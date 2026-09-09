@@ -1,0 +1,718 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/validators/candidate_binding.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "1be14e936f7715be01db58f836223f453fa5e9b4ed17f7894c825417d96752af",
+    "git_blob": "6ec9c561cedfd91e269ebd5489af551159d63eb6",
+    "bytes": 5872,
+    "lines": 135,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1be14e936f7715be01db58f836223f453fa5e9b4ed17f7894c825417d96752af",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        135
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v01",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "First document marker versus last global pipeline candidate.",
+    "finding_sections": [
+      "v01",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "pipelines/harness-selfimprove.yaml",
+      "scripts/lib/paths.py"
+    ],
+    "tests_read_in_part": [],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/ddl_dry_run.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "de53fd77df1c44c0cf2762c2ac7acf52c44d627d2e48c37a57bc48ba50ebe90f",
+    "git_blob": "977a0449890da22928372f4567364bcdd4fa32a2",
+    "bytes": 2236,
+    "lines": 57,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "de53fd77df1c44c0cf2762c2ac7acf52c44d627d2e48c37a57bc48ba50ebe90f",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        57
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v02",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Configured database SQL execution followed by rollback.",
+    "finding_sections": [
+      "v02",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "pipelines/core.yaml",
+      "scripts/lib/profile.py",
+      "scripts/engine/checks.py"
+    ],
+    "tests_read_in_part": [],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/harness_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "bytes": 107200,
+    "lines": 2092,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        2092
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v03",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Twenty-five checks; mixed static scans, subprocess and side effects.",
+    "finding_sections": [
+      "v03",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/autoheart_cmd.py",
+      "scripts/lib/git_flow.py",
+      "scripts/handlers/pre_tool/write_boundary.py",
+      "scripts/lib/judgment_paths.py",
+      "scripts/engine/gate_runner.py",
+      "config/retriever.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_harness_lint.py",
+      "tests/contract/test_lint_contracts_smoke.py",
+      "tests/contract/test_gate_executable_contract.py",
+      "tests/_isolate.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/heredoc_guard.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "16cdafb98b75f7912e9fbba7c7764574ee60f78f8ae7582469f5f1ebd5418ba8",
+    "git_blob": "4c911f35704830bc1ce114701c0ec8511f160d85",
+    "bytes": 5882,
+    "lines": 138,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "16cdafb98b75f7912e9fbba7c7764574ee60f78f8ae7582469f5f1ebd5418ba8",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        138
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v04",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Quoted delimiter and backslash/backtick heuristic over selected files.",
+    "finding_sections": [
+      "v04",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "config/policy/validator-ladder.json",
+      "scripts/engine/pr4.py"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_heredoc_guard_contract.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/intent_doc_floor.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "a66a1bb4f1ce49698dd4c2cf2b4781e5ce37fa0b3f8b5c01cb44029404b3bb94",
+    "git_blob": "35908ef02eb2bb14e04a9c044ced73f2c8484d6b",
+    "bytes": 4340,
+    "lines": 98,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a66a1bb4f1ce49698dd4c2cf2b4781e5ce37fa0b3f8b5c01cb44029404b3bb94",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v05",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Origin/placeholder/anchor/evidence-path document floor.",
+    "finding_sections": [
+      "v05",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "pipelines/reverse-onboarding.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_scaffold_smoke.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/isolation_deferred.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "c64cbe3d462daad0ab0ee2bb7ce589af9bb2e81148a654a168bbe7cdc7450be3",
+    "git_blob": "3550af376791fbb3c96d8895b7c3a72117a96876",
+    "bytes": 7007,
+    "lines": 153,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "c64cbe3d462daad0ab0ee2bb7ce589af9bb2e81148a654a168bbe7cdc7450be3",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        153
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v06",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Declared rerun location and caller-supplied skip count cap.",
+    "finding_sections": [
+      "v06",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/autoheart_cmd.py",
+      "scripts/cli/suite_cmd.py",
+      "scripts/lib/test_outcome.py"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_isolation_deferred_contract.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/ledger_semantics.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "2ef2b0c57d180327d4271de71458ffe45d104d5f901c5d16265866e94e788c57",
+    "git_blob": "f7239774632aa64421d49f963793ccb9cb0b3337",
+    "bytes": 7195,
+    "lines": 163,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2ef2b0c57d180327d4271de71458ffe45d104d5f901c5d16265866e94e788c57",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        163
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v07",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Synthetic projection poison plus selected live-ledger invariants.",
+    "finding_sections": [
+      "v07",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/ledger.py",
+      "scripts/lib/paths.py",
+      "scripts/validators/harness_lint.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_integrity_smoke.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/ontology_validator.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "f3e51e7faa92861e38a95499fd06b02bccf4dcace81a8d9e73b999399df28d08",
+    "git_blob": "a6fff8e6e3d173a4f8662fe9fad57db1341aa7ac",
+    "bytes": 10454,
+    "lines": 218,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f3e51e7faa92861e38a95499fd06b02bccf4dcace81a8d9e73b999399df28d08",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        218
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v08",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Schema, graph identity, enum and structural evidence checks.",
+    "finding_sections": [
+      "v08",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "ontology/schema.json",
+      "scripts/lib/paths.py",
+      "pipelines/core.yaml",
+      "scripts/validators/harness_lint.py"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_ontology_smoke.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/pattern_decisions.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "5d5f046ea1e0c73d3615cb0ac008eb69ac2288a1f1813650e86507bf7e83657f",
+    "git_blob": "6d73f3faa26781ab652a53a11ca919b240a99d7f",
+    "bytes": 2541,
+    "lines": 61,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "5d5f046ea1e0c73d3615cb0ac008eb69ac2288a1f1813650e86507bf7e83657f",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        61
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v09",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Fixed six pattern headings and decision/reference/reason markers.",
+    "finding_sections": [
+      "v09",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "config/policy/validator-ladder.json",
+      "scripts/engine/pr4.py"
+    ],
+    "tests_read_in_part": [],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/red_flags_scan.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "532d083e710ac260b23a3436d08cf90b0298b24d7c138938477d0abb9990913a",
+    "git_blob": "d0bdfcde5f8a00400c419030481075709116eaaf",
+    "bytes": 2087,
+    "lines": 53,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "532d083e710ac260b23a3436d08cf90b0298b24d7c138938477d0abb9990913a",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        53
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v10",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Required heading substring in selected skill Markdown.",
+    "finding_sections": [
+      "v10",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "config/policy/validator-ladder.json",
+      "scripts/engine/pr4.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_small_batch_smoke.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/repair_evidence.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "f7d248012dd7e15605092ed205a3cfd4593a85cad0b0388a91d1075bfcf43b54",
+    "git_blob": "ac600705c26c59eb2e8f4af70cb136c074b63cd4",
+    "bytes": 8243,
+    "lines": 187,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f7d248012dd7e15605092ed205a3cfd4593a85cad0b0388a91d1075bfcf43b54",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        187
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v11",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Any pending item, NO-REPAIR marker or selected dirty file.",
+    "finding_sections": [
+      "v11",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "pipelines/harness-selfimprove.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_repair_evidence_contract.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/settings_wiring.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "4524cda8efda8c36821f4654a3ec65cbf093f24dc0d20bb495cbcb7e2052d4a6",
+    "git_blob": "f8f945cf94b87ef947653117af3f0858bf48ab97",
+    "bytes": 13960,
+    "lines": 297,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "4524cda8efda8c36821f4654a3ec65cbf093f24dc0d20bb495cbcb7e2052d4a6",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        297
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v12",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Hook shape, launcher, registry and synthetic spawn checks.",
+    "finding_sections": [
+      "v12",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      ".claude/settings.json",
+      "scripts/handlers/dispatch.sh",
+      "scripts/handlers/registry.py",
+      "scripts/cli/health_cmd.py",
+      "scripts/validators/harness_lint.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_health_smoke.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/todo_scan.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "deb30faf232b79b4202374911e641eaf06492c0de9bac2f941efce4b2ec52235",
+    "git_blob": "ffc0ebdcf1ab533d960a77366d35f89c38215e40",
+    "bytes": 3422,
+    "lines": 78,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "deb30faf232b79b4202374911e641eaf06492c0de9bac2f941efce4b2ec52235",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v13",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Python marker scan with own-file exclusion and selected roots.",
+    "finding_sections": [
+      "v13",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "config/policy/validator-ladder.json",
+      "scripts/engine/pr4.py",
+      "scripts/cli/ladder_cmd.py",
+      "scripts/cron/l2_driver.py"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_ladder_sweep_contract.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/tradeoff_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "36561e2b5e13d219ef5e15da6a8077c771e75ac7dc4c14b1e87b50de3a599b76",
+    "git_blob": "20c8c7c8fbe5cd28132568745c1d757b2efed065",
+    "bytes": 11072,
+    "lines": 244,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "36561e2b5e13d219ef5e15da6a8077c771e75ac7dc4c14b1e87b50de3a599b76",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        244
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v14",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Tradeoff fence shape and closed metric/operator vocabulary.",
+    "finding_sections": [
+      "v14",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "ontology/metrics.yaml",
+      "scripts/engine/checks.py",
+      "pipelines/core.yaml",
+      "config/paths.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_tradeoff_lint_contract.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/usecase_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "132668f82063f1dbd73dc3a8f1c78f3bd519e2e2da24418296774c9c06d0c7da",
+    "git_blob": "2e1a8aedabd70bbe9bb9247b8c00edc3fde13fd2",
+    "bytes": 3450,
+    "lines": 84,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "132668f82063f1dbd73dc3a8f1c78f3bd519e2e2da24418296774c9c06d0c7da",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        84
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-validators-001/review.md#v15",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:scripts/validators:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "UC section and AC/GWT marker checks, not executable scenarios.",
+    "finding_sections": [
+      "v15",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "pipelines/core.yaml",
+      "scripts/engine/gate_runner.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_engine_smoke.py"
+    ],
+    "test_limits": "Selected test ranges only; no execution or acceptance evidence.",
+    "remaining": [
+      "Full transitive caller/config/test closure",
+      "Runtime and transition validation",
+      "License/adoption review",
+      "Actual independent Claude review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

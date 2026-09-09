@@ -1,0 +1,11 @@
+같은 세션 공동 토론. Read/Glob/Grep만, 원본 실행/쓰기/네트워크/live/credentials 금지. 먼저 root codex-initial.md, component_observations.py, components.stdout.txt/receipt, completion-self-check.stdout/receipt, ac-tree-unit.stdout/receipt를 읽고 초기보고를 정정/합의/반박/미확인으로 대조하세요. root 4개39337bytes는 manifest/rawGitblob/size로확인. line_count 201/262/438/80이며 UI의 trailingempty표시와구분. root실측 원본selfcheck28assertionsPASS+원본ACunit17PASS,별도helper프로그램. 격리networknone/read-only/nonroot 실제임시파일; mocking없지만 actualmodel/provider/host/worker/human인수없음. ACunit의lambda/predicatecallback은실제E2E아님.
+실측: caller schema_version=null/ts200/eventunrelated/completenessfalse/verdictapproved가 저장되고 freshapproved. tsNaN 및floorNaN도approved. verdict[] TypeError. cross_target=False인데callertrue marker남음. out-of-orderiteration시last가아닌maxts선택. validJSON[] countreaderAttributeError. gate truthystringsfalse+iter99=complete; noEvaluatorrequire=True는iterate(방어유지). emptyAC/stringfalseGateapproved; advisorybool은ValueError(방어유지). 문서defaultaxis완성도ValueError. emit함수가 실제/source디렉터리를파일로열다실패해도evaluate_emitapproved. 동일description다른predicate동일ID. emptyatlas0/0ready; absentglobal0/1blocked인데empty/unknownscope0/1ready.
+정정요청:
+1 'write side가.py어디에도없다'는 과장. evaluator_dispatcher694–751에axis_log_emit_for/checked가실제log_axis_event호출. log_verdict_event문서위임과다른Pythonwriter를구분; commands/harness-evaluate154와autopilot274도root전문읽음. grep축약/부재로전체writer0단정금지.
+2 '논리계층견고'는NaN,비해시verdict,truthiness,GateLeafbool,emit실패무시등실측과대조해축소. 입력의모든것이자기신고라일반화금지,각caller의권위와exactartifact결속문제.
+3 미래ts영구fresh가아님: since_ts가미래ts보다커지면필터됨. same-second/replay/generation/finite검증미흡으로한정. NaN실측은별개.
+4 GC는'30일후무조건전부소멸'이아님. lastmtime/cutoff와SessionStart실행/성공/activelease미검사가조건. archive전체부재도증명못함.
+5 evaluator_dispatcher590–638의fallback본문을읽어라. root독해에서는approvedbranch없음. 미실행정적가능성을 '실증된반례'라고부르면안됨. fallbackevent허용과현재fallbackproducerapproved발행은별개.
+6 root문서75–91의AC축완성도와영문allowedaxes불일치 확인. lambda latebinding은문서직역시조건부,모델이항상그대로실행한다고단정금지.
+7 rootcoverage empty/unknownscope는touched=None과[]차이, scope선택권위+expecteddenominator부재. residual배너보존의장점과ready/incomplete효과분리. cli meeting_ingest1–96은approved파일인자로가정하지만실제승인검사없음(해당CLI안으로한정).
+각추가독해정확구간명시. unresolved동시append/shortwrite/Windows경로/GC/provider/완전한전이closure/licensing은실행된것으로승격금지. 원시초기보고는보존. 전체분석/흡수false.

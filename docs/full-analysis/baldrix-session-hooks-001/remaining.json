@@ -1,0 +1,112 @@
+{
+  "primary_body_pending": [],
+  "per_file": [
+    {
+      "path": "scripts/handlers/post_tool/__init__.py",
+      "remaining": [
+        "Package marker only; host package discovery not executed.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/post_tool/agent_invocation_audit.py",
+      "remaining": [
+        "Expected-tools resolver and JSONL append backend not fully traced; actual dispatch success/dedup unknown.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/post_tool/agent_outcome_audit.py",
+      "remaining": [
+        "Semantic/cross-reference/boilerplate observers, breaker lifecycle and critic process propagation not fully traced.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/post_tool/reviewer.py",
+      "remaining": [
+        "File matchers and project verification script bodies not fully traced; host tool_output envelope unknown.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/post_tool/skill_candidate_extractor.py",
+      "remaining": [
+        "Candidate builder/activation chain not fully traced; enabled deployment env not inspected.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/prompt/__init__.py",
+      "remaining": [
+        "Package marker only; host package discovery not executed.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/prompt/context_load.py",
+      "remaining": [
+        "Insight writer/query and stage YAML parser not fully traced; authoritative SDD transitions unknown.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/prompt/debate_trigger.py",
+      "remaining": [
+        "Writeback store and graph freshness not traced; concurrent state/TTL untested.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/prompt/handoff_resume.py",
+      "remaining": [
+        "Absent from pinned settings prompt registrations; other registration surfaces/host unknown.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/prompt/mode_detector.py",
+      "remaining": [
+        "Phase detector and actual suggested engines/model eligibility not traced.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/prompt/skill_match.py",
+      "remaining": [
+        "Scoring, active path normalization and threshold promotion lifecycle not fully traced.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/session/__init__.py",
+      "remaining": [
+        "Package marker only; host package discovery not executed.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    },
+    {
+      "path": "scripts/handlers/session/init.py",
+      "remaining": [
+        "GC internals, scan deadline/cancellation, status helper backends and host watchPaths support not fully traced.",
+        "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+      ]
+    }
+  ],
+  "search_only_not_body_reviewed": [
+    "scripts/mermaid-validate.py"
+  ],
+  "unavailable_search_paths": [
+    "hooks/",
+    "tests/",
+    "scripts/handlers/pre_tool/critic_advisor.py"
+  ],
+  "unavailable_explanation": "Initial guessed paths unavailable; tests found under scripts/tests. No live fallback was used.",
+  "tests_executed": [],
+  "upstream_execution_count": 0,
+  "license_review_complete": false,
+  "actual_host_behavior_verified": false,
+  "full_transition_closure": false,
+  "whole_analysis_complete": false,
+  "adoption_approved": false
+}

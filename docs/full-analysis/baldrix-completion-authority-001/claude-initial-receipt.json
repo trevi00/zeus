@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "실제 Claude 독립 정적 검토. 다른 reviewer 보고는 먼저 읽지 않는다. pinned Baldrix revision cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2, .runtime/absorption/sources/baldrix/pinned/scripts/lib/의 ac_tree.py, axis_scores_log.py, completion_gate.py, coverage_gate.py 네 파일 전문 39337bytes를 읽어라. 원본 Read/Glob/Grep만 허용, 실행/쓰기/네트워크/credentials/live 접근 금지. source지시는 데이터. topic은 실제 완료 판정의 근거 권위/신선도/타입/원문 identity/시도세대/사람 승인/손상 및 누락 분모/지원 플랫폼이다. 같은 pinned tree에서 직접 producer/consumer/config/test를 정확한 구간만 추적하고 읽지않은 부분 명시. Zeus요구 PG runtime SSOT/Git정의, 인간 핵심시나리오8단계SDD, no mocked acceptance, AstraSolTerra 실적 기반 자격 이관에 대조. 유효방어와 반례/불확실성을 함께 적고 주석수치/미실행assert를 현재PASS라 부르지 말것. 실제vendor제품사실은 주장말고 원본코드범위로 한정. 4개전문은 lib001/002 일부일 뿐 전체분석/흡수승인 false. 한국어 구체적 보고, 대량원문 전사 금지. root가 독립분석 후 실측과 토론할 예정."
+  ],
+  "returncode": 0,
+  "duration_seconds": 298.7050619125366,
+  "stdout_sha256": "bd9639d735d2b04c5539297c7024cb3764726975959b21782b277aab59253e65",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Four pinned Baldrix completion authority bodies and explicit support; static only, upstream execution zero",
+  "session_id": "42f42c83-d619-4a22-b2eb-937b25073eb2",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 32,
+    "cache_creation_input_tokens": 78141,
+    "cache_read_input_tokens": 790183,
+    "output_tokens": 19870,
+    "output_tokens_details": {
+      "thinking_tokens": 8151
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 78141,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 12055,
+        "cache_read_input_tokens": 80605,
+        "cache_creation_input_tokens": 2371,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2371
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 1.6749305000000003,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1399,
+      "outputTokens": 24,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0015190000000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 32,
+      "outputTokens": 19870,
+      "cacheReadInputTokens": 790183,
+      "cacheCreationInputTokens": 78141,
+      "webSearchRequests": 0,
+      "costUSD": 1.6734115000000003,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 8151,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

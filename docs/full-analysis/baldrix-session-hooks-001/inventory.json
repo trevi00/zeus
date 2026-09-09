@@ -1,0 +1,78 @@
+[
+  {
+    "partition": "baldrix:scripts/handlers/post_tool:001",
+    "scope_sha256": "31b765fdff9d4a9fc796b786a587f649b068b3867d4cd7672c08173f057ae006",
+    "bytes": 61205,
+    "paths": [
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/post_tool/__init__.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/post_tool/agent_invocation_audit.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/post_tool/agent_outcome_audit.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/post_tool/reviewer.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/post_tool/skill_candidate_extractor.py"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "baldrix:scripts/handlers/prompt:001",
+    "scope_sha256": "1ec1c5722b56354d656e77b8c580d9a37915303a849ca79dd0f83197db82838b",
+    "bytes": 63448,
+    "paths": [
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/prompt/__init__.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/prompt/context_load.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/prompt/debate_trigger.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/prompt/handoff_resume.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/prompt/mode_detector.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/prompt/skill_match.py"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "baldrix:scripts/handlers/session:001",
+    "scope_sha256": "191c41f344702a86bbc8a73b19485ff39cd916cbaca03f5949f97bdb7106b4ca",
+    "bytes": 33978,
+    "paths": [
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/session/__init__.py"
+      },
+      {
+        "source": "baldrix",
+        "path": "scripts/handlers/session/init.py"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  }
+]

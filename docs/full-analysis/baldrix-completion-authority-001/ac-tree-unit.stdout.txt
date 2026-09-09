@@ -1,0 +1,19 @@
+  [OK] test_gate_leaf_rejects_non_callable
+  [OK] test_advisory_leaf_rejects_bad_axis
+  [OK] test_advisory_leaf_rejects_non_callable
+  [OK] test_gate_leaf_rejects_empty_description
+  [OK] test_empty_leaves_is_approved
+  [OK] test_all_gates_true_no_advisory_is_approved
+  [OK] test_any_gate_false_is_escalate
+  [OK] test_advisory_low_score_is_iterate
+  [OK] test_advisory_mean_low_is_iterate
+  [OK] test_advisory_all_three_plus_is_approved
+  [OK] test_gate_false_dominates_high_advisory
+  [OK] test_advisory_score_out_of_range_raises
+  [OK] test_advisory_score_bool_rejected
+  [OK] test_advisory_score_none_rejected
+  [OK] test_evaluate_emit_emits_per_leaf
+  [OK] test_leaf_id_stable_for_same_axis_description
+  [OK] test_isinstance_check_blocks_typo
+
+[OK] 17 tests passed

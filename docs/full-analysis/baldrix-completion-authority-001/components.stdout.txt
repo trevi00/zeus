@@ -1,0 +1,171 @@
+{
+  "kind": "original_completion_components",
+  "mocking": false,
+  "caller_timestamp_schema": {
+    "written": true,
+    "events": [
+      {
+        "completeness": false,
+        "event": "unrelated",
+        "schema_version": null,
+        "ts": 200.0,
+        "verdict": "approved"
+      }
+    ],
+    "fresh_verdict": {
+      "value": "approved"
+    }
+  },
+  "nan_timestamp": {
+    "written": true,
+    "events": [
+      {
+        "schema_version": "1",
+        "ts": NaN,
+        "verdict": "approved"
+      }
+    ],
+    "fresh_verdict": {
+      "value": "approved"
+    }
+  },
+  "nan_floor": {
+    "written": true,
+    "events": [
+      {
+        "schema_version": "1",
+        "ts": 1.0,
+        "verdict": "approved"
+      }
+    ],
+    "fresh_verdict": {
+      "value": "approved"
+    }
+  },
+  "invalid_verdict": {
+    "written": true,
+    "events": [
+      {
+        "schema_version": "1",
+        "ts": 200.0,
+        "verdict": []
+      }
+    ],
+    "fresh_verdict": {
+      "exception": "TypeError",
+      "message": "unhashable type: 'list'"
+    }
+  },
+  "caller_marker_when_false": [
+    {
+      "cross_target_first_invocation": true,
+      "schema_version": "1",
+      "ts": 1.0,
+      "verdict": "iterate"
+    }
+  ],
+  "iteration_order": {
+    "count": 2,
+    "selected_ts": 1788912060.0,
+    "last_in_file": "2026-09-09T00:00:00Z"
+  },
+  "iteration_wrong_shape": {
+    "exception": "AttributeError",
+    "message": "'list' object has no attribute 'get'"
+  },
+  "truthy_clean": "complete",
+  "no_evaluator_closed": "iterate",
+  "empty_ac": "approved",
+  "string_false_gate": "approved",
+  "invalid_advisory_bool": {
+    "exception": "ValueError",
+    "message": "AdvisoryLeaf predicate returned bool (True) — must be int 1..5"
+  },
+  "default_documented_axis": {
+    "exception": "ValueError",
+    "message": "AdvisoryLeaf.axis must be in ['cohesion', 'coupling', 'extensibility', 'stability', 'usability'], got '완성도'"
+  },
+  "emit_io_failure": "approved",
+  "duplicate_leaf_ids": [
+    "34298e5f7a4748ff",
+    "34298e5f7a4748ff"
+  ],
+  "coverage": {
+    "empty": {
+      "coverage": "0/0",
+      "ready_for_kickoff": true,
+      "blast_radius_incomplete": false,
+      "deficit_set": {
+        "undeclared_orphan": [],
+        "blocked_seams": [],
+        "absent_repos": []
+      },
+      "deficit_in_scope": {
+        "blocked_seams": [],
+        "undeclared_orphan": [],
+        "absent_repos": [],
+        "coverage_deficit": []
+      },
+      "coverage_banner_full": " || RESIDUAL-1 (invisible): a contract whose producer AND consumer are both absent repos yields no undeclared entry and no declared seam, so it is not surfaced by the deficit set. | RESIDUAL-2 (false-green): a behavioral claim implicating an absent repo WITHOUT naming it does NOT force ready_for_kickoff=false — no name-convention inference runs in the deterministic path; the operator-read coverage banner + human decision-gate are the catch."
+    },
+    "global": {
+      "coverage": "0/1",
+      "ready_for_kickoff": false,
+      "blast_radius_incomplete": true,
+      "deficit_set": {
+        "undeclared_orphan": [],
+        "blocked_seams": [],
+        "absent_repos": [
+          "missing"
+        ]
+      },
+      "deficit_in_scope": {
+        "blocked_seams": [],
+        "undeclared_orphan": [],
+        "absent_repos": [
+          "missing"
+        ],
+        "coverage_deficit": []
+      },
+      "coverage_banner_full": " || RESIDUAL-1 (invisible): a contract whose producer AND consumer are both absent repos yields no undeclared entry and no declared seam, so it is not surfaced by the deficit set. | RESIDUAL-2 (false-green): a behavioral claim implicating an absent repo WITHOUT naming it does NOT force ready_for_kickoff=false — no name-convention inference runs in the deterministic path; the operator-read coverage banner + human decision-gate are the catch."
+    },
+    "empty_scope": {
+      "coverage": "0/1",
+      "ready_for_kickoff": true,
+      "blast_radius_incomplete": false,
+      "deficit_set": {
+        "undeclared_orphan": [],
+        "blocked_seams": [],
+        "absent_repos": [
+          "missing"
+        ]
+      },
+      "deficit_in_scope": {
+        "blocked_seams": [],
+        "undeclared_orphan": [],
+        "absent_repos": [],
+        "coverage_deficit": []
+      },
+      "coverage_banner_full": " || RESIDUAL-1 (invisible): a contract whose producer AND consumer are both absent repos yields no undeclared entry and no declared seam, so it is not surfaced by the deficit set. | RESIDUAL-2 (false-green): a behavioral claim implicating an absent repo WITHOUT naming it does NOT force ready_for_kickoff=false — no name-convention inference runs in the deterministic path; the operator-read coverage banner + human decision-gate are the catch."
+    },
+    "unknown_scope": {
+      "coverage": "0/1",
+      "ready_for_kickoff": true,
+      "blast_radius_incomplete": false,
+      "deficit_set": {
+        "undeclared_orphan": [],
+        "blocked_seams": [],
+        "absent_repos": [
+          "missing"
+        ]
+      },
+      "deficit_in_scope": {
+        "blocked_seams": [],
+        "undeclared_orphan": [],
+        "absent_repos": [],
+        "coverage_deficit": []
+      },
+      "coverage_banner_full": " || RESIDUAL-1 (invisible): a contract whose producer AND consumer are both absent repos yields no undeclared entry and no declared seam, so it is not surfaced by the deficit set. | RESIDUAL-2 (false-green): a behavioral claim implicating an absent repo WITHOUT naming it does NOT force ready_for_kickoff=false — no name-convention inference runs in the deterministic path; the operator-read coverage banner + human decision-gate are the catch."
+    }
+  }
+}

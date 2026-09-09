@@ -1,0 +1,452 @@
+[
+  {
+    "source": "baldrix",
+    "path": "settings.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10437,
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_from_pinned_bytes",
+    "read_ranges": [
+      [
+        90,
+        150
+      ],
+      [
+        214,
+        330
+      ]
+    ],
+    "total_lines": 386,
+    "body_read_complete": false,
+    "id": "S01",
+    "purpose": "Actual prompt/post-tool/session registrations and limits; other settings not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/hook_io.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3938,
+    "git_blob": "458e2336a6fbc150dc6b785b3b39c4f3a0781cef",
+    "pinned_sha256": "6efe29f6907d641abe7e8f65eb9c183ae44edb40092a64ad5fac5ff15bd2dc1d",
+    "observed_sha256": null,
+    "manifest_sha256": "6efe29f6907d641abe7e8f65eb9c183ae44edb40092a64ad5fac5ff15bd2dc1d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        138
+      ]
+    ],
+    "total_lines": 138,
+    "body_read_complete": true,
+    "id": "S02",
+    "purpose": "Input/output and UTF8 handling; actual host semantics unverified",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/prompt_origin.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2642,
+    "git_blob": "5f1a24421de3c28128cde1e3ca753992b19c346b",
+    "pinned_sha256": "2b289f76a41bb3fedb21b243ced84e1d39606c8228f8c89d9ef65da95463e006",
+    "observed_sha256": null,
+    "manifest_sha256": "2b289f76a41bb3fedb21b243ced84e1d39606c8228f8c89d9ef65da95463e006",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        49
+      ]
+    ],
+    "total_lines": 49,
+    "body_read_complete": true,
+    "id": "S03",
+    "purpose": "Leading text marker classifier, not authenticated provenance",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ratio_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2552,
+    "git_blob": "3d599bc8a2fd072a41258231e06f28c1f45e2aec",
+    "pinned_sha256": "964e809ac00064be2500fa3f28e0ba4419c9c9b3a461a5f64a430a0df6af4bf4",
+    "observed_sha256": null,
+    "manifest_sha256": "964e809ac00064be2500fa3f28e0ba4419c9c9b3a461a5f64a430a0df6af4bf4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "total_lines": 78,
+    "body_read_complete": true,
+    "id": "S04",
+    "purpose": "Global counters, reset and read-modify-write",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/cooldown.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 1393,
+    "git_blob": "291e08b145e2798aca9fee58600acd8eab9014ca",
+    "pinned_sha256": "481306c93636366ee57b8c642d5ab46c501db9d5505f2fc98c9e7931c25e25ff",
+    "observed_sha256": null,
+    "manifest_sha256": "481306c93636366ee57b8c642d5ab46c501db9d5505f2fc98c9e7931c25e25ff",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        44
+      ]
+    ],
+    "total_lines": 44,
+    "body_read_complete": true,
+    "id": "S05",
+    "purpose": "mtime test consumes marker before work",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/validators/structural.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11525,
+    "git_blob": "a229dcaca73533871ac28b0b4e54405db001c7a5",
+    "pinned_sha256": "503a4e3b761191957d6f96ce8258bac343876d3a2c44d366b9cd85b4799ad2da",
+    "observed_sha256": null,
+    "manifest_sha256": "503a4e3b761191957d6f96ce8258bac343876d3a2c44d366b9cd85b4799ad2da",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        292
+      ]
+    ],
+    "total_lines": 292,
+    "body_read_complete": true,
+    "id": "S06",
+    "purpose": "Actual schema/stat/claimed-tool layers including skipped checks",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_status.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4122,
+    "git_blob": "b3aee119324770158a253d5e2fd04ddb63de41a9",
+    "pinned_sha256": "ecb5c1d7eecb9d2a6355eea1cacfa2aae2a87c20de3a800d8443d0eb932f3a24",
+    "observed_sha256": null,
+    "manifest_sha256": "ecb5c1d7eecb9d2a6355eea1cacfa2aae2a87c20de3a800d8443d0eb932f3a24",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        112
+      ]
+    ],
+    "total_lines": 112,
+    "body_read_complete": true,
+    "id": "S07",
+    "purpose": "Any output existence -> DONE; last found stage index",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_token_budget.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8830,
+    "git_blob": "94ba77d82abad9b4ec841dc8a694875d8eeea0cb",
+    "pinned_sha256": "b2fdc976251444ed2207f1fea6f2896efd2f96d1816652864dd77d624f5e874f",
+    "observed_sha256": null,
+    "manifest_sha256": "b2fdc976251444ed2207f1fea6f2896efd2f96d1816652864dd77d624f5e874f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        195
+      ]
+    ],
+    "total_lines": 195,
+    "body_read_complete": true,
+    "id": "S08",
+    "purpose": "Effective 4000/3000/3 constants and highest-ranked skill budget adaptation",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/subagent_invocation_log.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12108,
+    "git_blob": "eceb106d053c3905c084bb41fd0e6bfe3f25a627",
+    "pinned_sha256": "7992e3cf7569b224551f2a14d2e7cbb0bd58154995b18a681b0aa4ec100912d6",
+    "observed_sha256": null,
+    "manifest_sha256": "7992e3cf7569b224551f2a14d2e7cbb0bd58154995b18a681b0aa4ec100912d6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        40,
+        132
+      ]
+    ],
+    "total_lines": 325,
+    "body_read_complete": false,
+    "id": "S09",
+    "purpose": "Direct writer and origin schema; IO implementation and GC not traced",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_candidate_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 24482,
+    "git_blob": "4f33f6add4ff2a0df56ba6504765a506e421c590",
+    "pinned_sha256": "1e6ed6610917d376436b232ac9786f294712a8c8dba7297b192b496eca2d9d3d",
+    "observed_sha256": null,
+    "manifest_sha256": "1e6ed6610917d376436b232ac9786f294712a8c8dba7297b192b496eca2d9d3d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        212
+      ],
+      [
+        530,
+        620
+      ]
+    ],
+    "total_lines": 623,
+    "body_read_complete": false,
+    "id": "S10",
+    "purpose": "Enabled detector entry/tracker and candidate writer; builders and final 3 lines not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_reviewer_spec_verification.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3971,
+    "git_blob": "5a7d53e968afc273d46f48c61a16e6ca05137613",
+    "pinned_sha256": "61aacfcc2972500993830719f5b28b02d4c58a33815722b1681333b9b8cfd7e7",
+    "observed_sha256": null,
+    "manifest_sha256": "61aacfcc2972500993830719f5b28b02d4c58a33815722b1681333b9b8cfd7e7",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        116
+      ]
+    ],
+    "total_lines": 116,
+    "body_read_complete": true,
+    "id": "S11",
+    "purpose": "Fixture and PASS/FAIL/empty/missing/mock-timeout assertions; not run",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_agent_outcome_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11892,
+    "git_blob": "7f1da5fa8e2728531eed361d8fa64b1d188ce012",
+    "pinned_sha256": "3e833bfceb47157a946f2bf4bdbcbaaa738d5d4b9e9959c3c3692e462c553a60",
+    "observed_sha256": null,
+    "manifest_sha256": "3e833bfceb47157a946f2bf4bdbcbaaa738d5d4b9e9959c3c3692e462c553a60",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        96,
+        121
+      ]
+    ],
+    "total_lines": 331,
+    "body_read_complete": false,
+    "id": "S12",
+    "purpose": "Free-text result success assertion; invocation helper not read; not run",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_session_init.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9154,
+    "git_blob": "fc87672e34f29eef9fca3745508ae6bba90f8cb7",
+    "pinned_sha256": "8c4bef42957be43a003fffafa83e827c94dd1b3bf662a9614d597e7925575960",
+    "observed_sha256": null,
+    "manifest_sha256": "8c4bef42957be43a003fffafa83e827c94dd1b3bf662a9614d597e7925575960",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        100
+      ]
+    ],
+    "total_lines": 217,
+    "body_read_complete": false,
+    "id": "S13",
+    "purpose": "Handoff cap/orientation and abort count assertions; remaining tests not read; not run",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/graduation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 19847,
+    "git_blob": "d374e761ae212a30b859fed6ab62967cf54a61a8",
+    "pinned_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "observed_sha256": null,
+    "manifest_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        371,
+        407
+      ]
+    ],
+    "total_lines": 486,
+    "body_read_complete": false,
+    "id": "S14",
+    "purpose": "Direct SessionStart scan loop and save; inner tick not traced",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/operator_ledger.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12589,
+    "git_blob": "adc011a49c9b9805da94f90fa336c6abaf8bfbe2",
+    "pinned_sha256": "baaf4b0e9875b976adadee82bc8ba0a811a7417f9fbee1df400473a33be407bf",
+    "observed_sha256": null,
+    "manifest_sha256": "baaf4b0e9875b976adadee82bc8ba0a811a7417f9fbee1df400473a33be407bf",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        199,
+        277
+      ]
+    ],
+    "total_lines": 370,
+    "body_read_complete": false,
+    "id": "S15",
+    "purpose": "Caller defaults/append and gap event; downstream readers not traced",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_handoff_resume.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5365,
+    "git_blob": "bc3ddb8ab059beace15e53406077eaf15882a3ae",
+    "pinned_sha256": "cad1131ec1e1334937efd67d9b587821829d99ed50604c4112684db9b7606d73",
+    "observed_sha256": null,
+    "manifest_sha256": "cad1131ec1e1334937efd67d9b587821829d99ed50604c4112684db9b7606d73",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        100
+      ]
+    ],
+    "total_lines": 169,
+    "body_read_complete": false,
+    "id": "S16",
+    "purpose": "Helper-only scope and find/parse assertions; remaining tests not read; not run",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_debate_trigger_advisory.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7475,
+    "git_blob": "0d51a592441e68fdaaf32262fcd63ef75af3d35c",
+    "pinned_sha256": "e9da82219e3b1e742995fdca6345852dded102ac0bcd0af704270f5835b89eea",
+    "observed_sha256": null,
+    "manifest_sha256": "e9da82219e3b1e742995fdca6345852dded102ac0bcd0af704270f5835b89eea",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        90
+      ]
+    ],
+    "total_lines": 227,
+    "body_read_complete": false,
+    "id": "S17",
+    "purpose": "Helper slot/ack tests; remaining TTL test body not read; not run",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static read only; no upstream imports, tests or probes."
+  }
+]

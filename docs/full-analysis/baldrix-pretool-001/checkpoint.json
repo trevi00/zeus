@@ -1,0 +1,50 @@
+{
+  "partitions": [
+    {
+      "partition": "baldrix:scripts/handlers:001",
+      "scope_sha256": "d3ffebf8c7c38176f0bd2fbc458739ce1ceb27e4a06793711ac63d258ba925ab",
+      "files": 1,
+      "bytes": 79
+    },
+    {
+      "partition": "baldrix:scripts/handlers/notification:001",
+      "scope_sha256": "39efe9dbbf34cb0147acc24a6ab0363502d2b28ddbb9e86b1992425a12edcc5f",
+      "files": 4,
+      "bytes": 7095
+    },
+    {
+      "partition": "baldrix:scripts/handlers/pre_tool:001",
+      "scope_sha256": "b39a5426794348eebc434d14b8f8a6cb864135cefcc9bb1b3193cbfbdfbec96f",
+      "files": 9,
+      "bytes": 55823
+    },
+    {
+      "partition": "baldrix:scripts/handlers/tool:001",
+      "scope_sha256": "62ece893f22f3b40f557bd96874ca0fc40c9d3ec3f2198d47568f459e6a99c91",
+      "files": 2,
+      "bytes": 5832
+    }
+  ],
+  "source": "baldrix",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "primary_total": 16,
+  "primary_full_body_semantically_reviewed": 16,
+  "primary_bytes": 68829,
+  "primary_remaining": [],
+  "primary_body_review_complete": true,
+  "fresh_support_files": 15,
+  "reused_support_files": 2,
+  "upstream_executions": 0,
+  "tests_executed": [],
+  "probes_executed": 0,
+  "partition_complete": false,
+  "repository_complete": false,
+  "adoption_ready": false,
+  "files_ref": "docs/full-analysis/baldrix-pretool-001/files.json",
+  "review_ref": "docs/full-analysis/baldrix-pretool-001/review.md",
+  "notes_ref": "docs/full-analysis/baldrix-pretool-001/notes.md",
+  "supporting_ref": "docs/full-analysis/baldrix-pretool-001/supporting-evidence.json",
+  "reused_support_ref": "docs/full-analysis/baldrix-pretool-001/reused-support.json",
+  "remaining": "Transitive/effective config/test closure, all execution, license/external claims, independent joint review and absorption remain unresolved.",
+  "manifest_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5"
+}

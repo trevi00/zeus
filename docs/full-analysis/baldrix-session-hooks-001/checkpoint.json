@@ -1,0 +1,34 @@
+{
+  "source": "baldrix",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "partitions": [
+    "baldrix:scripts/handlers/post_tool:001",
+    "baldrix:scripts/handlers/prompt:001",
+    "baldrix:scripts/handlers/session:001"
+  ],
+  "primary_count": 13,
+  "primary_bytes": 158631,
+  "primary_body_read_count": 13,
+  "primary_status": "body_reviewed_call_test_trace_pending",
+  "supporting_count": 17,
+  "supporting_full_body_count": 8,
+  "supporting_partial_count": 9,
+  "primary_manifest_sha256_absent": [],
+  "supporting_manifest_sha256_absent": [
+    "settings.json"
+  ],
+  "raw_git_blobs_and_sizes_matched": true,
+  "available_manifest_sha256_matched": true,
+  "review_anchor_validation_passed": true,
+  "prior_reviews_reused": false,
+  "upstream_execution_count": 0,
+  "source_edits": 0,
+  "runtime_edits": 0,
+  "shared_coverage_edits": 0,
+  "commit_push_count": 0,
+  "blocked_probe_retried": false,
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "bounded_static_review_checkpoint_saved": true,
+  "stopped_at_bounded_scope": true
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/paths.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "manifest_bytes": 13699,
+    "pinned_bytes": 13699,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "prior_ledger": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+    "prior_ledger_sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d",
+    "reused_read_ranges": [
+      {
+        "start": 1,
+        "end": 21,
+        "raw_range_sha256": "587295056e9747b20909814aae253698d1134675928e1c2c1c815539b3a6f9f8"
+      },
+      {
+        "start": 61,
+        "end": 78,
+        "raw_range_sha256": "3dcca00d049f34552cf67348aaca23029a557cee37b4e77a11b23eed218734cd"
+      },
+      {
+        "start": 144,
+        "end": 158,
+        "raw_range_sha256": "98348a33dae9f25c389c6246954c15c196631b683f60604a666cc73c532decf1"
+      },
+      {
+        "start": 178,
+        "end": 201,
+        "raw_range_sha256": "e54bd4be0090b3290417c19df67f5e14d1cd857d7981dc0ce4f7dd8d885748ca"
+      },
+      {
+        "start": 231,
+        "end": 257,
+        "raw_range_sha256": "b7564dbe2b8808c8ba3bfb6744f9660b9dad52cb83c64e108dca620b00b5dad7"
+      }
+    ],
+    "fresh_body_read": false,
+    "coverage_promotion": false,
+    "meaning": "Asset/state/telemetry env split and import-time constants; reuse only previously recorded ranges."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/telemetry_log.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "aa23d8924904d3e8db9f6770cd51eb1914deccbe",
+    "pinned_sha256": "77f939b133c533c024faafdc277daea6f452890bc371f55d99a3951adc1cbb27",
+    "manifest_bytes": 4583,
+    "pinned_bytes": 4583,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "prior_ledger": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+    "prior_ledger_sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d",
+    "reused_read_ranges": [
+      {
+        "start": 1,
+        "end": 86,
+        "raw_range_sha256": "fc42f27f16225a4accdf413f023625f93f71242ea9aeb54a2a887c6184813f17"
+      }
+    ],
+    "fresh_body_read": false,
+    "coverage_promotion": false,
+    "meaning": "Append/rotation/fail-open1–86 previously read; timed decorator87+ not newly read, remains transitive gap."
+  }
+]

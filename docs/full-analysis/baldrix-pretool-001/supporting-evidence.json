@@ -1,0 +1,397 @@
+[
+  {
+    "source": "baldrix",
+    "path": "settings.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "manifest_bytes": 10437,
+    "pinned_bytes": 10437,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; fresh SHA, raw Git blob and byte count matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 138,
+        "end": 223,
+        "raw_range_sha256": "446f18eb8a2b4353d112a6f6cdff6cdded1f754a6a56efb1bd1cadea131eecfa"
+      },
+      {
+        "start": 228,
+        "end": 243,
+        "raw_range_sha256": "8287e1b9fa1081918226ffa5d73b98ab4ce65b10ccb0c5f3d21742b2f28f33dd"
+      },
+      {
+        "start": 261,
+        "end": 275,
+        "raw_range_sha256": "dc36306f88f098d147c634a17fa2a3d8cee0cdd887e08475811fd91f9c9660e1"
+      },
+      {
+        "start": 315,
+        "end": 333,
+        "raw_range_sha256": "150de931a72786e594f3e9ecbe77d0444ebfb61fe30728b52a45012e0315b377"
+      }
+    ],
+    "meaning": "Windows absolute-path command registrations, tool matchers,5/10sec timeouts. Exact snippets only; full merged/live settings unread.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/agent_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f8bf0d30c7f419c0d544ddf1ac27a57015d37f46",
+    "pinned_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3",
+    "manifest_bytes": 1737,
+    "pinned_bytes": 1737,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 59,
+        "raw_range_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3"
+      }
+    ],
+    "meaning": "Env inspection helper, invalid/unset reset0, no propagation writer. Full lib-only exact ORCH_DEPTH search found this file only; whole-tree writer closure pending.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/webhook.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c80f4884521a1f94392e574e849628c11af9e544",
+    "pinned_sha256": "d9dd3cdf891514fbdb1b588d33e50f447d7501266ea9dcca9591a18cc83f5523",
+    "manifest_bytes": 2194,
+    "pinned_bytes": 2194,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 65,
+        "raw_range_sha256": "d9dd3cdf891514fbdb1b588d33e50f447d7501266ea9dcca9591a18cc83f5523"
+      }
+    ],
+    "meaning": "POST attempts/retry/backoff/2xx semantics; no delivery acknowledgement,idempotency or global deadline.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/hook_io.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "458e2336a6fbc150dc6b785b3b39c4f3a0781cef",
+    "pinned_sha256": "6efe29f6907d641abe7e8f65eb9c183ae44edb40092a64ad5fac5ff15bd2dc1d",
+    "manifest_bytes": 3938,
+    "pinned_bytes": 3938,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 138,
+        "raw_range_sha256": "6efe29f6907d641abe7e8f65eb9c183ae44edb40092a64ad5fac5ff15bd2dc1d"
+      }
+    ],
+    "meaning": "Shared guarded UTF8/schema constructors and malformed-input {}. Claude protocol source claim not externally verified.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/agent_outcome_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b8a953fdcf82c52180004b8d667c91aaba375dc3",
+    "pinned_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "manifest_bytes": 19209,
+    "pinned_bytes": 19209,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 420,
+        "end": 465,
+        "raw_range_sha256": "583dd451df76702f0d56b991c70990bc3e107b05c52a5efe4503442dd7ca2f07"
+      }
+    ],
+    "meaning": "Separate-hook env consumption marks decision==invoke as performed; surrounding outcome and ledger closure unread.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/guard_patterns.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "0b71692d89eaa0ffb1b64837849d536918812891",
+    "pinned_sha256": "c8a0efc7fe2e0dd5d274625f0c2df8537116d842396bfb8856369f062b4ab244",
+    "manifest_bytes": 16042,
+    "pinned_bytes": 16042,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 307,
+        "raw_range_sha256": "c8a0efc7fe2e0dd5d274625f0c2df8537116d842396bfb8856369f062b4ab244"
+      }
+    ],
+    "meaning": "Actual policy data and command rewrite lambdas; timeout auto-add doc claim absent. Regex limits and solo early-return interaction examined.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/git_flow_override.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "271187243a55879e336a410c1e8cebe089664afe",
+    "pinned_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca",
+    "manifest_bytes": 4157,
+    "pinned_bytes": 4157,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 103,
+        "raw_range_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca"
+      }
+    ],
+    "meaning": "Ancestor six-level policy, two-key solo condition; not Git-root-bound.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/critic_policy.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "6991fba0d88764eaf9e292814b856f03d361fcee",
+    "pinned_sha256": "f69e4e61ff335a0c1e9c6aa885c6dddc898580d4b752d5f3ed331d1c719aa07b",
+    "manifest_bytes": 9257,
+    "pinned_bytes": 9257,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 155,
+        "end": 210,
+        "raw_range_sha256": "b5c92b2bf734019eec755cb51f0a4b9df5b97f24c15fe8ecc5ad4c1e51d69333"
+      }
+    ],
+    "meaning": "Resolve override/default and partial mutation function; loader/default lists/remaining token implementation unread.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/handoff_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "bed08d706ec96dffb088b4eaf4a9e9859c8f43eb",
+    "pinned_sha256": "bb1cd194421eabdeaaafa0a7e64f2f918b041df41ff0275630db4eab54d133ca",
+    "manifest_bytes": 18225,
+    "pinned_bytes": 18225,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 393,
+        "end": 440,
+        "raw_range_sha256": "67eac4b07cd2f844e92691b326cf18f9dd126c9a49be17e56ec5b2f5216a81ec"
+      }
+    ],
+    "meaning": "Advisory fail-open wrapper; render/check transitive bodies unread.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_on_notification_smoke.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ffa2dd182757fcc42084044dd93b098505955b06",
+    "pinned_sha256": "d8311ee889d0cece867c54a2f718477733454934df41748e55fec7143a827be7",
+    "manifest_bytes": 1864,
+    "pinned_bytes": 1864,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 57,
+        "raw_range_sha256": "d8311ee889d0cece867c54a2f718477733454934df41748e55fec7143a827be7"
+      }
+    ],
+    "meaning": "Full test source: ambient settings/env passed, no-channel assumed rather than enforced; no delivery test.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_pr_merge_check_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "dc7e6c7d50f05db9f37624c113dfd357c7894a04",
+    "pinned_sha256": "938003127031c96e604559be87f2cfc463513124a2b6e2aefdc7d1acdcea9ba5",
+    "manifest_bytes": 8613,
+    "pinned_bytes": 8613,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 220,
+        "raw_range_sha256": "651d759d6625d3edc89ce5cc2fa349455bf65b12bcfc0adf1626bae9a304dccd"
+      }
+    ],
+    "meaning": "Classifier copies plus mocked gh JSON; not real check/merge execution. Tail221–223 unread.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_critic_policy_advisor.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "202e9bf35da9653f8642d6511edca1c4801ab44a",
+    "pinned_sha256": "f511c3abb70f30a6064c4d5f8f805d49026fd29713af37399e953282112dfd17",
+    "manifest_bytes": 4320,
+    "pinned_bytes": 4320,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 148,
+        "raw_range_sha256": "f511c3abb70f30a6064c4d5f8f805d49026fd29713af37399e953282112dfd17"
+      }
+    ],
+    "meaning": "Stdout decision tests only, no pre→post process/ledger proof. Ambient env copy with CLAUDE_HOME override, not complete isolation.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_guard_failclosed.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d404320859db3bee742413c842fa18fa49413f8f",
+    "pinned_sha256": "20421c82be4148eeadeb4e8b2e2ea44b55536217f2142e8ddb136ca314779031",
+    "manifest_bytes": 4502,
+    "pinned_bytes": 4502,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 137,
+        "raw_range_sha256": "20421c82be4148eeadeb4e8b2e2ea44b55536217f2142e8ddb136ca314779031"
+      }
+    ],
+    "meaning": "In-process StringIO/mock selected error-path cases; no actual platform enforcement. Not executed.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_budget_and_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "506ca02443ce2660686e7496fb2b2f335555e11d",
+    "pinned_sha256": "ad46c7a43a8a2e8a7a180ea12b28616ea9ab1eb5b31373662fdc7c92032b2011",
+    "manifest_bytes": 8112,
+    "pinned_bytes": 8112,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 32,
+        "end": 78,
+        "raw_range_sha256": "7c9cc508bde8ea5903ce8038d47bac23d1d8c3c80385bf304fe58910d08c5801"
+      },
+      {
+        "start": 149,
+        "end": 211,
+        "raw_range_sha256": "fafc3c233f6e00ec6dcf28dd4c766304aab1d1ee0ddccff7d3d081a8f8550d05"
+      }
+    ],
+    "meaning": "Env manually injected boundary/deny tests; no nested Agent propagation. Budget body and runner remainder unread.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_outpos_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "840ed500e32a245695ca0f720af03d7d0a16f8cf",
+    "pinned_sha256": "f93a81cc8762fb16bf3b02b15fc3627bd72608f3754861f3091290e5079cbd8a",
+    "manifest_bytes": 12852,
+    "pinned_bytes": 12852,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 123,
+        "raw_range_sha256": "d990a60c4dcd51471da0bd252f281684b48bf74890a7fc71d1618d9ce0ca55af"
+      }
+    ],
+    "meaning": "Selected activation/deny/exemption fixtures; inline print exemption case does not exercise anchored print regex.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread ranges and transitive caller/config/test closure remain pending. Static source reading only."
+  }
+]

@@ -60,7 +60,12 @@
 - [Harness CLI 004](harness-cli-004/review.md): 6개 전문. SKIP 소비, 위임·수거 귀속, 스켈레톤/문서 PASS와 실제 사람 인수 경계를 추적했다. 원본 실행 0건이다.
 - [Harness handlers 001](harness-handlers-001/review.md): 20개 전문. posthoc 시간 예산, host timeout, 전역 heartbeat, 요약/삭제 집합 경합, harvest 단계 귀속을 대조했다. 원본 실행 0건이다.
 
-현재 고정 2,736개 중 762개에 검토 기록이 있으며 **1,974개는 아직 unreviewed**다. 이번 묶음 56개 중 이전 primary와 겹친 1개는 중복 집계하지 않았다. 762개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
+- [완료 근거 권위 공동 검토](baldrix-completion-authority-001/resolution.md): lib 4개 전문과 지원 11개. 실제 Claude와 독립 검토·토론·정정, 원본 self-check 28 assertions 및 AC unit 17 tests, 타입·시각·범위·증거 저장의 별도 실측. 실제 evaluator/host 인수는 남았다.
+- [Baldrix pretool](baldrix-pretool-001/review.md): 16개 전문. critic 결정/실행 혼동, 깊이 전파, PR 검사와 timeout, 알림 전달 범위를 대조했다. 원본 실행 0건이다.
+- [Baldrix session hooks](baldrix-session-hooks-001/review.md): 13개 전문. 검사 없음의 success 기록, 반환코드 미검사, 후보·주입·세션 복원과 실제 완료를 구분했다. 원본 실행 0건이다.
+- [Harness validators](harness-validators-001/review.md): 15개 전문. 검사 분모와 skip, 실제 배선 여부, 산출 귀속 및 형식 검사와 인간 시나리오 인수의 차이를 추적했다. 원본 실행 0건이다.
+
+현재 고정 2,736개 중 809개에 검토 기록이 있으며 **1,927개는 아직 unreviewed**다. 이번 묶음 48개 중 이전 primary와 겹친 1개는 중복 집계하지 않았다. 809개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
 
 Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 

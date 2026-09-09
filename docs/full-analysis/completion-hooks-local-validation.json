@@ -1,0 +1,20 @@
+{
+  "kind": "local_validation_tool_result_transcription",
+  "date": "2026-09-09",
+  "platform": "Windows PowerShell",
+  "base_revision": "c093fc29fca51fb0bd4fb6ada5ad6725c52ab26c",
+  "scope": "Completion authority and hook/validator analysis evidence; runtime source and tests unchanged",
+  "checks": [
+    {"argv": ["uv", "run", "ruff", "check", "."], "returncode": 0, "result": "All checks passed!"},
+    {"argv": ["uv", "run", "pytest", "-q"], "session_id": 12513, "returncode": 0, "passed": 660, "skipped": 68, "duration_seconds": 179.02}
+  ],
+  "original_execution_receipts": [
+    "docs/full-analysis/baldrix-completion-authority-001/completion-self-check.receipt.json",
+    "docs/full-analysis/baldrix-completion-authority-001/ac-tree-unit.receipt.json",
+    "docs/full-analysis/baldrix-completion-authority-001/components.receipt.json"
+  ],
+  "limits": "Zeus terminal results are transcribed, not raw stdout receipts. Original isolated executions have their own raw streams and hashes. Skips are not passes. Unit predicates and fixtures are not actual evaluator/host/user/device acceptance.",
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "runtime_deployed": false
+}

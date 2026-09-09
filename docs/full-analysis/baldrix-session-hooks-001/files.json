@@ -1,0 +1,498 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 93,
+    "git_blob": "cc41aebecdb6619896659950c98615bad02a94e8",
+    "pinned_sha256": "612ab248b55e13d68f0aa29d33d6f704d317259c7fd439447f44772707659f8f",
+    "observed_sha256": null,
+    "manifest_sha256": "612ab248b55e13d68f0aa29d33d6f704d317259c7fd439447f44772707659f8f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        1
+      ]
+    ],
+    "total_lines": 1,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/post_tool:001",
+    "partition_scope_sha256": "31b765fdff9d4a9fc796b786a587f649b068b3867d4cd7672c08173f057ae006",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f01",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Package marker only; host package discovery not executed."
+    ],
+    "remaining": [
+      "Package marker only; host package discovery not executed.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/agent_invocation_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9542,
+    "git_blob": "50fa9cbbcaa592604e5b2cdf268b3a368c28ecbb",
+    "pinned_sha256": "c71cfc61320e7d18e258fddc5406c848f4523e7970e1cd8d8f75586ab5783fac",
+    "observed_sha256": null,
+    "manifest_sha256": "c71cfc61320e7d18e258fddc5406c848f4523e7970e1cd8d8f75586ab5783fac",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        241
+      ]
+    ],
+    "total_lines": 241,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/post_tool:001",
+    "partition_scope_sha256": "31b765fdff9d4a9fc796b786a587f649b068b3867d4cd7672c08173f057ae006",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f02",
+    "supporting_ids": [
+      "S01",
+      "S09"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Expected-tools resolver and JSONL append backend not fully traced; actual dispatch success/dedup unknown."
+    ],
+    "remaining": [
+      "Expected-tools resolver and JSONL append backend not fully traced; actual dispatch success/dedup unknown.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/agent_outcome_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 19209,
+    "git_blob": "b8a953fdcf82c52180004b8d667c91aaba375dc3",
+    "pinned_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "observed_sha256": null,
+    "manifest_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        471
+      ]
+    ],
+    "total_lines": 471,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/post_tool:001",
+    "partition_scope_sha256": "31b765fdff9d4a9fc796b786a587f649b068b3867d4cd7672c08173f057ae006",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f03",
+    "supporting_ids": [
+      "S01",
+      "S06",
+      "S12",
+      "S15"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Semantic/cross-reference/boilerplate observers, breaker lifecycle and critic process propagation not fully traced."
+    ],
+    "remaining": [
+      "Semantic/cross-reference/boilerplate observers, breaker lifecycle and critic process propagation not fully traced.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/reviewer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 30305,
+    "git_blob": "2b0cc13fe7fb5d8418b8a16cb187d6b1b1ab62f7",
+    "pinned_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "observed_sha256": null,
+    "manifest_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        712
+      ]
+    ],
+    "total_lines": 712,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/post_tool:001",
+    "partition_scope_sha256": "31b765fdff9d4a9fc796b786a587f649b068b3867d4cd7672c08173f057ae006",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f04",
+    "supporting_ids": [
+      "S01",
+      "S04",
+      "S05",
+      "S11"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "File matchers and project verification script bodies not fully traced; host tool_output envelope unknown."
+    ],
+    "remaining": [
+      "File matchers and project verification script bodies not fully traced; host tool_output envelope unknown.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/skill_candidate_extractor.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2056,
+    "git_blob": "3794bfef1712a1ab14e1cd818af24b71a154351e",
+    "pinned_sha256": "ce84d37678c9c38045d70ea84f438d95d59fc683d09d200419239ec89741ebe6",
+    "observed_sha256": null,
+    "manifest_sha256": "ce84d37678c9c38045d70ea84f438d95d59fc683d09d200419239ec89741ebe6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        54
+      ]
+    ],
+    "total_lines": 54,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/post_tool:001",
+    "partition_scope_sha256": "31b765fdff9d4a9fc796b786a587f649b068b3867d4cd7672c08173f057ae006",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f05",
+    "supporting_ids": [
+      "S01",
+      "S10"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Candidate builder/activation chain not fully traced; enabled deployment env not inspected."
+    ],
+    "remaining": [
+      "Candidate builder/activation chain not fully traced; enabled deployment env not inspected.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 90,
+    "git_blob": "ef5e3ab30493c8d1da4354bf7f294493bc0ed4af",
+    "pinned_sha256": "60a66c1094140baee0e16de5ad4a6fc37ac4c8d9e2a0a4820ffbf6aa7a666528",
+    "observed_sha256": null,
+    "manifest_sha256": "60a66c1094140baee0e16de5ad4a6fc37ac4c8d9e2a0a4820ffbf6aa7a666528",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        1
+      ]
+    ],
+    "total_lines": 1,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "1ec1c5722b56354d656e77b8c580d9a37915303a849ca79dd0f83197db82838b",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f06",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Package marker only; host package discovery not executed."
+    ],
+    "remaining": [
+      "Package marker only; host package discovery not executed.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/context_load.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12893,
+    "git_blob": "add9270463bed6b7db0731e23da7ec070e4fe257",
+    "pinned_sha256": "ec6f975319de72139a6d50c8ab9a756e98dc394dc3162da4a63aa6b5444e4088",
+    "observed_sha256": null,
+    "manifest_sha256": "ec6f975319de72139a6d50c8ab9a756e98dc394dc3162da4a63aa6b5444e4088",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        306
+      ]
+    ],
+    "total_lines": 306,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "1ec1c5722b56354d656e77b8c580d9a37915303a849ca79dd0f83197db82838b",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f07",
+    "supporting_ids": [
+      "S01",
+      "S04",
+      "S07"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Insight writer/query and stage YAML parser not fully traced; authoritative SDD transitions unknown."
+    ],
+    "remaining": [
+      "Insight writer/query and stage YAML parser not fully traced; authoritative SDD transitions unknown.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/debate_trigger.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12522,
+    "git_blob": "8bfdb8ff16916b9778f91f62fc4fda639d82bbc8",
+    "pinned_sha256": "cf5cd7a77d5860fd0b2a861d89657122b45f0c43291ba693ea6bad666b27cfe6",
+    "observed_sha256": null,
+    "manifest_sha256": "cf5cd7a77d5860fd0b2a861d89657122b45f0c43291ba693ea6bad666b27cfe6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        323
+      ]
+    ],
+    "total_lines": 323,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "1ec1c5722b56354d656e77b8c580d9a37915303a849ca79dd0f83197db82838b",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f08",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S03",
+      "S17"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Writeback store and graph freshness not traced; concurrent state/TTL untested."
+    ],
+    "remaining": [
+      "Writeback store and graph freshness not traced; concurrent state/TTL untested.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/handoff_resume.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6467,
+    "git_blob": "5d42a31961ea4cf1e4c7f860c52d67a983c45810",
+    "pinned_sha256": "efb41b70c990fe9f12bbe7ca0f76887b9518d434d77229c742d147820cb412cd",
+    "observed_sha256": null,
+    "manifest_sha256": "efb41b70c990fe9f12bbe7ca0f76887b9518d434d77229c742d147820cb412cd",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        175
+      ]
+    ],
+    "total_lines": 175,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "1ec1c5722b56354d656e77b8c580d9a37915303a849ca79dd0f83197db82838b",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f09",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S16"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Absent from pinned settings prompt registrations; other registration surfaces/host unknown."
+    ],
+    "remaining": [
+      "Absent from pinned settings prompt registrations; other registration surfaces/host unknown.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/mode_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4884,
+    "git_blob": "0324fe0ef799b4df5330b2085997d9d14890dd3f",
+    "pinned_sha256": "efdc28d66ff357f18439fdd1c7b7d853529cdd42156e2938af68f79bc64d9ed0",
+    "observed_sha256": null,
+    "manifest_sha256": "efdc28d66ff357f18439fdd1c7b7d853529cdd42156e2938af68f79bc64d9ed0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        133
+      ]
+    ],
+    "total_lines": 133,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "1ec1c5722b56354d656e77b8c580d9a37915303a849ca79dd0f83197db82838b",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f10",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S03"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Phase detector and actual suggested engines/model eligibility not traced."
+    ],
+    "remaining": [
+      "Phase detector and actual suggested engines/model eligibility not traced.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 26592,
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "observed_sha256": null,
+    "manifest_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        618
+      ]
+    ],
+    "total_lines": 618,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "1ec1c5722b56354d656e77b8c580d9a37915303a849ca79dd0f83197db82838b",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f11",
+    "supporting_ids": [
+      "S01",
+      "S03",
+      "S08"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Scoring, active path normalization and threshold promotion lifecycle not fully traced."
+    ],
+    "remaining": [
+      "Scoring, active path normalization and threshold promotion lifecycle not fully traced.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/session/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 91,
+    "git_blob": "01a1d66c54caa71cb1720f46c7f6540db33aad0f",
+    "pinned_sha256": "4e5ad1a8645df654977baa90fcaeee36b94129c2e473483fb0c3802afc1ae4d3",
+    "observed_sha256": null,
+    "manifest_sha256": "4e5ad1a8645df654977baa90fcaeee36b94129c2e473483fb0c3802afc1ae4d3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        1
+      ]
+    ],
+    "total_lines": 1,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/session:001",
+    "partition_scope_sha256": "191c41f344702a86bbc8a73b19485ff39cd916cbaca03f5949f97bdb7106b4ca",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f12",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "Package marker only; host package discovery not executed."
+    ],
+    "remaining": [
+      "Package marker only; host package discovery not executed.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/session/init.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 33887,
+    "git_blob": "7f78a659b1cf6ab405a1e004a91053d6174dafa9",
+    "pinned_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "observed_sha256": null,
+    "manifest_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        843
+      ]
+    ],
+    "total_lines": 843,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/handlers/session:001",
+    "partition_scope_sha256": "191c41f344702a86bbc8a73b19485ff39cd916cbaca03f5949f97bdb7106b4ca",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-session-hooks-001/review.md#f13",
+    "supporting_ids": [
+      "S01",
+      "S13",
+      "S14"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0; static source reading is not a test receipt.",
+    "tests_not_run": [
+      "GC internals, scan deadline/cancellation, status helper backends and host watchPaths support not fully traced."
+    ],
+    "remaining": [
+      "GC internals, scan deadline/cancellation, status helper backends and host watchPaths support not fully traced.",
+      "Actual host behavior, full transition closure, licensing and Zeus adoption remain unverified."
+    ],
+    "adoption_approved": false
+  }
+]

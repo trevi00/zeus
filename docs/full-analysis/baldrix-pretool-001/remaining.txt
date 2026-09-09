@@ -1,0 +1,2 @@
+Primary full-body unread: 0 / 16.
+Pending: transitive caller/config/test closure; upstream execution0; external/license verification; independent joint review and Zeus adoption.
