@@ -1,0 +1,51 @@
+{
+  "id": "ZEUS-8f1322ec0a67",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "추적/로컬 추가 자산의 미검토를 보존하고 모든 하위 시스템을 출처·호출·상태·실패·실행 증거·Zeus 대응과 연결한다.",
+      "새 trevi00/zeus 저장소에 한정한다. 기존 codex-harness 운영 저장소에 자동 반영하지 않는다."
+    ],
+    "title": "[ZEUS-ANALYSIS] Claude 로컬 하네스 전체 분석과 Zeus 흡수",
+    "impact": "전체 의미 분석은 미완료다. 파일 목록·해시·과거 PASS를 흡수 완료로 오인하면 결함과 승인 상태가 함께 이전된다.",
+    "problem": "Git 추적 2,736개 및 추가 로컬 자산을 전체 분석한다. Codex와 실제 Claude가 독립 검토하고 근거와 이견을 비교한 뒤 주 Codex가 구현한다.\n\n이 티켓은 분석/수정 후보이며 독립 승인, 실기기 인수, 운영 배포 완료를 뜻하지 않는다.",
+    "rollback": "검토/구현 후보를 자동 활성화하지 않는다. 적용 후 회귀 시 기존 검증된 release 경로로 되돌리고 티켓/증거는 보존한다.",
+    "verification": [
+      "연결한 원문과 실제 실행 영수증을 대조한다. 파일 존재/문자열 hit를 기능 동작 증거로 승계하지 않는다.",
+      "E2E·사용자 인수는 실제 환경과 사람 검토를 거치며 미실행 초안을 PASS로 표시하지 않는다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/README.md",
+      "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/issue-drafts.md",
+      "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/path-ledger.json"
+    ],
+    "acceptance_criteria": [
+      "주장의 출처와 현재 재현 범위를 확인하고 미검증을 명시한다.",
+      "Codex·Claude 검토의 합의/이견을 같은 티켓 버전과 증거에 연결한다.",
+      "변경을 적용하면 기존 정상 동작과 실패 대조군, Windows/Linux 해당 경로를 검증한다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T02:59:34.251667+00:00",
+  "content_hash": "42d35cb734bca11b3af2b3b8b3ce2fed71e3e49bf3e384ba67c82a6e29c100b4",
+  "claimed_author": "Codex: user-authorized Zeus repository bootstrap",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T03:07:34.536893+00:00",
+      "id": "43f91551f8d79fe0a075d78b5b8a0552184fa475e97de4164c42ce7b958937ad",
+      "url": "https://github.com/trevi00/zeus/issues/1",
+      "number": 1,
+      "status": "synced",
+      "body_hash": "7af33fd6f72903174e849bf5fdc3c72182a28854ef71cea4ce8520e6c614da94",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "42d35cb734bca11b3af2b3b8b3ce2fed71e3e49bf3e384ba67c82a6e29c100b4",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

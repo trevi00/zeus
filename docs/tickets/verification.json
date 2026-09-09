@@ -1,0 +1,130 @@
+{
+  "argv": [
+    "gh",
+    "issue",
+    "list",
+    "--repo",
+    "trevi00/zeus",
+    "--state",
+    "all",
+    "--limit",
+    "100",
+    "--json",
+    "number,title,url,body"
+  ],
+  "remote_issue_count": 11,
+  "local_ticket_count": 11,
+  "results": [
+    {
+      "topic": "ZEUS-ANALYSIS",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "url": "https://github.com/trevi00/zeus/issues/1",
+      "number": 1,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-001",
+      "ticket_id": "ZEUS-ba0de9a2623e",
+      "url": "https://github.com/trevi00/zeus/issues/2",
+      "number": 2,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-002",
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "url": "https://github.com/trevi00/zeus/issues/3",
+      "number": 3,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-003",
+      "ticket_id": "ZEUS-429c533aab0e",
+      "url": "https://github.com/trevi00/zeus/issues/4",
+      "number": 4,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-004",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "url": "https://github.com/trevi00/zeus/issues/5",
+      "number": 5,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-005",
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "url": "https://github.com/trevi00/zeus/issues/6",
+      "number": 6,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-006",
+      "ticket_id": "ZEUS-fb340b746179",
+      "url": "https://github.com/trevi00/zeus/issues/7",
+      "number": 7,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-007",
+      "ticket_id": "ZEUS-2dd28a919f60",
+      "url": "https://github.com/trevi00/zeus/issues/8",
+      "number": 8,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-008",
+      "ticket_id": "ZEUS-4e7e2e2b01a9",
+      "url": "https://github.com/trevi00/zeus/issues/9",
+      "number": 9,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-009",
+      "ticket_id": "ZEUS-49fb81e7348d",
+      "url": "https://github.com/trevi00/zeus/issues/10",
+      "number": 10,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-010",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "url": "https://github.com/trevi00/zeus/issues/11",
+      "number": 11,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    }
+  ],
+  "all_match": true
+}

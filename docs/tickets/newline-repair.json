@@ -1,0 +1,167 @@
+[
+  {
+    "number": 1,
+    "url": "https://github.com/trevi00/zeus/issues/1",
+    "ticket_id": "ZEUS-8f1322ec0a67",
+    "before_body_hash": "d856a01337952c4eb7bf798d5ef14364913c823dc2e1f8051bbe08d8eae4b2c6",
+    "after_expected_hash": "7af33fd6f72903174e849bf5fdc3c72182a28854ef71cea4ce8520e6c614da94",
+    "before_observation": {
+      "ref": "sha256:734c89fb631b939a2223e449f282dc12d5ce85b8688120bf62e864c8ed7a56cf",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2555,
+      "at": "2026-09-09T03:02:22.139786+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 2,
+    "url": "https://github.com/trevi00/zeus/issues/2",
+    "ticket_id": "ZEUS-ba0de9a2623e",
+    "before_body_hash": "2982b2bacd7882894579f71a424f347a519b453b0d4bcae141b3a7636f53712f",
+    "after_expected_hash": "e07aa418bd8c5cf2b393ccef44b4b195f90911d3fa28292ec2e18d5f51a8f5a2",
+    "before_observation": {
+      "ref": "sha256:8b92ca15ca5e570b0e40e061d43f6a5843b3f41648c3094bfec666bbcdf17ba3",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2239,
+      "at": "2026-09-09T03:02:23.275102+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 3,
+    "url": "https://github.com/trevi00/zeus/issues/3",
+    "ticket_id": "ZEUS-7fcc5f0308e7",
+    "before_body_hash": "6b14ec6e26953ce27bb7a435a4ac7e1aba1b99eeb61984b78a3df1931af18c83",
+    "after_expected_hash": "27ad47fa11adc5c6a709f84cee035288f16180e90c2ebbdee3beab8462a4206e",
+    "before_observation": {
+      "ref": "sha256:99f96b4118b2bbc2826fd41b46abf0213354f6e2f6b7d6de730c5561c73801ea",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2229,
+      "at": "2026-09-09T03:02:24.446777+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 4,
+    "url": "https://github.com/trevi00/zeus/issues/4",
+    "ticket_id": "ZEUS-429c533aab0e",
+    "before_body_hash": "89052dc2284a7344298770fe13ddd0522ae369f2210add1c71b5aa2d05fefc75",
+    "after_expected_hash": "19981ee7e963a3048ba1aeb21a8c3a6239dcfa3cd636e8132652b351ba187270",
+    "before_observation": {
+      "ref": "sha256:e5f3db9a2aecedc0f7dd07d04d16509c7645c4e8a46f60080d70598d47464cf8",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2219,
+      "at": "2026-09-09T03:02:25.782916+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 5,
+    "url": "https://github.com/trevi00/zeus/issues/5",
+    "ticket_id": "ZEUS-6d62d42d9333",
+    "before_body_hash": "05eb7ea73e626dd595b8ae74974e7970cc34badba7d659cd33ff34379952f7cf",
+    "after_expected_hash": "139060d355b6136f207fd57ebd23deb69ae28c0e5586cfeb78f3627d25445b44",
+    "before_observation": {
+      "ref": "sha256:3bd534835bc690f438b800618c6872fd620e892c89f1728e1c79934086613b38",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2404,
+      "at": "2026-09-09T03:02:27.037933+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 6,
+    "url": "https://github.com/trevi00/zeus/issues/6",
+    "ticket_id": "ZEUS-f550e11eb0c4",
+    "before_body_hash": "3c2d71fc4f6d63399178f2c303b3006b2b80566088cba45d05068852fb67c1c3",
+    "after_expected_hash": "c3ecd01dbbd8724c141f8bee560217a25a6ce83dc92676212209e50e5808cf43",
+    "before_observation": {
+      "ref": "sha256:2d71ad01cce4793389d7c2b0a702effc67bd6527be0be240bd69e884b9b098d6",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2345,
+      "at": "2026-09-09T03:02:28.289623+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 7,
+    "url": "https://github.com/trevi00/zeus/issues/7",
+    "ticket_id": "ZEUS-fb340b746179",
+    "before_body_hash": "269139209aa8f6f23ef229bd830f7fded1b73de8d492ba501c5066fe402360c0",
+    "after_expected_hash": "39de8f7f18ccc61d859183af8e33b4bfd34264c8bf78bcbb820210ca4b3321dc",
+    "before_observation": {
+      "ref": "sha256:9cea640336711efb09bcfa7485e3263dc8fc4fbec7b1e268bfeb9ae0e728a025",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2180,
+      "at": "2026-09-09T03:02:29.477782+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 8,
+    "url": "https://github.com/trevi00/zeus/issues/8",
+    "ticket_id": "ZEUS-2dd28a919f60",
+    "before_body_hash": "be1fa7436cd45d0d1a924ea2e2489bdeed4825ad28eb7fe46a30886730f58364",
+    "after_expected_hash": "6a7cb21ea80fc8fff9e2f59406b40134b56c0c9f55d8299c2cf54265aa5f3ffb",
+    "before_observation": {
+      "ref": "sha256:cff0a073dc614324562f09b63a03a6b24bafea266313dd6909f9ca05c58da1f2",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2218,
+      "at": "2026-09-09T03:02:30.797359+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 9,
+    "url": "https://github.com/trevi00/zeus/issues/9",
+    "ticket_id": "ZEUS-4e7e2e2b01a9",
+    "before_body_hash": "ec322a83ab5010e6458b6a6536f395d98b656b7964781e522bd3bba9641899e7",
+    "after_expected_hash": "e3fa34f8a5c6955065bd19a2e69774859a99a02af9ae12be721446e962ddd50f",
+    "before_observation": {
+      "ref": "sha256:4169a29ad81e4a10b0f00e01f094d1ba863476dcfeadd3f130f92d1cab997a46",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2255,
+      "at": "2026-09-09T03:02:32.010274+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 10,
+    "url": "https://github.com/trevi00/zeus/issues/10",
+    "ticket_id": "ZEUS-49fb81e7348d",
+    "before_body_hash": "0976762e2ded34024b8d7bca8dd22695969593ae4e8e04d26e2618e03c2d675b",
+    "after_expected_hash": "6e186f9aa025fccc186e88126adba546d929d39df0f9a8f0aa0a715e792f4386",
+    "before_observation": {
+      "ref": "sha256:8480b2f8741dd6e773075d42cd0118a55fd6a014151b777bc48d52692f900cf1",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2251,
+      "at": "2026-09-09T03:02:33.165580+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  },
+  {
+    "number": 11,
+    "url": "https://github.com/trevi00/zeus/issues/11",
+    "ticket_id": "ZEUS-3d913005bed0",
+    "before_body_hash": "0c19f4e1bce4bfd508641470b17642275d1e17697966f99c99a8e01b193c8422",
+    "after_expected_hash": "c68ebd93f5a3fb0177d5f80c1d49d7d43548665f52b90dd1a7c44f46034fb68f",
+    "before_observation": {
+      "ref": "sha256:62d8d7cb26e9dc54ca70b5bfd7da5fe0d5ca2ff86a3f305d19ce58cadca143ee",
+      "source": "github-ticket-before-newline-repair",
+      "bytes": 2252,
+      "at": "2026-09-09T03:02:34.465843+00:00"
+    },
+    "change": "CRLF to LF only",
+    "returncode": 0
+  }
+]

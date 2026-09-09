@@ -88,7 +88,8 @@ class GitHubTickets:
                 # Only the canonical projection is written; GitHub comments are left intact.
                 with tempfile.TemporaryDirectory(prefix="zeus-issue-") as directory:
                     path = Path(directory) / "issue.md"
-                    path.write_text(body, encoding="utf-8")
+                    # INV-TICKET-001: the uploaded bytes must match the hashed projection on Windows too.
+                    path.write_text(body, encoding="utf-8", newline="\n")
                     args = (["issue", "edit", str(issue["number"])] if issue else ["issue", "create"])
                     output = self._call([*args, "--repo", repository, "--title", ticket["content"]["title"],
                                          "--body-file", str(path)])

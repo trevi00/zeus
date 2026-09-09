@@ -3,7 +3,8 @@
 독립 저장소: **[trevi00/zeus](https://github.com/trevi00/zeus)** · [이슈](https://github.com/trevi00/zeus/issues).
 기존 `trevi00/codex-harness`는 다른 컴퓨터의 운영 저장소로 유지합니다.
 이 저장소는 로컬 Zeus 작업을 분리한 개발 기준점이며 전체 분석·흡수·운영 승인은 아직 완료되지 않았습니다.
-[전수 분석 현황](docs/full-analysis/README.md)과 [토픽별 검토 근거](docs/full-analysis/issue-drafts.md)를 함께 확인하세요.
+[전수 분석 현황](docs/full-analysis/README.md), [통합 분석 이슈](https://github.com/trevi00/zeus/issues/1),
+[로컬 티켓과 GitHub 연결](docs/tickets/README.md)을 함께 확인하세요.
 
 Codex 기반 작업·검수·배포 하네스입니다. Zeus 0.2는 기존 실행 기록의 호환성을 유지하며
 버전별 로컬 티켓과 GitHub Issues 연동, Windows/Linux 실행 경로, 배포 검증 환경 분리를 추가합니다.

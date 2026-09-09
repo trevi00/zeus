@@ -1,5 +1,14 @@
 # 독립 저장소 초기 게시 검증
 
+## GitHub 게시 후 실제 연동 검증
+
+- 새 private 저장소: https://github.com/trevi00/zeus. 기존 `codex-harness` 원격에는 푸시하지 않았다.
+- 로컬 PostgreSQL 티켓 11개를 실제 GitHub Issues 1–11에 연결했다. 본문/제목/식별자/저장소 대조와 재동기화를 통과했고 중복 이슈는 없다. 공유 가능한 결과는 `docs/tickets/verification.json`에 있다.
+- Windows에서 임시 본문 파일을 쓸 때 기본 CRLF 변환으로 원장 LF 해시와 원격 본문이 달라지는 결함을 발견했다. 어댑터가 UTF-8/LF를 명시하도록 수정했다. 기존 11개 본문은 내용이 줄바꿈 외에는 동일함을 확인한 뒤 보정했으며 `docs/tickets/newline-repair.json`에 기록했다.
+- 수정 후 로컬 전체 테스트: **660 passed, 68 skipped**, 174.20초. Ruff 통과.
+- 초기 GitHub CI `34305370090`의 Ubuntu 3.14는 **665 passed, 62 skipped, 1 failed**, 통합 작업은 **725 passed, 2 skipped, 1 failed**였다. 두 실패는 shallow checkout에 과거 스키마 기준 커밋이 없어 생겼다. 두 작업에 `fetch-depth: 0`을 지정해 기존 검증 기준을 유지한다. 이 문서 작성 시 수정 후 CI 결과는 아직 대기 중이다.
+
+
 2026-09-09, `C:/Users/rudtn/zeus`에서 실행했다. 기존 저장소의 작업 파일을 읽어 별도 clone에 복사했으며 기존 로컬 변경과 원격을 수정하지 않았다.
 
 - `uv sync --frozen`: 새 Windows Python 3.14.7 venv 설치 성공.

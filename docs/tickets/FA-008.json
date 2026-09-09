@@ -1,0 +1,50 @@
+{
+  "id": "ZEUS-4e7e2e2b01a9",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "엄격 파서/유효 스택 enum/상속·경로 수집 회귀; 문서만 복사하지 않음",
+      "새 trevi00/zeus 저장소에 한정한다. 기존 codex-harness 운영 저장소에 자동 반영하지 않는다."
+    ],
+    "title": "[FA-008] 기술 스택 템플릿과 실제 라우터 불일치",
+    "impact": "상류 동작을 그대로 흡수하면 동일 결함 또는 잘못된 검증 권한이 Zeus에 유입될 수 있다.",
+    "problem": "upstream 17tests PASS 후 별도 inline-comment probe 재현\n\n이 티켓은 분석/수정 후보이며 독립 승인, 실기기 인수, 운영 배포 완료를 뜻하지 않는다.",
+    "rollback": "검토/구현 후보를 자동 활성화하지 않는다. 적용 후 회귀 시 기존 검증된 release 경로로 되돌리고 티켓/증거는 보존한다.",
+    "verification": [
+      "연결한 원문과 실제 실행 영수증을 대조한다. 파일 존재/문자열 hit를 기능 동작 증거로 승계하지 않는다.",
+      "E2E·사용자 인수는 실제 환경과 사람 검토를 거치며 미실행 초안을 PASS로 표시하지 않는다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/baldrix-common/REVIEW.md",
+      "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/baldrix-common/template-inline-comment-probe.json"
+    ],
+    "acceptance_criteria": [
+      "주장의 출처와 현재 재현 범위를 확인하고 미검증을 명시한다.",
+      "Codex·Claude 검토의 합의/이견을 같은 티켓 버전과 증거에 연결한다.",
+      "변경을 적용하면 기존 정상 동작과 실패 대조군, Windows/Linux 해당 경로를 검증한다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T02:59:34.422477+00:00",
+  "content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
+  "claimed_author": "Codex: user-authorized Zeus repository bootstrap",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T03:07:39.221555+00:00",
+      "id": "3fd8c3f1d7d0a082928172ad96b0b6ab4d8f41c8a69ee9d1e4a593efc0844eaa",
+      "url": "https://github.com/trevi00/zeus/issues/9",
+      "number": 9,
+      "status": "synced",
+      "body_hash": "e3fa34f8a5c6955065bd19a2e69774859a99a02af9ae12be721446e962ddd50f",
+      "ticket_id": "ZEUS-4e7e2e2b01a9",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

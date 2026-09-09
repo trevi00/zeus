@@ -1,0 +1,50 @@
+{
+  "id": "ZEUS-7fcc5f0308e7",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "원본 주장을 보존하되 검증/자격으로 승계 금지; 독립 occurrence 재계산",
+      "새 trevi00/zeus 저장소에 한정한다. 기존 codex-harness 운영 저장소에 자동 반영하지 않는다."
+    ],
+    "title": "[FA-002] 경험 수집 횟수와 독립 검증 횟수 혼동",
+    "impact": "상류 동작을 그대로 흡수하면 동일 결함 또는 잘못된 검증 권한이 Zeus에 유입될 수 있다.",
+    "problem": "curator 코드·25개 observed lesson·원장 대조\n\n이 티켓은 분석/수정 후보이며 독립 승인, 실기기 인수, 운영 배포 완료를 뜻하지 않는다.",
+    "rollback": "검토/구현 후보를 자동 활성화하지 않는다. 적용 후 회귀 시 기존 검증된 release 경로로 되돌리고 티켓/증거는 보존한다.",
+    "verification": [
+      "연결한 원문과 실제 실행 영수증을 대조한다. 파일 존재/문자열 hit를 기능 동작 증거로 승계하지 않는다.",
+      "E2E·사용자 인수는 실제 환경과 사람 검토를 거치며 미실행 초안을 PASS로 표시하지 않는다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/trace.md",
+      "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/analysis.json"
+    ],
+    "acceptance_criteria": [
+      "주장의 출처와 현재 재현 범위를 확인하고 미검증을 명시한다.",
+      "Codex·Claude 검토의 합의/이견을 같은 티켓 버전과 증거에 연결한다.",
+      "변경을 적용하면 기존 정상 동작과 실패 대조군, Windows/Linux 해당 경로를 검증한다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T02:59:34.302423+00:00",
+  "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+  "claimed_author": "Codex: user-authorized Zeus repository bootstrap",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T03:07:35.698405+00:00",
+      "id": "585ca10b95f1ca1089293d0ee63d05256366ab8b656b18166e45fa399715e17e",
+      "url": "https://github.com/trevi00/zeus/issues/3",
+      "number": 3,
+      "status": "synced",
+      "body_hash": "27ad47fa11adc5c6a709f84cee035288f16180e90c2ebbdee3beab8462a4206e",
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

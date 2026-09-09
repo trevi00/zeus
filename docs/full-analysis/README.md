@@ -37,4 +37,4 @@
 
 Guardian의 전체 13개 의미 검토 및 pinned/observed 각 5스위트 실행은 `guardian/review.md`에 있다. 실제 Claude와의 합의·정정, 현재 Windows Python 자식 인코딩 실패 실측은 `cross-review/resolution.md`에 연결한다. 작은 저장소의 완료나 기존 스모크 PASS를 큰 저장소·실 운영 검증으로 확대하지 않는다.
 
-분석 결과는 각 폴더의 `files.json`과 리뷰 문서에 연결한다. 현재 전체 의미 분석은 **미완료**다. 아직 처리하지 않은 파일과 하위 시스템을 후속 파티션으로 계속 분석한다. 운영 배포나 새 GitHub Issues 발행은 이 분석만으로 수행하지 않는다.
+분석 결과는 각 폴더의 `files.json`과 리뷰 문서에 연결한다. 현재 전체 의미 분석은 **미완료**다. 아직 처리하지 않은 파일과 하위 시스템을 후속 파티션으로 계속 분석한다. 사용자 요청에 따라 독립 `trevi00/zeus` 저장소를 만들고 [GitHub 이슈 11개](../tickets/README.md)를 로컬 PostgreSQL 원장과 연동했다. 이는 운영 배포나 기능 도입 승인이 아니다. 이후 작업 루트는 `C:/Users/rudtn/zeus`이며 과거 증거의 원본 경로는 당시 사실로 유지한다.
