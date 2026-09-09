@@ -1,0 +1,62 @@
+{
+  "id": "ZEUS-e36daeb984c1",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "Zeus PG runtime 원장에 task/attempt/pane generation과 고유 event ID, 발생 순서, 발생 시각과 수집 시각을 분리해 결속한다.",
+      "원본 shard 수집·원문 보존·검증·정본 반영·수집 확인의 crash recovery 계약을 설계한다. 파일과 PG를 하나의 원자 트랜잭션이라고 부르지 않는다.",
+      "FA-003 lease epoch와 FA-004 공통 멱등성은 공유하되, 이 티켓은 로그 병합의 원문 수명·순서·세대 판정 및 손상 알림에 한정한다.",
+      "기존 Claude 원본과 다른 컴퓨터에서 사용하는 codex-harness는 수정하지 않는다. 전체 분석 후 합의한 Zeus 구현은 주 Codex가 맡는다."
+    ],
+    "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+    "impact": "재개한 최신 작업을 과거 종료로 오인하거나 미수집·손상 증거를 조용히 잃어 QA/완료 판단·자가개선 원인 분석의 근거가 왜곡될 수 있다.",
+    "problem": "고정 Baldrix engine001 원본 함수의 격리 실행에서 gen2 running 정본에 과거 gen1 exited shard를 병합하자 최종 상태가 gen1 exited로 바뀌었다. 병합기는 원래 ts를 버리고 병합 시각을 부여하며 replay는 timestamp를 기준으로 상태를 덮는다. 별도 입력에서 not-json만 있는 shard는 병합 0건으로 보고되고 삭제됐다. Codex·실제 Claude 독립 검토와 토론은 두 관측을 수용했다. crash·동시 merger·실제 worker 종료는 이번 실행으로 검증하지 않았다.",
+    "rollback": "새 수집 경로는 자격 검증 전 비활성으로 두고, 오류 시 원문과 불변 수집 영수증을 보존한다. projection을 재구성해 검증하기 전 완료·승격을 차단하며 기존 데이터나 컨테이너를 삭제하지 않는다.",
+    "verification": [
+      "원본 1648개 바이트 전후 동일, network none/read-only source/nonroot, PyYAML6.0.3 고정 이미지에서 원본 함수를 직접 호출했다. 명시 임시 입력 fixture이며 mocking은 없다.",
+      "첫 bare Alpine 시도는 PyYAML import 실패로 원본 기능에 도달하지 못했다. 실패와 성공의 stdout/stderr/program hash를 모두 보존한다.",
+      "원본 retry 단위 테스트6 PASS는 주입 callback 시험이며 pane 병합 crash·실제 worker·인수 증거가 아니다.",
+      "초기 Claude 주장과 토론의 일부 과장은 final resolution에서 정정했다. generation 역행 실측을 모든 future timestamp 입력에서 항상 덮임이라는 주장으로 확대하지 않는다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/e79d8d0c186c1e9666c0c1508e762577399d1fb2/docs/full-analysis/baldrix-engine-001/resolution.md",
+      "https://github.com/trevi00/zeus/blob/e79d8d0c186c1e9666c0c1508e762577399d1fb2/docs/full-analysis/baldrix-engine-001/component_observations.py",
+      "https://github.com/trevi00/zeus/blob/e79d8d0c186c1e9666c0c1508e762577399d1fb2/docs/full-analysis/baldrix-engine-001/components-UTC0.stdout.txt",
+      "https://github.com/trevi00/zeus/blob/e79d8d0c186c1e9666c0c1508e762577399d1fb2/docs/full-analysis/baldrix-engine-001/components-UTC0.receipt.json",
+      "https://github.com/trevi00/zeus/blob/e79d8d0c186c1e9666c0c1508e762577399d1fb2/docs/full-analysis/baldrix-engine-001/components-missing-pyyaml.receipt.json",
+      "https://github.com/trevi00/zeus/blob/e79d8d0c186c1e9666c0c1508e762577399d1fb2/docs/full-analysis/baldrix-engine-001/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/e79d8d0c186c1e9666c0c1508e762577399d1fb2/docs/full-analysis/engine-validator-checkpoint-verification.json"
+    ],
+    "acceptance_criteria": [
+      "동일 pane 이름의 새 attempt/generation 실행 중 과거 terminal event가 늦게 도착해도 최신 상태가 역행하지 않는다. 잘못된 세대와 소유자 입력의 처분을 기록한다.",
+      "원본 timestamp와 bytes/hash를 보존하며 ingest timestamp를 별도 기록한다. 같은 시각·미래 시각·역순 도착에서도 결정론적 sequence 계약에 따라 재생한다.",
+      "빈 파일·손상 JSON·잘못된 shape·중간 손상·부분 마지막 줄·읽기 실패를 구분하고, 미확인 원문을 삭제하지 않는다. 해당 개수와 원문 참조를 notification 로그로 남긴다.",
+      "append/DB commit/ack/원문 정리 경계에서 실제 격리 프로세스를 중단·재개해 중복 적용과 소실을 검증한다. 동시 수집도 event ID와 권한 fencing으로 제어한다.",
+      "terminal 문자열만으로 실제 worker 종료·산출물 검증·사람 인수를 완료 처리하지 않는다. 실행기 종료 receipt와 QA 승인 범위를 별도로 요구한다.",
+      "Windows/Linux/WSL에서 실제 임시 파일과 프로세스로 경로·파일 잠금·UTF-8·CRLF·재시작을 검증하고 미실행 환경은 명시한다. 사용자 시나리오 인수를 mocked acceptance로 대체하지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T06:02:45.172047+00:00",
+  "content_hash": "8dc9bd2589c25cff9207bfa96a0dc7f41f8a6eceff72cb60531f7c82d839fa6f",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T06:02:47.049546+00:00",
+      "id": "e8cd426b35d68130a77d7056c01617d07f03a8d1d66a5d629c70780caf6f2483",
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "number": 17,
+      "status": "synced",
+      "body_hash": "2a76d38c868400625b7fd5c7fb4ba94a5ef2555ceea61b3200eb8663e01dda5c",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "8dc9bd2589c25cff9207bfa96a0dc7f41f8a6eceff72cb60531f7c82d839fa6f",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}
