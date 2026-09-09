@@ -35,15 +35,18 @@
 - harness lib: 43개 공통 라이브러리의 원장·lease·중복 방지·판정 도출 등 구현/호출/테스트.
 - harness-local-research: Git 밖 연구 노트 38개와 역할 로그 23개의 과거 판단·정정·제안 연결. 추가 자산 분모이며 현재 실행 테스트와 구분한다.
 - design-canon: 설계 정본의 범위·용어·SSOT·런타임·컨텍스트 계약과 구현 차이. 아직 부분 검토.
-- [Baldrix CLI 001](baldrix-cli-001/review.md), [002](baldrix-cli-002/review.md), [003](baldrix-cli-003/review.md): 59개 전문과 직접 의존. 001의 원본 테스트 34개만 실제 실행했으며 002·003은 정적 검토다.
+- [Baldrix CLI 001](baldrix-cli-001/review.md), [002](baldrix-cli-002/review.md), [003](baldrix-cli-003/review.md), [004](baldrix-cli-004/review.md): 78개 전문 기록과 직접 의존. 중복 경로는 전체 분모에서 한 번만 센다. 001의 원본 테스트 34개만 실제 실행했으며 002·003·004는 정적 검토다.
 - [프론트·SDD 자산](frontend-assets/review.md), [백엔드·데이터·DevOps](backend-assets/review.md), [다이어그램·모바일·역설계](diagram-mobile-assets/review.md): 88개 전문. 서로 다른 프로젝트의 관례와 사용자 요구를 구분하고 화살표 해석의 반증도 정정했다.
 - [파이프라인·역할·완료선](harness-pipeline-contracts/README.md): 61개 전문. 사용자 8단계 SDD, 실제 판정 소비, 실행 권한과 문서 선언을 대조했다.
 - [설계 결정문 001](design-decisions-001/review.md), [002](design-decisions-002/README.md): 추가 48개 전문 읽기 기록(D-050 기존 기록과 중복 1개 포함). 구현·호출·시험 추적은 미완료다.
 - [Common 품질 공동 검토](cross-review-common-quality/resolution.md): 실제 Claude와 Codex 독립 판단·토론·정정, 원본 단위 테스트 15개 및 별도 입력 관측. 스킬 품질과 실제 선택·주입을 두 토픽으로 분리했다.
 - [핵심 실행기 001](harness-engine-001/review.md), [002](harness-engine-002/README.md): 34개 전문과 직접 호출·설정·테스트 대조. 기존 검토 중복을 제외해 집계하며 상류 실행·채택은 미완료다.
 - [스킬 라우팅 런타임 공동 검토](baldrix-skill-routing-runtime/resolution.md): 6개 전문과 명시한 의존성, 실제 Claude 독립 판단·토론·정정, 원본 단위 테스트57개와 단계 추천·YAML·예산·교차참조 입력 관측. 실제 hook과 모델 인수는 남았다.
+- [추출기](harness-engine-extractors/review.md): 10개 전문. 순번 ID와 의미 보존, 정적 호출과 실제 사용자 시나리오, Python 모델 관계·TS 그래프 소비 범위를 대조했다. 실행·채택은 미완료다.
+- [Harness CLI 001](harness-cli-001/review.md): 13개 전문. 자가개선 검증 대상, 실제 부작용·반환 상태, 완료선·관측·배포 경계와 원본 테스트의 의미를 연결했다. 실행은 0건이다.
+- [게이트 소비·SDD 생성 공동 검토](harness-gate-consumer-joint/resolution.md): 기존 엔진 5개와 supporting 15개를 root가 재검토하고 실제 Claude와 독립 검토·토론·정정을 수행했다. 문장 귀속·PARTIAL·철회·ERROR·검사 분모 및 템플릿→lint→testgen 불일치를 확인했다. 정적 검토이며 원본 실행은 0건이다.
 
-현재 고정 2,736개 중 552개에 검토 기록이 있으며 **2,184개는 아직 unreviewed**다. 552개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
+현재 고정 2,736개 중 593개에 검토 기록이 있으며 **2,143개는 아직 unreviewed**다. 593개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
 
 Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 

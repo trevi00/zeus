@@ -1,0 +1,295 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/pipeline_loader.py",
+    "bytes": 22805,
+    "git_blob": "31763ff0da1a1e26942c288faebd991c0c8abc35",
+    "pinned_sha256": "8731d0d2325e1cc293269a27f8e21eeb58ed8555cacecab130c27460a2ea601c",
+    "line_count": 467,
+    "read_ranges": [
+      [
+        1,
+        467
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/staleness.py",
+    "bytes": 1780,
+    "git_blob": "b05817acb753b7dfc7fcb68778cb3e88b040f4e1",
+    "pinned_sha256": "b3ea2f71bc30b3617e6d7ec3ad9e7c29fdf863461900f854f20b8fbc13e9c501",
+    "line_count": 46,
+    "read_ranges": [
+      [
+        1,
+        46
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/gate_ratchet.py",
+    "bytes": 3173,
+    "git_blob": "9cd080e7ff65c2c143176215832487a32a7416d8",
+    "pinned_sha256": "b4aa178f9ce00bc2142926cb8561937fb5737a5eb7e95f93e728a1c4602d558d",
+    "line_count": 62,
+    "read_ranges": [
+      [
+        1,
+        62
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/preconditions.py",
+    "bytes": 4310,
+    "git_blob": "0c916e8b5bf2fcb9f366179f469bcc1d12b5e4a3",
+    "pinned_sha256": "66a01b966155a29d9db7a710eb598801f199b545f9e54e04df3e7b8d0f38014b",
+    "line_count": 100,
+    "read_ranges": [
+      [
+        1,
+        100
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/residual_cmd.py",
+    "bytes": 6557,
+    "git_blob": "c62cdd1c84cb57a9b88c0f8966e661d2e803ab7c",
+    "pinned_sha256": "358644347ea15989f51340e1e727f54d47c105ef757dcfee102db59cbd9c881f",
+    "line_count": 132,
+    "read_ranges": [
+      [
+        1,
+        132
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/testgen_cmd.py",
+    "bytes": 1711,
+    "git_blob": "51de83c320f1957873f7aa897900071a378af6ec",
+    "pinned_sha256": "fce2252b3eeccc5ae1aa9d0a0ef006193bb51d81e2e337f004a88351659f3f21",
+    "line_count": 49,
+    "read_ranges": [
+      [
+        1,
+        49
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/stop/reenforce.py",
+    "bytes": 6389,
+    "git_blob": "c743f578451c142c67719f226e3ccfb6f1872247",
+    "pinned_sha256": "23286ed56d13aa3ce95952df5140199e40a0ebcbf6afcde84cc9f81659a1ccab",
+    "line_count": 119,
+    "read_ranges": [
+      [
+        1,
+        119
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/validators/usecase_lint.py",
+    "bytes": 3450,
+    "git_blob": "2e1a8aedabd70bbe9bb9247b8c00edc3fde13fd2",
+    "pinned_sha256": "132668f82063f1dbd73dc3a8f1c78f3bd519e2e2da24418296774c9c06d0c7da",
+    "line_count": 84,
+    "read_ranges": [
+      [
+        1,
+        84
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_checks_smoke.py",
+    "bytes": 8842,
+    "git_blob": "75e1068145fe7dd7cc1afe7a1963bc532b5c2ac6",
+    "pinned_sha256": "360e843050fe740d6791fa9f2f399aa1a26ce0a4da5bb8df305a4338001c7354",
+    "line_count": 166,
+    "read_ranges": [
+      [
+        1,
+        166
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "templates/_common/usecase.template.md",
+    "bytes": 890,
+    "git_blob": "32f11071fb8e39cc39dd3f194b3a3c60b334c932",
+    "pinned_sha256": "dc99cba68fdd75f1e3e73c95d44d570a30199987781fcd1971b3aed89fa9c79d",
+    "line_count": 25,
+    "read_ranges": [
+      [
+        1,
+        25
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/derive_state.py",
+    "bytes": 27995,
+    "git_blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+    "pinned_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "line_count": 547,
+    "read_ranges": [
+      [
+        1,
+        215
+      ]
+    ],
+    "read_extent": "explicit_supporting_ranges",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/ledger.py",
+    "bytes": 23573,
+    "git_blob": "5e7534695489901c673ed95f65f7fd634390549d",
+    "pinned_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "line_count": 429,
+    "read_ranges": [
+      [
+        111,
+        158
+      ],
+      [
+        243,
+        357
+      ],
+      [
+        361,
+        428
+      ]
+    ],
+    "read_extent": "explicit_supporting_ranges",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/step_cmd.py",
+    "bytes": 29241,
+    "git_blob": "d0cd4cfdb8173077dbc869477b10764b209fa8af",
+    "pinned_sha256": "274043786f6517abbe5012a69c4af65efee80f03f2ab7aabe93d480b91b06d7b",
+    "line_count": 511,
+    "read_ranges": [
+      [
+        449,
+        504
+      ]
+    ],
+    "read_extent": "explicit_supporting_ranges",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_engine_smoke.py",
+    "bytes": 27277,
+    "git_blob": "11a940788f8318dab843738bc48645e3b1a5b835",
+    "pinned_sha256": "621493306a0988458f2f979e9074474c46c999716f5ee671f76d10d8d44bfb49",
+    "line_count": 500,
+    "read_ranges": [
+      [
+        186,
+        310
+      ]
+    ],
+    "read_extent": "explicit_supporting_ranges",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_small_batch_smoke.py",
+    "bytes": 49153,
+    "git_blob": "0e41a44a14f192b549d4ea1ac3e4344cdc86c25e",
+    "pinned_sha256": "4c81449b0e67ef3f029fffb017d0953b70f4e05ef516522236df21e3fa0bc458",
+    "line_count": 780,
+    "read_ranges": [
+      [
+        738,
+        754
+      ]
+    ],
+    "read_extent": "explicit_supporting_ranges",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  }
+]

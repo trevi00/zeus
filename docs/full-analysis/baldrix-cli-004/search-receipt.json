@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "resident|reverse_engineer|role|router_eval|seam_gate|seam_scan|selfmod|sensor_anomaly|signals|skill_graph|skill_lint_report|skill_telemetry_audit|skill_trigger_eval|spec_bundle_emit|state_leak_check|strike_research_consume|stub_faker_gate|surgery|team_policy_check",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\scripts\\tests",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\commands",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\skills",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\agents",
+    "--glob",
+    "*.py",
+    "--glob",
+    "*.md"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "d372861f86904cf65bcc2d6222543e0e08904af283d1682b5d7be025ab95df8a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "meaning": "Discovery only. Only supporting-evidence ranges were semantically read."
+}

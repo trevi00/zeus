@@ -1,0 +1,12 @@
+{
+  "metadata_generation": "passed: manifest SHA256, Git blob, bytes and supporting range bounds",
+  "json_schema_checks": "passed: 10 primary files, 47850 bytes, 18 supporting files",
+  "ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/harness-engine-extractors",
+    "result": "passed",
+    "initial_attempt": "system python lacks ruff; no package installed"
+  },
+  "upstream_execution_count": 0,
+  "review_sha256": "c02e98de8ed000bb430e5ce1378b6343850193d169ca4415b5ab6ea3e63ae29e",
+  "scope": "static review receipts only; no semantic execution or adoption approval"
+}

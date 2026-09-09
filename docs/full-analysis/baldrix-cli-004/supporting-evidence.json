@@ -1,0 +1,330 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/no_degradation_gate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1c0b8353ce00598b7512f4eba872e8ef639cffcb02f05ed809777f6e2371a448",
+    "line_count": 164,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 93,
+        "raw_range_sha256": "fc1e2c939188e66b0a76bf94323d70cd17c6c01e032c7e7ce9e92d70cac7c7f8"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_surgery.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "a38e48fb39bb69d80ee6e1fe898878ca72382da65aeab43bbaf99e90e85320f2",
+    "line_count": 329,
+    "read_ranges": [
+      {
+        "start_line": 177,
+        "end_line": 229,
+        "raw_range_sha256": "3338fedaf07c7d1904fb6192a501b4c2654cbe0597476285452a15895f0cb257"
+      },
+      {
+        "start_line": 303,
+        "end_line": 329,
+        "raw_range_sha256": "dcbde2620e625187245a1c15b8acb77df1702cb11a675494ca923c25260f21a5"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/team_policy.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "0062437b87149f629237cc6d34224a732dde78ffcca9b29033e4a4cd4702a1a2",
+    "line_count": 609,
+    "read_ranges": [
+      {
+        "start_line": 431,
+        "end_line": 500,
+        "raw_range_sha256": "2d43bdee6c367cb20f052d8dd7002468ec3f38f09e09b2595d98a1482879e5d4"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/spec_bundle.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "da2b906f7b840f662f50c49e5bfcb12da4f14fd3dcbef1cd58e3d27d53767b6f",
+    "line_count": 107,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 107,
+        "raw_range_sha256": "da2b906f7b840f662f50c49e5bfcb12da4f14fd3dcbef1cd58e3d27d53767b6f"
+      }
+    ],
+    "read_extent": "full",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/router_eval.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "259da45e36a6c045e8dcfb632755560db123948049edae1b10a85cc369d97751",
+    "line_count": 208,
+    "read_ranges": [
+      {
+        "start_line": 95,
+        "end_line": 208,
+        "raw_range_sha256": "9892ecf036708dff7957a70be53375373115dd4f1bca4c5da53c4ba383650b7e"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_lint_report.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "c076b16d3d212219ae72e477dd1fb4f16a738eea8954157752be2b2d31c3afd2",
+    "line_count": 538,
+    "read_ranges": [
+      {
+        "start_line": 481,
+        "end_line": 538,
+        "raw_range_sha256": "d583383cfdaa52b611d060953256ecfbccfebd24c99a6fb69f8a314ce906f32b"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_spec_bundle_emit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1598c443c22d86a4c3148369e1b085debb6cd3072e55019648051cf43cda2c44",
+    "line_count": 158,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 158,
+        "raw_range_sha256": "1598c443c22d86a4c3148369e1b085debb6cd3072e55019648051cf43cda2c44"
+      }
+    ],
+    "read_extent": "full",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_team_policy.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "504cfb15287b73cf0fa0820148f1a8d6632b9c3186bd9f14c34c09033d255e2f",
+    "line_count": 386,
+    "read_ranges": [
+      {
+        "start_line": 280,
+        "end_line": 360,
+        "raw_range_sha256": "d35f6892ee5a78019b1462308f33a7df8c556589360efae24189597b3b4cd388"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/resident_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "62b54ea95f1e40e0d3276e36901c04f3d63a9a39d7df3127b947674916b4f23d",
+    "line_count": 457,
+    "read_ranges": [
+      {
+        "start_line": 140,
+        "end_line": 201,
+        "raw_range_sha256": "60d4f617f8d5bbb08af8e9bd240544b9c29fe5b8a84ecc2f1e01268957285659"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/seams/parity.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d8e66ea930eb06ddbd84eca7c4ef99f10c1563f4d9d6d2193f3796757bc1286c",
+    "line_count": 71,
+    "read_ranges": [
+      {
+        "start_line": 43,
+        "end_line": 71,
+        "raw_range_sha256": "c78aea7e312b6046ba612e85c69b741b41465bb6d85b9cec66b4247c14af315a"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/roles.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d23bcc2ff19965b9b7bbeaaf484e2a2537851bab7b34923881f3490b9095bc3f",
+    "line_count": 150,
+    "read_ranges": [
+      {
+        "start_line": 118,
+        "end_line": 150,
+        "raw_range_sha256": "942f5f444fb98edf5668cfbc7768d9c165900c018ad26370787ad8bfaf85dd09"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/thin_skill_advisor.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "9b46c9cc2ce4f9ceacbbbbe364d76d5a74d3d99e6ded8fc04f5337d7cb03612c",
+    "line_count": 116,
+    "read_ranges": [
+      {
+        "start_line": 35,
+        "end_line": 85,
+        "raw_range_sha256": "bd942d85d27f539371ee84ff9ad4e266e8aa65ebac563b0d583e7e03ed16c284"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/golden_signals.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "26d68f1e6768d9536e43674fd23d303294486313400c40c539064c3bb4e291aa",
+    "line_count": 375,
+    "read_ranges": [
+      {
+        "start_line": 182,
+        "end_line": 219,
+        "raw_range_sha256": "a541e8a17ba16411ed9430df5e746e1edaf69f32872aee7cffcea1a5e447f2f5"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_state_leak_check.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "9724262ee7c6facbddded58d6ed8e5221808df458fd41cf153a328d0d7e4df19",
+    "line_count": 118,
+    "read_ranges": [
+      {
+        "start_line": 25,
+        "end_line": 95,
+        "raw_range_sha256": "0d51788414e7cf3665778df0a6e88dd72a83449ddfbf34516496ba502aab1b36"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-team.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "950ea1bfe81d77a65913a0433351bf386097f16243d55904e1734c943c92884d",
+    "line_count": 292,
+    "read_ranges": [
+      {
+        "start_line": 65,
+        "end_line": 91,
+        "raw_range_sha256": "c1cf13c3f1a6c68e307e4e941a2add824b6a4f301cec46f69892547234897580"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-ralph.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d359c6eb60471f6ff4a4e0a9822053d6ca10c0c9ae2188608bce902acf839252",
+    "line_count": 123,
+    "read_ranges": [
+      {
+        "start_line": 90,
+        "end_line": 114,
+        "raw_range_sha256": "4d3e6d41136d09f0f8cecf6c4a66ae38565d0587c0bac4e8dbbebf32a1b1a40c"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-reverse-prd.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "df361a1b425d82b205f83f823d58cfce6b281358be6f0ab1182d31d6bb9d40cd",
+    "line_count": 314,
+    "read_ranges": [
+      {
+        "start_line": 62,
+        "end_line": 75,
+        "raw_range_sha256": "669d2c2e0a56917f65ee0dcce2e1b7ec82dfc1fbc9970920325f4ee02ef73508"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/domain/sdd.py",
+    "revision": "b8de833ce276a664439a887f0d58931ea3938b51",
+    "working_bytes_sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+    "line_count": 202,
+    "read_ranges": [
+      {
+        "start_line": 39,
+        "end_line": 136,
+        "raw_range_sha256": "e810f0eb1243d9dcb756415b40015661a7e15295b811aeb45bcdfa753faf84d7"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/adapters/sdd.py",
+    "revision": "b8de833ce276a664439a887f0d58931ea3938b51",
+    "working_bytes_sha256": "8a8ebef555d9db097d934c029e1663db5a9478cda17b23a232fcaf3ad6b49dc5",
+    "line_count": 178,
+    "read_ranges": [
+      {
+        "start_line": 50,
+        "end_line": 64,
+        "raw_range_sha256": "4df09a60f183430613865cedc22206f1a5c07887e7ab479068ad98f730c577e9"
+      }
+    ],
+    "read_extent": "partial",
+    "coverage_role": "supporting only; no primary disposition change",
+    "tests_executed": []
+  }
+]

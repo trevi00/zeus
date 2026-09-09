@@ -1,0 +1,337 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/reverse.py",
+    "pinned_sha256": "0b3f0c9e9512a071c89d83005857d5a1a2f85501e0f68aeea6599f6cbb5c0f55",
+    "git_blob": "707a6e850e08fcbd0a1a3a1d2b436cbbdc1522a0",
+    "bytes": 14103,
+    "line_ranges": [
+      [
+        1,
+        152
+      ],
+      [
+        155,
+        181
+      ],
+      [
+        195,
+        259
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "pipelines/reverse-onboarding.yaml",
+    "pinned_sha256": "9698b9000ca6deb8c887ff7d87c5a568ca6fd83a28b348d793c5a60d1ce9d048",
+    "git_blob": "826b9f46b0988dc28227d7a58acd6d7d7ce64868",
+    "bytes": 4807,
+    "line_ranges": [
+      [
+        1,
+        93
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/validators/intent_doc_floor.py",
+    "pinned_sha256": "a66a1bb4f1ce49698dd4c2cf2b4781e5ce37fa0b3f8b5c01cb44029404b3bb94",
+    "git_blob": "35908ef02eb2bb14e04a9c044ced73f2c8484d6b",
+    "bytes": 4340,
+    "line_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_reverse_smoke.py",
+    "pinned_sha256": "724a75ae645ef26c2a739cd8ea7c2022b370bf5b36e2cbf0584f8a410968629b",
+    "git_blob": "c7f7937273521df1bf0bc5d292d31a549c0d30ea",
+    "bytes": 10498,
+    "line_ranges": [
+      [
+        1,
+        227
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_scaffold_smoke.py",
+    "pinned_sha256": "746069fc920c322e7d54887024c8cf7d1158c3c0527353acef5ee7f40125e064",
+    "git_blob": "e82b9992036da0915f130ac61045f2929ce291bf",
+    "bytes": 10340,
+    "line_ranges": [
+      [
+        35,
+        76
+      ],
+      [
+        117,
+        177
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_extractor_canary_contract.py",
+    "pinned_sha256": "13d2144769a3a7520b50d58904ed644e0cc8d3629e1e0e30e60f5b90287211ce",
+    "git_blob": "5d8bb542462179804d3e2881143cd98058b118f1",
+    "bytes": 14383,
+    "line_ranges": [
+      [
+        1,
+        170
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_artifact_type_registry_contract.py",
+    "pinned_sha256": "a05b915c8f3bd4b4178bd091e9f9b232dd05338ea2a1f6fb39d1f62fbba86324",
+    "git_blob": "b2351df241cee6a00200b28fff75b990dd15adca",
+    "bytes": 19218,
+    "line_ranges": [
+      [
+        382,
+        391
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "requirements.txt",
+    "pinned_sha256": "fa06bc6253f51386e980dbb9d27adf4b06368558f0c9ae049793e85e3b832c6b",
+    "git_blob": "2f46a7c9ef3ec7466833fe2a63cd0fabde9ad702",
+    "bytes": 767,
+    "line_ranges": [
+      [
+        1,
+        13
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/extractor_canary_cmd.py",
+    "pinned_sha256": "19bda89827845c451d38bd89934bb1ed9e5ff2304dc36aa548f51682fa28d8fe",
+    "git_blob": "914b79d703aa6980f086d543a268218e97695c92",
+    "bytes": 15491,
+    "line_ranges": [
+      [
+        43,
+        267
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/autoheart_cmd.py",
+    "pinned_sha256": "70d5ac60fa8475f8a659f8c9bc11fa8e7308b7e7859d4e37f0ad37d22c0c3c81",
+    "git_blob": "54b05e8a985aa808332faeac36ec42188ae5a228",
+    "bytes": 82521,
+    "line_ranges": [
+      [
+        768,
+        817
+      ],
+      [
+        850,
+        921
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "ontology/graph-queries.yaml",
+    "pinned_sha256": "37f917d30334e5fd558acbb2f36f3c6220bf3d6d3784ca01510cef5990a95ad1",
+    "git_blob": "ce20f77f7d7c6a554ddc266367cfa649d4aa9a2b",
+    "bytes": 5933,
+    "line_ranges": [
+      [
+        46,
+        80
+      ],
+      [
+        114,
+        126
+      ],
+      [
+        152,
+        156
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/graph_queries.py",
+    "pinned_sha256": "f4b93486880f467c1c001b4149589a432af81cca738f2284055e1690fc874152",
+    "git_blob": "c1e01a808ce6694e64ab668f3fe1b2c97b30b0b5",
+    "bytes": 38341,
+    "line_ranges": [
+      [
+        78,
+        115
+      ],
+      [
+        358,
+        414
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/mirror.py",
+    "pinned_sha256": "7b378a4420c56cb26bb91923fc6a4633208ac36079c8879c46c2c0b317f3ce39",
+    "git_blob": "72de013e67414633a8a0d2e075bff6baa2b27143",
+    "bytes": 7425,
+    "line_ranges": [
+      [
+        31,
+        35
+      ],
+      [
+        50,
+        79
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/pre_tool/extracted_guard.py",
+    "pinned_sha256": "3cb7e00fa216a0ce430bf835139f828fe3ed19ecd4492628ae2e5ea93e95f679",
+    "git_blob": "68056fe0e752de337cee89c90743ffaf9e822e76",
+    "bytes": 1546,
+    "line_ranges": [
+      [
+        1,
+        38
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/registry.py",
+    "pinned_sha256": "fb1f148241c27cc78481c8f8e32747582cf5b492183754c4cce0a72cdca766a4",
+    "git_blob": "a7697308e6b79bc466276dd13c011bc1dbffc8bd",
+    "bytes": 5748,
+    "line_ranges": [
+      [
+        42,
+        57
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": ".claude/commands/onboard.md",
+    "pinned_sha256": "a6e7b49f8d4b97b2e0d6b38a6e50352371e90fb19ab739ddde3fe3f74eb4152d",
+    "git_blob": "31d329a5be71028de38247ce61f55a196edcda87",
+    "bytes": 1718,
+    "line_ranges": [
+      [
+        1,
+        16
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/checks.py",
+    "pinned_sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27",
+    "git_blob": "ed9d1a309a0d8eb789d831e6d57d3ca8c6a84e41",
+    "bytes": 13179,
+    "line_ranges": [
+      [
+        91,
+        144
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/domain/sdd.py",
+    "sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+    "line_ranges": [
+      [
+        169,
+        202
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  }
+]

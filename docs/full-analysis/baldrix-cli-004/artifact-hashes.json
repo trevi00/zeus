@@ -1,0 +1,46 @@
+[
+  {
+    "path": "caller-test-search.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "caller-test-search.stdout",
+    "sha256": "d372861f86904cf65bcc2d6222543e0e08904af283d1682b5d7be025ab95df8a"
+  },
+  {
+    "path": "checkpoint-notes.md",
+    "sha256": "d34f2b2a373eaa0ebedd43b8c57b32e46a67c4743df65acfb22a21987c04c72c"
+  },
+  {
+    "path": "checkpoint.json",
+    "sha256": "6aea51e1d1e413e21175f2929b13e9a303eb6ba4b01d3339f55fcf7ab250665b"
+  },
+  {
+    "path": "files.json",
+    "sha256": "b916efffffd2c1528209bffb9c6427f22cc9a3400ed698202e3dceb8b586710d"
+  },
+  {
+    "path": "record_review.py",
+    "sha256": "a9be0c4bd9a6abdecc53889fe32f1f6754354ad7d615d15d2cd7a81d6db9344c"
+  },
+  {
+    "path": "remaining.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "review.md",
+    "sha256": "95eac51c4fccb5f5191c7ffd3b267d821e1de86007cc26b2cb24123429aaeae8"
+  },
+  {
+    "path": "search-receipt.json",
+    "sha256": "9e9c56773e396d47875463f9e8432bd9350b34578b77ba4505fb9918fe917b2a"
+  },
+  {
+    "path": "semantic-notes.json",
+    "sha256": "d053757ac34357e53adbdc83cb22a7f17bd681d40c7d907bfb295080a40759c7"
+  },
+  {
+    "path": "supporting-evidence.json",
+    "sha256": "eb521afdc8f236dbd774175ff1fc283e8acfd26b43ae07dbe7a7b8ebcbc8be60"
+  }
+]

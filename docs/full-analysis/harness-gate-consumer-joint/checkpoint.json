@@ -1,0 +1,18 @@
+{
+  "primary_paths": 5,
+  "primary_bytes": 52280,
+  "supporting_paths": 15,
+  "all_recorded_source_hashes_match": true,
+  "original_executions": 0,
+  "original_test_executions": 0,
+  "blocked_normal_writer_probe_retried": false,
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "runtime_implemented": false,
+  "remaining": [
+    "Complete transitive caller/config/tests and authentication/compaction traces",
+    "No static report replaces the unexecuted blocked normal-writer probe",
+    "Actual Windows/Linux/WSL, device, service and financial acceptance remain separate",
+    "Read final joint resolution for Claude/Codex agreements and corrections"
+  ]
+}

@@ -1,0 +1,351 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/doc_classifier.py",
+    "pinned_sha256": "cdc55dc2f40bc7ed33b7e09cceefa5880a4309515f3a8772dcef6341bf2c139e",
+    "git_blob": "fc15d8111fe0f360c1aab65b9a0eca32b38fac0a",
+    "bytes": 2261,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "파일명/앞 4000자 힌트의 단일 후보. 정렬 동점·읽기 실패/미분류 관측 공백; 보고 전용이며 정확도 승인 아님.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X07",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_scaffold_smoke.py",
+      "tests/contract/test_artifact_type_registry_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/intent_seed.py",
+    "pinned_sha256": "5be7523c030c37e3c1cd68150586ab537940d9325cdd3e923fe999e438606345",
+    "git_blob": "3801166871999cf4c25a118a113dc26b5b188ce9",
+    "bytes": 2792,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "README/docs 인용 후보 최대40·bullet160자, seed 재작성. 요구/사람 oracle 아님; 절단·출처 진위·untrusted 경계 별도.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X07",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_scaffold_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/python_api.py",
+    "pinned_sha256": "632ee9d52c8adbe6da3cc717cdb24c2b51c68e3ab234b5f6d402fbadf0912000",
+    "git_blob": "104ec98747a002080260207399b45ea354c61dc8",
+    "bytes": 4919,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "특정 root/main/routes/router 이름·공통 include prefix 합성. 순번 EP·고정 confidence·응답 타입명은 실제 API 계약과 다름.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X03",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_reverse_smoke.py",
+      "tests/contract/test_extractor_canary_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/python_conceptual.py",
+    "pinned_sha256": "346e24c785d40c8cb5b857aff41d1b5065ec9fb9ce37940d87acffbae3417e93",
+    "git_blob": "2976db7a1313c22ea9a93677f42b6490ac01c38b",
+    "bytes": 3539,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "모든 py 클래스의 tablename/Enum/FK 문자열 관측. models.py 모집단과 비대칭, CON 순번·관계 span/어휘값 제한.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X04",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_scaffold_smoke.py",
+      "tests/contract/test_extractor_canary_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/python_convention.py",
+    "pinned_sha256": "b2e9019303023b151e98112543c1cdfed8cd64dffa75583c45ce186847912342",
+    "git_blob": "cd645a3b5740235f259f442b84253467ce046292",
+    "bytes": 3103,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "package·snake 비율·도구 존재·tests 배치4축. 규범 아님; 고정 entries와 spans 계수는 항목별 파일행 증거와 다름.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X04",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_scaffold_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/python_flows.py",
+    "pinned_sha256": "691ffb6989b07599b0824f2fd220b755b82286a0cac05004b3b13b06973c8f63",
+    "git_blob": "d7b475b362b4b23c109d1f6d82fd0d4a185ff671",
+    "bytes": 3828,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "AST 방문순 call tail 이름 최대8 중복 제거. runtime 제어흐름·분기·횟수·사용자 여정·GWT oracle 아님.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X05",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_scaffold_smoke.py",
+      "tests/contract/test_extractor_canary_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/python_imports.py",
+    "pinned_sha256": "0d668158ce68e32b6adac2f0129910d6d01addfc50738cce3648cf1ffd02fdc0",
+    "git_blob": "04fdcb3ab02fde3abeddfd8781178eb8b35dc23c",
+    "bytes": 4953,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "하위 package 의존·대표 import 증거. relative/alias/직속파일/parse-error 경계, 0edge 출력은 현행 acyclic에서 FAIL.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X06",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_reverse_smoke.py",
+      "tests/contract/test_extractor_canary_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/python_models.py",
+    "pinned_sha256": "c01625d2987f821c4cfaee90b0ee43b4bf49600a2c104ea7c51987b3ffa6c5a6",
+    "git_blob": "9e06f9f872997d10ff0bcd97f51d111546a3c8aa",
+    "bytes": 6342,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "models.py Mapped 관측. scalar1:1·schema FK 첫 조각·nullable 비True 해석·고정 alembic실측문장·ENT/TBL 소비 비대칭.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X04",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_reverse_smoke.py",
+      "tests/contract/test_extractor_canary_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/tshelp.py",
+    "pinned_sha256": "2801a652a31b66f3793f54f264be7c0d492fdcfb6b825ee92078c17d36804b38",
+    "git_blob": "e0064def8dbc16fdcfb468da0b944c8eefe752c9",
+    "bytes": 1860,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "tree-sitter Python parse/text/call/string helper. has_error 강제·실행 문자열 평가 없음, helper는 구조 관측 원자.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X03",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/extractors/python_api.py",
+      "scripts/engine/extractors/python_models.py",
+      "scripts/engine/extractors/python_flows.py",
+      "scripts/engine/extractors/python_conceptual.py",
+      "scripts/engine/extractors/python_convention.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_reverse_smoke.py",
+      "tests/integration/test_scaffold_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/extractors/typescript_imports.py",
+    "pinned_sha256": "e9531e1ae0cbc8e5af6582cce8f279b0c106870cb010e402379adde11de702ab",
+    "git_blob": "16975e9c9035be245e28dc171146f43b078e411d",
+    "bytes": 14253,
+    "partition": "harness:scripts/engine/extractors:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "TS/TSX 지연문법·부재와 unreadable 구분·parse메타. root/scanned0·alias·slug·package-cycle·기본 acyclic 미배선.",
+    "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+    "finding_sections": [
+      "X06",
+      "X01",
+      "X02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/reverse.py"
+    ],
+    "tests_read_in_part": [],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 합성 소스/본문 카운트/분기 테스트는 실제 앱 또는 인수 증거가 아님. TS 직접명 검색0건은 전체 테스트 부재 증명 아님.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "현재 공식 자료와 라이선스 확인",
+      "격리된 기존 테스트와 플랫폼/semantic 경계 재현",
+      "전체 consumer 추적 및 Zeus 적응",
+      "사람 oracle와 실제 실행 증거 기반 인수"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

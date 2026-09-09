@@ -1,0 +1,18 @@
+{
+  "partition": "harness:scripts/cli:001",
+  "scope_sha256": "969d59336872da935576c8689cc4e099bc0ec4c998d0bf13361deea6e21fd7df",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "primary_paths": 13,
+  "primary_bytes": 168396,
+  "manifest_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+  "partitions_sha256": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8",
+  "full_body_read": 13,
+  "git_blob_matches": 13,
+  "sha256_recorded": 13,
+  "manifest_sha256_comparisons": 13,
+  "supporting_files": 36,
+  "source_executions": 0,
+  "tests_executed": [],
+  "validation_kind": "inert_metadata_integrity_only",
+  "adoption_approved": false
+}

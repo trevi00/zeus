@@ -1,0 +1,154 @@
+{
+  "resident.py": {
+    "purpose": "Claude headless 호출, 작업 큐 drain 및 결과 ledger 기록",
+    "analysis": "run_headless는 claude -p --output-format text를 실행한다. 추가 인자 중 output-format만 막으며 모델·도구·권한 인자를 제한하지 않는다. WARN으로 시작하는 응답 줄 제거는 정상 본문도 잃을 수 있다. ok는 rc=0 및 비어 있지 않은 stdout으로 결정되어 artifact 누락·잘못된 JSON·오래된 파일을 성공과 구별하지 않는다. artifact는 40000자까지만 읽는다. timeout의 부분 artifact 보존과 process tree 종료 보장은 별개다. queue list/read는 배타적 claim이 아니고 running marker 실패도 계속한다. max<=0도 하나 실행한다. ledger 후 unlink 순서는 중복 부작용을 막지 못하며 unlink 실패가 실패 횟수에 반영되지 않는다. 잘못된 JSON shape는 예외를 낼 수 있다. resident_store 140–201의 contract_ok는 누락 artifact를 실패로 보지만 이 CLI의 dequeue 성공 판단에는 호출되지 않는다.",
+    "authority": "호스트 환경·인증을 상속하는 실제 Claude subprocess이며 프롬프트의 수정 금지는 강제 격리가 아니다. 파일 큐와 compaction의 여러 쓰기는 원자적 작업 소유권이 아니다.",
+    "platform": "Windows claude 실행 shim 해석은 별도 보장 없음. UTF-8 replace 디코딩은 원시 바이트를 잃고 timeout 자식 트리 동작은 Windows/Linux/WSL별 미실행.",
+    "tests": "resident 및 contract_artifact_missing 테스트 이름은 검색 발견만. 테스트 전문·실행과 alert/provider 전이 의존 검토는 남음.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "reverse_engineer.py": {
+    "purpose": "등록 extractor로 역설계 산출물을 생성하고 선택적으로 roundtrip 확인",
+    "analysis": "dry-run에도 extractor를 생성·호출한다. 충돌 검사는 e.target, 실제 쓰기는 result.target을 사용하여 검사 대상과 출력이 달라질 수 있다. 출력 경계 제한이 없다. can_extract의 사전 검사 예외는 무시되지만 실제 loop에서는 중단될 수 있다. NaN confidence는 비교 문턱을 우회할 수 있다. --write는 기존 파일을 덮고 파일 단위 text rollback만 한다. 앞선 파일 쓰기는 후속 예외 시 남는다. --no-roundtrip은 intent floor도 건너뛴다. validator의 정상 반환값을 보지 않고 FAIL 문자열 부재를 성공으로 보며, 누락 validator나 생략 실행도 표의 기본 roundtrip PASS로 보일 수 있다.",
+    "authority": "extractor와 validator에 실제 파일 접근 권한을 위임한다. 모델 자격 또는 변경 승인으로 roundtrip 표시를 사용할 수 없다.",
+    "platform": "경로 confinement, symlink/reparse point 및 UTF-8 text rollback의 플랫폼별 등가성 미검증.",
+    "tests": "extractor 테스트는 검색 발견만. 등록 extractor/validator 전체 구현 및 adversarial rollback 실행 미완료.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "role.py": {
+    "purpose": "등록 역할 survey를 resident 작업으로 enqueue하고 역할별 결과 보고",
+    "analysis": "survey→enqueue에 중복 키나 동시성 claim이 없다. report는 ledger 전체 JSON을 읽어 한 손상 행이 전체를 실패시킬 수 있다. artifact/text parse_result를 쓰지만 compaction으로 외부화한 payload를 복원하는 경로는 확인되지 않았다. 알려지지 않은 결과 shape를 proposals=0으로 성공 출력할 수 있다. roles 118–150은 DBA/orchestrator/refactor/security 네 역할을 lazy 등록한다.",
+    "authority": "CLI 자체는 제안을 적용하지 않는다. 실제 설문 범위·프롬프트·모델 선택은 역할 및 resident로 위임된다.",
+    "platform": "파일 ledger와 Claude 경로 의존. Windows/Linux/WSL 동시 writer 및 compaction 호환성 미검증.",
+    "tests": "roles 테스트는 검색만. 네 역할 구현과 compaction 결과 재수화 테스트 전문은 남음.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "router_eval.py": {
+    "purpose": "라우터 시나리오 평가와 baseline 비교·기록",
+    "analysis": "--record-baseline은 퇴행한 현재 지표도 기록하고 0으로 끝낸다. --json 후 텍스트를 더 출력하여 단일 JSON 계약이 아니다. baseline 부재는 3이나 비어 있지 않은 dict에서 비교 키가 빠지면 해당 gate가 생략된다. lib/router_eval 95–208에서 잘못된 시나리오 JSON은 빈 negative 시나리오로 바뀔 수 있고 실제 production winner/본문 quota chain은 재현하지 않는다. compare의 0.10은 절대 비율 차이이며 지표는 소수 세 자리로 반올림된다. 평가 corpus와 라우터 revision의 승인 결합이 없다.",
+    "authority": "baseline 파일 쓰기는 결과 수용과 분리해야 한다. aggregate 성공 횟수는 Zeus 모델 자격의 근거 전체가 아니다.",
+    "platform": "동적 Python matcher 로드와 로컬 경로에 의존. import 환경과 JSON/text stdout 처리가 플랫폼별 미실행.",
+    "tests": "lib 95–208만 지원 독해. router_eval 테스트와 실제 production hook 호출 연결은 미독/미실행.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "seam_gate.py": {
+    "purpose": "선언된 시스템 seam의 parity 상태로 exit gate 판단",
+    "analysis": "--fail-on이 임의 문자열·빈 집합을 허용하여 차단 상태를 제거할 수 있다. 빈 seams는 PASS이고 미선언 seam은 검사 대상이 아니다. 기본 LOW_FIDELITY/NEEDS_TRANSFORM은 차단하지 않는다. JSON+summary에서는 summary를 쓰지 않으며 텍스트 출력은 fleet atlas를 다시 계산하여 판정 당시와 다른 상태일 수 있다. parity 43–71에서 low fidelity가 drift보다 먼저 판정되고 identity가 서로 완전히 다른 경우 NEEDS_TRANSFORM으로 기본 gate를 통과한다.",
+    "authority": "관찰 범위와 불확실 상태를 승인·배포 허용으로 승격해서는 안 된다. branch protection 실제 연결은 확인하지 않았다.",
+    "platform": "로컬 fleet 경로 접근 및 별도 snapshot 없는 재스캔은 모든 OS에서 일관성 문제를 남긴다.",
+    "tests": "seam_gate/seams 테스트 검색만. extractor/transform/fleet 실제 구성과 CI 연결 미검증.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "seam_scan.py": {
+    "purpose": "fleet extractor 관찰을 선언된 seam과 대조하고 ledger/parity 기록",
+    "analysis": "모든 등록 extractor를 각 repo에 적용하고 같은 enum 이름은 최초 항목만 남긴다. 선언 seam이 쓰지 않는 repo의 실패는 최종 실패로 이어지지 않을 수 있다. 입력 schema 검사가 부족하고 seam id가 state 파일 경로에 직접 사용된다. 기본 출력은 lib.paths.STATE_DIR가 아닌 scripts/state/seams이다. 행에 source commit/hash/timestamp가 없으며 append와 parity overwrite가 별도 쓰기다. 기본이 실제 쓰기이고 --no-write에서만 생략된다. 문서 SocketAction 한정 설명과 proto 포함 banner가 다르다.",
+    "authority": "외부 fleet 읽기와 state 파일 쓰기를 가진 CLI. Zeus PG 정본 관찰은 입력 snapshot과 event commit을 결합해야 한다.",
+    "platform": "상대 경로·seam id path traversal과 Windows drive/reparse, Linux symlink는 정적 위험이며 재현 실행하지 않았다.",
+    "tests": "parity 43–71만 읽음. 전체 extractor/transform/input schema 및 filesystem 공격 테스트 미완료.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "selfmod.py": {
+    "purpose": "selfmod branch 상태·canary·regression 검사 후 Git merge",
+    "analysis": "_HOME은 소스 Git 루트이며 Git config/hooks를 상속한다. clean 검사가 brain/ 전체를 예외 처리한다. status도 change_states를 통해 canary를 실행한다. 등록 CHANGES만 검사되어 비등록 변경의 의미적 보호가 없다. git diff rc=2도 차이로 취급하고 status rc를 검증하지 않는다. ahead 개수는 검증된 merge 결과가 아니며 regression은 branch에서 수행하고 switch/merge 직전 exact HEAD 재검사가 없다. --dry-run에도 canary/regression은 실행한다. abort/switch 실패 반환값을 무시한다.",
+    "authority": "검증 코드 자신도 같은 branch에서 바뀔 수 있어 독립 승인 근거가 아니다. 실제 Git 변경 권한과 테스트 실행 권한을 가진다.",
+    "platform": "Git hook/config와 subprocess 환경이 OS별로 다르며 fixed repo/cwd와 branch 경쟁 상태를 미실행.",
+    "tests": "selfmod_clean_gate 테스트 검색만. CHANGES 전체 정의·canary 및 merge 실패 복구 테스트 미완료.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "sensor_anomaly.py": {
+    "purpose": "sensor ledger 분포·불일치에 대한 휴리스틱 이상 보고",
+    "analysis": "손상 ledger 행을 조용히 버리고 숫자형/해석 불가 timestamp를 시간 창에 포함한다. 빈 자료는 0이다. 한 행의 반복 mode를 중복 집계하며 task hash를 project로 구분하지 않는다. inconsistency에서 min_count가 쓰이지 않는다. set→list 출력은 비결정적이다. 검증 tier의 분포는 실제 오류나 우회 행위의 증명이 아니다. threshold/min_count=0 조합은 나눗셈 문제를 만들 수 있다. 내장 selfcheck는 CLAUDE_HOME을 복원하지 않는다.",
+    "authority": "기본은 관찰 조언이지만 exit 2는 CI 차단에 연결될 수 있다. 통계를 주체 승인이나 행동 자격으로 사용하지 않아야 한다.",
+    "platform": "시간 해석·set 순서·환경 변수 변경이 프로세스/OS별 차이를 만들 수 있다. Windows/Linux/WSL 미실행.",
+    "tests": "내장 selfcheck 본문은 primary로 독해했지만 실행 0. 별도 test_sensor_anomaly_selfcheck는 검색만.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "signals.py": {
+    "purpose": "golden signals 보고와 선택적 실제 hook latency probe",
+    "analysis": "--probe는 lib/golden_signals 182–219에서 SessionStart와 네 prompt hook subprocess를 실제 실행한다. 호스트 환경과 home/scripts cwd를 상속하며 각 timeout은 300초다. saturation은 SessionStart를 import하고 HANDOFF를 읽어 clipping 전후 측정 차이가 가능하다. 결과 없음은 3이나 warning 없는 unknown 값은 0일 수 있다. 중복 --only는 flat 집계에서는 중복, JSON title dict에서는 합쳐진다.",
+    "authority": "probe는 수동 관찰이 아니라 hook 실행이다. 운영 환경에서 무해함이 보장되지 않는다.",
+    "platform": "hook interpreter/cwd/environment 및 latency 의미는 Windows/Linux/WSL마다 별도 검증해야 한다.",
+    "tests": "latency probe 부분만 독해. saturation loader와 나머지 signal 수집 구현/테스트는 미완료.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "skill_lint_report.py": {
+    "purpose": "lib.skill_lint_report namespace 재노출 및 main 위임 wrapper",
+    "analysis": "모듈 객체의 public/private 참조를 자신의 namespace로 복사한다. wrapper 상수 대입은 구현 모듈의 globals를 바꾸지 않는다. 자체 scripts bootstrap이 없어 직접 파일 실행과 scripts에서 -m 실행의 import 경로가 다르다. lib 구현 main 481–538은 저장 telemetry를 사용하고 threshold override 및 warn-only 성공을 허용한다. wrapper 전문을 읽었지만 구현 전문과의 의미 동등성은 주장하지 않는다.",
+    "authority": "실제 lint 판단은 lib에 있으며 stdout/exit 전달만으로 승인 기준을 충족하지 않는다.",
+    "platform": "PYTHONPATH에 따른 호출 가능성 차이와 구현의 unguarded stdout.reconfigure는 플랫폼/embedding 미검증.",
+    "tests": "lib main 481–538 부분 독해. 전체 구현 및 skill_lint 테스트는 미독/미실행.",
+    "decision": "변형: 진입점 위임 구조만 참고; lib 의미 검토 완료 전 lint 동작 채택 보류"
+  },
+  "skill_telemetry_audit.py": {
+    "purpose": "skill match telemetry의 낮은 점수·차원 빈도·thin skill 보고",
+    "analysis": "top5 자료는 선택 편향이 있으며 낮은 점수는 false positive 정답 라벨이 아니다. 차원 빈도는 점수 가중 기여와 다르다. bool을 int로 받아 점수에 포함하고 중복 entry를 중복 집계한다. lib/thin_skill_advisor 35–85는 bool을 제외하여 복제된 predicate가 일치하지 않는다. timestamp의 Z를 지운 뒤 mktime으로 해석하여 UTC를 로컬 시간으로 바꾼다. unknown timestamp 포함, negative/NaN since 허용, 빈 보고서 성공은 품질 증거가 아니다.",
+    "authority": "파일 읽기와 조언이며 자동 수정은 없다. telemetry 수치로 자체 skill 개선 승인을 대체하지 않아야 한다.",
+    "platform": "UTC/local 변환은 OS timezone에 따라 결과가 달라진다. 시간·손상 입력 회귀는 미실행.",
+    "tests": "thin_skill_advisor 35–85 부분 독해. skill_telemetry_audit 테스트는 검색만.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "skill_graph.py": {
+    "purpose": "skill Markdown을 JSON/Markdown/HTML 그래프로 출력",
+    "analysis": "rglob 결과의 filename.stem을 node id로 사용하여 여러 디렉터리의 SKILL.md가 모두 SKILL로 충돌하고 최초 파일만 남을 수 있다. frontmatter name은 id가 아니다. 없는 requires/self edge는 버리지만 cycle을 검출하지 않아 DAG 보장은 없다. keywords 3개 중첩·sibling edge는 실제 activation/dependency 증거가 아니다. 단순 comma/space 분리는 전체 YAML 문법이 아니다. --json은 check/html 전 반환한다. --check는 디스크 JSON/MD의 SHA256 앞 16자리 비교로 Git 동기 검사가 아니다. 기본 여러 파일 쓰기는 비원자적이다. HTML은 unpinned mermaid@10 CDN, raw script JSON과 innerHTML을 사용하여 비신뢰 description/name의 주입 위험이 있다.",
+    "authority": "읽은 skill 문서는 분석 데이터여야 한다. 그래프 설명을 실행 의존이나 모델 권한으로 승격할 수 없고 HTML 공유는 별도 안전성 검토 대상이다.",
+    "platform": "파일 탐색 순서 및 동명 파일 충돌, symlink, 브라우저 외부 CDN 동작은 OS/환경별 미실행.",
+    "tests": "skill_graph 테스트는 검색만. frontmatter 구현·실제 consumer와 HTML 주입 재현은 미완료. CDN/라이선스 원문 미확인.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "skill_trigger_eval.py": {
+    "purpose": "skill별 positive/near-miss query로 trigger 점수 및 문턱 제안",
+    "analysis": "precision은 negative pass / negative count로 계산되어 precision이 아니라 specificity다. 이를 사용한 F1도 통상 F1이 아니다. recall은 target matched 및 winner를 요구하나 winner 정렬은 competitor eligibility를 반영하지 않고 raw score만 본다. 동일 점수에는 삽입 순서가 영향을 주며 filename stem 충돌은 winner 식별을 혼동한다. 모든 skill을 재귀 후보로 사용하고 score_skill에 빈 context를 전달하여 production active path/phase 동등성이 없다. negative 없음은 precision=1, positive 없음은 recall=0이다. query schema/경로 경계 검사가 불충분하고 성공 학습 표본의 최소 점수 제안은 과적합될 수 있다.",
+    "authority": "잘못 이름 붙인 지표로 모델/skill 자격을 승인하면 안 된다. trigger 점수는 실제 작업 성공/권한 검증과 다르다.",
+    "platform": "stdout.reconfigure 무조건 호출, 경로 이탈 및 recursive 탐색 조건의 OS별 동등성 미검증.",
+    "tests": "score_skill 구현과 skill_trigger_eval 테스트 전문·실행 미완료. 알려진 metrics 결함은 정적 계산식 근거.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "spec_bundle_emit.py": {
+    "purpose": "코드/DDL에서 spec scaffold 및 TODO scenario bundle 생성",
+    "analysis": "out의 root 경계 제한이 없고 domain 인자도 경로 escape를 막지 않는다. facet은 element가 있을 때만 써서 이전 facet이 남을 수 있다. manifest/persona TODO 재작성으로 저작 내용을 잃지만 기존 feature는 무조건 보존하여 stale 내용도 남는다. 여러 쓰기는 atomic/rollback이 아니고 검증 전에 수행한다. validator problems가 있어도 CLI는 0으로 끝날 수 있다. 빈 model의 logical/ER valid와 TODO problem 필터는 실제 행동 검증이 아니다. validator 전문은 scenario id 및 facet 구조를 보며 nonempty requirement/GWT/oracle을 검증하지 않는다. 테스트는 TODO bundle validator_problems=[] 및 root==out forward를 허용하여 원본 불변 설명보다 약하다. Zeus domain/sdd 39–136은 비어 있지 않은 요구/시나리오, active coverage, 기존 요구 의미/ID 및 retired ID 규칙을 확인한다. adapter 50–64는 상이한 기존 export를 거부하고 xb로 새 파일을 쓴다. 이 역시 structural-only이고 acceptance가 아니다.",
+    "authority": "생성 scaffold를 승인된 spec으로 수용하지 않는다. 소스 root 보호, 의미 보존, retirement 및 export 정책을 먼저 적용해야 한다.",
+    "platform": "경로/domain injection과 overwrite, newline/text behavior는 Windows/Linux/WSL 실행하지 않았다.",
+    "tests": "scripts/validators/spec_bundle.py 1–107 및 test_spec_bundle_emit.py 1–158 전문 지원 독해. 테스트 6개를 읽었으나 실행 0. detector와 facet 전이 구현은 남음.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "state_leak_check.py": {
+    "purpose": "테스트 전후 state 파일 path/mtime를 비교하는 누수 탐지",
+    "analysis": "내용 hash가 아닌 mtime이며 읽기 실패는 생략한다. 삭제를 무시하고 일시 변경/mtime 복원을 관찰하지 못한다. before가 비어 있으면 4. TemporaryDirectory를 만들지만 실제 runner cwd/env를 그 경로로 옮기지 않으므로 runner 격리에 의존한다. runner 실패 exit는 최종 판정에 반영되지 않고 stdout/stderr가 폐기된다. timeout은 처리되지 않는다. 동시 live state 업데이트는 오탐을 만든다. therefore state untouched/isolation을 증명하지 않는다. 테스트 25–95는 삭제 무시를 명시한다.",
+    "authority": "실제 테스트 runner 실행은 운영 파일 접근 권한이 될 수 있다. 이번에는 실행하지 않았으며 snapshot 통과를 테스트 성공으로 보지 않는다.",
+    "platform": "mtime 해상도/권한/삭제·경로 의미는 Windows/Linux/WSL에 따라 달라진다. 파일 byte 무변경 영수증이 필요하다.",
+    "tests": "test_state_leak_check.py 25–95만 독해. 실제 runners/isolation 설정과 실패 exit 회귀는 미완료.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "strike_research_consume.py": {
+    "purpose": "반복 strike 연구 dispatch와 산출물 소비·skill 후보 staging",
+    "analysis": "session_id는 event path 경계를 검증하지 않는다. dispatch 누락 인자는 skip=0이고 record가 실제 Agent spawn보다 먼저여서 실행되지 않은 연구도 quota를 소비할 수 있다. consume fingerprint regex는 강하지만 artifact_path는 임의 파일 읽기/sidecar 쓰기다. dedup sid/fingerprint에 artifact hash/generation이 없어 바뀐 연구도 이전 결과로 고정된다. verdict 문자열을 substring 순서로 읽어 not accepted_change 같은 부정 문맥도 오해할 수 있다. candidate 파일 뒤 event를 쓰므로 event 오류 시 main이 staged:false를 보고해도 파일은 이미 남을 수 있다. 낮은 우선순위 candidate 쓰기 생략 후에도 staged=true가 될 수 있다. sidecar 실패를 무시하는 escalation 및 check-then-effect는 transaction이 아니다. no_degradation_gate 1–93의 probe.passed + secret_clean은 실제 skill 적용/회귀 실행이 아니며 advisory skill용 의도적 약화다.",
+    "authority": "제안 staging과 실제 activation은 별도지만 public enable 경로의 권한 근거는 이번에 검증하지 않았다. 과거 횟수·구성된 probe PASS는 자격·승인이 아니다.",
+    "platform": "import-time STATE_DIR, arbitrary artifact path와 event append의 race/crash 의미는 OS별 미실행.",
+    "tests": "harness-ralph 90–114 및 no_degradation_gate 1–93 읽음. strike_research_consume 테스트와 candidate writer/parser 전체 전이 검토·실행 남음.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "stub_faker_gate.py": {
+    "purpose": "테스트 framework 및 hollow stub/faker 의심 결과를 exit gate로 노출",
+    "analysis": "framework가 없으면 PASS=0, indeterminate도 --strict에서 WARN=0이다. strict는 hollow만 실패시키며 Then 부재 또는 honestly pending은 실행 가능한 행동 검증이 아닐 수 있다. false clean 의심 보고는 차단이 아니다. 실제 assertion 의미/실행과 framework 설정 타당성은 이 wrapper에서 증명하지 않는다. normally graduate 전제는 문구이며 권한 guard가 아니다.",
+    "authority": "정적 형식 검사를 작업 인수나 변경 적용 권한으로 사용할 수 없다.",
+    "platform": "framework 탐지·경로 처리와 stdout 결과가 OS별 미검증. 라이브 테스트 실행 없음.",
+    "tests": "stub_faker_lint 테스트 검색만. lib lint 전체 및 framework별 fixture 테스트 전문은 남음.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "surgery.py": {
+    "purpose": "selfmod branch에서 skill 압축 후보를 Claude로 수정하고 검사·rollback",
+    "analysis": "branch prefix 및 target clean만 확인한다. Git status 반환값을 무시하며 _HOME과 달리 resident.run_headless에 cwd를 전달하지 않아 모델은 호출자 cwd를 상속한다. _prompt의 text 인자는 사용되지 않는다. 한 파일 수정 지시는 격리가 아니다. max<=0도 하나 수행하며 dry-run은 worker를 생략하고 3이다. UTF-8 replace로 target을 읽어 원시 보존이 약하다. target 삭제/읽기 예외는 rollback 없이 중단할 수 있다. res.run_ok=False라도 S.evaluate 통과만으로 채택할 수 있다. rollback은 target만 checkout하고 다른 파일 부작용은 검출/복구하지 않는다. 일부 성공이면 다른 실패에도 0이며 ledger 오류는 무시한다. lib/skill_surgery 177–229,303–329의 길이 95%, heading 보존, 단어 중첩 약 55%는 의미 보존 증명이 아니다.",
+    "authority": "host 권한의 Claude 쓰기 및 Git rollback을 가진 자가수정이다. PG proposal/승인/검증 receipt와 exact revision을 결합하고 격리된 작업 트리에서 수행해야 한다.",
+    "platform": "inherited cwd, shell Git, process timeout 및 text replacement가 Windows/Linux/WSL별 미검증.",
+    "tests": "skill_surgery 지정 구간만 독해. surgery 테스트와 refactor matchable 역할/전이 구현·실패 복구 실행 남음.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  },
+  "team_policy_check.py": {
+    "purpose": "병렬 worker 상태를 바탕으로 stall 종료·escalation 정책 적용",
+    "analysis": "worker discovery는 file/psmux 오류를 숨기고 빈 목록을 frozen=0 noop으로 만들 수 있다. session_id 경계 검사가 없다. 손상 state는 frozen_n/killed를 초기화하여 fail-open이며 explicit frozen_n override에는 actor/version fence가 없다. alive=False를 DONE 없이 responded로 취급한다. terminate_fn=False 또는 예외여도 newly_killed에 넣어 영구 killed set으로 기록하고 재시도에서 제외한다. event는 terminated=false여도 결과 killed 목록에 포함한다. read/decision/kill/state write에 lock이 없고 kill 후 event/save 오류는 main의 killed=[] failclosed 보고와 실제 부작용이 다르다. lib/team_policy 431–500은 unknown worker가 있어도 kill/escalate를 먼저 결정해 any read fault never kills 설명과 상충한다.",
+    "authority": "실제 process 종료 권한이다. PG lease/fencing, 정확한 process identity, 성공 종료 receipt 및 미확인 상태 차단을 별도로 설계해야 한다.",
+    "platform": "psmux/PID 재사용/종료 수단과 OS별 실패 동작은 미독/미실행. Windows/Linux/WSL 동일 종료 보장 없음.",
+    "tests": "test_team_policy.py 280–360은 mock terminate=True, frozen/quorum 및 escalation 경로만 읽음. 실패 terminate의 재시도/부분 부작용 검증은 남음.",
+    "decision": "변형: 개념만 검토 후보이며 현재 구현의 직접 채택은 보류"
+  }
+}

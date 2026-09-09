@@ -1,0 +1,676 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/cron/l2_driver.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 119098,
+    "lines": 2044,
+    "sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "read_ranges": [
+      [
+        598,
+        675
+      ],
+      [
+        1135,
+        1285
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/completion_line.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4568,
+    "lines": 87,
+    "sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "git_blob": "de466f89378100fa6dbc4e0416610b26aa9a7980",
+    "read_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/backlog.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 12691,
+    "lines": 238,
+    "sha256": "39600fa9f0de271db99336f6b6c2ed6a31f7809329ed69fba76e5d02fd89fc07",
+    "git_blob": "6d2a2fdbb715d8f22b589bc3163e59eddabf7664",
+    "read_ranges": [
+      [
+        70,
+        112
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/derive_state.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 27995,
+    "lines": 547,
+    "sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "git_blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+    "read_ranges": [
+      [
+        214,
+        240
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/debate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10398,
+    "lines": 226,
+    "sha256": "a46d9f27ccaa83506248d4fdcc96d16dabca0e4b97e389878c88bfb2092b5ebf",
+    "git_blob": "5a3146326ecb30fe572f7d109eecc3ba678c446b",
+    "read_ranges": [
+      [
+        76,
+        162
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/endpoint_graph.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8168,
+    "lines": 168,
+    "sha256": "a077e247e82c81266db4ead3529f62447bba68721d5ef95f92856985ef9999d2",
+    "git_blob": "c3987244efd1b08e5ee4f0a679c79ffc14e9b253",
+    "read_ranges": [
+      [
+        24,
+        168
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_cli_wrappers_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5337,
+    "lines": 120,
+    "sha256": "d40831881f40c64495b7cddd5f90da8c3892b9fa9244769a9d51095bcfef0ca6",
+    "git_blob": "2c8c16818a127749ab041f5afe589da766a79baa",
+    "read_ranges": [
+      [
+        25,
+        76
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_small_batch_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 49153,
+    "lines": 780,
+    "sha256": "4c81449b0e67ef3f029fffb017d0953b70f4e05ef516522236df21e3fa0bc458",
+    "git_blob": "0e41a44a14f192b549d4ea1ac3e4344cdc86c25e",
+    "read_ranges": [
+      [
+        754,
+        780
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_arming_wiring_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 40408,
+    "lines": 779,
+    "sha256": "8a32de0a7ec9a430de13f90f64942b9c0bffd55cbb9f06dbab31e03755e42687",
+    "git_blob": "87492341e8b19588eed9700151f2b679f8fe7ea6",
+    "read_ranges": [
+      [
+        217,
+        280
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_autoheart_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 64871,
+    "lines": 1121,
+    "sha256": "40b960b472506f05270b9879034e4f56f023dedd4b0e41fe3bd56cf3912c3822",
+    "git_blob": "88be03a8e14dfaa84585b0151a1ec1a7402d7096",
+    "read_ranges": [
+      [
+        1,
+        115
+      ],
+      [
+        820,
+        895
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_boundary_corpus_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8852,
+    "lines": 184,
+    "sha256": "83b0be399db3e8d3a131d134bf177dba3667594b92dd12ae7d77b1e3e8c19417",
+    "git_blob": "97c796abaf068a8aeff476fbc2878bccae7fdcda",
+    "read_ranges": [
+      [
+        1,
+        150
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_capture_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 12168,
+    "lines": 222,
+    "sha256": "776e754fa37fc54ab0f961397a19c22f7df341012e7f2c67fabf138e3cdcfdd0",
+    "git_blob": "6aa7b193f5a1a5547d44d155305383cd0fb0f5b1",
+    "read_ranges": [
+      [
+        110,
+        172
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_suite_runner_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 28554,
+    "lines": 468,
+    "sha256": "4cc72b93e6479838430ef9a3c4105fcd27b515c0d5cf596b7a9f00e6d02f55fa",
+    "git_blob": "b25ad8604448370be2027c245545e3afd6c78008",
+    "read_ranges": [
+      [
+        171,
+        210
+      ],
+      [
+        330,
+        355
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_coverage_bootstrap.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4360,
+    "lines": 95,
+    "sha256": "d78b07ae5ea13187556c32bed739cdc6dae0698c3ff723e5e2647cdfa0f1540e",
+    "git_blob": "35a915e0616501a591909b6c7fc4c2c6b093a767",
+    "read_ranges": [
+      [
+        1,
+        90
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_polish_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9173,
+    "lines": 194,
+    "sha256": "8fa442c645779766e652d1d699728bef0867d02682a6c6f802f03228f24928da",
+    "git_blob": "e6153f2c5a0531644e6935aac37cc8254c24a3ff",
+    "read_ranges": [
+      [
+        25,
+        85
+      ],
+      [
+        133,
+        167
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_spiral_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7323,
+    "lines": 169,
+    "sha256": "acd3d7eea71d170905e97347f2abbafdc1cef1a7c43ad17f6344347b554f7a75",
+    "git_blob": "7e11e4c7f1e5c2f419dc36eacc8bc7ab3b3c75d0",
+    "read_ranges": [
+      [
+        95,
+        145
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_endpoint_graph_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9050,
+    "lines": 179,
+    "sha256": "a428d510f603866990b63bc10fd97d78db3068fb4e9baee1c5f2a11040c88ea7",
+    "git_blob": "60639cae70e02cca0220b3be88703386de93f3dd",
+    "read_ranges": [
+      [
+        135,
+        177
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_debate_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 12788,
+    "lines": 242,
+    "sha256": "dcf7906d4919ea7238ca9be8d9a7874977054360d28645f6666a5c3066a3b890",
+    "git_blob": "1fe57681ac6cfde59a75458df4d16e63ed7b8e17",
+    "read_ranges": [
+      [
+        110,
+        150
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "config/paths.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1816,
+    "lines": 32,
+    "sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e",
+    "git_blob": "4905eceac4c0b291b4ec789ef4b5ec13fe1ba8b1",
+    "read_ranges": [
+      [
+        1,
+        32
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": ".claude/settings.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 2146,
+    "lines": 98,
+    "sha256": "d7f9e4b551505c3fef8a3dc4470f50e024e21494cc6337c1d58e44355753da0a",
+    "git_blob": "543919592f4bf4b9e0f0e9eb16299c1788b84409",
+    "read_ranges": [
+      [
+        1,
+        40
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/arming-rules.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9093,
+    "lines": 143,
+    "sha256": "89660bf986d4419ff122f0c46001b731c66813585e8cbfaa4968caecfb1a43c0",
+    "git_blob": "6ea755852589367b4fde9700330ce8965bbcbf4c",
+    "read_ranges": [
+      [
+        1,
+        95
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/health_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 49796,
+    "lines": 957,
+    "sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "git_blob": "ffc56a369eae2661de3f9ac954c8721385966065",
+    "read_ranges": [
+      [
+        35,
+        53
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/sandbox_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13069,
+    "lines": 255,
+    "sha256": "b275120af02d83daa1bd60a9f35f44a331ab24dc44fb245be4e10a467d7790ce",
+    "git_blob": "f0eb07ce2b87c32878b871af73739351bc1d1451",
+    "read_ranges": [
+      [
+        59,
+        69
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/spiral_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 37440,
+    "lines": 679,
+    "sha256": "ae2544523614c9c3ddcc64d3b5b78954397ff57420e7dee8926fb07165d03f97",
+    "git_blob": "0a05aad322125ff120a61b4261bc180630d5f825",
+    "read_ranges": [
+      [
+        133,
+        168
+      ],
+      [
+        266,
+        305
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/ledger.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 23573,
+    "lines": 429,
+    "sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "git_blob": "5e7534695489901c673ed95f65f7fd634390549d",
+    "read_ranges": [
+      [
+        243,
+        320
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/suite_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 35632,
+    "lines": 624,
+    "sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+    "read_ranges": [
+      [
+        254,
+        292
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "brain/spikes/harness_board.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 61156,
+    "lines": 1309,
+    "sha256": "b5aeeab9f99cfba5d74d65c95d5811f2d4f77770d61d9d041f79958585dfef32",
+    "git_blob": "a19519d4baf2add037b619def26a8ce83a0c706e",
+    "read_ranges": [
+      [
+        225,
+        244
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": ".claude/commands/debate.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 2089,
+    "lines": 18,
+    "sha256": "56ca4285a6d52255a45d4226fb4e9b59129abb6c1afc87637ceec009aba3dc8e",
+    "git_blob": "9421f8bfec7273c05557ed697e76d219f189c75a",
+    "read_ranges": [
+      [
+        1,
+        18
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/test_outcome.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 18074,
+    "lines": 345,
+    "sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "git_blob": "d8f1c080bada2a498a1bc27799b65a21bb579c85",
+    "read_ranges": [
+      [
+        217,
+        345
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/params.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6147,
+    "lines": 158,
+    "sha256": "902305b0f5fc5a019bbc0d10bf2bc5d05b288d9b9463b4439f91b30ffae9d14b",
+    "git_blob": "6ab94fcdb76fd4003d8bc6da77eb75fffc143d1b",
+    "read_ranges": [
+      [
+        71,
+        118
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/harness_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 107200,
+    "lines": 2092,
+    "sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "read_ranges": [
+      [
+        1031,
+        1068
+      ],
+      [
+        1389,
+        1447
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/sandbox.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 32037,
+    "lines": 551,
+    "sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "read_ranges": [
+      [
+        383,
+        438
+      ],
+      [
+        475,
+        551
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/roster_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10541,
+    "lines": 222,
+    "sha256": "73ba08416e980af9e73915667eec5d245c540f98b44e199981324dfeb46cfc7c",
+    "git_blob": "fa1b82ce2913e5c31ee4847abaa84a18247dcdf1",
+    "read_ranges": [
+      [
+        30,
+        65
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": [],
+    "limit": "해시는 파일 전체에 적용되며 의미 검토 범위는 명시 구간뿐이다. 시험 파일 읽기는 실행 증거가 아니다."
+  },
+  {
+    "source": "zeus",
+    "path": "AGENTS.md",
+    "bytes": 1399,
+    "lines": 17,
+    "sha256": "535230bb5054c307c7d90dc14ea26f4a840d1f9a4f8ae2a5c1601df2033da9f2",
+    "git_blob": "9258473acb0278fde55281917d5b12f227b5424e",
+    "read_ranges": [
+      [
+        1,
+        17
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": []
+  },
+  {
+    "source": "zeus",
+    "path": "docs/research-standard.md",
+    "bytes": 8196,
+    "lines": 108,
+    "sha256": "3328161efffcf50f0aec5b3baf00f8865aa63bee4b6964ceea9ce646ddd87c5f",
+    "git_blob": "a15fc94fb0d39374ec5598a744f1f0051d3a4c1e",
+    "read_ranges": [
+      [
+        1,
+        108
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": []
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/domain/sdd.py",
+    "bytes": 12845,
+    "lines": 202,
+    "sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+    "git_blob": "fb3a6a2fe10d0a9c4b93e121b8bd7bc380bec4fa",
+    "read_ranges": [
+      [
+        8,
+        22
+      ],
+      [
+        185,
+        202
+      ]
+    ],
+    "disposition": "supporting_selected_body_read",
+    "tests_executed": []
+  }
+]

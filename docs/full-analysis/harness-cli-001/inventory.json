@@ -1,0 +1,60 @@
+{
+  "partition": "harness:scripts/cli:001",
+  "scope_sha256": "969d59336872da935576c8689cc4e099bc0ec4c998d0bf13361deea6e21fd7df",
+  "bytes": 168396,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "scripts/cli/agentsmd_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/append_restore.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/arming_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/autoheart_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/boundary_corpus_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/capture_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/classify_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/completion_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/coverage_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/cycle_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/debate_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/delegate_cmd.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cli/endpoint_cmd.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

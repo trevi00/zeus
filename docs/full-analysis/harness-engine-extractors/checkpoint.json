@@ -1,0 +1,39 @@
+{
+  "source": "harness",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "partitions": [
+    "harness:scripts/engine/extractors:001"
+  ],
+  "scope_sha256": "b552f678d301dba12f0b99725d304af283f5e1168da0d33cb96994866ae611d3",
+  "expected": 10,
+  "full_body_reviewed": 10,
+  "bytes_verified": 47850,
+  "unreviewed_paths_in_partition": [],
+  "tests_executed": [],
+  "upstream_execution_count": 0,
+  "blocked_probe_retried_or_bypassed": false,
+  "subsystem_complete": false,
+  "adoption_approved": false,
+  "claude_independent_review": "pending",
+  "status": "static_review_complete_execution_and_independent_review_pending",
+  "review_ref": "docs/full-analysis/harness-engine-extractors/review.md",
+  "searches": [
+    {
+      "scope": [
+        "tests",
+        "pipelines",
+        "ontology/graph-queries.yaml"
+      ],
+      "source": "harness-pinned",
+      "pattern": "typescript_imports|component-diagram-typescript|TypeScriptUnreadable",
+      "matches": 0,
+      "limit": "Exact text search only; indirect tests not ruled out"
+    }
+  ],
+  "search_limits": "config/handlers.yaml 추정 경로 부재. rg --files로 실제 scripts/handlers/registry.py 확인 후 직접 읽음. supporting 구간만 조회했으며 전체 consumer 감사 아님.",
+  "deferred": [
+    "Samsung 실기기",
+    "Device Farm SDK/MCP/Replay 구축·인수",
+    "Astra→Sol→Terra 실행 자격 증명"
+  ]
+}

@@ -1,0 +1,97 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/checks.py",
+    "bytes": 13179,
+    "git_blob": "ed9d1a309a0d8eb789d831e6d57d3ca8c6a84e41",
+    "pinned_sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27",
+    "line_count": 284,
+    "read_ranges": [
+      [
+        1,
+        284
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/gate_runner.py",
+    "bytes": 9074,
+    "git_blob": "bc111a1d469611f3549862df0b1df32578cd0610",
+    "pinned_sha256": "b0781fd1e40d0d7970f426c20ad0d47febffeaf38ad19a1cec9b199589070e59",
+    "line_count": 179,
+    "read_ranges": [
+      [
+        1,
+        179
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/select_ready.py",
+    "bytes": 4240,
+    "git_blob": "757ad7ab51eaba44d0a47da66fc16d16714c472b",
+    "pinned_sha256": "97a8ceb28f55ee4d239c0b236eca569db7a285c9cd6aed1822b4619b7cf2dcb2",
+    "line_count": 99,
+    "read_ranges": [
+      [
+        1,
+        99
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/testgen.py",
+    "bytes": 2767,
+    "git_blob": "1674b127d23137cd7db826eb31e9cf33439d8fcc",
+    "pinned_sha256": "c2b7c3a6a902bd6297e47904d65032a940a8a4b21a0eab659a2570af517d5344",
+    "line_count": 70,
+    "read_ranges": [
+      [
+        1,
+        70
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/tick.py",
+    "bytes": 23020,
+    "git_blob": "2e406b67fd578c7f04457c93a6a9629de3273223",
+    "pinned_sha256": "108a2f93e5a85a98d67cbb0dfeefde2b3f38f6f29e7a6a8e6e9620b2fc07506d",
+    "line_count": 379,
+    "read_ranges": [
+      [
+        1,
+        379
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-gate-consumer-joint/resolution.md"
+  }
+]

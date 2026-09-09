@@ -1,0 +1,595 @@
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-code-simplifier.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-code-simplifier.md:13:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-designer.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-designer.md:14:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-designer.md:87:- Typography: [fonts + why] · Color: [palette + roles] · Motion: [approach] · Layout: [composition]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-architect.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-architect.md:15:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-design-critic.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-design-critic.md:12:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-analyst.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-analyst.md:13:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-critic.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-critic.md:21:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-qa-tester.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-qa-tester.md:14:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-planner.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-planner.md:14:The debate has three roles:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-planner.md:19:You NEVER defend your own proposal. When the Critic returns attacks, the next generation's Planner call (you again) revises. Defending in place would collapse the roles.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-planner.md:20:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ai-researcher.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ai-researcher.md:25:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-git-master.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-git-master.md:14:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-document-specialist.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-document-specialist.md:14:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-explore.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-explore.md:13:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:32:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:39:You are NOT the generator. You are NOT a debater. You are the *Evaluator role* of DGE per CLAUDE.md core principle 1, locked by debate-1778248254-0b7092 (4-gen converged).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:40:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:113:| **Tier 2** | **Semantic** (← **you**) | 5-axis 1-5 LLM judgment + completeness boolean clamp + verdict | **your role** — you are the only tier that produces 정성적 score. Tiers 1/3 are mechanical/aggregative respectively. |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:116:**Scope discipline implied by tier 2 role**:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:124:<paradox_guard_role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:130:</paradox_guard_role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-evaluator.md:158:- vs `harness-critic`: Critic attacks proposals on assumption/failure/simplification. You score quality + check completeness — different role, different output schema.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-tracer.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-tracer.md:14:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-scientist.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-scientist.md:14:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-codebase-mapper.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-codebase-mapper.md:30:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-researcher.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-researcher.md:16:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-doc-verifier.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-doc-verifier.md:28:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-doc-verifier.md:204:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-code-fixer.md:13:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-code-fixer.md:22:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-domain-researcher.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-domain-researcher.md:21:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-code-reviewer.md:13:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-code-reviewer.md:20:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-doc-writer.md:16:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-doc-writer.md:33:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-doc-writer.md:159:- Framework config files: `next.config.*`, `vite.config.*`, `webpack.config.*` — architecture signals
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-doc-writer.md:457:- Package name and one-line description — State what this specific package does and its role in the monorepo.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-framework-selector.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-framework-selector.md:20:- Surfacing a fact that makes one option look better is fine ("option X has no streaming API [VERIFIED]"); telling the reader which to choose is NOT your role.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-framework-selector.md:21:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-assumptions-analyzer.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-assumptions-analyzer.md:22:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-executor.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-executor.md:26:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-ultrawork.md:27:   - **Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: after each Agent returns, call `lib.subagent_invocation_log.record_invocation(ultrawork_sid, agent_name="harness-explore", tools=lib.agent_tool_audit.expected_tools("harness-explore"), generation=0, role="ultrawork-explore", extra={"thoroughness": "medium", "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. The PostToolUse hook records the same invocation as a safety net.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-ultrawork.md:54:   - **Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: per-slice, after each wave Agent returns, call `lib.subagent_invocation_log.record_invocation(ultrawork_sid, "general-purpose", tools=[<tools claimed at dispatch>], generation=<wave_num>, role="ultrawork-slice", extra={"slice_id": "<id>", "owner": "<file or area>", "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. PostToolUse hook records this automatically too.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:35:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-advisor-researcher.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-advisor-researcher.md:20:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-advisor-researcher.md:36:- **Maturity signals:** Include star counts, project age, ecosystem size where relevant
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-advisor-researcher.md:38:- **Rationale:** Full paragraph with maturity signals and project context
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-nyquist-auditor.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-nyquist-auditor.md:19:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:43:   - **Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: immediately after each worker's detached launch returns control, the orchestrator calls `lib.subagent_invocation_log.record_invocation(<team_sid_or_orch_sid>, agent_name=f"team-worker-{i}-{provider}", tools=["external-cli"], generation=0, role="team-worker", extra={"provider": provider, "subtask": "<area or file scope>", "session_dir": "<absolute path>", "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. Use `orch_sid` when invoked from an autopilot super-session (`ORCH_SID` env present); otherwise fall back to the team session id (`team-<unix_ts>`). The cross-session grep target lets operators answer "who invoked codex on the auth-module review last week?" without scanning every team-session dir.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:73:     cd ~/.claude/scripts && python -m cli.team_policy_check \
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:239:- Heartbeat flat ≥120s on a worker → `cli.team_policy_check` (§5 D1) classifies
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:262:- status: `all_done` (all DONE markers present) | `partial` (some FAIL/missing) | `stalled` (heartbeat flat ≥120s + alive + all signals flat — `cli.team_policy_check` D1; quorum-guarded auto-kill via D2, else escalate exit 5) | `hard_cap` (deadline reached).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:271:- **heartbeat flat ≥120s** on one worker: `cli.team_policy_check` (§5) decides deterministically — `stalled` requires alive AND all live signals flat (codex/claude on high reasoning effort legitimately spends minutes silent, so the AND-combiner + pane-hash veto guard against false positives). Auto-kill is QUORUM-GUARDED (D2): a kill that would break quorum is refused and escalated (exit 5) instead.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:285:- stall detection: heartbeat JSONL `event=heartbeat` fires every 30s with current `out_bytes`. `cli.team_policy_check` (§5, `lib.team_policy.evaluate_stall`) consumes it deterministically — a flat heartbeat + flat `.out` bytes for ≥`--stall-seconds` while alive ⇒ `stalled`. Kill is quorum-guarded (D2), not advisory-only; a kill that would break the frozen-N quorum escalates (exit 5) instead.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:290:- vs `harness-debate`: this fans out the SAME task to multiple AI providers/perspectives; debate runs Planner/Critic/Architect roles for convergence on a single decision.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-intel-updater.md:22:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-intel-updater.md:34:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-plan-checker.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-plan-checker.md:30:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-integration-checker.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-integration-checker.md:20:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-skill.md:63:- No auto-learning (that's `handlers/stop/learner.py`'s sensor role; promotion is manual via `add`).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-project-researcher.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-project-researcher.md:36:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-phase-researcher.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-phase-researcher.md:38:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-research-synthesizer.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-research-synthesizer.md:36:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-reverse-prd.md:69:   python -m cli.spec_bundle_emit --root <source_path> --out <output_path>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-reverse-prd.md:73:3. **검증** — `python -m validators.spec_bundle` 또는 autopilot이 `@id` 유일성·manifest↔domain·facet 정합을 advisory로 점검. 생성된 spec은 `python -m cli.spec_bundle_emit --json` 또는 `lib.testgen`으로 스택별 테스트 stub(java→Cucumber-JVM)까지 round-trip.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-reverse-prd.md:312:- vs `cli.reverse_engineer`: reverse-prd is the orchestrator; reverse_engineer is the per-extractor backend (convention/er/logical/openapi/...). reverse-prd composes them into staged PRD.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-security-auditor.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-security-auditor.md:19:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-planner.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-planner.md:39:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-planner.md:257:**Too large signals:** Touches >3-5 files, multiple distinct chunks, action section >1 paragraph.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-planner.md:259:**Combine signals:** One task sets up for the next, separate tasks touch same file, neither meaningful alone.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-roadmapper.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-roadmapper.md:36:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ui-auditor.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ui-auditor.md:31:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ui-checker.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ui-checker.md:28:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ui-researcher.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-ui-researcher.md:31:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:11:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:19:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:61:- Confidence scoring thresholds (HIGH: 10+ signals across 2+ projects, MEDIUM: 5-9, LOW: <5, UNSCORED: 0)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:81:1. **Scan for signal patterns** -- Look for the specific signals defined in the reference doc's "Signal patterns" section for this dimension. Count occurrences.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:83:2. **Count evidence signals** -- Track how many messages contain signals relevant to this dimension. Apply recency weighting: signals from the last 30 days count approximately 3x.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:97:   - HIGH: 10+ signals (weighted) across 2+ projects
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:98:   - MEDIUM: 5-9 signals OR consistent within 1 project only
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:99:   - LOW: <5 signals OR mixed/contradictory signals
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:100:   - UNSCORED: 0 relevant signals detected
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:167:- Never rate a dimension HIGH without 10+ signals (weighted) across 2+ projects
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:170:- Report context-dependent splits rather than forcing a single rating when contradictory signals exist across projects
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-verifier.md:17:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-verifier.md:27:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\research-stack-onboarder.md:10:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\research-stack-onboarder.md:14:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\outpos-pr-creator.md:9:<role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\outpos-pr-creator.md:15:</role>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-ralph.md:41:      - **Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: immediately after the fix Agent returns, call `lib.subagent_invocation_log.record_invocation(sid, "general-purpose", tools=[<tools claimed at dispatch>], generation=iter, role="ralph-fixer", extra={"failing_validators": [<names>], "goal": goal, "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. The cross-session forensics target ("how many ralph fix iterations did we run on validator X this month?") needs the per-iteration record.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-ralph.md:94:**Deterministic seam (M18, debate-1781594208-53fee4)** — the dispatch decision and the artifact→skill-candidate consumption are owned by `cli.strike_research_consume`, NOT by skippable prose. The ONLY LLM step is the irreducible `Agent` spawn between the two CLI calls. Run these three mechanical steps in order:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-ralph.md:98:   python -m cli.strike_research_consume dispatch \
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-ralph.md:108:   python -m cli.strike_research_consume consume \
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-pinit.md:57:   python -m cli.skill_graph --json | jq '.nodes[] | select(.subtree | startswith("typescript/"))'
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-debug\SKILL.md:17:**Orchestrator role:** Gather symptoms, spawn kha-debugger agent, handle checkpoints, and keep each diagnosis or fix attempt isolated.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\springboot-3.2\testing.md:106:    // authenticate(userId, role) → mockMvc.perform() → status().isOk()
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\springboot-3.2\testing.md:265:    .set("role", "BUYER")  // ENUM
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\springboot-4\efficient-packaging.md:30:3. **base image 는 distroless / jre-slim** 같은 가벼운 것. JDK 가 아닌 JRE (Java 17+) 로 충분.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\outpos\backend.md:56:- `GP-AUTH-RULE`: JSON (roleCode, storeUnqcd 포함)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\springboot-3.2\auth-jwt-oauth.md:36:│   ├── CustomOAuth2User.java              # OAuth2User 확장 (email, role 추가)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\springboot-3.2\auth-jwt-oauth.md:70:3. CustomOAuth2UserService (DefaultOAuth2UserService 상속) — `loadUser()`에서 DB에 유저 존재 여부 확인 → 없으면 저장 → CustomOAuth2User(email + role 추가 필드) 반환.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\springboot-3.2\auth-jwt-oauth.md:160:   - CustomOAuth2User 반환 (email + role 추가 필드)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-interview.md:25:**Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: immediately after the Agent tool returns, call `lib.subagent_invocation_log.record_invocation(interview_sid, "harness-analyst", tools=lib.agent_tool_audit.expected_tools("harness-analyst"), generation=0, role="interview-analyst", extra={"topic": topic, "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. ``interview_sid`` = ``f"interview-{unix_ts}-{rand6}"`` minted at step 0; the same id is used for the answers.jsonl + seed.md filenames. PostToolUse hook (handlers/post_tool/agent_invocation_audit.py) records this dispatch automatically as well — the directive here is the contract; the hook is the safety net.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\java\springboot-3.5\observability.md:5:intent: instrument-from-day-one wire-tracing capture-runtime-signals plan-slo
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-intel-index\SKILL.md:146:2. Write JSON intel files to .planning/intel/ (stack.json, api-map.json, dependency-graph.json, file-roles.json, arch-decisions.json)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-plan-phase\SKILL.md:25:**Orchestrator role:** Parse arguments, validate phase, research domain (unless skipped), spawn kha-planner, verify with kha-plan-checker, iterate until pass or max iterations, present results.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-greenfield.md:46:`spec_bundle_emit --forward` (manifest + facets, never-clobbers authored features), `testgen`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-greenfield.md:77:four passed: (1) `gradlew test` BUILD SUCCESSFUL, (2) `stub_faker_gate` 0 hollow @Then, (3) `spec_roundtrip`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-greenfield.md:93:python -m cli.stub_faker_gate <out>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-greenfield.md:113:- **Stub-faker (floor raised, residual not closed)**: Phase F's `stub_faker_gate` now MECHANICALLY flags
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-greenfield.md:127:- Do NOT modify the reused pieces (spec_bundle, testgen, spec_bundle_emit, autopilot); greenfield is
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-research-phase\SKILL.md:23:**Orchestrator role:** Parse phase, validate against roadmap, check existing research, gather context, spawn researcher agent, present results.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-evaluate.md:83:**Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: immediately after the Agent tool returns (success OR caught timeout/exception — record both paths so forensics can correlate timeout incidence), call `lib.subagent_invocation_log.record_invocation(orch_sid, "harness-evaluator", tools=lib.agent_tool_audit.expected_tools("harness-evaluator"), generation=0, role="evaluator", extra={"phase_id": phase_id, "fallback": fallback_reason or "none", "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. The fallback path's `record_invocation` is what later forensics use to distinguish "evaluator was healthy" from "evaluator failed N times this week" — do NOT skip the log on the fallback branch.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-allsolution.md:50:**Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: after the Agent returns (success OR timeout fallback), call `lib.subagent_invocation_log.record_invocation(allsolution_sid, "harness-researcher", tools=lib.agent_tool_audit.expected_tools("harness-researcher"), generation=0, role="allsolution-researcher", extra={"phase": "B", "timed_out": <bool>, "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. PostToolUse hook records this dispatch automatically as a safety net.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-autopilot.md:45:  - **Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: immediately after the Agent tool returns, call `lib.subagent_invocation_log.record_invocation(sess.sid, "general-purpose", tools=[<tier-appropriate tool list>], generation=<current iteration>, role="executor", extra={"decision_id": "<D_n>", "model_tier": "<haiku|sonnet|opus>", "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. Record-as-claimed: pass the tools the caller actually invoked the Agent with, not a frontmatter lookup (`general-purpose` is the platform default — no agent .md file).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-autopilot.md:51:  - **Audit log (A2 wiring, commit 7aff8b7, 2026-05-10; E1 origin tag 2026-05-10)**: per-decision, immediately after each Agent tool returns, call `lib.subagent_invocation_log.record_invocation(sess.sid, "general-purpose", tools=[...], generation=<iter>, role="executor", extra={"decision_id": "<D_n>", "worktree": "<path>", "branch": "auto/<sid>/<did>", "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})`. The shard event (`emit_pane_started`) already records pane-side lifecycle; this audit log records the dispatch surface for cross-session forensics.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-autopilot.md:55:  - Dispatch via Task tool: `result = Agent(subagent_type=payload["subagent_type"], prompt=payload["prompt_text"])`. After the Agent returns, call `lib.subagent_invocation_log.record_invocation(sess.sid, payload["subagent_type"], tools=lib.agent_tool_audit.expected_tools(payload["subagent_type"]), generation=<iter>, role="merge", extra={"integration_branch": payload["integration_branch"], "origin": lib.subagent_invocation_log.ORIGIN_DIRECTIVE})` (A2 wiring, commit 7aff8b7; E1 origin tag).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-diagnose.md:104:  - confidence: `high` (≥3 evidence + reproducible) | `medium` (some signals) | `low` | `NEEDS_DATA` (insufficient)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-debate.md:50:   - **Isolation leak scan (defense-in-depth, 2026-05-09)**: call `lib.debate_output_audit.scan_for_isolation_leaks(<full critique text>)`. If non-empty, append an `isolation_leak_observed` event with `lib.debate_output_audit.render_leak_advisory('harness-critic', leaks)` payload. Catches platform-isolation degradation (subagent output mentioning `state/debates/`, `events.jsonl`, sid prefixes, prior-turn phrases, role-override injection attempts, Korean equivalents). Observability only — Architect treats leaks as a verdict confidence reducer.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-debate.md:129:- `role`: `"planner"` | `"critic"` | `"architect"`.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-debate.md:183:- vs `harness-team`: team fans out the SAME prompt to multiple AIs for diverse opinions; debate runs DIFFERENT roles (Planner/Critic/Architect) for structured convergence on a single decision.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-session-report\SKILL.md:33:- preflight: if session context files and git signals cannot be gathered sufficiently to build a report, abort before write and surface which sources were unavailable.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_autopilot_worktree_probe.py:116:def test_default_no_signals_returns_true_none():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_autopilot_worktree_probe.py:175:    test_default_no_signals_returns_true_none,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:94:def test_autopilot_md_records_executor_and_merge_roles():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:95:    """Sequential + parallel paths use role='executor'; cherry-pick uses
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:96:    role='merge'. Both role tokens must appear."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:98:    assert 'role="executor"' in text, "executor role missing"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:99:    assert 'role="merge"' in text, "merge role missing"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:107:    assert 'role="team-worker"' in text, "team-worker role missing"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:118:    assert 'role="evaluator"' in text
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:129:    assert 'role="ralph-fixer"' in text
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:139:    assert 'role="interview-analyst"' in text
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:150:    assert 'role="ultrawork-explore"' in text
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:151:    assert 'role="ultrawork-slice"' in text
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:161:    assert 'role="allsolution-researcher"' in text
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:204:            "so the directive's defense-in-depth role is explicit"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commands_wiring.py:254:    test_autopilot_md_records_executor_and_merge_roles,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-workstream-manager\SKILL.md:111:- `kha-intel-index`는 prompt 내부 산출물 이름과 실제 `bin/lib/intel.cjs` 구현이 다르다. prompt는 `api-map.json`/`dependency-graph.json`/`file-roles.json`/`arch-decisions.json`을 말하지만 실제 구현은 `files.json`/`apis.json`/`deps.json`/`stack.json`/`arch.md`다.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\nextjs-spring-bff-write-delegation.md:35:│   3. await s2sFetch('POST', '/admin/...', input)  ← 사용자신원+role+tenant 서명/토큰 동봉
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\nextjs-spring-bff-write-delegation.md:89:                                  ctx: { userId: string; role: string; tenantCode: string | null }) {
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\nextjs-spring-bff-write-delegation.md:120:    { userId: session.userId, role: 'owner', tenantCode: session.tenantCode });
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\nextjs-spring-bff-write-delegation.md:148:  // 발급-측 게이트(서명 전 enforce, 12 §7-1): role × 노출필터 × 매장 스코프 × row 실존
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\nextjs-spring-bff-write-delegation.md:163:  if (session.role !== 'owner') forbidden?.() ?? redirect('/');
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\nextjs-spring-bff-write-delegation.md:204:- **`design/06_auth-tenant-design.md` §4.3**: S2S 인증(짧은수명 토큰/서명 헤더, 사용자신원+role+tenant_code 전달) = §2 `s2sFetch`. **§5.1** read 측 ScopedRepository 타입벽 = §1 `ownerRepo` 팩토리. **§5.2** write 측 Spring tenant guard(Next.js는 위임만). **§9** 적층(CSRF→S2S→tenant guard→ScopedRepository) = §5 게이트.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_boilerplate.py:74:    """LICENSE basename + standard MIT body → BOILERPLATE (both signals)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\redis-cache-idempotency-dedup.md:43:1. 후보 A = PG `session` 테이블 / 후보 B = **Redis 공유 세션** `sess:{token}` → {user_id, role, tenant_code} + TTL(idle/absolute). 결정 소유처 = `08_db-design`(`06 §4.1`).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\redis-cache-idempotency-dedup.md:134:await redis.set(`sess:${token}`, JSON.stringify({ userId, role, tenantCode }), { EX: idleSec });
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\redis-cache-idempotency-dedup.md:135:// 즉시 무효화(비번변경·role변경·거래처폐기 06 §8.1): await redis.del(`sess:${token}`)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\grocery-green-design-system.md:222:- **shadcn 매핑**: 설계 `10 §B-2-1` 23개 라이브 UI→프리미티브 표 + `§B-2-2` 공유/feature 경계 → `components/ui/`(이미 button/card/dialog/table/badge/switch/popover/command/progress 등 존재) vs `components/{role}/`. 공용 래퍼 6종(DataTable·DateTabs·StorageBadge·ConfirmDialog·ImageSlider·OrderStepper)은 11_module-diagram 인계.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:40:                "signals": {"ok": True, "data": {"Errors": [
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:45:                "surgery": {"ok": True, "data": {"total": 20, "passed": 20, "reverted": 0,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:50:                "breakers": {"ok": True, "data": {"role": {"open": False, "streak": 0,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:52:                                                  "surgery": {"open": False, "streak": 0,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:56:                                                    "roles": ["orchestrator"],
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:124:    m["sections"]["surgery"]["data"] = {"candidates": "리스트가 아님"}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:145:    assert got["sections"]["signals"]["ok"] is True, "한 섹션 실패가 번졌다"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:185:    m["sections"]["signals"]["data"]["Errors"][0]["value"] = None
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_agent_invocation_audit.py:81:        assert rec["role"] == "post-tool-hook"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\vue\component-contracts-and-testing.md:26:   - DOM selector는 stable (`data-testid` 또는 role)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\vue\component-contracts-and-testing.md:100:  <span v-if="error" role="alert">{{ error }}</span>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\vue\component-contracts-and-testing.md:120:      <div class="modal" role="dialog" :aria-label="title" @click.stop>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\vue\component-contracts-and-testing.md:233:  const modal = document.querySelector("#modal-root [role=dialog]");
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\vue\component-contracts-and-testing.md:270:| 검증성 | data-testid/role 기반 selector로 brittle 안 한가 |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\vue\component-contracts-and-testing.md:314:markup 변경에 깨짐. `data-testid`, role, aria-label 사용.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_outpos\platform.md:51:### 머지 권한 (Integrator role)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\react\react-19-actions-and-optimistic-ui.md:72:      {state.error && <p role="alert">{state.error}</p>}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\5.x\strict-config-and-runtime-contracts.md:90:  role: z.enum(["admin", "member"]),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\run_all.py:130:    않는다**. cli/state_leak_check 가 그걸 보던 유일한 창이었다(그 독스트링 참고).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_ac_tree.py:169:    # No `kind`/`axis_role` attribute on GateLeaf
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_ac_tree.py:170:    assert not hasattr(g, "axis_role")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\5.x\frontend.md:32:4. 접근성 (aria-label, role, 키보드)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:22:   - 결정 기준: 즉시 로그아웃 / role 변경 즉시 반영 필요면 DB
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:42:3. RBAC: session.user.role을 callback에서 채우고, 각 surface에서 enforce
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:89:      if (user) token.role = user.role;  // 가입 시점에 role 박기
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:93:      session.user.role = token.role as string;
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:123:  if (session.user.role !== "admin") redirect("/no-access");
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:135:  if (!session?.user || session.user.role !== "admin") {
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:235:### role을 client에 의존
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:236:`session.user.role === 'admin' && <AdminUI />`만으론 보호 안 됨. server에서 enforce 필수. UI 토글은 UX, 권한은 server.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:239:BFF(Next.js)가 HMAC 서명 쿠키/세션을 소유하고 백엔드는 stateless S2S 리소스 서버인 아키텍처에서, "세션 쿠키를 만드는 건 BFF뿐"이라고 **인가 판단(누가 이 작업을 해도 되나)까지 BFF 서버액션에만 두면** 백엔드 RBAC 우회 표면이 생긴다. 특히 impersonation(관리자→타 계정 대행 로그인)처럼 백엔드 호출 없이 쿠키만 발급하는 경로가 위험 — 대행 후 쓰기는 백엔드에 *대행당한* role로 도착해 원 계정의 실제 권한(예: 읽기 전용)을 못 본다.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:242:- UI 게이트(버튼 비활성/숨김)는 편의, 실제 강제는 백엔드(위 "role을 client에 의존"과 동일 계열).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\nextjs\auth-runtime-and-secrets.md:257:모든 RSC 렌더에 session() 호출 → DB 쿼리 폭발. JWT에 role 박아두고 session callback은 token에서 복사만.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\probe_intent_docs.py:9:audited mutation authority in the subsystem remains cli.reverse_engineer's roundtrip+
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\probe_intent_docs.py:10:rollback; the probe never assumes that role.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\probe_intent_docs.py:37:# Shared fabrication-floor logic lives in lib (also consumed by cli.reverse_engineer as a
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\typescript\5.x\advanced-type-patterns.md:177:  role: z.enum(["admin", "member"]),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\ai-llm.md:65:사용자 입력을 시스템 프롬프트에 직접 삽입하면 지시를 덮어쓸 수 있음. 사용자 입력은 반드시 user role 메시지로 분리하고, 중요 지시는 시스템 프롬프트 끝에 배치.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_outpos\developers.md:25:- **integrator role**: `main`과 `develop` 머지 commit author 대부분 jason — `mergedBy=GitHub` (PR 자동 머지)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\db-design.md:66:        enum role "BUYER SELLER ADMIN"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_contract_artifact_missing.py:8:(`cli/resident.py` — 파일을 못 읽으면 `artifact=None` + `artifact_missing=<경로>`).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_contract_artifact_missing.py:25:from lib import resident_store as RS  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_contract_artifact_missing.py:87:    `tests/test_resident.py:229` 가 `R._append_ledger` 를 갈아끼우고
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_contract_artifact_missing.py:88:    `tests/test_resident_compaction.py:461,482` 가 직접 호출한다. 별칭이
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_contract_artifact_missing.py:91:    from cli import resident as R
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_evaluator_dispatcher.py:162:def test_validate_prompt_isolation_rejects_role_override_attempts():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_evaluator_dispatcher.py:163:    """Defense against persona/role-override injection (beyond pure isolation)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_evaluator_dispatcher.py:407:    test_validate_prompt_isolation_rejects_role_override_attempts,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_stagnation_check.py:29:        signals={"oscillation": sig(recommend), "stagnation": sig(False),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_example_fleet.py:21:from cli.seam_scan import scan  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_example_fleet.py:53:def test_seam_scan_zero_blocked_with_realistic_drifts():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_example_fleet.py:66:    tests = [test_ontology_is_activated, test_seam_scan_zero_blocked_with_realistic_drifts]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:31:_MARK = "<!-- 보류: surgery_count >= 30 -->"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:42:def _surgery_log(td: str, n: int, failed: int = 0) -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:43:    d = Path(td) / "state" / "surgery"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:70:def test_counter_reads_the_surgery_log() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:73:            _surgery_log(td, 20, failed=3)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:75:            assert D.COUNTERS["surgery_count"]() == 20
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:76:            assert D.COUNTERS["surgery_reverted"]() == 3
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:85:            assert D.COUNTERS["surgery_count"]() == 0
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:86:            assert D.parse(_doc()) == D.Deferral("surgery_count", 30, 0)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:94:            _surgery_log(td, 29)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:97:            _surgery_log(td, 30)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:133:            assert D.parse("# t" + _NL + "위 `보류: surgery_count >= 30` 이 조건이다") is None
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:154:            _surgery_log(td, 20)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:157:            from lib import role_orchestrator as RO
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:168:            _surgery_log(td, 30)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:171:            from lib import role_orchestrator as RO
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:184:            _surgery_log(td, 30)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:187:            from lib import role_orchestrator as RO
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:204:            _surgery_log(td, 20)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:221:    p = claude_home() / "state" / "operator-pending" / "unattended-surgery-automerge.md"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_deferral.py:231:    test_counter_reads_the_surgery_log,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:102:def test_convention_confidence_scales_with_signals():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:105:        # Bare project: only one Java file with no signals
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:110:        # Rich project: 4/4 signals
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:742:    from cli.reverse_engineer import _firing_target_collisions
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:754:    from cli.reverse_engineer import _firing_target_collisions
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:772:def test_reverse_engineer_floor_gate_rolls_back_fabrication():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:774:    reverse_engineer --write — the external floor actually gates the pipeline, it is not
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:776:    import cli.reverse_engineer as re_mod
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:829:        test_convention_confidence_scales_with_signals,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_extractors.py:868:        test_reverse_engineer_floor_gate_rolls_back_fabrication,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit_contract.py:66:        ("ledger/role-runs/researcher/source_note-1.jsonl", "역할 런 원장"),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit_contract.py:131:        ("근거: C:/Users/rudtn/harness/ledger/role-runs/researcher.jsonl",
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_fleet_atlas.py:44:    _ok(b["B"][0]["role"] == "consumer", "B is a consumer")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_fleet_atlas.py:137:        "blast_radius": {"agent": [{"seam_id": "s_drift", "role": "producer"}, {"seam_id": "s_block", "role": "producer"}]},
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_fleet_atlas.py:150:    _ok("2 seam(s)" in md and "s_drift(p)" in md, "blast radius count + role rendered")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_doc_code_drift.py:178:    assert _refs("call `lib.breaker.role_state()` now") == []
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_decision_memory.py:29:from lib import role_orchestrator as RO    # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_decision_memory.py:30:from lib.roles import Finding              # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_decision_memory.py:110:def test_same_target_different_role_is_a_different_decision() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_decision_memory.py:115:        assert len(DM.recall({"state/x"}, role="orchestrator")) == 1
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_decision_memory.py:116:        assert len(DM.recall({"state/x"}, role="dba")) == 1
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_decision_memory.py:200:    test_same_target_different_role_is_a_different_decision,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_event_store.py:175:def test_replay_signals_mid_log_corruption():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_event_store.py:234:    test_replay_signals_mid_log_corruption,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\design-korean-premium.md:40:3. 토큰은 **시맨틱 3층** — target(fill/text/border) → role(brand/neutral) → variant(weak/alt). 액센트 하나가 `fill-brand`/`text-brand`/`border-brand-weak` 로 갈라지지, 다른 그린 5종이 생기지 않는다.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\design-korean-premium.md:75:- **시맨틱 3층**: target(fill/text/border)→role(brand/neutral)→variant(weak/alt). 그린 하나가 `fill-brand`/`text-brand`/`border-brand-weak` — 5가지 다른 그린 금지.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\design-korean-premium.md:125:      상태=opacity(hover .8/disabled .5) · 그린 약간 desat+darken · OKLCH L 정합 · role 토큰
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:45:def test_role_named_transcript_leak():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:76:def test_role_override_injection_detected():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:217:    test_role_named_transcript_leak,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:222:    test_role_override_injection_detected,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:2:"""Unit tests for lib/golden_signals.py + cli/signals.py + cli/agents.py.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:28:from lib import golden_signals as G  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:29:from cli import signals as CLI       # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:31:from cli import resident as RES      # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:240:    """`cli.resident run` 은 계약 조항이 안 붙는다 — 요구하지 않은 것을
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:300:    from cli import resident as R
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:325:    from lib.resident_store import contract_ok
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_golden_signals.py:375:        print(f"{_NL}golden_signals: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_trigger.py:19:def _setup_skill_graph(state_dir: Path, nodes: list[dict]) -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_trigger.py:50:            _setup_skill_graph(Path(td), [
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_trigger.py:89:            _setup_skill_graph(Path(td), nodes)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_trigger.py:103:            _setup_skill_graph(Path(td), [
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_trigger.py:156:            _setup_skill_graph(Path(td), [
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_trigger.py:181:            _setup_skill_graph(Path(td), [])  # empty graph
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_import_hygiene.py:15:    import cli.strike_research_consume        # lib/ 를 path 에 올린다
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_import_hygiene.py:161:        import cli.strike_research_consume
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_harness_health.py:350:             "agent": "harness-critic", "role": "critic"},
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:54:            from lib import golden_signals as G
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:87:            from lib import golden_signals as G
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:102:            from lib import golden_signals as G
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:116:            from lib import golden_signals as G
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:123:    from lib import golden_signals as G
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:134:            from lib import golden_signals as G
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_import_graph.py:135:    """`cli/surgery.py` 는 `engine/inventory_scan.py` 를 **경로로** 부른다."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_import_graph.py:139:        _w(s / "cli" / "surgery.py",
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\doc-writer.md:47:   python -m cli.spec_bundle_emit --root <project> --out <project> --source-mode forward --domains a,b,c
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\investigation-discipline.md:72:         정본은 `role_supervisor.request_path()` = `state/<role>/spawn_request.jsonl`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\investigation-discipline.md:86:    좋음   from cron import role_supervisor as rs; rs.request_path(role)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\learner.md:31:## 추출 타이밍 (sensor signals)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mock_review_stage.py:92:def test_mock_review_is_designer_role():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mock_review_stage.py:152:    test_mock_review_is_designer_role,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\motion-interaction.md:43:- **모달**: 열 때 포커스 저장→닫을 때 복원, 내부 focus trap. `role="dialog"`+`aria-modal`+`aria-labelledby`.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\oncall-and-incident-response.md:5:intent: assign-roles classify-severity write-postmortem set-burn-rate-alerts identify-toil
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\progressive-delivery.md:46:   - **permission flag**: tenant/role 기반
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\runtime-lifecycle.md:150:Dockerfile `HEALTHCHECK`에 사용할 명령(curl, wget)이 image에 없으면 unhealthy. distroless 이미지면 별도 binary 추가하거나 application-level health.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\search-governance.md:3:description: Search as a relevance contract — query rewrite, ranking signals, freshness windows, and zero-result recovery made reviewable instead of trusting engine defaults.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\security.md:148:- 토큰 페이로드: userId + role만 포함 (민감 정보 금지)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\security.md:596:@Column(name = "resident_number")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\security.md:597:private String residentNumber;  // DB에는 암호문 저장
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:3:description: 신규 스킬 추가/수정/삭제 시 frontmatter 품질 + matcher 트리거 정확도 + R002 size 위반을 검증하는 운영 워크플로우. skill_lint_report, skill_trigger_eval, debate_doubts CLI 도구 사용 시점과 PR 검토 게이트 명시. 스킬 작성자와 리뷰어가 매번 따라야 하는 절차서.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:7:patterns: skill_lint skill_trigger_eval debate_doubts
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:23:4. **trigger eval 실행**: `python -m cli.skill_trigger_eval <skill.md> --queries <queries.json> --candidates _common`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:29:1. 변경 전 `python -m cli.skill_trigger_eval <skill.md> --queries <기존 queries.json>` baseline 측정
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:32:4. lock-in test 통과 확인 (`python -m tests.test_skill_trigger_eval`)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:43:- 분리 부적정 (cross-ref 비용 큼) → `cli/skill_lint_report.py`의 `GRANDFATHERED_PATHS` frozenset에 명시 등록 + `tests/test_skill_lint.py::test_grandfathered_paths_contains_known_outliers` 업데이트 (PR 리뷰 강제)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:46:- `python -m cli.skill_lint_report --lint --json` 실행 → 어느 clause fired 확인
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:69:| 신규/수정 스킬 검토 | `cli.skill_trigger_eval` | trigger 정확도 측정 (recall/precision/F1) |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:70:| baseline 분석 | `cli.skill_lint_report` | 트리별 분포, R003 trigger 상태, R002 violation |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:71:| `--p1-check` 게이트 | `cli.skill_lint_report --p1-check` | exit 0 if P1 ready (per-tree dominance ≥80%) |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:72:| 의도된 long file 등록 | code PR → `cli/skill_lint_report.py::GRANDFATHERED_PATHS` | 명시적 등록 + lock-in test 갱신 |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:118:- 신규 skill PR: `python -m cli.skill_trigger_eval <new>.md --queries <queries>.json` 결과를 PR description에 첨부
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\skill-lint-workflow.md:119:- 정기 audit: `python -m cli.skill_lint_report` 출력을 매주 1회 사람 검토
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\sre-operations.md:4:keywords: sre slo sli error-budget budget-burn launch-freeze incident-command handoff role-continuity dependency-outage fallback customer-update maintenance-window rollback freeze blast-radius operator-load on-call escalation runbook postmortem
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\sre-operations.md:30:2. roles — Incident Commander, Communications Lead, Operations Lead 분리
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\sre-operations.md:33:5. handoff — 교대 시 role + 현재 가설 + 다음 행동을 명시 전달
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\ux-heuristics-research.md:7:patterns: aria role focus-visible prefers-reduced-motion label
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\ux-heuristics-research.md:60:- **First Rule of ARIA(Roselli)**: 네이티브 HTML 먼저(`<button>`/`<a href>`/`<nav>`/`<dialog>` = 키보드·포커스·role 무료). `role` 추가 = 키보드+상태관리 직접 구현 약속. **`role="menu"`를 사이트 nav에 쓰지 말 것**(데스크톱앱 시맨틱). `aria-roledescription`은 code smell.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_phase_detector.py:95:def test_phase_signals_keys_complete():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_phase_detector.py:115:    test_phase_signals_keys_complete,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_phase_tree.py:47:    # value with >= 3 commas signals nested sub-step list
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:29:`golden_signals` · `roles` 는 **함수 지역** import 로 위임한다. 그 둘의 지연
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:52:    ("lib.golden_signals", "_home"),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:54:    ("lib.roles", "_home"),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:65:    ("cli.sensor_anomaly", "_claude_home"),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:69:LOCAL_IMPORT_ONLY = ("lib/golden_signals.py", "lib/roles.py")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:164:    """`golden_signals`·`roles` 에 최상위 간선을 넣으면 문서화된 회귀가 난다
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:165:    (`lib/resident_store.py` · `cli/resident.py` 참조). 균일성보다 그게 앞선다."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:181:    for rel in ("cli/action_evolver.py", "cli/observe.py", "cli/sensor_anomaly.py"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_rejection_memory.py:155:    from lib import role_orchestrator as RO
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_rejection_memory.py:156:    src = (_SCRIPTS / "lib" / "role_orchestrator.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_rejection_memory.py:208:    from lib.roles import Finding
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_rejection_memory.py:244:    src = (_SCRIPTS / "lib" / "role_orchestrator.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_headless_argv.py:6:     하네스 자신의 헤드리스 워커(cmd_run·cmd_drain·surgery)가 이 경로를 쓴다.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_headless_argv.py:31:from cli import resident as R  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_headless_argv.py:176:    tests/test_resident.py 의 더블이 `lambda prompt, timeout=0, artifact=None`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_headless_argv.py:177:    으로 그 집합을 핀한다. cmd_run·cmd_drain·surgery 가 cwd·env_overrides·
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_headless_argv.py:184:    for rel in ("cli/resident.py", "cli/surgery.py"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:2:"""Tests for lib/resident_store.py 의 **페이로드 접기**.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:4:실측 2026-08-30: `state/resident/ledger.jsonl` 이 10행 95,315B — 행 평균 9.5KB
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:7:(`lib.breaker` · `lib.golden_signals` · `cli.decisions` · `cron.run_role_cycle`).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:42:            "topic": "role-orchestrator", "ok": ok, "seconds": 10.0 + i,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:50:    from lib import resident_store as R
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:52:    from lib import golden_signals as G
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:75:            "latency": sig(G.latency()), "role": tuple(B.role_state())}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:250:    src = (_SCRIPTS / "cli" / "resident.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:369:    """원장을 읽는 소비자가 넷이다(breaker · golden_signals · dashboard ·
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:437:    for rel in ("lib/golden_signals.py", "lib/breaker.py", "cron/run_role_cycle.py"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:453:            from cli import resident as CR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:476:            from cli import resident as CR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:488:            assert un[0].source == "resident"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:530:        print(f"{_NL}resident_compaction: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident.py:2:"""Unit tests for cli/resident.py — 세션 밖 워커.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident.py:26:from cli import resident as R  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident.py:147:    실측: cli.role 의 판단이 731초를 돌고 계약 JSON 을 마지막에 냈는데
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident.py:168:    p = subprocess.run([sys.executable, "-m", "cli.resident", "drain"],
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident.py:288:        print(f"\nresident: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_reverse_engineer.py:2:"""Tests for cli/reverse_engineer._select_extractors — doc_classifier isolation (P2 D2 ⓒ)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_reverse_engineer.py:12:from cli.reverse_engineer import _select_extractors  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_router_eval.py:2:"""Tests for lib/router_eval.py + cli/router_eval.py — 라우터 평가 게이트.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_router_eval.py:26:from lib import router_eval as RE  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_router_eval.py:27:from cli import router_eval as CLI  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_router_eval.py:127:    assert bp.is_file(), f"기준선이 없다: {bp} — `python -m cli.router_eval --record-baseline`"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_router_eval.py:204:        print(f"{_NL}router_eval: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:2:"""Unit tests for lib/roles.py + lib/role_*.py + cli/role.py — 상주 역할(팀장).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:24:from lib import roles as R                    # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:25:from lib import role_refactor, role_security, role_dba, role_orchestrator  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:27:from cli import role as CLI                   # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:44:    `role_refactor` 는 **1위가 될 수 있는 스킬만** 본다(프로덕션 수집기 +
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:54:def test_every_role_is_well_formed() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:56:    for slug, role in R.ROLES.items():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:57:        assert role.slug == slug, (slug, role.slug)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:58:        assert role.title and role.charter, slug
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:59:        assert callable(role.survey) and callable(role.prompt), slug
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:60:        assert role.blind, f"{slug}: 못 보는 것을 안 적었다 — 목록이 '전부'로 읽힌다"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:63:def test_expected_roles_are_registered() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:67:def test_unknown_role_is_fail_closed() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:69:    assert CLI.main(["survey", "--role", "없는역할"]) == CLI.EXIT_FAILCLOSED
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:74:    for slug, role in R.ROLES.items():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:75:        p = role.prompt(f)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:100:        assert role_refactor.survey(home) == [], "바이트로 쟀다"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:106:        assert role_refactor.survey(home) == []
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:116:        got = role_refactor.survey(home)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:129:    live = role_refactor.survey(R._home())
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:162:        for f in role_security.survey(home):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:174:        kinds = [(f.kind, f.detail) for f in role_security.survey(home)]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:183:        kinds = [f.kind for f in role_security.survey(home)]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:193:        got = {f.kind: f for f in role_dba.survey(home)}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:202:        assert role_dba.survey(home) == []
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:207:        assert role_dba.survey(Path(td)) == []
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:216:    orig = role_orchestrator._stalled
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:217:    role_orchestrator._stalled = boom          # type: ignore[assignment]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:220:            kinds = [f.kind for f in role_orchestrator.survey(Path(td))]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:222:        role_orchestrator._stalled = orig      # type: ignore[assignment]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:228:    p = role_orchestrator.prompt(findings)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:235:    test_every_role_is_well_formed,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:236:    test_expected_roles_are_registered,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:237:    test_unknown_role_is_fail_closed,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_roles.py:267:        print(f"{_NL}roles: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:475:    """실측 2026-08-30, 토큰을 켠 첫 패스: `surgery_cycle_check/run` 이
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seam_gate.py:2:"""Regression for cli.seam_gate — the deployable CI contract-breaking gate.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seam_gate.py:6:Self-running: `python tests/test_seam_gate.py` -> exit 0/1.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seam_gate.py:20:import cli.seam_gate as sg  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seam_gate.py:21:from cli.seam_gate import evaluate, _render_summary  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:262:def test_seam_scan_merges_all_stacks_per_repo():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:265:    from cli.seam_scan import _extract_repo
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:340:def test_seam_scan_drift_blocked_undeclared_and_ledger():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:341:    from cli.seam_scan import scan, write_ledger, COVERAGE_BANNER
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:464:        _SCRIPTS / "cli" / "seam_scan.py", _SCRIPTS / "validators" / "seam_parity_drift.py"]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:472:def test_seam_scan_out_of_scope_dict_element_round_trips():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:477:    from cli.seam_scan import scan
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:486:def test_seam_scan_2run_byte_identical():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:489:    from cli.seam_scan import scan
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:517:        test_seam_scan_merges_all_stacks_per_repo,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:524:        test_seam_scan_drift_blocked_undeclared_and_ledger,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:530:        test_seam_scan_out_of_scope_dict_element_round_trips,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_seams.py:531:        test_seam_scan_2run_byte_identical,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:2:"""Tests for cli/selfmod.py 의 **깨끗한 트리 게이트**.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:24:from cli import selfmod as SM  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:55:    for src in ("scripts/lib/skill_surgery.py", "skills/_common/x.md",
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:56:                "settings.json", "CLAUDE.md", "state/surgery/log.jsonl"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:90:def test_surgery_target_cleanliness_is_unaffected() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:96:    from cli import surgery as SG
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:97:    src = (_SCRIPTS / "cli" / "surgery.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:110:    test_surgery_target_cleanliness_is_unaffected,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_selfmod_clean_gate.py:124:        print(f"{_NL}selfmod_clean_gate: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_sensor_anomaly_selfcheck.py:2:"""Wire cli/sensor_anomaly.py::_self_check() into the run_units regression.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_sensor_anomaly_selfcheck.py:4:sensor_anomaly ships an inline _self_check() reachable only via its __main__
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_sensor_anomaly_selfcheck.py:19:    from cli import sensor_anomaly as _m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_graph.py:2:"""Unit tests for cli/skill_graph.py."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_graph.py:14:from cli import skill_graph as sg  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_match_render.py:42:    """Multiple signals in one rule should produce only one hint per rule."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:191:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:208:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:240:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:260:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:266:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:282:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:305:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:314:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:327:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:350:    from cli import skill_lint_report as SLR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:371:        from lib import skill_lint_report as SLR  # init imports from lib (layer fix 2026-06-21)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_lint.py:385:    from lib import skill_lint_report as SLR  # init imports from lib (layer fix 2026-06-21)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_score.py:110:    from lib import router_eval as RE
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_telemetry_audit.py:2:"""Tests for cli.skill_telemetry_audit — M7 skill-match weight/FP audit.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_telemetry_audit.py:16:import cli.skill_telemetry_audit as audit_cli  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_surgery.py:2:"""Tests for lib/skill_surgery.py — 스킬 수술의 자동 생성 카나리아.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_surgery.py:23:from lib import skill_surgery as S  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_surgery.py:206:def test_tight_is_not_a_surgery_candidate() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_surgery.py:227:    src = (_SCRIPTS / "lib" / "skill_surgery.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_surgery.py:241:    그건 `candidates()` 에서 파생되고 test_surgery 가 본다. 여기서 잠그는
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_surgery.py:286:    test_tight_is_not_a_surgery_candidate,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_surgery.py:304:        print(f"{_NL}skill_surgery: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_token_budget.py:232:    from lib import skill_surgery as S
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_trigger_eval.py:2:"""Tests for cli/skill_trigger_eval.py — trigger accuracy CLI.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_trigger_eval.py:13:    cd ~/.claude/scripts && python -m tests.test_skill_trigger_eval
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_trigger_eval.py:26:from cli import skill_trigger_eval as STE  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_bundle_emit.py:2:"""Tests for cli/spec_bundle_emit.py — deterministic Spec Bundle scaffold (D-INT)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_bundle_emit.py:35:    from cli.spec_bundle_emit import detect_domains
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_bundle_emit.py:42:    from cli.spec_bundle_emit import emit
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_bundle_emit.py:68:    from cli.spec_bundle_emit import emit
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_bundle_emit.py:78:    from cli.spec_bundle_emit import emit
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_bundle_emit.py:93:    from cli.spec_bundle_emit import emit
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_bundle_emit.py:114:    from cli.spec_bundle_emit import emit
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_spec_facets.py:17:  role TEXT NOT NULL
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_state_leak_check.py:2:"""Unit tests for cli/state_leak_check.py — 스위트의 실 상태 오염 측정기.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_state_leak_check.py:22:from cli import state_leak_check as SLC  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_state_leak_check.py:111:        print(f"\nstate_leak_check: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_state_root_env.py:11:  - `cli/state_leak_check.py:21,157`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_strike_research_consume.py:2:"""Tests for cli.strike_research_consume + the M18 skill_candidate_detector clobber-guard.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_strike_research_consume.py:22:import cli.strike_research_consume as cli  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_stub_faker_lint.py:2:"""Tests for the stub-faker floor: lib.stub_faker_lint + cli.stub_faker_gate (debate-1782892965).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_stub_faker_lint.py:31:from cli.stub_faker_gate import run as gate_run  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_subagent_invocation_log.py:69:            generation=2, role="critic", extra={"caller": "autopilot-phase-0"},
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_subagent_invocation_log.py:73:        assert rec["role"] == "critic"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_subagent_isolation_contract.py:9:new role acquiring tools beyond its purpose, a worker-loop comment being
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:2:"""Tests for cli/surgery.py — 자율 수술의 **안전 조건**.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:4:판정식 자체는 `test_skill_surgery.py` 가 본다. 여기서 잠그는 것은 **시작하지
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:8:  1. 본선에서 돌지 않는다 — `selfmod/*` 브랜치 전용.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:25:from cli import surgery as SG  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:32:def test_refuses_outside_a_selfmod_branch() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:41:def test_branch_prefix_is_the_selfmod_one() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:42:    assert SG.BRANCH_PREFIX == "selfmod/"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:51:    SG.current_branch = lambda: "selfmod/probe"      # type: ignore[assignment]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:54:    from cli import resident
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:55:    orig_run = resident.run_headless
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:56:    resident.run_headless = lambda *a, **k: calls.append("ran") or {  # type: ignore[assignment]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:62:        resident.run_headless = orig_run           # type: ignore[assignment]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:69:    p = subprocess.run([sys.executable, "-m", "cli.surgery", "run"],
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:80:    from lib import skill_surgery as S
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:83:        # evaluate 는 동일 입력에 대해서도 건전성을 보지만, surgery 는 그 전에
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:86:    src = (_SCRIPTS / "cli" / "surgery.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:94:    from lib import role_refactor
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:96:               for p in role_refactor._matchable(_SCRIPTS.parent)}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:101:def test_every_candidate_actually_needs_surgery() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:103:    from lib import skill_surgery as S
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:121:    return (_SCRIPTS / "cli" / "surgery.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:152:    test_refuses_outside_a_selfmod_branch,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:153:    test_branch_prefix_is_the_selfmod_one,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:158:    test_every_candidate_actually_needs_surgery,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_surgery.py:173:        print(f"{_NL}surgery: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_team_policy.py:2:"""Tests for lib.team_policy + cli.team_policy_check (M28).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_team_policy.py:288:    import cli.team_policy_check as cli
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_team_policy.py:353:    import cli.team_policy_check as cli
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_thin_skill_advisor.py:63:    assert "skill_telemetry_audit" in adv      # points to the audit CLI
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_thin_skill_advisor.py:107:    from cli import skill_telemetry_audit as m7
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_timefmt.py:32:    # The shape observe.py had and action_evolver/sensor_anomaly LACKED.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:40:    survey 자체는 test_golden_signals · test_role_* 가 본다."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:46:        from lib.roles import Finding
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:51:    from lib import roles as R
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:101:def test_role_breaker_ignores_adhoc_runs() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:103:    (같은 실수를 golden_signals 에서 이미 한 번 했다.)"""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:180:    from cron import run_role_cycle as RC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:192:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:197:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:199:    orig = _B.role_state
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:200:    _B.role_state = lambda *a, **k: _B.State(True, 3, "연속 3회 실패", "")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:204:        _B.role_state = orig
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:210:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:211:    from lib import resident_store as store
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:226:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:232:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:234:    orig = _B.role_state
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:238:    _B.role_state = boom
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:242:        _B.role_state = orig
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:249:    src = (_SCRIPTS / "cron" / "run_role_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:257:    src = (_SCRIPTS / "cron" / "run_role_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:259:    for forbidden in ("cli.surgery", "selfmod", "git ", "commit"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:265:    src = (_SCRIPTS / "cron" / "run_role_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:273:    assert by["role_cycle_check"].token is None, "재기가 토큰을 요구한다"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:274:    assert by["role_cycle_run"].token == D.ENABLE_CRON_TOKEN
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:275:    assert by["role_cycle_run"].scope == D.LOCAL
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:280:def test_surgery_cycle_never_merges() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:289:    src = (_SCRIPTS / "cron" / "run_surgery_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:304:def test_surgery_cycle_stops_when_a_branch_awaits_review() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:307:    from cron import check_surgery_cycle as CS
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:308:    orig = CS.open_selfmod_branches
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:309:    CS.open_selfmod_branches = lambda: ["selfmod/auto-1"]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:313:        CS.open_selfmod_branches = orig
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:318:def test_surgery_cycle_is_token_gated() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:319:    from cron import run_surgery_cycle as RS
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:328:def test_surgery_pair_registered_with_gating() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:331:    assert by["surgery_cycle_check"].token is None
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:332:    assert by["surgery_cycle_run"].token == D.ENABLE_CRON_TOKEN
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:333:    assert by["surgery_cycle_run"].scope == D.LOCAL
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:376:    """실측 2026-08-30: 알림 경로가 run_role_cycle·run_surgery_cycle 둘에만
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:444:    test_surgery_cycle_never_merges,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:445:    test_surgery_cycle_stops_when_a_branch_awaits_review,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:446:    test_surgery_cycle_is_token_gated,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:447:    test_surgery_pair_registered_with_gating,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:458:    test_role_breaker_ignores_adhoc_runs,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:49:        from lib.roles import Finding
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:62:        for name in ("lib.resident_store", "lib.breaker", "lib.alert",
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:63:                     "cron.check_role_cycle", "cron.run_role_cycle"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:65:        from lib import breaker, alert, resident_store
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:66:        from cron import check_role_cycle, run_role_cycle
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:67:        self.B, self.A, self.RS = breaker, alert, resident_store
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:68:        self.CC, self.RC = check_role_cycle, run_role_cycle
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:90:        from lib import roles as R
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:103:        assert not r.B.role_state().open
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:106:            assert not r.B.role_state().open, f"{i + 1}회에서 일찍 열렸다"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:108:        st = r.B.role_state()
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:130:        from lib import roles as R

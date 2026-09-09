@@ -1,0 +1,460 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/cli/agentsmd_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "041fd83ff0266274671271608c4dd871fd796816",
+    "bytes": 12223,
+    "pinned_sha256": "bb97f0e1c71ff201cc82557b77e27998dd792f3955951c2ef76b87bc19a22e25",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        235
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#agentsmd_cmdpy",
+    "supporting_refs": [
+      "tests/integration/test_small_batch_smoke.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/roster_cmd.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "전체 카드·ownership 정의·_RENDERED 매핑, 무시 파일 변형·표 escape·YAML 경계 및 실제 model qualification 시험은 미추적.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/append_restore.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "f918e37ba1ef0deb4d233cb4826057b4762c6e53",
+    "bytes": 1540,
+    "pinned_sha256": "57f59ef11e433008b1824ddda88fac5f8e8b77e6024679fb831ecb2b513ef9d3",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        40
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#append_restorepy",
+    "supporting_refs": [
+      "tests/integration/test_cli_wrappers_smoke.py",
+      "config/paths.yaml",
+      "scripts/lib/ledger.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_cli_wrappers_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "실제 restorer 호출·실행 영수증, known-good 권한, 실패 후 감사 재시도와 복원/기록 원자성 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/arming_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "da9104ea2a8648aaaa4712fd44f988ac33caf16e",
+    "bytes": 11637,
+    "pinned_sha256": "8bffcf1740d4a3371975e95bedbfca884469e8d89ca4280e79d490194ffa1b43",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        193
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#arming_cmdpy",
+    "supporting_refs": [
+      "scripts/cron/l2_driver.py",
+      "tests/integration/test_arming_wiring_smoke.py",
+      "config/policy/arming-rules.json",
+      "scripts/cli/spiral_cmd.py",
+      "brain/spikes/harness_board.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "arming.decide/preflight와 승인 proof 본체, 토큰/lease 동시성, 전체 처분표 후반 및 실장전 시험은 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/autoheart_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "54b05e8a985aa808332faeac36ec42188ae5a228",
+    "bytes": 82521,
+    "pinned_sha256": "70d5ac60fa8475f8a659f8c9bc11fa8e7308b7e7859d4e37f0ad37d22c0c3c81",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        1444
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#autoheart_cmdpy",
+    "supporting_refs": [
+      "scripts/cron/l2_driver.py",
+      "tests/integration/test_autoheart_smoke.py",
+      "scripts/cli/health_cmd.py",
+      "scripts/cli/sandbox_cmd.py",
+      "scripts/cli/suite_cmd.py",
+      "scripts/lib/params.py",
+      "scripts/engine/sandbox.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "후보를 참조 runner로 검증하는 전체 폐회로, 시험 의미·분모 봉인, current/anchor/candidate hash 원자성, 권한·lease·승격/감사 실패 처리, 전체 extractor canary 구현·실행, OS 격리·총시간·메모리·자손 프로세스 제한은 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/boundary_corpus_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "faa537769f6bca2d42a3cf2856c397794b5eeca1",
+    "bytes": 12738,
+    "pinned_sha256": "136c584bd2db7c0623fded861b09fe44240d67ded08c02af63e823e8a266916f",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        269
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#boundary_corpus_cmdpy",
+    "supporting_refs": [
+      "tests/contract/test_boundary_corpus_smoke.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_boundary_corpus_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "원문 tool/cwd/provenance 보존, baseline 조건 해시·공통 분모 0·ERR 처리, Windows/PowerShell 실제 경계와 handler 전체 dependency 검토는 미완료. 차단 probe 재시도 금지 유지.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/capture_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "951a9a2c70d317b58f13af6269ce8a04cd1c16e3",
+    "bytes": 8465,
+    "pinned_sha256": "ac3936df0ae07c90a0a0e225051e81dba92f03f23897017c59d0bdd80ae75600",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        158
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#capture_cmdpy",
+    "supporting_refs": [
+      "scripts/lib/backlog.py",
+      "tests/integration/test_capture_smoke.py",
+      "scripts/cli/spiral_cmd.py",
+      "scripts/lib/ledger.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_capture_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "충돌·장문·다중 프로젝트·동시 중복, unknown state·철회 fold 및 캡처가 인수/승인으로 승격되는 전체 경로 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/classify_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "0c37611733394203e6d644336a43c43ac85552d3",
+    "bytes": 6384,
+    "pinned_sha256": "b71885cef03e8da95b1e88db8709f26fad3b97f11bf38e6beca300f747efe44c",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        138
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#classify_cmdpy",
+    "supporting_refs": [
+      "tests/contract/test_suite_runner_smoke.py",
+      "scripts/lib/test_outcome.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_suite_runner_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "완전 argv 보존·사전 인수 검증·필수 rc·출력 provenance·서명 오탐/미탐·OS별 timeout과 실제 외부 runner 연계는 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/completion_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "cfefa86368733a6522e62c52031f96125a914073",
+    "bytes": 4447,
+    "pinned_sha256": "27615a64724e24fc84f69fc05de582093879487116cd004e3d221d52e54336e9",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        112
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#completion_cmdpy",
+    "supporting_refs": [
+      "scripts/lib/completion_line.py",
+      "tests/integration/test_polish_smoke.py",
+      "config/paths.yaml",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_polish_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "완료선별 실제 gate/receipt 연결, 내용·버전·인수 유효성, path confinement/비정상 YAML 및 전체 설정은 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/coverage_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "e5039ca5ac15cc632a76359c5c5a747d34db40f0",
+    "bytes": 8921,
+    "pinned_sha256": "45d8b44b699f57a8bb18415637ad6e374c774c3ac97c288f0598d381fb341218",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        207
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#coverage_cmdpy",
+    "supporting_refs": [
+      "tests/contract/test_coverage_bootstrap.py",
+      "scripts/cli/suite_cmd.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_coverage_bootstrap.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "누락 shard/파일 분모, 실제 시험 결과 결속·JSON 계약·병렬 상태/coverage 버전 의존·네트워크/자원 제한 및 Win/Linux/WSL 실행은 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/cycle_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "0bedd50eb9d06eba8e32dd0ddda0069c9da1a7bc",
+    "bytes": 5744,
+    "pinned_sha256": "946726a2da0408b8cfe3de566407a9f17871f347006990ef8ea333f56c1b0e3e",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        118
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#cycle_cmdpy",
+    "supporting_refs": [
+      "scripts/lib/derive_state.py",
+      "tests/integration/test_spiral_smoke.py",
+      "scripts/lib/ledger.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_spiral_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "circuit 전체 구현·실제 plan caller·중복/동시성·부분 실패·오타와 무의미 수렴·입력쌍 검증 및 실행 증거 미완료.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/debate_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "9203f587e355d40560cf2e0b549ede976610a4e0",
+    "bytes": 4480,
+    "pinned_sha256": "b4f33ad674c391f5e710f95aa94030959fdcae0952db631505f00ecd32aad6be",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        121
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#debate_cmdpy",
+    "supporting_refs": [
+      "scripts/engine/debate.py",
+      "tests/integration/test_debate_smoke.py",
+      "scripts/lib/ledger.py",
+      ".claude/commands/debate.md"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_debate_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "rules.evaluate_convergence 전체·독립 실행 proof·세대/후보 hash·동시 종결·카드/원장 원자성·외부 코드 인코딩 및 CLI exit end-to-end 시험 미완료.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/delegate_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "e24ee9c4fc4338934a683a0b97011c357b16445e",
+    "bytes": 6912,
+    "pinned_sha256": "8c4637c68839a47ec04f7f456ce3c4afc01ba4996366e05ae369e96ea3bf3ca9",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        166
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#delegate_cmdpy",
+    "supporting_refs": [
+      "tests/integration/test_polish_smoke.py",
+      ".claude/settings.json"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_polish_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "정확한 위임분 식별·CAS 및 rollback·부분 쓰기·인증·공백 경로 shell parsing·Windows/WSL 네이티브 실행·전체 settings/dispatch 의미는 미검증.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/endpoint_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "1e5357294cd8281fc32c195f2c6cb2948171b290",
+    "bytes": 2384,
+    "pinned_sha256": "70fed2bd1a4e784a1783b0f72e6e50b6120f16b9ca671cc2fbe522541b8d804a",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        65
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-001/review.md#endpoint_cmdpy",
+    "supporting_refs": [
+      "scripts/engine/endpoint_graph.py",
+      "tests/integration/test_endpoint_graph_smoke.py"
+    ],
+    "tests_executed": [],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_endpoint_graph_smoke.py",
+        "reason": "이번 할당은 정적 분석 전용. 전체 dependency/격리 검토 및 별도 실행 영수증 필요."
+      }
+    ],
+    "test_limits": "이번 원본·원본 테스트·생성 코드 실행 0회. Supporting 선택 구간만 읽음. 역사적 PASS와 현재 실행 증거 분리.",
+    "remaining": [
+      "graph_queries/seams 전체 구현·실제 catalog/config·자동 승급 원장·이름 충돌·source identity·통합 graph 영향 및 실행 시험 미완료.",
+      "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+    ],
+    "adoption_approved": false
+  }
+]

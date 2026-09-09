@@ -1,0 +1,107 @@
+{
+  "primary_body_reviewed": 13,
+  "primary_body_pending": [],
+  "status": "body_reviewed_call_test_trace_pending",
+  "tests_executed": [],
+  "paths": [
+    {
+      "path": "scripts/cli/agentsmd_cmd.py",
+      "remaining": [
+        "전체 카드·ownership 정의·_RENDERED 매핑, 무시 파일 변형·표 escape·YAML 경계 및 실제 model qualification 시험은 미추적.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/append_restore.py",
+      "remaining": [
+        "실제 restorer 호출·실행 영수증, known-good 권한, 실패 후 감사 재시도와 복원/기록 원자성 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/arming_cmd.py",
+      "remaining": [
+        "arming.decide/preflight와 승인 proof 본체, 토큰/lease 동시성, 전체 처분표 후반 및 실장전 시험은 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/autoheart_cmd.py",
+      "remaining": [
+        "후보를 참조 runner로 검증하는 전체 폐회로, 시험 의미·분모 봉인, current/anchor/candidate hash 원자성, 권한·lease·승격/감사 실패 처리, 전체 extractor canary 구현·실행, OS 격리·총시간·메모리·자손 프로세스 제한은 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/boundary_corpus_cmd.py",
+      "remaining": [
+        "원문 tool/cwd/provenance 보존, baseline 조건 해시·공통 분모 0·ERR 처리, Windows/PowerShell 실제 경계와 handler 전체 dependency 검토는 미완료. 차단 probe 재시도 금지 유지.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/capture_cmd.py",
+      "remaining": [
+        "충돌·장문·다중 프로젝트·동시 중복, unknown state·철회 fold 및 캡처가 인수/승인으로 승격되는 전체 경로 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/classify_cmd.py",
+      "remaining": [
+        "완전 argv 보존·사전 인수 검증·필수 rc·출력 provenance·서명 오탐/미탐·OS별 timeout과 실제 외부 runner 연계는 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/completion_cmd.py",
+      "remaining": [
+        "완료선별 실제 gate/receipt 연결, 내용·버전·인수 유효성, path confinement/비정상 YAML 및 전체 설정은 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/coverage_cmd.py",
+      "remaining": [
+        "누락 shard/파일 분모, 실제 시험 결과 결속·JSON 계약·병렬 상태/coverage 버전 의존·네트워크/자원 제한 및 Win/Linux/WSL 실행은 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/cycle_cmd.py",
+      "remaining": [
+        "circuit 전체 구현·실제 plan caller·중복/동시성·부분 실패·오타와 무의미 수렴·입력쌍 검증 및 실행 증거 미완료.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/debate_cmd.py",
+      "remaining": [
+        "rules.evaluate_convergence 전체·독립 실행 proof·세대/후보 hash·동시 종결·카드/원장 원자성·외부 코드 인코딩 및 CLI exit end-to-end 시험 미완료.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/delegate_cmd.py",
+      "remaining": [
+        "정확한 위임분 식별·CAS 및 rollback·부분 쓰기·인증·공백 경로 shell parsing·Windows/WSL 네이티브 실행·전체 settings/dispatch 의미는 미검증.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    },
+    {
+      "path": "scripts/cli/endpoint_cmd.py",
+      "remaining": [
+        "graph_queries/seams 전체 구현·실제 catalog/config·자동 승급 원장·이름 충돌·source identity·통합 graph 영향 및 실행 시험 미완료.",
+        "실제 실행 영수증·독립 검토·후보/환경/정책 결속 이후에만 채택 판단 가능"
+      ]
+    }
+  ],
+  "global": [
+    "원본·원본 테스트 실행 금지 범위이므로 모든 실행 검증이 남는다.",
+    "실제 supporting 구간 밖을 전체 구현 등가 또는 완전 caller/config/test 검증으로 승격하지 않았다.",
+    "실제 guardian restorer, OS 권한/격리, 모델 자격 및 Win/Linux/WSL 이식성 검증은 남는다.",
+    "인증된 사람 경험 인수와 사용자 8단계 SDD·PG runtime SSOT로의 구현 흡수는 이 보고서의 완료 범위가 아니다."
+  ],
+  "blocked_probe_retried": false,
+  "adoption_approved": false
+}
