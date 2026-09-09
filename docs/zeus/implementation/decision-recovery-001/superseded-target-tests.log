@@ -1,0 +1,94 @@
+........................................................................ [ 24%]
+..........................F............................................. [ 49%]
+.....................s.................................................. [ 74%]
+.....................F.......................s....s....s....s....s....s. [ 99%]
+.                                                                        [100%]
+================================== FAILURES ===================================
+______ test_schema_preflight_failure_cannot_create_audit_success[review] ______
+
+audit = (<codex_harness.application.research.ResearchAudits object at 0x0000023A6505E970>, {'id': 'b089581e832c3e1f7f088f8854d...b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862')], <function audit.<locals>.git at 0x0000023A65013950>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023A64F3E270>
+operation = 'review'
+
+    @pytest.mark.parametrize('operation', ['proposal', 'review'])
+    def test_schema_preflight_failure_cannot_create_audit_success(audit, monkeypatch, operation):
+        from types import SimpleNamespace
+    
+        from codex_harness.adapters.app_server import AppServer
+        from codex_harness.adapters.audit_execution import AuditExecution
+        from codex_harness.adapters.output_schema import CAUSE
+    
+        service, record, source, _, _ = audit
+        executor = SimpleNamespace(service=SimpleNamespace(store=service.store),
+                                   artifacts=service.artifacts, workflow=service.workflow)
+        execution = AuditExecution(executor, FixtureRunner(service.artifacts))
+        server = AppServer(executable='fixture')
+        sent = []
+        monkeypatch.setattr(server, 'send', sent.append)
+    
+        cause = CAUSE
+    
+        def defective_turn(task, objective, evidence, schema):
+            del schema['properties']['version']['type']
+            return server.request('turn/start', {'outputSchema': schema})
+    
+        monkeypatch.setattr(execution, 'run_model', defective_turn)
+        if operation == 'review':
+            activate_fixture(service)
+            proposal = complete_fixture_audit(service, record, source)
+            service.propose(record['id'], proposal)
+            task = lease_review(service, 'lead:research')
+            with pytest.raises(ContractError, match=cause):
+>               execution.review(task)
+
+tests\test_research_audits.py:914: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <codex_harness.adapters.audit_execution.AuditExecution object at 0x0000023A64F35450>
+task = {'id': '61fdad32d9f335895179715b8de787b8e917d5ce6abd86efaa88a48b012f86c2', 'actor': 'lead:research', 'phase': 'audit_r...l'], 'behavior': 'behavior', ...}, 'binding': '87706ff1601474590498264d620336b0288c4a2c4a8e8f30dacf0437b442d1fa'}, ...}
+
+    def review(self, task):
+        from codex_harness.application.execution_recovery import ExecutionRecovery
+>       recovery = ExecutionRecovery(self.audits.store, self.executor.service.org, self.executor.artifacts)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'org'
+
+src\codex_harness\adapters\audit_execution.py:171: AttributeError
+__________ test_conductor_rejection_and_terminal_request_idempotence __________
+
+policy_repo = (WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-2908/test_conductor_rejection_and_t0/repo'), <codex_harness.adapters.git.GitWorkspace object at 0x0000023A64EB37A0>)
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-2908/test_conductor_rejection_and_t0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023A64E1EEB0>
+
+    def test_conductor_rejection_and_terminal_request_idempotence(policy_repo, tmp_path, monkeypatch):
+>       executor, reviews, request = setup_review(policy_repo, tmp_path)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_threshold_reviews.py:134: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_threshold_reviews.py:26: in setup_review
+    run = ThresholdProposals(store, artifacts, lambda: current_policy(git)).collect('project')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\codex_harness\application\threshold_proposals.py:19: in collect
+    policy = self.policy_provider()
+             ^^^^^^^^^^^^^^^^^^^^^^
+tests\test_threshold_reviews.py:26: in <lambda>
+    run = ThresholdProposals(store, artifacts, lambda: current_policy(git)).collect('project')
+                                                       ^^^^^^^^^^^^^^^^^^^
+src\codex_harness\adapters\threshold_policy.py:48: in current_policy
+    require(committed == loaded, 'Loaded threshold source differs from selected Git revision')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+condition = False
+reason = 'Loaded threshold source differs from selected Git revision'
+
+    def require(condition: bool, reason: str) -> None:
+        if not condition:
+>           raise ContractError(reason)
+E           codex_harness.domain.model.ContractError: Loaded threshold source differs from selected Git revision
+
+src\codex_harness\domain\model.py:40: ContractError
+=========================== short test summary info ===========================
+FAILED tests/test_research_audits.py::test_schema_preflight_failure_cannot_create_audit_success[review]
+FAILED tests/test_threshold_reviews.py::test_conductor_rejection_and_terminal_request_idempotence
+2 failed, 280 passed, 7 skipped in 141.44s (0:02:21)

@@ -53,6 +53,8 @@ class ThresholdReviews:
     def _prepare(self, tx, lease):
         require(lease.get('_bucket') == 'decisions_pending', 'Threshold decision lease required')
         current = self.workflow._owned(tx, lease)
+        from codex_harness.application.execution_recovery import ExecutionRecovery
+        ExecutionRecovery(self.store, self.org, self.artifacts).validate_decision(tx, current)
         require(current['actor'] == lease.get('actor'), 'Threshold lease actor mismatch')
         require(current['phase'] == 'threshold_review', 'Wrong threshold decision phase')
         request = tx.get('threshold_review_requests', current['input']['request_id'])

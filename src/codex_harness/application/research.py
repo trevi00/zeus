@@ -294,6 +294,8 @@ class ResearchAudits:
         review = parse_record({'version': 1, 'kind': 'IndependentReview', 'record': asdict(review)})
         with self.store.transaction() as tx:
             current = self.workflow._owned(tx, task)
+            from codex_harness.application.execution_recovery import ExecutionRecovery
+            ExecutionRecovery(self.store, self.workflow.org, self.artifacts).validate_decision(tx, current)
             require(current.get('phase') == 'audit_review' and current['actor'] == review.actor,
                     'Unauthorized audit reviewer')
             data = current['input']

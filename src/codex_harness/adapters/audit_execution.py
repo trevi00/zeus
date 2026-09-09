@@ -167,6 +167,8 @@ class AuditExecution:
         return self.audits.checkpoint(task, checkpoint, paths, systems)
 
     def review(self, task):
+        from codex_harness.application.execution_recovery import ExecutionRecovery
+        recovery = ExecutionRecovery(self.audits.store, self.audits.workflow.org, self.audits.artifacts)
         data = task['input']
         # Successful command inspection is mandatory even if the model's verdict is positive.
         receipt = self.audits.execute(task, data['audit_id'], ['source-list'])
@@ -186,6 +188,7 @@ class AuditExecution:
             if result.get('inspection_blocked'):
                 with self.audits.store.transaction() as tx:
                     current = self.executor.workflow._owned(tx, task)
+                    recovery.validate_decision(tx, current)
                     current.update(status='inspection_blocked', result=result, completed_at=utcnow())
                     tx.put('decisions_pending', task['id'], current)
                 return current
@@ -195,6 +198,8 @@ class AuditExecution:
             self.audits.review(task, review)
         with self.audits.store.transaction() as tx:
             current = self.executor.workflow._owned(tx, task)
+            if blocked:
+                recovery.validate_decision(tx, current)
             current.update(status='inspection_blocked' if blocked else 'succeeded',
                            result=result, completed_at=utcnow())
             tx.put('decisions_pending', task['id'], current)

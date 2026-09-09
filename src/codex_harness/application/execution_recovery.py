@@ -41,7 +41,8 @@ class ExecutionRecovery:
                     and budget is None and row['attempt'] > 0, 'Not an unverified legacy retry')
         elif operation == 'repair':
             require(row['status'] == 'blocked' and row.get('error') in
-                    {'InvalidRetryBudget', 'InvalidExecutionDeadline'}, 'Only corrupt execution controls can be repaired')
+                    {'InvalidRetryBudget', 'InvalidExecutionDeadline', 'RecoveryContextChanged'},
+                    'Only corrupt controls or changed recovery context can be repaired')
         else:
             require(operation == 'resume', 'Invalid recovery operation')
             if row['status'] == 'expired' and budget is None:
@@ -58,13 +59,15 @@ class ExecutionRecovery:
             return self._related_checked(tx, bucket, row)
         except ContractError:
             raise
-        except (OSError, ValueError, KeyError, TypeError) as exc:
+        except (OSError, ValueError, KeyError, TypeError, AttributeError, IndexError, RecursionError) as exc:
             raise ContractError('Related recovery evidence unavailable or malformed') from exc
 
     def _related_checked(self, tx, bucket, row):
         if bucket != 'decisions_pending':
             return None
-        require(row.get('phase') == 'threshold_review', 'No recovery coupling handler for this decision phase')
+        if row.get('phase') != 'threshold_review':
+            from codex_harness.application.decision_recovery import context
+            return context(tx, row, self.org, self.artifacts)
         request = tx.get('threshold_review_requests', row['input']['request_id'])
         expected = {'lead:improvement': 'awaiting_lead', 'conductor': 'awaiting_conductor'}.get(row['actor'])
         require(request is not None and expected
@@ -77,6 +80,30 @@ class ExecutionRecovery:
         record = ThresholdReviews(Workflow(self.store, self.org), self.artifacts)._row(tx, request['row_id'])
         require(digest(record) == request['binding'], 'Threshold recovery input changed')
         return {'request': request, 'record': record, 'run': tx.get('threshold_proposal_runs', record['run_id'])}
+
+    def validate_decision(self, tx, row):
+        """Recheck the recovered dependencies before spending an attempt or committing effects."""
+        reference = row.get('recovery_receipt')
+        budget = row.get('retry_budget')
+        if not reference:
+            require(not row.get('recovery_sequence') and not (isinstance(budget, dict) and budget.get('recovery_ref')),
+                    'Decision recovery receipt missing')
+            return
+        require(isinstance(reference, str), 'Invalid decision recovery receipt reference')
+        receipt = tx.get('execution_recoveries', reference)
+        packet = receipt.get('packet') if isinstance(receipt, dict) else None
+        require(isinstance(packet, dict) and packet.get('bucket') == 'decisions_pending'
+                and packet.get('task_id') == row['id'] and receipt.get('id') == reference == digest(packet),
+                'Decision recovery receipt missing or mismatched')
+        previous = receipt.get('previous')
+        require(isinstance(previous, dict) and type(previous.get('generation')) is int
+                and type(previous.get('recovery_sequence', 0)) is int
+                and isinstance(budget, dict) and budget.get('recovery_ref') == reference
+                and row.get('recovery_sequence') == previous.get('recovery_sequence', 0) + 1
+                and type(row.get('generation')) is int and row['generation'] > previous['generation'],
+                'Decision recovery generation changed')
+        require(digest(self._related(tx, 'decisions_pending', row)) == receipt.get('result_related_hash'),
+                'Recovered decision dependencies changed')
 
     def _evidence(self, refs):
         require(isinstance(refs, list) and 0 < len(refs) <= 8
@@ -155,9 +182,10 @@ class ExecutionRecovery:
             receipt = tx.get('execution_recoveries', identity)
             if receipt:
                 current = self._row(tx, packet['bucket'], packet['task_id'])
+                require(receipt['packet'] == packet and digest(current) == receipt['result_hash'],
+                        'Stale recovery retry after execution changed')
                 related = self._related(tx, packet['bucket'], current)
-                require(receipt['packet'] == packet and digest(current) == receipt['result_hash']
-                        and digest(related) == receipt['result_related_hash'],
+                require(digest(related) == receipt['result_related_hash'],
                         'Stale recovery retry after execution changed')
                 return {'replayed': True, 'receipt_id': identity, 'execution': current}
         # Validate content and artifact integrity before acquiring the mutation transaction.
@@ -170,9 +198,9 @@ class ExecutionRecovery:
             row = self._row(tx, packet['bucket'], packet['task_id'])
             receipt = tx.get('execution_recoveries', identity)
             if receipt:
+                require(receipt['packet'] == packet and digest(row) == receipt['result_hash'], 'Stale recovery retry')
                 related = self._related(tx, packet['bucket'], row)
-                require(receipt['packet'] == packet and digest(row) == receipt['result_hash']
-                        and digest(related) == receipt['result_related_hash'], 'Stale recovery retry')
+                require(digest(related) == receipt['result_related_hash'], 'Stale recovery retry')
                 return {'replayed': True, 'receipt_id': identity, 'execution': row}
             now = aware_time()
             require(issued <= now < expires, 'Recovery packet expired or not yet valid')
@@ -197,7 +225,7 @@ class ExecutionRecovery:
             row.pop('owner', None)
             row.pop('completed_at', None)
             restored = deepcopy(related)
-            if related is not None and related['request']['status'] == 'failed':
+            if row.get('phase') == 'threshold_review' and related is not None and related['request']['status'] == 'failed':
                 restored['request'] = {**related['request'], 'status': {'lead:improvement': 'awaiting_lead',
                             'conductor': 'awaiting_conductor'}[row['actor']], 'recovery_receipt': identity}
                 for name in ('failure', 'failed_decision', 'completed_at'):

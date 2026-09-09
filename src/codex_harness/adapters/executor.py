@@ -468,6 +468,13 @@ class Executor:
                     continue
                 if row["status"] == "running" and datetime.fromisoformat(row["lease_until"]) > now:
                     continue
+                from codex_harness.application.execution_recovery import ExecutionRecovery
+                try:
+                    ExecutionRecovery(self.service.store, self.service.org, self.artifacts).validate_decision(tx, row)
+                except ContractError:
+                    from codex_harness.application.execution_budget import block_execution
+                    block_execution(tx, row, 'decisions_pending', 'RecoveryContextChanged', now)
+                    continue
                 try:
                     ticket_binding(tx, row["input"])
                 except TicketSuperseded as exc:
@@ -544,16 +551,18 @@ class Executor:
                 # INV-RELEASE-001: blockage cannot create reviews or downstream effects.
                 result = {**result, "accepted": False}
                 with self.service.store.transaction() as tx:
-                    self.workflow._owned(tx, lease)
-                    current = tx.get("decisions_pending", decision["id"])
+                    current = self.workflow._owned(tx, lease)
+                    ExecutionRecovery(self.service.store, self.service.org, self.artifacts).validate_decision(tx, current)
+                    self._recovered_effect(current, agent, phase, data)
                     current.update(status="inspection_blocked", result=result, completed_at=utcnow())
                     tx.put("decisions_pending", decision["id"], current)
                 return current
             if result.get("blocked"):
                 require(not result["accepted"], "Blocked review cannot approve")
                 with self.service.store.transaction() as tx:
-                    self.workflow._owned(tx, lease)
-                    current = tx.get("decisions_pending", decision["id"])
+                    current = self.workflow._owned(tx, lease)
+                    ExecutionRecovery(self.service.store, self.service.org, self.artifacts).validate_decision(tx, current)
+                    self._recovered_effect(current, agent, phase, data)
                     current.update(status="blocked", result=result, completed_at=utcnow())
                     tx.put("decisions_pending", decision["id"], current)
                 return current
@@ -564,11 +573,21 @@ class Executor:
             except ContractError as failure:
                 return self._lost_execution({**decision, "_bucket": "decisions_pending"}, failure)
 
+    @staticmethod
+    def _recovered_effect(current, agent, phase, data):
+        if current.get('recovery_receipt'):
+            effect_input = {k: v for k, v in data.items() if k != 'independent_diff'}
+            require(current['actor'] == agent and current['phase'] == phase
+                    and effect_input == current['input'], 'Recovered decision effect input changed')
+
     def _commit_decision(self, decision, agent, phase, data, result, lease):
         # INV-SESSION-001 / INV-RELEASE-001: all effects commit under the same
         # current lease. A failure cannot leave a review, hook or deploy request behind.
         with self.service.store.transaction() as tx:
             current = self.workflow._owned(tx, lease)
+            from codex_harness.application.execution_recovery import ExecutionRecovery
+            ExecutionRecovery(self.service.store, self.service.org, self.artifacts).validate_decision(tx, current)
+            self._recovered_effect(current, agent, phase, data)
             try:
                 ticket_binding(tx, data)
             except TicketSuperseded as exc:
@@ -596,10 +615,8 @@ class Executor:
                                                    {"proposal": data, "approval": result})
                 next_message["where"]["revision"] = result["basis_revision"]
             elif phase == "review_lead":
-                policy = {"checks": ["tests", "cli_start", "cli_file_task"],
-                          "revision": data["candidate"]["base"]}
-                if data["candidate"].get("hook_id"):
-                    policy["checks"] += ["hook_reproduction", "hook_normal_case"]
+                from codex_harness.application.decision_recovery import release_review_policy
+                policy = release_review_policy(data['candidate'])
                 release = self.releases.propose(data["candidate"], policy, transaction=tx)
                 self.releases.review(release["id"], agent, data["candidate"]["revision"],
                                      result["accepted"], result["execution_ref"], transaction=tx)

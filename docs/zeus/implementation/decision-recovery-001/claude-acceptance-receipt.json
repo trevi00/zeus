@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Final delta review: execution_recovery.py repair now accepts RecoveryContextChanged but still invokes native context (queued/reviewed/terminal cannot resurrect); two tests show eligible context drift can explicitly regrant and queued release cannot. Executor blocked branches now mutate the validated row and call shared _recovered_effect as normal commit does; redundant replay conditions removed. Root retains reworks/rejected_trees in context because native negative-result branching depends on them; only annotations ignored. Read current files and tests for actual remaining blocker; no writes/execute/new issues, <=200 words."
+  ],
+  "returncode": 0,
+  "duration_seconds": 163.1130015850067,
+  "stdout_sha256": "81854204ad3993a317736f2e2fd8d6cd4a1178e96a6ddcb8aa2e1fedfc15f63a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "095f1d8f-3f84-4b4b-b4f4-8d603b45f136",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 26,
+    "cache_creation_input_tokens": 53429,
+    "cache_read_input_tokens": 445892,
+    "output_tokens": 10801,
+    "output_tokens_details": {
+      "thinking_tokens": 8407
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 53429,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 543,
+        "cache_read_input_tokens": 55923,
+        "cache_creation_input_tokens": 2341,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2341
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 1.028487,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1021,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001096,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 26,
+      "outputTokens": 10801,
+      "cacheReadInputTokens": 445892,
+      "cacheCreationInputTokens": 53429,
+      "webSearchRequests": 0,
+      "costUSD": 1.027391,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 8407,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

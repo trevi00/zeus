@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Independently review pending decision recovery implementation: application/decision_recovery.py, execution_recovery.py validate_decision/_related/restore, executor.py claim and _commit_decision guards/shared release_review_policy, research.py.review and threshold_reviews.py._prepare guards, tests/test_decision_recovery.py. Root implemented historical diagnosis binding without whole source status; review_lead/conductor report+source+release+hook+loop binding; audit native binding and prior review/approval checks; research_lead/proposal retain require_dispatch deferral. Recovery receipt result_related_hash rechecked at claim before budget spend and native commit boundaries (not _owned globally, to avoid rejecting own writes). New tests label verdicts as fixtures, memory+realPG runs separate. Identify concrete bugs including too-permissive or overrestrictive guards, existing threshold recovery compatibility, source identity, interleaved native side effects, malformed receipt handling. No execution/writes/issues. <=650 words."
+  ],
+  "returncode": 0,
+  "duration_seconds": 181.9050943851471,
+  "stdout_sha256": "acb158450f3321df33fd779fa37d2e21a4a77821f1f238c7311bff00431e79cd",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "0943ee2e-608a-4fa3-972a-6c3e110303bb",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 16,
+    "cache_creation_input_tokens": 37130,
+    "cache_read_input_tokens": 172503,
+    "output_tokens": 12609,
+    "output_tokens_details": {
+      "thinking_tokens": 9348
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 37130,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 3454,
+        "cache_read_input_tokens": 39754,
+        "cache_creation_input_tokens": 2211,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2211
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.7740275000000001,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1111,
+      "outputTokens": 12,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001171,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 16,
+      "outputTokens": 12609,
+      "cacheReadInputTokens": 172503,
+      "cacheCreationInputTokens": 37130,
+      "webSearchRequests": 0,
+      "costUSD": 0.7728565000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 9348,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

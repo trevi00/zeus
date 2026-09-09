@@ -1,0 +1,69 @@
+........................................................................ [  6%]
+....ssssssssssss..ss....ssss.s.s..ss.s.s.s.s.s.ss....s.s......ssssss.... [ 13%]
+....ssssssss.s.s.s.s.ss.s...sss.s..ss....ssss........................... [ 20%]
+.....s.s.s.s.s..ss.s.s.s.s.s.s.s.s.s.s.s.s.s..ss.s.s.sssssssssssssssssss [ 27%]
+sssssss................................................................. [ 34%]
+....................................ssssss.s.s.s.s.s.s.s................ [ 41%]
+...........................................................s............ [ 48%]
+...............................s.s.s....s..s............................ [ 55%]
+..........................................F....s.s.s.........sssssssss.. [ 62%]
+...sssss.s.ss.s.s.s....ssss..ss.s....................................... [ 68%]
+ssssss.............................s..............................s.s.s. [ 75%]
+s.s......................................................s........ssssss [ 82%]
+ss.....sssss.s.s.s.s.s.s..ss.......sssssss.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s [ 89%]
+.s.s.s.s.s.s.s.........................s...............s................ [ 96%]
+s....s....s....s....s....s...........                                    [100%]
+================================== FAILURES ===================================
+______ test_schema_preflight_failure_cannot_create_audit_success[review] ______
+
+audit = (<codex_harness.application.research.ResearchAudits object at 0x0000019052C9D940>, {'id': '5e07fec0b5c11ef03405d8383e1...b0ae17309b65efb24828e06256c986734fa2cbadb0e233771b10abc6344862')], <function audit.<locals>.git at 0x000001905329E090>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019052C9F930>
+operation = 'review'
+
+    @pytest.mark.parametrize('operation', ['proposal', 'review'])
+    def test_schema_preflight_failure_cannot_create_audit_success(audit, monkeypatch, operation):
+        from types import SimpleNamespace
+    
+        from codex_harness.adapters.app_server import AppServer
+        from codex_harness.adapters.audit_execution import AuditExecution
+        from codex_harness.adapters.output_schema import CAUSE
+    
+        service, record, source, _, _ = audit
+        executor = SimpleNamespace(service=SimpleNamespace(store=service.store),
+                                   artifacts=service.artifacts, workflow=service.workflow)
+        execution = AuditExecution(executor, FixtureRunner(service.artifacts))
+        server = AppServer(executable='fixture')
+        sent = []
+        monkeypatch.setattr(server, 'send', sent.append)
+    
+        cause = CAUSE
+    
+        def defective_turn(task, objective, evidence, schema):
+            del schema['properties']['version']['type']
+            return server.request('turn/start', {'outputSchema': schema})
+    
+        monkeypatch.setattr(execution, 'run_model', defective_turn)
+        if operation == 'review':
+            activate_fixture(service)
+            proposal = complete_fixture_audit(service, record, source)
+            service.propose(record['id'], proposal)
+            task = lease_review(service, 'lead:research')
+            with pytest.raises(ContractError, match=cause):
+>               execution.review(task)
+
+tests\test_research_audits.py:914: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <codex_harness.adapters.audit_execution.AuditExecution object at 0x0000019052D26E90>
+task = {'id': '453230007b7818fe032c7edfd05ef6d345ec7f098bc07ea04124b39425d151c7', 'actor': 'lead:research', 'phase': 'audit_r...l'], 'behavior': 'behavior', ...}, 'binding': 'f36641b6a3d55310bf6df0127dd1ca8086abbe86e5eca8f156a1a432ad128831'}, ...}
+
+    def review(self, task):
+        from codex_harness.application.execution_recovery import ExecutionRecovery
+>       recovery = ExecutionRecovery(self.audits.store, self.executor.service.org, self.executor.artifacts)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'org'
+
+src\codex_harness\adapters\audit_execution.py:171: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_research_audits.py::test_schema_preflight_failure_cannot_create_audit_success[review]
+1 failed, 812 passed, 232 skipped in 220.96s (0:03:40)

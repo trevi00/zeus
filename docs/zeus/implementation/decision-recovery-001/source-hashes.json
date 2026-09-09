@@ -1,0 +1,10 @@
+{
+  "src/codex_harness/application/decision_recovery.py": "8fca9dd53bfd1fdd5fd1ec11495730d1e867f06adef80ab059f2b7592da7a5a4",
+  "src/codex_harness/application/execution_recovery.py": "ec10141827c33eef30f7a2aff38df19aaa6605bce74fae317beea39bb9095de7",
+  "src/codex_harness/adapters/executor.py": "3d1dc6a066d41b750a550c3b77783da0c7c62f04cf892fe540397708937ee543",
+  "src/codex_harness/adapters/audit_execution.py": "1b908d6739e15af38a97a0951bb93c5dda43843941597d13eaf01ab8284160b9",
+  "src/codex_harness/application/research.py": "7d4ff58d3901c6a90d771754ea3181739bfbf9ad7615e9b8ef8d643445d40de7",
+  "src/codex_harness/application/threshold_reviews.py": "03b043e076c5b44ad730a0766e921587ee0a472a98cf1bfd813f8472c18fbf6c",
+  "tests/test_decision_recovery.py": "ae4159d29123982d8d380dae0accdbbffccf297bc83ee678a56c31ec3e1421f5",
+  "tests/test_execution_recovery.py": "f7e320c24cb0aa010717a28d57624d4d9b3d4393988ed44b4496f0e600154791"
+}

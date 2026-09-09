@@ -208,6 +208,7 @@ def test_decision_and_threshold_request_recovery_are_atomic_and_replay_bound(wor
     assert recovery.apply(packet)['execution']['attempt'] == 2
     assert recovery.apply(packet)['replayed'] is True
     with workflow.store.transaction() as tx:
+        recovery.validate_decision(tx, tx.get('decisions_pending', decision_id))
         row = tx.get('threshold_review_requests', request_id)
         assert row['status'] == 'awaiting_conductor' and row['reviews'] == request['reviews']
         receipt = tx.get('execution_recoveries', digest(packet))
@@ -277,7 +278,7 @@ def test_explicit_repair_preserves_corrupt_source_and_does_not_reset_attempts(wo
 
 def test_unhandled_decision_phase_is_explicitly_rejected(workflow, recovery):
     with workflow.store.transaction() as tx:
-        tx.put('decisions_pending', 'decision', {'id': 'decision', 'phase': 'review_conductor',
+        tx.put('decisions_pending', 'decision', {'id': 'decision', 'phase': 'unknown_phase',
             'actor': 'conductor', 'input': {}, 'attempt': 1, 'generation': 1, 'status': 'failed',
             'error': 'attempt budget exhausted', 'retry_budget': {'version': 1, 'max_attempts': 1}})
     ref = recovery.artifacts.put('Evidence fixture', 'test')['ref']
