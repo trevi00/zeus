@@ -1,0 +1,29 @@
+{
+  "kind": "Own artifact checks, not upstream execution",
+  "workdir": "C:/Users/rudtn/zeus",
+  "checks": [
+    {
+      "argv": [".venv/Scripts/ruff.exe", "check", "docs/full-analysis/baldrix-tests-004/record_review.py", "docs/full-analysis/baldrix-tests-004/check_artifacts.py"],
+      "tool_chunk": "d4a222", "exit_code": 0,
+      "stdout": "All checks passed!\n", "stderr": ""
+    },
+    {
+      "argv": ["python", "docs/full-analysis/baldrix-tests-004/record_review.py"],
+      "tool_chunk": "ef95bb", "exit_code": 0,
+      "stdout": "{\"primary\": 24, \"bytes\": 193142, \"fresh\": 24, \"reused\": 0, \"supporting\": 29, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\r\n", "stderr": ""
+    },
+    {
+      "argv": ["python", "docs/full-analysis/baldrix-tests-004/check_artifacts.py"],
+      "tool_chunk": "0d4c57", "exit_code": 0,
+      "stdout": "{\"primary\": 24, \"supporting\": 29, \"hashes\": 12, \"refs\": \"PASS\", \"utf8\": \"PASS\", \"python_lf\": \"PASS\", \"source_execution\": 0}\r\n", "stderr": "",
+      "limit": "Hash index regenerated unchanged checker after adding this receipt;12 was the earlier artifact count."
+    }
+  ],
+  "korean_readback_chunks": ["0105c8", "702efc"],
+  "korean_readback_result": "Actual Korean prose preserved, no question-mark substitution observed.",
+  "source_execution_count": 0,
+  "upstream_tests_executed": [],
+  "upstream_execution_acceptance": false,
+  "transitive_closure_complete": false,
+  "adoption_ready": false
+}

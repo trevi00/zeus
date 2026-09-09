@@ -1,0 +1,38 @@
+[
+  {
+    "topic": "FA-027",
+    "title": "[FA-027] 선언 그래프·실측 시나리오·필수 검사 분모 분리",
+    "problem": "예제 계약 그래프의 LIVE/JOIN은 enum 집합의 정적 일치이며 실제 메시지 전달이나 사용자 인수가 아니다. 그래프는 선언과 관측, producer/consumer 역할 및 BLOCKED 상태를 구분하지 못한다. 원본 게이트는 미등록 fail-on 이름과 검사 대상 0개를 성공으로 받아들인다.",
+    "impact": "스펙에서 도출한 VIEW나 테스트 스켈레톤을 실제 기능 성공으로 오해하면 누락된 사용자 시나리오와 실패 처리가 자기개선·모델 승계·배포 근거에 포함될 수 있다. 특히 금전 흐름은 enum 이름이나 형식 PASS만으로 인수할 수 없다.",
+    "scope": [
+      "예제 서비스 20개 primary와 직접 구현·호출·테스트를 root 및 실제 Claude가 검토하고, 원본 fixture 테스트와 CLI를 격리 실행한 증거를 다룬다.",
+      "별도 테스트 62개는 전문 정적 검토이며 실행 수에 더하지 않는다. 전체 분석 및 독립 채택 검토가 끝난 뒤 root가 Zeus에 변형 구현한다.",
+      "FA-023 승인 권위, FA-024 추출 누락, FA-026 실행 분모와 연결한다. 삼성 기기·Device Farm 실측 인수는 후속 범위다."
+    ],
+    "acceptance_criteria": [
+      "VIEW에서 선언·추출·실행 관측·사람 승인 상태를 구분하고 원본 revision, scenario/contract ID, 방향·채널·스키마·fidelity·누락 이유와 실제 영수증을 연결한다.",
+      "BLOCKED/unknown 노드를 선언된 사실로 유지하되 관측된 정상 연결로 표시하지 않는다. drift 방향 및 생산자/소비자 역할이 파생 그래프에서도 유지된다.",
+      "fail-on 설정은 허용된 상태 이름만 받고 오타·빈 정책을 명시적으로 거절한다. 필수 시나리오 또는 검사 분모가 0이거나 일부 누락되면 승인 가능한 성공을 만들지 않는다.",
+      "스펙→생성 코드→수집→실행→assertion→인수의 분모를 따로 기록한다. PendingException, ID 집합 일치, marker 제거, substring coverage, 합성 투표와 skip을 실제 통과로 계수하지 않는다.",
+      "동일한 고정 입력에서 판정과 VIEW를 만들며 정확한 생성 명령·title·환경·출력 해시를 보존한다. 상대경로, UTF-8 및 줄바꿈을 Windows/Linux/WSL 실제 실행으로 검증한다.",
+      "사람이 정의한 핵심 사용자·실패·금전 시나리오를 8단계 SDD의 승인된 스펙과 결속하고 실제 서비스/기기 실측으로 E2E를 검증한다. fixture 결과만으로 알파·QA·라이브 승인이나 Astra→Sol→Terra 자격 이전을 하지 않는다.",
+      "PG가 런타임 시도·증거·승인·티켓 원장을 관리하고 Git이 정의를 관리한다. 그래프/JSONL/보고서는 파생 VIEW이며 별도 정본을 만들지 않는다."
+    ],
+    "verification": [
+      "네트워크 차단·읽기 전용 source·제한된 scratch의 기존 immutable Linux 이미지에서 원본 수동 테스트 2/2 통과, CLI 6회 추가 실행 및 실제 helper 관측을 보존했다. source 1648개는 실행 전후 동일했다.",
+      "원본 ontology dump는 committed bytes와 같았고 atlas는 custom title을 명시하면 같았다. README의 생성 절차 누락과 기본 title 차이를 근본적인 재현 불가로 과장하지 않는다.",
+      "absent gate 기본 rc1, DRIFT만 지정 시 rc0, TYPO 상태 지정 시 rc0, 빈 선언 직접 판정 0/0 성공을 실제 관측했다. 기본 BLOCKED 방어는 유지된다.",
+      "절대 YAML 경로를 사용해도 다른 cwd에서는 상대 repo 경로 때문에 전체 6 seam이 BLOCKED가 됐다. 원본 test는 경로를 별도로 절대화한다.",
+      "실제 서비스·Java 컴파일·native Windows/WSL 원본 실행·실제 모델 자격·사람 인수는 미검증이다. 세 검토 agent의 62개 테스트 파일은 원본 실행 0이다."
+    ],
+    "rollback": "입력 범위·실행 분모·방향·원본 정체성이 누락된 파생 결과의 신규 승인 사용을 중단한다. 원시 실패와 이전 정의·PG 시도를 보존하고 고정 입력 및 검증된 정책으로 다시 측정한다.",
+    "evidence_paths": [
+      "docs/full-analysis/baldrix-example-fleet-001/resolution.md",
+      "docs/full-analysis/baldrix-example-fleet-001/claude-discussion.md",
+      "docs/full-analysis/baldrix-example-fleet-001/attempts/ddd43bcdb2b8402bb5e50fb1aa00e685/receipt.json",
+      "docs/full-analysis/baldrix-example-fleet-001/attempts/ddd43bcdb2b8402bb5e50fb1aa00e685/stdout.txt",
+      "docs/full-analysis/example-tests-root-review.md",
+      "docs/full-analysis/example-tests-checkpoint-verification.json"
+    ]
+  }
+]

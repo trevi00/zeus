@@ -1,0 +1,26 @@
+{
+  "primary_body_remaining": [],
+  "supporting_trace_remaining": [
+    "Unlisted intervals and complete transitive consumer closure are not read here.",
+    "Embedded evaluator self-check middle body 1463-2279 and provider/quota implementations.",
+    "All nine extractor full parser/renderer bodies, spec bundle assembler and stack execution.",
+    "Composite breaker persistence/concurrency, atomic helpers and notification delivery.",
+    "run_all/conftest full semantics and real fixture fleet are separate root scope.",
+    "Actual Claude independent review, licenses, Windows/Linux/WSL execution.",
+    "Actual service/device/replay, alpha/live deployment and human acceptance.",
+    "Zeus adoption and implementation equivalence."
+  ],
+  "upstream_executions": 0,
+  "upstream_imports": 0,
+  "probes": 0,
+  "network_calls": 0,
+  "installs": 0,
+  "model_calls": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adopted": false,
+  "review_ref": "docs/full-analysis/baldrix-tests-005/review.md#unknowns"
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "Static source read and own metadata operation history; no upstream execution",
+  "start_head_chunk": "297ba6",
+  "instructions_partition_chunk": "6ee94e",
+  "prior_ledger_snapshot_chunk": "156321",
+  "primary_full_read_chunks": ["8b9535", "a89623", "14646c", "a77cc6", "f4c836", "c9ba3a", "0b1302", "92d740", "3ae5bd", "7bb8e7", "ac45af", "f7da9d", "e67a25", "d5e395", "0105c8"],
+  "supporting_read_chunks": ["d86e4e", "ab803a", "2d5fc1", "4a8545", "95bdef", "b66eb9", "08b942", "3b3baa"],
+  "readback_chunks": ["5f3760", "0105c8"],
+  "preserved_limitations": [
+    "Individual source-read start/end times were not captured; no invented timing.",
+    "f7da9d PowerShell default display mangled Korean; original UTF-8 files were intact and primary15/16 fully re-read explicitly UTF-8 in0105c8.",
+    "An apply_patch attempted nonexistent '#' context and failed without changing any file; corrected by explicit anchor insertion.",
+    "5a9ea8 narrow symbol lookup included nonexistent lib/debate_landing.py, exit1. Actual cli/debate_landing.py was resolved from primary import then read59-138 in08b942.",
+    "b66eb9 exceeded output budget in later settings search hits. Only fully visible leading output_audit/dashboard_model/debate_aggregate bodies counted. Settings122-131/registry1-87 separately read in08b942; omitted search text is not coverage.",
+    "5994a2 prepared own recorder from existing metadata template; before first execution810c5b exposed accidental16-to24 support-index substitution. Corrected in811626 before first recorder execution. No source code execution or prior semantic reuse.",
+    "940519 executed own Ruff and recorder: exit0, stdout All checks passed! followed by JSON primary24 bytes193142 fresh24 reused0 supporting29 source_executions0 manifest_blob_bytes_all_match=true; stderr empty. Recorder is rerun unchanged after per-file header clarification to refresh its recorded review hash."
+  ],
+  "source_executions": 0,
+  "source_imports": 0,
+  "tests_executed": [],
+  "source_probes": 0,
+  "source_network": 0,
+  "source_installations": 0
+}

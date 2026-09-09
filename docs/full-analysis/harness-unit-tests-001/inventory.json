@@ -1,0 +1,72 @@
+{
+  "partition": "harness:tests/unit:001",
+  "scope_sha256": "9f880290aebca4d5f7835f7f715cc39e4c0c187e55ef4f339241da270ef744a1",
+  "bytes": 183843,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "tests/unit/_isolate.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_checks_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_circuit_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_codex_provider.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_compaction_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_error_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_evaluator_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_golden_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_graph_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_ledger_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_recall_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_reverse_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_router_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_skill_bundle_signal_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_test_outcome.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/unit/test_workup_smoke.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

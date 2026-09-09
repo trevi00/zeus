@@ -1,0 +1,112 @@
+{
+  "partitions": [
+    "baldrix:scripts/example-fleet:001",
+    "baldrix:scripts/example-fleet/inventory-service:001",
+    "baldrix:scripts/example-fleet/notification-service:001",
+    "baldrix:scripts/example-fleet/order-service:001",
+    "baldrix:scripts/example-fleet/payment-service:001"
+  ],
+  "paths": [
+    {
+      "path": "scripts/example-fleet/FLEET-MAP.md",
+      "bytes": 2447,
+      "sha256": "ceaf7cf087ef30cbdfb1758dad7b3a1fc62fd6e7182fb731d264f2b238951bf2"
+    },
+    {
+      "path": "scripts/example-fleet/README.md",
+      "bytes": 3777,
+      "sha256": "e3b0909c9c5b11feb861b13f6fd5b788692f21abff0f5b2e55ed0942fbe6f612"
+    },
+    {
+      "path": "scripts/example-fleet/fleet.absent.yaml",
+      "bytes": 810,
+      "sha256": "d07f94b83c992368be1b1de7166ef9369e1266719e51089a8726223115cdfb08"
+    },
+    {
+      "path": "scripts/example-fleet/fleet.example.yaml",
+      "bytes": 644,
+      "sha256": "8620743d468c7facdc39bb2f29f085e30ab162f7a2c08e5bd10dcc6296c60913"
+    },
+    {
+      "path": "scripts/example-fleet/ontology.jsonl",
+      "bytes": 5283,
+      "sha256": "9f2ce28008661d07a30bd40fdb70b94efc597f013053db9d3b40da4131b9dd96"
+    },
+    {
+      "path": "scripts/example-fleet/seams.absent.spec.yaml",
+      "bytes": 656,
+      "sha256": "5a969186eb62cb1314db633f9c153a0de747db79df208f40af61b20eb845c8f1"
+    },
+    {
+      "path": "scripts/example-fleet/seams.example.spec.yaml",
+      "bytes": 1570,
+      "sha256": "79b9907a0f37d73271ade48082fa05da8d8106193520553b50d8cbd1ab1c3e63"
+    },
+    {
+      "path": "scripts/example-fleet/inventory-service/src/main/java/com/shop/inventory/events/OrderInbound.java",
+      "bytes": 304,
+      "sha256": "521ae914fa15323b8c4eeacd706607b95eb14af15ebeca7bbb06876d8a1624bb"
+    },
+    {
+      "path": "scripts/example-fleet/inventory-service/src/main/java/com/shop/inventory/events/PaymentInbound.java",
+      "bytes": 275,
+      "sha256": "e82c25784fd8bfd119d78e72fc38ed366ffe4ea0a630ee3285f6e800f5879747"
+    },
+    {
+      "path": "scripts/example-fleet/inventory-service/src/main/java/com/shop/inventory/events/SocketAction.java",
+      "bytes": 184,
+      "sha256": "7be033dd6dc48269e6ecf5b682cf3398033dd9e1d642c7c2a746e8fc19a1f346"
+    },
+    {
+      "path": "scripts/example-fleet/inventory-service/src/main/java/com/shop/inventory/events/StockEventAction.java",
+      "bytes": 262,
+      "sha256": "1badd9f58e8c1cfad634ad90c22de204a520182d09130f14aeb7ed9fcec44aa4"
+    },
+    {
+      "path": "scripts/example-fleet/notification-service/src/main/java/com/shop/notification/events/OrderInbound.java",
+      "bytes": 284,
+      "sha256": "d6002e0d414bf531a738a375243f84ae835f52f1451a670eeaae6325616ae09b"
+    },
+    {
+      "path": "scripts/example-fleet/notification-service/src/main/java/com/shop/notification/events/PaymentInbound.java",
+      "bytes": 276,
+      "sha256": "4886c5226c5d3396f380e9f6d4a2beb063cef0eb95e4aee526657f1cc9fee034"
+    },
+    {
+      "path": "scripts/example-fleet/notification-service/src/main/java/com/shop/notification/events/SocketAction.java",
+      "bytes": 187,
+      "sha256": "94a2004e9cbbd5bdfe0154af139f72f33221bfd22b059fbdcf86874b758b398c"
+    },
+    {
+      "path": "scripts/example-fleet/notification-service/src/main/java/com/shop/notification/events/StockInbound.java",
+      "bytes": 265,
+      "sha256": "fbc56d0ffc3d86e7f0551a08a0d55523dfd32686f3c4d17d27d7edcd8a6b8a45"
+    },
+    {
+      "path": "scripts/example-fleet/order-service/src/main/java/com/shop/order/events/OrderEventAction.java",
+      "bytes": 285,
+      "sha256": "7249782a745ec0ce0f87243ccac3bbba505a0130faca0727547c7ec82a331702"
+    },
+    {
+      "path": "scripts/example-fleet/order-service/src/main/java/com/shop/order/events/SocketAction.java",
+      "bytes": 180,
+      "sha256": "eb4899a8cd7b7f1caf094473990e10df0f6f66c38daa3198178d51c4c32703ff"
+    },
+    {
+      "path": "scripts/example-fleet/payment-service/src/main/java/com/shop/payment/events/OrderInbound.java",
+      "bytes": 274,
+      "sha256": "46c09ebf2e270e0a822fc8eef9ee1d28abace5e5a6b0fb9c51730142e7a2ea2c"
+    },
+    {
+      "path": "scripts/example-fleet/payment-service/src/main/java/com/shop/payment/events/PaymentEventAction.java",
+      "bytes": 272,
+      "sha256": "1bfbf9f453eafbce70091cf2ebb5dc8947f3a8326b8beeacae4993cd53095e29"
+    },
+    {
+      "path": "scripts/example-fleet/payment-service/src/main/java/com/shop/payment/events/SocketAction.java",
+      "bytes": 182,
+      "sha256": "3e60e27c2756be12e8dbe6545f48729effa0a4ec77b17ce27d86dba0985c363c"
+    }
+  ],
+  "scope_sha256": "ea4a7a793b53395fe694bfb227bfd7812aa3b796dd145e61ae296678b931824a"
+}

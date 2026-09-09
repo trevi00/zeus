@@ -1,0 +1,22 @@
+{
+  "partitions": [
+    "baldrix:scripts/example-fleet:001",
+    "baldrix:scripts/example-fleet/inventory-service:001",
+    "baldrix:scripts/example-fleet/notification-service:001",
+    "baldrix:scripts/example-fleet/order-service:001",
+    "baldrix:scripts/example-fleet/payment-service:001"
+  ],
+  "scope_sha256": "ea4a7a793b53395fe694bfb227bfd7812aa3b796dd145e61ae296678b931824a",
+  "primary_files": 20,
+  "primary_bytes": 18417,
+  "supporting_full": 16,
+  "supporting_partial": 0,
+  "original_manual_tests_passed": 2,
+  "original_observation_programs": 1,
+  "original_cli_subprocesses": 7,
+  "actual_claude_initial_review": true,
+  "actual_claude_discussion_complete": true,
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "actual_claude_processes": 2
+}

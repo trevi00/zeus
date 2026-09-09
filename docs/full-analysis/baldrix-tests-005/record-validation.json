@@ -1,0 +1,23 @@
+{
+  "partition": "baldrix:scripts/tests:005",
+  "checkpoint_sha256": "21fe5fb2fa86511084e78b5001639bec734b31af1d66ceb74a7a1042612f8259",
+  "artifact_hashes_rechecked": true,
+  "pinned_source_hashes_rechecked": 75,
+  "primary_count": 22,
+  "primary_previous_disposition_unreviewed": true,
+  "utf8_lf_all_artifacts": true,
+  "korean_full_body_readback_performed": true,
+  "review_anchor_count": 26,
+  "ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/baldrix-tests-005/record_review.py",
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "recorder_sha256": "d6d88c0c154ba021100ac3456d1291ec8ab6719e60d1201cbe08772cc7af3e8a",
+    "observed_tool_chunk_id": "e7696b"
+  },
+  "source_execution_count": 0,
+  "source_import_count": 0,
+  "probe_count": 0,
+  "network_count": 0,
+  "commit_or_push": false
+}

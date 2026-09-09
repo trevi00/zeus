@@ -1,0 +1,19 @@
+{
+  "validation": "PASS",
+  "checks": [
+    "Pinned revision, raw Git blob, byte size and available manifest SHA256 identity",
+    "Primary/support range bounds and unique primary denominator",
+    "Exact prior-ledger rows and raw identity",
+    "Review file anchors and supporting IDs",
+    "UTF-8 without BOM, LF, JSON parse",
+    "ASCII English semantic prose visually reviewed; replacement characters and repeated question-mark damage absent",
+    "Own metadata recorder Ruff check --no-cache: passed"
+  ],
+  "source_tests_executed": 0,
+  "tests_collected": 0,
+  "source_import_execution_probe_network_install": 0,
+  "review_sha256": "a5cc03e7b5c4ee5a9462c115019460ba3e21570e105f4c98fc771eeeff32f2c7",
+  "recorder_sha256": "2b62379227cd880918fc7b9b792d4c7aa3f88c233538ed788c2b7d1f82ff993a",
+  "whole_closure": false,
+  "adoption_approved": false
+}

@@ -1,0 +1,975 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/dashboard_model.py",
+    "git_blob": "14708da801e03e31e12b8c3add9ad07dea1ab078",
+    "pinned_sha256": "94bb5b93a22362996a4ab6825534a577614d7f812623e7f714bcee995f7d8525",
+    "pinned_bytes": 8263,
+    "manifest_bytes": 8263,
+    "line_count": 182,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 126,
+        "end": 182,
+        "raw_range_sha256": "138fa723f880c4e785193f482b79bce7401107fda6e8ed5aafed1f1869ddf21a"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_dashboard.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/ddl.py",
+    "git_blob": "2042725be5d9071e89928865ea5c8168a8b8e189",
+    "pinned_sha256": "57f41cecf830f5f8bd7703a57a503aad2121a16c27787ec096ff2af67db87c12",
+    "pinned_bytes": 6633,
+    "manifest_bytes": 6633,
+    "line_count": 186,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 91,
+        "end": 186,
+        "raw_range_sha256": "a21c053dce15a4c5c6835a717a56fb6ee0f2f6af2f2e0d220b934321162fe822"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_ddl.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/debate_aggregate.py",
+    "git_blob": "e5dbc533cb3baca17c0a13e41acac3689598d303",
+    "pinned_sha256": "39e05873a49e199c5c4eeee5977b733c2ead5d103d895f19372e057548238725",
+    "pinned_bytes": 34109,
+    "manifest_bytes": 34109,
+    "line_count": 789,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 119,
+        "end": 160,
+        "raw_range_sha256": "2a9bca0fba01e264d2fa9e7b1730e4039ab5f402bb61dbc54fe3c2e349c810fa"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_aggregate.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/debate_convergence.py",
+    "git_blob": "1a263a451eb1fda4263c66de7ed1842ba72afa04",
+    "pinned_sha256": "71ad5209899dd540e7a26a96bc7397145c2979af686865cf87affc05bf6c0704",
+    "pinned_bytes": 11894,
+    "manifest_bytes": 11894,
+    "line_count": 222,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 118,
+        "end": 222,
+        "raw_range_sha256": "3785f3f3424f68b49f921bce0a8e36d6adaab5fcd7f9da33cba748baf067a33f"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_convergence.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/debate_landing.py",
+    "git_blob": "9bc1dd6017e78679a2337cc1c06e488fb0b1d1ac",
+    "pinned_sha256": "185f5e00e520516b3979885e81c2d3a2e2c935fcbc9e26cca94ebde54eed95f0",
+    "pinned_bytes": 7039,
+    "manifest_bytes": 7039,
+    "line_count": 169,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 59,
+        "end": 138,
+        "raw_range_sha256": "84c06a04a2698852d7db133f5b930eafa499c122e1dd2aa6903035cb18b56d4c"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_landing_contract.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/debate_output_audit.py",
+    "git_blob": "ceb80b95a4bfb5c7db921a13bad632484abffd86",
+    "pinned_sha256": "8c9c83e8571fb095ba5f9c2277ba3d0c2c51e89cd84d21501ba742d70e806833",
+    "pinned_bytes": 7448,
+    "manifest_bytes": 7448,
+    "line_count": 141,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 88,
+        "end": 141,
+        "raw_range_sha256": "911356c3f61d79b7879c130f9ef1a723b4cd721d33bae8ac5cefd63b96f69b20"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_output_audit.py",
+      "scripts/tests/test_debate_output_audit_contract.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/debate_stagnation.py",
+    "git_blob": "fd04058366f654fb16273fb169c962338decd4ec",
+    "pinned_sha256": "e97838fc4c0d8cd3043563eb3c03d796a59097fe6e8f7f9fa5c21b9fe479ee3d",
+    "pinned_bytes": 28555,
+    "manifest_bytes": 28555,
+    "line_count": 736,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 434,
+        "end": 736,
+        "raw_range_sha256": "b6b3c5799187ef0a46452b0607806148618f0a38722f6bfdda8118c6f8a69ba1"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_stagnation.py",
+      "scripts/tests/test_debate_stagnation_check.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/debate_stagnation_check.py",
+    "git_blob": "6f029d647f2890080f13d058f3d9399154763f86",
+    "pinned_sha256": "e6c82f777da8bee0034d8f87cfdc99d3268400639ac27579d8c2f4498c350366",
+    "pinned_bytes": 8448,
+    "manifest_bytes": 8448,
+    "line_count": 199,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 84,
+        "end": 148,
+        "raw_range_sha256": "346dcb869d1c7e45ddc5a303eb97f3ef995a229f5cc224f216d345ed69a534fb"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_stagnation_check.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/handlers/prompt/debate_trigger.py",
+    "git_blob": "8bfdb8ff16916b9778f91f62fc4fda639d82bbc8",
+    "pinned_sha256": "cf5cd7a77d5860fd0b2a861d89657122b45f0c43291ba693ea6bad666b27cfe6",
+    "pinned_bytes": 12522,
+    "manifest_bytes": 12522,
+    "line_count": 323,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 249,
+        "end": 323,
+        "raw_range_sha256": "77bbcc9019136dc12e4c89a1c5bd25e342845d230926317c222afa645e395c83"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_trigger.py",
+      "scripts/tests/test_debate_trigger_advisory.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/decision_memory.py",
+    "git_blob": "6106bb29e96a4981c7aebf3ab1579332eda75320",
+    "pinned_sha256": "aa8a45d7e8071ec67c452572608f604cccb1d244c575e0dff88253ee8902ebce",
+    "pinned_bytes": 18265,
+    "manifest_bytes": 18265,
+    "line_count": 412,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 260,
+        "end": 380,
+        "raw_range_sha256": "fb412c55ff446ca871b571791b5dbd69a1ce2831ff79b10f077d155da02d6790"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_decision_memory.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/deferral.py",
+    "git_blob": "d1f5ba42a560be3707b28739b2ea04090c359a5a",
+    "pinned_sha256": "02493c49416fcbc02d505bde8ac97c9755a696324a9b726d498e3936078de036",
+    "pinned_bytes": 4498,
+    "manifest_bytes": 4498,
+    "line_count": 128,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 51,
+        "end": 128,
+        "raw_range_sha256": "db591b2eeb46539e60e00d3a02ee52675f92f6bb0fdef7c718252537d1652cd1"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_deferral.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/design_slop_a11y.py",
+    "git_blob": "41ea115e2458ddc71cd91dcbe2d4c644c34c11a2",
+    "pinned_sha256": "58d372969e384657b2a43bf9f6c330094e6faef850b0965333db0f5ad9845391",
+    "pinned_bytes": 10176,
+    "manifest_bytes": 10176,
+    "line_count": 218,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 169,
+        "end": 218,
+        "raw_range_sha256": "644870674e254781e4ab26e6e419421d0c3a489ae13946de9ee92d537b02f184"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_design_slop_a11y.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/engine/dispatch_retry.py",
+    "git_blob": "d4c5163d2b027527a78a7fd6504c3d650b6ee39e",
+    "pinned_sha256": "7bee6067d41272f193d6762398ab0d0ffa83a7e140f6ee80f47367715211f7a7",
+    "pinned_bytes": 3113,
+    "manifest_bytes": 3113,
+    "line_count": 70,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 70,
+        "raw_range_sha256": "7bee6067d41272f193d6762398ab0d0ffa83a7e140f6ee80f47367715211f7a7"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_dispatch_retry.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/extractors/doc_classifier.py",
+    "git_blob": "df280eaf6694520a271db8719db952e7fb011e76",
+    "pinned_sha256": "6f0d3c241c62e7a67810a1a1d99568c565553fdc3eadaa16dc69ac20d3d48c5a",
+    "pinned_bytes": 11435,
+    "manifest_bytes": 11435,
+    "line_count": 276,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 63,
+        "end": 158,
+        "raw_range_sha256": "af66d470ec606645ffa6d397de973f28532d6d8bcc7f420f2ef20bae2238f18c"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_doc_classifier.py",
+      "scripts/tests/test_doc_classifier_explained.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/ingest_docs.py",
+    "git_blob": "2061c27374e77e13115e48175cd80efb0bd99ebe",
+    "pinned_sha256": "80177d2b2bb2628c5adb07addd99af6424ad31c4dd80f28bec83a8007e4bf24f",
+    "pinned_bytes": 3496,
+    "manifest_bytes": 3496,
+    "line_count": 80,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 80,
+        "raw_range_sha256": "80177d2b2bb2628c5adb07addd99af6424ad31c4dd80f28bec83a8007e4bf24f"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_doc_classifier.py",
+      "scripts/tests/test_doc_classifier_explained.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/doc_code_drift.py",
+    "git_blob": "ddef9ddb19bb76dffa3052e7c53b4de7325944e8",
+    "pinned_sha256": "693ebceb9a3823feb78ceda3314d81f0402526385a1943b178b3d79b167efb80",
+    "pinned_bytes": 15089,
+    "manifest_bytes": 15089,
+    "line_count": 343,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 281,
+        "end": 343,
+        "raw_range_sha256": "8c0895388c7535c49efb004bedd78f64821b353a9ddf026512d23193af1da5bc"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_doc_code_drift.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/endpoint_graph.py",
+    "git_blob": "5afb2501fe31d97ccecd120a67dc44eecaebf334",
+    "pinned_sha256": "030d178b4949c90cee5d9a7b53f97d1c22ae884c49f5cd386d444fd30897fce2",
+    "pinned_bytes": 4241,
+    "manifest_bytes": 4241,
+    "line_count": 97,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 97,
+        "raw_range_sha256": "030d178b4949c90cee5d9a7b53f97d1c22ae884c49f5cd386d444fd30897fce2"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_endpoint_graph.py",
+      "scripts/tests/test_endpoint_graph_subsumes_ontology.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/engines.py",
+    "git_blob": "f390f095070058d9a2a19b6f6f6611e303bd3e68",
+    "pinned_sha256": "6060a53e087f7ca073a745bd2fbd31f2c43a391ce692e9fbc23fd55e4f8e985b",
+    "pinned_bytes": 2137,
+    "manifest_bytes": 2137,
+    "line_count": 59,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 59,
+        "raw_range_sha256": "6060a53e087f7ca073a745bd2fbd31f2c43a391ce692e9fbc23fd55e4f8e985b"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_engines.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/ensemble_evaluator.py",
+    "git_blob": "b5c38bd67a5579d40617d9080a70fc62ca157738",
+    "pinned_sha256": "ea09df2fe95ae9656bf053f71fc9574ea557003e5fc43be5a55264b210f39ff3",
+    "pinned_bytes": 37538,
+    "manifest_bytes": 37538,
+    "line_count": 895,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 374,
+        "end": 895,
+        "raw_range_sha256": "9bf1691a1558fc7458d30c9624aae4a5b3fb98a35b309011348659e25cffb447"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_ensemble_evaluator.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/er.py",
+    "git_blob": "3f88684d721cbf31c6ff1c31327902ae40bdf535",
+    "pinned_sha256": "4146183fbc6e9884fe0a3f5769e67e9827dda806fc34a0c29a15c178aecb38db",
+    "pinned_bytes": 4292,
+    "manifest_bytes": 4292,
+    "line_count": 122,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 53,
+        "end": 122,
+        "raw_range_sha256": "cfec013cfec1d93ba3501ec599a55a29317f89b14718581084c45d4fbef771e7"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_er.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/evaluator.py",
+    "git_blob": "186850c61a005e5c2c256501fb55dbc41e122ca3",
+    "pinned_sha256": "3b065bd2e87e7ba7b069d6312274fd57b9fa2d2035d52702ca66122699a8dea3",
+    "pinned_bytes": 11866,
+    "manifest_bytes": 11866,
+    "line_count": 294,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 229,
+        "end": 291,
+        "raw_range_sha256": "6012e6c9b28d1c44815366779f0eb6bf91c2690ddb6d829e97785694693e3b41"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_evaluator.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/run_units.py",
+    "git_blob": "7c61b756e5ac9127ed57bddf136582fc67629a16",
+    "pinned_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+    "pinned_bytes": 17340,
+    "manifest_bytes": 17340,
+    "line_count": 407,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 48,
+        "end": 210,
+        "raw_range_sha256": "7349e7dbded2d89218c49ba6f3df82fa1ccf45fdf7cf43acfd495cbd039e74b4"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_dashboard.py",
+      "scripts/tests/test_ddl.py",
+      "scripts/tests/test_debate_aggregate.py",
+      "scripts/tests/test_debate_convergence.py",
+      "scripts/tests/test_debate_landing_contract.py",
+      "scripts/tests/test_debate_output_audit.py",
+      "scripts/tests/test_debate_output_audit_contract.py",
+      "scripts/tests/test_debate_stagnation.py",
+      "scripts/tests/test_debate_stagnation_check.py",
+      "scripts/tests/test_debate_trigger.py",
+      "scripts/tests/test_debate_trigger_advisory.py",
+      "scripts/tests/test_decision_memory.py",
+      "scripts/tests/test_deferral.py",
+      "scripts/tests/test_design_slop_a11y.py",
+      "scripts/tests/test_dispatch_retry.py",
+      "scripts/tests/test_doc_classifier.py",
+      "scripts/tests/test_doc_classifier_explained.py",
+      "scripts/tests/test_doc_code_drift.py",
+      "scripts/tests/test_endpoint_graph.py",
+      "scripts/tests/test_endpoint_graph_subsumes_ontology.py",
+      "scripts/tests/test_engines.py",
+      "scripts/tests/test_ensemble_evaluator.py",
+      "scripts/tests/test_er.py",
+      "scripts/tests/test_evaluator.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/__init__.py",
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "pinned_bytes": 4480,
+    "manifest_bytes": 4480,
+    "line_count": 123,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 87,
+        "raw_range_sha256": "45a816b9ae402fb8d7cb1bc6b920d933442fb39d3479144b17e278c1b2bb5738"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_ddl.py",
+      "scripts/tests/test_design_slop_a11y.py",
+      "scripts/tests/test_doc_code_drift.py",
+      "scripts/tests/test_er.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "settings.json",
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "pinned_bytes": 10437,
+    "manifest_bytes": 10437,
+    "line_count": 386,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 122,
+        "end": 131,
+        "raw_range_sha256": "e0dd1bc05a3ab73692a22c65b53169272217e48ca890ed6eb5ff653534471659"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_debate_trigger.py",
+      "scripts/tests/test_debate_trigger_advisory.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/fleet_atlas.py",
+    "git_blob": "f32e6e90a7867135558b7e5a124d52de0cde9bd1",
+    "pinned_sha256": "357040d46be384659a871f8688f79f5b69b18b82f26179ccdc22dbd3a80fbad7",
+    "pinned_bytes": 8982,
+    "manifest_bytes": 8982,
+    "line_count": 203,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 59,
+        "end": 117,
+        "raw_range_sha256": "5abe917ad4fcc08eb385c2da44f2051f5434a8db8a890af79754ea56b471939e"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_endpoint_graph.py",
+      "scripts/tests/test_endpoint_graph_subsumes_ontology.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/ontology_query.py",
+    "git_blob": "2c5104b9d7a0afcbf16331b346d6c060d78c813e",
+    "pinned_sha256": "8e8ec90c7bf8ad9dc2aa74f5308c64bec12604a251f207070abd723304cce6df",
+    "pinned_bytes": 6614,
+    "manifest_bytes": 6614,
+    "line_count": 153,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 43,
+        "end": 102,
+        "raw_range_sha256": "1970f150bf8962692a9689064c5b6bcfc1723f04b9a7bfad8fa11ac01ab8372b"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_endpoint_graph.py",
+      "scripts/tests/test_endpoint_graph_subsumes_ontology.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/engine/external_jury.py",
+    "git_blob": "1c7c2193ac9f088d5f6c6acbc0e0bda6064bdc6b",
+    "pinned_sha256": "83c1b8effcf635abd8ebca2b124f55a77e51198ee577b499e11ba7e6a16c5a35",
+    "pinned_bytes": 11370,
+    "manifest_bytes": 11370,
+    "line_count": 280,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 152,
+        "end": 200,
+        "raw_range_sha256": "7b1727b33319ff5387293359a3dc14638c076d3631fe6fb6d210d8cfeee57d59"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_dispatch_retry.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/role_orchestrator.py",
+    "git_blob": "8f601ccc45b1fde7c21d40540e512c004bfb5d99",
+    "pinned_sha256": "f387fa9ea52a8a2afb456a279ed443d2e7fa82a149492f09055ef116407ebe80",
+    "pinned_bytes": 11496,
+    "manifest_bytes": 11496,
+    "line_count": 227,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 140,
+        "end": 169,
+        "raw_range_sha256": "0975839fa49b0c9d40c1918fdaace58945e995becef602b5572fdf6a2cd4f028"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_decision_memory.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/paths.py",
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "pinned_bytes": 13699,
+    "manifest_bytes": 13699,
+    "line_count": 257,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 79,
+        "end": 143,
+        "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+      }
+    ],
+    "supports_primary": [
+      "scripts/tests/test_dashboard.py",
+      "scripts/tests/test_debate_aggregate.py",
+      "scripts/tests/test_debate_landing_contract.py",
+      "scripts/tests/test_debate_stagnation.py",
+      "scripts/tests/test_debate_stagnation_check.py",
+      "scripts/tests/test_debate_trigger.py",
+      "scripts/tests/test_debate_trigger_advisory.py",
+      "scripts/tests/test_decision_memory.py",
+      "scripts/tests/test_deferral.py",
+      "scripts/tests/test_doc_code_drift.py",
+      "scripts/tests/test_engines.py"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-004/supporting-notes.md",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  }
+]

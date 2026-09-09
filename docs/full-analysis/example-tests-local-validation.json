@@ -1,0 +1,55 @@
+{
+  "kind": "root_local_validation_observations",
+  "source_head_before_changes": "a98f29e3cdc913445b38fcc10f9fd1eb8942ae7f",
+  "runtime_source_tests_workflows_changed": false,
+  "metadata_identity_check_initial": {
+    "passed": false,
+    "reason": "KeyError: bytes; tests004 records use pinned_bytes",
+    "correction": "Accept either documented byte-count field while comparing it to manifest and actual raw byte length"
+  },
+  "metadata_identity_check_after_correction": {
+    "passed": true,
+    "primary": 82,
+    "supporting": 119,
+    "recursive_artifacts": 61,
+    "adoption_or_semantic_certification": false
+  },
+  "ruff": {
+    "command": "uv run ruff check .",
+    "passed": true
+  },
+  "pytest_before_metadata_field_correction": {
+    "command": "uv run pytest",
+    "session": 73427,
+    "terminal_chunk": "a0391a",
+    "exit_code": 0,
+    "collected": 728,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 170.85
+  },
+  "pytest_after_metadata_field_correction": {
+    "command": "uv run pytest",
+    "session": 8469,
+    "terminal_chunk": "9b1984",
+    "exit_code": 0,
+    "collected": 728,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 170.84
+  },
+  "prior_public_ci": {
+    "run": 34335243370,
+    "head": "a98f29e3cdc913445b38fcc10f9fd1eb8942ae7f",
+    "conclusion": "success",
+    "jobs_passed": 5,
+    "raw_result": "docs/zeus/ci/34335243370.json"
+  },
+  "whole_source_acceptance_or_adoption": false,
+  "public_staged_review": {
+    "files_checked": 71,
+    "selected_secret_signature_matches": 0,
+    "scan_is_not_universal_secret_proof": true,
+    "staged_bytes_equal_worktree": true
+  }
+}
