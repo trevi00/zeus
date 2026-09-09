@@ -1,0 +1,205 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/merge-back.cjs",
+    "git_blob": "86f510429e7a610c8a42cb8a84ff1a1c23fdfd71",
+    "pinned_sha256": "4c073476aa9f98991b1c2ba8b34882c9f0c6b66d5360e3625faf0f7924e85e8e",
+    "pinned_bytes": 11273,
+    "manifest_bytes": 11273,
+    "line_count": 267,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 267,
+        "raw_range_sha256": "4c073476aa9f98991b1c2ba8b34882c9f0c6b66d5360e3625faf0f7924e85e8e"
+      }
+    ],
+    "supports_primary": [
+      "get-shit-done/bin/gsd-tools.cjs",
+      "get-shit-done/bin/lib/__tests__/merge-back.test.cjs",
+      "get-shit-done/bin/lib/core.cjs"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/model-profiles.cjs",
+    "git_blob": "5bb89051b2c0a6d2a1bf84685a329fa8d737be57",
+    "pinned_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777",
+    "pinned_bytes": 3804,
+    "manifest_bytes": 3804,
+    "line_count": 70,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 70,
+        "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+      }
+    ],
+    "supports_primary": [
+      "get-shit-done/bin/gsd-tools.cjs",
+      "get-shit-done/bin/lib/commands.cjs",
+      "get-shit-done/bin/lib/config.cjs",
+      "get-shit-done/bin/lib/core.cjs",
+      "get-shit-done/bin/lib/docs.cjs"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/docs-update.md",
+    "git_blob": "e58d42d86a03bca966fa77f81435f7863c83e6ab",
+    "pinned_sha256": "dada72c670ec7b71586fc6c53134741a3cc86ed71dd2e834095a5156ffcccdde",
+    "pinned_bytes": 47560,
+    "manifest_bytes": 47560,
+    "line_count": 1153,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 65,
+        "raw_range_sha256": "f1f865fedd2bc7a0a99cd9496afee5f89d414a9741bb34783ba7b61f6bbd0dfb"
+      }
+    ],
+    "supports_primary": [
+      "get-shit-done/bin/gsd-tools.cjs",
+      "get-shit-done/bin/lib/docs.cjs"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/verify.cjs",
+    "git_blob": "626698ee2f825570a2af822994a1e0f37a716d17",
+    "pinned_sha256": "b232ed0ccfef3f03022ea70ff1d90e833bde92e447913a068e0144816907ba09",
+    "pinned_bytes": 41212,
+    "manifest_bytes": 41212,
+    "line_count": 1032,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 272,
+        "end": 390,
+        "raw_range_sha256": "468fee9e46fc0b971c18190e2bbe37f5d78132ad4d0d0ea36354948da3c95d0f"
+      }
+    ],
+    "supports_primary": [
+      "get-shit-done/bin/gsd-tools.cjs",
+      "get-shit-done/bin/lib/frontmatter.cjs"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/quick.md",
+    "git_blob": "4352e8ebc6630f16ededcd766d3e8429e0062753",
+    "pinned_sha256": "0dde8108e48a4c005d3e32948f9d19651250a792ce55e89b0ccb855959b8ae3a",
+    "pinned_bytes": 36798,
+    "manifest_bytes": 36798,
+    "line_count": 890,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 615,
+        "end": 660,
+        "raw_range_sha256": "7a56f9edd1621085407f8d2980b4d71761cf8f9bf0d0e5bcff9c55b593b2edd6"
+      }
+    ],
+    "supports_primary": [
+      "get-shit-done/bin/gsd-tools.cjs",
+      "get-shit-done/bin/lib/__tests__/merge-back.test.cjs"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/security.cjs",
+    "git_blob": "d09c0beee6cde5b9cbac5777e71934b3501afe44",
+    "pinned_sha256": "82cb2084112d8e68e88e88bec6b0563dc7ecdbfe2a4c53a2ca157b5f4092bbe5",
+    "pinned_bytes": 17440,
+    "manifest_bytes": 17440,
+    "line_count": 503,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 503,
+        "raw_range_sha256": "82cb2084112d8e68e88e88bec6b0563dc7ecdbfe2a4c53a2ca157b5f4092bbe5"
+      }
+    ],
+    "supports_primary": [
+      "get-shit-done/bin/gsd-tools.cjs",
+      "get-shit-done/bin/lib/commands.cjs",
+      "get-shit-done/bin/lib/frontmatter.cjs"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  }
+]

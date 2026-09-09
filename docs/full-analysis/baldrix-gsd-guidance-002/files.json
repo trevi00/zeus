@@ -1,0 +1,250 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/VERSION",
+    "git_blob": "62262325a7e0225ba7f5a985e193873cd0f610af",
+    "bytes": 6,
+    "pinned_sha256": "ef3afc161b7b22605d04802ef5c8448df9fb68226784bb6d76dde299d384bff9",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 1,
+        "raw_range_sha256": "ef3afc161b7b22605d04802ef5c8448df9fb68226784bb6d76dde299d384bff9"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Installed-version marker read with bounded updater consumer; not immutable revision or platform qualification.",
+    "original_reference_bash_calls": 0,
+    "original_source_suite_executed": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/contexts/dev.md",
+    "git_blob": "7a9a9a2739e9ff4b6054b8efc59a31d2a2cb8f6b",
+    "bytes": 759,
+    "pinned_sha256": "dcb0de9dce33cf41cf4cf356a382ec5832d6be99054367925614d4b50349ca61",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 21,
+        "raw_range_sha256": "dcb0de9dce33cf41cf4cf356a382ec5832d6be99054367925614d4b50349ca61"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Concise action style; config-set accepts dev, actual loader unconfirmed.",
+    "original_reference_bash_calls": 0,
+    "original_source_suite_executed": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/contexts/research.md",
+    "git_blob": "d358858385cd431a5df07b4bf382cff74ecb67f2",
+    "bytes": 859,
+    "pinned_sha256": "b3285d8e7209cc3be7115b2e0000614c96e0ac3ff25d5933abc799d70e43fc52",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 22,
+        "raw_range_sha256": "b3285d8e7209cc3be7115b2e0000614c96e0ac3ff25d5933abc799d70e43fc52"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Research breadth and cited evidence guidance; config interface is not confirmed Markdown loading or full research closure.",
+    "original_reference_bash_calls": 0,
+    "original_source_suite_executed": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/contexts/review.md",
+    "git_blob": "3e298e5fc7d5b5c9694e68d64b9aa41b51ea43de",
+    "bytes": 922,
+    "pinned_sha256": "0caf4651f28673b866a06bc1c6262d1bb1f524fccd5a6530214fa576755c0342",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 22,
+        "raw_range_sha256": "0caf4651f28673b866a06bc1c6262d1bb1f524fccd5a6530214fa576755c0342"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Severity and evidence-oriented style; not actual reviewer execution or qualified model authority.",
+    "original_reference_bash_calls": 0,
+    "original_source_suite_executed": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/references/user-profiling.md",
+    "git_blob": "c38c3718112bfbb78884c3f01280d8147c756e68",
+    "bytes": 37775,
+    "pinned_sha256": "146e2dee3f35ac358976f95b7d885c89d5a1c645b869814f31e61cabd1dc9148",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 681,
+        "raw_range_sha256": "146e2dee3f35ac358976f95b7d885c89d5a1c645b869814f31e61cabd1dc9148"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Eight dimensions, raw/weighted/sampled denominator, actual consent, evidence_quotes redaction mismatch and inferred directive authority traced. No real user collection.",
+    "original_reference_bash_calls": 0,
+    "original_source_suite_executed": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/references/verification-overrides.md",
+    "git_blob": "68f48a23cb3e5479d01c1f959481a7d97793bb70",
+    "bytes": 8760,
+    "pinned_sha256": "a46fee77c8e4b422cd120a5c35ccb34918e071e8c53930af2738293e84fa86b5",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 227,
+        "raw_range_sha256": "a46fee77c8e4b422cd120a5c35ccb34918e071e8c53930af2738293e84fa86b5"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Fuzzy text binding and passed-override score, preserved human-needed and incomplete-work restrictions; authenticated revision-bound waiver unverified.",
+    "original_reference_bash_calls": 0,
+    "original_source_suite_executed": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/references/verification-patterns.md",
+    "git_blob": "836db76f25b55609646fdc05dcdcc43d78897499",
+    "bytes": 16552,
+    "pinned_sha256": "5ee34d57a8e60486ec4bdf278ebc2b5eec66cdb7d4aa02b00299310bdd4b4df0",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 612,
+        "raw_range_sha256": "5ee34d57a8e60486ec4bdf278ebc2b5eec66cdb7d4aa02b00299310bdd4b4df0"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": true,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Four verification levels and human flows; seven isolated original Bash calls reveal token-only labels and inconsistent command failure handling. Not full verifier acceptance.",
+    "original_reference_bash_calls": 7,
+    "original_source_suite_executed": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/references/workstream-flag.md",
+    "git_blob": "10d908b2b61a0d8fcbab4d4e904f9a1392fd9c75",
+    "bytes": 4591,
+    "pinned_sha256": "61ec2963fcc99102271cb5cfb970272480a4ee07fafaa8b08869f702bcbae02f",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 111,
+        "raw_range_sha256": "61ec2963fcc99102271cb5cfb970272480a4ee07fafaa8b08869f702bcbae02f"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-guidance-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-guidance-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/observations.md",
+      "docs/full-analysis/baldrix-gsd-guidance-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "test_limits": "Direct named tests not located in bounded search; originals unexecuted. Full caller/config/test closure pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Explicit/env/session/shared routing and actual pointer implementations; sanitizer collisions, project routing and unfenced writes remain static concerns.",
+    "original_reference_bash_calls": 0,
+    "original_source_suite_executed": false
+  }
+]

@@ -1,0 +1,141 @@
+{
+  "ledger_path": "docs/full-analysis/path-ledger.json",
+  "ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+  "rows": [
+    {
+      "row_index": 394,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/discuss-phase.md",
+        "git_blob": "98ad79317e772219aec4c65ea0873886817c781c",
+        "mode": "100644",
+        "bytes": 51827,
+        "pinned_sha256": "0eeee62db841ed6dbc32f8c3c93b9be0c4f8c2d72d05988158e0fb04ba8d7619",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 395,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/do.md",
+        "git_blob": "b86953dd6366a65e617769cfee5d9e98ba1b8bde",
+        "mode": "100644",
+        "bytes": 4603,
+        "pinned_sha256": "e2e37b82d811e4ea6594b23a6b8a88cb1e2e20fc2bd6a5062971d4143a9e2d46",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 396,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/docs-update.md",
+        "git_blob": "e58d42d86a03bca966fa77f81435f7863c83e6ab",
+        "mode": "100644",
+        "bytes": 47560,
+        "pinned_sha256": "dada72c670ec7b71586fc6c53134741a3cc86ed71dd2e834095a5156ffcccdde",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 397,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/execute-phase.md",
+        "git_blob": "d8a3636fdbe98a121b6942bd9c66fe709b634a4f",
+        "mode": "100644",
+        "bytes": 51734,
+        "pinned_sha256": "bb8d349ac339d7672fba1885b22ebc63d47316652a0df002b6dad0bebb3ad8b0",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 398,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/execute-plan.md",
+        "git_blob": "7e79db2814a7ba1c347caa88f532e5399ca9053c",
+        "mode": "100644",
+        "bytes": 23242,
+        "pinned_sha256": "5e3540cf7be6e7fa5d5ba98084c5fcd0a553787d0a8155d7e9a7ca46f351e992",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 399,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/explore.md",
+        "git_blob": "a00dc2e1f63d97dd2ee063ba48332937e24b7f8c",
+        "mode": "100644",
+        "bytes": 5349,
+        "pinned_sha256": "b0610a63a96e4529f7793ebf6f9e4ebdf9ac3ce3eb22404d1f500bc98b8da572",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 400,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/fast.md",
+        "git_blob": "03a082c3586e1a7166d7946c819adfa87b0f7a0a",
+        "mode": "100644",
+        "bytes": 2703,
+        "pinned_sha256": "5cec55558393c423e5169d3a999c1122486bb3abb2ee2a63026be1d61d98176d",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 401,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/forensics.md",
+        "git_blob": "6fe5e646932c5545fca456a4d14f57c311f12cb2",
+        "mode": "100644",
+        "bytes": 7412,
+        "pinned_sha256": "6941eb18a8297ea54107e65b02148aad4cd2ed6b9a922fe2b2411df15316fe51",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 402,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/health.md",
+        "git_blob": "ef2c413f97e3787672d3f63849761677098dee75",
+        "mode": "100644",
+        "bytes": 5530,
+        "pinned_sha256": "7d3f1de92fa58e9c7d18e6a0b79733652183da9df58cde0f0d61f8ce6bf49c5d",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    }
+  ]
+}

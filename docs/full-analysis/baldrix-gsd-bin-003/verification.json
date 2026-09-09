@@ -1,0 +1,50 @@
+{
+  "primary_count": 9,
+  "primary_bytes": 183887,
+  "primary_lines": 5017,
+  "partition_counts": {
+    "baldrix:get-shit-done/bin:003": {
+      "files": 9,
+      "bytes": 183887
+    }
+  },
+  "supporting_rows": 16,
+  "supporting_read_lines": 2660,
+  "prior_reuse_rows": 0,
+  "review_refs_checked": 63,
+  "raw_blob_size_sha256_verified": true,
+  "range_bounds_verified": true,
+  "utf8_decoding_verified": true,
+  "korean_sentinel_verified": true,
+  "missing_manifest_snapshot_sha256_paths": [
+    "get-shit-done/bin/lib/profile-pipeline.cjs",
+    "get-shit-done/bin/lib/roadmap.cjs",
+    "get-shit-done/bin/lib/schema-detect.cjs",
+    "get-shit-done/bin/lib/security.cjs",
+    "get-shit-done/bin/lib/state.cjs",
+    "get-shit-done/bin/lib/template.cjs",
+    "get-shit-done/bin/lib/uat.cjs",
+    "get-shit-done/bin/lib/verify.cjs",
+    "get-shit-done/bin/lib/workstream.cjs",
+    "get-shit-done/bin/gsd-tools.cjs",
+    "get-shit-done/bin/lib/core.cjs",
+    "get-shit-done/bin/lib/frontmatter.cjs",
+    "get-shit-done/bin/lib/config.cjs"
+  ],
+  "upstream_tests_run": false,
+  "external_claims_verified": 0,
+  "full_read_gap_repairs": {},
+  "search_only_not_body": [
+    "034824",
+    "7c9e31",
+    "ad8408",
+    "06ea89",
+    "29bd9b",
+    "b767f5",
+    "a1d1e2",
+    "77b2e9"
+  ],
+  "search_limits": "No direct tests were found with the named identifier searches in pinned test/spec paths. This is not proof of whole-tree test absence. No tests ran.",
+  "metadata_format_reuse": "Previous recorder source format reused; no source semantic/body evidence reused.",
+  "final_parser_tail_read": "Fresh frontmatter.cjs lines 295-304 displayed after receipt 9338bd. Current tool receipt is not embedded recursively."
+}

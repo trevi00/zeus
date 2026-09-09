@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "primary_files": 9,
+  "primary_bytes": 183887,
+  "primary_lines": 5017,
+  "supporting_rows": 16,
+  "supporting_read_lines": 2660,
+  "review_refs_checked": 63,
+  "raw_git_blob_bytes_sha256_and_prior_rows": "verified_by_record_review.py_receipt_27f3a1",
+  "utf8_and_exactly_one_trailing_lf": true,
+  "own_python_ast_parse": true,
+  "ruff": {
+    "command": ".venv/Scripts/ruff.exe check docs/full-analysis/baldrix-gsd-bin-003",
+    "exit_code": 0,
+    "receipt": "9cba7c",
+    "python_sha256": {
+      "build_recorder.py": "5212b6f989a9e9079f699a5c1d585f2d8b809f2bb3a6fec341bd3d3e3d755db8",
+      "record_review.py": "c664768f532652f216b3d9450359964d97c383fda1045f6667b653332e5f48ca"
+    }
+  },
+  "human_korean_readback": {
+    "receipt": "37cda7",
+    "line_ranges": [
+      [
+        1,
+        124
+      ]
+    ],
+    "complete_untruncated": true
+  },
+  "artifact_sha256": {
+    "build_recorder.py": "5212b6f989a9e9079f699a5c1d585f2d8b809f2bb3a6fec341bd3d3e3d755db8",
+    "checkpoint.json": "6999b104080d24f3eb779766cacf5190a3a64d90600ebdbc37e8466a6b6b769e",
+    "files.json": "4765da72a2adb189332e2fbf2b0ffd91cdfe57885ec0dc5c541290134bab105c",
+    "record_review.py": "c664768f532652f216b3d9450359964d97c383fda1045f6667b653332e5f48ca",
+    "remaining.json": "e5c8533ab5dfc45c305fef1df3ed01f25ea429ceea6a88184d6b75baf9c186b7",
+    "review.md": "60e3005cc3b0d676956b0cd18cefc4b8ee5c847ba79dd554fad0b6e3b825ee1f",
+    "supporting-evidence.json": "7165026a74e37c77867bddb186603d672d7b6eff151462ff3c311ebeffe20d4a",
+    "verification.json": "00b0b13c2cb62b6a22f29c2689f677ab6172345b4442150ecf6dea19656ec87a"
+  },
+  "source_execution_count": 0,
+  "source_import_count": 0,
+  "probe_count": 0,
+  "collection_count": 0,
+  "network_count": 0,
+  "install_count": 0,
+  "actual_claude_calls": 0,
+  "whole_closure_complete": false,
+  "license_complete": false,
+  "os_runtime_verified": false,
+  "model_qualification_verified": false,
+  "human_acceptance_verified": false,
+  "adopted": false
+}

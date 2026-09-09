@@ -1,0 +1,114 @@
+[
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/gsd-tools.cjs",
+      "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+      "mode": "100644",
+      "bytes": 43392,
+      "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/__tests__/merge-back.test.cjs",
+      "git_blob": "40bc828e4f6d1a127270e3c8d87fd0424c7ab46b",
+      "mode": "100644",
+      "bytes": 20495,
+      "pinned_sha256": "9c9da62867b8e56eb45139525242d1a43d3e435afca9f33d4652fdd86e985280",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/commands.cjs",
+      "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+      "mode": "100644",
+      "bytes": 36090,
+      "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/config.cjs",
+      "git_blob": "cf19a3969d5f8823e4b312383cdcb93c5b9e5923",
+      "mode": "100644",
+      "bytes": 15944,
+      "pinned_sha256": "d368e3166e3be997aa47c927110fadbee5b1469ca18da2f90805f856a3b271cb",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/core.cjs",
+      "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+      "mode": "100644",
+      "bytes": 58568,
+      "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/docs.cjs",
+      "git_blob": "1fd1602b4bd3998bdd8644229e29fd84a5926004",
+      "mode": "100644",
+      "bytes": 9342,
+      "pinned_sha256": "0790ce0eaabd70e832b132657538c9204984ac3d4fc6a182f05fa544621e293e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/frontmatter.cjs",
+      "git_blob": "f8e4ee7fcadc190f5ac5769e9d65b6c184dba829",
+      "mode": "100644",
+      "bytes": 15155,
+      "pinned_sha256": "6e5c45b41239d2a20ca14f4f008cd6f6cd734e086732bfd3eed9b6e8544dfb45",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4",
+    "reused_for_read": false
+  }
+]

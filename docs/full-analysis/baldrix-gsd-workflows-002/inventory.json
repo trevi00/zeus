@@ -1,0 +1,44 @@
+{
+  "partition": "baldrix:get-shit-done/workflows:002",
+  "scope_sha256": "262598b7b56a11bd070b715813266e543d03d059a66ccdaaff32bd2388451473",
+  "bytes": 199960,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/discuss-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/do.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/docs-update.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/execute-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/execute-plan.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/explore.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/fast.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/forensics.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/health.md"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

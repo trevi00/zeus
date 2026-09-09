@@ -1,0 +1,647 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/gsd-tools.cjs",
+    "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+    "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+    "pinned_bytes": 43392,
+    "manifest_bytes": 43392,
+    "line_count": 1055,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "partition": "baldrix:get-shit-done/bin:001",
+    "scope_sha256": "cafde003ad2a4ac33ded41bf2d4ffca61edd436ee59f33143706c491ed5b8851",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        1055
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/gsd-tools.cjs",
+      "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+      "mode": "100644",
+      "bytes": 43392,
+      "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md#file-01",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct caller/config/test follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "get-shit-done/bin/lib/merge-back.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 267,
+            "raw_range_sha256": "4c073476aa9f98991b1c2ba8b34882c9f0c6b66d5360e3625faf0f7924e85e8e"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/bin/lib/model-profiles.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 70,
+            "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/workflows/docs-update.md",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 65,
+            "raw_range_sha256": "f1f865fedd2bc7a0a99cd9496afee5f89d414a9741bb34783ba7b61f6bbd0dfb"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/bin/lib/verify.cjs",
+        "read_ranges": [
+          {
+            "start": 272,
+            "end": 390,
+            "raw_range_sha256": "468fee9e46fc0b971c18190e2bbe37f5d78132ad4d0d0ea36354948da3c95d0f"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/workflows/quick.md",
+        "read_ranges": [
+          {
+            "start": 615,
+            "end": 660,
+            "raw_range_sha256": "7a56f9edd1621085407f8d2980b4d71761cf8f9bf0d0e5bcff9c55b593b2edd6"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/bin/lib/security.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 503,
+            "raw_range_sha256": "82cb2084112d8e68e88e88bec6b0563dc7ecdbfe2a4c53a2ca157b5f4092bbe5"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "CLI routes, direct primary dependencies and bounded supports recorded; no invocation.",
+    "tests_read_not_run": [
+      "get-shit-done/bin/lib/__tests__/merge-back.test.cjs"
+    ],
+    "test_design_cases_read": 0,
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/__tests__/merge-back.test.cjs",
+    "git_blob": "40bc828e4f6d1a127270e3c8d87fd0424c7ab46b",
+    "pinned_sha256": "9c9da62867b8e56eb45139525242d1a43d3e435afca9f33d4652fdd86e985280",
+    "pinned_bytes": 20495,
+    "manifest_bytes": 20495,
+    "line_count": 444,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "partition": "baldrix:get-shit-done/bin:001",
+    "scope_sha256": "cafde003ad2a4ac33ded41bf2d4ffca61edd436ee59f33143706c491ed5b8851",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        444
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/__tests__/merge-back.test.cjs",
+      "git_blob": "40bc828e4f6d1a127270e3c8d87fd0424c7ab46b",
+      "mode": "100644",
+      "bytes": 20495,
+      "pinned_sha256": "9c9da62867b8e56eb45139525242d1a43d3e435afca9f33d4652fdd86e985280",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md#file-02",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct caller/config/test follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "get-shit-done/bin/lib/merge-back.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 267,
+            "raw_range_sha256": "4c073476aa9f98991b1c2ba8b34882c9f0c6b66d5360e3625faf0f7924e85e8e"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/workflows/quick.md",
+        "read_ranges": [
+          {
+            "start": 615,
+            "end": 660,
+            "raw_range_sha256": "7a56f9edd1621085407f8d2980b4d71761cf8f9bf0d0e5bcff9c55b593b2edd6"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "CLI routes, direct primary dependencies and bounded supports recorded; no invocation.",
+    "tests_read_not_run": [
+      "get-shit-done/bin/lib/__tests__/merge-back.test.cjs"
+    ],
+    "test_design_cases_read": 13,
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/commands.cjs",
+    "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+    "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+    "pinned_bytes": 36090,
+    "manifest_bytes": 36090,
+    "line_count": 1013,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "partition": "baldrix:get-shit-done/bin:001",
+    "scope_sha256": "cafde003ad2a4ac33ded41bf2d4ffca61edd436ee59f33143706c491ed5b8851",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        1013
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/commands.cjs",
+      "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+      "mode": "100644",
+      "bytes": 36090,
+      "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md#file-03",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct caller/config/test follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "get-shit-done/bin/lib/model-profiles.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 70,
+            "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/bin/lib/security.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 503,
+            "raw_range_sha256": "82cb2084112d8e68e88e88bec6b0563dc7ecdbfe2a4c53a2ca157b5f4092bbe5"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "CLI routes, direct primary dependencies and bounded supports recorded; no invocation.",
+    "tests_read_not_run": [],
+    "test_design_cases_read": 0,
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/config.cjs",
+    "git_blob": "cf19a3969d5f8823e4b312383cdcb93c5b9e5923",
+    "pinned_sha256": "d368e3166e3be997aa47c927110fadbee5b1469ca18da2f90805f856a3b271cb",
+    "pinned_bytes": 15944,
+    "manifest_bytes": 15944,
+    "line_count": 471,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "partition": "baldrix:get-shit-done/bin:001",
+    "scope_sha256": "cafde003ad2a4ac33ded41bf2d4ffca61edd436ee59f33143706c491ed5b8851",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        471
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/config.cjs",
+      "git_blob": "cf19a3969d5f8823e4b312383cdcb93c5b9e5923",
+      "mode": "100644",
+      "bytes": 15944,
+      "pinned_sha256": "d368e3166e3be997aa47c927110fadbee5b1469ca18da2f90805f856a3b271cb",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md#file-04",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct caller/config/test follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "get-shit-done/bin/lib/model-profiles.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 70,
+            "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "CLI routes, direct primary dependencies and bounded supports recorded; no invocation.",
+    "tests_read_not_run": [],
+    "test_design_cases_read": 0,
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/core.cjs",
+    "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+    "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+    "pinned_bytes": 58568,
+    "manifest_bytes": 58568,
+    "line_count": 1536,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "partition": "baldrix:get-shit-done/bin:001",
+    "scope_sha256": "cafde003ad2a4ac33ded41bf2d4ffca61edd436ee59f33143706c491ed5b8851",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        1536
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/core.cjs",
+      "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+      "mode": "100644",
+      "bytes": 58568,
+      "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md#file-05",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct caller/config/test follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "get-shit-done/bin/lib/merge-back.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 267,
+            "raw_range_sha256": "4c073476aa9f98991b1c2ba8b34882c9f0c6b66d5360e3625faf0f7924e85e8e"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/bin/lib/model-profiles.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 70,
+            "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "CLI routes, direct primary dependencies and bounded supports recorded; no invocation.",
+    "tests_read_not_run": [
+      "get-shit-done/bin/lib/__tests__/merge-back.test.cjs"
+    ],
+    "test_design_cases_read": 0,
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/docs.cjs",
+    "git_blob": "1fd1602b4bd3998bdd8644229e29fd84a5926004",
+    "pinned_sha256": "0790ce0eaabd70e832b132657538c9204984ac3d4fc6a182f05fa544621e293e",
+    "pinned_bytes": 9342,
+    "manifest_bytes": 9342,
+    "line_count": 267,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "partition": "baldrix:get-shit-done/bin:001",
+    "scope_sha256": "cafde003ad2a4ac33ded41bf2d4ffca61edd436ee59f33143706c491ed5b8851",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        267
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/docs.cjs",
+      "git_blob": "1fd1602b4bd3998bdd8644229e29fd84a5926004",
+      "mode": "100644",
+      "bytes": 9342,
+      "pinned_sha256": "0790ce0eaabd70e832b132657538c9204984ac3d4fc6a182f05fa544621e293e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md#file-06",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct caller/config/test follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "get-shit-done/bin/lib/model-profiles.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 70,
+            "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/workflows/docs-update.md",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 65,
+            "raw_range_sha256": "f1f865fedd2bc7a0a99cd9496afee5f89d414a9741bb34783ba7b61f6bbd0dfb"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "CLI routes, direct primary dependencies and bounded supports recorded; no invocation.",
+    "tests_read_not_run": [],
+    "test_design_cases_read": 0,
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/frontmatter.cjs",
+    "git_blob": "f8e4ee7fcadc190f5ac5769e9d65b6c184dba829",
+    "pinned_sha256": "6e5c45b41239d2a20ca14f4f008cd6f6cd734e086732bfd3eed9b6e8544dfb45",
+    "pinned_bytes": 15155,
+    "manifest_bytes": 15155,
+    "line_count": 381,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "partition": "baldrix:get-shit-done/bin:001",
+    "scope_sha256": "cafde003ad2a4ac33ded41bf2d4ffca61edd436ee59f33143706c491ed5b8851",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        381
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/frontmatter.cjs",
+      "git_blob": "f8e4ee7fcadc190f5ac5769e9d65b6c184dba829",
+      "mode": "100644",
+      "bytes": 15155,
+      "pinned_sha256": "6e5c45b41239d2a20ca14f4f008cd6f6cd734e086732bfd3eed9b6e8544dfb45",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md#file-07",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct caller/config/test follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "get-shit-done/bin/lib/verify.cjs",
+        "read_ranges": [
+          {
+            "start": 272,
+            "end": 390,
+            "raw_range_sha256": "468fee9e46fc0b971c18190e2bbe37f5d78132ad4d0d0ea36354948da3c95d0f"
+          }
+        ]
+      },
+      {
+        "path": "get-shit-done/bin/lib/security.cjs",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 503,
+            "raw_range_sha256": "82cb2084112d8e68e88e88bec6b0563dc7ecdbfe2a4c53a2ca157b5f4092bbe5"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "CLI routes, direct primary dependencies and bounded supports recorded; no invocation.",
+    "tests_read_not_run": [],
+    "test_design_cases_read": 0,
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  }
+]

@@ -1,0 +1,59 @@
+{
+  "partitions": [
+    "baldrix:get-shit-done/bin:003"
+  ],
+  "partition_scopes": {
+    "baldrix:get-shit-done/bin:003": "efd1cb12da5b31c451989c5c0c2f4af49269e667efffa9dd618dd92b688c3522"
+  },
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "zeus_head_at_start": "5acaeced22de71ae3eb8584643e00557762745c0",
+  "status": "bounded_static_review_complete",
+  "primary_files": 9,
+  "primary_bytes": 183887,
+  "primary_lines": 5017,
+  "partition_counts": {
+    "baldrix:get-shit-done/bin:003": {
+      "files": 9,
+      "bytes": 183887
+    }
+  },
+  "supporting_rows": 16,
+  "previous_review_reuse": null,
+  "input_sha256_at_recording": {
+    ".runtime/absorption/sources/baldrix/manifest.json": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+    "docs/full-analysis/partitions.json": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8",
+    "docs/full-analysis/path-ledger.json": "947f235275b6940c410c1f1d4973c64f4b5a32c3d65a61bc13d6d62a8e56c2c4"
+  },
+  "artifact_sha256": {
+    "review.md": "60e3005cc3b0d676956b0cd18cefc4b8ee5c847ba79dd554fad0b6e3b825ee1f",
+    "files.json": "4765da72a2adb189332e2fbf2b0ffd91cdfe57885ec0dc5c541290134bab105c",
+    "supporting-evidence.json": "7165026a74e37c77867bddb186603d672d7b6eff151462ff3c311ebeffe20d4a",
+    "remaining.json": "e5c8533ab5dfc45c305fef1df3ed01f25ea429ceea6a88184d6b75baf9c186b7",
+    "verification.json": "00b0b13c2cb62b6a22f29c2689f677ab6172345b4442150ecf6dea19656ec87a",
+    "record_review.py": "c664768f532652f216b3d9450359964d97c383fda1045f6667b653332e5f48ca",
+    "build_recorder.py": "5212b6f989a9e9079f699a5c1d585f2d8b809f2bb3a6fec341bd3d3e3d755db8"
+  },
+  "scope_complete": true,
+  "subsystem_complete": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adoption_approved": false,
+  "actual_claude_review_complete": false,
+  "license_review_complete": false,
+  "model_qualification_verified": false,
+  "os_runtime_verified": false,
+  "human_acceptance_verified": false,
+  "source_execution_count": 0,
+  "source_import_count": 0,
+  "collection_count": 0,
+  "probe_count": 0,
+  "network_count": 0,
+  "model_count": 0,
+  "install_count": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried_or_bypassed": false,
+  "source_runtime_shared_coverage_modified": false,
+  "commit_or_push_performed": false,
+  "review_ref": "docs/full-analysis/baldrix-gsd-bin-003/review.md#scope"
+}

@@ -1,0 +1,62 @@
+{
+  "partitions": [
+    {
+      "partition": "baldrix:get-shit-done:001",
+      "scope_sha256": "577d4320e122edfc43a90c05b00cfe192442e9017af8d038ab385ad08d6d6a16",
+      "bytes": 6,
+      "paths": [
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/VERSION"
+        }
+      ],
+      "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+    },
+    {
+      "partition": "baldrix:get-shit-done/contexts:001",
+      "scope_sha256": "ffeb24440c0ff0653efff593fed0a85975cc5d518ed8148e0ebf59cf1ad1bc9b",
+      "bytes": 2540,
+      "paths": [
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/contexts/dev.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/contexts/research.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/contexts/review.md"
+        }
+      ],
+      "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+    },
+    {
+      "partition": "baldrix:get-shit-done/references:002",
+      "scope_sha256": "5d3874e31f83cd69c68a9daaffeaba1dea325b002e0a34db1296f3f7e87bfb08",
+      "bytes": 67678,
+      "paths": [
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/references/user-profiling.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/references/verification-overrides.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/references/verification-patterns.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/references/workstream-flag.md"
+        }
+      ],
+      "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+    }
+  ],
+  "primary_count": 8,
+  "primary_bytes": 70224
+}

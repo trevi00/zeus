@@ -1,0 +1,20 @@
+{
+  "check_metadata.py": "66e1cdc62c207ec5383f9903a99172c11ec889e0f7a7d7b74fda3b6fa129a547",
+  "checkpoint.json": "b39fe2ce062c4840675315877c43424834a54c912ae3931d94404f76edae1c28",
+  "file-reviews.md": "743ca4c79465de770907ec6d22928eb1849468bdb323ae2d99a6add86bdddc8a",
+  "files.json": "be6206d97bffc88832e9da89346b0b54e4afa08374207c0b5858ab304d554bd3",
+  "final_checks.py": "9b2dcfb45127c5d0cff3dddce3078b6579d7dc7998fbb416632b2fe331f3c3c5",
+  "metadata-check.json": "ae9e9397ca862791fa8e3de97565986bbeca133c2f23813489a60afbf670911a",
+  "order_notes.py": "58282918f27233e61460ef7f5f84a828990aee03bb49c6adfa46ff91051ed7f9",
+  "prepare_metadata.py": "d67814de0c6129bded2b9926f4805311a09fbc355a4cacf6dcd71b49a6e40887",
+  "prior-path-ledger.json": "582fea60ddfbc297d5f38cec4e06d9629fb60f547abefec973961ba9ad573df4",
+  "read-receipts.json": "c71bcedac654382757a31de84c07fe10f0b8d866da933162522f434133a5ef56",
+  "read_source.py": "3e65557f4f2f66325b34997555bda5cf13487bf2fd749beb195ea195f48b7cb6",
+  "record_review.py": "b71e89516a643cb4bf78eb8ba9707d6f6f5536e82b6efff74a02a44df37eb9ac",
+  "remaining.txt": "f6d52b8049d0fc17ce44d164a697b98a193e3708c36917fc1569c4b925425814",
+  "review.md": "6a9c06e2c109e46e1695ef667c31d1fa0c51869af27c1a959b30929233f15465",
+  "support-specs.json": "de4aa53f8ba4eb578e3924661c41576c33794193900691f9dea341f1e8018c91",
+  "supporting-evidence.json": "25dd71c1c534c8785cbefd462ccdfb899f25795fe3e29c53dde6cf1d87502a4a",
+  "supporting-notes.md": "141ea0705489e05cf1fe48539f661465b5bbd082f757b287f5a2b1c982e5cd2e",
+  "verification-receipt.json": "0f1ad873f2b92a4a68afcba361083ca63aed684a81b855df4b99dcaf94f264ad"
+}

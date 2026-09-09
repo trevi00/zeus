@@ -1,0 +1,66 @@
+{
+  "kind": "local_validation_observations",
+  "starting_head": "31d5091407566d4988980485246ed031784203b2",
+  "checks": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "result": "All checks passed!",
+      "tool_chunk": "c90827"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "session": 31141,
+      "exit_code": 0,
+      "passed": 660,
+      "skipped": 68,
+      "duration_seconds": 272.0,
+      "terminal_tool_chunk": "174a04"
+    },
+    {
+      "argv": [
+        "python",
+        "docs/full-analysis/baldrix-gsd-guidance-002/verify_evidence.py"
+      ],
+      "exit_code": 0,
+      "tool_chunk": "ed5da7",
+      "scope": "Original reference Bash observation and actual Claude receipt integrity; no upstream reexecution"
+    },
+    {
+      "argv": [
+        "python",
+        ".runtime/absorption/guidance002_checkpoint.py"
+      ],
+      "exit_code": 0,
+      "tool_chunk": "5c9bb0",
+      "primary_records": 33,
+      "supporting_records": 56,
+      "review_refs": 177
+    }
+  ],
+  "publication_checks": {
+    "tool_chunk": "a59d72",
+    "staged_artifact_hashes_verified": 68,
+    "staged_files_before_this_receipt_and_additional_previous_ci": 76,
+    "selected_secret_pattern_hits": 0,
+    "not_universal_secret_scan": true,
+    "whitespace_tool_chunk": "ac2116",
+    "whitespace": "PASS"
+  },
+  "limits": [
+    "Skipped checks are not passed",
+    "Current Zeus tests and bounded receipt checks do not establish complete source acceptance, human acceptance, OS qualification or adoption",
+    "Subsequent delegated workflow partitions are separate uncommitted work requiring their own verification."
+  ]
+}

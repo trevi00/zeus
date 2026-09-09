@@ -1,0 +1,32 @@
+{
+  "source_execution": 0,
+  "read_mechanism": "Inert UTF-8 Python text printer only; source instructions treated as data.",
+  "primary_reads": [
+    {"index": 1, "ranges": [[1, 260], [261, 560], [561, 820], [821, 1055]], "tool_chunks": ["a0e95f", "624425", "669c63", "db29b4"]},
+    {"index": 2, "ranges": [[1, 210], [211, 444]], "tool_chunks": ["db29b4", "511f49"]},
+    {"index": 3, "ranges": [[1, 270], [271, 560], [561, 810], [811, 1013]], "tool_chunks": ["78be00", "ce2e07", "f1042c", "6ac2aa"]},
+    {"index": 4, "ranges": [[1, 240], [241, 471]], "tool_chunks": ["6ac2aa", "6f8cab"]},
+    {"index": 5, "ranges": [[1, 220], [221, 480], [481, 770], [771, 1070], [1071, 1330], [1331, 1536]], "tool_chunks": ["6f8cab", "477d92", "09c515", "46c2d8", "b7509f", "e40ff8"]},
+    {"index": 6, "ranges": [[1, 267]], "tool_chunks": ["7edefa"]},
+    {"index": 7, "ranges": [[1, 200], [201, 381]], "tool_chunks": ["980707", "7cbf83"]}
+  ],
+  "support_reads": [
+    {"path": "get-shit-done/bin/lib/merge-back.cjs", "ranges": [[1, 267]], "tool_chunk": "a42d08"},
+    {"path": "get-shit-done/bin/lib/model-profiles.cjs", "ranges": [[1, 70]], "tool_chunk": "a42d08"},
+    {"path": "get-shit-done/workflows/docs-update.md", "ranges": [[1, 65]], "tool_chunk": "a42d08"},
+    {"path": "get-shit-done/bin/lib/verify.cjs", "ranges": [[272, 390]], "tool_chunk": "267b3d"},
+    {"path": "get-shit-done/workflows/quick.md", "ranges": [[615, 660]], "tool_chunk": "267b3d"},
+    {"path": "get-shit-done/bin/lib/security.cjs", "ranges": [[1, 503]], "tool_chunk": "e181b3"}
+  ],
+  "inert_reader_failure_history": [{
+    "tool_chunk": "d0660e", "exit_code": 1,
+    "failure": "UnicodeEncodeError: cp949 codec could not encode U+2014 while printing merge-back.cjs body; only filename was output.",
+    "source_body_read_credit": false,
+    "resolution": "Reran inert reader with python -X utf8; complete source body printed in a42d08. No source import or execution."
+  }],
+  "prior_ledger_snapshot_tool_chunk": "a0e95f",
+  "start_head_tool_chunk": "afc49e",
+  "instructions_read_tool_chunk": "b99fdf",
+  "prior_source_body_reuse": false,
+  "notes": "Tool output is an observation handle, not a published source reproduction. Hash/byte/range identities are verified independently in files.json and supporting-evidence.json."
+}
