@@ -1,0 +1,59 @@
+{
+  "partitions": [
+    "baldrix:get-shit-done/workflows:005"
+  ],
+  "partition_scopes": {
+    "baldrix:get-shit-done/workflows:005": "0793c364d3a1426312c4800715fdd964ba23bbb7eeab42fd57b36649b4e184eb"
+  },
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "zeus_head_at_start": "31d5091407566d4988980485246ed031784203b2",
+  "status": "bounded_static_review_complete",
+  "primary_files": 7,
+  "primary_bytes": 83538,
+  "primary_lines": 2523,
+  "partition_counts": {
+    "baldrix:get-shit-done/workflows:005": {
+      "files": 7,
+      "bytes": 83538
+    }
+  },
+  "supporting_rows": 25,
+  "previous_review_reuse": null,
+  "input_sha256_at_recording": {
+    ".runtime/absorption/sources/baldrix/manifest.json": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+    "docs/full-analysis/partitions.json": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8",
+    "docs/full-analysis/path-ledger.json": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216"
+  },
+  "artifact_sha256": {
+    "review.md": "213f2d1ff4653736ff92f9d9719c87cece5f16b8aee46edb76396c9c44b52237",
+    "files.json": "efbb776f593d9d670a41c78b8815ff80077239aed0250acb460bcf737e2811c8",
+    "supporting-evidence.json": "e19255702fbfbb5fd2e397c6c686c1e3e4cf0ba974da5947677df0f47cd7b295",
+    "remaining.json": "1fd0dcbaedf9cc6992ea36ec12b17c3f5c3270163cbaac148dfde324144db8ca",
+    "verification.json": "c452e2166d574234f75bf97f4e8eaceaaf375fe99bad544aaeb2a84c6b91b8d7",
+    "record_review.py": "5938e68ca683e6ac46b8bd41b77275edb8c82e53411867bab7352a6b71d14733",
+    "build_recorder.py": "4c3229aa516d3e97e37ae385ff4a5211801eca2780aa68541c95670c4c3bf4ab"
+  },
+  "scope_complete": true,
+  "subsystem_complete": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adoption_approved": false,
+  "actual_claude_review_complete": false,
+  "license_review_complete": false,
+  "model_qualification_verified": false,
+  "os_runtime_verified": false,
+  "human_acceptance_verified": false,
+  "source_execution_count": 0,
+  "source_import_count": 0,
+  "collection_count": 0,
+  "probe_count": 0,
+  "network_count": 0,
+  "model_count": 0,
+  "install_count": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried_or_bypassed": false,
+  "source_runtime_shared_coverage_modified": false,
+  "commit_or_push_performed": false,
+  "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#scope"
+}

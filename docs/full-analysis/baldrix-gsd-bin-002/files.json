@@ -1,0 +1,242 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/init.cjs",
+    "git_blob": "320122ad737c4923d2a543480709c3c1c2cb65e2",
+    "bytes": 56501,
+    "pinned_sha256": "e8b97d8b7fbe0ba7b719c80ba497c7559cfa4f70928afc3543b3404440a9f4cf",
+    "line_count": 1522,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 1522,
+        "raw_range_sha256": "e8b97d8b7fbe0ba7b719c80ba497c7559cfa4f70928afc3543b3404440a9f4cf"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Initializers mix metadata with completion/activity heuristics; config reads can mutate and no exact acceptance or live lease is established."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/intel.cjs",
+    "git_blob": "02856ce48e31d3b24010ffcae803efefe0aa1295",
+    "bytes": 20862,
+    "pinned_sha256": "c0ed6c580934a4ac69d14c73cffc2cc974958528bbfd008663f92533ca4a76f7",
+    "line_count": 660,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 660,
+        "raw_range_sha256": "c0ed6c580934a4ac69d14c73cffc2cc974958528bbfd008663f92533ca4a76f7"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Derived intel indexes use weak schema/freshness/path heuristics and text hashes; not source truth or real agent execution."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/learnings.cjs",
+    "git_blob": "c8f052c7b6992c565bad33a2d44999b1a04eb867",
+    "bytes": 11427,
+    "pinned_sha256": "d39a24dc421d69a68f73eae49524119f5af217cb64d8c7d3aafd1c7e6e1f20de",
+    "line_count": 378,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 378,
+        "raw_range_sha256": "d39a24dc421d69a68f73eae49524119f5af217cb64d8c7d3aafd1c7e6e1f20de"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Global learning files have unversioned check-write dedup and age deletion; no validated improvement or PostgreSQL authority."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/merge-back.cjs",
+    "git_blob": "86f510429e7a610c8a42cb8a84ff1a1c23fdfd71",
+    "bytes": 11273,
+    "pinned_sha256": "4c073476aa9f98991b1c2ba8b34882c9f0c6b66d5360e3625faf0f7924e85e8e",
+    "line_count": 267,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 267,
+        "raw_range_sha256": "4c073476aa9f98991b1c2ba8b34882c9f0c6b66d5360e3625faf0f7924e85e8e"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Real Git merge helper retains several useful defenses but ignores expectedBase and lacks owned selection and fail-closed reconcile/cleanup."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/milestone.cjs",
+    "git_blob": "f406634c8018a04b7cad62b1b08aaaed2b43af84",
+    "bytes": 10824,
+    "pinned_sha256": "1724e218f409d86ec9c6810fb5e7985d0d88e8211dcd29d9799d2a57f3b85682",
+    "line_count": 282,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 282,
+        "raw_range_sha256": "1724e218f409d86ec9c6810fb5e7985d0d88e8211dcd29d9799d2a57f3b85682"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Milestone text/archive transitions can leave partial effects and misleading existence results; clear has confirmation but lacks archive/active checks."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/model-profiles.cjs",
+    "git_blob": "5bb89051b2c0a6d2a1bf84685a329fa8d737be57",
+    "bytes": 3804,
+    "pinned_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777",
+    "line_count": 70,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 70,
+        "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Static role aliases are not qualified models; setter, health and resolver disagree on adaptive/inherit."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/phase.cjs",
+    "git_blob": "730e712dbf8057507e8119d82c09ce700909b004",
+    "bytes": 35757,
+    "pinned_sha256": "e71444af06a86925f53183edd71918a1083be8928a78cab38dd78054beed9961",
+    "line_count": 931,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 931,
+        "raw_range_sha256": "e71444af06a86925f53183edd71918a1083be8928a78cab38dd78054beed9961"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Phase lifecycle has count/summary completion, warning-only debt, non-idempotent counters and partial/cascading renumber risks."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/profile-output.cjs",
+    "git_blob": "613a6eacf79951521bfc48a0ecb268eb8f9d67a3",
+    "bytes": 45081,
+    "pinned_sha256": "93f8110728241c7abc3428ede13d1b98bf5fe697d2909d665c5d786fc99b7d00",
+    "line_count": 1048,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 1048,
+        "raw_range_sha256": "93f8110728241c7abc3428ede13d1b98bf5fe697d2909d665c5d786fc99b7d00"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": true,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Profile redaction is narrower than rendered fields; generated directives/managed sections lack uniform schema, provenance and historical content binding."
+  }
+]

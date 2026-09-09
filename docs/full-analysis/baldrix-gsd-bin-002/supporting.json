@@ -1,0 +1,207 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/core.cjs",
+    "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+    "bytes": 58568,
+    "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+    "line_count": 1536,
+    "read_ranges": [
+      {
+        "start_line": 209,
+        "end_line": 404,
+        "raw_range_sha256": "0035b892f3cd33e6768afd22b5a4a19b70f9485c0c6d29d9c620491724e94bd4"
+      },
+      {
+        "start_line": 525,
+        "end_line": 680,
+        "raw_range_sha256": "3a82467a84ed029385f11d1221c05bb27c9908c893c0a45b83c1cbf45c822562"
+      },
+      {
+        "start_line": 1230,
+        "end_line": 1362,
+        "raw_range_sha256": "a491dad6231e489373a4d45cff57a8041751df5d32af07f7eb016850ddf89ef2"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": false,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Config read side effects, defaults, Git/lock/path and model authority."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/security.cjs",
+    "git_blob": "d09c0beee6cde5b9cbac5777e71934b3501afe44",
+    "bytes": 17440,
+    "pinned_sha256": "82cb2084112d8e68e88e88bec6b0563dc7ecdbfe2a4c53a2ca157b5f4092bbe5",
+    "line_count": 503,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 130,
+        "raw_range_sha256": "893b162f00d89f87956a16908d72af85a63b6731fb51e320af3348b8f5d85ea9"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": false,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Existing realpath and parent fallback containment; skill leaf remains separately unchecked."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/gsd-tools.cjs",
+    "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+    "bytes": 43392,
+    "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+    "line_count": 1055,
+    "read_ranges": [
+      {
+        "start_line": 160,
+        "end_line": 265,
+        "raw_range_sha256": "0d94a6554c16ac786469a94cd27dc157b423f31cd3abc8d5ef2327e08ea2a28e"
+      },
+      {
+        "start_line": 435,
+        "end_line": 494,
+        "raw_range_sha256": "acaf88dfdd4f2dfb2f4e90389a4931f8d12cd482ec25159e722338397c0f19f8"
+      },
+      {
+        "start_line": 565,
+        "end_line": 704,
+        "raw_range_sha256": "2f0cace55718dfd167801b730ee76ab5afff785f34601ced965b8bcd41a18bd3"
+      },
+      {
+        "start_line": 900,
+        "end_line": 1049,
+        "raw_range_sha256": "6069e522fbcbf16ae48464df6737d55584332d77c0e8270bfba136564203b26f"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": false,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Direct command dispatch, expectedBase threading, answers and force values, intel root path."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/config.cjs",
+    "git_blob": "cf19a3969d5f8823e4b312383cdcb93c5b9e5923",
+    "bytes": 15944,
+    "pinned_sha256": "d368e3166e3be997aa47c927110fadbee5b1469ca18da2f90805f856a3b271cb",
+    "line_count": 471,
+    "read_ranges": [
+      {
+        "start_line": 400,
+        "end_line": 454,
+        "raw_range_sha256": "1e4b530fd6b1437617dc17f39fb6045840595275b363b0455d677dccaac3dee3"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": false,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Model profile setter derived table validation."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/verify.cjs",
+    "git_blob": "626698ee2f825570a2af822994a1e0f37a716d17",
+    "bytes": 41212,
+    "pinned_sha256": "b232ed0ccfef3f03022ea70ff1d90e833bde92e447913a068e0144816907ba09",
+    "line_count": 1032,
+    "read_ranges": [
+      {
+        "start_line": 625,
+        "end_line": 644,
+        "raw_range_sha256": "b9095f319c8509b9d3033e04ff33e1b0d6ae9dae484d70cb4643d9d7e6ba1247"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": false,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "Health model profile validation differs from setter."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/__tests__/merge-back.test.cjs",
+    "git_blob": "40bc828e4f6d1a127270e3c8d87fd0424c7ab46b",
+    "bytes": 20495,
+    "pinned_sha256": "9c9da62867b8e56eb45139525242d1a43d3e435afca9f33d4652fdd86e985280",
+    "line_count": 444,
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 444,
+        "raw_range_sha256": "9c9da62867b8e56eb45139525242d1a43d3e435afca9f33d4652fdd86e985280"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-gsd-bin-002/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-bin-002/root-initial.md",
+      "docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_coverage_counted": false,
+    "source_executed": false,
+    "tests_executed": [],
+    "original_source_suite_executed": false,
+    "test_limits": "Static only; original Node/Git test body read but not collected or executed. Isolated runtime, full closure and OS/human/model acceptance remain pending.",
+    "adoption_status": "not_approved_not_incorporated",
+    "semantic_summary": "13 declared real temporary Git scenarios; zero collected/executed."
+  }
+]

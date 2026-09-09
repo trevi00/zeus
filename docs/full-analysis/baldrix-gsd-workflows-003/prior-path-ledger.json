@@ -1,0 +1,274 @@
+[
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/help.md",
+      "git_blob": "8cbd7cd78f29fe95c463fb97f3b97adccf23e1d5",
+      "mode": "100644",
+      "bytes": 20009,
+      "pinned_sha256": "21e9883b86ae34a90e0a0e492aebaf90c4112eb2b2a2d892292cdba54fee23b6",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/import.md",
+      "git_blob": "0cc28bf6607413fd441c8dde1a3e87ff358e012d",
+      "mode": "100644",
+      "bytes": 9092,
+      "pinned_sha256": "dbae397e926633ff66b4a3d455c819ec5eda41991c3b9e43ae093ed666955c6e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/inbox.md",
+      "git_blob": "289ccead5ac8cf2947be33228a28c11f0311d3fa",
+      "mode": "100644",
+      "bytes": 14352,
+      "pinned_sha256": "a3b9a4c464cfca67c0171765478db7adbecffbfa4a9583e59ce762734242af78",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/insert-phase.md",
+      "git_blob": "fd5bebf9d0f45500e59494df7a7287e1141455cc",
+      "mode": "100644",
+      "bytes": 3580,
+      "pinned_sha256": "85222b6933a74e7754ba892f55879ec7777fc3227eaa2f195b6a0517fc066d00",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/list-phase-assumptions.md",
+      "git_blob": "d55045babdafefc0ae21a05556026731488b4f63",
+      "mode": "100644",
+      "bytes": 4285,
+      "pinned_sha256": "3187ca8200307773b128b5479eab800001186886be9dc3d1700f4a4354ec4467",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/list-workspaces.md",
+      "git_blob": "63d420c3d1fd0438299b5e3580fd8ecb5b94cd7a",
+      "mode": "100644",
+      "bytes": 1221,
+      "pinned_sha256": "c3836f60792db85d1d0ebd4268348fcdc173aa8ab0dac3fe5c67c142eb135c05",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/manager.md",
+      "git_blob": "05cc7fb6d8e11f982cf0476fcb6dde4063133793",
+      "mode": "100644",
+      "bytes": 15817,
+      "pinned_sha256": "6e472f970ac682f24e7aa7ed89f52654fc81322828e809cb7b0d0e026f6cd126",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/map-codebase.md",
+      "git_blob": "97817423d861fae20116d15f21c3200e6ae2c5c3",
+      "mode": "100644",
+      "bytes": 12459,
+      "pinned_sha256": "088b76722949ba1485a7350c9c65eed2a393465c0df38d1137b6ce0d60d8c658",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/milestone-summary.md",
+      "git_blob": "04b25572ae3c4d7e133e4dc0fd7edac5a618d7f5",
+      "mode": "100644",
+      "bytes": 7326,
+      "pinned_sha256": "784a2a3ff25dc57d9ce9703b710cdcd584020f2d0f8503eec5ca6da01a8886bc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/new-milestone.md",
+      "git_blob": "c7afdd92defbb1c57b1850d9a1ac7398f247a7f2",
+      "mode": "100644",
+      "bytes": 18632,
+      "pinned_sha256": "7e737a83b628da33a7f925cd90813e4be166472263b63937206bb724f42808ba",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/new-project.md",
+      "git_blob": "f8b3e183f326fe6f2a3e2317924152c4d208cde9",
+      "mode": "100644",
+      "bytes": 39980,
+      "pinned_sha256": "30e240a3eae39bc8c76c7143cf5e03eec85bf013bd5bf93f433b00280e578bf8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/new-workspace.md",
+      "git_blob": "baa3644154dd4b1fbd8753f6b09decc2942a6e12",
+      "mode": "100644",
+      "bytes": 6383,
+      "pinned_sha256": "42f09281ecaabf9e816e38abe4985f79a27734e0cab1405c81a265093c404366",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/next.md",
+      "git_blob": "ec805e1d989a4e9c6d17dda1dcd5cd516889a39b",
+      "mode": "100644",
+      "bytes": 4903,
+      "pinned_sha256": "70e933740eb9a0ff3f695bc4388b7d57b3746a23d5541e79e649a4f090e58c99",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/node-repair.md",
+      "git_blob": "7be3dbbcc708d30d8890f5134f154fc774701bd2",
+      "mode": "100644",
+      "bytes": 4173,
+      "pinned_sha256": "07a1628e5a1ff96bf8a90b49a9d9c3a0ef0b843aff79ffc0162c7b7026f6a61b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/note.md",
+      "git_blob": "392cbd4e70e64b9e17679f75a3e22d2552ca037c",
+      "mode": "100644",
+      "bytes": 6185,
+      "pinned_sha256": "d3fe44048bb5fdedcf3c59cd5b87757f1b50e8fe3722162cb958d2654812ce1d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/pause-work.md",
+      "git_blob": "dea0cacb520c9ecc746938db59ef61c8eb3eedeb",
+      "mode": "100644",
+      "bytes": 8951,
+      "pinned_sha256": "4eb2480b75250e060c84cc4dd21da3b0c44ea9b8c11b0a343e1895a989f2c6a8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/plan-milestone-gaps.md",
+      "git_blob": "3cd7821eac84e44c21df52e4def09d5c50be8d0e",
+      "mode": "100644",
+      "bytes": 6744,
+      "pinned_sha256": "91643dde72f0b4dba28c60ab321797bd31666c5fbda8b16e80ea1079f154bffc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "00c6528195f816c475b3e76e839c1fe83bf3fbb0cea59415e4f96f90462da216",
+    "reused_for_read": false
+  }
+]

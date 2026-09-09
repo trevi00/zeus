@@ -1,0 +1,46 @@
+{
+  "partitions": [
+    {
+      "partition": "baldrix:get-shit-done/bin:002",
+      "scope_sha256": "42e66f1c06a3e4b8014cfe10e2efc89aa5c8e4dfcc97ec619f0a9d2321e5230c",
+      "bytes": 195529,
+      "paths": [
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/init.cjs"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/intel.cjs"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/learnings.cjs"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/merge-back.cjs"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/milestone.cjs"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/model-profiles.cjs"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/phase.cjs"
+        },
+        {
+          "source": "baldrix",
+          "path": "get-shit-done/bin/lib/profile-output.cjs"
+        }
+      ],
+      "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+    }
+  ],
+  "primary_count": 8,
+  "primary_bytes": 195529
+}

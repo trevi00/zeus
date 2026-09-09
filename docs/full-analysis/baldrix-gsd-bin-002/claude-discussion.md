@@ -1,0 +1,106 @@
+Read `root-initial.md` and `root-followup.md`, then completed the directed support reads: `core.cjs` 209–404, 525–680, 1230–1362; `security.cjs` 1–130; `gsd-tools.cjs` 160–265, 435–494, 565–704, 900–1049; `config.cjs` 400–454; `verify.cjs` 625–644; `merge-back.test.cjs` 1–444 in full. No execution, imports, or writes. My initial report stands unedited as historical output; corrections below.
+
+---
+
+## 1. Corrections I accept
+
+**Line counts.** I cited ranges off `cat -n` display (1–1523 etc.). Raw physical EOF totals are **1522 / 660 / 378 / 267 / 282 / 70 / 931 / 1048**. I use those going forward.
+
+**Test denominator.** I wrote "all 12 non-trivial scenarios." Wrong on two counts. `merge-back.test.cjs` has **13 `test(...)` definitions** (titles 1, 2, 3, 4, 4b, 5a, 5b, 6, 7, 8, 9, 10, 11), and **all 13** `runMergeBack` invocations pass `--expected-base` (`:192, 227, 250, 274, 290, 307, 330, 347, 370, 393, 410, 427, 437`) — including the no-op case at `:437`. My "12 + 1" split was an inferred denominator I should not have constructed. Also: this file is not evidence about the breadth of any wider suite, and nothing here was run.
+
+**The expectedBase contract — root's correction is right and mine was loose.** I did not assert `expectedBase == HEAD`, but my phrasing ("no verification that main is the base the worktree branched from") reads as if a HEAD-equality fence were the fix. It is not, and asserting it would break the source's own supported cases: test 2 advances main at `:225` after the worktree spawns and requires `merge_type === 'merge'` (`:231`); test 7 advances main at `:367` and requires main HEAD *unchanged* after abort (`:374`). Both deliberately run with `HEAD !== expectedBase`.
+
+The correct decomposition — three separable properties, only the third of which is a fence:
+- **ancestry**: is `expectedBase` still reachable from current main HEAD (planned base not rewritten out of history)?
+- **worktree ownership**: does this linked worktree descend from `expectedBase` and belong to *this* quick task? `merge-back.cjs:226-238` enumerates **every** worktree except `mainRoot` — there is no branch allowlist, no quick-id binding on the worktree selection. Test 8 (`:381-400`) merges a second worktree on branch `gsd/quick-${QID}-b` that authored only `src/two.js` and no artifact under `QUICK_DIR`, and asserts that as success.
+- **revision fencing**: optimistic concurrency against a main that moved in a way that invalidates the plan.
+
+`merge-back.cjs` implements none of the three. The inert-parameter finding survives; the prescription changes.
+
+**`milestones_updated: true` — narrowing accepted, with a sharper mechanism.** Root is correct that the writes at `milestone.cjs:176-195` are unconditional on the normal path, so a throwing write propagates before `:242` builds the result. My "emitted regardless of what the write branches did" overstated it.
+
+But I also over-credited `:237-239`. Those `fs.existsSync` archive flags are **not** receipts for this invocation. The archive writes are guarded: `:154 if (fs.existsSync(roadmapPath))` and `:160 if (fs.existsSync(reqPath))`. If ROADMAP.md is absent, the write at `:156` never runs — yet `:237` reports `archived.roadmap: true` whenever `${version}-ROADMAP.md` exists from a *prior* run of the same version. Same for `:238`. So the accurate statement is: one flag is a literal with no semantic content, and the others are existence checks that cannot distinguish this invocation's work from an earlier one. Neither is an idempotence or transition-identity check. That is stronger and more exact than either of our first passes.
+
+---
+
+## 2. Root's new findings — validated against exact source
+
+**Phase-removal cascade (`phase.cjs:569-581`) — confirmed, and worse than "cascades more than once."**
+```
+for (let oldNum = MAX_PHASE(99); oldNum > removedInt; oldNum--) {
+  content = content.replace(/(Phase\s+)${oldStr}([:\s])/g, `$1${newStr}$2`);
+```
+Descending order means each replacement's *output* is the next iteration's *input*. Removing phase 5: at `oldNum=7`, "Phase 7"→"Phase 6"; at `oldNum=6`, that same text →"Phase 5". Following the loop to its bound, **every phase number above `removedInt` is decremented once per iteration until it reaches `removedInt`** — they all collapse to the removed number. Ascending order would be correct (6→5 first, then 7→6 acts on the untouched 7). This is a static derivation from the loop and the `g` flag; unexecuted. My original framing ("over-broad rewrite," `:576-577` unanchored patterns) was directionally right but missed the actual mechanism. Root's is the correct diagnosis; both defects coexist, since `:577`'s `${oldPad}-(\d{2})` is separately unanchored.
+
+**Requirements producer/consumer split — confirmed, and it is three-way.**
+- Producers: `phase.cjs:366` and `:448` write `**Requirements**: TBD` (colon *outside* the bold).
+- Completion consumer: `phase.cjs:764` matches `/\*\*Requirements:\*\*\s*([^\n]+)/i` (colon *inside*).
+- Init consumers: `init.cjs:79` and `:201` match `/^\*\*Requirements\*\*:[^\S\n]*([^\n]*)$/m` (colon outside).
+
+So `init` reads what `phase add/insert` writes, and `cmdPhaseComplete` does not — `reqMatch` is null, the `if (reqMatch)` block at `:766-786` is skipped, and `requirementsUpdated` stays `false` in the result at `:914`. Confirmed against all four sites.
+
+**Non-blocking verification debt — confirmed, plus the filter gap.** `phase.cjs:673-692` collects warnings only; nothing gates the writes at `:695-902`. And the filters are `f.includes('-UAT')` (`:679`) and `f.includes('-VERIFICATION')` (`:687`) — a file named exactly `UAT.md` or `VERIFICATION.md` has no hyphen prefix and is skipped, while `cmdInitPlanPhase:259-266` explicitly accepts both `f === 'VERIFICATION.md'` and `f === 'UAT.md'`. Same repo, two different naming contracts.
+
+**Repeated completion increments — confirmed.** `phase.cjs:876-896`: `Completed Phases` is read, `+1`, written back, and `Progress` recomputed, with no check that this phase was already counted. Re-invoking `phase complete 3` increments again. The `totalPhases > 0` guard at `:886` correctly avoids a zero denominator, but there is no transition identity.
+
+**Lock semantics (`core.cjs:583-628`) — confirmed on all three points.**
+- `:625-627`: after the 10s while-loop expires, it `unlinkSync`es the lock and `return fn()` **without reacquiring**. The timeout path executes the callback unlocked.
+- `:605`: the `finally` unlinks **by pathname**, with no comparison against the `pid` written at `:596`. Combined with the above, process A's force-unlink plus B's ownerless `finally` unlink yields two concurrent writers and a lock file owned by neither.
+- `:593-623` structure: `try { ...wx write...; try { return fn() } finally {...} } catch (err) { if (err.code === 'EEXIST') ... continue }`. `fn()` is inside the outer `try`, so an `EEXIST` thrown *by the callback* is caught as lock contention and `continue`s — re-running `fn()`. All four `withPlanningLock` callers in the primaries (`phase.cjs:327, 406, 561, 696`) pass filesystem-write callbacks.
+
+Adjacent, confirmed: `execGit` (`core.cjs:531-542`) passes only `cwd`/`stdio`/`encoding` — **no timeout**, so every `merge-back.cjs` git call is unbounded. `init.cjs:1288, 1307, 1410` do pass `timeout: 5000` to their `execSync` calls. The inconsistency is within the partition.
+
+**`loadConfig` writes on the read path — confirmed, and it propagates widely.** `core.cjs:258` (depth→granularity migration) and `:291` (sub_repos sync) both `fs.writeFileSync(configPath, ...)`, each wrapped in a swallowing `catch`. `loadConfig` is called by fourteen `init.cjs` entry points (`:43, 55, 178, 297, 402, 449, 507, 543, 589, 700, 759, 820, 855, 1126`). This materially corrects the implicit framing in my report that `init.cjs` is a read-only metadata assembler: a nominally read-only initializer can silently rewrite `.planning/config.json`, and `:279` `detectSubRepos(cwd)` makes that write depend on ambient filesystem state.
+
+**Quick-ID determinism — confirmed, both halves.** `init.cjs:457-464`: `Math.floor(secondsSinceMidnight / 2).toString(36).padStart(3,'0')` over local-clock components. No randomness, no counter, no lease, no collision check. Two invocations in the same 2-second window on the same local date produce an identical `quickId` — and because it is purely clock-derived with no cross-process coordination, two agents or machines in that window collide *deterministically*. The comment at `:456` calling this "practically collision-free across a team" is not supported by the code. Separately, `date`/`timestamp` at `:490-491` use `toISOString()` (UTC) while the ID uses `getFullYear/getMonth/getDate` (local) — these disagree across the local-midnight boundary. Contrast `learnings.cjs:65-69`, which does mix `Date.now()` with `crypto.randomBytes(4)`.
+
+**`verify-work` artifact asymmetry — confirmed.** `init.cjs:538-586` returns no `uat_path`, `context_path`, `research_path`, `verification_path`, or `reviews_path`; the directory-scan block present at `:246-272` (plan-phase) and `:669-694` (phase-op) is simply absent. Its fallback `phaseInfo` at `:551-563` also omits `has_reviews`, which the plan-phase fallback at `:186-199` includes.
+
+**mtime is not process observation — confirmed.** `init.cjs:922-934`: `isActive = (now - newestMtime) < 300000`. No pid, no lease, no liveness. A future mtime yields a negative delta, which also satisfies `< 300000`. This feeds the concurrency filter at `:1064-1082`, which additionally does not exclude the calling phase from `activeExecuting`/`activePlanning` — an agent that just wrote its own phase files can filter out its own recommended action. Root's "not an execution lease" is exactly right.
+
+**`--auto` compares against freshly generated content — confirmed.** `profile-output.cjs:981-990`: `expectedBody` is `${heading}\n\n${gen.content}` produced *this run*, then `detectManualEdit(fileContent, name, expectedBody)` (`:257-262`) normalizes and compares. There is no stored digest of the previously generated body anywhere in the file (full body read). Consequence: when the *source* (`PROJECT.md`, `STACK.md`, …) changes, the on-disk section legitimately differs from the new content and is classified as a manual edit and skipped (`:983-989`) — `--auto` refuses to update precisely when an update is warranted. This inverts the flag's intent and is a cleaner statement of the problem than my `profile_status` finding, which remains separately valid at `:1015-1017`.
+
+**LOW/UNSCORED directives and unredacted global output — confirmed, and this subsumes my finding #4.** `cmdGenerateDevPreferences:743-759` and `cmdGenerateClaudeProfile:830-847` iterate `DIMENSION_KEYS`, include every present dimension with no confidence floor, and merely print `confidence` as text. `cmdWriteProfile:561-575` *does* filter its summary to HIGH/MEDIUM. More importantly: **`redactSensitive` exists only inside `cmdWriteProfile` (`:497-537`)**. Neither `cmdGenerateDevPreferences` nor `cmdGenerateClaudeProfile` runs any redaction pass at all, and both default to home-directory targets — `~/.claude/commands/gsd/dev-preferences.md` (`:778`) and `~/.claude/CLAUDE.md` under `--global` (`:869`). So untrusted `claude_instruction` text reaches standing agent-instruction files verbatim. My `evidence_quotes` gap (`:527-537` vs `:603`) is real but is the narrower case; the boundary defect is that redaction is attached to one command rather than to the write surface.
+
+**`999` exclusion — confirmed, with the mechanism.** `milestone.cjs:256`: `!/^999(?:\.|$)/.test(e.name)` is applied to **directory names**. For `999.1-foo`, `^999` then `\.` matches → excluded. For `999-backlog`, position 3 is `-`, matching neither `\.` nor `$` → **not excluded → deleted**. The identical pattern at `init.cjs:1017` is applied to a phase **number** (`999`, `999.1`), where it is correct. Same regex, two input domains, right in one and wrong in the other — because directory names carry a `-slug` suffix that phase numbers do not.
+
+**Router-level inert flags — confirmed, and `expectedBase` is not alone.** `gsd-tools.cjs:944-945` parses `--force` and passes `force: forceFlag` into `cmdGenerateClaudeMd`; the full body (`:911-1038`) reads `options.output` and `options.auto` only. Two accepted-but-unconsumed parameters in one partition makes this a *class*, not an incident.
+
+**Failure collapsing to empty — confirmed, and I under-weighted it.** `merge-back.cjs:226-244`: if `wlist.exitCode !== 0`, the loop body never runs, `worktreePaths` stays empty, and the function returns `{ merged: false, reason: 'no_worktrees' }`. A git *failure* is reported as "there were no worktrees." I had credited the empty-case guard at `:240-244` as correctly handling the empty denominator; it does prevent a vacuous `every() === true`, but it also launders an error into a benign-looking reason string. Both are true; root's reading is the one that matters operationally. Relatedly, several git results are discarded: `merge --abort` (`:109`), `rm -f` (`:150`), `checkout`/`add` (`:163-168`).
+
+**`security.cjs` leaf gap — confirmed.** `validatePath` (`:33-97`) realpaths both base (`:51`) and target (`:69`), with a logical-resolution fallback that realpaths one parent level (`:73-79`), and rejects null bytes (`:43`) and absolute paths unless opted in (`:58-61`). Genuine defense. But `init.cjs:1460` calls it on `skillPath`, **discards `pathCheck.resolved`**, and then at `:1467` re-derives a logical `path.join(projectRoot, skillPath, 'SKILL.md')` for the `existsSync`. The leaf is never validated, and there is a TOCTOU window between `:1468` and any later read by the agent that consumes the emitted `@path/SKILL.md` reference. I had credited only the defense; root's gap is correct.
+
+---
+
+## 3. Where I extend, differ, or mark unknown
+
+- **`intel` config divergence.** Root's characterization is right and I'll adopt it: `core.cjs:331-366` returns a fixed normalized shape with no `intel` key, so `intel.cjs:53-63` reading `config.json` directly is a *divergent authority*, not automatically a defect. The concrete consequence stands: intel gating cannot participate in the `~/.gsd/defaults.json` fallback (`core.cjs:373-394`), and it fails closed on error, which is the safe direction.
+- **Top-level-before-nested precedence** (`core.cjs:316-322`) — confirmed; a nested `workflow.research` edit is silently ineffective if a stale top-level `research` exists. Agreed with root, no amendment.
+- **Malformed config with a present `.planning/`** returns `CONFIG_DEFAULTS`, not global defaults (`core.cjs:370-372`) — confirmed.
+- **`planningDir` name validation** (`core.cjs:652-659`) rejects `[/\\]` and `..` in `GSD_PROJECT`/`GSD_WORKSTREAM` by throwing. Real defense, worth preserving. It is a *name* check, not a containment proof; symlink behavior is not established by it.
+- **Unknown, and I will not close it here:** whether any of these paths are reachable in normal operation depends on the workflow markdown that invokes `gsd-tools`, which lies outside the eight-primary scope. I did not substitute agent workflow reports for source, and I make no reachability claim.
+- **Also unknown:** every finding above is a static derivation. Nothing was executed — no Node, no git, no tests. I make no OS, model-qualification, human-acceptance, whole-closure, or adoption claim.
+
+---
+
+## 4. Defenses worth retaining
+
+`execGit`'s argv-array invocation (`core.cjs:532`) — real shell-injection defense. `sanitizeFlags` (`init.cjs:1088-1099`) — allowlist, stderr warning, fails to `''`. Learnings ID validation at three sites (`learnings.cjs:141, 197`; `:355`). `learningsPrune`'s safe failure direction (`:291-297`: `Invalid Date < cutoff` is `false`, so malformed records are kept). `phase-op`'s deliberate preference for the current ROADMAP over an archived directory (`init.cjs:595-613`). `merge-back`'s per-worktree `PRE_MERGE_HEAD` (`:99`), fresh non-amend reconcile (`:172`), detached-ancestry tripwire (`:129-135`), blob-level CRLF-immune drift compare (`:158-159`), and deterministic `worktreePaths.sort()` (`:238`). `validatePath`'s realpath + null-byte handling. And the test harness's *shape*: real temp git repos and subprocesses with byte-exact tree assertions (`merge-back.test.cjs:79-83, 211`), explicit teardown ordering (`:159-174`), and per-scenario isolated roots.
+
+---
+
+## 5. Zeus adaptation — priorities, and the `--confirm` framing
+
+On the `--confirm` asymmetry I raised (`milestone.cjs:258-262` requires it; `cmdLearningsPrune` does not): **that asymmetry alone does not prescribe adding an approval prompt in Zeus, and I want to withdraw any such implication.** A confirmation dialog is not a safety property. What actually differs between those two operations is *scope relative to the authorizing task*: `phases clear` acts inside the project the task was invoked for, while `learnings prune` (`learnings.cjs:270-301`, dispatched at `gsd-tools.cjs:1035-1039`) unlinks from `~/.gsd/knowledge` (`:24`) — a global store shared by every project, reachable from any project's CWD, with `opts` never threaded from the CLI path so the `storeDir` override is test-only. The defect is that the blast radius exceeds the task's authorization scope and the deletion is irreversible with no tombstone. The correct Zeus response is scope-binding plus reversibility, not an extra prompt. Where a task is already authorized and the operation stays inside its declared ownership, adding approval friction buys nothing and trains people to click through.
+
+Ranked adaptation priorities:
+
+1. **Accepted parameters must be consumed or rejected at the boundary.** `--expected-base` and `--force` are both parsed, threaded, and never read. This is the highest-priority lesson because a safety-shaped contract silently degraded into decoration *and* a real-git test suite passed it 13 times without noticing. In Zeus: unknown-or-unconsumed options fail closed at the router, and any option named for a safety property must have a test that makes the *mismatch* case fail.
+2. **Read paths must not write.** `loadConfig` mutating `config.json` (`core.cjs:258, 291`) beneath fourteen initializers is the cleanest instance. Migration belongs in an explicit, receipted command.
+3. **Irreversible multi-step operations need scope-binding and a rollback journal.** Covers merge-back's partial-merge-with-destroyed-worktrees, milestone's mid-loop `renameSync` failure (`:211-226`), and phase-remove's delete-then-swallow-rename (`:612-622`). Bind to ownership and record enough to reverse; do not report a global boolean over independently-committed mutations.
+4. **Never conflate failure with emptiness.** `reason: 'no_worktrees'` on a `git worktree list` failure is the template for what not to do. Distinguish `empty`, `failed`, and `unknown` as separate states.
+5. **Format contracts shared, not duplicated as regexes.** Three spellings of the Requirements field across `phase.cjs:366/448`, `phase.cjs:764`, `init.cjs:79/201` — one writer, two readers, one of which never matches.
+6. **Redaction and confidence gates belong to the write surface, not to a single command.** Two of three profile artifacts write to home-directory agent-instruction files with no redaction pass and no confidence floor.
+7. **Identity, not clocks.** Quick IDs from a 2-second local-time bucket, and "activity" from file mtime, are both stand-ins for coordination that does not exist. Zeus needs real identity and real leases where concurrency matters.
+
+Ready to go another round on any of these — the phase-removal cascade and the `withPlanningLock` timeout path are the two I'd most want a second static read on, since both are pure derivations from loop and control-flow structure with no execution behind them.

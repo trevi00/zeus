@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "scope": "Own metadata, references, raw source identity and text integrity only.",
+  "primary": 18,
+  "primary_bytes": 190882,
+  "supporting_records": 32,
+  "supporting_distinct_paths": 32,
+  "upstream_executions": 0,
+  "source_tests_collected": 0,
+  "source_tests_executed": 0,
+  "source_test_bodies_read": 1,
+  "source_test_scenarios_declared": 13,
+  "ruff": "Own recorder and validator passed check --no-cache.",
+  "files": [
+    {
+      "path": "build_index.py",
+      "sha256": "9bcba4c1e3a8f6739b4320a0c237b6685e084adb2874c17515ca3c0d61fc9133"
+    },
+    {
+      "path": "checkpoint.json",
+      "sha256": "20b1423def3da053375fa1c90bd4abdfe530cfc747041f79be323089d2d814dd"
+    },
+    {
+      "path": "files.json",
+      "sha256": "1e5807f5b0ad4541c8f8a305bd014f67f0589e693793655013f288bdc7168402"
+    },
+    {
+      "path": "inventory.json",
+      "sha256": "bf22579efdb4bd9a10b819f8ad6627d28845ed7a811186b4c89eeef8dc8ea593"
+    },
+    {
+      "path": "prior-ledger.json",
+      "sha256": "c6767033b01b30f7a4999780e175a0d5db3d20adf27e68d91ffee3443d338ffd"
+    },
+    {
+      "path": "read-plan.json",
+      "sha256": "aabaf3ea3081d19d1850ae68aacf9090cf06ba8ffca53b96a08e5e888395df3c"
+    },
+    {
+      "path": "README.md",
+      "sha256": "da1af5b53835b40cd720ffef933e49f4c77a806cf46255fa9ce6e8e1cd892130"
+    },
+    {
+      "path": "remaining.json",
+      "sha256": "23661550f0d05483b29f6e3b4bcfd6d5296ea41834cbcdf17098465db5ed03ca"
+    },
+    {
+      "path": "review.md",
+      "sha256": "ca4064cf2ac97705ba090e5d91466cd0ef07ccb5e9c55eb3e0dc8d5a39cbb138"
+    },
+    {
+      "path": "supporting.json",
+      "sha256": "bd2d8a8f6d0ed75895503721eab1d35f065ad5f40c5f3454216849d3d3ae73a0"
+    },
+    {
+      "path": "validate_index.py",
+      "sha256": "5c2a3e68524f9705b19d44f972f618fa8fba0420a1ba5b1178feee01a199d825"
+    }
+  ]
+}

@@ -1,0 +1,1590 @@
+[
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/uat.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1007629426eaa9886e5ee8bc21b1169762eade2fc287388ef961deba173e4035",
+    "git_blob": "7a63495e9f32d7c20dad9bcbe882bf9e47c5bfe1",
+    "bytes": 10071,
+    "lines": 282,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 292,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/uat.cjs",
+      "git_blob": "7a63495e9f32d7c20dad9bcbe882bf9e47c5bfe1",
+      "mode": "100644",
+      "bytes": 10071,
+      "pinned_sha256": "1007629426eaa9886e5ee8bc21b1169762eade2fc287388ef961deba173e4035",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-bin-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "13194bd3f0c1175c63a3cc869e9a2f3f849fc0c5f79721fe7e94d17a96b0979a",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S01",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        282
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "f8e2a1",
+      "1c6d19"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 282,
+        "sha256": "1007629426eaa9886e5ee8bc21b1169762eade2fc287388ef961deba173e4035"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/verify.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "b232ed0ccfef3f03022ea70ff1d90e833bde92e447913a068e0144816907ba09",
+    "git_blob": "626698ee2f825570a2af822994a1e0f37a716d17",
+    "bytes": 41212,
+    "lines": 1032,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 293,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/verify.cjs",
+      "git_blob": "626698ee2f825570a2af822994a1e0f37a716d17",
+      "mode": "100644",
+      "bytes": 41212,
+      "pinned_sha256": "b232ed0ccfef3f03022ea70ff1d90e833bde92e447913a068e0144816907ba09",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-bin-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "46ee1d94f8f9b5d89f4e8b63d14076bf0a51e552b8e4028db595c6d90610115f",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S02",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        283,
+        399
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "f8e2a1"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 283,
+        "end": 399,
+        "sha256": "79168fb148ad78e77907e542e7c254a23b49b9f4d40aa3ee22ef13abb32e990c"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/init.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e8b97d8b7fbe0ba7b719c80ba497c7559cfa4f70928afc3543b3404440a9f4cf",
+    "git_blob": "320122ad737c4923d2a543480709c3c1c2cb65e2",
+    "bytes": 56501,
+    "lines": 1522,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 278,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/init.cjs",
+      "git_blob": "320122ad737c4923d2a543480709c3c1c2cb65e2",
+      "mode": "100644",
+      "bytes": 56501,
+      "pinned_sha256": "e8b97d8b7fbe0ba7b719c80ba497c7559cfa4f70928afc3543b3404440a9f4cf",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "605b837ede1cfd5eedd41aabb09f2c92e6aa8b87621d922ea35cd3b5e60991ca",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S03",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        25,
+        48
+      ],
+      [
+        173,
+        226
+      ],
+      [
+        538,
+        695
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "f8e2a1",
+      "1c6d19",
+      "77d214",
+      "370e00",
+      "7bcf14"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i02",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 25,
+        "end": 48,
+        "sha256": "cc1edb93689255c456b82cac44461c6346f6112bffd5b1f9f90116904e9745e4"
+      },
+      {
+        "start": 173,
+        "end": 226,
+        "sha256": "33772271f8c54796e0fe6983e2161426c2e55d650eaebd948e72505c5fa7c059"
+      },
+      {
+        "start": 538,
+        "end": 695,
+        "sha256": "574f0c1262a1a8c1baa76e740635262492b6ef6e612d02c0f2c4453ea906e34a"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/commands.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+    "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+    "bytes": 36090,
+    "lines": 1013,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 273,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/commands.cjs",
+      "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+      "mode": "100644",
+      "bytes": 36090,
+      "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-bin-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "5882d6b7b2fb5ecfd3d900a9cc8a30dfd9d3d6877b8a53a7642b174b079844df",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S04",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        250,
+        348
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "f8e2a1"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 250,
+        "end": 348,
+        "sha256": "87cb9756a4a141af6db89b995680cba61d57bd2032a119638ebf74c8cdff20d5"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-ui-checker.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "21e95cd2725baea51817a6b12367eea81152aa4bc3b74ca258e371af7b285b78",
+    "git_blob": "e4bffa62698840d72b0077be9b1be3901ba3a044",
+    "bytes": 10483,
+    "lines": 303,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "21e95cd2725baea51817a6b12367eea81152aa4bc3b74ca258e371af7b285b78",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 50,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "agents/kha-ui-checker.md",
+      "git_blob": "e4bffa62698840d72b0077be9b1be3901ba3a044",
+      "mode": "100644",
+      "bytes": 10483,
+      "pinned_sha256": "21e95cd2725baea51817a6b12367eea81152aa4bc3b74ca258e371af7b285b78",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-agents-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "b584ef8269812dd63ec52c1f8850992c666391751c9a3961309a03ae1252e968",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S05",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        153,
+        281
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "1c6d19"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 153,
+        "end": 281,
+        "sha256": "5699c0b2caec864107cde0a7c380051ba57322e54133ad446eadd70d94c067d1"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-nyquist-auditor.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "8fa73ad0c670760bf2090abea191675f892a8dd6502b57e6376e84a3caea41ea",
+    "git_blob": "9b9143826d292ad9b151b8e188fad54ff9ee08b7",
+    "bytes": 5341,
+    "lines": 173,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8fa73ad0c670760bf2090abea191675f892a8dd6502b57e6376e84a3caea41ea",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 41,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "agents/kha-nyquist-auditor.md",
+      "git_blob": "9b9143826d292ad9b151b8e188fad54ff9ee08b7",
+      "mode": "100644",
+      "bytes": 5341,
+      "pinned_sha256": "8fa73ad0c670760bf2090abea191675f892a8dd6502b57e6376e84a3caea41ea",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-agents-002/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "d7f6c73168e30ff6919a0975885c9f7813758af29e65d4eb58b3c8146682bfef",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S06",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        171
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "1c6d19"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 171,
+        "sha256": "5ad09bd0a2f00528b13393afbcef94c56d71834c261529b9901ff6c3324579a3"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-ui-auditor.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "14e84a39de50e107cac7d044a721518f90e4efc04e96d39183140b62fbe01e41",
+    "git_blob": "05b713e20a7c1a409ccbadae61733e6f0081bdb3",
+    "bytes": 17433,
+    "lines": 504,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "14e84a39de50e107cac7d044a721518f90e4efc04e96d39183140b62fbe01e41",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 49,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "agents/kha-ui-auditor.md",
+      "git_blob": "05b713e20a7c1a409ccbadae61733e6f0081bdb3",
+      "mode": "100644",
+      "bytes": 17433,
+      "pinned_sha256": "14e84a39de50e107cac7d044a721518f90e4efc04e96d39183140b62fbe01e41",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-agents-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "616d0245632624db6798bb0b0a190dd38c7b2edd2f30350ae630e36085b5fc60",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S07",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        330,
+        370
+      ],
+      [
+        447,
+        500
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "1c6d19"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i02"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 330,
+        "end": 370,
+        "sha256": "fa7cff37fbea295b7269ecdd493d389362091bbe37e037e91cca7656d2fa77e5"
+      },
+      {
+        "start": 447,
+        "end": 500,
+        "sha256": "b5eb2605a213109c7ce1f4d7c88e46dea0426efd79ae76114af1dbe34bf82481"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/core.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+    "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+    "bytes": 58568,
+    "lines": 1536,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 275,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/core.cjs",
+      "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+      "mode": "100644",
+      "bytes": 58568,
+      "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-bin-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "e245fbe0853c3abd5cdea0abda5cf3ffba1361062f3cad7551ebea0d6e420fa4",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S08",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        648,
+        686
+      ],
+      [
+        1303,
+        1342
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "77d214"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#zeus",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 648,
+        "end": 686,
+        "sha256": "fe89591468fcaef2d74ce50661cee769e5a6cf341b4fddeacaa40ff2e86a7266"
+      },
+      {
+        "start": 1303,
+        "end": 1342,
+        "sha256": "301a60d3ea72d0113c1fe356d1804a0a8a34ddd8ec908ae6c14997891f99a827"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/config.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d368e3166e3be997aa47c927110fadbee5b1469ca18da2f90805f856a3b271cb",
+    "git_blob": "cf19a3969d5f8823e4b312383cdcb93c5b9e5923",
+    "bytes": 15944,
+    "lines": 471,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 274,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/config.cjs",
+      "git_blob": "cf19a3969d5f8823e4b312383cdcb93c5b9e5923",
+      "mode": "100644",
+      "bytes": 15944,
+      "pinned_sha256": "d368e3166e3be997aa47c927110fadbee5b1469ca18da2f90805f856a3b271cb",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-bin-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "6623ef96e5cc9ae86816de270a5ed6d15a951524027f1201210c1dedd4ffc1d5",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S09",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        125,
+        150
+      ],
+      [
+        357,
+        405
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "77d214",
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 125,
+        "end": 150,
+        "sha256": "941a3b409c02212ae3a59fec5ae64a78639892f3ebeee4aa80c3fd322a21e3c0"
+      },
+      {
+        "start": 357,
+        "end": 405,
+        "sha256": "3d839af6717632232c47979dfb85cde6fb72963e907dc4ff99c7c501c9d2c1fa"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/workflows/execute-phase.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "bb8d349ac339d7672fba1885b22ebc63d47316652a0df002b6dad0bebb3ad8b0",
+    "git_blob": "d8a3636fdbe98a121b6942bd9c66fe709b634a4f",
+    "bytes": 51734,
+    "lines": 1260,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "bb8d349ac339d7672fba1885b22ebc63d47316652a0df002b6dad0bebb3ad8b0",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 397,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/workflows/execute-phase.md",
+      "git_blob": "d8a3636fdbe98a121b6942bd9c66fe709b634a4f",
+      "mode": "100644",
+      "bytes": 51734,
+      "pinned_sha256": "bb8d349ac339d7672fba1885b22ebc63d47316652a0df002b6dad0bebb3ad8b0",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-workflows-002/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "6d1f95a1d55cc5ebb009f5f724fce49fd36c7fb9eb58cd770976c16573d02bd0",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S10",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        954,
+        1116
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "77d214"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 954,
+        "end": 1116,
+        "sha256": "4a30444281da3bcceff392a2cb47b3565b9a65b80135a585340280a17c869ebd"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/VALIDATION.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "52ed40484aeddb2e582fa4e5a74c04f2477af20b29b2d5b6c63a57e1440cd1e6",
+    "git_blob": "480ea755023d30f4225345ea4864b363a601bf4c",
+    "bytes": 2175,
+    "lines": 76,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "52ed40484aeddb2e582fa4e5a74c04f2477af20b29b2d5b6c63a57e1440cd1e6",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 338,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/templates/VALIDATION.md",
+      "git_blob": "480ea755023d30f4225345ea4864b363a601bf4c",
+      "mode": "100644",
+      "bytes": 2175,
+      "pinned_sha256": "52ed40484aeddb2e582fa4e5a74c04f2477af20b29b2d5b6c63a57e1440cd1e6",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-templates-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "4fa28a16cf9411fddd52e2941587c65971992a3803563629c73b7aa1cc3ee0e0",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S11",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        76
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "77d214"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 76,
+        "sha256": "52ed40484aeddb2e582fa4e5a74c04f2477af20b29b2d5b6c63a57e1440cd1e6"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/UAT.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "91b5a925bce27d49ba075dffa62c0597d9355e31fea8ca7ec224986e6aee8cc8",
+    "git_blob": "9d63d6d876de9c7324924ecdedc9fe4286e4ea7c",
+    "bytes": 6858,
+    "lines": 265,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "91b5a925bce27d49ba075dffa62c0597d9355e31fea8ca7ec224986e6aee8cc8",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 336,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/templates/UAT.md",
+      "git_blob": "9d63d6d876de9c7324924ecdedc9fe4286e4ea7c",
+      "mode": "100644",
+      "bytes": 6858,
+      "pinned_sha256": "91b5a925bce27d49ba075dffa62c0597d9355e31fea8ca7ec224986e6aee8cc8",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-templates-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "fdce6ef7013c602b8c7d572aa095d3827629010991e71b1624da95ddab720feb",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S12",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        102
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "77d214"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 102,
+        "sha256": "19487f7e29ba059406fd2df91455b5fe8bc9646224036d2a2b1c824fddfd492e"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/phase.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e71444af06a86925f53183edd71918a1083be8928a78cab38dd78054beed9961",
+    "git_blob": "730e712dbf8057507e8119d82c09ce700909b004",
+    "bytes": 35757,
+    "lines": 931,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 284,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/lib/phase.cjs",
+      "git_blob": "730e712dbf8057507e8119d82c09ce700909b004",
+      "mode": "100644",
+      "bytes": 35757,
+      "pinned_sha256": "e71444af06a86925f53183edd71918a1083be8928a78cab38dd78054beed9961",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "9e75ce7fd32cb97ccc498cdd58903c78a0b5444d3c57e7107144986afa869535",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S13",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        652,
+        719
+      ],
+      [
+        899,
+        924
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 652,
+        "end": 719,
+        "sha256": "a671ac3aec75e1ccaea288b48aa8667a6136c85df0323343daed0c670ea4181c"
+      },
+      {
+        "start": 899,
+        "end": 924,
+        "sha256": "e4ff021e4eebc1e288f909fb1094d9052668644f37f245eb925e7278150a9764"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/gsd-tools.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+    "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+    "bytes": 43392,
+    "lines": 1055,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 271,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/bin/gsd-tools.cjs",
+      "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+      "mode": "100644",
+      "bytes": 43392,
+      "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-bin-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "d0bdeb6549285f5e49284d11e159cad8b43744d32a47d7964832e703431e82da",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S14",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        450,
+        466
+      ],
+      [
+        540,
+        560
+      ],
+      [
+        725,
+        741
+      ],
+      [
+        785,
+        805
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 450,
+        "end": 466,
+        "sha256": "654a737ac001274f6b8317c04f2414c2968b3951ba1a320cc6dc7e9f4693beb3"
+      },
+      {
+        "start": 540,
+        "end": 560,
+        "sha256": "18cc7e9bbfa43042bc384b6c4f65ca178bded594398c48d000bc2ebc3d19b103"
+      },
+      {
+        "start": 725,
+        "end": 741,
+        "sha256": "749254dde4dd9e1c0e117f9a9a0c954e25d0231b6ac13e56da4161980c9db735"
+      },
+      {
+        "start": 785,
+        "end": 805,
+        "sha256": "b7a54f06acaecdb2493a189dd6a9ff8ed9e38d2d4c191e0f34ea09d6a2116825"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/phase-prompt.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "0b3578101798573e6eaff5d7cda89da680c0aed3c9f12c4ab1ea009ae3e1d2a4",
+    "git_blob": "7883dd2dab781c745fa974bf24626a43c506fd8b",
+    "bytes": 18607,
+    "lines": 610,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "0b3578101798573e6eaff5d7cda89da680c0aed3c9f12c4ab1ea009ae3e1d2a4",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 357,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/templates/phase-prompt.md",
+      "git_blob": "7883dd2dab781c745fa974bf24626a43c506fd8b",
+      "mode": "100644",
+      "bytes": 18607,
+      "pinned_sha256": "0b3578101798573e6eaff5d7cda89da680c0aed3c9f12c4ab1ea009ae3e1d2a4",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-templates-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "34a853edf5d377c14f600518bc3e67136f42df5e014b24bb4fdb27be5a4c7b35",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S15",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        603,
+        610
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 603,
+        "end": 610,
+        "sha256": "bd5e4f8dd0926599d941ba80dd93f67e0b6f1e6474863b824c8b84f15bb0922f"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-ui-researcher.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f3aad90fe544aba8259f8a65535986b2a76da57498679f1edef7915d94fb0007",
+    "git_blob": "804fa1002f94542632f3d2213fb76b536d2020c5",
+    "bytes": 14157,
+    "lines": 382,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f3aad90fe544aba8259f8a65535986b2a76da57498679f1edef7915d94fb0007",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 51,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "agents/kha-ui-researcher.md",
+      "git_blob": "804fa1002f94542632f3d2213fb76b536d2020c5",
+      "mode": "100644",
+      "bytes": 14157,
+      "pinned_sha256": "f3aad90fe544aba8259f8a65535986b2a76da57498679f1edef7915d94fb0007",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-agents-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "7db52f6a510e86046573cbb6912a2f36b497606b15f163ceb438cdbff8f83018",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S16",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        75,
+        84
+      ],
+      [
+        99,
+        222
+      ],
+      [
+        314,
+        335
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "370e00"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 75,
+        "end": 84,
+        "sha256": "7a104b55832fff577b2738f4a307204de304bd55b21e8fd6e0545679499199fd"
+      },
+      {
+        "start": 99,
+        "end": 222,
+        "sha256": "dc99a3bde7b3e6111494f3b2ed17d5735b12f360ae0fc467dbf162e8c03e1679"
+      },
+      {
+        "start": 314,
+        "end": 335,
+        "sha256": "6c05296d496f7df6c10604a97826ab88d214c6d1dd7f09cc428a7ff3ee00754b"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-verifier.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f34dc9a0b7c37d0138e274d1a57262c8434736c352fab3d50afbd0c2a8f49bf4",
+    "git_blob": "d684e60e48e5de35609de02eace24140ff9c3161",
+    "bytes": 30275,
+    "lines": 823,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f34dc9a0b7c37d0138e274d1a57262c8434736c352fab3d50afbd0c2a8f49bf4",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 53,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "agents/kha-verifier.md",
+      "git_blob": "d684e60e48e5de35609de02eace24140ff9c3161",
+      "mode": "100644",
+      "bytes": 30275,
+      "pinned_sha256": "f34dc9a0b7c37d0138e274d1a57262c8434736c352fab3d50afbd0c2a8f49bf4",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-agents-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "96a538cc9544970fcb63631e44f41e5caf790b45a5133da59e2e576122c73757",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S17",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        494,
+        543
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "370e00"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 494,
+        "end": 543,
+        "sha256": "56e3f391eb8db45eb215f7eb5040abeb6d6dc276d146e657c56f808b948d1f7e"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/UI-SPEC.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "6120e6cef0b41ad739fdfbb5c9334c94c9e3b606eecdd753d45503a7b8dbf3d4",
+    "git_blob": "30f0d1a00743b674244c9abf6cb906de06d4907c",
+    "bytes": 2296,
+    "lines": 100,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6120e6cef0b41ad739fdfbb5c9334c94c9e3b606eecdd753d45503a7b8dbf3d4",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 337,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/templates/UI-SPEC.md",
+      "git_blob": "30f0d1a00743b674244c9abf6cb906de06d4907c",
+      "mode": "100644",
+      "bytes": 2296,
+      "pinned_sha256": "6120e6cef0b41ad739fdfbb5c9334c94c9e3b606eecdd753d45503a7b8dbf3d4",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-templates-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "648897e71a5c9259c5c155a01f28133da18a074b093ad9e71a3a0ab9ac9ab860",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S18",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        95
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "370e00"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 95,
+        "sha256": "a9bdd58c8d75968485e00b9fbf366b514c889863376bc01b6b0b71e4efbf053d"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/verification-report.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "df40f0c2f7dc0d35aec7b8023822541df4e072a368d2de99ba3382f93c0cd232",
+    "git_blob": "8684fe2c47a6689bcf802e364720ffb5a993f40c",
+    "bytes": 9641,
+    "lines": 322,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "df40f0c2f7dc0d35aec7b8023822541df4e072a368d2de99ba3382f93c0cd232",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 376,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "get-shit-done/templates/verification-report.md",
+      "git_blob": "8684fe2c47a6689bcf802e364720ffb5a993f40c",
+      "mode": "100644",
+      "bytes": 9641,
+      "pinned_sha256": "df40f0c2f7dc0d35aec7b8023822541df4e072a368d2de99ba3382f93c0cd232",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-gsd-templates-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "c3bd233701a7308b376c05c2dd90df396e535f9293dc4676ac76bddcb0d2b3e5",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S19",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        37
+      ],
+      [
+        74,
+        114
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "370e00",
+      "7bcf14"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i06",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 37,
+        "sha256": "9e614f565baaa012f040b670e7e26dca4b262248f839ce0f360b69e884cca26e"
+      },
+      {
+        "start": 74,
+        "end": 114,
+        "sha256": "51bcbea4b1e3cd9cd8baef091a1a5f233fd2ab87a9956521d805984985acd27a"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-spec-ui-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+    "git_blob": "11afe51a17adcca3b4a049c782b4da51dac61b91",
+    "bytes": 1745,
+    "lines": 57,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1508,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-spec-ui-phase/SKILL.md",
+      "git_blob": "11afe51a17adcca3b4a049c782b4da51dac61b91",
+      "mode": "100644",
+      "bytes": 1745,
+      "pinned_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "ab6e535850ec5b03d48ccedf7eb4cc2560c63b53870d6c3583c8750e080632db",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S20",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        57
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 57,
+        "sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-review-ui/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+    "git_blob": "396b713ccf8e7be77ab9a92e2bed0689c8852899",
+    "bytes": 1568,
+    "lines": 55,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1499,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-review-ui/SKILL.md",
+      "git_blob": "396b713ccf8e7be77ab9a92e2bed0689c8852899",
+      "mode": "100644",
+      "bytes": 1568,
+      "pinned_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "4a7d4404ec0a7f3ec7d155201e4ae37b67689006a79ac3390280331b03d8c726",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S21",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        55
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i02"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 55,
+        "sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-revert-work/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+    "git_blob": "2a66d86778d767d9a7fe3f2e3fb8b485dcd4d5ff",
+    "bytes": 2578,
+    "lines": 61,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1496,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-revert-work/SKILL.md",
+      "git_blob": "2a66d86778d767d9a7fe3f2e3fb8b485dcd4d5ff",
+      "mode": "100644",
+      "bytes": 2578,
+      "pinned_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "58d10ce0b9df725a7a2f7befc0aa76930d4ecbd7996cca4851b5498d49f8b565",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S22",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        61
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i03"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 61,
+        "sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-self-update/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+    "git_blob": "c8c15055e0464f9e716e3d0597edf0cd1265dc3f",
+    "bytes": 2345,
+    "lines": 59,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1504,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-self-update/SKILL.md",
+      "git_blob": "c8c15055e0464f9e716e3d0597edf0cd1265dc3f",
+      "mode": "100644",
+      "bytes": 2345,
+      "pinned_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "be4d539541fff1eafbd617fa5607d75850a91301fd35c84293740e6006c4bfdd",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S23",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        59
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i04"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 59,
+        "sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-validate-nyquist-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+    "git_blob": "3356bb288dd2a8e6a07a865f1ceca1a03797143f",
+    "bytes": 1835,
+    "lines": 58,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1515,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-validate-nyquist-phase/SKILL.md",
+      "git_blob": "3356bb288dd2a8e6a07a865f1ceca1a03797143f",
+      "mode": "100644",
+      "bytes": 1835,
+      "pinned_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "c63faedb16da61ef4ca7874184f7564369ca81a97d66142ccb2408063f2c0518",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S24",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        58
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 58,
+        "sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-verify-uat/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+    "git_blob": "1e0a07fa500ca77782fd65fbb746847fd92d174e",
+    "bytes": 2301,
+    "lines": 61,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1517,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-verify-uat/SKILL.md",
+      "git_blob": "1e0a07fa500ca77782fd65fbb746847fd92d174e",
+      "mode": "100644",
+      "bytes": 2301,
+      "pinned_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "dbed05a8274bef155896fa563da4c07af44eb7d086ccfd59180853cded13c2bd",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S25",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        61
+      ]
+    ],
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+      "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 61,
+        "sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0"
+      }
+    ],
+    "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+  }
+]

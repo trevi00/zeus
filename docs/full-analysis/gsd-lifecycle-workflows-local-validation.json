@@ -1,0 +1,34 @@
+{
+  "kind": "Zeus local validation, not upstream acceptance",
+  "base_revision": "9471f52d2c25de5c52d6c0525dbf5851e83d9455",
+  "ruff": {
+    "argv": [
+      "uv",
+      "run",
+      "ruff",
+      "check",
+      "."
+    ],
+    "exit_code": 0,
+    "tool_chunk": "afd6b0"
+  },
+  "pytest": {
+    "argv": [
+      "uv",
+      "run",
+      "pytest",
+      "-q"
+    ],
+    "exit_code": 0,
+    "session_id": 48629,
+    "terminal_tool_chunk": "08eb37",
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 261.16
+  },
+  "identity_verification_tool_chunk": "3660e9",
+  "claude_binding_scan_tool_chunk": "975619",
+  "original_tests_executed": 0,
+  "full_analysis_complete": false,
+  "adoption_approved": false
+}

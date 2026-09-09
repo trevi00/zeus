@@ -1,0 +1,26 @@
+# 직접 소비·설정·호출 지원
+
+<a id="support-all"></a>
+지원 24개는 이번에 실제 출력하여 새로 읽은 범위만 기록했다. 모든 bytes/blob/SHA/range는 supporting-evidence.json에 결속한다. 기존 supporting 전문을 재사용하지 않았으며 지원은 primary coverage 증가가 아니다. 원본 실행·collection·시험·Claude는0, 테스트의 실제 존재/실행 전체 closure는 미완료다.
+
+init.cjs 296–471행(626a52): new-project는 코드 탐색 depth3/extension목록·패키지 파일 존재·.git 존재·key 파일 존재만으로 환경 신호를 만든다. unreadable은 false이며 has_codebase_map은 디렉터리 존재만으로 true라 내용/정확 revision을 검증하지 않는다. 모델은 그 시점 loadConfig로 계산되어 이후 설정 변경 전 snapshot이다. new-milestone은 phase directory count를 읽기 오류면0으로 만들고 latestCompleted 이름으로 archive path를 만든다. 해당 helper 자체는 이 범위 밖이다. 448–471행 quick ID 시작부도 실제 읽었으나2초 timestamp의 충돌 자유 주장만 관찰한 부분 지원이며 workflow003 primary로 계상하지 않는다.
+
+init.cjs 819–1124행(f459df,6ab193,e04705): map은 파일명 목록과 timeout 설정을 반환하고 실행은 하지 않는다. manager는 numeric phase만 파싱하고 summaryCount>=planCount 또는 roadmap[x]를 complete로 만든다. `[X]`는 regex i라도 캡처 문자열 비교가 x 엄격값이라 달라진다. active는 최근5분 mtime이며 worker identity가 아니다. dependency 숫자 regex는 범위1-5를1과5로, letter/custom 값을 다른 ID로 해석하며 없는 숫자는 empty.every로 충족할 수 있다. 연결 그래프 필터라는 방어는 있으나 자기 자신은 reaches가 명시 true가 아니어서 같은 active planned phase 재추천 가능성이 남고 새 추천끼리의 충돌/파일공유는 검사하지 않는다. partial은 activeExecuting에 영구 포함될 수 있고 실행 재추천 경로에는 없다. WAITING은 shared root, 다른 상태는 scoped 경로다. flag 문자 allowlist는 shell 문법 일부를 제한하지만 --force 같은 권한 의미를 제한하지 않는다. all_complete는0개를 제외하지만 분모 자체가 numeric/파싱 성공 phase뿐이다.
+
+init.cjs 1297–1387행(6ab193): workspace helper의 git --version 성공은 worktree 기능 검사가 아니다. list는 WORKSPACE 존재가 있는 immediate directory만 세고 table 줄의 ASCII word/Repo/--- 문자열 필터로 repo 수를 추정한다. 한국어 이름·다른 표·부분 manifest·실제 Git 유효성을 놓친다. base read 오류는 빈 inventory다. remove-workspace 시작부도 실제 범위에 포함됐으나 삭제 구현 전체를 읽었다고 계상하지 않았다.
+
+gsd-tools.cjs 324–390,602–636,940–954행(a47efa,6d3a22,6ab193): --pick은 bracket negative index를 지원하므로 gap workflow의 directories[-1] 자체는 구현된 문법이다. 값 누락은 빈 문자열, JSON parse 오류는 원출력 fallback이며 이 타입 손실을 호출자가 처리해야 한다. phases clear는 milestone.cmdPhasesClear로 실제 연결된다. generate-claude-md는 --auto가 argv에 있어야 auto=true인데 new-project 호출에는 --output만 있으므로 아래 수동편집 보존 분기를 켜지 않는다. 주변 state/config/workstream route 시작부는 실제 읽은 지정범위만 반영했다.
+
+phase.cjs 393–488행(6ab193): 삽입은 withPlanningLock 안에서 현재 milestone target 존재를 검사하지만 **쓰기 위치는 rawContent의 첫 일치 heading**으로 다시 찾는다. 같은 번호의 archive가 앞에 있으면 검사와 쓰기가 다른 milestone을 가리킬 수 있다. 기존 decimals는 disk만 검사하고 읽기 실패를 빈 목록으로 처리한다. 정규식 escape는 점 일부만, slug/project_code와 description의 경계·newline 검증은 미확인이다. 디렉터리/.gitkeep을 먼저 만들고 roadmap 실패면 남는다. 마지막488행은 다음 helper 주석이며 구현은 미독이다.
+
+milestone.cjs 249–282행(79c5a7): --confirm만 있으면 planningPaths.phases의 **999 prefix 제외 모든 directory를 recursive force 삭제**한다. archive/완료/실제 검수/활성 worker 검사, lease, rollback은 없다. new-milestone이 이를 Step6에서 호출해 Step7.5 archive gate를 무력화하는 순서 결함을 확인했다. 확인되지 않은 child를 지우는 동작을 실행하지 않았다.
+
+core.cjs 307–351,583–628행(a47efa): top-level commit_docs가 planning.commit_docs보다 우선하므로 new-project multi-repo가 nested false만 바꿔도 기존 top true가 남으면 효과가 없다. lock은 wx 생성 방어가 있지만 callback EEXIST 재시도, mtime30초 무소유권 삭제,10초 후 재취득 없는 fn 호출이 있다. 이번 지정 구간을 새로 읽었으며 이전 bin 파티션 전문을 fresh로 재사용하지 않았다.
+
+config.cjs 198–242행(a47efa): 기존 config를 덮어쓰지 않는 created:false는 유지 후보이나 workflow가 새 선택이 적용됐다고 가정하면 틀린다. 신규 쓰기도 exists/write 경쟁이며 userChoices는 JSON 문법만 보고 buildNewProjectConfig를 호출한다. 그 helper와 config 전체는 이번 범위 밖이다. profile-output.cjs 911–1010행(a47efa)은6개 section generator 결과를 managed marker에 쓰고 임의 absolute output 경로도 허용한다. manual edit skip은 options.auto일 때만, source new-project는 이 flag를 주지 않는다. 안전 읽기의 null이 미존재/오류를 구분하는지와 section generation/update 후반부는 미독으로 남겼다. 본문 gate를 이름만으로 강제한다고 주장하지 않는다.
+
+execute-plan.md 326–374행(6ab193): Task의 checkpoint는 parent에게 넘기고 새 continuation을 만든다는 선언이다. repair는 local ./.claude의 config-get 실패를true로 바꾸고 default2회·PRUNE를 허용한다. Skip의 incomplete 기록과 사용자에게 기대/실제 결과를 내놓는 방어는 좋지만 원 오라클 재검사/global budget과 exact execution receipt는 이 문서가 강제하지 않는다. resume-project.md 60–104행은 structured handoff 우선·git status 대조·한 번 사용 뒤 삭제 및 phase glob fallback이며 nonphase 경로와 immutable provenance가 누락된다.
+
+직접 wrapper 15개는 c3f895 및667f9f에서 전문을 읽었다. 각 path/full range는 JSON에 개별 기록한다. help는 Read-only이고 실패시 reference 대체 없이 abort한다. advance는 SlashCommand와 force를 노출한다. capture-note는 Write/Glob만, promote 부분 실패를 보존한다. import-plan은 checker 후 partial·비멱등성을 명시한다. insert-phase는 실패시 임의 renumber 금지와 STATE writable preflight를 추가한다. list-workspaces는 init 실패 abort를 보완한다. **map-codebase와 milestone-summary는 mutates:no인데 실제 write/commit을 명시**한다. manager는 long-running:no이지만 loop/background를 지속하고 dashboard를 snapshot/dry-run이라 부르지만 revision-bound snapshot은 아니다. new-milestone wrapper63행은 archive 없으면 phase를 clear하지 말라는데 workflow Step6은 먼저 clear한다. new-project는 Copilot 질문 API 동등성 주장을 포함하나 실제 미검증이다. new-workspace wrapper는 missingname abort·부분성공 기록·at least one 성공을 요구해 본문 all-repos criteria와 다르다. pause-work는 commit 실패시 handoff 보존을 보완한다. phase-assumptions는 대화 수정 미저장을 명시한다. plan-gap-phases는 traceability 오류를 쓰기 전에 차단·중복검사를 요구하지만 본문은 roadmap을 먼저 쓰고 해당 검사를 구현하지 않는다.
+
+inbox는 pinned skills/*/SKILL.md에서 정확 workflow path를 참조하는 caller를 찾지 못했다(176c5c,79c5a7). 주석의 dangling 주장을 이 좁은 검색과 일치하는 관찰로만 남긴다. commands/다른 동적 include 전체는 닫히지 않았다. scripts/tests/*.py에서 new-milestone/manager/node-repair/pause-work의 정확 filename 검색은 hit가 없었다(6d3a22). 이는 직접 테스트 부재 전체 증거가 아니며 테스트 전문을 읽거나 실행했다고 계상하지 않는다. 원본 vendor/외부 링크·라이선스·모델/API/OS 사실은 미확인이다.

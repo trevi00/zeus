@@ -1,0 +1,32 @@
+{
+  "source_execution": 0,
+  "read_method": "Fresh inert UTF-8 full primary print; bounded supporting prints. No source imports.",
+  "start_head": "31d5091407566d4988980485246ed031784203b2",
+  "instructions_and_head_chunk": "1af779",
+  "prior_ledger_snapshot_chunk": "0153f5",
+  "primary_reads": [
+    {"index": 1, "ranges": [[1, 310], [311, 609]], "tool_chunks": ["f9f75a", "f6a44c"]},
+    {"index": 2, "ranges": [[1, 274]], "tool_chunks": ["f6a44c"]},
+    {"index": 3, "ranges": [[1, 215], [216, 391]], "tool_chunks": ["9232f4", "b73852"]},
+    {"index": 4, "ranges": [[1, 130]], "tool_chunks": ["b73852"]},
+    {"index": 5, "ranges": [[1, 178]], "tool_chunks": ["b73852"]},
+    {"index": 6, "ranges": [[1, 56]], "tool_chunks": ["b73852"]},
+    {"index": 7, "ranges": [[1, 190], [191, 363]], "tool_chunks": ["73e88d", "c6e077"]},
+    {"index": 8, "ranges": [[1, 200], [201, 379]], "tool_chunks": ["c6e077", "19412c"]},
+    {"index": 9, "ranges": [[1, 223]], "tool_chunks": ["19412c"]},
+    {"index": 10, "ranges": [[1, 255], [256, 492]], "tool_chunks": ["004ced", "d07a55"]},
+    {"index": 11, "ranges": [[1, 230], [231, 495], [496, 770], [771, 1040], [1041, 1273]], "tool_chunks": ["d07a55", "ee586c", "8c6ac1", "07c0ba", "beca9f"]},
+    {"index": 12, "ranges": [[1, 237]], "tool_chunks": ["beca9f"]},
+    {"index": 13, "ranges": [[1, 153]], "tool_chunks": ["4b353e"]},
+    {"index": 14, "ranges": [[1, 92]], "tool_chunks": ["4b353e"]},
+    {"index": 15, "ranges": [[1, 156]], "tool_chunks": ["4b353e"]},
+    {"index": 16, "ranges": [[1, 239]], "tool_chunks": ["700253"]},
+    {"index": 17, "ranges": [[1, 273]], "tool_chunks": ["700253"]}
+  ],
+  "support_print_chunks": ["626a52", "f459df", "6ab193", "e04705", "79c5a7", "c3f895", "667f9f", "a47efa", "6d3a22"],
+  "support_raw_ranges_and_hashes": "supporting-evidence.json",
+  "search_limitation": "e04705 had a Windows literal wildcard path rg error 123 and a separator-sensitive wrapper-name regex no-hit. Corrected to directory -g '*.cjs' in350b5e and exact content-based caller discovery in79c5a7. No failed search grants semantic coverage.",
+  "previous_source_read_reuse": false,
+  "upstream_tests_executed": 0,
+  "tests_read": 0
+}

@@ -1,0 +1,3 @@
+Primary unread: 0 of 17 (184092 bytes); fresh reads17, prior reuse0.
+Supporting ranges: 24 files, no new global primary promotion.
+Pending: unlisted/transitive caller/config/tests; all source execution; license/vendor originals; whole-area actual Claude; Windows/Linux/WSL; model qualification; Zeus PG/SDD adaptation; human acceptance/adoption.

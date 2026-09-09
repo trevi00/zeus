@@ -1,0 +1,42 @@
+{
+  "primary_count": 7,
+  "primary_bytes": 83538,
+  "primary_lines": 2523,
+  "partition_counts": {
+    "baldrix:get-shit-done/workflows:005": {
+      "files": 7,
+      "bytes": 83538
+    }
+  },
+  "supporting_rows": 25,
+  "supporting_read_lines": 2532,
+  "prior_reuse_rows": 0,
+  "review_refs_checked": 71,
+  "raw_blob_size_sha256_verified": true,
+  "range_bounds_verified": true,
+  "utf8_decoding_verified": true,
+  "korean_sentinel_verified": true,
+  "missing_manifest_snapshot_sha256_paths": [
+    "get-shit-done/bin/lib/uat.cjs",
+    "get-shit-done/bin/lib/verify.cjs",
+    "get-shit-done/bin/lib/init.cjs",
+    "get-shit-done/bin/lib/commands.cjs",
+    "get-shit-done/bin/lib/core.cjs",
+    "get-shit-done/bin/lib/config.cjs",
+    "get-shit-done/bin/lib/phase.cjs",
+    "get-shit-done/bin/gsd-tools.cjs"
+  ],
+  "upstream_tests_run": false,
+  "external_claims_verified": 0,
+  "full_read_gap_repairs": {},
+  "search_only_not_body": [
+    "0f54bb",
+    "b13c12",
+    "7609ae",
+    "2a6b55",
+    "361b06"
+  ],
+  "failed_read_not_counted": "7a6314 failed at line 2 with cp949 output encoding; complete successful fresh reads are f8e2a1 and 1c6d19.",
+  "search_limits": "No direct test bodies found in named identifier test/spec searches. Broad uat hits and truncated search output do not establish test absence. bin/install.js and update hook bodies were not obtained. No original tests ran.",
+  "metadata_format_reuse": "Previous recorder source format reused only; no prior source body or semantic finding reused."
+}

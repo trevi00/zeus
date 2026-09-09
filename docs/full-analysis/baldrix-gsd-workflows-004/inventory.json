@@ -1,0 +1,80 @@
+{
+  "partition": "baldrix:get-shit-done/workflows:004",
+  "scope_sha256": "0bfc544b913ef32112f3353ef9a105cdeca9893a5159724f21f54e10d10396f4",
+  "bytes": 190882,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/plan-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/plant-seed.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/pr-branch.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/profile-user.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/progress.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/quick.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/remove-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/remove-workspace.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/research-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/resume-project.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/review.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/scan.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/secure-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/session-report.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/settings.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/ship.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/stats.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/transition.md"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}
