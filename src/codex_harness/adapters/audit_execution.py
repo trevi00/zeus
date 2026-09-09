@@ -167,6 +167,7 @@ class AuditExecution:
         return self.audits.checkpoint(task, checkpoint, paths, systems)
 
     def review(self, task):
+        from codex_harness.application.execution_notices import record as execution_notice
         from codex_harness.application.execution_recovery import ExecutionRecovery
         recovery = ExecutionRecovery(self.audits.store, self.audits.workflow.org, self.audits.artifacts)
         data = task['input']
@@ -191,6 +192,7 @@ class AuditExecution:
                     recovery.validate_decision(tx, current)
                     current.update(status='inspection_blocked', result=result, completed_at=utcnow())
                     tx.put('decisions_pending', task['id'], current)
+                    execution_notice(tx, self.audits.workflow.org, current, 'decisions_pending', 'inspection_blocked', utcnow())
                 return current
             review = IndependentReview(data['binding'], task['actor'], receipt['id'], result['accepted'],
                 result['license_assessment'], result['dependency_assessment'], result['sre_assessment'],
@@ -203,4 +205,6 @@ class AuditExecution:
             current.update(status='inspection_blocked' if blocked else 'succeeded',
                            result=result, completed_at=utcnow())
             tx.put('decisions_pending', task['id'], current)
+            if blocked:
+                execution_notice(tx, self.audits.workflow.org, current, 'decisions_pending', 'inspection_blocked', utcnow())
         return current

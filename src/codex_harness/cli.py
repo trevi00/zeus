@@ -209,7 +209,7 @@ def parser() -> argparse.ArgumentParser:
     inspect = commands.add_parser("inspect")
     inspect.add_argument("bucket", choices=["incidents", "hooks", "sessions", "events", "deliveries", "outbox",
                                            "outbox_quarantine", "outbox_delivery", "outbox_attempts",
-                                           "execution_failures", "execution_recoveries",
+                                           "execution_failures", "execution_recoveries", "execution_notices", "execution_notice_errors",
                                            "tasks", "decisions_pending", "releases", "deployment", "release_queue"])
     rollback = commands.add_parser("rollback-hook")
     rollback.add_argument("hook_id")

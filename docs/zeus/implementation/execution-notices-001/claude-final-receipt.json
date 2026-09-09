@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Final source review, read-only (do not implement/execute). execution_notices.py now splits build from tx writes: bad actor/counter/source shape creates durable execution_notice_errors + safe event in SAME transaction so containment is not undone; DB errors still propagate/rollback. Semantic transition ID no longer hashes whole clock-bearing row; envelope first-write retained. Receiver checks already-processed workflow_inbox hash first, missing proof for new notice still fails/deadletters via CLI (bus.dead_letter ACKs). Strict conditional schema now requires exact notice fields/counters/reasons, superseded/blocked/inspection_blocked branches notify. Root explicitly limits this patch to state-changing transitions, not stalled no-transition require_adoption or retry-limit conflicts, and no retention deletion is introduced. Tests now include corrupt generation containment memory+PG, missing proof, byte stability, 4 actual killed child boundaries with actual PG/Redis, pending consumer reclaim. Examine source for concrete remaining blocker and count-related existing tests that need distinguishing business outbox from notices. <=450 words."
+  ],
+  "returncode": 0,
+  "duration_seconds": 75.93793797492981,
+  "stdout_sha256": "98716c95f9b5e82675aaf1758273c4dedcb072bba8a67d35b61e7adb621998a9",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "cf9e91e5-1d8b-443e-a041-cf27ddf69492",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 12,
+    "cache_creation_input_tokens": 22035,
+    "cache_read_input_tokens": 92825,
+    "output_tokens": 5047,
+    "output_tokens_details": {
+      "thinking_tokens": 2740
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 22035,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 1755,
+        "cache_read_input_tokens": 24749,
+        "cache_creation_input_tokens": 2121,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2121
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.3942105,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1138,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0012129999999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 12,
+      "outputTokens": 5047,
+      "cacheReadInputTokens": 92825,
+      "cacheCreationInputTokens": 22035,
+      "webSearchRequests": 0,
+      "costUSD": 0.3929975,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 2740,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

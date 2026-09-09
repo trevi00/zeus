@@ -102,7 +102,9 @@ def test_failed_execution_is_persisted_and_restart_does_not_resubmit(setup, monk
     assert restarted.execute_one('worker:github') is None
     assert len(calls) == 1
     with s.service.store.transaction() as tx:
-        assert not tx.scan('outbox')
+        messages = [r['message'] for r in tx.scan('outbox')]
+        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
+        assert messages[0]['what']['details']['status'] == 'failed'
         assert len(tx.scan('decisions_pending')) == 1
     # Fresh authorized work is permitted: there is no inferred account-wide block.
     fresh = copy.deepcopy(s.task['message'])
@@ -136,7 +138,10 @@ def test_decision_failure_has_evidence_and_never_creates_review(setup, monkeypat
     assert s.executor.decide_one('lead:research') is None
     assert len(calls) == 1
     with s.service.store.transaction() as tx:
-        assert not tx.scan('outbox') and not tx.scan('incidents')
+        messages = [r['message'] for r in tx.scan('outbox')]
+        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
+        assert messages[0]['what']['details']['status'] == 'failed'
+        assert not tx.scan('incidents')
 
 
 @pytest.mark.parametrize('bucket', ['tasks', 'decisions_pending'])

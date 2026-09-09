@@ -80,6 +80,9 @@ class Organization:
         kind = message["type"]
         if kind == "task.assign":
             require(recipient.parent == sender.id, "Assignment must follow a direct reporting edge")
+        elif kind == 'execution.notice':
+            require(recipient.id == (sender.parent or sender.id), 'Execution notice must follow the reporting edge')
+            require(message['what']['action'] == 'observe_execution', 'Execution notice cannot assign work')
         elif kind == "review.result":
             require(sender.role in {"lead", "conductor"}, "Worker cannot approve")
         elif kind in {"incident.report", "task.result", "hook.required"}:

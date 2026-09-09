@@ -13,6 +13,7 @@ from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.skill_history import prepare_history, project_identity, record_history
+from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
@@ -473,13 +474,14 @@ class Executor:
                     ExecutionRecovery(self.service.store, self.service.org, self.artifacts).validate_decision(tx, row)
                 except ContractError:
                     from codex_harness.application.execution_budget import block_execution
-                    block_execution(tx, row, 'decisions_pending', 'RecoveryContextChanged', now)
+                    block_execution(tx, row, 'decisions_pending', 'RecoveryContextChanged', now, self.service.org)
                     continue
                 try:
                     ticket_binding(tx, row["input"])
                 except TicketSuperseded as exc:
                     row.update(status="superseded", error=str(exc), completed_at=utcnow())
                     tx.put("decisions_pending", row["id"], row)
+                    execution_notice(tx, self.service.org, row, 'decisions_pending', 'ticket_superseded', now.isoformat())
                     continue
                 from codex_harness.application.execution_budget import (
                     block_execution,
@@ -490,22 +492,24 @@ class Executor:
                 try:
                     deadline = deadline_time(row.get('execution_deadline'))
                 except ContractError:
-                    block_execution(tx, row, 'decisions_pending', 'InvalidExecutionDeadline', now)
+                    block_execution(tx, row, 'decisions_pending', 'InvalidExecutionDeadline', now, self.service.org)
                     continue
                 if deadline is not None and deadline <= now:
                     row.update(status='expired', error='deadline exceeded')
                     tx.put('decisions_pending', row['id'], row)
+                    execution_notice(tx, self.service.org, row, 'decisions_pending', 'deadline_exceeded', now.isoformat())
                     continue
                 try:
-                    limit = retry_limit(tx, row, "decisions_pending", None, now)
+                    limit = retry_limit(tx, row, "decisions_pending", None, now, self.service.org)
                 except ContractError:
-                    block_execution(tx, row, "decisions_pending", "InvalidRetryBudget", now)
+                    block_execution(tx, row, "decisions_pending", "InvalidRetryBudget", now, self.service.org)
                     continue
                 if limit is None:
                     continue
                 if row["attempt"] >= limit:
                     row.update(status='failed', error='attempt budget exhausted')
                     tx.put("decisions_pending", row["id"], row)
+                    execution_notice(tx, self.service.org, row, 'decisions_pending', 'budget_exhausted', now.isoformat())
                     if row['phase'] == 'threshold_review':
                         from codex_harness.application.threshold_reviews import ThresholdReviews
 
@@ -556,6 +560,7 @@ class Executor:
                     self._recovered_effect(current, agent, phase, data)
                     current.update(status="inspection_blocked", result=result, completed_at=utcnow())
                     tx.put("decisions_pending", decision["id"], current)
+                    execution_notice(tx, self.service.org, current, 'decisions_pending', 'inspection_blocked', utcnow())
                 return current
             if result.get("blocked"):
                 require(not result["accepted"], "Blocked review cannot approve")
@@ -565,6 +570,7 @@ class Executor:
                     self._recovered_effect(current, agent, phase, data)
                     current.update(status="blocked", result=result, completed_at=utcnow())
                     tx.put("decisions_pending", decision["id"], current)
+                    execution_notice(tx, self.service.org, current, 'decisions_pending', 'decision_blocked', utcnow())
                 return current
             return self._commit_decision(decision, agent, phase, data, result, lease)
         except Exception as exc:
@@ -593,6 +599,7 @@ class Executor:
             except TicketSuperseded as exc:
                 current.update(status="superseded", result=result, error=str(exc), completed_at=utcnow())
                 tx.put("decisions_pending", decision["id"], current)
+                execution_notice(tx, self.service.org, current, 'decisions_pending', 'ticket_superseded', utcnow())
                 return current
             message = decision["message"]
             next_message = None

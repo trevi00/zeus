@@ -167,7 +167,9 @@ def test_executor_blocked_inspection_never_records_release_review(tmp_path, monk
     if blocked:
         assert result['status'] == 'inspection_blocked'
         assert result['result']['execution_ref'] == 'fixture:commands'
-        assert not queued and not outbox
+        assert not queued
+        assert len(outbox) == 1 and outbox[0]['message']['type'] == 'execution.notice'
+        assert outbox[0]['message']['what']['details']['status'] == 'inspection_blocked'
         assert not releases if phase == 'review_lead' else len(releases[0]['reviews']) == 1
     else:
         assert result['status'] == 'succeeded'
@@ -337,7 +339,10 @@ def test_blocked_transport_end_to_end(tmp_path, monkeypatch, ending, phase, acto
         assert tx.get('sessions', actor)['checkpoint']['evidence_ref'] == ref
         progress = tx.get('execution_progress', 'decision')
         assert json.loads(artifacts.read(progress['last_completed']['evidence']))['event'] == failure
-        assert not tx.scan('release_queue') and not tx.scan('outbox')
+        assert not tx.scan('release_queue')
+        messages = [r['message'] for r in tx.scan('outbox')]
+        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
+        assert messages[0]['what']['details']['status'] == 'inspection_blocked'
         assert not tx.scan('improvement_loops') and not tx.scan('incidents')
         releases = tx.scan('releases')
         assert not releases if phase == 'review_lead' else len(releases[0]['reviews']) == 1

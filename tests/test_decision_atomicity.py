@@ -77,8 +77,15 @@ def test_decision_effects_require_current_lease_and_atomic_completion(
                 assert len(tx.scan("release_queue")) == 1
             return
         assert tx.scan("releases") == before
-        for bucket in ("incidents", "hooks", "outbox", "release_queue", "improvement_loops"):
+        for bucket in ("incidents", "hooks", "release_queue", "improvement_loops"):
             assert not tx.scan(bucket), bucket
+        messages = [r['message'] for r in tx.scan('outbox')]
+        if failure == 'commit_failed':
+            # Failed business commit rolls back; the subsequent failure transition notifies.
+            assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
+            assert messages[0]['what']['details']['reason_code'] == 'execution_failed'
+        else:
+            assert not messages
         current = tx.get("decisions_pending", "decision")
         assert current["status"] != "succeeded"
         if failure == "replaced":

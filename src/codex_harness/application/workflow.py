@@ -13,6 +13,7 @@ from codex_harness.application.execution_budget import (
     positive_integer,
     retry_limit,
 )
+from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.domain.model import (
     ContractError,
@@ -93,6 +94,7 @@ class Workflow:
                 except ContractError as exc:
                     task.update(status="blocked", error=str(exc))
                     tx.put("tasks", task["id"], task)
+                    execution_notice(tx, self.org, task, 'tasks', 'ticket_binding_changed', now.isoformat())
                     continue
                 if task["message"]["what"]["action"] in {"plan", "implement"}:
                     try:
@@ -104,7 +106,7 @@ class Workflow:
                 try:
                     deadline = deadline_time(task.get("execution_deadline", task["message"]["when"]["deadline"]))
                 except ContractError:
-                    block_execution(tx, task, "tasks", "InvalidExecutionDeadline", now)
+                    block_execution(tx, task, "tasks", "InvalidExecutionDeadline", now, self.org)
                     continue
                 dependencies = [tx.get("tasks", dep) for dep in task["message"]["when"]["after"]]
                 terminal_dependency = any(d["status"] in {"failed", "cancelled", "expired"}
@@ -117,15 +119,16 @@ class Workflow:
                     continue
                 else:
                     try:
-                        limit = retry_limit(tx, task, "tasks", max_attempts, now)
+                        limit = retry_limit(tx, task, "tasks", max_attempts, now, self.org)
                     except ContractError:
-                        block_execution(tx, task, "tasks", "InvalidRetryBudget", now)
+                        block_execution(tx, task, "tasks", "InvalidRetryBudget", now, self.org)
                         continue
                     if limit is None:
                         continue
                     if task["attempt"] >= limit:
                         task.update(status="failed", error="attempt budget exhausted")
                         tx.put("tasks", task["id"], task)
+                        execution_notice(tx, self.org, task, 'tasks', 'budget_exhausted', now.isoformat())
                         continue
                     task.update(status="running", attempt=task["attempt"] + 1,
                                 generation=task["generation"] + 1, lease_owner=owner,
@@ -133,6 +136,8 @@ class Workflow:
                     tx.put("tasks", task["id"], task)
                     return task
                 tx.put("tasks", task["id"], task)
+                execution_notice(tx, self.org, task, 'tasks',
+                                 'deadline_exceeded' if task['status'] == 'expired' else 'dependency_failed', now.isoformat())
         return None
 
     def _owned(self, tx, task: dict, now: datetime | None = None) -> dict:
@@ -168,6 +173,7 @@ class Workflow:
                 self._attempt_outcome(current, "superseded", utcnow())
                 current.update(status="superseded", result=result, error=str(exc), completed_at=utcnow())
                 tx.put("tasks", task["id"], current)
+                execution_notice(tx, self.org, current, 'tasks', 'ticket_superseded', utcnow())
                 return current
             self._attempt_outcome(current, "succeeded", utcnow())
             current.update(status="succeeded", result=result, completed_at=utcnow())
@@ -229,6 +235,7 @@ class Workflow:
             tx.put(bucket, task["id"], current)
             tx.put("execution_failures", identity, {"id": identity, "request": request,
                    "status": current["status"], "at": utcnow()})
+            execution_notice(tx, self.org, current, bucket, 'execution_failed', utcnow(), identity)
             return current
 
     def cancel(self, task_id: str, actor: str, reason: str) -> None:
@@ -240,6 +247,7 @@ class Workflow:
             self._attempt_outcome(task, "cancelled", utcnow(), reason)
             task.update(status="cancelled", error=reason, generation=task["generation"] + 1)
             tx.put("tasks", task_id, task)
+            execution_notice(tx, self.org, task, 'tasks', 'operator_cancelled', utcnow())
 
     def request_rebase(self, task_id: str, new_base: str) -> dict:
         with self.store.transaction() as tx:
@@ -263,6 +271,10 @@ class Workflow:
     def handle(self, message: dict) -> dict:
         """Consume a report once and atomically queue the next reporting-edge command."""
         self.org.authorize(message)
+        if message['type'] == 'execution.notice':
+            from codex_harness.application.execution_notices import receive
+            with self.store.transaction() as tx:
+                return receive(tx, message)
         if message["type"] == "task.assign":
             return self.submit(message)
         require(message["type"] in {"task.result", "hook.required", "review.result"}, "Unsupported workflow message")

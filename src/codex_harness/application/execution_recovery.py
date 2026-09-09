@@ -239,4 +239,6 @@ class ExecutionRecovery:
             tx.put('events', identity, {'type': 'execution.recovered', 'receipt_id': identity,
                    'bucket': packet['bucket'], 'task_id': row['id'], 'generation': row['generation'],
                    'sequence': row['recovery_sequence'], 'at': now.isoformat()})
+            from codex_harness.application.execution_notices import record as execution_notice
+            execution_notice(tx, self.org, row, packet['bucket'], 'execution_recovered', now.isoformat(), identity)
             return {'replayed': False, 'receipt_id': identity, 'execution': row}

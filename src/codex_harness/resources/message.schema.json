@@ -15,6 +15,7 @@
       "enum": [
         "task.assign",
         "task.result",
+        "execution.notice",
         "incident.report",
         "hook.required",
         "review.result"
@@ -200,5 +201,110 @@
     "when",
     "where",
     "how"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "execution.notice"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "what": {
+            "properties": {
+              "action": {
+                "const": "observe_execution"
+              },
+              "details": {
+                "type": "object",
+                "properties": {
+                  "notice_id": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "version": {
+                    "const": 1
+                  },
+                  "bucket": {
+                    "enum": [
+                      "tasks",
+                      "decisions_pending"
+                    ]
+                  },
+                  "task_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "generation": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "attempt": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "recovery_sequence": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "status": {
+                    "enum": [
+                      "retry",
+                      "failed",
+                      "expired",
+                      "cancelled",
+                      "blocked",
+                      "superseded",
+                      "inspection_blocked"
+                    ]
+                  },
+                  "reason_code": {
+                    "enum": [
+                      "InvalidExecutionDeadline",
+                      "InvalidRetryBudget",
+                      "RecoveryContextChanged",
+                      "UnverifiedLegacyRetryBudget",
+                      "budget_exhausted",
+                      "deadline_exceeded",
+                      "decision_blocked",
+                      "dependency_failed",
+                      "execution_failed",
+                      "execution_recovered",
+                      "inspection_blocked",
+                      "operator_cancelled",
+                      "ticket_binding_changed",
+                      "ticket_superseded"
+                    ]
+                  },
+                  "transition_ref": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                },
+                "required": [
+                  "notice_id",
+                  "version",
+                  "bucket",
+                  "task_id",
+                  "generation",
+                  "attempt",
+                  "recovery_sequence",
+                  "status",
+                  "reason_code",
+                  "transition_ref"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    }
   ]
 }

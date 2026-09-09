@@ -1,0 +1,27 @@
+{
+  "processes": [
+    {
+      "pid": 33992,
+      "exit_code": 1,
+      "boundary": "before_commit"
+    },
+    {
+      "pid": 11840,
+      "exit_code": 1,
+      "boundary": "after_commit"
+    },
+    {
+      "pid": 20736,
+      "exit_code": 1,
+      "boundary": "after_publish"
+    },
+    {
+      "pid": 31208,
+      "exit_code": 1,
+      "boundary": "after_consume"
+    }
+  ],
+  "scope": "Real PG/Redis and killed child processes, no model execution",
+  "redis_copies": 2,
+  "receiver_effects": 1
+}

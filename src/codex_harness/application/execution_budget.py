@@ -26,13 +26,13 @@ def deadline_time(value):
         raise ContractError("Deadline must be a timezone-aware ISO timestamp") from exc
 
 
-def retry_limit(tx, row, bucket, requested, now):
+def retry_limit(tx, row, bucket, requested, now, org):
     if requested is not None:
         positive_integer(requested, "Retry limit")
     budget = row.get("retry_budget")
     if budget is None:
         if row["attempt"] > 0:
-            block_execution(tx, row, bucket, "UnverifiedLegacyRetryBudget", now)
+            block_execution(tx, row, bucket, "UnverifiedLegacyRetryBudget", now, org)
             return None
         limit = requested if requested is not None else POLICY.max_attempts
         positive_integer(limit, "Retry limit")
@@ -53,10 +53,13 @@ def retry_limit(tx, row, bucket, requested, now):
     return limit
 
 
-def block_execution(tx, row, bucket, reason, now):
-    event = {"type": "execution.state_blocked", "bucket": bucket, "task_id": row["id"], "reason": reason}
+def block_execution(tx, row, bucket, reason, now, org):
+    event = {"type": "execution.state_blocked", "bucket": bucket, "task_id": row["id"], "reason": reason,
+             "generation": row.get('generation', 0), "recovery_sequence": row.get('recovery_sequence', 0)}
     identity = digest(event)
     if tx.get("events", identity) is None:
         tx.put("events", identity, {**event, "at": now.isoformat()})
     row.update(status="blocked", error=reason)
     tx.put(bucket, row["id"], row)
+    from codex_harness.application.execution_notices import record
+    record(tx, org, row, bucket, reason, now.isoformat(), identity)

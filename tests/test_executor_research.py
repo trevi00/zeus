@@ -119,7 +119,9 @@ def test_invalid_evidence_never_completes(setup, failure):
         del s.config['final']['source_revision']
     assert s.executor.execute_one('worker:github')['status'] == 'retry'
     with s.service.store.transaction() as tx:
-        assert not tx.scan('outbox')
+        messages = [r['message'] for r in tx.scan('outbox')]
+        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
+        assert messages[0]['what']['details']['reason_code'] == 'execution_failed'
         assert tx.get('tasks', s.task['id'])['status'] == 'retry'
     if not failure.startswith('final'):
         assert 'final' not in s.calls
@@ -212,7 +214,9 @@ def test_stale_session_generation_rejects_checkpoint(setup):
     result = s.executor.execute_one('worker:github')
     assert result['status'] == 'retry' and 'Stale session' in result['error']
     with s.service.store.transaction() as tx:
-        assert not tx.scan('outbox')
+        messages = [r['message'] for r in tx.scan('outbox')]
+        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
+        assert messages[0]['what']['details']['reason_code'] == 'execution_failed'
         assert tx.get('sessions', 'worker:github')['generation'] == 7
 
 
