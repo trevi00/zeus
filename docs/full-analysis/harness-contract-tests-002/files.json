@@ -1,0 +1,1002 @@
+[
+  {
+    "source": "harness",
+    "path": "tests/contract/test_code_context_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "fd0d483debd4cf80d2e1711381ab849c0a444c49d77215d06d0e345034e46498",
+    "git_blob": "ef936a5d7d73cf5a2b8b3f5a35e87e9cb615f86c",
+    "bytes": 5192,
+    "lines": 104,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "fd0d483debd4cf80d2e1711381ab849c0a444c49d77215d06d0e345034e46498",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        104
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i01",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Synthetic module graph and actual lint registration; partial import/parser oracles.",
+    "finding_sections": [
+      "i01",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/code_context.py",
+      "scripts/validators/harness_lint.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_code_context_smoke.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_commit_scope_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "af9c49d53e3786739dffa67540c047723f0cff0427e7f3f331c2501a3e621c45",
+    "git_blob": "ee51371bf36adbe3c67c276a3e10c18d93775627",
+    "bytes": 6189,
+    "lines": 127,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "af9c49d53e3786739dffa67540c047723f0cff0427e7f3f331c2501a3e621c45",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        127
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i02",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Two pipeline output declarations and prose delivery; no Git enforcement.",
+    "finding_sections": [
+      "i02",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/commit_scope.py",
+      "scripts/cron/l2_driver.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_commit_scope_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_consume_gate_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6b2360261129408bea55490ca6bd76aee2fb18206f57f1df2dbfe94448816e74",
+    "git_blob": "fa0924334bcaa9d1de990cc9286fe77b60d1fa50",
+    "bytes": 9834,
+    "lines": 195,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6b2360261129408bea55490ca6bd76aee2fb18206f57f1df2dbfe94448816e74",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        195
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i03",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Synthetic reachability and queued payload; fail-open plus conditional operation axis.",
+    "finding_sections": [
+      "i03",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/consume_gate.py",
+      "scripts/cron/l2_driver.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_consume_gate_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_contract_visibility_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "b96aa6f944fd16d24fd86babdd55e7520784e556fb84e5719d6ba005b53f4a32",
+    "git_blob": "b106939779e431a9d54e51e7d5d235ee17ec003a",
+    "bytes": 8475,
+    "lines": 179,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "b96aa6f944fd16d24fd86babdd55e7520784e556fb84e5719d6ba005b53f4a32",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        179
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i04",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "AST success-print heuristic differs from executed assertion denominator.",
+    "finding_sections": [
+      "i04",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/test_outcome.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_contract_visibility_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_coverage_bootstrap.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "d78b07ae5ea13187556c32bed739cdc6dae0698c3ff723e5e2647cdfa0f1540e",
+    "git_blob": "35a915e0616501a591909b6c7fc4c2c6b093a767",
+    "bytes": 4360,
+    "lines": 95,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "d78b07ae5ea13187556c32bed739cdc6dae0698c3ff723e5e2647cdfa0f1540e",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        95
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i05",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Optional coverage startup on one unit pattern; instrumentation is not successful suite acceptance.",
+    "finding_sections": [
+      "i05",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/coverage_cmd.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_coverage_bootstrap.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_dba_projection_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "620604ed5339228c48b699b7ae36dc7dea8bc1b6e7e825c3425d9481c4a58ce4",
+    "git_blob": "d31f26f11fde33ef9c74cb53037ae7d0a2f9285b",
+    "bytes": 6133,
+    "lines": 145,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "620604ed5339228c48b699b7ae36dc7dea8bc1b6e7e825c3425d9481c4a58ce4",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        145
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i06",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Fake PG projection; zero-stage heartbeat conditional path is untested.",
+    "finding_sections": [
+      "i06",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/dba_projection.py",
+      "infra/fleet/docker-compose.yml"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_dba_projection_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_delegation_cap_attribution_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "a0b98a9125041e28a50d9755e9c3eae50632bf85bebfef3a197ea8eb9a37c7c6",
+    "git_blob": "815f49041439e4b6557a9791e50706e6bcd51d3a",
+    "bytes": 7093,
+    "lines": 144,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a0b98a9125041e28a50d9755e9c3eae50632bf85bebfef3a197ea8eb9a37c7c6",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        144
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i07",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Actual delegate event with synthetic binding; cap predicate shadowed in test.",
+    "finding_sections": [
+      "i07",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/step_cmd.py",
+      "scripts/engine/tick.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_delegation_cap_attribution_smoke.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_disarm_says_what_happened_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "8a1fb95e82a442faf9c5dea7addc5f1fbd0a9ec0626c6e375af32da04cdb94e0",
+    "git_blob": "c0130f2095506d23499183665db37f2e8d90c8a9",
+    "bytes": 7576,
+    "lines": 159,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8a1fb95e82a442faf9c5dea7addc5f1fbd0a9ec0626c6e375af32da04cdb94e0",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        159
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i08",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Stub stage fold and payload oracle; not pipeline-order or process-stop proof.",
+    "finding_sections": [
+      "i08",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/run_cmd.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_disarm_says_what_happened_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_domain_lead_delivery_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "16e4485f26eb78bc58411188d41d3a960142ead0b82ee1e694531473b6a1c2c7",
+    "git_blob": "b37fe048c9ed5da80ff5d46e7dafff6f5ff79234",
+    "bytes": 7450,
+    "lines": 140,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "16e4485f26eb78bc58411188d41d3a960142ead0b82ee1e694531473b6a1c2c7",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        140
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i09",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "One current role card and plan fields; not all cards or agent receipt.",
+    "finding_sections": [
+      "i09",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/step_cmd.py",
+      "scripts/cli/roster_cmd.py",
+      "scripts/lib/decomposition.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_domain_lead_delivery_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_driver_caps_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "135331d50e57cad6f31e07c8643ca157f08812b364e5b1e16872ad60440823ae",
+    "git_blob": "7145b544809b89d2c7bd416e988af67b9f78fadc",
+    "bytes": 4231,
+    "lines": 98,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "135331d50e57cad6f31e07c8643ca157f08812b364e5b1e16872ad60440823ae",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i10",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Declared integer limits; no live spawn/budget or provider verification.",
+    "finding_sections": [
+      "i10",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/l2_driver.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_driver_caps_smoke.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_dropped_print_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "57897eabeb5b8f41e0bdc4dc61c729628938276426e10203715280712adc1af4",
+    "git_blob": "0d5fc57a0ff0370342e2ec1d3580c1b4d9bd977d",
+    "bytes": 22368,
+    "lines": 482,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "57897eabeb5b8f41e0bdc4dc61c729628938276426e10203715280712adc1af4",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        482
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i11",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Printer and temporary CLI fixture; mutation exceptions and partial denominator limits.",
+    "finding_sections": [
+      "i11",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/spiral_cmd.py",
+      "scripts/cli/arming_cmd.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_dropped_print_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_entrance_reconfirm_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "4da91419a1a819264e9d902d0e6891e33f907e2ce1b510546b327a452c5ee21b",
+    "git_blob": "07c65fc3c33c6c666002455830a52e06a712a406",
+    "bytes": 10623,
+    "lines": 196,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "4da91419a1a819264e9d902d0e6891e33f907e2ce1b510546b327a452c5ee21b",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        196
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i12",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Real suite fixture but shadowed reconfirm decision; current sandbox defense exists.",
+    "finding_sections": [
+      "i12",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/sandbox.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_entrance_reconfirm_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_entrypoint_import.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "cd09d2400bfaa600f17176ba3dffe895524c69180db6b25680cfed73e5cbc282",
+    "git_blob": "8aa408e542a461c6cdf25e8bd036870d777ae17f",
+    "bytes": 6473,
+    "lines": 140,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "cd09d2400bfaa600f17176ba3dffe895524c69180db6b25680cfed73e5cbc282",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        140
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i13",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Fresh child state import plan; path-set diff not full side-effect isolation.",
+    "finding_sections": [
+      "i13",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "tests/_isolate.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_entrypoint_import.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_env_seal_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "d1b033ff0920eb09dcab596bcbc00d72f2131ee37831d58a0e040a2fa9e9b039",
+    "git_blob": "54e77377a5d8ed13c5adfdb791a67a1e1e0cad33",
+    "bytes": 20433,
+    "lines": 379,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "d1b033ff0920eb09dcab596bcbc00d72f2131ee37831d58a0e040a2fa9e9b039",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        379
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i14",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Current dual caller sealing; branch four only restores HOME and can remove other environment values.",
+    "finding_sections": [
+      "i14",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/sandbox_cmd.py",
+      "scripts/cli/autoheart_cmd.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_env_seal_smoke.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_evidence_freshness_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "fec3a54de510e86a983e91dc2d560a29bf0de9275b3e8427e3d0298b38010af1",
+    "git_blob": "7af4785f0d7540974d903dddbfa31c54922f6bbe",
+    "bytes": 23048,
+    "lines": 407,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "fec3a54de510e86a983e91dc2d560a29bf0de9275b3e8427e3d0298b38010af1",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        407
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i15",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Date fixtures and conditional live candidates; future dates and missing paths not authentic evidence.",
+    "finding_sections": [
+      "i15",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/evidence_freshness.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_evidence_freshness_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_extractor_canary_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "13d2144769a3a7520b50d58904ed644e0cc8d3629e1e0e30e60f5b90287211ce",
+    "git_blob": "5d8bb542462179804d3e2881143cd98058b118f1",
+    "bytes": 14383,
+    "lines": 280,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "13d2144769a3a7520b50d58904ed644e0cc8d3629e1e0e30e60f5b90287211ce",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        280
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i16",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Synthetic extraction plus stubbed gate outcomes; current DEFER and SELF_BLIND preserved.",
+    "finding_sections": [
+      "i16",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/autoheart_cmd.py",
+      "scripts/cli/extractor_canary_cmd.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_extractor_canary_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_fleet_contracts_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "5be1c138cef5994f86b46310a511740bdfbf77ce2dd18cfba45b719a99f57d3a",
+    "git_blob": "8cca540d38d3db6c48feecdc174833ecd3842ffc",
+    "bytes": 13851,
+    "lines": 299,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "5be1c138cef5994f86b46310a511740bdfbf77ce2dd18cfba45b719a99f57d3a",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        299
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i17",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Source strings and optional external repo observations; no protocol/device runtime.",
+    "finding_sections": [
+      "i17",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/fleet_contracts.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_fleet_contracts_smoke.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_fleet_mount_boundary_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "53114a93c0459709167932e86a9cedf20f9b8c113448e95ca108e7a73a08ef9d",
+    "git_blob": "ed8bebea4aa81469b9cd1ec97a4858338acdcf2e",
+    "bytes": 5482,
+    "lines": 121,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "53114a93c0459709167932e86a9cedf20f9b8c113448e95ca108e7a73a08ef9d",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        121
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i18",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Compose short mount string contract; not effective Docker permissions.",
+    "finding_sections": [
+      "i18",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "infra/fleet/docker-compose.yml"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_fleet_mount_boundary_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_gate_dump_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "8f07b7a439ab447dfd3b8c58416983f59a1ae6a8df0c130a72ca486155187e22",
+    "git_blob": "a881d0ec1ac011376966310c3fca98a291c56538",
+    "bytes": 10740,
+    "lines": 219,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8f07b7a439ab447dfd3b8c58416983f59a1ae6a8df0c130a72ca486155187e22",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        219
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#i19",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "partition": "harness:tests/contract:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Machine check declarations and counts; current lint flags structured and defers derived deficits.",
+    "finding_sections": [
+      "i19",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/gate_dump_cmd.py",
+      "scripts/validators/harness_lint.py"
+    ],
+    "test_kind": "standalone_smoke_script",
+    "declared_entrypoint": "Standalone __main__ script; dynamic check denominator; early-return and skip semantics detailed per file",
+    "denominator_basis": "Full source body; emitted checks are conditional/dynamic and not executed.",
+    "tests_read_in_part": [
+      "tests/contract/test_gate_dump_contract.py"
+    ],
+    "test_limits": "Static oracle/fixture/caller analysis only; asserts are not PASS or human acceptance.",
+    "remaining": [
+      "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+      "Full transitive callers, fixtures, policies, tests and deployment closure.",
+      "Authenticated human acceptance and real product/device evidence.",
+      "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+      "Actual independent Claude review managed by root.",
+      "License and redistribution review; adoption approval and Zeus implementation."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

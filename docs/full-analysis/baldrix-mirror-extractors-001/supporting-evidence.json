@@ -1,0 +1,73 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/mirror_drift.py",
+    "git_blob": "f10acb835bd3e8783154bedc1e0a88df84b8bf77",
+    "pinned_sha256": "390ab2e866072aff0a61f2f234e1d5bf93b50f13efd1671ddbe3488fad39216d",
+    "pinned_bytes": 13326,
+    "manifest_bytes": 13326,
+    "line_count": 284,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 100,
+        "end": 162,
+        "raw_range_sha256": "ad07690d064c727a11d96f150d19d72ad9a7172d8874b5ceaa3a736be8b9de98"
+      },
+      {
+        "start": 178,
+        "end": 240,
+        "raw_range_sha256": "60c04f3bae131317e51a14480854b7e65cfd4f98d0e7dea0a7281ab91cda88b4"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/mirror_extractors/__init__.py",
+      "scripts/lib/mirror_extractors/base.py",
+      "scripts/lib/mirror_extractors/pathglob.py",
+      "scripts/lib/mirror_extractors/rust.py"
+    ],
+    "coverage_promotion": false,
+    "review_ref": "docs/full-analysis/baldrix-mirror-extractors-001/supporting-notes.md",
+    "meaning": "Exact direct ranges only; supporting-notes.md documents semantics and unclosed trace.",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges and transitive dependencies unreviewed in this pass. No execution."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_mirror_drift.py",
+    "git_blob": "37d567b2ff57ba6e7c4c224a13ce6644f67e3ecc",
+    "pinned_sha256": "450f7e67b6e847338d58ac72fb79ef5ab3c422b0af3363cf747ccea844c842af",
+    "pinned_bytes": 10793,
+    "manifest_bytes": 10793,
+    "line_count": 228,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 196,
+        "raw_range_sha256": "9352b115e47bd36563708a2de4ab7878fd4dd9a308a2a80dc2ce618c93cacc37"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/mirror_extractors/__init__.py",
+      "scripts/lib/mirror_extractors/base.py",
+      "scripts/lib/mirror_extractors/pathglob.py",
+      "scripts/lib/mirror_extractors/rust.py"
+    ],
+    "coverage_promotion": false,
+    "review_ref": "docs/full-analysis/baldrix-mirror-extractors-001/supporting-notes.md",
+    "meaning": "Exact direct ranges only; supporting-notes.md documents semantics and unclosed trace.",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges and transitive dependencies unreviewed in this pass. No execution."
+  }
+]

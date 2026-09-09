@@ -1,0 +1,30 @@
+{
+  "kind": "inert recording only, no source execution",
+  "recording_argv": [
+    "python",
+    "-X",
+    "utf8",
+    "docs/full-analysis/baldrix-mirror-extractors-001/record_review.py"
+  ],
+  "recording_chunk": "400a37",
+  "recording_exit_code": 0,
+  "recording_stdout": "{\"primary\": 4, \"bytes\": 17868, \"fresh\": 4, \"reused\": 0, \"supporting\": 2, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\n",
+  "recording_stderr": "",
+  "ruff_argv": [
+    ".venv/Scripts/ruff.exe",
+    "check",
+    "docs/full-analysis/baldrix-mirror-extractors-001/record_review.py",
+    "docs/full-analysis/baldrix-workers-001/record_review.py"
+  ],
+  "ruff_chunk": "7c18f5",
+  "ruff_exit_code": 0,
+  "ruff_stdout": "All checks passed!\n",
+  "ruff_stderr": "",
+  "recorder_sha256": "42994d1c59e1d15e73887c56ee82f52749f61c60c7f52150d99fb89ea19321fa",
+  "primary_read_chunk": "4d77df",
+  "support_read_chunks": [
+    "6a8eda",
+    "16d06b"
+  ],
+  "limits": "Tool chunk execution provenance; wall-clock start/end not separately captured. Tests and upstream imports/execution/probes/network/install all 0."
+}

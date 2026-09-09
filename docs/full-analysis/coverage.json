@@ -2,16 +2,16 @@
   "tracked_paths": 2736,
   "source_counts": {
     "baldrix": {
-      "unreviewed": 1149,
-      "semantically_reviewed": 351,
-      "body_reviewed_call_test_trace_pending": 148
+      "unreviewed": 1134,
+      "semantically_reviewed": 359,
+      "body_reviewed_call_test_trace_pending": 155
     },
     "harness": {
-      "unreviewed": 430,
+      "unreviewed": 400,
       "semantic-reviewed-execution-not-attested": 93,
       "semantically_reviewed_static_only": 61,
-      "body_reviewed_call_test_trace_pending": 116,
-      "semantically_reviewed": 231
+      "body_reviewed_call_test_trace_pending": 127,
+      "semantically_reviewed": 250
     },
     "guardian": {
       "semantically_reviewed": 13

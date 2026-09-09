@@ -1,0 +1,33 @@
+{
+  "partition": "baldrix:scripts/lib/seams:001",
+  "scope_sha256": "bdb8b8af3b18af7b8b51c423b22f613a6bc56670e522a28bda0aaec9731d2020",
+  "primary_count": 7,
+  "primary_bytes": 24216,
+  "primary_body_read_complete": true,
+  "root_supporting_count": 10,
+  "root_supporting_fresh_full": 9,
+  "root_supporting_fresh_partial": 1,
+  "prior_read_reused": 0,
+  "original_unit_attempts": [
+    {
+      "prefix": "seams-unit",
+      "passed": 22,
+      "failed": 4,
+      "returncode": 1,
+      "reason": "Image lacks yaml; four CLI import paths fail. Failure preserved."
+    },
+    {
+      "prefix": "seams-unit-with-yaml",
+      "passed": 26,
+      "failed": 0,
+      "returncode": 0,
+      "reason": "Existing immutable image with YAML, overridden service entrypoint, same isolation."
+    }
+  ],
+  "original_component_programs_completed": 1,
+  "actual_provider_model_task_invocations": 0,
+  "execution_limits": "Original functions and actual synthetic scratch files. No method/provider patch, fleet/compiler/wire/human/device/native WindowsWSL acceptance.",
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false
+}

@@ -1,0 +1,256 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/extractors/base.py",
+    "bytes": 3229,
+    "git_blob": "287c4759c73d9aad40d0221b128d61af9a4e8ff0",
+    "pinned_sha256": "bd0625d1bd4000630647c4325d4d57e77ae2f58b0aa4e5f7879c112ff6b744a1",
+    "matches_manifest_sha256": true,
+    "line_count": 94,
+    "read_ranges": [
+      [
+        1,
+        94
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_seams.py",
+    "bytes": 22806,
+    "git_blob": "8212f37ac6551c18c5684e0dd358bd0f9d4fcd91",
+    "pinned_sha256": "6eb584ec1bb1cf9e494d18d8456b6a3ea47c415c4d3e32af4649394a365c5848",
+    "matches_manifest_sha256": true,
+    "line_count": 546,
+    "read_ranges": [
+      [
+        1,
+        546
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/seam_scan.py",
+    "bytes": 9099,
+    "git_blob": "c40c64d8e27b87643602a79841e8daf2edc207d5",
+    "pinned_sha256": "b0e41b9b677ff152366ed14c956f51f64d2357b6c95caa4b3cde49981b33850a",
+    "matches_manifest_sha256": true,
+    "line_count": 198,
+    "read_ranges": [
+      [
+        1,
+        198
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/seam_parity_drift.py",
+    "bytes": 4597,
+    "git_blob": "2908ba5ec69fa52dcb05c9efea01e476f0c51097",
+    "pinned_sha256": "5168cd6a20bafff5f7def5be4a4624326dd9c211caaaa66ffc100c6c52451bfc",
+    "matches_manifest_sha256": true,
+    "line_count": 107,
+    "read_ranges": [
+      [
+        1,
+        107
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/__init__.py",
+    "bytes": 4480,
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "matches_manifest_sha256": true,
+    "line_count": 123,
+    "read_ranges": [
+      [
+        1,
+        123
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/paths.py",
+    "bytes": 13699,
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "matches_manifest_sha256": true,
+    "line_count": 257,
+    "read_ranges": [
+      [
+        1,
+        257
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/telemetry_log.py",
+    "bytes": 4583,
+    "git_blob": "aa23d8924904d3e8db9f6770cd51eb1914deccbe",
+    "pinned_sha256": "77f939b133c533c024faafdc277daea6f452890bc371f55d99a3951adc1cbb27",
+    "matches_manifest_sha256": true,
+    "line_count": 124,
+    "read_ranges": [
+      [
+        1,
+        124
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/seam_gate.py",
+    "bytes": 5263,
+    "git_blob": "a4388498d6e9bc4eee21c95c676284a00aa1b73b",
+    "pinned_sha256": "710226b43ec11c10a9e09ba628fce2a90ab76be1b94f230bea25d3f87eb2bbd5",
+    "matches_manifest_sha256": true,
+    "line_count": 118,
+    "read_ranges": [
+      [
+        1,
+        118
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "atlas/seam-registry/seams.spec.yaml",
+    "bytes": 10310,
+    "git_blob": "6bf544822f0e5fa7104116fb572324a92b335612",
+    "pinned_sha256": "b4d1d04d28e3e2c5730c48454fbd93db810bea6ba9c58d30d5d3c476a3c655df",
+    "matches_manifest_sha256": true,
+    "line_count": 129,
+    "read_ranges": [
+      [
+        1,
+        129
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/graduation.py",
+    "bytes": 19847,
+    "git_blob": "d374e761ae212a30b859fed6ab62967cf54a61a8",
+    "pinned_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "matches_manifest_sha256": true,
+    "line_count": 486,
+    "read_ranges": [
+      [
+        1,
+        125
+      ],
+      [
+        199,
+        216
+      ]
+    ],
+    "read_extent": "explicit_supporting_ranges",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-seams-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  }
+]

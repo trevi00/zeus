@@ -1,0 +1,27 @@
+  [OK] test_seam_registry_ocp
+  [OK] test_java_name_rule_bare_and_ctor
+  [OK] test_java_ctor_string_rule
+  [OK] test_java_computed_is_low_fidelity
+  [OK] test_java_excludes_servicetype_category
+  [OK] test_java_no_sources_empty
+  [OK] test_dart_string_arg_wire_not_member_name
+  [OK] test_dart_excludes_non_socketaction_enum
+  [OK] test_dart_no_lib_empty
+  [OK] test_proto_extracts_message_fields_with_tags
+  [OK] test_proto_tag_drop_drift
+  [OK] test_seam_scan_merges_all_stacks_per_repo
+  [OK] test_transform_forms
+  [OK] test_parity_ok_identical
+  [OK] test_parity_drift_with_declared_affix_transform
+  [OK] test_parity_disjoint_no_transform_is_needs_transform_not_drift
+  [OK] test_parity_low_fidelity_suppresses
+  [OK] test_parity_value_map_collision_is_needs_transform
+  [OK] test_seam_scan_drift_blocked_undeclared_and_ledger
+  [OK] test_seam_validator_flags_potential_break_and_clean
+  [OK] test_seam_validator_catches_tampered_status_non_self_cert
+  [OK] test_seam_validator_low_fidelity_not_potential_break
+  [OK] test_seam_validator_no_ledger_empty
+  [OK] test_seams_no_llm_or_network_imports
+  [OK] test_seam_scan_out_of_scope_dict_element_round_trips
+  [OK] test_seam_scan_2run_byte_identical
+[OK] 26/26 tests passed

@@ -1,0 +1,19 @@
+{
+  "partition": "harness:tests/contract:002",
+  "primary_body_remaining": [],
+  "remaining": [
+    "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+    "Full transitive callers, fixtures, policies, tests and deployment closure.",
+    "Authenticated human acceptance and real product/device evidence.",
+    "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+    "Actual independent Claude review managed by root.",
+    "License and redistribution review; adoption approval and Zeus implementation."
+  ],
+  "specific_partial_traces": [
+    "Complete sandbox/canary/delegation caller and authenticated approval transition closure.",
+    "Fleet extractor parser bodies, actual protocol/device behavior and human scenario semantic fidelity.",
+    "All compose and shell semantics, effective mounts, runtime service health and environment restoration.",
+    "Actual deployment triggers, production state and PostgreSQL transition consumers."
+  ],
+  "review_ref": "docs/full-analysis/harness-contract-tests-002/review.md#unknowns"
+}

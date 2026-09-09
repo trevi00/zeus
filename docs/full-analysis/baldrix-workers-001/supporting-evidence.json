@@ -1,0 +1,128 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_workers.py",
+    "git_blob": "3ce07c3f3a0673a35bdc69816c205a5f64f6453e",
+    "pinned_sha256": "76ad3601d0f8e076d0aa82c4fad6f5ea1317289096d40c1ad8ce063fbfd98e6f",
+    "pinned_bytes": 6611,
+    "manifest_bytes": 6611,
+    "line_count": 181,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 181,
+        "raw_range_sha256": "76ad3601d0f8e076d0aa82c4fad6f5ea1317289096d40c1ad8ce063fbfd98e6f"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/workers/__init__.py",
+      "scripts/lib/workers/base.py",
+      "scripts/lib/workers/subprocess_fallback.py"
+    ],
+    "coverage_promotion": false,
+    "review_ref": "docs/full-analysis/baldrix-workers-001/supporting-notes.md",
+    "meaning": "Exact direct ranges only; supporting-notes.md documents semantics and unclosed trace.",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges and transitive dependencies unreviewed in this pass. No execution."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_psmux.py",
+    "git_blob": "87fbc294c502d2202d6b0e3f2ee4b6077664bb64",
+    "pinned_sha256": "af79e92b3b22b3bc94afe49f45b03763389959cac702f7c09282c289f323e5f3",
+    "pinned_bytes": 10812,
+    "manifest_bytes": 10812,
+    "line_count": 342,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 230,
+        "raw_range_sha256": "f6b91091bac2b372c543d9a72bd8a558d3671fb8cf10418c968131b1a6ea2e17"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/workers/psmux_adapter.py"
+    ],
+    "coverage_promotion": false,
+    "review_ref": "docs/full-analysis/baldrix-workers-001/supporting-notes.md",
+    "meaning": "Exact direct ranges only; supporting-notes.md documents semantics and unclosed trace.",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges and transitive dependencies unreviewed in this pass. No execution."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "commands/harness-team.md",
+    "git_blob": "3e0d22409051d04cca9e3e70ba88878d42ff19c5",
+    "pinned_sha256": "950ea1bfe81d77a65913a0433351bf386097f16243d55904e1734c943c92884d",
+    "pinned_bytes": 17038,
+    "manifest_bytes": 17038,
+    "line_count": 292,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 20,
+        "end": 65,
+        "raw_range_sha256": "4baf7f2f93195968c3680cbb998a08142258f97dfaaf588e359bb82055ff50d7"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/workers/__init__.py",
+      "scripts/lib/workers/base.py",
+      "scripts/lib/workers/psmux_adapter.py",
+      "scripts/lib/workers/subprocess_fallback.py"
+    ],
+    "coverage_promotion": false,
+    "review_ref": "docs/full-analysis/baldrix-workers-001/supporting-notes.md",
+    "meaning": "Exact direct ranges only; supporting-notes.md documents semantics and unclosed trace.",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges and transitive dependencies unreviewed in this pass. No execution."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "commands/harness-ultrawork.md",
+    "git_blob": "5065384b4c16552471b9d95c3cea1f9c4949f774",
+    "pinned_sha256": "4146defe64f8020bee378d20d3cd2abe28132d8635ce04b2b8743fc256e2915d",
+    "pinned_bytes": 7506,
+    "manifest_bytes": 7506,
+    "line_count": 108,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 98,
+        "end": 108,
+        "raw_range_sha256": "8c5a123ada6ae136aa2c87bc1d52a37a703326cd0fd2d4d0414662c5c4c20397"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/workers/__init__.py",
+      "scripts/lib/workers/base.py"
+    ],
+    "coverage_promotion": false,
+    "review_ref": "docs/full-analysis/baldrix-workers-001/supporting-notes.md",
+    "meaning": "Exact direct ranges only; supporting-notes.md documents semantics and unclosed trace.",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges and transitive dependencies unreviewed in this pass. No execution."
+  }
+]

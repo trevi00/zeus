@@ -1,0 +1,20 @@
+{
+  "scope": "Own review metadata only; no upstream execution",
+  "metadata_recorder": {
+    "command": "python docs/full-analysis/harness-contract-tests-001/build_index.py",
+    "exit_code": 0,
+    "result": "PASS",
+    "checks": ["11 primary / 195089 bytes", "29 supporting paths", "pinned revision and partition scope", "raw Git blob and manifest bytes", "available manifest SHA-256", "read ranges within decoded line bounds", "primary review anchors and supporting references", "UTF-8 without BOM, LF, JSON parse"]
+  },
+  "own_ruff": {
+    "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/harness-contract-tests-001/build_index.py",
+    "exit_code": 0,
+    "result": "All checks passed!"
+  },
+  "display_limit": "A console preview failed to encode an em dash under cp949 after successfully decoding UTF-8. Repeated the preview with Python -X utf8; this was a display issue, not an upstream test or source change.",
+  "upstream_tests_executed": [],
+  "upstream_execution_count": 0,
+  "source_import_probe_network_install_count": 0,
+  "subsystem_complete": false,
+  "adoption_approved": false
+}

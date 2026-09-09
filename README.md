@@ -1,6 +1,6 @@
 ﻿# Zeus
 
-독립 저장소: **[trevi00/zeus](https://github.com/trevi00/zeus)** · [이슈](https://github.com/trevi00/zeus/issues).
+독립 공개 저장소: **[trevi00/zeus](https://github.com/trevi00/zeus)** · [이슈](https://github.com/trevi00/zeus/issues).
 기존 `trevi00/codex-harness`는 다른 컴퓨터의 운영 저장소로 유지합니다.
 이 저장소는 로컬 Zeus 작업을 분리한 개발 기준점이며 전체 분석·흡수·운영 승인은 아직 완료되지 않았습니다.
 [전수 분석 현황](docs/full-analysis/README.md), [통합 분석 이슈](https://github.com/trevi00/zeus/issues/1),

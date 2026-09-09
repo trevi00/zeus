@@ -1,0 +1,52 @@
+{
+  "partition": "harness:tests/contract:001",
+  "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+  "bytes": 195089,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "tests/contract/_isolate.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_acceptance_coverage_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_arm_reopens_cycle_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_arming_freshness_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_arming_grade_axis_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_artifact_type_registry_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_board_publisher_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_boundary_corpus_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_bus_tailer_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_bus_topic_order_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_bus_watermark_contract.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

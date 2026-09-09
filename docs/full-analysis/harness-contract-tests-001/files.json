@@ -1,0 +1,507 @@
+[
+  {
+    "source": "harness",
+    "path": "tests/contract/_isolate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 922,
+    "git_blob": "a3da9daa0fbd3cb8fe331390c37e3d7f32a42bd5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "7db7b9747ef8ad8728a7455480e41a70dcf81cc72579c4a5757188107d97a4e0",
+    "observed_sha256": null,
+    "manifest_sha256": "7db7b9747ef8ad8728a7455480e41a70dcf81cc72579c4a5757188107d97a4e0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        20
+      ]
+    ],
+    "total_lines": 20,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f01",
+    "supporting_ids": [
+      "s01",
+      "s02",
+      "s03"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_acceptance_coverage_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 21084,
+    "git_blob": "1a015d0af17c69221a3e5bb6d5e58dbc29499917",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6877e079084a14864b8e6a2ecb376cb73d12b89dd360c832fb2e4cba45511a6c",
+    "observed_sha256": null,
+    "manifest_sha256": "6877e079084a14864b8e6a2ecb376cb73d12b89dd360c832fb2e4cba45511a6c",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        351
+      ]
+    ],
+    "total_lines": 351,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f02",
+    "supporting_ids": [
+      "s01",
+      "s02",
+      "s03",
+      "s04",
+      "s16"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 15398,
+    "git_blob": "815441b5885d16ea85bcbc1e6265b93fa89c8ded",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9ae78643ed6c8e9ae76409008817f1bde545d9b01ebcefc2a2395121231b7af8",
+    "observed_sha256": null,
+    "manifest_sha256": "9ae78643ed6c8e9ae76409008817f1bde545d9b01ebcefc2a2395121231b7af8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        282
+      ]
+    ],
+    "total_lines": 282,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f03",
+    "supporting_ids": [
+      "s01",
+      "s04",
+      "s06",
+      "s07",
+      "s11",
+      "s27",
+      "s29"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_arming_freshness_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 24546,
+    "git_blob": "c58da669dbbeceee5e9a9d74fdf58873b766b907",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9bd9051dd44b472590bd191fa24552ed5a5f495df2a461d5b4f763aad8254d6b",
+    "observed_sha256": null,
+    "manifest_sha256": "9bd9051dd44b472590bd191fa24552ed5a5f495df2a461d5b4f763aad8254d6b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        475
+      ]
+    ],
+    "total_lines": 475,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f04",
+    "supporting_ids": [
+      "s01",
+      "s07",
+      "s08",
+      "s10",
+      "s15",
+      "s25"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_arming_grade_axis_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 34055,
+    "git_blob": "ad136a13f181004a21c5564a5e7e3e67213b531b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a70cae3a0cd5f65f12b7dba80ad3f2585e54eaff8fdbcaaeb1333cb5c965bbfd",
+    "observed_sha256": null,
+    "manifest_sha256": "a70cae3a0cd5f65f12b7dba80ad3f2585e54eaff8fdbcaaeb1333cb5c965bbfd",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        593
+      ]
+    ],
+    "total_lines": 593,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f05",
+    "supporting_ids": [
+      "s01",
+      "s07",
+      "s08",
+      "s09",
+      "s14",
+      "s25"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_artifact_type_registry_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 19218,
+    "git_blob": "b2351df241cee6a00200b28fff75b990dd15adca",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a05b915c8f3bd4b4178bd091e9f9b232dd05338ea2a1f6fb39d1f62fbba86324",
+    "observed_sha256": null,
+    "manifest_sha256": "a05b915c8f3bd4b4178bd091e9f9b232dd05338ea2a1f6fb39d1f62fbba86324",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        412
+      ]
+    ],
+    "total_lines": 412,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f06",
+    "supporting_ids": [
+      "s02",
+      "s03",
+      "s11",
+      "s12",
+      "s13"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_board_publisher_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 29396,
+    "git_blob": "cbcff8c3a79b925588ba53da6d249fd9cc61cd30",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "477fb232a874e4151909e3cba18507fa868884a46984aeaadab31c52228af2ec",
+    "observed_sha256": null,
+    "manifest_sha256": "477fb232a874e4151909e3cba18507fa868884a46984aeaadab31c52228af2ec",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        485
+      ]
+    ],
+    "total_lines": 485,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f07",
+    "supporting_ids": [
+      "s01",
+      "s17",
+      "s19"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_boundary_corpus_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8852,
+    "git_blob": "97c796abaf068a8aeff476fbc2878bccae7fdcda",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "83b0be399db3e8d3a131d134bf177dba3667594b92dd12ae7d77b1e3e8c19417",
+    "observed_sha256": null,
+    "manifest_sha256": "83b0be399db3e8d3a131d134bf177dba3667594b92dd12ae7d77b1e3e8c19417",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        184
+      ]
+    ],
+    "total_lines": 184,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f08",
+    "supporting_ids": [
+      "s01",
+      "s18",
+      "s26",
+      "s28"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_bus_tailer_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11190,
+    "git_blob": "6949ea700ee51568cfaf8efb589b26dbb2baf5b2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "63806f33c50d4e60519bfbdfcdb6e7e6f52f86f7bac4d6a856270e2e8e93efdd",
+    "observed_sha256": null,
+    "manifest_sha256": "63806f33c50d4e60519bfbdfcdb6e7e6f52f86f7bac4d6a856270e2e8e93efdd",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        242
+      ]
+    ],
+    "total_lines": 242,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f09",
+    "supporting_ids": [
+      "s01",
+      "s05",
+      "s06"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_bus_topic_order_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 16712,
+    "git_blob": "a9d31b0b32f6e08b04aca98c015448f524ef705a",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "7c4b4cae739f6c7125911835ef3e215a41a87d61bcda57afcd55efd8b461c814",
+    "observed_sha256": null,
+    "manifest_sha256": "7c4b4cae739f6c7125911835ef3e215a41a87d61bcda57afcd55efd8b461c814",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        321
+      ]
+    ],
+    "total_lines": 321,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f10",
+    "supporting_ids": [
+      "s05",
+      "s16",
+      "s20",
+      "s21",
+      "s22",
+      "s23",
+      "s24"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_bus_watermark_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13716,
+    "git_blob": "08e87d464f2440713646cd1bb2d73a8d84be15b7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9f982fc4ebeb1102075be19775e66c191e5ab51c756b3e8b2cd96c5a20fdd8b8",
+    "observed_sha256": null,
+    "manifest_sha256": "9f982fc4ebeb1102075be19775e66c191e5ab51c756b3e8b2cd96c5a20fdd8b8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        262
+      ]
+    ],
+    "total_lines": 262,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "partition": "harness:tests/contract:001",
+    "scope_sha256": "66bda8a8cf43d1c4928d88d4f6f3cd0eb1eff332b06a501c67a88f087e6abfd4",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-contract-tests-001/review.md#f11",
+    "supporting_ids": [
+      "s01",
+      "s05",
+      "s06",
+      "s16",
+      "s24"
+    ],
+    "remaining": [
+      "Only recorded direct ranges reviewed; transitive caller/config/test closure pending.",
+      "Upstream execution/import/probe/network/install prohibited: none performed.",
+      "Historical PASS, approval statements and synthetic fixtures are not current execution evidence.",
+      "Actual Claude joint review, license/dependency closure and model qualification pending.",
+      "Windows/Linux/WSL execution and real human experience acceptance pending.",
+      "Zeus eight-stage SDD implementation equivalence and adoption approval not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  }
+]

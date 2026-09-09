@@ -1,0 +1,30 @@
+{
+  "kind": "root_local_validation_transcription",
+  "ruff": {
+    "command": [
+      "uv",
+      "run",
+      "ruff",
+      "check",
+      "."
+    ],
+    "returncode": 0,
+    "output": "All checks passed!",
+    "tool_chunk": "6cd831"
+  },
+  "pytest": {
+    "command": [
+      "uv",
+      "run",
+      "pytest",
+      "-q"
+    ],
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "seconds": 176.86,
+    "terminal_tool_chunk": "377767",
+    "exec_session": 64503
+  },
+  "scope": "Zeus local regression, separate from original synthetic seam tests. No product/human/device/model/pilot acceptance. Transcribed tool result, not raw subprocess receipt."
+}

@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-09-09T08:44:23.132262+00:00",
+  "authorization": "User explicitly requested private-to-public conversion in this thread",
+  "github": {
+    "nameWithOwner": "trevi00/zeus",
+    "url": "https://github.com/trevi00/zeus",
+    "visibility": "PUBLIC"
+  },
+  "checked_main_revision": "810cc3c5c3ac188b29ca884fb00b05121784df48",
+  "credential_pattern_preflight": {
+    "reachable_blobs": 1757,
+    "bytes": 50258451,
+    "blob_pattern_hits": 0,
+    "paginated_issue_body_pattern_hits": 0,
+    "limits": "Selected credential patterns; not a universal absence proof."
+  },
+  "service_deployment_changed": false
+}

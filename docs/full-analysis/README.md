@@ -90,7 +90,13 @@
 - [Baldrix 추출기](baldrix-lib-extractors-001/review.md): 12개 전문·지원13개. flowchart/flow 검증 연결, 생성 PASS, 변환 후 원문 행·출처 유실과 실제 스펙 의미를 대조했다. 원본 실행0이다.
 - [Harness 통합 테스트 005](harness-integration-tests-005/review.md): 9개 전문·지원47개. sandbox rc-only와 SKIP, seams 자동승급/CLI 카나리아, 합성 승인·통지·스켈레톤의 인수 경계를 추적했다. 원본 실행0이다.
 
-현재 고정 2,736개 중 1,067개에 검토 기록이 있으며 **1,669개는 아직 unreviewed**다. 이번 묶음 36개는 모두 새 primary 경로다. 1,067개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`과 [root 검토](validator-workflow-root-review.md)를 따른다.
+- [계약 추출 공동 검토](baldrix-seams-001/resolution.md): 7개 전문·root 지원10개, 실제 Claude 독립 검토·토론·정정. 최초 yaml 부재22/26 실패를 보존하고 별도 기존 이미지에서 원본26/26 통과를 확인했다. 원본 함수 관측으로 변환 충돌 OK·HIGH 누락·원장 손상 뒤 감사 누락을 기록했다.
+- [Baldrix mirror 추출기](baldrix-mirror-extractors-001/review.md): 4개 전문·지원2개. 정규화 hash의 의미·원시 바이트·경로·읽기 실패 및 구조 추출 경계를 추적했다. 원본 실행0이다.
+- [Baldrix workers](baldrix-workers-001/review.md): 4개 전문·지원4개. worker 신원·세대·실제 출력/종료·OS quoting과 registry/문서 실행 경로를 대조했다. 원본 실행0이다.
+- [Harness 계약 테스트001](harness-contract-tests-001/review.md): 11개 전문·지원29개. acceptance 탑재/인수, 후보 소진, 버스 held 실패 로그 및 실제 승인·전송 분모를 구분했다. 원본 실행0이다.
+- [Harness 계약 테스트002](harness-contract-tests-002/review.md): 19개 전문·지원33개. projection heartbeat 조건, env 복원, 실제 reconfirmation 방어와 fixture/선언/실행 증거의 경계를 대조했다. 원본 실행0이다.
+
+현재 고정 2,736개 중 1,112개에 검토 기록이 있으며 **1,624개는 아직 unreviewed**다. 이번 묶음 45개는 모두 새 primary 경로다. 1,112개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`과 [root 검토](seam-contract-root-review.md)를 따른다.
 
 Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 
