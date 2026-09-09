@@ -1,0 +1,22 @@
+{
+  "report_sha256": "b6600e66bc18914bb6b4fd92b04ba0c027ceedd009161fa2d61efe5afa800cd5",
+  "artifacts_verified": 13,
+  "referenced_artifacts_verified": 13,
+  "actual_pg_snapshot_unchanged": true,
+  "issues": [
+    {
+      "number": 34,
+      "state": "CLOSED",
+      "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+      "url": "https://github.com/trevi00/zeus/issues/34"
+    },
+    {
+      "number": 30,
+      "state": "OPEN",
+      "title": "[FA-029] \uac80\uc99d \uc99d\uac70\uc5d0 \uacb0\uc18d\ub41c \ud2f0\ucf13 \uc885\ub8cc\u00b7\uc7ac\uac1c\uc640 PG/GitHub \uc0c1\ud0dc \uc870\uc815",
+      "url": "https://github.com/trevi00/zeus/issues/30"
+    }
+  ],
+  "private_key_removed": true,
+  "human_acceptance": false
+}

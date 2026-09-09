@@ -130,5 +130,27 @@ Actual Claude reviewed the design, root adjudication and implementation; raw rep
 and process receipts are alongside this document. Tests use real OpenSSH signatures
 and both memory and isolated actual PostgreSQL. Their substituted GitHub transport
 exercises failure ordering deterministically and is not live GitHub acceptance.
-Final test, native WSL and separate live GitHub results will be recorded after they
-finish. FA-029 remains open until its entire acceptance scope is satisfied.
+The committed implementation is `33240ab4f0d759adfb2205db1de74c1e2c76212e`.
+Windows full-suite validation passed 716 tests (132 optional skips); its final
+lifecycle suite passed 80 cases across memory/actual PostgreSQL. Native Ubuntu WSL
+passed 722 tests (126 skips), built the package and verified the new CLI commands
+from a clean isolated clone; dependency lock bytes stayed unchanged.
+
+[Live acceptance](live-github.json) used actual PostgreSQL and dedicated GitHub
+[test issue34](https://github.com/trevi00/zeus/issues/34): separate local/remote state,
+actual close with deliberate ACK discard and recovery, reopen, external-state
+conflict, explicit reconciliation and fresh cycle-bound closure all passed. The test
+issue ended CLOSED; improvement issue30 remained OPEN and unchanged. The temporary
+automation private key was deleted, and the isolated test schema is retained for audit.
+This was not a real human approval or a naturally occurring network outage.
+
+[Additional real text-conflict checks](live-text-conflicts.json) independently changed
+the test issue's body and title, observed each rejection, reconciled the exact saved
+observation, and restored its original content/state without changing the lifecycle
+sequence. An independent readback verified the retained artifact hashes and actual
+PG snapshot, and the actual CLI read back the closed ticket at sequence4. The native
+WSL logs and runner hashes are in [wsl/receipt.json](wsl/receipt.json).
+
+Remote CI is tracked separately against the pushed revision. FA-029 remains open:
+these automated operational checks do not supply production human enrollment or
+authenticated successor-policy rotation, and the full Zeus goal remains active.

@@ -1,0 +1,69 @@
+"""Actual external text conflicts on the dedicated, already closed test issue only."""
+import json
+import tempfile
+from pathlib import Path
+
+from psycopg.conninfo import make_conninfo
+
+from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.git import GitWorkspace
+from codex_harness.adapters.github_tickets import GitHubTickets
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.adapters.ticket_authority import TicketAuthority
+from codex_harness.application.ticket_lifecycle import TicketLifecycle
+from codex_harness.application.tickets import Tickets, render_ticket
+from codex_harness.bootstrap import database_url
+from codex_harness.domain.model import ContractError, utcnow
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/ticket-lifecycle-002/live-text-conflicts.json'
+assert not out.exists()
+state = json.loads((root / '.runtime/ticket-lifecycle-live-state.json').read_text('utf-8'))
+assert state['phase'] == 7 and state['number'] == 34
+run_root = root / '.runtime' / ('ticket-live-' + state['run_id'])
+store = PostgresStore(make_conninfo(database_url(), options='-c search_path=ticket_live_' + state['run_id'] + ',public'))
+artifacts = FileArtifacts(run_root / 'artifacts')
+tickets = Tickets(store, None)
+authority = TicketAuthority(GitWorkspace(str(run_root / 'trust-repository'), str(run_root / 'workspaces')),
+                            artifacts, state['trust_commit'])
+life = TicketLifecycle(tickets, artifacts, authority)
+github = GitHubTickets(tickets, artifacts, life)
+ticket_id, repository = state['ticket_id'], 'trevi00/zeus'
+ticket = tickets.get(ticket_id)
+before = github._read(repository, 34)
+assert before['state'] == 'CLOSED' and before['title'].startswith('[Zeus lifecycle acceptance test]')
+assert before['body'] == render_ticket(ticket) and ticket['status'] == 'closed'
+rows = []
+for field in ('body', 'title'):
+    proposed = before[field] + '\nExternal conflict acceptance probe' if field == 'body' else before[field] + ' [external probe]'
+    with tempfile.TemporaryDirectory(prefix='zeus-test-external-edit-') as directory:
+        path = Path(directory) / 'body.md'
+        path.write_text(proposed if field == 'body' else before['body'], encoding='utf-8', newline='\n')
+        github._call(['issue', 'edit', '34', '--repo', repository, '--title', proposed if field == 'title' else before['title'],
+                      '--body-file', str(path)])
+    try:
+        github.sync(ticket_id, repository)
+    except ContractError as exc:
+        assert field + ' changed externally' in str(exc)
+        failure = str(exc)
+    else:
+        raise AssertionError('Actual external edit was not rejected')
+    observed = github.pull(ticket_id, repository)
+    assert artifacts.document(observed['evidence_ref'])[field] == proposed
+    current = tickets.get(ticket_id)
+    assert current['status'] == 'closed' and current['lifecycle_sequence'] == 4
+    assert current['github'][0]['status'] == 'needs_attention'
+    restored = github.sync(ticket_id, repository, reconcile_observation=observed['id'], expected_revision=1)
+    assert restored['status'] == 'synced'
+    assert github._read(repository, 34) == before
+    rows.append({'field': field, 'error': failure, 'observation': observed, 'restored_projection': restored})
+with store.transaction() as tx:
+    snapshot = tx.records()
+blobs = {'sha256:' + p.stem: p.read_text('utf-8') for p in artifacts.root.glob('*.txt')}
+report = {'code_commit': state['code_commit'], 'observed_at': utcnow(), 'issue': before['url'],
+          'mode': 'actual GitHub title/body edits, actual PostgreSQL conflict records, explicit exact-observation reconciliation',
+          'result': 'passed', 'cases': rows, 'final_remote_equals_initial': True, 'lifecycle_sequence_unchanged': 4,
+          'human_acceptance': False, 'postgres_snapshot': snapshot, 'artifacts': blobs}
+out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+out.with_name('text-conflict-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'result': 'passed', 'cases': ['body', 'title'], 'issue': before['url'], 'restored_unchanged': True}))

@@ -1,0 +1,232 @@
+"""Actual PG/GitHub acceptance on one dedicated test issue; never an improvement issue."""
+import hashlib
+import json
+import platform
+import re
+import subprocess
+import sys
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from uuid import uuid4
+
+import psycopg
+from psycopg import sql
+from psycopg.conninfo import make_conninfo
+
+from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.commands import run_process
+from codex_harness.adapters.git import GitWorkspace
+from codex_harness.adapters.github_tickets import GitHubTickets
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.adapters.ticket_authority import TicketAuthority
+from codex_harness.application.ticket_lifecycle import TicketLifecycle
+from codex_harness.application.tickets import Tickets, render_ticket
+from codex_harness.bootstrap import database_url
+from codex_harness.domain.model import canonical, digest, utcnow
+
+ROOT = Path(__file__).resolve().parents[1]
+CONTROL = ROOT / '.runtime/ticket-lifecycle-live-state.json'
+REPORT = ROOT / 'docs/zeus/implementation/ticket-lifecycle-002/live-github.json'
+commit = sys.argv[1]
+assert re.fullmatch('[0-9a-f]{40}', commit)
+if REPORT.exists():
+    report = json.loads(REPORT.read_text('utf-8'))
+    assert report['code_commit'] == commit
+    print(json.dumps({'already_recorded': True, 'issue': report['issue'], 'result': report['result']}))
+    raise SystemExit(0)
+state = json.loads(CONTROL.read_text('utf-8')) if CONTROL.exists() else {
+    'run_id': uuid4().hex, 'code_commit': commit, 'phase': 0, 'steps': []}
+assert state['code_commit'] == commit
+def save():
+    temp = CONTROL.with_suffix('.tmp')
+    temp.write_text(json.dumps(state, indent=2) + '\n', encoding='utf-8', newline='\n')
+    temp.replace(CONTROL)
+save()
+run_root = ROOT / '.runtime' / ('ticket-live-' + state['run_id'])
+run_root.mkdir(exist_ok=True)
+schema = 'ticket_live_' + state['run_id']
+assert re.fullmatch('ticket_live_[0-9a-f]{32}', schema)
+dsn = database_url()
+with psycopg.connect(dsn) as connection:
+    connection.execute(sql.SQL('CREATE SCHEMA IF NOT EXISTS {}').format(sql.Identifier(schema)))
+    pg_version = connection.execute('SHOW server_version').fetchone()[0]
+store = PostgresStore(make_conninfo(dsn, options=f'-c search_path={schema},public'))
+store.migrate()
+artifacts = FileArtifacts(run_root / 'artifacts')
+tickets = Tickets(store, None)
+repo_root = run_root / 'trust-repository'
+if not repo_root.exists():
+    result = run_process(['git', 'clone', '--no-hardlinks', str(ROOT), str(repo_root)])
+    assert result.returncode == 0, result.stderr
+git = GitWorkspace(str(repo_root), str(run_root / 'workspaces'))
+git._git('config', 'core.hooksPath', str(run_root / 'no-hooks'))
+key = run_root / 'test-only-automation-key'
+principal = 'test-only-not-a-human@zeus.invalid'
+if not state.get('trust_commit'):
+    git._git('checkout', '--detach', commit)
+    if not key.exists():
+        result = run_process(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-f', str(key)])
+        assert result.returncode == 0, result.stderr
+    now = datetime.now(timezone.utc)
+    policy = {'version': 1, 'scope': 'test-only-lifecycle:' + state['run_id'], 'max_evidence_age_seconds': 3600,
+        'signers': [{'principal': principal, 'role': 'automation',
+            'public_key': ' '.join(key.with_suffix('.pub').read_text('utf-8').split()[:2]),
+            'valid_after': (now - timedelta(hours=1)).isoformat(), 'valid_before': (now + timedelta(days=1)).isoformat()}],
+        'required_signers': [principal], 'required_human_signers': [], 'revoked': []}
+    (repo_root / '.zeus').mkdir(exist_ok=True)
+    (repo_root / '.zeus/ticket-trust.json').write_text(canonical(policy), encoding='utf-8', newline='\n')
+    git._git('add', '--', '.zeus/ticket-trust.json')
+    git._git('-c', 'user.name=Zeus acceptance test', '-c', 'user.email=test@zeus.invalid',
+             '-c', 'commit.gpgsign=false', 'commit', '-m', 'Enroll only ephemeral test automation identity')
+    state['trust_commit'] = git._git('rev-parse', 'HEAD')
+    save()
+authority = TicketAuthority(git, artifacts, state['trust_commit'])
+life = TicketLifecycle(tickets, artifacts, authority)
+github = GitHubTickets(tickets, artifacts, life)
+repository = 'trevi00/zeus'
+if not state.get('ticket_id'):
+    with store.transaction() as tx:
+        existing = tx.scan('tickets')
+    if existing:
+        assert len(existing) == 1
+        ticket = existing[0]
+    else:
+        ticket = tickets.create({'title': '[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen',
+            'problem': 'Dedicated automated acceptance issue for the signed ticket lifecycle implementation.',
+            'impact': 'Test only. This does not resolve FA-029 or any improvement issue and is not human acceptance.',
+            'rollback': 'Retain test receipts and close only this dedicated issue after verification.',
+            'scope': ['Isolated PostgreSQL schema', 'This dedicated GitHub issue', 'Ephemeral automation signer only'],
+            'evidence_refs': ['https://github.com/trevi00/zeus/commit/' + commit],
+            'acceptance_criteria': ['The dedicated test issue is read back with its exact current title and body from real GitHub.'],
+            'verification': ['Actual GitHub readback and PostgreSQL state are retained before each signed closure.']})
+    state['ticket_id'] = ticket['id']
+    state['improvement_issue_before'] = github._read(repository, 30)
+    assert state['improvement_issue_before']['state'] == 'OPEN'
+    save()
+ticket_id = state['ticket_id']
+def observe_step(name, result):
+    state['steps'].append({'name': name, 'at': utcnow(), 'result': result})
+    save()
+def remote():
+    result = github._read(repository, state['number'])
+    assert result['number'] != 30
+    assert result['body'].startswith('<!-- zeus-ticket:' + ticket_id + ' -->')
+    assert result['title'].startswith('[Zeus lifecycle acceptance test]')
+    return result
+def prepare_signed(label):
+    if label in state:
+        return state[label]
+    current, measured = tickets.get(ticket_id), remote()
+    assert measured['state'] == 'OPEN' and measured['title'] == current['content']['title']
+    assert measured['body'] == render_ticket(current)
+    base = {'ticket_id': ticket_id, 'revision': current['revision'], 'content_hash': current['content_hash'],
+            'solution_commit': commit, 'observed_at': utcnow()}
+    environment = artifacts.put(canonical({**base, 'kind': 'ticket-environment-v1', 'details': {
+        'platform': platform.platform(), 'python': platform.python_version(), 'postgres_version': pg_version,
+        'isolated_schema': schema, 'github_repository': repository, 'code_commit': commit}}), 'actual-test-environment')['ref']
+    evidence = artifacts.put(canonical({**base, 'kind': 'ticket-criterion-evidence-v1', 'criterion_index': 0,
+        'outcome': 'passed', 'details': {'actual_github_readback': measured,
+            'expected_body_hash': digest(render_ticket(current)), 'observed_body_hash': digest(measured['body'])}}),
+        'actual-github-criterion-observation')['ref']
+    packet = life.prepare(ticket_id, {'solution_commit': commit, 'environment_ref': environment,
+        'reason': 'Dedicated automated acceptance cycle: ' + label, 'criteria': [{'index': 0,
+            'criterion_hash': digest(current['content']['acceptance_criteria'][0]), 'outcome': 'passed', 'evidence_refs': [evidence]}]})
+    path = run_root / (label + '.json')
+    path.write_text(packet['signing_payload'], encoding='utf-8', newline='\n')
+    result = run_process(['ssh-keygen', '-Y', 'sign', '-f', str(key), '-n', 'zeus-ticket-close-v1', str(path)])
+    assert result.returncode == 0, result.stderr
+    signature = artifacts.put(path.with_suffix('.json.sig').read_text('utf-8'), 'test-only-automation-signature')['ref']
+    state[label] = {'packet_ref': packet['packet_ref'], 'signatures': [{'principal': principal, 'signature_ref': signature}]}
+    save()
+    return state[label]
+
+if state['phase'] < 1:
+    result = github.sync(ticket_id, repository)
+    state['number'], state['issue'] = result['number'], result['url']
+    assert state['number'] != 30
+    state['phase'] = 1
+    observe_step('create_and_actual_readback', result)
+if state['phase'] < 2:
+    signed = prepare_signed('first_close')
+    decision = life.close(signed['packet_ref'], signed['signatures'])
+    assert remote()['state'] == 'OPEN'
+    state['phase'] = 2
+    observe_step('PG_closed_remote_still_OPEN', decision)
+if state['phase'] < 3:
+    real_call = github._call
+    dropped = [False]
+    def drop_real_close_ack(args):
+        response = real_call(args)
+        if args[:2] == ['issue', 'close']:
+            dropped[0] = True
+            state['close_ack_injected'] = True
+            save()
+            raise TimeoutError('Deliberate fault injection after an actual successful GitHub close')
+        return response
+    github._call = drop_real_close_ack
+    try:
+        result = github.sync(ticket_id, repository)
+        assert remote()['state'] == 'CLOSED'  # A resumed attempt may already be remotely closed.
+    except TimeoutError:
+        assert dropped[0] and remote()['state'] == 'CLOSED'
+    finally:
+        github._call = real_call
+    result = github.sync(ticket_id, repository)
+    assert result['status'] == 'synced' and result['observed_state'] == 'CLOSED'
+    assert state.get('close_ack_injected'), 'Actual close ACK discard was not observed; do not claim fault acceptance'
+    replay = life.close(state['first_close']['packet_ref'], [])
+    assert replay['replayed'] and replay['verification'] == 'not_repeated'
+    state['phase'] = 3
+    observe_step('actual_close_ACK_discard_and_readback_recovery', {'fault_injected_this_attempt': dropped[0], 'sync': result, 'replay': replay})
+if state['phase'] < 4:
+    decision = life.reopen(ticket_id, 1, 1, 'Automated acceptance exercises a recurrence')
+    assert decision['replayed'] or remote()['state'] == 'CLOSED'
+    result = github.sync(ticket_id, repository)
+    assert result['status'] == 'synced' and remote()['state'] == 'OPEN'
+    state['phase'] = 4
+    observe_step('actual_reopen', {'decision': decision, 'sync': result})
+if state['phase'] < 5:
+    github._call(['issue', 'close', str(state['number']), '--repo', repository, '--reason', 'completed'])
+    result = github.sync(ticket_id, repository)
+    assert result['status'] == 'state_conflict' and remote()['state'] == 'CLOSED'
+    assert tickets.get(ticket_id)['status'] == 'open'
+    state['phase'] = 5
+    observe_step('external_test_close_is_conflict_not_local_acceptance', result)
+if state['phase'] < 6:
+    decision = life.reopen(ticket_id, 1, 2, 'Reconcile the injected external close', expected_status='open')
+    result = github.sync(ticket_id, repository)
+    assert result['status'] == 'synced' and remote()['state'] == 'OPEN'
+    state['phase'] = 6
+    observe_step('explicit_external_state_reconciliation', {'decision': decision, 'sync': result})
+if state['phase'] < 7:
+    signed = prepare_signed('final_close')
+    decision = life.close(signed['packet_ref'], signed['signatures'])
+    result = github.sync(ticket_id, repository)
+    assert result['status'] == 'synced' and remote()['state'] == 'CLOSED'
+    state['phase'] = 7
+    observe_step('fresh_cycle_signed_close', {'decision': decision, 'sync': result})
+
+after = github._read(repository, 30)
+assert after == state['improvement_issue_before']
+with store.transaction() as tx:
+    records = tx.records()
+blobs = {}
+for path in artifacts.root.glob('*.txt'):
+    data = path.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == path.stem
+    blobs['sha256:' + path.stem] = data.decode('utf-8')
+report = {'result': 'passed', 'code_commit': commit, 'observed_at': utcnow(), 'issue': state['issue'],
+    'ticket_id': ticket_id, 'mode': 'actual PostgreSQL and actual GitHub; response loss deliberately injected after real close',
+    'human_acceptance': False, 'signer_identity': 'ephemeral test-only automation',
+    'improvement_issue_30_unchanged': True, 'steps': state['steps'], 'postgres_snapshot': records,
+    'artifacts': blobs, 'test_policy_commit': state['trust_commit'], 'test_policy_is_local_only': True,
+    'test_policy': authority.policy()['definition'], 'final_remote': remote(),
+    'not_verified': ['production human enrollment', 'physical human presence', 'authenticated trust rotation', 'production rollout']}
+REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+assert key.parent == run_root and key.name == 'test-only-automation-key'
+key.unlink()
+state['private_test_key_removed'] = True
+save()
+print(json.dumps({'result': 'passed', 'issue': state['issue'], 'steps': len(state['steps']),
+                  'human_acceptance': False, 'improvement_issue_30_unchanged': True,
+                  'isolated_schema_retained_for_audit': schema, 'private_test_key_removed': True}))

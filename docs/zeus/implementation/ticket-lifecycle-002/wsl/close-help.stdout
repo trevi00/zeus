@@ -1,0 +1,10 @@
+usage: zeus ticket close [-h] --packet PACKET --signature SIGNATURE ticket_id
+
+positional arguments:
+  ticket_id
+
+options:
+  -h, --help            show this help message and exit
+  --packet PACKET
+  --signature SIGNATURE
+                        PRINCIPAL=SIGNATURE_FILE; repeat per signer

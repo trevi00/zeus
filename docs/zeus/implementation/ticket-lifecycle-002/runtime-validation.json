@@ -1,0 +1,45 @@
+{
+  "code_commit": "33240ab4f0d759adfb2205db1de74c1e2c76212e",
+  "result": "passed within stated automated scope",
+  "evidence": {
+    "local-validation.json": "d504b7f613b3d56dc10fad7011f4d3140e9b6fb9fcb2962e5d4851a8683045cf",
+    "live-github.json": "b6600e66bc18914bb6b4fd92b04ba0c027ceedd009161fa2d61efe5afa800cd5",
+    "live-independent-readback.json": "764b06a58fe7e7bf11f56daa7d4d3e9ee6da4374b8a515e0ad299fce7b1d3dc6",
+    "live-cli-readback.json": "ca41355e9768d0752fe43865ecc4fbf7c814ce7f96359fcf0832f85010983497",
+    "live-text-conflicts.json": "103d72516888f6dd5969a8d8e04d56e7adcf22f339709fa2c3af5fcdd8c20042",
+    "live-runner.py.txt": "1926071e8e7eebd86cf31894c2d64c6477c13b5fd9a9c51ca41ff64fc0715a6a",
+    "text-conflict-runner.py.txt": "633d32cfb6511481007ee4546d99966a69b80fc502df388ba03aa6e8ee0349bc",
+    "wsl/receipt.json": "ffa2177e91508da94189a9929d72ac99c5d51e48bf92e5371344d24a448089a6"
+  },
+  "windows": {
+    "full_passed": 716,
+    "full_skipped": 132,
+    "actual_PG_lifecycle_passed": 80
+  },
+  "native_WSL": {
+    "full_passed": 722,
+    "full_skipped": 126,
+    "duration_seconds": 24.38,
+    "build": "passed",
+    "lock_unchanged": true
+  },
+  "actual_GitHub": {
+    "issue": "https://github.com/trevi00/zeus/issues/34",
+    "final_state": "CLOSED",
+    "steps": 7,
+    "extra_text_conflict_cases": [
+      "body",
+      "title"
+    ],
+    "improvement_issue30": "OPEN unchanged",
+    "ACK_loss": "deliberate fault injection after real close; not a naturally observed network outage"
+  },
+  "human_acceptance": false,
+  "FA_029": "open",
+  "remaining": [
+    "production human enrollment",
+    "authenticated successor trust-policy rotation",
+    "overall Zeus pilot acceptance"
+  ],
+  "remote_CI": "pending after push"
+}

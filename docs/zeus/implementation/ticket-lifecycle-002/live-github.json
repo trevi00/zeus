@@ -1,0 +1,690 @@
+{
+  "result": "passed",
+  "code_commit": "33240ab4f0d759adfb2205db1de74c1e2c76212e",
+  "observed_at": "2026-09-09T15:05:11.819871+00:00",
+  "issue": "https://github.com/trevi00/zeus/issues/34",
+  "ticket_id": "ZEUS-c4bcef7b11b0",
+  "mode": "actual PostgreSQL and actual GitHub; response loss deliberately injected after real close",
+  "human_acceptance": false,
+  "signer_identity": "ephemeral test-only automation",
+  "improvement_issue_30_unchanged": true,
+  "steps": [
+    {
+      "name": "create_and_actual_readback",
+      "at": "2026-09-09T15:04:48.201553+00:00",
+      "result": {
+        "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "repository": "trevi00/zeus",
+        "number": 34,
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "attempted_revision": 1,
+        "synced_revision": 1,
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "attempted_content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+        "title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+        "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+        "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+        "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+        "desired_state": "OPEN",
+        "observed_state": "OPEN",
+        "lifecycle_sequence": 0,
+        "lifecycle_event": null,
+        "observation_ref": "sha256:bb60792489cd3795deec56a91273bdf85817a63d35f6675734eea48a69532992",
+        "observation_id": "306cf2489b1be9aaede362413c08b4c5a7ac79a67168837bb349a0740d7772a7",
+        "at": "2026-09-09T15:04:48.163739+00:00",
+        "review_ids": [],
+        "status": "synced",
+        "projected_lifecycle_event": null
+      }
+    },
+    {
+      "name": "PG_closed_remote_still_OPEN",
+      "at": "2026-09-09T15:04:49.957778+00:00",
+      "result": {
+        "decision": {
+          "ticket_id": "ZEUS-c4bcef7b11b0",
+          "revision": 1,
+          "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "from_sequence": 0,
+          "sequence": 1,
+          "previous_event": null,
+          "previous_status": "open",
+          "kind": "closed",
+          "reason": "Dedicated automated acceptance cycle: first_close",
+          "previous_updated_at": "2026-09-09T15:04:44.386692+00:00",
+          "packet_ref": "sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397",
+          "proof_ref": "sha256:23f3676d69f29479092af78a766fa8058e4232d7e780482851f5611d5f6bb9ec",
+          "request_id": null,
+          "at": "2026-09-09T15:04:49.399939+00:00",
+          "id": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8"
+        },
+        "replayed": false,
+        "verification": "performed"
+      }
+    },
+    {
+      "name": "actual_close_ACK_discard_and_readback_recovery",
+      "at": "2026-09-09T15:04:55.017201+00:00",
+      "result": {
+        "fault_injected_this_attempt": true,
+        "sync": {
+          "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+          "ticket_id": "ZEUS-c4bcef7b11b0",
+          "repository": "trevi00/zeus",
+          "number": 34,
+          "url": "https://github.com/trevi00/zeus/issues/34",
+          "attempted_revision": 1,
+          "synced_revision": 1,
+          "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "attempted_content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+          "desired_state": "CLOSED",
+          "observed_state": "CLOSED",
+          "lifecycle_sequence": 1,
+          "lifecycle_event": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+          "observation_ref": "sha256:f71399b54d53217c2f020611a54d10262abe9abee6edbb1cafb22be7f63cfb58",
+          "observation_id": "a1398a3465b2d7a0ba14f6a43a0512f9c3499ce876104637bfad6de8046bd236",
+          "at": "2026-09-09T15:04:54.955698+00:00",
+          "review_ids": [],
+          "status": "synced",
+          "projected_lifecycle_event": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8"
+        },
+        "replay": {
+          "decision": {
+            "at": "2026-09-09T15:04:49.399939+00:00",
+            "id": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+            "kind": "closed",
+            "reason": "Dedicated automated acceptance cycle: first_close",
+            "revision": 1,
+            "sequence": 1,
+            "proof_ref": "sha256:23f3676d69f29479092af78a766fa8058e4232d7e780482851f5611d5f6bb9ec",
+            "ticket_id": "ZEUS-c4bcef7b11b0",
+            "packet_ref": "sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397",
+            "request_id": null,
+            "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+            "from_sequence": 0,
+            "previous_event": null,
+            "previous_status": "open",
+            "previous_updated_at": "2026-09-09T15:04:44.386692+00:00"
+          },
+          "replayed": true,
+          "verification": "not_repeated"
+        }
+      }
+    },
+    {
+      "name": "actual_reopen",
+      "at": "2026-09-09T15:04:59.360617+00:00",
+      "result": {
+        "decision": {
+          "decision": {
+            "ticket_id": "ZEUS-c4bcef7b11b0",
+            "revision": 1,
+            "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+            "from_sequence": 1,
+            "sequence": 2,
+            "previous_event": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+            "previous_status": "closed",
+            "kind": "reopened",
+            "reason": "Automated acceptance exercises a recurrence",
+            "previous_updated_at": "2026-09-09T15:04:49.399939+00:00",
+            "packet_ref": null,
+            "proof_ref": null,
+            "request_id": "356cd9d2366129d21a6ec554ac5a44306ead2be710d6b7681393a1bdb3b504f1",
+            "at": "2026-09-09T15:04:55.033456+00:00",
+            "id": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18"
+          },
+          "replayed": false,
+          "verification": "not_required_authority_removed"
+        },
+        "sync": {
+          "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+          "ticket_id": "ZEUS-c4bcef7b11b0",
+          "repository": "trevi00/zeus",
+          "number": 34,
+          "url": "https://github.com/trevi00/zeus/issues/34",
+          "attempted_revision": 1,
+          "synced_revision": 1,
+          "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "attempted_content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+          "desired_state": "OPEN",
+          "observed_state": "OPEN",
+          "lifecycle_sequence": 2,
+          "lifecycle_event": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18",
+          "observation_ref": "sha256:bb60792489cd3795deec56a91273bdf85817a63d35f6675734eea48a69532992",
+          "observation_id": "306cf2489b1be9aaede362413c08b4c5a7ac79a67168837bb349a0740d7772a7",
+          "at": "2026-09-09T15:04:58.780334+00:00",
+          "review_ids": [],
+          "status": "synced",
+          "projected_lifecycle_event": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18"
+        }
+      }
+    },
+    {
+      "name": "external_test_close_is_conflict_not_local_acceptance",
+      "at": "2026-09-09T15:05:02.726127+00:00",
+      "result": {
+        "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "repository": "trevi00/zeus",
+        "number": 34,
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "attempted_revision": 1,
+        "synced_revision": 1,
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "attempted_content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+        "title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+        "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+        "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+        "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+        "desired_state": "OPEN",
+        "observed_state": "CLOSED",
+        "lifecycle_sequence": 2,
+        "lifecycle_event": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18",
+        "observation_ref": "sha256:f71399b54d53217c2f020611a54d10262abe9abee6edbb1cafb22be7f63cfb58",
+        "observation_id": "a1398a3465b2d7a0ba14f6a43a0512f9c3499ce876104637bfad6de8046bd236",
+        "at": "2026-09-09T15:05:02.153730+00:00",
+        "review_ids": [],
+        "status": "state_conflict",
+        "projected_lifecycle_event": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18"
+      }
+    },
+    {
+      "name": "explicit_external_state_reconciliation",
+      "at": "2026-09-09T15:05:06.442410+00:00",
+      "result": {
+        "decision": {
+          "decision": {
+            "ticket_id": "ZEUS-c4bcef7b11b0",
+            "revision": 1,
+            "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+            "from_sequence": 2,
+            "sequence": 3,
+            "previous_event": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18",
+            "previous_status": "open",
+            "kind": "reopened",
+            "reason": "Reconcile the injected external close",
+            "previous_updated_at": "2026-09-09T15:04:55.033456+00:00",
+            "packet_ref": null,
+            "proof_ref": null,
+            "request_id": "2f9ac10cefb8d34f6c0a3b1578fb20879286bf85bb9726c225fdb42a526ca584",
+            "at": "2026-09-09T15:05:02.744760+00:00",
+            "id": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254"
+          },
+          "replayed": false,
+          "verification": "not_required_authority_removed"
+        },
+        "sync": {
+          "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+          "ticket_id": "ZEUS-c4bcef7b11b0",
+          "repository": "trevi00/zeus",
+          "number": 34,
+          "url": "https://github.com/trevi00/zeus/issues/34",
+          "attempted_revision": 1,
+          "synced_revision": 1,
+          "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "attempted_content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+          "desired_state": "OPEN",
+          "observed_state": "OPEN",
+          "lifecycle_sequence": 3,
+          "lifecycle_event": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254",
+          "observation_ref": "sha256:bb60792489cd3795deec56a91273bdf85817a63d35f6675734eea48a69532992",
+          "observation_id": "306cf2489b1be9aaede362413c08b4c5a7ac79a67168837bb349a0740d7772a7",
+          "at": "2026-09-09T15:05:05.908159+00:00",
+          "review_ids": [],
+          "status": "synced",
+          "projected_lifecycle_event": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254"
+        }
+      }
+    },
+    {
+      "name": "fresh_cycle_signed_close",
+      "at": "2026-09-09T15:05:11.124822+00:00",
+      "result": {
+        "decision": {
+          "decision": {
+            "ticket_id": "ZEUS-c4bcef7b11b0",
+            "revision": 1,
+            "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+            "from_sequence": 3,
+            "sequence": 4,
+            "previous_event": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254",
+            "previous_status": "open",
+            "kind": "closed",
+            "reason": "Dedicated automated acceptance cycle: final_close",
+            "previous_updated_at": "2026-09-09T15:05:02.744760+00:00",
+            "packet_ref": "sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2",
+            "proof_ref": "sha256:54efc8ae14a9a6d7ac7d90b9c20a0cf8ac5b8a0c01697f3c0e77db9b080a0600",
+            "request_id": null,
+            "at": "2026-09-09T15:05:07.501306+00:00",
+            "id": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac"
+          },
+          "replayed": false,
+          "verification": "performed"
+        },
+        "sync": {
+          "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+          "ticket_id": "ZEUS-c4bcef7b11b0",
+          "repository": "trevi00/zeus",
+          "number": 34,
+          "url": "https://github.com/trevi00/zeus/issues/34",
+          "attempted_revision": 1,
+          "synced_revision": 1,
+          "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "attempted_content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+          "body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+          "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+          "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+          "desired_state": "CLOSED",
+          "observed_state": "CLOSED",
+          "lifecycle_sequence": 4,
+          "lifecycle_event": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac",
+          "observation_ref": "sha256:f71399b54d53217c2f020611a54d10262abe9abee6edbb1cafb22be7f63cfb58",
+          "observation_id": "a1398a3465b2d7a0ba14f6a43a0512f9c3499ce876104637bfad6de8046bd236",
+          "at": "2026-09-09T15:05:10.615796+00:00",
+          "review_ids": [],
+          "status": "synced",
+          "projected_lifecycle_event": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac"
+        }
+      }
+    }
+  ],
+  "postgres_snapshot": [
+    {
+      "bucket": "ticket_closures",
+      "id": "sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2",
+      "body": {
+        "event_id": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac",
+        "packet_ref": "sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2"
+      }
+    },
+    {
+      "bucket": "ticket_closures",
+      "id": "sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397",
+      "body": {
+        "event_id": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+        "packet_ref": "sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397"
+      }
+    },
+    {
+      "bucket": "ticket_closure_sequences",
+      "id": "ZEUS-c4bcef7b11b0:0",
+      "body": {
+        "event_id": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+        "packet_ref": "sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397"
+      }
+    },
+    {
+      "bucket": "ticket_closure_sequences",
+      "id": "ZEUS-c4bcef7b11b0:3",
+      "body": {
+        "event_id": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac",
+        "packet_ref": "sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2"
+      }
+    },
+    {
+      "bucket": "ticket_github",
+      "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+      "body": {
+        "at": "2026-09-09T15:05:10.615796+00:00",
+        "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+        "number": 34,
+        "status": "synced",
+        "body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "repository": "trevi00/zeus",
+        "review_ids": [],
+        "title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "desired_state": "CLOSED",
+        "observation_id": "a1398a3465b2d7a0ba14f6a43a0512f9c3499ce876104637bfad6de8046bd236",
+        "observed_state": "CLOSED",
+        "lifecycle_event": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac",
+        "observation_ref": "sha256:f71399b54d53217c2f020611a54d10262abe9abee6edbb1cafb22be7f63cfb58",
+        "synced_revision": 1,
+        "attempted_revision": 1,
+        "lifecycle_sequence": 4,
+        "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+        "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+        "attempted_content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "projected_lifecycle_event": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac"
+      }
+    },
+    {
+      "bucket": "ticket_lifecycle_events",
+      "id": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac",
+      "body": {
+        "at": "2026-09-09T15:05:07.501306+00:00",
+        "id": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac",
+        "kind": "closed",
+        "reason": "Dedicated automated acceptance cycle: final_close",
+        "revision": 1,
+        "sequence": 4,
+        "proof_ref": "sha256:54efc8ae14a9a6d7ac7d90b9c20a0cf8ac5b8a0c01697f3c0e77db9b080a0600",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "packet_ref": "sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2",
+        "request_id": null,
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "from_sequence": 3,
+        "previous_event": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254",
+        "previous_status": "open",
+        "previous_updated_at": "2026-09-09T15:05:02.744760+00:00"
+      }
+    },
+    {
+      "bucket": "ticket_lifecycle_events",
+      "id": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254",
+      "body": {
+        "at": "2026-09-09T15:05:02.744760+00:00",
+        "id": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254",
+        "kind": "reopened",
+        "reason": "Reconcile the injected external close",
+        "revision": 1,
+        "sequence": 3,
+        "proof_ref": null,
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "packet_ref": null,
+        "request_id": "2f9ac10cefb8d34f6c0a3b1578fb20879286bf85bb9726c225fdb42a526ca584",
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "from_sequence": 2,
+        "previous_event": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18",
+        "previous_status": "open",
+        "previous_updated_at": "2026-09-09T15:04:55.033456+00:00"
+      }
+    },
+    {
+      "bucket": "ticket_lifecycle_events",
+      "id": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+      "body": {
+        "at": "2026-09-09T15:04:49.399939+00:00",
+        "id": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+        "kind": "closed",
+        "reason": "Dedicated automated acceptance cycle: first_close",
+        "revision": 1,
+        "sequence": 1,
+        "proof_ref": "sha256:23f3676d69f29479092af78a766fa8058e4232d7e780482851f5611d5f6bb9ec",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "packet_ref": "sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397",
+        "request_id": null,
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "from_sequence": 0,
+        "previous_event": null,
+        "previous_status": "open",
+        "previous_updated_at": "2026-09-09T15:04:44.386692+00:00"
+      }
+    },
+    {
+      "bucket": "ticket_lifecycle_events",
+      "id": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18",
+      "body": {
+        "at": "2026-09-09T15:04:55.033456+00:00",
+        "id": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18",
+        "kind": "reopened",
+        "reason": "Automated acceptance exercises a recurrence",
+        "revision": 1,
+        "sequence": 2,
+        "proof_ref": null,
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "packet_ref": null,
+        "request_id": "356cd9d2366129d21a6ec554ac5a44306ead2be710d6b7681393a1bdb3b504f1",
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "from_sequence": 1,
+        "previous_event": "60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8",
+        "previous_status": "closed",
+        "previous_updated_at": "2026-09-09T15:04:49.399939+00:00"
+      }
+    },
+    {
+      "bucket": "ticket_remote_creations",
+      "id": "4d4df4dca5d6e58d0adc0130fa240f4772ba277e76b3cc8f7c2bba0089c79bc3",
+      "body": {
+        "at": "2026-09-09T15:04:47.606750+00:00",
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "number": 34,
+        "authority": "external_observation_only",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "repository": "trevi00/zeus",
+        "claim_owner": "94b94b64-2afc-446a-9cd0-eee8f06dbd17",
+        "evidence_ref": "sha256:4d4df4dca5d6e58d0adc0130fa240f4772ba277e76b3cc8f7c2bba0089c79bc3"
+      }
+    },
+    {
+      "bucket": "ticket_remote_observations",
+      "id": "306cf2489b1be9aaede362413c08b4c5a7ac79a67168837bb349a0740d7772a7",
+      "body": {
+        "at": "2026-09-09T15:05:05.894332+00:00",
+        "id": "306cf2489b1be9aaede362413c08b4c5a7ac79a67168837bb349a0740d7772a7",
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "state": "OPEN",
+        "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+        "number": 34,
+        "purpose": "post_write",
+        "authority": "external_observation_only",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "first_seen": "2026-09-09T15:04:48.144159+00:00",
+        "repository": "trevi00/zeus",
+        "evidence_ref": "sha256:bb60792489cd3795deec56a91273bdf85817a63d35f6675734eea48a69532992",
+        "marker_present": true
+      }
+    },
+    {
+      "bucket": "ticket_remote_observations",
+      "id": "85317350360bdfb8b79a614ccf346ac17fda53c11122da518a90f876322c8b78",
+      "body": {
+        "at": "2026-09-09T15:05:08.516346+00:00",
+        "id": "85317350360bdfb8b79a614ccf346ac17fda53c11122da518a90f876322c8b78",
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "state": "OPEN",
+        "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+        "number": 34,
+        "purpose": "pre_write",
+        "authority": "external_observation_only",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "first_seen": "2026-09-09T15:04:51.048686+00:00",
+        "repository": "trevi00/zeus",
+        "evidence_ref": "sha256:bb60792489cd3795deec56a91273bdf85817a63d35f6675734eea48a69532992",
+        "marker_present": true
+      }
+    },
+    {
+      "bucket": "ticket_remote_observations",
+      "id": "9d8ce940e6038f1a052d4cca4e46a528690be5a51e4562a81fe06f5e831c3037",
+      "body": {
+        "at": "2026-09-09T15:05:03.461513+00:00",
+        "id": "9d8ce940e6038f1a052d4cca4e46a528690be5a51e4562a81fe06f5e831c3037",
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "state": "CLOSED",
+        "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+        "number": 34,
+        "purpose": "pre_write",
+        "authority": "external_observation_only",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "first_seen": "2026-09-09T15:04:54.372264+00:00",
+        "repository": "trevi00/zeus",
+        "evidence_ref": "sha256:f71399b54d53217c2f020611a54d10262abe9abee6edbb1cafb22be7f63cfb58",
+        "marker_present": true
+      }
+    },
+    {
+      "bucket": "ticket_remote_observations",
+      "id": "a1398a3465b2d7a0ba14f6a43a0512f9c3499ce876104637bfad6de8046bd236",
+      "body": {
+        "at": "2026-09-09T15:05:10.601568+00:00",
+        "id": "a1398a3465b2d7a0ba14f6a43a0512f9c3499ce876104637bfad6de8046bd236",
+        "url": "https://github.com/trevi00/zeus/issues/34",
+        "state": "CLOSED",
+        "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+        "number": 34,
+        "purpose": "post_write",
+        "authority": "external_observation_only",
+        "ticket_id": "ZEUS-c4bcef7b11b0",
+        "first_seen": "2026-09-09T15:04:54.939365+00:00",
+        "repository": "trevi00/zeus",
+        "evidence_ref": "sha256:f71399b54d53217c2f020611a54d10262abe9abee6edbb1cafb22be7f63cfb58",
+        "marker_present": true
+      }
+    },
+    {
+      "bucket": "ticket_reopens",
+      "id": "2f9ac10cefb8d34f6c0a3b1578fb20879286bf85bb9726c225fdb42a526ca584",
+      "body": {
+        "event_id": "42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254"
+      }
+    },
+    {
+      "bucket": "ticket_reopens",
+      "id": "356cd9d2366129d21a6ec554ac5a44306ead2be710d6b7681393a1bdb3b504f1",
+      "body": {
+        "event_id": "a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18"
+      }
+    },
+    {
+      "bucket": "ticket_revisions",
+      "id": "ZEUS-c4bcef7b11b0:1",
+      "body": {
+        "id": "ZEUS-c4bcef7b11b0",
+        "reason": "created",
+        "status": "open",
+        "content": {
+          "scope": [
+            "Isolated PostgreSQL schema",
+            "This dedicated GitHub issue",
+            "Ephemeral automation signer only"
+          ],
+          "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+          "impact": "Test only. This does not resolve FA-029 or any improvement issue and is not human acceptance.",
+          "problem": "Dedicated automated acceptance issue for the signed ticket lifecycle implementation.",
+          "rollback": "Retain test receipts and close only this dedicated issue after verification.",
+          "verification": [
+            "Actual GitHub readback and PostgreSQL state are retained before each signed closure."
+          ],
+          "evidence_refs": [
+            "https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e"
+          ],
+          "acceptance_criteria": [
+            "The dedicated test issue is read back with its exact current title and body from real GitHub."
+          ]
+        },
+        "revision": 1,
+        "created_at": "2026-09-09T15:04:44.386692+00:00",
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "claimed_author": "operator"
+      }
+    },
+    {
+      "bucket": "tickets",
+      "id": "ZEUS-c4bcef7b11b0",
+      "body": {
+        "id": "ZEUS-c4bcef7b11b0",
+        "status": "closed",
+        "revision": 1,
+        "created_at": "2026-09-09T15:04:44.386692+00:00",
+        "updated_at": "2026-09-09T15:05:07.501306+00:00",
+        "content_hash": "9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a",
+        "lifecycle_event": "261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac",
+        "lifecycle_sequence": 4
+      }
+    },
+    {
+      "bucket": "ticket_syncs",
+      "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+      "body": {
+        "id": "5ee97d64e8b9854ef50cb067b29fa3f521d5fcd5578a9ef50a7fa406406ce662",
+        "owner": null,
+        "status": "synced",
+        "error_type": "TimeoutError",
+        "lease_until": "2026-09-09T15:10:08.578101+00:00",
+        "created_number": 34,
+        "pending_body_hash": null,
+        "creation_uncertain": false,
+        "observed_body_hash": "10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0",
+        "pending_title_hash": null,
+        "observed_title_hash": "9b9e41ed7f17b565f681728cad63251a55811fc7452badf62008fe806fdca6ee",
+        "reconcile_observation": null
+      }
+    },
+    {
+      "bucket": "ticket_trust_anchors",
+      "id": "deployment",
+      "body": {
+        "scope": "test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243",
+        "pinned_at": "2026-09-09T15:04:49.394218+00:00",
+        "policy_hash": "135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e",
+        "policy_commit": "379070b4c79fe80436d9ac977a2d034b9d9126de",
+        "bootstrap_source": "out_of_band_deployment_configuration",
+        "bootstrap_human_presence_verified": false
+      }
+    }
+  ],
+  "artifacts": {
+    "sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2": "{\"content_hash\":\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\",\"criteria\":[{\"criterion_hash\":\"29b53ef78b28fe7f36a3bd2e2279725e3186b5c8072e3c902efd491e9ba770b5\",\"evidence_refs\":[\"sha256:1163259ecdc8cc8dc03294f0fdc1bf3f423da2bb8a8482ee2697d6762a4fc123\"],\"index\":0,\"outcome\":\"passed\"}],\"criteria_hash\":\"aec6b2d82c942086b6584274269a6458132dfbfbdc40f9989a943e55e480865a\",\"environment_ref\":\"sha256:dab6d5ec9832a05504315fc7bbcfd7074038cf0902091eeae7452b52558976dc\",\"expected_status\":\"open\",\"expires_at\":\"2026-09-09T16:05:07.128648+00:00\",\"issued_at\":\"2026-09-09T15:05:07.128648+00:00\",\"policy_commit\":\"379070b4c79fe80436d9ac977a2d034b9d9126de\",\"policy_hash\":\"135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e\",\"reason\":\"Dedicated automated acceptance cycle: final_close\",\"revision\":1,\"scope\":\"test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243\",\"sequence\":3,\"solution_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"ticket_id\":\"ZEUS-c4bcef7b11b0\",\"version\":1}",
+    "sha256:1163259ecdc8cc8dc03294f0fdc1bf3f423da2bb8a8482ee2697d6762a4fc123": "{\"content_hash\":\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\",\"criterion_index\":0,\"details\":{\"actual_github_readback\":{\"body\":\"<!-- zeus-ticket:ZEUS-c4bcef7b11b0 -->\\n\\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\n\\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\\n\\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\\n\\n## Problem\\n\\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\\n\\n## Impact\\n\\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\\n\\n## Rollback\\n\\nRetain test receipts and close only this dedicated issue after verification.\\n\\n## Evidence Refs\\n\\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\\n\\n## Scope\\n\\n- Isolated PostgreSQL schema\\n- This dedicated GitHub issue\\n- Ephemeral automation signer only\\n\\n## Acceptance Criteria\\n\\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\\n\\n## Verification\\n\\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\\n\\n## Reviewer findings\\n\\nNo review recorded for this revision.\\n\",\"comments\":[],\"number\":34,\"state\":\"OPEN\",\"title\":\"[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\",\"url\":\"https://github.com/trevi00/zeus/issues/34\"},\"expected_body_hash\":\"10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0\",\"observed_body_hash\":\"10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0\"},\"kind\":\"ticket-criterion-evidence-v1\",\"observed_at\":\"2026-09-09T15:05:07.008157+00:00\",\"outcome\":\"passed\",\"revision\":1,\"solution_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"ticket_id\":\"ZEUS-c4bcef7b11b0\"}",
+    "sha256:23f3676d69f29479092af78a766fa8058e4232d7e780482851f5611d5f6bb9ec": "{\"attestation_scope\":\"configured_key_authority_only\",\"packet_ref\":\"sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397\",\"physical_human_presence_verified\":false,\"policy_commit\":\"379070b4c79fe80436d9ac977a2d034b9d9126de\",\"policy_hash\":\"135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e\",\"required_human_signers\":[],\"required_signers\":[\"test-only-not-a-human@zeus.invalid\"],\"scope\":\"test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243\",\"signatures\":[{\"principal\":\"test-only-not-a-human@zeus.invalid\",\"public_key_hash\":\"9842751aa2eb07db0263f9efe8a2ecd2371ebb7edb15c18567b21de839f20316\",\"role\":\"automation\",\"signature_ref\":\"sha256:79c1e21f1ff24201955913a0dbcfb9c8b863cca3f3ea89ecfad9e41b870fc67c\"}],\"verified_at\":\"2026-09-09T15:04:49.360280+00:00\"}",
+    "sha256:4d4df4dca5d6e58d0adc0130fa240f4772ba277e76b3cc8f7c2bba0089c79bc3": "{\"authority\":\"external_observation_only\",\"claim_owner\":\"94b94b64-2afc-446a-9cd0-eee8f06dbd17\",\"number\":34,\"repository\":\"trevi00/zeus\",\"ticket_id\":\"ZEUS-c4bcef7b11b0\",\"url\":\"https://github.com/trevi00/zeus/issues/34\"}",
+    "sha256:523697e00e0ed3c4ed5bae1632b8bd0b49f027b9c91d58a5b5406adb3cdc6adb": "{\"content_hash\":\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\",\"criterion_index\":0,\"details\":{\"actual_github_readback\":{\"body\":\"<!-- zeus-ticket:ZEUS-c4bcef7b11b0 -->\\n\\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\n\\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\\n\\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\\n\\n## Problem\\n\\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\\n\\n## Impact\\n\\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\\n\\n## Rollback\\n\\nRetain test receipts and close only this dedicated issue after verification.\\n\\n## Evidence Refs\\n\\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\\n\\n## Scope\\n\\n- Isolated PostgreSQL schema\\n- This dedicated GitHub issue\\n- Ephemeral automation signer only\\n\\n## Acceptance Criteria\\n\\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\\n\\n## Verification\\n\\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\\n\\n## Reviewer findings\\n\\nNo review recorded for this revision.\\n\",\"comments\":[],\"number\":34,\"state\":\"OPEN\",\"title\":\"[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\",\"url\":\"https://github.com/trevi00/zeus/issues/34\"},\"expected_body_hash\":\"10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0\",\"observed_body_hash\":\"10e9453f5e7ed011755841661ff52edd1ea1db4f359767d46e845d6efb7cb1f0\"},\"kind\":\"ticket-criterion-evidence-v1\",\"observed_at\":\"2026-09-09T15:04:48.771532+00:00\",\"outcome\":\"passed\",\"revision\":1,\"solution_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"ticket_id\":\"ZEUS-c4bcef7b11b0\"}",
+    "sha256:54efc8ae14a9a6d7ac7d90b9c20a0cf8ac5b8a0c01697f3c0e77db9b080a0600": "{\"attestation_scope\":\"configured_key_authority_only\",\"packet_ref\":\"sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2\",\"physical_human_presence_verified\":false,\"policy_commit\":\"379070b4c79fe80436d9ac977a2d034b9d9126de\",\"policy_hash\":\"135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e\",\"required_human_signers\":[],\"required_signers\":[\"test-only-not-a-human@zeus.invalid\"],\"scope\":\"test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243\",\"signatures\":[{\"principal\":\"test-only-not-a-human@zeus.invalid\",\"public_key_hash\":\"9842751aa2eb07db0263f9efe8a2ecd2371ebb7edb15c18567b21de839f20316\",\"role\":\"automation\",\"signature_ref\":\"sha256:6f7c9e100262adaa0492cff6ed062968295afad331248561cf88e0c464e6503e\"}],\"verified_at\":\"2026-09-09T15:05:07.470673+00:00\"}",
+    "sha256:6f7c9e100262adaa0492cff6ed062968295afad331248561cf88e0c464e6503e": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgEbJPy25kVeROXYYiUw8WuxOrHk\nbyweIzf/vKlCTKlV0AAAAUemV1cy10aWNrZXQtY2xvc2UtdjEAAAAAAAAABnNoYTUxMgAA\nAFMAAAALc3NoLWVkMjU1MTkAAABAC+wRO+1I88whzES126aX61GhJQqpPGSVkZLpVk9Bh4\nohlo+/6nTTiStNTYtjLtDNzwPD9weSgsb7FeMJXDoMBA==\n-----END SSH SIGNATURE-----\n",
+    "sha256:79c1e21f1ff24201955913a0dbcfb9c8b863cca3f3ea89ecfad9e41b870fc67c": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgEbJPy25kVeROXYYiUw8WuxOrHk\nbyweIzf/vKlCTKlV0AAAAUemV1cy10aWNrZXQtY2xvc2UtdjEAAAAAAAAABnNoYTUxMgAA\nAFMAAAALc3NoLWVkMjU1MTkAAABAC+ZBT7my40bL+LndF2QuaHxqnKhjDRWrmWyGNCtHDR\nJZ4nBuseZUHL2PCrG6nHUbWnhSviFL4qTv6rHPXbNiCg==\n-----END SSH SIGNATURE-----\n",
+    "sha256:9221d2842569d3bec813787d17b39ccb68cabcfcdaab54ba9a85baa93f91ca10": "{\"content_hash\":\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\",\"details\":{\"code_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"github_repository\":\"trevi00/zeus\",\"isolated_schema\":\"ticket_live_10fa6da78a9a417d958b2cba6f39e243\",\"platform\":\"Windows-11-10.0.26200-SP0\",\"postgres_version\":\"17.11 (Debian 17.11-1.pgdg12+2)\",\"python\":\"3.14.7\"},\"kind\":\"ticket-environment-v1\",\"observed_at\":\"2026-09-09T15:04:48.771532+00:00\",\"revision\":1,\"solution_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"ticket_id\":\"ZEUS-c4bcef7b11b0\"}",
+    "sha256:bb60792489cd3795deec56a91273bdf85817a63d35f6675734eea48a69532992": "{\"body\":\"<!-- zeus-ticket:ZEUS-c4bcef7b11b0 -->\\n\\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\n\\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\\n\\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\\n\\n## Problem\\n\\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\\n\\n## Impact\\n\\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\\n\\n## Rollback\\n\\nRetain test receipts and close only this dedicated issue after verification.\\n\\n## Evidence Refs\\n\\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\\n\\n## Scope\\n\\n- Isolated PostgreSQL schema\\n- This dedicated GitHub issue\\n- Ephemeral automation signer only\\n\\n## Acceptance Criteria\\n\\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\\n\\n## Verification\\n\\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\\n\\n## Reviewer findings\\n\\nNo review recorded for this revision.\\n\",\"comments\":[],\"number\":34,\"state\":\"OPEN\",\"title\":\"[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\",\"url\":\"https://github.com/trevi00/zeus/issues/34\"}",
+    "sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397": "{\"content_hash\":\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\",\"criteria\":[{\"criterion_hash\":\"29b53ef78b28fe7f36a3bd2e2279725e3186b5c8072e3c902efd491e9ba770b5\",\"evidence_refs\":[\"sha256:523697e00e0ed3c4ed5bae1632b8bd0b49f027b9c91d58a5b5406adb3cdc6adb\"],\"index\":0,\"outcome\":\"passed\"}],\"criteria_hash\":\"aec6b2d82c942086b6584274269a6458132dfbfbdc40f9989a943e55e480865a\",\"environment_ref\":\"sha256:9221d2842569d3bec813787d17b39ccb68cabcfcdaab54ba9a85baa93f91ca10\",\"expected_status\":\"open\",\"expires_at\":\"2026-09-09T16:04:49.012046+00:00\",\"issued_at\":\"2026-09-09T15:04:49.012046+00:00\",\"policy_commit\":\"379070b4c79fe80436d9ac977a2d034b9d9126de\",\"policy_hash\":\"135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e\",\"reason\":\"Dedicated automated acceptance cycle: first_close\",\"revision\":1,\"scope\":\"test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243\",\"sequence\":0,\"solution_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"ticket_id\":\"ZEUS-c4bcef7b11b0\",\"version\":1}",
+    "sha256:dab6d5ec9832a05504315fc7bbcfd7074038cf0902091eeae7452b52558976dc": "{\"content_hash\":\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\",\"details\":{\"code_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"github_repository\":\"trevi00/zeus\",\"isolated_schema\":\"ticket_live_10fa6da78a9a417d958b2cba6f39e243\",\"platform\":\"Windows-11-10.0.26200-SP0\",\"postgres_version\":\"17.11 (Debian 17.11-1.pgdg12+2)\",\"python\":\"3.14.7\"},\"kind\":\"ticket-environment-v1\",\"observed_at\":\"2026-09-09T15:05:07.008157+00:00\",\"revision\":1,\"solution_commit\":\"33240ab4f0d759adfb2205db1de74c1e2c76212e\",\"ticket_id\":\"ZEUS-c4bcef7b11b0\"}",
+    "sha256:f71399b54d53217c2f020611a54d10262abe9abee6edbb1cafb22be7f63cfb58": "{\"body\":\"<!-- zeus-ticket:ZEUS-c4bcef7b11b0 -->\\n\\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\n\\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\\n\\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\\n\\n## Problem\\n\\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\\n\\n## Impact\\n\\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\\n\\n## Rollback\\n\\nRetain test receipts and close only this dedicated issue after verification.\\n\\n## Evidence Refs\\n\\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\\n\\n## Scope\\n\\n- Isolated PostgreSQL schema\\n- This dedicated GitHub issue\\n- Ephemeral automation signer only\\n\\n## Acceptance Criteria\\n\\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\\n\\n## Verification\\n\\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\\n\\n## Reviewer findings\\n\\nNo review recorded for this revision.\\n\",\"comments\":[],\"number\":34,\"state\":\"CLOSED\",\"title\":\"[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\",\"url\":\"https://github.com/trevi00/zeus/issues/34\"}"
+  },
+  "test_policy_commit": "379070b4c79fe80436d9ac977a2d034b9d9126de",
+  "test_policy_is_local_only": true,
+  "test_policy": {
+    "max_evidence_age_seconds": 3600,
+    "required_human_signers": [],
+    "required_signers": [
+      "test-only-not-a-human@zeus.invalid"
+    ],
+    "revoked": [],
+    "scope": "test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243",
+    "signers": [
+      {
+        "principal": "test-only-not-a-human@zeus.invalid",
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBGyT8tuZFXkTl2GIlMPFrsTqx5G8sHiM3/7ypQkypVd",
+        "role": "automation",
+        "valid_after": "2026-09-09T14:04:44.034360+00:00",
+        "valid_before": "2026-09-10T15:04:44.034360+00:00"
+      }
+    ],
+    "version": 1
+  },
+  "final_remote": {
+    "body": "<!-- zeus-ticket:ZEUS-c4bcef7b11b0 -->\n\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\n\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\n\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\n\n## Impact\n\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\n\n## Rollback\n\nRetain test receipts and close only this dedicated issue after verification.\n\n## Evidence Refs\n\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\n\n## Scope\n\n- Isolated PostgreSQL schema\n- This dedicated GitHub issue\n- Ephemeral automation signer only\n\n## Acceptance Criteria\n\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\n\n## Verification\n\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\n\n## Reviewer findings\n\nNo review recorded for this revision.\n",
+    "comments": [],
+    "number": 34,
+    "state": "CLOSED",
+    "title": "[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen",
+    "url": "https://github.com/trevi00/zeus/issues/34"
+  },
+  "not_verified": [
+    "production human enrollment",
+    "physical human presence",
+    "authenticated trust rotation",
+    "production rollout"
+  ]
+}
