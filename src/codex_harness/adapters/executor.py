@@ -420,18 +420,10 @@ class Executor:
         except Exception as exc:
             return self._fail_task(task, agent, exc)
 
-    def _lost_execution(self, lease, error):
+    def _lost_execution(self, lease, error, rejection_error=None):
         # INV-SESSION-001: a stale executor cannot publish failure or diagnosis.
-        with self.service.store.transaction() as tx:
-            current = tx.get(lease.get("_bucket", "tasks"), lease["id"])
-        if current and current["status"] == "succeeded":
-            return current
-        if not current or (current["status"] != "running"
-                           or current["generation"] != lease["generation"]
-                           or current["lease_owner"] != lease["lease_owner"]
-                           or datetime.fromisoformat(current["lease_until"]) <= datetime.now(timezone.utc)):
-            return {"id": lease["id"], "status": "stale", "error": str(error)}
-        raise error
+        from codex_harness.application.execution_rejections import reconcile
+        return reconcile(self.service.store, lease, error, rejection_error)
 
     def _fail_task(self, task, agent, error):
         try:
@@ -454,7 +446,7 @@ class Executor:
                                "status": "pending", "attempt": 0})
                 return current
         except ContractError as exc:
-            return self._lost_execution(task, exc)
+            return self._lost_execution(task, error, exc)
 
     def decide_one(self, agent: str) -> dict | None:
         owner, now = str(uuid4()), datetime.now(timezone.utc)
@@ -577,7 +569,7 @@ class Executor:
             try:
                 return self.workflow.fail_execution({**decision, "_bucket": "decisions_pending"}, exc)
             except ContractError as failure:
-                return self._lost_execution({**decision, "_bucket": "decisions_pending"}, failure)
+                return self._lost_execution({**decision, "_bucket": "decisions_pending"}, exc, failure)
 
     @staticmethod
     def _recovered_effect(current, agent, phase, data):

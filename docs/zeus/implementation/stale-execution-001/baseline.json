@@ -1,0 +1,9 @@
+{
+  "source": "b823151664b2065ad63f58f6d0532431c1d34ac1",
+  "old_generation": 1,
+  "successor_generation": 2,
+  "returned_status": "succeeded",
+  "returned_generation": 2,
+  "rejection_count": 0,
+  "scope": "Actual isolated PostgreSQL application execution; no model invoked"
+}
