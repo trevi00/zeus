@@ -49,6 +49,22 @@ Claude resolution review (`claude-resolution.md`, session
 It did not execute tests. Its remaining observations concern cyclic/deep Python
 objects and ambiguity of type labels for unencodable, non-JSON input.
 
+Exact source commit `b2a64def499a9e56652327e152bab79d69e195f5` passed native WSL
+validation: **827 passed, 231 skipped** in the ordinary suite, **193 passed,
+1 skipped** in the actual PostgreSQL/Redis and decision atomicity matrix. All 11
+runner stages passed, including build, CLI help and a clean source tree/unchanged
+lockfile. `wsl/receipt.json` binds each log hash to the tested revision.
+`wsl/kill-matrix-ac0e6f5abcb64016b6c5701c1154dcaf.json` records four Linux children
+terminated with exit code -9; two Redis entries produced one receiver effect.
+The temporary database credential file was consumed and deleted before cloning;
+receipt environment and retained files were scanned for actual connection secrets.
+
+GitHub CI [34387667944](https://github.com/trevi00/zeus/actions/runs/34387667944)
+completed successfully for that exact source commit: Windows and Ubuntu on Python
+3.12 and 3.14, plus the real-service integration job. Raw job/step evidence is
+retained in `docs/zeus/ci/34387667944.json`. The test-only Redis container was stopped
+after local verification; no original deployment was replaced.
+
 This is not completion of FA-017 or pilot acceptance. No-state adoption/conflict
 stalls, clock discontinuities, and the complete native execution/reconciliation
 matrix remain outside this slice. No existing production container is replaced.
