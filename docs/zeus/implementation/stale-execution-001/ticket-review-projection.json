@@ -1,0 +1,49 @@
+{
+  "ticket_id": "ZEUS-3875a025c20d",
+  "revision": 1,
+  "review_ids": [
+    "c3b089b745cf8d81332f4cdd28d24eefa66cd23abcffaf9f2055d77e70712699",
+    "ca9253d19fac3b6186e8390137e1b1110e3eb47f28bade99d2b3bbb31b23931a"
+  ],
+  "projection": {
+    "id": "414dbcc04b3e439da9cf6fd98e68550b718936bb0d6dbb6d325b7eb5051cbf92",
+    "ticket_id": "ZEUS-3875a025c20d",
+    "repository": "trevi00/zeus",
+    "number": 18,
+    "url": "https://github.com/trevi00/zeus/issues/18",
+    "attempted_revision": 1,
+    "synced_revision": 1,
+    "content_hash": "b39225a63fb43ada4d0b0a688f8606e4a8923a4835a39f6e5bf39338f4f7140e",
+    "attempted_content_hash": "b39225a63fb43ada4d0b0a688f8606e4a8923a4835a39f6e5bf39338f4f7140e",
+    "body_hash": "8369c631e10053c5ccbfa16e48931d49fba841376266c98e9d075efbc1072a75",
+    "title_hash": "3d1c4d18898336b21d293988a24cd44732ec01ec91e941a4140c142da3ffc40f",
+    "observed_body_hash": "8369c631e10053c5ccbfa16e48931d49fba841376266c98e9d075efbc1072a75",
+    "observed_title_hash": "3d1c4d18898336b21d293988a24cd44732ec01ec91e941a4140c142da3ffc40f",
+    "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+    "desired_state": "OPEN",
+    "observed_state": "OPEN",
+    "lifecycle_sequence": 0,
+    "lifecycle_event": null,
+    "observation_ref": "sha256:bf61541cd818d5d9d0fe5a932e45ba6b66f9b9f7b6806c4568e8b006d74183a1",
+    "observation_id": "27dd3338ab89093af14d57c6f137a5599b6f01db01e512d499cf0b9e1aeb8663",
+    "at": "2026-09-09T23:31:30.426508+00:00",
+    "review_ids": [
+      "4f4eb29f1801204a367b2c381441be6576fa5fe605d285fced780aaf65b26395",
+      "5b54bef1851f5b6a8e433949fd7cb95eb839bf6d0847f52df9a7ff58cc7188d9",
+      "61cc8bf3f87336e2c11b9a5820b0a1cabbcdd37a1c09e9ea388861407474bc1b",
+      "746c615d91db9020874e3f688a0650594ba39f3654a629ef349008adeec752ad",
+      "996222e1a7088f793d404dc5fb2b882a47fe96db073d51d4062c367f0ff3b071",
+      "a22d954badc10d3ed43ff581080155828af5680a0d33bad352546f3910a5ca59",
+      "c3b089b745cf8d81332f4cdd28d24eefa66cd23abcffaf9f2055d77e70712699",
+      "ca9253d19fac3b6186e8390137e1b1110e3eb47f28bade99d2b3bbb31b23931a"
+    ],
+    "status": "synced",
+    "projected_lifecycle_event": null
+  },
+  "source_commit": "212959993e3f4f023f5370d9a6c6a561f3a46cab",
+  "evidence_commit": "bf9e2e58b73fa80133e4cd98066d3bed8e07edf5",
+  "sync_exit_code": 0,
+  "github_body_verified": true,
+  "new_issue_created": false,
+  "closure_requested": false
+}
