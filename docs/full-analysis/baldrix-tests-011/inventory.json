@@ -1,0 +1,104 @@
+{
+  "partition": "baldrix:scripts/tests:011",
+  "scope_sha256": "2e0cccca4989d4e7bd5b8e6b8ba86af7c4f3acff26ac853303368f04445a2441",
+  "bytes": 188300,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_frontmatter.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_graph.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_lint.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_match_render.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_match_scan_root.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_quality_axes.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_score.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_source_liveness.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_staging_isolation.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_structure_depth.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_surgery.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_telemetry_audit.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_token_budget.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_trigger_eval.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_bundle.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_bundle_emit.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_facets.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_roundtrip.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_staging_guard.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_state_leak_check.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_state_root_env.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_stdout_utf8_guard.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_stop_phrases.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_strike_dispatcher.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

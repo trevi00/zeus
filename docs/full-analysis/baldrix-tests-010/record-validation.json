@@ -1,0 +1,33 @@
+{
+  "status": "pass",
+  "kind": "own_metadata_validation_only",
+  "review_sha256": "adf3ec3d568077e31fd66ddd000d92c256af30b37986e6191aafc939745dbee0",
+  "checkpoint_sha256": "e7038ac87a49a875ea957f8353317f418c5bdf5a06e77f433559b3badbced556",
+  "recorder_sha256": "fa381c8fc7500768d6d0dbced7a5716aca823da99e0132f19f85075958d7fd4d",
+  "ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/baldrix-tests-010/record_review.py",
+    "exit_code": 0,
+    "stdout": "All checks passed!",
+    "tool_chunk": "1f42f0"
+  },
+  "recorder_tool_chunk": "16557f",
+  "full_korean_readback_chunks": [
+    "523aa8",
+    "c2f663"
+  ],
+  "final_delta_readback": "line 163 corrected to explicit non-evidence meaning; displayed in validation call",
+  "raw_blob_size_sha256_rows": 74,
+  "primary_rows": 23,
+  "supporting_rows": 51,
+  "review_refs": 97,
+  "utf8_lf_verified": true,
+  "source_execution_count": 0,
+  "source_import_count": 0,
+  "source_probe_count": 0,
+  "model_count": 0,
+  "network_count": 0,
+  "installs": 0,
+  "transitive_closure_complete": false,
+  "human_acceptance_verified": false,
+  "adoption_approved": false
+}

@@ -1,0 +1,35 @@
+{
+  "scope": "Own metadata only; no source imports, collection, execution or probes",
+  "checks": {
+    "primary_count_and_bytes": true,
+    "full_primary_ranges": true,
+    "support_unique_and_separate": true,
+    "prior_unreviewed": true,
+    "execution_zero": true,
+    "raw_blob_bytes_ranges": "PASS: own build_index.py assertions for 24 primary and 35 supporting paths",
+    "utf8_lf_json": true,
+    "review_anchors": true
+  },
+  "ruff": {
+    "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/baldrix-tests-011/build_index.py",
+    "exit_code": 0,
+    "result": "All checks passed!"
+  },
+  "primary_static_test_definitions": 300,
+  "primary_static_assert_statements": 546,
+  "primary_soft_check_call_sites": 12,
+  "denominator_limit": "Syntax counts only, not collected/executed/passing cases. Branches, loops, skips and main/pytest paths differ.",
+  "source_execution": 0,
+  "files": {
+    "build_index.py": "69550de18626b7b39ba3d1fbc9c96714a03a2c88291d3727ed9a490622fe2027",
+    "checkpoint.json": "3df960ce7d0b9d947449bf347f082770d137af9ce01d7e065b71fb2af18a6a47",
+    "files.json": "ed4089916ee4c0457dd0e68cffc5b4671ccce0c9d2d30b37b8909e4325af05c4",
+    "inventory.json": "503724bb7b04cdf42072c4b7e472e971b540678b9d7ad9817f9b81a2d6e687fa",
+    "prior-ledger.json": "11ef866cefd0797eba195b89ab1207fa82c46c4e09d9a52b3776a6c40ced58a0",
+    "read-plan.json": "8143fdebd149f350c4608660a4f6edfebd591e96cc9683a8deda856b59c22aab",
+    "README.md": "f800aedf6f6aabaa26352c4549fac4d0dd38fb0c8018819b74b997622aa05f0d",
+    "remaining.json": "ff1792ba6534b3328d4e6cdf890324131be1809fd63c71330afa531dd5ef87d7",
+    "review.md": "37b59b2d72490d7eff2c15a5e4d5ae1e18a154150e8e2cde86b38a99c9191b28",
+    "supporting.json": "7413802df8df599b662d79736381d3339254ad1b4ccfb50393485bd322519dc2"
+  }
+}

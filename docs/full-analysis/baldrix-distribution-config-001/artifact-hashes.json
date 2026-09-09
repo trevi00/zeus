@@ -1,0 +1,114 @@
+{
+  "attempts/d9b82d63392f4a33bfb0e4076a23288c/cleanup.stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "attempts/d9b82d63392f4a33bfb0e4076a23288c/cleanup.stdout.txt": {
+    "bytes": 45,
+    "sha256": "9d4ff93c602c980a6d35b33a463d164ac27c80fda41d6134d989aba85cf8a988"
+  },
+  "attempts/d9b82d63392f4a33bfb0e4076a23288c/intent.json": {
+    "bytes": 1942,
+    "sha256": "823df531898c6ac6616d0e353f2aabfdce5b574f75f65633c831e60fae8bccbd"
+  },
+  "attempts/d9b82d63392f4a33bfb0e4076a23288c/receipt.json": {
+    "bytes": 396,
+    "sha256": "a388876357500242d3e9432ecb52989f3fc70f81ba31869d845e630348da3c72"
+  },
+  "attempts/d9b82d63392f4a33bfb0e4076a23288c/source-check.json": {
+    "bytes": 481,
+    "sha256": "4f6d29f1d0965e410d8d51b70eb7c547f1b4ab6e2104a9139543cb3d573c5144"
+  },
+  "attempts/d9b82d63392f4a33bfb0e4076a23288c/stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "attempts/d9b82d63392f4a33bfb0e4076a23288c/stdout.txt": {
+    "bytes": 11959,
+    "sha256": "a81db8f08fbcbc26cd87c558140d47d32127624532e54e42942b2b2a9954ae7c"
+  },
+  "checkpoint.json": {
+    "bytes": 855,
+    "sha256": "8b42f4f6a6ea17e12b26ff591c525703450a3c4f2aa517ecf04805aad70f5825"
+  },
+  "claude-discussion-prompt.txt": {
+    "bytes": 3826,
+    "sha256": "5f4737fbf92f1de3682d2f544b7a44a8aeead928f348ce41ebeaec09d1c9252e"
+  },
+  "claude-discussion-receipt.json": {
+    "bytes": 5964,
+    "sha256": "d46b18bf09ab34b75c2a7c9ce663ccbb711d9e4b4139459b5a5ee691b69241a6"
+  },
+  "claude-discussion.json": {
+    "bytes": 14202,
+    "sha256": "3541b81d3759d5912cc99365207785e8ebffcdc5341b40db9015f7ef2a2f073f"
+  },
+  "claude-discussion.md": {
+    "bytes": 12274,
+    "sha256": "8a2bc7f9e06b2bfb1af3c8e9813512d6b109e33ea2523a927773c9506adb86a2"
+  },
+  "claude-discussion.stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "claude-initial-prompt.txt": {
+    "bytes": 1199,
+    "sha256": "0603837374df7c375f06bf2d8ef635b68eab8f5445597472243fc9c7f23df922"
+  },
+  "claude-initial-receipt.json": {
+    "bytes": 3682,
+    "sha256": "17200d0baadb126ea92fc09310acf33a875a35c321274cd0b0b3b35f477126be"
+  },
+  "claude-initial.json": {
+    "bytes": 16244,
+    "sha256": "ab61eaf00c46d114c09ccba7bb261d2ada75b9b14520d3f813a5f401af5f3f7c"
+  },
+  "claude-initial.md": {
+    "bytes": 13986,
+    "sha256": "b700c70623d20a9d137e4c6201bea3f6d91b61784e2fe4bd8e70a57a493644c9"
+  },
+  "claude-initial.stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "codex-discussion-input.md": {
+    "bytes": 3826,
+    "sha256": "5f4737fbf92f1de3682d2f544b7a44a8aeead928f348ce41ebeaec09d1c9252e"
+  },
+  "codex-initial.md": {
+    "bytes": 2680,
+    "sha256": "7f1c8672e31a94f9228293b9123e2a1af2964dafe1776afd277d25f4a494fd43"
+  },
+  "component_observations.py": {
+    "bytes": 3423,
+    "sha256": "feb052ac0ec28820e064a111daa00a40c5ed78b24bd4a7540e6203cbe57fbcfc"
+  },
+  "files.json": {
+    "bytes": 2955,
+    "sha256": "e8b2efea54b378375629bcef599f6ddc34a0a68bcc83916083506a9d4f02bc5f"
+  },
+  "platform-references.md": {
+    "bytes": 1595,
+    "sha256": "ee59877975b75420e8fffc00d8ef969016106c378c43838b3ef5a6fa4c362b45"
+  },
+  "prior-ledger.json": {
+    "bytes": 1760,
+    "sha256": "6e1fab2643f9eabf0ed55bab6e1dfe260603c1e784d468c914fe45793cb4427a"
+  },
+  "resolution.md": {
+    "bytes": 7035,
+    "sha256": "a9510e584bd58f7ef44252715ae95c41f4b41e058daa993670bf8336fbb3b88c"
+  },
+  "run_observations.py": {
+    "bytes": 2785,
+    "sha256": "efda0615651a14c17289764e770bb6d3589e6cc72eb1f57c8bbbf831c481025d"
+  },
+  "scope.json": {
+    "bytes": 1499,
+    "sha256": "d5a92c769fc8d753d36888d3843f404bf1577d523f5184d825f5984fdc7de104"
+  },
+  "supporting.json": {
+    "bytes": 5577,
+    "sha256": "b9c3fbbc751a7a7eaeec011133c05bd72726be1b69849df204e4d7c66fd68f44"
+  }
+}

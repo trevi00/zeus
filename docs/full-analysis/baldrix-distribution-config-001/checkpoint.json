@@ -1,0 +1,25 @@
+{
+  "partitions": [
+    "baldrix:.github/workflows:001",
+    "baldrix:.claude-plugin:001",
+    "baldrix:.claude:001"
+  ],
+  "scope_sha256": "12b0208a4587a787ced1cc10ec4e57df18779a844b4eeaecb8035a1eefe7f257",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "zeus_start_head": "1b910a1e929fc45b9e259930f0316f516dac5e18",
+  "primary_count": 4,
+  "primary_bytes": 3912,
+  "fresh_full_body_reads": 4,
+  "supporting_files": 9,
+  "actual_claude_independent_review_completed": true,
+  "actual_claude_discussion_completed": true,
+  "original_observation_attempts": 1,
+  "original_cli_subprocesses": 7,
+  "original_manual_tests_executed": 0,
+  "whole_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adoption_ready": false,
+  "native_os_acceptance": false,
+  "plugin_install_verified": false,
+  "human_acceptance_verified": false
+}

@@ -1,0 +1,3036 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_resident.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "84b47af58898e19085d3fd8b31afe9b488fdcea869e1c90159e15d80ea31d23b",
+    "git_blob": "448494e67abaf9cd825fc4307e9f4d447b0926d8",
+    "bytes": 12088,
+    "lines": 295,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "84b47af58898e19085d3fd8b31afe9b488fdcea869e1c90159e15d80ea31d23b",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1109,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_resident.py",
+      "git_blob": "448494e67abaf9cd825fc4307e9f4d447b0926d8",
+      "mode": "100644",
+      "bytes": 12088,
+      "pinned_sha256": "84b47af58898e19085d3fd8b31afe9b488fdcea869e1c90159e15d80ea31d23b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "0605c29e908b5b3ec3cc79fe6a3cf965840c5f531a951688f997f0291da610b2",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        295
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i01",
+    "semantic_summary": "16개 함수이며 수동 main 목록도 16개다. 경고 제거, 작업 중 마커, 큐 등록, 최대 처리량 필수, dry-run, 실패·원장 쓰기 실패 시 큐 보존, 정상 기록 후 소비를 검사한다. 대부분 `run_headless`를 fake로 바꾸며 실제 모델 작업을 하지 않는다. `test_artifact_file_beats_final_turn`은 fake가 파일을 쓰고 반환 dict의 artifact까지 직접 채운다. 따라서 실제 subprocess 결과에서 파일을 우선 읽는 구현을 검증한 테스트가 아니다. 예외 시 마커 제거 시험은 예외가 발생해야 한다는 별도 단언 없이 발생한 예외를 잡는다.\n\n직접 SUT `cli/resident.py` 208–224는 rc 0과 비어 있지 않은 stdout으로 ok를 정하고 artifact 부재를 별도 표기한다. 391–398의 큐 소비 조건은 ok와 원장 기록 성공이다. 현재 `resident_store.py` 173–182는 artifact_missing을 계약 성공으로 잘못 세지 않는 방어를 갖지만, 이 방어가 drain 소비 조건에 들어가지는 않는다. `cron/run_role_cycle.py` 109–115는 drain 뒤 계약을 다시 검사한다. 따라서 계약 판정 방어가 없다고 일반화할 수 없고, 낮은 층의 소비와 높은 층의 사후 판정이 다른 것이다. `cli/decisions.py` 65–78의 harvest는 topic과 파싱 결과를 사용하며 이 구간에서는 ok·partial·contract_ok를 다시 요구하지 않는다. 실제 재처리·동시 claim·부분 성공·모델 작업의 사용자 승인은 미검증이다.",
+    "finding_sections": [
+      "i01",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/resident.py",
+      "scripts/lib/resident_store.py",
+      "scripts/tests/conftest.py",
+      "scripts/tests/run_units.py",
+      "scripts/lib/paths.py",
+      "scripts/lib/breaker.py",
+      "scripts/cli/decisions.py",
+      "scripts/cron/run_role_cycle.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_strip_noise_removes_known_warnings",
+        "line": 35,
+        "end_line": 42
+      },
+      {
+        "name": "test_strip_noise_keeps_multiline_answer",
+        "line": 45,
+        "end_line": 48
+      },
+      {
+        "name": "test_strip_noise_on_clean_output_is_identity",
+        "line": 51,
+        "end_line": 54
+      },
+      {
+        "name": "test_running_marker_exists_during_the_run_and_is_gone_after",
+        "line": 59,
+        "end_line": 83
+      },
+      {
+        "name": "test_marker_is_removed_even_when_the_run_raises",
+        "line": 86,
+        "end_line": 101
+      },
+      {
+        "name": "test_enqueue_appends_the_artifact_contract",
+        "line": 104,
+        "end_line": 112
+      },
+      {
+        "name": "test_artifact_file_beats_the_final_turn",
+        "line": 115,
+        "end_line": 139
+      },
+      {
+        "name": "test_clip_keeps_the_tail_where_the_contract_lives",
+        "line": 144,
+        "end_line": 156
+      },
+      {
+        "name": "test_clip_is_identity_when_short",
+        "line": 159,
+        "end_line": 161
+      },
+      {
+        "name": "test_drain_requires_max",
+        "line": 166,
+        "end_line": 172
+      },
+      {
+        "name": "test_enqueue_then_dry_drain_keeps_item",
+        "line": 177,
+        "end_line": 184
+      },
+      {
+        "name": "test_failed_run_leaves_item_in_queue",
+        "line": 187,
+        "end_line": 200
+      },
+      {
+        "name": "test_success_consumes_item_and_records",
+        "line": 203,
+        "end_line": 218
+      },
+      {
+        "name": "test_ledger_write_failure_keeps_item",
+        "line": 221,
+        "end_line": 235
+      },
+      {
+        "name": "test_empty_queue_is_not_an_error_but_not_ok",
+        "line": 238,
+        "end_line": 241
+      },
+      {
+        "name": "test_bad_topic_slug_rejected",
+        "line": 244,
+        "end_line": 248
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 16,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_resident_compaction.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "986de8183b2d35e54dacb0ac2bea5453115ade9a7251a4781b0747642cde49cc",
+    "git_blob": "193cc3dbdb95da3f741e8ea1cbafa1a6941998fa",
+    "bytes": 21360,
+    "lines": 537,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "986de8183b2d35e54dacb0ac2bea5453115ade9a7251a4781b0747642cde49cc",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1110,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_resident_compaction.py",
+      "git_blob": "193cc3dbdb95da3f741e8ea1cbafa1a6941998fa",
+      "mode": "100644",
+      "bytes": 21360,
+      "pinned_sha256": "986de8183b2d35e54dacb0ac2bea5453115ade9a7251a4781b0747642cde49cc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "72e03a471c0664e97cc3e8383e9da39e07f06b795f10f0c62cbddc3090030e37",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        537
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i02",
+    "semantic_summary": "23개 함수와 명시 목록이다. 40행 합성 원장을 만들고 압축 전후 golden signals와 breaker의 같은 구현 결과를 비교한다. 행 수·시각·깨진 줄 보존, 원문 재수화, 파일과 동일한 artifact 중복 저장 회피, 부분 문자열 불일치, 보존 수·slack, 두 번째 압축 무변경, 크기 감소, 원장 기록 이후 압축 실패와 알림을 검사한다. writer의 artifact_path 연결, probe의 payload 미사용, harvest의 with_payloads는 소스 문자열 검사다. 지표 비교는 독립 정답표가 아니며 실제 운영 원장·사용자 결과를 재현하지 않는다.\n\n`resident_store.py` 262–301은 접기 전 contract_ok를 저장하고, 370–391은 archive 또는 artifact_path에서 본문을 재구성한다. 401–457은 archive를 먼저 append한 뒤 고정 `.tmp`를 replace하며 오류를 반환한다. 현재 방어는 유용하지만 다중 writer 락·전원 장애·artifact 파일 사후 변조·archive 손실까지 증명하지 않는다. `golden_signals.py` 255–301은 최근 10행과 계약 대상 분모를 구분하고, `breaker.py` 72–82는 계약 대상 행의 contract_ok를 사용한다. 압축 시험의 동일성은 이 소비자들의 판정 보존이다.\n\n`test_rewrite_is_atomic`의 오라클은 종료 뒤 임시 파일 부재이며 crash 원자성 시험이 아니다. 읽기 핸들 시험의 thread는 sleep으로 겹침을 유도하고 진입 barrier·thread 예외 수집이 없다. replace 차단이 감지되지 않는 환경에서는 두 시험이 조기 return하여 수동 main에서 성공으로 집계된다. 이는 Linux/Windows 각각의 공유 핸들 동작 실측과 다르다. `_cleanup`은 이전 CLAUDE_STATE_DIR을 복원하지 않고 제거한다. 반복 실행 시 환경·모듈 reload 영향은 별도 격리 대상이다.",
+    "finding_sections": [
+      "i02",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/resident.py",
+      "scripts/lib/resident_store.py",
+      "scripts/lib/golden_signals.py",
+      "scripts/lib/breaker.py",
+      "scripts/cli/decisions.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_every_metric_survives_compaction",
+        "line": 80,
+        "end_line": 96
+      },
+      {
+        "name": "test_folded_row_keeps_its_verdict",
+        "line": 99,
+        "end_line": 112
+      },
+      {
+        "name": "test_no_row_is_deleted",
+        "line": 117,
+        "end_line": 127
+      },
+      {
+        "name": "test_corrupt_line_passes_through_verbatim",
+        "line": 130,
+        "end_line": 141
+      },
+      {
+        "name": "test_payloads_are_archived_and_rehydratable",
+        "line": 144,
+        "end_line": 158
+      },
+      {
+        "name": "test_missing_archive_leaves_row_folded",
+        "line": 161,
+        "end_line": 172
+      },
+      {
+        "name": "test_artifact_on_disk_is_not_archived_twice",
+        "line": 187,
+        "end_line": 208
+      },
+      {
+        "name": "test_mismatched_artifact_is_still_archived",
+        "line": 211,
+        "end_line": 229
+      },
+      {
+        "name": "test_missing_artifact_file_leaves_row_folded",
+        "line": 232,
+        "end_line": 245
+      },
+      {
+        "name": "test_writer_records_the_artifact_path",
+        "line": 248,
+        "end_line": 251
+      },
+      {
+        "name": "test_folded_rows_reference_their_artifact_files",
+        "line": 254,
+        "end_line": 271
+      },
+      {
+        "name": "test_deleting_only_unreferenced_loses_nothing",
+        "line": 274,
+        "end_line": 292
+      },
+      {
+        "name": "test_below_slack_changes_nothing",
+        "line": 297,
+        "end_line": 308
+      },
+      {
+        "name": "test_second_pass_is_idempotent",
+        "line": 311,
+        "end_line": 321
+      },
+      {
+        "name": "test_rewrite_is_atomic_and_leaves_no_tmp",
+        "line": 324,
+        "end_line": 332
+      },
+      {
+        "name": "test_it_actually_gets_smaller",
+        "line": 335,
+        "end_line": 345
+      },
+      {
+        "name": "test_transient_reader_does_not_kill_compaction",
+        "line": 368,
+        "end_line": 390
+      },
+      {
+        "name": "test_stuck_reader_loses_nothing",
+        "line": 393,
+        "end_line": 410
+      },
+      {
+        "name": "test_retry_after_failure_is_still_correct",
+        "line": 413,
+        "end_line": 430
+      },
+      {
+        "name": "test_probe_path_never_rehydrates",
+        "line": 435,
+        "end_line": 439
+      },
+      {
+        "name": "test_harvest_reads_the_payloads",
+        "line": 442,
+        "end_line": 445
+      },
+      {
+        "name": "test_compaction_failure_never_loses_the_record",
+        "line": 448,
+        "end_line": 466
+      },
+      {
+        "name": "test_compaction_failure_raises_an_alert",
+        "line": 469,
+        "end_line": 490
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 23,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_resident_headless_argv.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "46eba0b6d1a84ac9f8b1be3ae372ffa7d747b19889919278bbce0de0159b9eba",
+    "git_blob": "1e98bf0c49ab2d014e0828174c0e437622be56b3",
+    "bytes": 8859,
+    "lines": 219,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "46eba0b6d1a84ac9f8b1be3ae372ffa7d747b19889919278bbce0de0159b9eba",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1111,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_resident_headless_argv.py",
+      "git_blob": "1e98bf0c49ab2d014e0828174c0e437622be56b3",
+      "mode": "100644",
+      "bytes": 8859,
+      "pinned_sha256": "46eba0b6d1a84ac9f8b1be3ae372ffa7d747b19889919278bbce0de0159b9eba",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "af10b5316485c1e3750ded86eba97e0d1970d534c3af78ca931a97560b5ffdf1",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        219
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i03",
+    "semantic_summary": "11개 함수다. subprocess.run을 캡처 예외로 교체하여 기본 argv, cwd, 환경 병합, extra_args 순서, 금지 output-format, 없는 cwd와 실행 오류의 구분을 확인한다. 실제 Claude 프로세스·CLI 버전·PowerShell/WSL 경계·모델 결과는 검사하지 않는다. 호출부 호환 시험은 정규식으로 호출의 keyword 이름을 추출하므로 중첩 표현식이나 실제 실행 효과를 증명하지 않는다.\n\n`cli/resident.py` 125–224에서 output-format 거절과 cwd 선검사, UTF-8 subprocess, timeout 부분 출력 보존을 확인했다. extra_args 전체 권한 정책과 모델 자격을 검사하는 것은 아니다. 금지 인자와 없는 cwd 시험 일부는 subprocess를 가짜로 막지 않고 해당 방어가 작동할 것에 의존한다. 없는 디렉터리 이름도 고정값이며 부재를 직접 보장하지 않는다. 향후 회귀 실행 시 방어가 깨져도 실제 유료 모델 호출로 이어지지 않는 외부 격리가 필요하다. 기존 env의 임의 키를 사용하는 시험은 환경 분모가 달라질 수 있다.",
+    "finding_sections": [
+      "i03",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/resident.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_extra_args_cannot_override_output_format",
+        "line": 61,
+        "end_line": 67
+      },
+      {
+        "name": "test_allowed_extra_args_still_pass_through",
+        "line": 71,
+        "end_line": 76
+      },
+      {
+        "name": "test_default_argv_and_cwd_and_env_unchanged",
+        "line": 79,
+        "end_line": 84
+      },
+      {
+        "name": "test_extra_args_appended_in_order",
+        "line": 87,
+        "end_line": 92
+      },
+      {
+        "name": "test_cwd_is_passed_through",
+        "line": 95,
+        "end_line": 100
+      },
+      {
+        "name": "test_env_overrides_merge_not_replace",
+        "line": 103,
+        "end_line": 112
+      },
+      {
+        "name": "test_env_overrides_win_over_existing_key",
+        "line": 115,
+        "end_line": 120
+      },
+      {
+        "name": "test_missing_cwd_reports_workdir_not_cli",
+        "line": 123,
+        "end_line": 134
+      },
+      {
+        "name": "test_claude_missing_message_preserved",
+        "line": 137,
+        "end_line": 149
+      },
+      {
+        "name": "test_notadirectory_still_reported_accurately",
+        "line": 152,
+        "end_line": 170
+      },
+      {
+        "name": "test_existing_harness_callers_pass_only_three_kwargs",
+        "line": 173,
+        "end_line": 195
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 11,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_reverse_engineer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "7561ec6d66a03d005f0ba1acbcc29b0f8a5b97ed964f5e368ea089044160dbf4",
+    "git_blob": "48091d46118dc71c5e1e62e71021d5368523680e",
+    "bytes": 1984,
+    "lines": 69,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "7561ec6d66a03d005f0ba1acbcc29b0f8a5b97ed964f5e368ea089044160dbf4",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1112,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_reverse_engineer.py",
+      "git_blob": "48091d46118dc71c5e1e62e71021d5368523680e",
+      "mode": "100644",
+      "bytes": 1984,
+      "pinned_sha256": "7561ec6d66a03d005f0ba1acbcc29b0f8a5b97ed964f5e368ea089044160dbf4",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "a69b9e4c8a954357fdf0d2615eb7e1dfae2d94579f94a6f0aaabed593bbd0c9d",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i04",
+    "semantic_summary": "5개 함수다. 기본 extractor 선택에서 doc_classifier 제외, 명시 stage 선택, unknown stage의 빈 목록, code_extractor 속성의 기본값·false 분기를 확인한다. 문서 추출 품질이나 스펙→시나리오→E2E 생성은 실행하지 않는다. `cli/reverse_engineer.py` 46–59가 직접 선택기이며 CLI 138–141은 unknown stage에 2를 반환한다. 빈 선택을 곧 CLI 성공으로 해석하면 안 된다.\n\n같은 CLI 143–150에 실제 발화 대상 충돌 선검사가 있고, 187–203은 산출물 쓰기 후 검사를 시작한다. `_run_validator` 95–112는 호출한 main의 일반 반환값을 보지 않고 stdout의 FAIL 부재를 성공 조건으로 쓴다. 이 테스트는 충돌·전체 skip·반환값/빈 stdout·쓰기 복구를 다루지 않는다. 후속 rollback 구간 및 extractor/validator 전체 closure는 미독이다. Zeus 스펙 승인을 코드 역추출 결과만으로 대체할 근거가 없다.",
+    "finding_sections": [
+      "i04",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/reverse_engineer.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_default_walk_excludes_doc_classifier",
+        "line": 20,
+        "end_line": 24
+      },
+      {
+        "name": "test_stage_includes_doc_classifier_explicitly",
+        "line": 27,
+        "end_line": 29
+      },
+      {
+        "name": "test_unknown_stage_empty",
+        "line": 32,
+        "end_line": 33
+      },
+      {
+        "name": "test_doc_classifier_marked_non_code",
+        "line": 36,
+        "end_line": 37
+      },
+      {
+        "name": "test_code_extractors_default_true",
+        "line": 40,
+        "end_line": 42
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 5,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_reverse_prd_checkpoint.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "8ad2f2909b9f7020d2d37c705018d621774d55e06f9a94528ecc9d43d4ef1568",
+    "git_blob": "d366157d91366630e13e002c261ec03d4f6debb0",
+    "bytes": 4275,
+    "lines": 112,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8ad2f2909b9f7020d2d37c705018d621774d55e06f9a94528ecc9d43d4ef1568",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1113,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_reverse_prd_checkpoint.py",
+      "git_blob": "d366157d91366630e13e002c261ec03d4f6debb0",
+      "mode": "100644",
+      "bytes": 4275,
+      "pinned_sha256": "8ad2f2909b9f7020d2d37c705018d621774d55e06f9a94528ecc9d43d4ef1568",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "d7bca33fa020123e9b4bf53dc6f232ae70f5f942ddd1c31e915c19074bcd24d8",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        112
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i05",
+    "semantic_summary": "5개 함수다. 임시 Git 저장소의 실제 명령으로 HEAD를 만들고 release 기록·load·동일 HEAD·새 commit drift·잘못된 release/status를 확인하도록 설계되어 있다. 본 검토에서 해당 Git 명령은 실행하지 않았다. fixture는 서명·hooks·전역 Git 설정의 영향을 완전히 제거하지 않으며 subprocess timeout 등 실행 환경 재현도 별도 문제다.\n\n`lib/reverse_prd_checkpoint.py` 전문을 읽었다. record_release는 허용 release/status 외의 승인자·산출물 hash·commit 출처를 검증하지 않는 일반 JSON 쓰기다. check_drift는 양쪽 commit이 모두 있을 때 차이를 표시하며 missing/corrupt checkpoint는 빈 releases로 읽는다. 상태 complete는 시험에서 지정한 값이며 실제 릴리스 완료가 아니다. dirty tree, checkout 실패, 손상 checkpoint, 동시 기록, 사람 승인, 배포된 artifact와의 결속은 미검증이다. Zeus에서는 스펙 버전의 정본과 런타임 진행 상태를 구분해야 한다.",
+    "finding_sections": [
+      "i05",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/reverse_prd_checkpoint.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_record_and_load",
+        "line": 28,
+        "end_line": 38
+      },
+      {
+        "name": "test_no_drift_when_source_unchanged",
+        "line": 41,
+        "end_line": 48
+      },
+      {
+        "name": "test_drift_detected_when_source_moves",
+        "line": 51,
+        "end_line": 61
+      },
+      {
+        "name": "test_invalid_release_or_status_rejected",
+        "line": 64,
+        "end_line": 69
+      },
+      {
+        "name": "test_failsoft_no_crash_and_no_release_no_drift",
+        "line": 72,
+        "end_line": 83
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 5,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_review_reminder.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "482c9f25deb7a6d73d7fb3922a4836b852b85a8a46b3ac52aaf9743af009cf3a",
+    "git_blob": "6847e2107d99a443388736971b29f41d5ff2855f",
+    "bytes": 3437,
+    "lines": 117,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "482c9f25deb7a6d73d7fb3922a4836b852b85a8a46b3ac52aaf9743af009cf3a",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1114,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_review_reminder.py",
+      "git_blob": "6847e2107d99a443388736971b29f41d5ff2855f",
+      "mode": "100644",
+      "bytes": 3437,
+      "pinned_sha256": "482c9f25deb7a6d73d7fb3922a4836b852b85a8a46b3ac52aaf9743af009cf3a",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "d6e66baac0802749ad80d21bc475f92b97872b3726a3d1dabdc94f6fe7fcec89",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        117
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i06",
+    "semantic_summary": "13개 함수다. 공통 네 항목, 언어별 추가 체크, Write의 새 파일 안내, 경로 표시·최근 변경·XML 형태 태그·오류 복구 문구를 검사한다. `lib/review_reminder.py` 전문은 순수 문자열 생성기다. POSIX의 os.path.basename으로 Windows 역슬래시 경로를 처리하는 결과까지 이 시험이 보장하지 않는다.\n\n`handlers/post_tool/reviewer.py` 679–694에서 변경 기록과 cooldown 뒤 이 문구를 실제 context에 추가하는 호출을 확인했다. 다만 조건·배달·모델의 수행·검수 결과까지 검증한 것은 아니다. SDD의 자체검증 시작을 돕는 안내 자산이며 QA 승인이나 검증 완료 증거로 쓰면 안 된다. 원문의 즉시 수정 지침은 이번 검토에서 실행 권한으로 상속하지 않았다.",
+    "finding_sections": [
+      "i06",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/review_reminder.py",
+      "scripts/handlers/post_tool/reviewer.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_base_checks_count",
+        "line": 15,
+        "end_line": 16
+      },
+      {
+        "name": "test_lang_checks_includes_python",
+        "line": 19,
+        "end_line": 21
+      },
+      {
+        "name": "test_lang_checks_includes_typescript_variants",
+        "line": 24,
+        "end_line": 27
+      },
+      {
+        "name": "test_get_review_context_wraps_in_tag",
+        "line": 30,
+        "end_line": 33
+      },
+      {
+        "name": "test_get_review_context_includes_filename",
+        "line": 36,
+        "end_line": 40
+      },
+      {
+        "name": "test_get_review_context_includes_base_checks",
+        "line": 43,
+        "end_line": 46
+      },
+      {
+        "name": "test_get_review_context_python_appends_type_hint_check",
+        "line": 49,
+        "end_line": 51
+      },
+      {
+        "name": "test_get_review_context_unknown_ext_no_lang_check",
+        "line": 54,
+        "end_line": 59
+      },
+      {
+        "name": "test_write_appends_consistency_check",
+        "line": 62,
+        "end_line": 64
+      },
+      {
+        "name": "test_edit_does_not_append_consistency_check",
+        "line": 67,
+        "end_line": 69
+      },
+      {
+        "name": "test_recent_changes_section_only_when_provided",
+        "line": 72,
+        "end_line": 77
+      },
+      {
+        "name": "test_get_review_context_handles_empty_path",
+        "line": 80,
+        "end_line": 83
+      },
+      {
+        "name": "test_get_error_recovery_hint_format",
+        "line": 86,
+        "end_line": 90
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 13,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_reviewer_spec_verification.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "61aacfcc2972500993830719f5b28b02d4c58a33815722b1681333b9b8cfd7e7",
+    "git_blob": "5a7d53e968afc273d46f48c61a16e6ca05137613",
+    "bytes": 3971,
+    "lines": 116,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "61aacfcc2972500993830719f5b28b02d4c58a33815722b1681333b9b8cfd7e7",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1115,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_reviewer_spec_verification.py",
+      "git_blob": "5a7d53e968afc273d46f48c61a16e6ca05137613",
+      "mode": "100644",
+      "bytes": 3971,
+      "pinned_sha256": "61aacfcc2972500993830719f5b28b02d4c58a33815722b1681333b9b8cfd7e7",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "74f5df20e66acdc0b4c1e38d74128dd9823fbb26f21b106c9bb948bb569724ea",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        116
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i07",
+    "semantic_summary": "5개 함수다. temp 프로젝트에 PASS·FAIL·빈 stdout을 출력하는 가짜 Python 검증 스크립트를 쓰고 helper의 메시지를 검사한다. FAIL fixture도 exit 0이다. timeout은 subprocess.run을 교체해 주입한다. 원문의 end-to-end라는 표현은 실제 프로젝트 검증기나 사용자 시나리오 인수를 뜻하지 않는다.\n\n`handlers/post_tool/reviewer.py` 362–423은 project script→global script fallback, 30초 timeout, stdout 태그 판정을 수행한다. 일반 returncode와 stderr는 성공 판정에 반영하지 않는다. stdout이 비면 None, 비어 있지 않고 FAIL이 없으면 pass 태그다. 따라서 rc 비정상+평범한 stdout 또는 stderr-only 실패는 이 시험의 오라클 밖이다. 309–359의 실제 DAG 소비자는 cooldown/hash 이후 결과 메시지만 수집한다. 실패를 의미하는 증거와 사용자에게 보이는 pass 문구의 계약을 별도로 검증해야 한다.",
+    "finding_sections": [
+      "i07",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/handlers/post_tool/reviewer.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_pass_script_wraps_spec_verify_pass",
+        "line": 33,
+        "end_line": 40
+      },
+      {
+        "name": "test_fail_script_wraps_spec_verify_fail",
+        "line": 43,
+        "end_line": 49
+      },
+      {
+        "name": "test_empty_output_returns_none",
+        "line": 52,
+        "end_line": 56
+      },
+      {
+        "name": "test_missing_script_returns_none",
+        "line": 59,
+        "end_line": 63
+      },
+      {
+        "name": "test_timeout_branch_wraps_fail",
+        "line": 66,
+        "end_line": 84
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 5,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_rewind.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "2ba877004c91e1eb4a91ca3432205b704db456753dcdb064f20506866312b3fc",
+    "git_blob": "7f076b8a40cbf423beb64eb38db353387709e5a6",
+    "bytes": 781,
+    "lines": 27,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2ba877004c91e1eb4a91ca3432205b704db456753dcdb064f20506866312b3fc",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1116,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_rewind.py",
+      "git_blob": "7f076b8a40cbf423beb64eb38db353387709e5a6",
+      "mode": "100644",
+      "bytes": 781,
+      "pinned_sha256": "2ba877004c91e1eb4a91ca3432205b704db456753dcdb064f20506866312b3fc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "5b129d0751b8864038f7f0f9000922cbac11fd6f8e3695ca073d454f8337973e",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        27
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i08",
+    "semantic_summary": "0개 최상위 test 함수이며 main이 `lib.rewind._self_check`를 호출한다. 반환값이 int가 아니면 0으로 변환한다. 직접 읽은 self-check 318–435는 합성 부모 5개 이벤트로 기본 fork·부모 bytes 불변·마커·부모 조회·3회 cap·범위 clamp를 확인한다. 정상 분기 기준 case 이름 26개이며 분기 양쪽에 같은 이름의 호출이 존재하므로 AST 호출 수를 실행 분모로 쓰지 않았다. 새 파일의 복사된 모든 원문 행과 hash chain을 비교하는 오라클은 없다.\n\n`lib/rewind.py` 188–310은 행을 복사하고 marker를 쓴 뒤 별도 부모 fork 원장을 갱신한다. 원장 손상은 109–116에서 빈 count로 처리하며 두 파일의 원자적 트랜잭션·동시 cap·요청 idempotency는 이 시험 밖이다. self-check는 CLAUDE_HOME을 바꾸고 복원하지 않으며 실제 state_dir에는 CLAUDE_STATE_DIR이 우선한다. 현재 77–87의 읽기 경로는 mkdir 하지 않는 방어가 있으므로 옛 읽기 부수효과를 현행 결함으로 적지 않는다. 이벤트 복사는 장치 Replay나 실제 서비스 부작용 취소·재실행이 아니다.",
+    "finding_sections": [
+      "i08",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/tests/conftest.py",
+      "scripts/lib/paths.py",
+      "scripts/lib/rewind.py"
+    ],
+    "declared_test_functions": [],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 0,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_roles.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "7abf13dcfa66ba2ac81cc9a3278d9853bb41c461191f4726c571f92b85c843b6",
+    "git_blob": "bc82a0b314823dff54ff50bab7e2eba62bfcaa8c",
+    "bytes": 11365,
+    "lines": 274,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "7abf13dcfa66ba2ac81cc9a3278d9853bb41c461191f4726c571f92b85c843b6",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1117,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_roles.py",
+      "git_blob": "bc82a0b314823dff54ff50bab7e2eba62bfcaa8c",
+      "mode": "100644",
+      "bytes": 11365,
+      "pinned_sha256": "7abf13dcfa66ba2ac81cc9a3278d9853bb41c461191f4726c571f92b85c843b6",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "77fc7376f452d2d6abb6960c6c1bb64ad3ce69998b3e2ff75446ffafe8750714",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        274
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i09",
+    "semantic_summary": "19개 함수다. 역할 registry·unknown role·JSON 프롬프트, 범위 표시와 잘린 보고 수, refactor 문자 예산, security 권한 문자열, DBA JSONL 손상, orchestrator 예외 표시를 검사한다. refactor의 실제 홈 survey와 security의 Git 추적 목록 조회가 포함되므로 전부 순수 fixture인 것은 아니다. secret 내용 미노출 시험은 결과를 순회하나 결과가 존재해야 한다는 단언이 없어 무결과도 통과할 수 있다.\n\n`roles.py` 85–115의 작업 범위는 프롬프트 문구다. `role_refactor.py` 90–122는 읽은 글자 수·절 구조를, `role_dba.py` 41–92는 state JSONL 파싱과 크기를 검사한다. `role_security.py` 50–98은 settings와 Git 파일명을 읽고, 파일 권한에 대한 hardcoded 판단을 내린다. 그 판단을 현재 Claude/Codex 권한의 공식 사실로 채택하지 않았다. `role_orchestrator.py` 128–137은 개별 survey 오류를 finding으로 보존한다. 나머지 helper와 실제 role CLI 전체는 미독이다. 역할이 네 개라는 사실은 사용자의 다섯 팀·Astra/Sol/Terra 자격·독립 검수 완료를 보장하지 않는다.",
+    "finding_sections": [
+      "i09",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/roles.py",
+      "scripts/lib/role_security.py",
+      "scripts/lib/role_refactor.py",
+      "scripts/lib/role_dba.py",
+      "scripts/lib/role_orchestrator.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_every_role_is_well_formed",
+        "line": 54,
+        "end_line": 60
+      },
+      {
+        "name": "test_expected_roles_are_registered",
+        "line": 63,
+        "end_line": 64
+      },
+      {
+        "name": "test_unknown_role_is_fail_closed",
+        "line": 67,
+        "end_line": 69
+      },
+      {
+        "name": "test_every_prompt_carries_the_json_contract",
+        "line": 72,
+        "end_line": 77
+      },
+      {
+        "name": "test_render_states_the_total_and_names_what_it_dropped",
+        "line": 82,
+        "end_line": 88
+      },
+      {
+        "name": "test_refactor_measures_characters_not_bytes",
+        "line": 93,
+        "end_line": 100
+      },
+      {
+        "name": "test_refactor_ignores_files_that_barely_exceed",
+        "line": 103,
+        "end_line": 106
+      },
+      {
+        "name": "test_refactor_flags_real_loss_and_ranks_sectionless_first",
+        "line": 109,
+        "end_line": 120
+      },
+      {
+        "name": "test_refactor_only_looks_at_matchable_skills",
+        "line": 123,
+        "end_line": 133
+      },
+      {
+        "name": "test_scoped_render_bounds_the_work_not_just_the_list",
+        "line": 136,
+        "end_line": 147
+      },
+      {
+        "name": "test_unscoped_render_stays_unscoped",
+        "line": 150,
+        "end_line": 154
+      },
+      {
+        "name": "test_security_never_puts_file_contents_in_findings",
+        "line": 159,
+        "end_line": 164
+      },
+      {
+        "name": "test_security_flags_path_form_write_deny",
+        "line": 167,
+        "end_line": 177
+      },
+      {
+        "name": "test_security_reports_unreadable_settings_instead_of_silence",
+        "line": 180,
+        "end_line": 184
+      },
+      {
+        "name": "test_dba_detects_corrupt_rows",
+        "line": 189,
+        "end_line": 195
+      },
+      {
+        "name": "test_dba_clean_store_is_no_finding",
+        "line": 198,
+        "end_line": 202
+      },
+      {
+        "name": "test_dba_missing_state_dir_is_safe",
+        "line": 205,
+        "end_line": 207
+      },
+      {
+        "name": "test_orchestrator_turns_a_failed_probe_into_a_finding",
+        "line": 212,
+        "end_line": 223
+      },
+      {
+        "name": "test_orchestrator_prompt_forces_a_choice_not_a_list",
+        "line": 226,
+        "end_line": 231
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 19,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_router_eval.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1f45c796bc3c684a00c1e3397d205407e90f55fa2e3b4d1787b21d0a800c2c54",
+    "git_blob": "ea596509e0d6b039a9d1a4d95aabdc332a14a3d8",
+    "bytes": 8118,
+    "lines": 211,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1f45c796bc3c684a00c1e3397d205407e90f55fa2e3b4d1787b21d0a800c2c54",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1118,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_router_eval.py",
+      "git_blob": "ea596509e0d6b039a9d1a4d95aabdc332a14a3d8",
+      "mode": "100644",
+      "bytes": 8118,
+      "pinned_sha256": "1f45c796bc3c684a00c1e3397d205407e90f55fa2e3b4d1787b21d0a800c2c54",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "8dfeb95aace059df6f431a07d853d727bbbb7289883d8c78cfedee68195e96ca",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        211
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i10",
+    "semantic_summary": "14개 함수다. 실제 소스 위치의 skill tree·tech-stack·18개 고정 시나리오·baseline을 읽는 평가와 순수 metrics/compare 시험을 섞는다. 후보 비어 있음 방지, `_` 파일 제외, stack 밖 후보 억제, 분모 키, 기대 없음의 None, basename 중복 제거, 이름별 회귀·허용 하락·측정 불가를 확인한다. CLI JSON 시험은 shape만 확인하고 rc를 단언하지 않는다. baseline은 저장된 숫자이며 이번 검토의 실측치가 아니다.\n\n`lib/router_eval.py` 129–163은 운영 collector와 scorer를 쓰지만 detected_paths를 빈 set으로 넣고 score 임계 이상을 모두 full로 분류한다. 실제 `handlers/prompt/skill_match.py` 335–418에는 경로 추출·pipeline boost·SKILL.md 표시 이름·상위 FULL_BODY_TOP_K·토큰 예산 적용이 있다. 따라서 후보 필터의 현행 수정은 인정하면서 전체 운영 주입과 동일하다는 강한 주장은 제한해야 한다. 평가의 basename 집계가 실제 상대경로 수집 및 표시 이름과 다른 점도 있다. 이 파일의 fixture는 다수 동시 매칭·경로 의존·상위 제한을 시험하지 않는다.\n\nmetrics 183은 음성 시나리오가 없으면 0을 반환하므로 모든 무표본 비율이 None이라는 일반화도 불가하다. CLI 89–98은 record-baseline 요청 시 회귀 여부와 별개로 baseline을 다시 쓰고 성공을 반환한다. 이 파일은 그 갱신의 승인·원본 hash·holdout 독립성까지 시험하지 않는다. Zeus의 모델/프롬프트 자격 승격에는 실제 주입 결과와 사람이 검토한 시나리오가 추가로 필요하다.",
+    "finding_sections": [
+      "i10",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/router_eval.py",
+      "scripts/cli/router_eval.py",
+      "evals/router/baseline.json",
+      "scripts/handlers/prompt/skill_match.py",
+      ".claude/tech-stack.yaml",
+      "evals/router/scenarios.jsonl"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_eval_uses_the_production_collector",
+        "line": 38,
+        "end_line": 45
+      },
+      {
+        "name": "test_eval_applies_the_tech_stack_filter_like_production",
+        "line": 48,
+        "end_line": 68
+      },
+      {
+        "name": "test_full_body_threshold_comes_from_production",
+        "line": 71,
+        "end_line": 73
+      },
+      {
+        "name": "test_metrics_carry_denominators",
+        "line": 78,
+        "end_line": 83
+      },
+      {
+        "name": "test_no_sample_gives_none_not_zero",
+        "line": 86,
+        "end_line": 90
+      },
+      {
+        "name": "test_duplicate_basenames_counted_once",
+        "line": 93,
+        "end_line": 97
+      },
+      {
+        "name": "test_regression_is_reported_by_name",
+        "line": 102,
+        "end_line": 105
+      },
+      {
+        "name": "test_small_drop_within_tolerance_is_not_a_regression",
+        "line": 108,
+        "end_line": 109
+      },
+      {
+        "name": "test_becoming_unmeasurable_is_a_regression",
+        "line": 112,
+        "end_line": 115
+      },
+      {
+        "name": "test_missing_baseline_key_is_not_a_false_alarm",
+        "line": 118,
+        "end_line": 119
+      },
+      {
+        "name": "test_live_tree_holds_the_baseline",
+        "line": 124,
+        "end_line": 131
+      },
+      {
+        "name": "test_scenarios_are_well_formed",
+        "line": 134,
+        "end_line": 141
+      },
+      {
+        "name": "test_cli_json_shape",
+        "line": 156,
+        "end_line": 164
+      },
+      {
+        "name": "test_cli_reports_nothing_when_scenarios_missing",
+        "line": 167,
+        "end_line": 173
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 14,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_rust_scaffolder.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "c3d32d70b3055255d10467e0ab6fa72a181555bf017eb36fc95bb4dcf3542074",
+    "git_blob": "4b4760f4ccf02c4b2d5b7e24d229ed9db5c0eb42",
+    "bytes": 4980,
+    "lines": 115,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "c3d32d70b3055255d10467e0ab6fa72a181555bf017eb36fc95bb4dcf3542074",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1119,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_rust_scaffolder.py",
+      "git_blob": "4b4760f4ccf02c4b2d5b7e24d229ed9db5c0eb42",
+      "mode": "100644",
+      "bytes": 4980,
+      "pinned_sha256": "c3d32d70b3055255d10467e0ab6fa72a181555bf017eb36fc95bb4dcf3542074",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "1187c5aae877681beb1da81b6992a8354934eae9523d7dcd229df991e4ffac3d",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        115
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i11",
+    "semantic_summary": "6개 함수다. cargo test target의 도메인 이름, harness=false, 경로 구성, cucumber-rs 선택, temp emit 파일 존재와 Rust Then lint를 검사한다. `_ok`는 실패 시 전역 리스트에 추가할 뿐 예외를 던지지 않는다. 수동 main은 이를 모아 rc 1을 반환하지만 pytest에서 각 함수를 직접 실행하면 그 리스트를 최종 판정하지 않는다. 원본 testgen 출력의 todo 존재는 확인해도 cargo build/test를 실행하지 않는다. runnable seed와 실제 RED 결과를 구분해야 한다.\n\n`lib/testgen.py` 133–166은 빈 World와 todo step을 생성하며, `greenfield_spec_emit.py` 98–118은 feature 및 step 파일을 쓴다. `rust_scaffolder.py` 69–82의 기존 Cargo.toml/src/lib.rs 보존과 emit의 다른 파일 덮어쓰기는 서로 다르다. stub lint 218–228은 pending과 비 Then을 exempt하고 assertion 토큰·delegate 모양으로 판정한다. 미지 framework/파일 없음은 현재 indeterminate 방어가 있지만 284–294에서 unreadable 파일을 continue한 후 실검사 분모를 확보하는지는 별도 문제다. 이번 시험에는 생성한 테스트의 컴파일·실행·비즈니스 오라클·실제 UI·기기 인수가 없다. 스펙에서 시작하는 개발 자산 후보이며 SDD 단계 4·6 완료 증거가 아니다.",
+    "finding_sections": [
+      "i11",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/tests/run_units.py",
+      "scripts/lib/rust_scaffolder.py",
+      "scripts/lib/testgen.py",
+      "scripts/cli/greenfield_spec_emit.py",
+      "scripts/lib/stub_faker_lint.py",
+      "skills/_pipeline/overlays/rust.overlay.yaml"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_cargo_toml_test_target_per_domain",
+        "line": 33,
+        "end_line": 38
+      },
+      {
+        "name": "test_scaffold_files_layout",
+        "line": 41,
+        "end_line": 45
+      },
+      {
+        "name": "test_testgen_cucumber_rs_single_source_path",
+        "line": 48,
+        "end_line": 55
+      },
+      {
+        "name": "test_framework_for_rust",
+        "line": 58,
+        "end_line": 59
+      },
+      {
+        "name": "test_emit_rust_produces_runnable_seed",
+        "line": 62,
+        "end_line": 74
+      },
+      {
+        "name": "test_lint_classifies_rust_then_steps",
+        "line": 77,
+        "end_line": 92
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 6,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_scheduler_driver.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "6f453edf4c5a09d25f6f2fb204151b9cd6d83a9eb9e763c3aecfeb5b7fe23bb4",
+    "git_blob": "5f7e8aad6aa06245956a73c8e067680c661f15f4",
+    "bytes": 21889,
+    "lines": 538,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6f453edf4c5a09d25f6f2fb204151b9cd6d83a9eb9e763c3aecfeb5b7fe23bb4",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1120,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_scheduler_driver.py",
+      "git_blob": "5f7e8aad6aa06245956a73c8e067680c661f15f4",
+      "mode": "100644",
+      "bytes": 21889,
+      "pinned_sha256": "6f453edf4c5a09d25f6f2fb204151b9cd6d83a9eb9e763c3aecfeb5b7fe23bb4",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "37e0f3c8758a65fad6e89343eb0a1ff668ea6b39b36b42eeae42acb37243eaf5",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        538
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i12",
+    "semantic_summary": "31개 함수다. synthetic clock/job/runner로 cadence, token gate, 실패 backoff, 실패 계속 진행, GC, dry-run, heartbeat/history, 잠금·stale·health·원격 opt-in·nothing 상태를 검사한다. 대부분 jobs와 runner를 주입하며 실제 cron 작업·외부 푸시를 수행하지 않는다. remote 시험은 운영 watermark의 due 여부에 의존하고, 일부 all(...)은 관측된 local job이 없어도 참이다. `_with_state`는 paths.STATE_DIR을 패치하지만 현재 state_dir의 CLAUDE_STATE_DIR 환경변수가 더 우선하므로 그 env까지 격리되었다고 볼 수 없다.\n\n335–391의 encoding 시험은 원본 cron 폴더의 고정 `_probe_encoding.py`를 write/unlink하며, 실패 로그가 있으면 삭제하고 실행 뒤에도 삭제한다. 별도 temp source 복제 없이 돌리면 기존 파일·로그 보존을 보장하지 않는다. 실제 SUT 615–643에는 현재 UTF-8/errors=replace와 양 stream 모두 None이면 RC_UNREADABLE 방어가 있다. 역사적 cp949 결함 자체를 현행 재현으로 주장하지 않는다. timeout은 상위 run_pass에서 예외로 집계되지만 이 helper 구간은 TimeoutExpired의 부분 stream을 별도 보존하지 않는다.\n\nSUT 309–329의 잠금은 존재 확인 뒤 atomic JSON 쓰기이며 배타적 생성이 아니고 인프라 오류에도 True를 반환한다. 시험은 이미 보유한 잠금과 단일 stale PID를 다루며 동시 획득 race를 증명하지 않는다. 542–543의 acted는 gated와 due_dry_run만 제외하여 gated_remote도 센다. 현재 원격 이중 gate가 있으나 집계와 실제 작업 수가 일치하는지의 시험은 빠졌다. main의 구현·설치·서비스 스케줄 등록, 모델/비용 상한, 권한 있는 사람의 원격 승인, 프로세스 트리 종료는 미검증이다.",
+    "finding_sections": [
+      "i12",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/scheduler_driver.py",
+      "scripts/tests/run_units.py",
+      "scripts/lib/paths.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_is_due",
+        "line": 23,
+        "end_line": 28
+      },
+      {
+        "name": "test_run_star_gated_without_token_and_watermark_not_advanced",
+        "line": 41,
+        "end_line": 58
+      },
+      {
+        "name": "test_check_jobs_run_without_token",
+        "line": 61,
+        "end_line": 69
+      },
+      {
+        "name": "test_cadence_skips_within_window",
+        "line": 74,
+        "end_line": 89
+      },
+      {
+        "name": "test_failure_is_recorded_others_continue",
+        "line": 94,
+        "end_line": 107
+      },
+      {
+        "name": "test_cron_nonzero_rc_counts_as_failure",
+        "line": 110,
+        "end_line": 117
+      },
+      {
+        "name": "test_gc_tasks_run_and_failsoft",
+        "line": 122,
+        "end_line": 131
+      },
+      {
+        "name": "test_dry_run_runs_nothing",
+        "line": 136,
+        "end_line": 146
+      },
+      {
+        "name": "test_real_manifest_well_formed",
+        "line": 151,
+        "end_line": 180
+      },
+      {
+        "name": "test_effective_interval_backoff_and_cap",
+        "line": 185,
+        "end_line": 193
+      },
+      {
+        "name": "test_failed_job_retries_before_full_cadence",
+        "line": 196,
+        "end_line": 215
+      },
+      {
+        "name": "test_success_resets_backoff_counter",
+        "line": 218,
+        "end_line": 233
+      },
+      {
+        "name": "test_overlap_lock_skips_concurrent_pass",
+        "line": 238,
+        "end_line": 249
+      },
+      {
+        "name": "test_stale_lock_is_reclaimed",
+        "line": 252,
+        "end_line": 261
+      },
+      {
+        "name": "test_real_pass_writes_heartbeat_and_history",
+        "line": 266,
+        "end_line": 277
+      },
+      {
+        "name": "test_dry_run_writes_no_heartbeat",
+        "line": 280,
+        "end_line": 288
+      },
+      {
+        "name": "test_liveness_stale_after_threshold",
+        "line": 291,
+        "end_line": 298
+      },
+      {
+        "name": "test_gc_history_trims_old_lines",
+        "line": 301,
+        "end_line": 312
+      },
+      {
+        "name": "test_cron_health_flags_failing_jobs",
+        "line": 315,
+        "end_line": 326
+      },
+      {
+        "name": "test_non_ascii_output_does_not_break_the_runner",
+        "line": 347,
+        "end_line": 364
+      },
+      {
+        "name": "test_failing_job_output_is_kept",
+        "line": 367,
+        "end_line": 391
+      },
+      {
+        "name": "test_unreadable_capture_is_reported_as_failure",
+        "line": 394,
+        "end_line": 397
+      },
+      {
+        "name": "test_runner_pins_the_decoder_explicitly",
+        "line": 400,
+        "end_line": 406
+      },
+      {
+        "name": "test_token_alone_does_not_open_the_remote_job",
+        "line": 411,
+        "end_line": 429
+      },
+      {
+        "name": "test_remote_opt_in_opens_it",
+        "line": 432,
+        "end_line": 438
+      },
+      {
+        "name": "test_remote_opt_in_alone_is_not_enough",
+        "line": 441,
+        "end_line": 451
+      },
+      {
+        "name": "test_only_the_pushing_job_is_remote",
+        "line": 454,
+        "end_line": 458
+      },
+      {
+        "name": "test_gated_remote_is_visible_not_silent",
+        "line": 461,
+        "end_line": 469
+      },
+      {
+        "name": "test_nothing_to_do_is_not_a_failure",
+        "line": 474,
+        "end_line": 493
+      },
+      {
+        "name": "test_nothing_is_distinct_from_ok",
+        "line": 496,
+        "end_line": 500
+      },
+      {
+        "name": "test_real_failure_is_still_a_failure",
+        "line": 503,
+        "end_line": 512
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 31,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_seam_gate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "66205969ba590c133ecf9fa4c96278dcc6fb6b703567f7fc6f60990ad5faf8a5",
+    "git_blob": "eb8fab30ceff81503fc275e2c78b026ee710f333",
+    "bytes": 5234,
+    "lines": 126,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "66205969ba590c133ecf9fa4c96278dcc6fb6b703567f7fc6f60990ad5faf8a5",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1121,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_seam_gate.py",
+      "git_blob": "eb8fab30ceff81503fc275e2c78b026ee710f333",
+      "mode": "100644",
+      "bytes": 5234,
+      "pinned_sha256": "66205969ba590c133ecf9fa4c96278dcc6fb6b703567f7fc6f60990ad5faf8a5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "2ca8812187da6740e1c68f2729e3db17ecbfc68f9377429781ee2afa2a543108",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        126
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i13",
+    "semantic_summary": "5개 함수다. 합성 report와 temp Dart 두 저장소로 DRIFT/BLOCKED 정책·상태 세기·summary·CLI rc를 검사한다. `_ok`의 전역 실패 누적을 수동 main이 판단하며 직접 pytest에서 같은 보장을 얻지는 않는다. 텍스트의 PAY 같은 wire value는 실제 결제 흐름을 실행하지 않는다.\n\n`cli/seam_gate.py` 51–65의 total은 선언된 seams 개수이고 pass는 fail_on에 속하지 않는 상태다. CLI 97은 입력 문자열을 분리할 뿐 허용 상태를 검증하지 않는다. 비어 있는 선언이나 잘못된 fail-on 이름은 테스트되지 않는다. `seam_scan.py` 52–67의 상대 repo 경로는 실행 cwd를 기준으로 해석한다. fixture의 절대경로는 이 차이를 숨긴다. JSON 모드의 시험은 GitHub summary 쓰기와 실제 CI merge 차단까지 증명하지 않는다. 부모의 다른 격리 실측 결과는 본 범위의 실행 횟수에 합치지 않았다.",
+    "finding_sections": [
+      "i13",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/tests/run_units.py",
+      "scripts/cli/seam_gate.py",
+      "scripts/cli/seam_scan.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_evaluate_drift_fails",
+        "line": 36,
+        "end_line": 45
+      },
+      {
+        "name": "test_evaluate_failon_excludes",
+        "line": 48,
+        "end_line": 52
+      },
+      {
+        "name": "test_evaluate_blocked_detail",
+        "line": 55,
+        "end_line": 59
+      },
+      {
+        "name": "test_render_summary",
+        "line": 62,
+        "end_line": 68
+      },
+      {
+        "name": "test_main_exit_codes_on_temp_drift_fleet",
+        "line": 80,
+        "end_line": 102
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 5,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_seams.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "6eb584ec1bb1cf9e494d18d8456b6a3ea47c415c4d3e32af4649394a365c5848",
+    "git_blob": "8212f37ac6551c18c5684e0dd358bd0f9d4fcd91",
+    "bytes": 22806,
+    "lines": 546,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6eb584ec1bb1cf9e494d18d8456b6a3ea47c415c4d3e32af4649394a365c5848",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1122,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_seams.py",
+      "git_blob": "8212f37ac6551c18c5684e0dd358bd0f9d4fcd91",
+      "mode": "100644",
+      "bytes": 22806,
+      "pinned_sha256": "6eb584ec1bb1cf9e494d18d8456b6a3ea47c415c4d3e32af4649394a365c5848",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "6878f349f9b017ba7000a1b8dd0f390ab3f927efb33d3737f58729c29e65c1ec",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        546
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i14",
+    "semantic_summary": "26개 함수다. Java/Dart/proto 합성 파일을 실제 extractor 함수에 주고 wire 값·transform·parity·absent BLOCKED·undeclared·원장·tampered status 감지·두 번 JSON 동일성을 검사하도록 설계되어 있다. 외부 서비스는 가짜 네트워크로 대체한 것이 아니라 아예 호출하지 않는다. source read-only 검사는 producer의 mtime 집합만 비교하며 consumer bytes와 네트워크 부수효과의 포괄 증명이 아니다. 금지 import AST 검사도 해당 파일들의 정적 import 집합만 다루며 전이 import·동적 실행을 인증하지 않는다.\n\n`seams/parity.py`는 LOW와 변환 불가를 별도 상태로 낮추는 현재 방어가 있다. `java_socket.py` 47–105의 ctor-string은 첫 문자열 인자를 사용하고 accessor field와 인자 대응을 해석하지 않는다. `dart_socket.py` 95–135도 regex 기반이며 실제 serialization 실행은 없다. `proto.py` 전문은 tag:name을 키로 만들고 type·repeated/optional·oneof 의미 전체를 보존하지 않는다. proto fixture의 tag 누락을 잡는다고 전송 호환성 전체를 증명할 수 없다.\n\n`seam_scan.py` 134–141의 원장은 seam_id 경로에 쓰지만 테스트에는 경로 탈출·중복 id·동시 append가 없다. `seam_parity_drift.py` 29–78은 최신 기록의 집합에서 상태를 재계산하며 원본을 다시 추출하지 않는다. BLOCKED는 skip하고 손상 마지막 JSON은 제외한다. 따라서 상태와 집합을 함께 바꾼 위조·없어진 source·손상 분모는 tampered-status 시험의 범위 밖이다. missing ledger의 빈 결과와 validator의 PASS(skip)는 계약이 확인되었다는 뜻이 아니다.",
+    "finding_sections": [
+      "i14",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/seam_scan.py",
+      "scripts/lib/seams/parity.py",
+      "scripts/lib/seams/java_socket.py",
+      "scripts/lib/seams/dart_socket.py",
+      "scripts/validators/seam_parity_drift.py",
+      "scripts/lib/seams/proto.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_seam_registry_ocp",
+        "line": 115,
+        "end_line": 126
+      },
+      {
+        "name": "test_java_name_rule_bare_and_ctor",
+        "line": 129,
+        "end_line": 144
+      },
+      {
+        "name": "test_java_ctor_string_rule",
+        "line": 147,
+        "end_line": 154
+      },
+      {
+        "name": "test_java_computed_is_low_fidelity",
+        "line": 157,
+        "end_line": 165
+      },
+      {
+        "name": "test_java_excludes_servicetype_category",
+        "line": 168,
+        "end_line": 175
+      },
+      {
+        "name": "test_java_no_sources_empty",
+        "line": 178,
+        "end_line": 181
+      },
+      {
+        "name": "test_dart_string_arg_wire_not_member_name",
+        "line": 184,
+        "end_line": 194
+      },
+      {
+        "name": "test_dart_excludes_non_socketaction_enum",
+        "line": 197,
+        "end_line": 202
+      },
+      {
+        "name": "test_dart_no_lib_empty",
+        "line": 205,
+        "end_line": 208
+      },
+      {
+        "name": "test_proto_extracts_message_fields_with_tags",
+        "line": 235,
+        "end_line": 244
+      },
+      {
+        "name": "test_proto_tag_drop_drift",
+        "line": 247,
+        "end_line": 259
+      },
+      {
+        "name": "test_seam_scan_merges_all_stacks_per_repo",
+        "line": 262,
+        "end_line": 272
+      },
+      {
+        "name": "test_transform_forms",
+        "line": 275,
+        "end_line": 282
+      },
+      {
+        "name": "test_parity_ok_identical",
+        "line": 285,
+        "end_line": 287
+      },
+      {
+        "name": "test_parity_drift_with_declared_affix_transform",
+        "line": 290,
+        "end_line": 298
+      },
+      {
+        "name": "test_parity_disjoint_no_transform_is_needs_transform_not_drift",
+        "line": 301,
+        "end_line": 304
+      },
+      {
+        "name": "test_parity_low_fidelity_suppresses",
+        "line": 307,
+        "end_line": 310
+      },
+      {
+        "name": "test_parity_value_map_collision_is_needs_transform",
+        "line": 313,
+        "end_line": 316
+      },
+      {
+        "name": "test_seam_scan_drift_blocked_undeclared_and_ledger",
+        "line": 340,
+        "end_line": 385
+      },
+      {
+        "name": "test_seam_validator_flags_potential_break_and_clean",
+        "line": 396,
+        "end_line": 407
+      },
+      {
+        "name": "test_seam_validator_catches_tampered_status_non_self_cert",
+        "line": 410,
+        "end_line": 420
+      },
+      {
+        "name": "test_seam_validator_low_fidelity_not_potential_break",
+        "line": 423,
+        "end_line": 431
+      },
+      {
+        "name": "test_seam_validator_no_ledger_empty",
+        "line": 434,
+        "end_line": 438
+      },
+      {
+        "name": "test_seams_no_llm_or_network_imports",
+        "line": 460,
+        "end_line": 469
+      },
+      {
+        "name": "test_seam_scan_out_of_scope_dict_element_round_trips",
+        "line": 472,
+        "end_line": 483
+      },
+      {
+        "name": "test_seam_scan_2run_byte_identical",
+        "line": 486,
+        "end_line": 501
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 26,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_self_model_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "a100e5f6bba0148c3e8a5c2c158324339e4f86cf973a373beabb329e31b76601",
+    "git_blob": "881d78ee42b1005fc936a9873d3e82308b6a5fea",
+    "bytes": 8000,
+    "lines": 193,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a100e5f6bba0148c3e8a5c2c158324339e4f86cf973a373beabb329e31b76601",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1123,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_self_model_drift.py",
+      "git_blob": "881d78ee42b1005fc936a9873d3e82308b6a5fea",
+      "mode": "100644",
+      "bytes": 8000,
+      "pinned_sha256": "a100e5f6bba0148c3e8a5c2c158324339e4f86cf973a373beabb329e31b76601",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "3f14391f6f6e7b223c8106849044f7120b34e388805bfe2c7fa20535f3851dcf",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        193
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i15",
+    "semantic_summary": "11개 함수다. tools 필드·권한 초과 집합·script ref 정규식·존재 확인·canonical token, 실제 commands/skills에서 참조가 한 개 이상 나오는지, 주입 reader로 mirror 누락과 clean, synthetic graduation 여부의 rc를 검사한다. scan shape 시험은 실제 상태가 깨끗해야 한다는 단언이 아니다. 소스의 금지 문자열 부재 시험은 동작의 포괄 격리 증명이 아니다.\n\nSUT 89–111은 frontmatter 도구 선언을 비교하며 실제 런타임 권한을 집행하지 않는다. 147–168은 읽지 못한 command/skill을 넘기며, 205–231은 canonical/mirror unreadable을 경고로 표기한다. 243–271은 현재 graduation 상태에 따라 blocking/advisory를 구분하고 advisory drift에도 PASS 및 rc 0을 낸다. “항상 advisory라 차단 기능 없음”이라는 역사적 일반화는 부정확하다. 반대로 fixture에서 graduation을 True로 만든 것은 자격 승인 증거가 아니다. Zeus에는 분모·누락 이유·권한 집행과 모델 자격 증거를 별도로 결속할 필요가 있다.",
+    "finding_sections": [
+      "i15",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/validators/self_model_drift.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_parse_tools_field",
+        "line": 24,
+        "end_line": 27
+      },
+      {
+        "name": "test_extra_tools_creep_only",
+        "line": 30,
+        "end_line": 34
+      },
+      {
+        "name": "test_extract_script_refs_triple_guard",
+        "line": 37,
+        "end_line": 46
+      },
+      {
+        "name": "test_ref_resolves",
+        "line": 49,
+        "end_line": 53
+      },
+      {
+        "name": "test_canonical_tokens_in_vocab_intersected",
+        "line": 56,
+        "end_line": 62
+      },
+      {
+        "name": "test_scriptref_not_silently_dead",
+        "line": 66,
+        "end_line": 79
+      },
+      {
+        "name": "test_mutmirror_fires_on_missing_token",
+        "line": 83,
+        "end_line": 102
+      },
+      {
+        "name": "test_mutmirror_silent_when_all_in_sync",
+        "line": 105,
+        "end_line": 114
+      },
+      {
+        "name": "test_scan_returns_three_keys_no_crash",
+        "line": 117,
+        "end_line": 120
+      },
+      {
+        "name": "test_graduated_mode_fails_on_drift",
+        "line": 123,
+        "end_line": 146
+      },
+      {
+        "name": "test_validator_source_is_hermetic",
+        "line": 150,
+        "end_line": 158
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 11,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_selfmod_clean_gate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "0b1530a449ac2c4609ef61936f5c927b8bc5e7f15328f3da64e4e80d5919e2bb",
+    "git_blob": "e5df87500529a8ae649d2684df168d7e001c89e5",
+    "bytes": 4914,
+    "lines": 131,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "0b1530a449ac2c4609ef61936f5c927b8bc5e7f15328f3da64e4e80d5919e2bb",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1124,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_selfmod_clean_gate.py",
+      "git_blob": "e5df87500529a8ae649d2684df168d7e001c89e5",
+      "mode": "100644",
+      "bytes": 4914,
+      "pinned_sha256": "0b1530a449ac2c4609ef61936f5c927b8bc5e7f15328f3da64e4e80d5919e2bb",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "785c261528d119f1bffd93ef9452b392470c8e4c640cfbd6971b2a7ae02dd7dd",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        131
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i16",
+    "semantic_summary": "8개 함수다. strip된 porcelain 첫 줄, rename destination, quoted path, 생성 prefix 면제, dirty source 차단과 generated-only 허용을 synthetic Git 출력으로 검사한다. 실제 Git branch/merge/working-tree race를 실행하지 않는다. surgery 검사에는 GENERATED_PREFIXES 문자열 부재와 callable만 확인한다.\n\n`cli/selfmod.py` 95–126에서 실제 면제는 파일 유형 판별이 아니라 정규화된 brain/ prefix다. 그 아래 임의 파일도 해당하며 rename은 destination만 본다. 테스트의 “생성 파일에만”이라는 제목보다 계약이 넓다. is_clean은 Git rc를 직접 보지 않는다. merge 228–286에는 branch·dirty·ahead·canary·regression gate가 있지만 직접 읽은 해당 함수에 사람 diff 승인 receipt 검사는 없고 dry-run 이후 실제 switch/merge를 수행한다. 이 테스트는 그 흐름을 검증하지 않는다. Zeus의 사용자가 요청한 자가개선과 사람 승인 경계는 clean tree 한 항목으로 충족되지 않는다.",
+    "finding_sections": [
+      "i16",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/selfmod.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_path_survives_the_stripped_first_line",
+        "line": 31,
+        "end_line": 40
+      },
+      {
+        "name": "test_rename_takes_the_destination",
+        "line": 43,
+        "end_line": 44
+      },
+      {
+        "name": "test_quoted_path_is_unwrapped",
+        "line": 47,
+        "end_line": 48
+      },
+      {
+        "name": "test_only_generated_paths_are_exempt",
+        "line": 53,
+        "end_line": 57
+      },
+      {
+        "name": "test_a_dirty_source_file_still_blocks",
+        "line": 60,
+        "end_line": 71
+      },
+      {
+        "name": "test_generated_only_is_clean",
+        "line": 74,
+        "end_line": 82
+      },
+      {
+        "name": "test_exemption_list_is_narrow",
+        "line": 85,
+        "end_line": 87
+      },
+      {
+        "name": "test_surgery_target_cleanliness_is_unaffected",
+        "line": 90,
+        "end_line": 99
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 8,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_semantic.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d89b25e4503b02a5e75edb06b114f87643bf13c652cc51027d1c8a550c03ff7c",
+    "git_blob": "cd1f40f2d4ab38a12d9a0f28c443918b0154f5c6",
+    "bytes": 10325,
+    "lines": 294,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "d89b25e4503b02a5e75edb06b114f87643bf13c652cc51027d1c8a550c03ff7c",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1125,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_semantic.py",
+      "git_blob": "cd1f40f2d4ab38a12d9a0f28c443918b0154f5c6",
+      "mode": "100644",
+      "bytes": 10325,
+      "pinned_sha256": "d89b25e4503b02a5e75edb06b114f87643bf13c652cc51027d1c8a550c03ff7c",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "cf98ccb4827dfe27bce791dd560f0842b8457df6311b93e15300b6131ff18e36",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        294
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i17",
+    "semantic_summary": "17개 함수다. temp 파일과 envelope로 missing/empty/짧은 summary의 SKIPPED, 겹침 임계와 최악 집계, 영어·한국어·일본어·혼합 token을 검사한다. 실제 근거가 주장과 의미상 일치하는지의 사람 오라클은 없다. 고정 C:/없는경로 fixture는 다른 OS에서 경로 의미가 달라지며 실제 부재를 먼저 보장하지 않는다.\n\n`lib/validators/semantic.py` 171–292는 지정 file_path의 앞부분을 읽고 token 교집합 비율을 비교한다. 자체 root confinement·artifact hash·실행 identity 검사는 이 구간에 없다. missing/empty를 skip하는 것은 해당 lexical layer의 정책이며 성공 인증이 아니다. 실제 `agent_outcome_audit.py` 298–315는 이 결과를 advisory로 실행하고, 213–227은 verified_by 분류만 바꾸며 SKIPPED는 기본 분류로 떨어진다. 이를 배포 gate가 모든 이상을 막는다는 주장으로 확대하지 않는다. SDD evidence 보조 신호로 검토할 수 있으나 금전 흐름의 기능 정확성과 무 mock 인수를 대체하지 못한다.",
+    "finding_sections": [
+      "i17",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/validators/semantic.py",
+      "scripts/handlers/post_tool/agent_outcome_audit.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_malformed_envelope_is_skipped",
+        "line": 42,
+        "end_line": 45
+      },
+      {
+        "name": "test_summary_too_short_is_skipped",
+        "line": 48,
+        "end_line": 51
+      },
+      {
+        "name": "test_no_evidence_is_skipped",
+        "line": 54,
+        "end_line": 56
+      },
+      {
+        "name": "test_missing_files_only_is_skipped_with_errors",
+        "line": 59,
+        "end_line": 70
+      },
+      {
+        "name": "test_perfect_overlap_is_clean",
+        "line": 75,
+        "end_line": 84
+      },
+      {
+        "name": "test_partial_above_threshold_is_clean",
+        "line": 87,
+        "end_line": 96
+      },
+      {
+        "name": "test_tiny_overlap_above_zero_is_suspicious",
+        "line": 99,
+        "end_line": 113
+      },
+      {
+        "name": "test_zero_overlap_is_strong_suspicion",
+        "line": 116,
+        "end_line": 125
+      },
+      {
+        "name": "test_worst_case_across_entries",
+        "line": 130,
+        "end_line": 141
+      },
+      {
+        "name": "test_tokenizer_min_chars_and_case_insensitive",
+        "line": 146,
+        "end_line": 156
+      },
+      {
+        "name": "test_short_tokens_ignored",
+        "line": 159,
+        "end_line": 169
+      },
+      {
+        "name": "test_empty_file_records_zero_overlap_but_no_verdict_signal",
+        "line": 174,
+        "end_line": 186
+      },
+      {
+        "name": "test_cjk_korean_overlap_clean",
+        "line": 189,
+        "end_line": 198
+      },
+      {
+        "name": "test_cjk_korean_zero_overlap_strong_suspicion",
+        "line": 201,
+        "end_line": 210
+      },
+      {
+        "name": "test_cjk_japanese_overlap",
+        "line": 213,
+        "end_line": 222
+      },
+      {
+        "name": "test_mixed_ascii_and_cjk",
+        "line": 225,
+        "end_line": 234
+      },
+      {
+        "name": "test_cjk_short_run_is_not_tokenized_for_noise_reduction",
+        "line": 237,
+        "end_line": 250
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 17,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_sensor_anomaly_selfcheck.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "6288c9db29eb03ce26b4df3da43249f4edee71d890300c9ce21e88bb8cbf30c5",
+    "git_blob": "086e5ff5c7c7c517a7276826e17af386324f4f14",
+    "bytes": 730,
+    "lines": 25,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6288c9db29eb03ce26b4df3da43249f4edee71d890300c9ce21e88bb8cbf30c5",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1126,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_sensor_anomaly_selfcheck.py",
+      "git_blob": "086e5ff5c7c7c517a7276826e17af386324f4f14",
+      "mode": "100644",
+      "bytes": 730,
+      "pinned_sha256": "6288c9db29eb03ce26b4df3da43249f4edee71d890300c9ce21e88bb8cbf30c5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "185af9511139d51eff309b1ce7011ce10aaa1fbbcb8a15679feca247fa32f059",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        25
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i18",
+    "semantic_summary": "0개 최상위 test 함수이며 main은 `cli.sensor_anomaly._self_check`의 비 int 반환을 0으로 바꾼다. 직접 읽은 self-check 380–480은 11개 case 판정을 만든다. 임시 합성 operator ledger의 verified_by 쏠림, self_only, 반복 failure mode, 같은 task_hash의 다른 결과, 오래된 표본 제외, min_count를 확인한다. timestamp를 현재 시각 기준으로 만든 현행 수정이 있으므로 예전 고정 날짜 만료를 현행 실패로 적지 않는다.\n\nSUT 119–150은 깨진 JSON·비 dict·읽기 오류를 제외하며 파싱 불가 timestamp는 since 필터에서 제외하지 않는다. 310–336의 records_scanned는 이 선별 뒤의 값이다. 전체 이벤트 분모나 독립 검증자 실재를 인증하지 않는다. self-check의 CLAUDE_HOME 변경은 복원되지 않고 별도 CLAUDE_STATE_DIR도 덮지 않는다. unittest가 아닌 wrapper만 pytest로 실행하면 수집할 test가 없다는 점도 중요하다. 실제 알림 전달·model promotion 차단·사용자 인수는 미검증이다.",
+    "finding_sections": [
+      "i18",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/tests/conftest.py",
+      "scripts/lib/paths.py",
+      "scripts/cli/sensor_anomaly.py"
+    ],
+    "declared_test_functions": [],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 0,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_session_init.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "8c4bef42957be43a003fffafa83e827c94dd1b3bf662a9614d597e7925575960",
+    "git_blob": "fc87672e34f29eef9fca3745508ae6bba90f8cb7",
+    "bytes": 9154,
+    "lines": 217,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8c4bef42957be43a003fffafa83e827c94dd1b3bf662a9614d597e7925575960",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1127,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_session_init.py",
+      "git_blob": "fc87672e34f29eef9fca3745508ae6bba90f8cb7",
+      "mode": "100644",
+      "bytes": 9154,
+      "pinned_sha256": "8c4bef42957be43a003fffafa83e827c94dd1b3bf662a9614d597e7925575960",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "6d641ee93d90da84f8558ebe351ad1926620ba19f9ffd119f8e8b5352c46cb7d",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i19",
+    "semantic_summary": "11개 함수다. 실제 repository HANDOFF 앞부분의 크기·Resume entry·phase_id·history 부재, 임시 ack store의 중복 제거와 status line, ready 직접 주입, 실제 graduation tick의 무예외 smoke, fake brain status 합계·예외를 검사한다. 임시 store 한 곳만 바꾼 compose 시험은 모든 status producer를 동시에 격리하지 않는다. fail-soft smoke는 내부 실패가 삼켜져도 성공한다.\n\n`handlers/session/init.py` 108–136은 현재 byte 단위 HANDOFF 절단을 사용한다. 따라서 문자 절단 과거 결함은 현행 방어와 구분했다. 350–386은 validator scan tick과 ready 안내를 분리한다. 775–839에는 다수 상태 수집 및 실제 main의 GC/maintenance 호출이 있지만 이 테스트는 main 전체의 실행·입출력·부작용·총 context budget을 검사하지 않는다. `ready=True` fixture와 안내 token은 실제 validator 졸업·사람 승인·알림 수신을 의미하지 않는다. CS 단계의 관찰 표면 후보이며 SDD 완료 판정은 별도다.",
+    "finding_sections": [
+      "i19",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/handlers/session/init.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_handoff_injection_stays_within_budget",
+        "line": 21,
+        "end_line": 40
+      },
+      {
+        "name": "test_handoff_head_carries_orientation_not_history",
+        "line": 43,
+        "end_line": 50
+      },
+      {
+        "name": "test_aborted_kha_plan_line_silent_on_zero_and_counts_aborts",
+        "line": 53,
+        "end_line": 72
+      },
+      {
+        "name": "test_compose_includes_aborted_kha_when_present",
+        "line": 75,
+        "end_line": 92
+      },
+      {
+        "name": "test_graduation_ready_line_silent_until_ready",
+        "line": 95,
+        "end_line": 112
+      },
+      {
+        "name": "test_compose_includes_graduation_when_ready",
+        "line": 115,
+        "end_line": 128
+      },
+      {
+        "name": "test_graduation_streak_tick_failsoft_smoke",
+        "line": 131,
+        "end_line": 142
+      },
+      {
+        "name": "test_brain_divergence_line_fires_on_divergence",
+        "line": 145,
+        "end_line": 155
+      },
+      {
+        "name": "test_brain_divergence_line_silent_on_zero",
+        "line": 158,
+        "end_line": 165
+      },
+      {
+        "name": "test_brain_divergence_line_failsoft",
+        "line": 168,
+        "end_line": 173
+      },
+      {
+        "name": "test_compose_includes_brain_divergence_when_present",
+        "line": 176,
+        "end_line": 182
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 11,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_settings_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f8ab5b50cf198c0b4a700e2036ade32364edc73d9957ece5763f804cd8f3f1b0",
+    "git_blob": "8d9f0e4dc129d82da100c80926c19b944d6046d7",
+    "bytes": 7229,
+    "lines": 189,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f8ab5b50cf198c0b4a700e2036ade32364edc73d9957ece5763f804cd8f3f1b0",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1128,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_settings_guard.py",
+      "git_blob": "8d9f0e4dc129d82da100c80926c19b944d6046d7",
+      "mode": "100644",
+      "bytes": 7229,
+      "pinned_sha256": "f8ab5b50cf198c0b4a700e2036ade32364edc73d9957ece5763f804cd8f3f1b0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "cf6faab1c2e57b8439360f85818634952dd37669c6773b4af5adb67baa48f01d",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        189
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i20",
+    "semantic_summary": "14개 함수다. synthetic 권한 dict와 temp settings로 특정 rule 제거, covering rule 요구, 다른 경로·allow·비 file tool 거절, 다른 key 유지·마지막 comma·거절 시 원문 불변·손상 JSON을 검사한다. 마지막 시험은 소스 위치 settings의 ineffective_rules 개수만 상한 검사한다. 본 검토는 그 settings 파일이나 실제 인증정보를 열지 않았다.\n\n`lib/settings_guard.py` 40–110의 효과 분류는 hardcoded Write/Read/NotebookEdit/MultiEdit 대 Edit 가정이고, 실제 도구 권한을 실행하여 측정하지 않는다. 현재 사실이나 Codex 권한 변환 규칙으로 추천하지 않는다. `_BUCKETS`는 deny와 ask 모두인데 primary에는 ask 행동 시험이 없다. 113–163은 지울 줄을 유일하게 찾고 JSON 구조의 다른 변화가 없는지 재검사하는 현재 방어가 있다. 쓰기는 일반 write_text이며 동시 변경·중간 실패·실제 경로 glob·Windows/WSL 적용은 미검증이다. 사용자의 전역 권한 요청을 이 원문 rule 제거의 채택 승인으로 해석하지 않았다.",
+    "finding_sections": [
+      "i20",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/role_security.py",
+      "scripts/lib/settings_guard.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_removes_an_ineffective_rule_when_protection_remains",
+        "line": 37,
+        "end_line": 40
+      },
+      {
+        "name": "test_ineffective_rules_finds_only_path_form_noop_tools",
+        "line": 43,
+        "end_line": 47
+      },
+      {
+        "name": "test_refuses_to_remove_the_effective_rule",
+        "line": 52,
+        "end_line": 55
+      },
+      {
+        "name": "test_refuses_when_no_effective_rule_covers_the_path",
+        "line": 58,
+        "end_line": 62
+      },
+      {
+        "name": "test_refuses_a_different_path_even_if_shaped_alike",
+        "line": 65,
+        "end_line": 68
+      },
+      {
+        "name": "test_refuses_non_file_tools",
+        "line": 71,
+        "end_line": 73
+      },
+      {
+        "name": "test_refuses_the_allow_bucket",
+        "line": 76,
+        "end_line": 79
+      },
+      {
+        "name": "test_refuses_a_rule_that_is_not_there",
+        "line": 82,
+        "end_line": 84
+      },
+      {
+        "name": "test_refuses_a_non_path_form_rule",
+        "line": 87,
+        "end_line": 89
+      },
+      {
+        "name": "test_removal_touches_exactly_one_line_and_keeps_everything_else",
+        "line": 94,
+        "end_line": 112
+      },
+      {
+        "name": "test_removal_of_the_last_deny_entry_keeps_valid_json",
+        "line": 115,
+        "end_line": 124
+      },
+      {
+        "name": "test_refused_removal_leaves_the_file_untouched",
+        "line": 127,
+        "end_line": 134
+      },
+      {
+        "name": "test_unreadable_file_is_refused_not_crashed",
+        "line": 137,
+        "end_line": 142
+      },
+      {
+        "name": "test_live_settings_has_at_most_the_known_dead_rule",
+        "line": 147,
+        "end_line": 151
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 14,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_similarity.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "61590dbab5e784045dcbd3ba0ee312b9a0ef53611d4c59bc5f3872d440e8b564",
+    "git_blob": "ec1be50ca982b77b3900ca8a9085957f5662e78e",
+    "bytes": 3555,
+    "lines": 105,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "61590dbab5e784045dcbd3ba0ee312b9a0ef53611d4c59bc5f3872d440e8b564",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1129,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_similarity.py",
+      "git_blob": "ec1be50ca982b77b3900ca8a9085957f5662e78e",
+      "mode": "100644",
+      "bytes": 3555,
+      "pinned_sha256": "61590dbab5e784045dcbd3ba0ee312b9a0ef53611d4c59bc5f3872d440e8b564",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "01e7d238ed9b2907a216937f847b15f42f3975ec384f4a4005ed833404e28c3a",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        105
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i21",
+    "semantic_summary": "7개 함수다. ontology snapshot의 빈 집합·필드 누락·교집합 없음·동일·부분 교집합·type 불일치·id 없는 field 제외에 대한 수식 오라클이다. missing/empty 양쪽이 1.0인 것은 수식의 경계값이며 스펙 완전성의 증거는 아니다. 중복 id, 필드 타입 손상, 데이터 출처·검증자 identity는 시험하지 않는다.\n\n`lib/similarity.py` 전문의 dict comprehension은 같은 id를 마지막 값으로 덮고 고정 0.5/0.3/0.2 비중을 계산한다. 실제 `engine/debate.py` 72–91은 이를 similarity_log로 기록하며 backup이고 convergence 판정에 사용하지 않는다고 명시한다. 이 직접 caller를 확인했으므로 빈 snapshot 1.0만으로 곧 토론 자동 승인이라고 주장하지 않는다. 실제 convergence 전체 closure와 사람 판단은 별도 검토 대상이다.",
+    "finding_sections": [
+      "i21",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/similarity.py",
+      "scripts/engine/debate.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_empty_union_returns_1",
+        "line": 13,
+        "end_line": 15
+      },
+      {
+        "name": "test_missing_fields_key_treated_as_empty",
+        "line": 18,
+        "end_line": 20
+      },
+      {
+        "name": "test_no_common_ids_returns_half_name_sim",
+        "line": 23,
+        "end_line": 28
+      },
+      {
+        "name": "test_identical_snapshots_return_1",
+        "line": 31,
+        "end_line": 37
+      },
+      {
+        "name": "test_partial_overlap_full_formula",
+        "line": 40,
+        "end_line": 54
+      },
+      {
+        "name": "test_type_mismatch_reduces_score",
+        "line": 57,
+        "end_line": 63
+      },
+      {
+        "name": "test_skips_fields_missing_id_key",
+        "line": 66,
+        "end_line": 71
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 7,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_skeleton.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "29c059de6a809a39b917efbce662a67cf2eb14521886d09d047e626375bd31d5",
+    "git_blob": "12d661dfe6c90619dce2da4b55b9416bd0f48b0d",
+    "bytes": 2827,
+    "lines": 89,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "29c059de6a809a39b917efbce662a67cf2eb14521886d09d047e626375bd31d5",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1130,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_skeleton.py",
+      "git_blob": "12d661dfe6c90619dce2da4b55b9416bd0f48b0d",
+      "mode": "100644",
+      "bytes": 2827,
+      "pinned_sha256": "29c059de6a809a39b917efbce662a67cf2eb14521886d09d047e626375bd31d5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "5321c23699f831c7df947cf6239f991d369f716209a08e77311bf4e5068cf14f",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        89
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i22",
+    "semantic_summary": "3개 함수다. temp cwd의 비 Java/Java 정상 뼈대/없는 build 파일을 만들고 stdout PASS·FAIL만 확인한다. helper는 validator 반환값을 사용하지 않는다. 정상 fixture는 Gradle 의존성 문자열과 application.yml만 놓으며 Java 컴파일·서버 실행·DB·실제 사용자 요청을 수행하지 않는다.\n\n`validators/skeleton.py` 전문은 src/main/java가 없으면 PASS(skip), Gradle 내용의 regex와 파일·패키지 디렉터리 존재를 검사하고 main은 int 상태를 반환하지 않는다. source-level 실패는 stdout으로 전달된다. primary의 수동 main은 예상 FAIL을 캡처해 자체 assertion으로 처리하므로 이 wrapper의 성공과 validator가 실제 프로젝트를 통과시켰다는 사실은 다르다. Maven·kts·패키지 경로 분기는 이 세 fixture로 전체 커버되지 않는다. Zeus 단계 3의 구조 확인 후보이며 단계 4·5·6 완료 표시는 아니다.",
+    "finding_sections": [
+      "i22",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/validators/skeleton.py"
+    ],
+    "declared_test_functions": [
+      {
+        "name": "test_empty_cwd_skips_cleanly",
+        "line": 31,
+        "end_line": 34
+      },
+      {
+        "name": "test_happy_path_full_skeleton",
+        "line": 37,
+        "end_line": 55
+      },
+      {
+        "name": "test_negative_path_no_build_file",
+        "line": 58,
+        "end_line": 64
+      }
+    ],
+    "declared_test_methods": [],
+    "declared_test_method_count": 0,
+    "declared_test_function_count": 3,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_skill_candidate_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "6d35f62ce2a4991c6303d4ebb9c38ed0dc18a7693ba8ef285494560599e52d43",
+    "git_blob": "a1575c7bde37e6ac1c900c2b87c94c94403897a1",
+    "bytes": 20146,
+    "lines": 479,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6d35f62ce2a4991c6303d4ebb9c38ed0dc18a7693ba8ef285494560599e52d43",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1131,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_skill_candidate_detector.py",
+      "git_blob": "a1575c7bde37e6ac1c900c2b87c94c94403897a1",
+      "mode": "100644",
+      "bytes": 20146,
+      "pinned_sha256": "6d35f62ce2a4991c6303d4ebb9c38ed0dc18a7693ba8ef285494560599e52d43",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "43ada3bea36fe72aff70f92f83a8ef6ff6bd59482b811eb97302baf7416c6c5a",
+    "tests_executed": [],
+    "partition": "baldrix:scripts/tests:010",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        479
+      ]
+    ],
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#i23",
+    "semantic_summary": "0개 최상위 test 함수와 네 unittest TestCase의 33개 메서드다. main이 네 class를 명시적으로 suite에 넣고 wasSuccessful로 반환하므로 class가 있다는 이유만으로 run_units가 아무것도 실행하지 않는다고 해석하면 안 된다. 앞선 두 class는 tracker/candidate root와 threshold=3을 패치한다. 기본 threshold=10 확인은 별도 class이며 대부분의 생성 흐름이 운영 기본값 10에서 시험되지는 않는다. 합성 payload의 반복 수·pattern 분류·manifest·session 분리·invalid silent·write failure silent·secret fixture·reflection adapter metadata와 안정된 cid를 검사한다.\n\n실제 detector 47–48의 기본 root는 Path.home()/.claude이며 CLAUDE_HOME override가 아니다. reflection TestCase는 임시 reflection 파일만 만들고 insight root는 패치하지 않는다. `_build_candidate_from_reflection` 284–288의 no-write 설명과 달리 368–385는 insight_index.append를 호출한다. 직접 읽은 insight_index 338–341은 home/memory 원장에 append하므로 별도 실행 격리가 필요하다. 성공 실패는 swallowed exception 때문에 reflection 반환만으로 관측되지 않는다. 이 부수효과는 이번 검토에서 실행하지 않았다.\n\nprocess_payload 115–124는 pattern tracker를 먼저 저장한 뒤 candidate를 secret scan한다. secret 시험은 `_build_candidate` 반환의 trace에 합성 패턴을 넣어 blocked marker만 확인한다. 원시 tool_input의 pattern이 tracker에 남는 경계는 검사하지 않는다. WebFetch는 netloc, Bash/WebSearch는 앞 두 token을 사용하며 이 원문 설계가 민감 값 최소화까지 보장한다는 결론은 불가하다. session slug의 절단·치환, candidate의 짧은 session prefix와 pattern hash 충돌, 중복 이벤트·동시 갱신·두 파일 쓰기 중간 실패도 미검증이다.\n\n현재 _write_candidate 552–584에는 source priority 역전 덮어쓰기 방어가 있다. 동급은 refresh하며 JSON과 Markdown은 별도 쓰기다. 이 테스트에는 priority 소비·activation CLI·운영자 identity 검증이 없다. `handlers/post_tool/skill_candidate_extractor.py` 35–50은 env=1일 때만 호출하고 오류를 rc 0으로 삼킨다. pending_review·requires_operator·confirm_token은 출력 선언이며 사람이 검수하고 스킬이 안전하게 승격됐다는 증거가 아니다. Zeus log→scenario→코드 생성으로 흡수하려면 반복량과 실제 개선 효과를 구분하고 실패 알림·근거 보존·원장 transaction·승인 소비를 연결해야 한다.",
+    "finding_sections": [
+      "i23",
+      "trace",
+      "zeus",
+      "unknowns"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/tests/conftest.py",
+      "scripts/tests/run_units.py",
+      "scripts/lib/paths.py",
+      "scripts/lib/skill_candidate_detector.py",
+      "scripts/handlers/post_tool/skill_candidate_extractor.py",
+      "scripts/lib/insight_index.py"
+    ],
+    "declared_test_functions": [],
+    "declared_test_methods": [
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_below_threshold_no_candidate",
+        "line": 54,
+        "end_line": 58
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_at_threshold_creates_candidate",
+        "line": 60,
+        "end_line": 81
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_edit_tool_mutates_flag",
+        "line": 83,
+        "end_line": 90
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_secret_blocks_candidate_no_body_persisted",
+        "line": 92,
+        "end_line": 107
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_secret_allowlist_passes",
+        "line": 109,
+        "end_line": 114
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_empty_or_invalid_payload_silent",
+        "line": 116,
+        "end_line": 123
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_write_failure_silent",
+        "line": 125,
+        "end_line": 129
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_invariant_no_settings_mutation",
+        "line": 132,
+        "end_line": 142
+      },
+      {
+        "class": "TestSkillCandidateDetector",
+        "name": "test_session_isolation",
+        "line": 144,
+        "end_line": 155
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_pattern_key_bash_first_two_tokens",
+        "line": 181,
+        "end_line": 189
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_pattern_key_file_tools_extension",
+        "line": 191,
+        "end_line": 198
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_pattern_key_grep_glob_truncated",
+        "line": 200,
+        "end_line": 203
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_pattern_key_webfetch_netloc",
+        "line": 205,
+        "end_line": 209
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_pattern_key_websearch_first_two_words",
+        "line": 211,
+        "end_line": 215
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_pattern_key_skill_and_agent",
+        "line": 217,
+        "end_line": 223
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_pattern_key_no_input_fallback",
+        "line": 225,
+        "end_line": 227
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_distinct_patterns_count_independently",
+        "line": 229,
+        "end_line": 240
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_same_pattern_hits_threshold",
+        "line": 242,
+        "end_line": 251
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_cid_includes_pattern_slug",
+        "line": 253,
+        "end_line": 259
+      },
+      {
+        "class": "TestPhase2PatternKey",
+        "name": "test_legacy_flat_tracker_resets",
+        "line": 261,
+        "end_line": 278
+      },
+      {
+        "class": "TestPhase2Constants",
+        "name": "test_default_threshold_is_10",
+        "line": 284,
+        "end_line": 285
+      },
+      {
+        "class": "TestPhase2Constants",
+        "name": "test_pattern_max_len_is_40",
+        "line": 287,
+        "end_line": 288
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_structured_reflection_yields_candidate",
+        "line": 329,
+        "end_line": 335
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_manifest_provenance_under_metadata",
+        "line": 337,
+        "end_line": 350
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_activation_block_enable_skill",
+        "line": 352,
+        "end_line": 357
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_target_skill_hint_null_yaml_to_python_none",
+        "line": 359,
+        "end_line": 376
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_legacy_reflection_returns_none",
+        "line": 378,
+        "end_line": 391
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_missing_file_returns_none",
+        "line": 393,
+        "end_line": 396
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_malformed_frontmatter_returns_none",
+        "line": 398,
+        "end_line": 400
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_bad_fingerprint_length_returns_none",
+        "line": 402,
+        "end_line": 418
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_secret_scan_pass_compatible",
+        "line": 420,
+        "end_line": 424
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_trace_md_contains_axis_and_body",
+        "line": 426,
+        "end_line": 433
+      },
+      {
+        "class": "TestBuildCandidateFromReflection",
+        "name": "test_idempotent_cid_for_same_fingerprint",
+        "line": 435,
+        "end_line": 456
+      }
+    ],
+    "declared_test_method_count": 33,
+    "declared_test_function_count": 0,
+    "denominator_basis": "Static definitions; main lists and conditional checks described in review; not execution count.",
+    "test_kind": "synthetic_fixture_or_static_contract_or_temporary_git_as_detailed_in_review",
+    "tests_read_in_part": [],
+    "adoption_status": "not_approved_not_incorporated",
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false
+  }
+]

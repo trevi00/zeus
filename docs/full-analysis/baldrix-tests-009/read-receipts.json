@@ -1,0 +1,28 @@
+{
+  "primary_chunks": {
+    "1-4": "6017d9",
+    "5-8": "b15292",
+    "9-13": "1ab772",
+    "14-18": "23d485",
+    "19-22": "a6487b",
+    "23-26": "59e1f8",
+    "27-30": "d6a4ce",
+    "31-32": "3f4dea"
+  },
+  "supporting_chunks": [
+    "39d57a",
+    "a5cf43",
+    "503f4c",
+    "ea49a5",
+    "d458c5",
+    "5e220e"
+  ],
+  "scope_and_instructions": "53147c",
+  "inventory": "d203b9",
+  "prior_snapshot": "ba17a7",
+  "failed_read": {
+    "chunk": "ba17a7",
+    "reason": "Inert Python stdout cp949 UnicodeEncodeError before first primary body printed; no semantic credit. Retried via PowerShell Get-Content UTF8 in6017d9."
+  },
+  "source_execution": 0
+}

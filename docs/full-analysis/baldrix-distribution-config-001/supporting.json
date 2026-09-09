@@ -1,0 +1,160 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/brain_snapshot.py",
+    "git_blob": "2cacb4c2296694d00954ccf18105a881f7414cdf",
+    "bytes": 2621,
+    "pinned_sha256": "f7f429bf4001c5dd527dd12a1f5181c8e09366f538d22f7a021da4c70c9914c2",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 68,
+        "raw_range_sha256": "f7f429bf4001c5dd527dd12a1f5181c8e09366f538d22f7a021da4c70c9914c2"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/brain_store.py",
+    "git_blob": "3191221cbd7c31284d3b9bbcc25962c4f90e76c7",
+    "bytes": 15224,
+    "pinned_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 332,
+        "raw_range_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/tech_stack.py",
+    "git_blob": "186bea7bd23a7d5270ad67051c174082e8c0d028",
+    "bytes": 6309,
+    "pinned_sha256": "c990d4309891ad56d41d3c4b44b3eca0909a0d38a38dd63737e40d7b4a9d3c7f",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 195,
+        "raw_range_sha256": "c990d4309891ad56d41d3c4b44b3eca0909a0d38a38dd63737e40d7b4a9d3c7f"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/paths.py",
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "bytes": 13699,
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 257,
+        "raw_range_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_brain_store.py",
+    "git_blob": "aac7d2277fd9ea1db7cc800868bb08e5c7ea381c",
+    "bytes": 11875,
+    "pinned_sha256": "c7ba74b5c0968365b00ea2d2c9689304e47e06b8540978ba012a90e6259918f3",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 268,
+        "raw_range_sha256": "c7ba74b5c0968365b00ea2d2c9689304e47e06b8540978ba012a90e6259918f3"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "requirements.txt",
+    "git_blob": "9df42774adedd418caf38869717231d561004d7c",
+    "bytes": 425,
+    "pinned_sha256": "ee18f8c25e405c8af0f057797b9ce6937c746b8667c5c83e4627a5e6a8fdc30a",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 10,
+        "raw_range_sha256": "ee18f8c25e405c8af0f057797b9ce6937c746b8667c5c83e4627a5e6a8fdc30a"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/__init__.py",
+    "git_blob": "85106bc22dd3418fc204115db95ad92489ab592f",
+    "bytes": 74,
+    "pinned_sha256": "e9008df98b2d2237ac96f4d3277b45736d988aca041fa89a30ee2bc5b4e0ddca",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 1,
+        "raw_range_sha256": "e9008df98b2d2237ac96f4d3277b45736d988aca041fa89a30ee2bc5b4e0ddca"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/__init__.py",
+    "git_blob": "55802573069dfafda4332693cdb316c422f132e1",
+    "bytes": 77,
+    "pinned_sha256": "abcb0787099abfbb2b703a4124bac0a7faacfc08f0909ed5aaa239c74383443e",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 1,
+        "raw_range_sha256": "abcb0787099abfbb2b703a4124bac0a7faacfc08f0909ed5aaa239c74383443e"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "bytes": 26592,
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 105,
+        "raw_range_sha256": "5aaed5086779c9ecdb8e269739cb2f1df30ba363563b9619969e81426ce365f4"
+      },
+      {
+        "start_line": 160,
+        "end_line": 380,
+        "raw_range_sha256": "92e4113fe38f6fa31e9b389e120ed11cf43f68666b9aef6212a054cfbe4a776e"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-distribution-config-001/resolution.md"
+  }
+]

@@ -1,0 +1,42 @@
+{
+  "partitions": [
+    "baldrix:.github/workflows:001",
+    "baldrix:.claude-plugin:001",
+    "baldrix:.claude:001"
+  ],
+  "paths": [
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": ".github/workflows/ci.yml",
+      "bytes": 2778,
+      "git_blob": "0328c959342c2411d3b04bc95e0bb7c8f4ac7dd1",
+      "pinned_sha256": "b6fa9579c707a4858812b5cc83f3e69a176e4cab4ead6aa5aca2256a32fd13dd"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": ".claude-plugin/marketplace.json",
+      "bytes": 301,
+      "git_blob": "683d43db19da6a45b28aba45f08d91ed221e4210",
+      "pinned_sha256": "d558e782335160aab383104a2872733d94fd3627b30f7eec184690e1076ab799"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": ".claude-plugin/plugin.json",
+      "bytes": 194,
+      "git_blob": "065f9be1605fac3fe69c562252547794ed811b20",
+      "pinned_sha256": "c8a574febcdd2229aa2b22153a7a1e14b63e618dd9a00e881efe23df758de383"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": ".claude/tech-stack.yaml",
+      "bytes": 639,
+      "git_blob": "85545e558c9816db656a10121cccd5665476fc5d",
+      "pinned_sha256": "41db2691e4c5f9a253a5cbfeef3b37e143c4225ca0f1f7b70abe31364ef88d13"
+    }
+  ],
+  "scope_sha256": "12b0208a4587a787ced1cc10ec4e57df18779a844b4eeaecb8035a1eefe7f257"
+}

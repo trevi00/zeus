@@ -1,0 +1,29 @@
+{
+  "primary_body_remaining": [],
+  "supporting_trace_remaining": [
+    "Unlisted intervals and complete transitive consumer closure are not read here.",
+    "Unlisted resident contract parser/atomic writer/alert transport and role-cycle last-row binding.",
+    "Full router runtime budget/phase/cross-skill dispatch and independent scenario labelling.",
+    "Reverse extraction/validation pipeline closure; Rust compiler/cargo and real acceptance.",
+    "Scheduler real jobs, GC, install/service triggers, concurrent ownership and crash recovery.",
+    "Seam helper/parser/transform closure and real fleet transport; actual approval consumers.",
+    "Full graduation scans, replay/event hash semantics, detector reflection parser and activation.",
+    "Unlisted settings, credentials and live state were not opened; no permission claim verified.",
+    "Actual Claude independent review, licenses, Windows/Linux/WSL execution.",
+    "Actual service/device/replay, alpha/live deployment and human acceptance.",
+    "Zeus PG/source implementation adoption and equivalence."
+  ],
+  "upstream_executions": 0,
+  "upstream_imports": 0,
+  "probes": 0,
+  "network_calls": 0,
+  "installs": 0,
+  "model_calls": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adopted": false,
+  "review_ref": "docs/full-analysis/baldrix-tests-010/review.md#unknowns"
+}

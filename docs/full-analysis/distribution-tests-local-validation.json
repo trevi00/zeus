@@ -1,0 +1,58 @@
+{
+  "kind": "root_local_validation_observations",
+  "source_head_before_changes": "1b910a1e929fc45b9e259930f0316f516dac5e18",
+  "runtime_source_tests_workflows_changed": false,
+  "metadata_identity_check_initial": {
+    "passed": false,
+    "terminal_chunk": "39e0b0",
+    "exception": "UnicodeDecodeError: cp949 cannot decode UTF-8 stdout",
+    "executed_program": "docs/full-analysis/distribution-tests-verifier-initial.executed.txt",
+    "correction": "Explicit encoding=utf-8 for the original stdout receipt; no upstream re-execution"
+  },
+  "metadata_identity_check_after_correction": {
+    "passed": true,
+    "terminal_chunk": "2438f3",
+    "primary": 83,
+    "supporting": 131,
+    "recursive_artifacts": 63,
+    "adoption_or_semantic_certification": false
+  },
+  "ruff": {
+    "command": "uv run ruff check .",
+    "passed": true
+  },
+  "pytest_started_before_encoding_correction": {
+    "command": "uv run pytest",
+    "session": 99661,
+    "terminal_chunk": "b615a8",
+    "exit_code": 0,
+    "collected": 728,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 170.09
+  },
+  "prior_public_ci": {
+    "run": 34339738555,
+    "head": "1b910a1e929fc45b9e259930f0316f516dac5e18",
+    "conclusion": "success",
+    "jobs_passed": 5,
+    "raw_result": "docs/zeus/ci/34339738555.json"
+  },
+  "whole_source_acceptance_or_adoption": false,
+  "public_staged_review": {
+    "files_checked": 74,
+    "selected_secret_signature_matches": 0,
+    "scan_is_not_universal_secret_proof": true,
+    "staged_bytes_equal_worktree": true
+  },
+  "pytest_after_encoding_correction": {
+    "command": "uv run pytest",
+    "session": 46356,
+    "terminal_chunk": "0b3119",
+    "exit_code": 0,
+    "collected": 728,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 175.3
+  }
+}

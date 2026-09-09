@@ -1,0 +1,1018 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_frontmatter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8222,
+    "git_blob": "e3746dd3256577bc62f52252b8523993322ea7b4",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ad8049b9e6b261d8ae9f291c5ad3e4255560378d92b6da682c703292ba5026c2",
+    "observed_sha256": null,
+    "manifest_sha256": "ad8049b9e6b261d8ae9f291c5ad3e4255560378d92b6da682c703292ba5026c2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        142,
+        217
+      ]
+    ],
+    "total_lines": 217,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s01",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/skill_graph.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 15562,
+    "git_blob": "c3992c7494add128837fe348510d0a00f363695d",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "692e524f0262d29200de3eab960ec3b20f7e66e769dadb97d223c15e414b95a9",
+    "observed_sha256": null,
+    "manifest_sha256": "692e524f0262d29200de3eab960ec3b20f7e66e769dadb97d223c15e414b95a9",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        114,
+        223
+      ]
+    ],
+    "total_lines": 434,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s02",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_lint.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4682,
+    "git_blob": "b53e5acc35a6c56a59c6ba8d9451ad01660c05b9",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "cb48134d93991e70eac5c4c50d056dff9a040aec3bdd6d2389438a8e4b974781",
+    "observed_sha256": null,
+    "manifest_sha256": "cb48134d93991e70eac5c4c50d056dff9a040aec3bdd6d2389438a8e4b974781",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        41,
+        127
+      ]
+    ],
+    "total_lines": 127,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s03",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_lint_report.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 22117,
+    "git_blob": "fb45efaa25f87d511acc059f06455375e70e423f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c076b16d3d212219ae72e477dd1fb4f16a738eea8954157752be2b2d31c3afd2",
+    "observed_sha256": null,
+    "manifest_sha256": "c076b16d3d212219ae72e477dd1fb4f16a738eea8954157752be2b2d31c3afd2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        295,
+        422
+      ]
+    ],
+    "total_lines": 538,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s04",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/skill_lint_report.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 1167,
+    "git_blob": "89c1cc395a56264f396f93eaf70034c3c1439d51",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8da7bb2fa50d860c473f9ac12b0be04778c9d0c491965ae4e68e0b4c2cfd7710",
+    "observed_sha256": null,
+    "manifest_sha256": "8da7bb2fa50d860c473f9ac12b0be04778c9d0c491965ae4e68e0b4c2cfd7710",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        29
+      ]
+    ],
+    "total_lines": 29,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s05",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_match_render.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6029,
+    "git_blob": "f12750478c90193a9c583365a390cfd5e5f81c5b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2123360eea20f84d97e4bb6f0c62aef1c7baeeed4d3d9be242b98e0a225895fc",
+    "observed_sha256": null,
+    "manifest_sha256": "2123360eea20f84d97e4bb6f0c62aef1c7baeeed4d3d9be242b98e0a225895fc",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        72,
+        138
+      ]
+    ],
+    "total_lines": 138,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s06",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 26592,
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "observed_sha256": null,
+    "manifest_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        141,
+        254
+      ],
+      [
+        400,
+        425
+      ],
+      [
+        542,
+        560
+      ]
+    ],
+    "total_lines": 618,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s07",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_quality_axes.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8848,
+    "git_blob": "945ff93cf6d0942a8413ac430b0f8bbcc2ebf166",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+    "observed_sha256": null,
+    "manifest_sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        85,
+        101
+      ],
+      [
+        120,
+        211
+      ]
+    ],
+    "total_lines": 269,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s08",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_score.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12596,
+    "git_blob": "d908ed7de5a2d3179486a53104536c5d5aed31f3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "54b750cd2a2409999145ff484dc0ac33266720661a0f1cb2974ab985c03c7564",
+    "observed_sha256": null,
+    "manifest_sha256": "54b750cd2a2409999145ff484dc0ac33266720661a0f1cb2974ab985c03c7564",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        30,
+        68
+      ],
+      [
+        192,
+        270
+      ]
+    ],
+    "total_lines": 270,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s09",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_source_liveness.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7194,
+    "git_blob": "a507b484f1717b89e869cb3826db38c3d1183a66",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8d176d5b53232c1d5b021dc92e9531740dee8d1d6beecae28ef999fb6937a8e9",
+    "observed_sha256": null,
+    "manifest_sha256": "8d176d5b53232c1d5b021dc92e9531740dee8d1d6beecae28ef999fb6937a8e9",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        79,
+        137
+      ]
+    ],
+    "total_lines": 196,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s10",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_staging_isolation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7270,
+    "git_blob": "b36468e4afd03284501a4ee23db758fa4d0fc4eb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4bc41f4d26fa52f1cdc5239f633ce18ad1205c08c02088dc1f1d9949b41663a2",
+    "observed_sha256": null,
+    "manifest_sha256": "4bc41f4d26fa52f1cdc5239f633ce18ad1205c08c02088dc1f1d9949b41663a2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        89,
+        187
+      ]
+    ],
+    "total_lines": 217,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s11",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_structure_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3901,
+    "git_blob": "5464369f0f6ca69d2f00814f0c3d86bfcf724a0e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "46aad44fb9f9548aaff2350098325d946e773027f24d4e1a86083591cdd059e1",
+    "observed_sha256": null,
+    "manifest_sha256": "46aad44fb9f9548aaff2350098325d946e773027f24d4e1a86083591cdd059e1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        45,
+        97
+      ]
+    ],
+    "total_lines": 97,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s12",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_structure_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3363,
+    "git_blob": "40fada52ed47c0dd5a06d6e320e71a94df66b069",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "656506540771131a790cfc5f26a1bd4440b1933806b6fa97b96ddfe139b69a59",
+    "observed_sha256": null,
+    "manifest_sha256": "656506540771131a790cfc5f26a1bd4440b1933806b6fa97b96ddfe139b69a59",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        37,
+        85
+      ]
+    ],
+    "total_lines": 85,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s13",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_surgery.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 16687,
+    "git_blob": "7473a4b547852b6b1006b809991d412efc4992bb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a38e48fb39bb69d80ee6e1fe898878ca72382da65aeab43bbaf99e90e85320f2",
+    "observed_sha256": null,
+    "manifest_sha256": "a38e48fb39bb69d80ee6e1fe898878ca72382da65aeab43bbaf99e90e85320f2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        177,
+        277
+      ],
+      [
+        303,
+        329
+      ]
+    ],
+    "total_lines": 329,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s14",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/skill_telemetry_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9392,
+    "git_blob": "555e5734a6b2c8ea0e68d826dc0bd21f41720d3a",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1efa95bba3d93b1b6eee840432d50d3bd5176a6a06f465acaebc2c66582b9925",
+    "observed_sha256": null,
+    "manifest_sha256": "1efa95bba3d93b1b6eee840432d50d3bd5176a6a06f465acaebc2c66582b9925",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        86,
+        155
+      ]
+    ],
+    "total_lines": 230,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s15",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_token_budget.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8830,
+    "git_blob": "94ba77d82abad9b4ec841dc8a694875d8eeea0cb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "b2fdc976251444ed2207f1fea6f2896efd2f96d1816652864dd77d624f5e874f",
+    "observed_sha256": null,
+    "manifest_sha256": "b2fdc976251444ed2207f1fea6f2896efd2f96d1816652864dd77d624f5e874f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        66,
+        195
+      ]
+    ],
+    "total_lines": 195,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s16",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/skill_trigger_eval.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9101,
+    "git_blob": "4dbdc05008c98a9325e5647a4d3e3bd36fecac3f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ce41ecf20d84e558ec44fa282a976fc5f9ba49fa4160f4703a1a56445a3eae19",
+    "observed_sha256": null,
+    "manifest_sha256": "ce41ecf20d84e558ec44fa282a976fc5f9ba49fa4160f4703a1a56445a3eae19",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        86,
+        171
+      ]
+    ],
+    "total_lines": 243,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s17",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/spec_bundle.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7413,
+    "git_blob": "e768ebcbfa5477024e566e209bbf2a2682b850fc",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c0de1d9fcf2e0b35365a2f727890d9c4762770d3fce67c91e904b87d343f804f",
+    "observed_sha256": null,
+    "manifest_sha256": "c0de1d9fcf2e0b35365a2f727890d9c4762770d3fce67c91e904b87d343f804f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        85,
+        173
+      ]
+    ],
+    "total_lines": 205,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s18",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/spec_facets.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12430,
+    "git_blob": "4ef5443d33802174d3885b97588f06a9b4c47c70",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "990fa962d094c08be063d126889816f4a2b65a96d5361a96d0f27177ad83805e",
+    "observed_sha256": null,
+    "manifest_sha256": "990fa962d094c08be063d126889816f4a2b65a96d5361a96d0f27177ad83805e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        79,
+        114
+      ]
+    ],
+    "total_lines": 282,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s19",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/spec_bundle_emit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8661,
+    "git_blob": "fc99b2c61f1d65325d33d296643b4e07890db0c4",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1ca194153c5e4440d0842ed1bb26e9acbe42cbe4d1363206446f65f66c6cd9d6",
+    "observed_sha256": null,
+    "manifest_sha256": "1ca194153c5e4440d0842ed1bb26e9acbe42cbe4d1363206446f65f66c6cd9d6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        84,
+        145
+      ]
+    ],
+    "total_lines": 189,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s20",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/spec_bundle.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4020,
+    "git_blob": "008c22effb4afea9523450cf1927003148b76b7e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "da2b906f7b840f662f50c49e5bfcb12da4f14fd3dcbef1cd58e3d27d53767b6f",
+    "observed_sha256": null,
+    "manifest_sha256": "da2b906f7b840f662f50c49e5bfcb12da4f14fd3dcbef1cd58e3d27d53767b6f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        31,
+        77
+      ]
+    ],
+    "total_lines": 107,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s21",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/spec_roundtrip.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5208,
+    "git_blob": "4bed9eee81b3091af5faad1dbccb8df211384f23",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "00dbe20673e8b06c4c8ad8308a44c066081ee427b57c05c3364bc614b88f651c",
+    "observed_sha256": null,
+    "manifest_sha256": "00dbe20673e8b06c4c8ad8308a44c066081ee427b57c05c3364bc614b88f651c",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        45,
+        105
+      ]
+    ],
+    "total_lines": 135,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s22",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/staging_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2966,
+    "git_blob": "de32bcaeeed01bee870dcfb00f17e742f20c474e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bf6921ecd370863495dea2f60dd5957e736396e9eafed0d2ff2f571dcccfbec9",
+    "observed_sha256": null,
+    "manifest_sha256": "bf6921ecd370863495dea2f60dd5957e736396e9eafed0d2ff2f571dcccfbec9",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        83
+      ]
+    ],
+    "total_lines": 83,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s23",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/state_leak_check.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7381,
+    "git_blob": "9c76e793cc8d486de519c4d9254631a2f39a205f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "df2e375fc614dd4edd94dcc4b0d108d6201a2a5516fb47f1a60be1d194835edc",
+    "observed_sha256": null,
+    "manifest_sha256": "df2e375fc614dd4edd94dcc4b0d108d6201a2a5516fb47f1a60be1d194835edc",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        83,
+        161
+      ]
+    ],
+    "total_lines": 163,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s24",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/paths.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 13699,
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "observed_sha256": null,
+    "manifest_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        12,
+        68
+      ],
+      [
+        100,
+        245
+      ]
+    ],
+    "total_lines": 257,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s25",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/stdout_utf8_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6075,
+    "git_blob": "6bd7f55f0a805abfd23dac84b85c6b69d7d0b13d",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "67be97acd29e8b0278578fc77bca09a0a37ad0bd35a878b3f68444337a550e1e",
+    "observed_sha256": null,
+    "manifest_sha256": "67be97acd29e8b0278578fc77bca09a0a37ad0bd35a878b3f68444337a550e1e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        40,
+        143
+      ]
+    ],
+    "total_lines": 143,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s26",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/stop_phrases.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4062,
+    "git_blob": "ecdd49c2b694f5b303ee3d9c44ce0c024ea290f0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9a3ac376ef448994f3d316cbe1e2205c75cb4c4314c6f0438311b20b52d7ba86",
+    "observed_sha256": null,
+    "manifest_sha256": "9a3ac376ef448994f3d316cbe1e2205c75cb4c4314c6f0438311b20b52d7ba86",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        82,
+        115
+      ]
+    ],
+    "total_lines": 115,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s27",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/strike_dispatcher.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5723,
+    "git_blob": "90185248b5d150745654cb695b72894552516b1b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6985e38d69dc3ff335f6ae9efb12404dc37097fa443b81e60b3abcec03bde607",
+    "observed_sha256": null,
+    "manifest_sha256": "6985e38d69dc3ff335f6ae9efb12404dc37097fa443b81e60b3abcec03bde607",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        34,
+        124
+      ]
+    ],
+    "total_lines": 124,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s28",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/reviewer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 30305,
+    "git_blob": "2b0cc13fe7fb5d8418b8a16cb187d6b1b1ab62f7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "observed_sha256": null,
+    "manifest_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        565,
+        588
+      ],
+      [
+        615,
+        625
+      ]
+    ],
+    "total_lines": 712,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s29",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/engine/orchestrator.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 23018,
+    "git_blob": "d66ffda7b3fb736b61006dbd534af105bbccab3f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "45ebe36ba1e9fd919f7592967b4700a412122fe5625976a305f8707d5c00c5c6",
+    "observed_sha256": null,
+    "manifest_sha256": "45ebe36ba1e9fd919f7592967b4700a412122fe5625976a305f8707d5c00c5c6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        215,
+        249
+      ]
+    ],
+    "total_lines": 655,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s30",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/session/init.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 33887,
+    "git_blob": "7f78a659b1cf6ab405a1e004a91053d6174dafa9",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "observed_sha256": null,
+    "manifest_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        147,
+        192
+      ]
+    ],
+    "total_lines": 843,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s31",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4480,
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "observed_sha256": null,
+    "manifest_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        54,
+        85
+      ]
+    ],
+    "total_lines": 123,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s32",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/run_units.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 17340,
+    "git_blob": "7c61b756e5ac9127ed57bddf136582fc67629a16",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+    "observed_sha256": null,
+    "manifest_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        48,
+        100
+      ],
+      [
+        130,
+        170
+      ],
+      [
+        314,
+        387
+      ]
+    ],
+    "total_lines": 407,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s33",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/quota_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7246,
+    "git_blob": "8480e91b8e5e15618605d270840dee7982ffb2a5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "observed_sha256": null,
+    "manifest_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        41,
+        158
+      ]
+    ],
+    "total_lines": 158,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s34",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/run_all.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 13346,
+    "git_blob": "5847db0d9d93272a17411be61b016449dd19de5d",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a1d1a5e37a22758d1579ac439cad844c113208daf44ca73ca6998fc3f3dce9ee",
+    "observed_sha256": null,
+    "manifest_sha256": "a1d1a5e37a22758d1579ac439cad844c113208daf44ca73ca6998fc3f3dce9ee",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        227,
+        252
+      ]
+    ],
+    "total_lines": 304,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s35",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-tests-011/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  }
+]

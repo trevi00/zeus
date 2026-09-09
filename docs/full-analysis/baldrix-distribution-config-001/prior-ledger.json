@@ -1,0 +1,50 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": ".github/workflows/ci.yml",
+    "git_blob": "0328c959342c2411d3b04bc95e0bb7c8f4ac7dd1",
+    "mode": "100644",
+    "bytes": 2778,
+    "pinned_sha256": "b6fa9579c707a4858812b5cc83f3e69a176e4cab4ead6aa5aca2256a32fd13dd",
+    "disposition": "unreviewed",
+    "review_records": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": ".claude-plugin/marketplace.json",
+    "git_blob": "683d43db19da6a45b28aba45f08d91ed221e4210",
+    "mode": "100644",
+    "bytes": 301,
+    "pinned_sha256": "d558e782335160aab383104a2872733d94fd3627b30f7eec184690e1076ab799",
+    "disposition": "unreviewed",
+    "review_records": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": ".claude-plugin/plugin.json",
+    "git_blob": "065f9be1605fac3fe69c562252547794ed811b20",
+    "mode": "100644",
+    "bytes": 194,
+    "pinned_sha256": "c8a574febcdd2229aa2b22153a7a1e14b63e618dd9a00e881efe23df758de383",
+    "disposition": "unreviewed",
+    "review_records": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": ".claude/tech-stack.yaml",
+    "git_blob": "85545e558c9816db656a10121cccd5665476fc5d",
+    "mode": "100644",
+    "bytes": 639,
+    "pinned_sha256": "41db2691e4c5f9a253a5cbfeef3b37e143c4225ca0f1f7b70abe31364ef88d13",
+    "disposition": "unreviewed",
+    "review_records": [],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

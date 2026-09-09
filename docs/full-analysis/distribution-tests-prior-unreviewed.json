@@ -1,0 +1,504 @@
+{
+  "prior_ledger_sha256": "915f3a4440a9b0d28ff21742f38cb992849e2224d0366539578b6aa215c4ffcf",
+  "new_primary": 83,
+  "records": [
+    {
+      "source": "baldrix",
+      "path": ".github/workflows/ci.yml",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "b6fa9579c707a4858812b5cc83f3e69a176e4cab4ead6aa5aca2256a32fd13dd"
+    },
+    {
+      "source": "baldrix",
+      "path": ".claude-plugin/marketplace.json",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "d558e782335160aab383104a2872733d94fd3627b30f7eec184690e1076ab799"
+    },
+    {
+      "source": "baldrix",
+      "path": ".claude-plugin/plugin.json",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "c8a574febcdd2229aa2b22153a7a1e14b63e618dd9a00e881efe23df758de383"
+    },
+    {
+      "source": "baldrix",
+      "path": ".claude/tech-stack.yaml",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "41db2691e4c5f9a253a5cbfeef3b37e143c4225ca0f1f7b70abe31364ef88d13"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_phase_graph_builder.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "67e5fa281f7f1ea628bb6f1e196382e96d2fd0b96229981f11c5771b964aa794"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_phase_graph_query.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "e4bb05ca62e45df8fab9ccf03b68086e9c99ad62f956331d5a58b9b44c01b747"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_phase_tree.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "1d6133c78ad39a55d9b7337e0b9e5ee425a111896c6f492ad6e35bf7d0615975"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_pipeline_gate_runner.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "32d689f612b92c900bf5f58127d97456e5ec56e6c0c342a5060fb9baf106d7dd"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_pipeline_stage_picker.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "21292b90540d2ffc596d8f6ec5d522521f3fcf5321003b1c69a89ff88bc785c4"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_pipeline_status.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "3b9c4369f7fcb876433e2b8f8bff41f156546a5c5db8a4de7055bfd1781694db"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_pipeline_yaml.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "ecde4b30f2844917fe23fdc2b56d765a784068f0fb1db48a4e45f0e63e9c2ff9"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_pr_merge_check_guard.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "938003127031c96e604559be87f2cfc463513124a2b6e2aefdc7d1acdcea9ba5"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_prd.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "e7ec2f4e9066aa2c0666c685baa194f8176132ecc919505ac3697b6ea26b1d63"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_private_content_leak.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "f09a1806927d3e6f7e9f2400078873619d1db31fbe6a91c0ef159339fc82c881"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_producer_consumer_coherence.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "ac44c7337477f9f387336d9fdfd4c211a3b81bc4c700bc7328f1c4fe9c651eeb"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_project_analyze.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "261ca170eb8c3680356e81e7acb940ee9661d570ed38a70b0d89aefb1856a248"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_project_paths.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "6f02d8e8ae189e4264154882f484107c932bbf4376d44a31266d0745ba274a02"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_prompt_hook_failopen.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "f6b75cc29f8980e8c27d82c47c24ff234f78d90dcbac12c13e4b3516f9e1f11f"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_prompt_origin.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "1bfc2d1d7cf88b4a4df1d9efc9bab6df3b9ecacfd5eed978fb1b9d2135b70b33"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_providers_ollama.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "25d5b99686447de6b70d7df5ae86c7593f161be6121da0d4a97632a8e5aa879d"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_psmux.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "af79e92b3b22b3bc94afe49f45b03763389959cac702f7c09282c289f323e5f3"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_pytest_stdin_shim.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "8fd0e2b7ba8ee168fddd34a55e9cb6fda9723c68bcb28fd7584dd4005eab23e7"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_q_activation.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "af220491484100ec5a134ca5ede966ca29dfcb2ba055364e1afba8951a80633d"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_quota_tracker.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "2d420db3fa023ef0216fa251b821942707f5dadbeb1885cb41fd49db69011589"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_ratio_tracker.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "75ea9b943245d9e54d3395f628a7e8a9e1cc2abd0716e4de9cfd755e2551241a"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_read_paths_are_pure.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "0b7e04bc46d3c3a775448545e2ce8333216df177f355dca2eed0269c5ddedd81"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_reflection_recall.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "69c8983bc5b5d01557fdfa29a632fca054faa3979ad70309482d58e955bf266f"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_reflexion_integration.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "b76b5ebc76a4b6db53402761056997be61bc8bac78ef8a81304df600bf40b62b"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_reflexion_loop.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "284a9d5b232b53bf43da22b732386172131c97ac890e0cf43ec37527eb2a13ad"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_register_task.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "36ec449e80bd9db2fa044aed7530c6136a85b15844ae7b509910e12fc91e1012"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_rejection_memory.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "44e949e46c6163bf43089ef49f6a7e4d55a4aeab939610527b3472e63caf9596"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_repeat_error_tracker.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "62850a6fb907f0fcfb083c926f4edd8bb3cf5a1e50b192dc648c7a18b98d15bc"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_repo_health.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "33a0887bb7f8da34775962a0176bca648845bf7c6bbeea268269676b5af994bd"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_repro_probe.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "0e1d3038d36926acd276a25689d50549d3b8693d3cdc55ee2e8ce876b5873358"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_research_extractor.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "145b1ddc2c08744322490fc0193002aff84c5cfad319b3134f2e34d2b9fb9d8a"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_research_provenance.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "8733bfdedfc40a5fc3086ea3b51186c177c9290dc86789ab72eedfaacd6048c9"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_resident.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "84b47af58898e19085d3fd8b31afe9b488fdcea869e1c90159e15d80ea31d23b"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_resident_compaction.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "986de8183b2d35e54dacb0ac2bea5453115ade9a7251a4781b0747642cde49cc"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_resident_headless_argv.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "46eba0b6d1a84ac9f8b1be3ae372ffa7d747b19889919278bbce0de0159b9eba"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_reverse_engineer.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "7561ec6d66a03d005f0ba1acbcc29b0f8a5b97ed964f5e368ea089044160dbf4"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_reverse_prd_checkpoint.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "8ad2f2909b9f7020d2d37c705018d621774d55e06f9a94528ecc9d43d4ef1568"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_review_reminder.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "482c9f25deb7a6d73d7fb3922a4836b852b85a8a46b3ac52aaf9743af009cf3a"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_reviewer_spec_verification.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "61aacfcc2972500993830719f5b28b02d4c58a33815722b1681333b9b8cfd7e7"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_rewind.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "2ba877004c91e1eb4a91ca3432205b704db456753dcdb064f20506866312b3fc"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_roles.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "7abf13dcfa66ba2ac81cc9a3278d9853bb41c461191f4726c571f92b85c843b6"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_router_eval.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "1f45c796bc3c684a00c1e3397d205407e90f55fa2e3b4d1787b21d0a800c2c54"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_rust_scaffolder.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "c3d32d70b3055255d10467e0ab6fa72a181555bf017eb36fc95bb4dcf3542074"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_scheduler_driver.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "6f453edf4c5a09d25f6f2fb204151b9cd6d83a9eb9e763c3aecfeb5b7fe23bb4"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_seam_gate.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "66205969ba590c133ecf9fa4c96278dcc6fb6b703567f7fc6f60990ad5faf8a5"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_seams.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "6eb584ec1bb1cf9e494d18d8456b6a3ea47c415c4d3e32af4649394a365c5848"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_self_model_drift.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "a100e5f6bba0148c3e8a5c2c158324339e4f86cf973a373beabb329e31b76601"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_selfmod_clean_gate.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "0b1530a449ac2c4609ef61936f5c927b8bc5e7f15328f3da64e4e80d5919e2bb"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_semantic.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "d89b25e4503b02a5e75edb06b114f87643bf13c652cc51027d1c8a550c03ff7c"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_sensor_anomaly_selfcheck.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "6288c9db29eb03ce26b4df3da43249f4edee71d890300c9ce21e88bb8cbf30c5"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_session_init.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "8c4bef42957be43a003fffafa83e827c94dd1b3bf662a9614d597e7925575960"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_settings_guard.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "f8ab5b50cf198c0b4a700e2036ade32364edc73d9957ece5763f804cd8f3f1b0"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_similarity.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "61590dbab5e784045dcbd3ba0ee312b9a0ef53611d4c59bc5f3872d440e8b564"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skeleton.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "29c059de6a809a39b917efbce662a67cf2eb14521886d09d047e626375bd31d5"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_candidate_detector.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "6d35f62ce2a4991c6303d4ebb9c38ed0dc18a7693ba8ef285494560599e52d43"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_frontmatter.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "95caa264f0e12d26c35c23044929a69791dedd4af1502995f24775f6b093b897"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_graph.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "28dd2b9d8c65037d7ea1a33198d9f8eea9e8a72955c57fbc619904df20f74fbb"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_lint.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "40da5680d207d6072e302912bb378543e97eada9fc5543447bbf27840840b7e0"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_match_render.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "da06e2f7a0d5c6487283537eada26d4888e9017adf5ee2659bacd742917eef4a"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_match_scan_root.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "79ba8349ef6820bae29a33cc5422f1ddfa150a3dd2de9957e7eab7dba12acb29"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_quality_axes.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "8edee0db90d70c40bbffdb0ab127d0f6618a5ae6fb65788835128dd7020f4b6e"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_score.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "e48bc6a4c74a759df42dd34a3c32a47f239e25ce05557eecb4ba0ef9b0f8132b"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_source_liveness.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "b3eff546e7e6921043a792f28fff7ff82370c3696feb5495a1365fb3444b6f23"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_staging_isolation.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "ae7f574d9a27eb2c3740ed26d41b28b98604206fec2579a6dbbdaab39e4beab2"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_structure_depth.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "c74aa69c9c65561c3f26838b8c0f0f4742ad39fc1a225e75efe9c293a2e18a52"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_surgery.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "5174596d2bc892a414577fc85956e6b2213e7e7dccab9d74b633a237a6aed7e2"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_telemetry_audit.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "62a6b23c4e92b637b372b44691ec7d1f4f66b643760a49c59ac4b9868b7c9287"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_token_budget.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "10761f9f02772a74c80866934897f3e77c4971baf603135569790d8f40692674"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_skill_trigger_eval.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "66db9ef2f433ea7d9fcb987fe7523fef73c2b62c2bdc8154733d15369f610db0"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_bundle.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "cec424b7c2327456738f76b47d6cc12e1adcb0206be3754e5b4a771598571345"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_bundle_emit.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "1598c443c22d86a4c3148369e1b085debb6cd3072e55019648051cf43cda2c44"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_facets.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "8ff34a4a92104632ae323fea219cfb259a7de73ca73eccf68092f7316c52a4cc"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_spec_roundtrip.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "9593c629ee77d976f9ef7acace460677a23880700eb57f873204d56028ef2b72"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_staging_guard.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "a86fff8116e0b11270bab93016ae1e662cf0321299b00953470b5c86ad5cc202"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_state_leak_check.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "9724262ee7c6facbddded58d6ed8e5221808df458fd41cf153a328d0d7e4df19"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_state_root_env.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "69c936315c4ae87e376ab75eebb9b6866d6b134c810d09f66fd91ee142a94bc5"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_stdout_utf8_guard.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "e5a793e0cbe317bc2496d0223bfa15035fca610b34ac7efd199e5cea20c273d9"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_stop_phrases.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "cdb5f1e7a5c166f66a2d31e917d063ef03d561bfbeac1f906dc3e4448e77363d"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_strike_dispatcher.py",
+      "prior_disposition": "unreviewed",
+      "pinned_sha256": "66cf790dbac98a411cf1d345f1572aef55c9b6cb5ada61ae9cab9d37e990d5ac"
+    }
+  ]
+}

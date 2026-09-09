@@ -1,0 +1,15 @@
+{
+  "workdir": "C:/Users/rudtn/zeus",
+  "record_and_check_chunk": "ad7069",
+  "korean_readback_chunk": "bf48ca",
+  "commands": [
+    ".venv/Scripts/python.exe docs/full-analysis/baldrix-tests-009/record_review.py",
+    ".venv/Scripts/ruff.exe check docs/full-analysis/baldrix-tests-009/record_review.py docs/full-analysis/baldrix-tests-009/check_metadata.py",
+    ".venv/Scripts/python.exe docs/full-analysis/baldrix-tests-009/check_metadata.py"
+  ],
+  "ruff_stdout": "All checks passed!",
+  "metadata_result": "32 primary / 197463 bytes, 36 supporting; raw Git blob/bytes/SHA/ranges/refs/UTF8/LF and artifact index verified",
+  "source_execution": 0,
+  "upstream_tests_executed": 0,
+  "limits": "Own inert metadata checks only. Whole closure, actual Claude, license, OS, model, acceptance and adoption remain pending."
+}

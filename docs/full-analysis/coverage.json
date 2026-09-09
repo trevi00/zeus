@@ -2,9 +2,9 @@
   "tracked_paths": 2736,
   "source_counts": {
     "baldrix": {
-      "unreviewed": 881,
-      "semantically_reviewed": 523,
-      "body_reviewed_call_test_trace_pending": 244
+      "semantically_reviewed": 582,
+      "unreviewed": 798,
+      "body_reviewed_call_test_trace_pending": 268
     },
     "harness": {
       "unreviewed": 336,
