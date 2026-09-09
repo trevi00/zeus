@@ -104,7 +104,7 @@ Guardian의 전체 13개 의미 검토 및 pinned/observed 각 5스위트 실행
 
 harness lib의 정상 gate writer 추가 분석은 검토 도구의 자동 보안 검사로 중단됐다. 그 중단을 테스트 결과로 취급하지 않으며 기존 FA-005의 미검증 범위는 유지한다. `harness-lib/continuation-status.md`에 중단과 미실행 초안을 기록했다.
 
-분석 결과는 각 폴더의 `files.json`과 리뷰 문서에 연결한다. 현재 전체 의미 분석은 **미완료**다. 아직 처리하지 않은 파일과 하위 시스템을 후속 파티션으로 계속 분석한다. 사용자 요청에 따라 독립 `trevi00/zeus` 저장소를 만들고 [GitHub 이슈 24개](../tickets/README.md)를 로컬 PostgreSQL 원장과 연동했다. Common 품질 공동 검토는 [미검사 PASS #12](https://github.com/trevi00/zeus/issues/12)와 [평가·실제 주입 불일치 #13](https://github.com/trevi00/zeus/issues/13)에, 후속 게이트 공동 검토는 [판정 귀속·PARTIAL #14](https://github.com/trevi00/zeus/issues/14)와 [스펙·인수 생성 계약 #15](https://github.com/trevi00/zeus/issues/15)에 연결했다. CLI005 writeback 공동 검토는 [승인 대상·단일 소비·복구 #16](https://github.com/trevi00/zeus/issues/16)으로, engine001 실측은 [pane 세대 역행·원문 소실 #17](https://github.com/trevi00/zeus/issues/17)로 분리했다. Stop001 실측은 [첫 재시도 뒤 재개·회고 상태 유실 #18](https://github.com/trevi00/zeus/issues/18)에 연결했다. 완료 근거 공동 검토는 [실제 평가·대상·시도 신원 결속 #19](https://github.com/trevi00/zeus/issues/19)에 연결했다. 이는 운영 배포나 기능 도입 승인이 아니다. 이후 작업 루트는 `C:/Users/rudtn/zeus`이며 과거 증거의 원본 경로는 당시 사실로 유지한다.
+분석 결과는 각 폴더의 `files.json`과 리뷰 문서에 연결한다. 현재 전체 의미 분석은 **미완료**다. 아직 처리하지 않은 파일과 하위 시스템을 후속 파티션으로 계속 분석한다. 사용자 요청에 따라 독립 `trevi00/zeus` 저장소를 만들고 [GitHub 이슈 25개](../tickets/README.md)를 로컬 PostgreSQL 원장과 연동했다. Common 품질 공동 검토는 [미검사 PASS #12](https://github.com/trevi00/zeus/issues/12)와 [평가·실제 주입 불일치 #13](https://github.com/trevi00/zeus/issues/13)에, 후속 게이트 공동 검토는 [판정 귀속·PARTIAL #14](https://github.com/trevi00/zeus/issues/14)와 [스펙·인수 생성 계약 #15](https://github.com/trevi00/zeus/issues/15)에 연결했다. CLI005 writeback 공동 검토는 [승인 대상·단일 소비·복구 #16](https://github.com/trevi00/zeus/issues/16)으로, engine001 실측은 [pane 세대 역행·원문 소실 #17](https://github.com/trevi00/zeus/issues/17)로 분리했다. Stop001 실측은 [첫 재시도 뒤 재개·회고 상태 유실 #18](https://github.com/trevi00/zeus/issues/18)에 연결했다. 완료 근거 공동 검토는 [실제 평가·대상·시도 신원 결속 #19](https://github.com/trevi00/zeus/issues/19)에 연결했다. 이는 운영 배포나 기능 도입 승인이 아니다. 이후 작업 루트는 `C:/Users/rudtn/zeus`이며 과거 증거의 원본 경로는 당시 사실로 유지한다.
 
 모델 호출 공동 검토는 [호출 계약·실측 사용량·모델 자격 #20](https://github.com/trevi00/zeus/issues/20)에 연결했다. 로컬 PostgreSQL 원장과 GitHub 20개 항목의 본문·제목·revision marker 일치를 확인했다.
 
@@ -115,3 +115,5 @@ harness lib의 정상 gate writer 추가 분석은 검토 도구의 자동 보�
 증거 감지 공동 검토는 [검사 unknown·재실행 동일성·실행 권한 #23](https://github.com/trevi00/zeus/issues/23)에 연결했다. 근거는 `c99da02`에 고정했으며 로컬 PostgreSQL 원장과 GitHub 23개 항목의 본문·제목·marker 일치를 확인했다.
 
 구조·어휘 검증기 공동 검토는 [실제 검사 분모와 인수 권위 #24](https://github.com/trevi00/zeus/issues/24)에 연결했다. 근거는 `60593c6`에 고정했으며 로컬 PostgreSQL 원장과 GitHub 24개 항목의 본문·제목·marker 일치를 확인했다.
+
+계약 추출 공동 검토는 [누락·변환 충돌·판정 권위 #25](https://github.com/trevi00/zeus/issues/25)에 연결했다. 근거는 `9929b04`에 고정했다. 저장소는 사용자 요청으로 공개 전환했으며 서비스 운영 배포와는 별개다.
