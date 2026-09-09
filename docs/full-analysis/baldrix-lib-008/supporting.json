@@ -1,0 +1,719 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 26592,
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "observed_sha256": null,
+    "manifest_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        267,
+        308
+      ],
+      [
+        410,
+        445
+      ],
+      [
+        500,
+        522
+      ]
+    ],
+    "total_lines": 618,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s01",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/surgery.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 13519,
+    "git_blob": "aa64e8a06b804e9324eb92a4e11743106663a46f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "eb21b3e014ad94d70a327282b8f3432a42994b8110c6c87e0b725b7b7288d609",
+    "observed_sha256": null,
+    "manifest_sha256": "eb21b3e014ad94d70a327282b8f3432a42994b8110c6c87e0b725b7b7288d609",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        191,
+        249
+      ]
+    ],
+    "total_lines": 319,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s02",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/team_policy_check.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11543,
+    "git_blob": "e708e0f2b904620a3494774b18458aa189fa45d8",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "5fdb871ffd229a66837f11f0337e51984b5aff3c2f2eff9181dee78157504ff2",
+    "observed_sha256": null,
+    "manifest_sha256": "5fdb871ffd229a66837f11f0337e51984b5aff3c2f2eff9181dee78157504ff2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        147,
+        249
+      ]
+    ],
+    "total_lines": 294,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s03",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_step.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 35973,
+    "git_blob": "70350b38cbbed7496ab848637274c2ba1ee3b2fe",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c27719a5c25e971325d0ff281104ef655175f33fabe5030f60caa4bdcd233f23",
+    "observed_sha256": null,
+    "manifest_sha256": "c27719a5c25e971325d0ff281104ef655175f33fabe5030f60caa4bdcd233f23",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        337,
+        381
+      ]
+    ],
+    "total_lines": 631,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s04",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/greenfield_spec_emit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9247,
+    "git_blob": "139266d55cca9c860d1f0af36ddb623e16258e86",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ee74210453441e3cf5f8768753e1b902e10dc310e8bf78c1a5c670e4e7b188f0",
+    "observed_sha256": null,
+    "manifest_sha256": "ee74210453441e3cf5f8768753e1b902e10dc310e8bf78c1a5c670e4e7b188f0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        83,
+        119
+      ]
+    ],
+    "total_lines": 182,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s05",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/session/init.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 33887,
+    "git_blob": "7f78a659b1cf6ab405a1e004a91053d6174dafa9",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "observed_sha256": null,
+    "manifest_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        217,
+        237
+      ]
+    ],
+    "total_lines": 843,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s06",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/observe.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 29932,
+    "git_blob": "9d82cefa6e71e9d0cb7817f8a5079a2c5763aad2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "595d63a5208886b11658ec96ffd28036e9d0fc06cf7bd33d39a54eaef65ecd2f",
+    "observed_sha256": null,
+    "manifest_sha256": "595d63a5208886b11658ec96ffd28036e9d0fc06cf7bd33d39a54eaef65ecd2f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        74,
+        84
+      ],
+      [
+        155,
+        181
+      ]
+    ],
+    "total_lines": 745,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s07",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/calibration/threshold_proposer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9180,
+    "git_blob": "0bf021f2c1f81fb0ee8e1419533d24ffd4525d87",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "61a07fa5bf12eaece5aedf1aec0d6c098d534ae84a8e803c1a52668b6ccfadb2",
+    "observed_sha256": null,
+    "manifest_sha256": "61a07fa5bf12eaece5aedf1aec0d6c098d534ae84a8e803c1a52668b6ccfadb2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        49,
+        76
+      ],
+      [
+        154,
+        183
+      ]
+    ],
+    "total_lines": 194,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s08",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/calibration/threshold_registry.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8017,
+    "git_blob": "41a2771ab2ea093aadd0591bf4ee25e0a3ddb69b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "982e34649c97b80b8dad94cdc32645608acf28bb88a940ef62862d6a12a7ca34",
+    "observed_sha256": null,
+    "manifest_sha256": "982e34649c97b80b8dad94cdc32645608acf28bb88a940ef62862d6a12a7ca34",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        29,
+        44
+      ],
+      [
+        70,
+        109
+      ],
+      [
+        117,
+        149
+      ]
+    ],
+    "total_lines": 161,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s09",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_stub_faker_mutation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7551,
+    "git_blob": "abbf45ccd2a034357118a01ff8c71d1208f99265",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a51fc316d136179f91e09f810b2286aac8d293d79a6d04200a46e41853398f45",
+    "observed_sha256": null,
+    "manifest_sha256": "a51fc316d136179f91e09f810b2286aac8d293d79a6d04200a46e41853398f45",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        160
+      ]
+    ],
+    "total_lines": 170,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s10",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_team_policy.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 15649,
+    "git_blob": "e1f3e2ca35f63f57aa3f72ae31c92297ea16845f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "504cfb15287b73cf0fa0820148f1a8d6632b9c3186bd9f14c34c09033d255e2f",
+    "observed_sha256": null,
+    "manifest_sha256": "504cfb15287b73cf0fa0820148f1a8d6632b9c3186bd9f14c34c09033d255e2f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        292,
+        331
+      ]
+    ],
+    "total_lines": 386,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s11",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_team_runtime.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12416,
+    "git_blob": "799483789eec8301c9efee4eba43ea4c67f75108",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e4e440fc0d7d2cbb0669321a19a3e8d11e76c7ca7266cc35e45ea7b50b9b7067",
+    "observed_sha256": null,
+    "manifest_sha256": "e4e440fc0d7d2cbb0669321a19a3e8d11e76c7ca7266cc35e45ea7b50b9b7067",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        89,
+        146
+      ]
+    ],
+    "total_lines": 352,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s12",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/agent_invocation_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9542,
+    "git_blob": "50fa9cbbcaa592604e5b2cdf268b3a368c28ecbb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c71cfc61320e7d18e258fddc5406c848f4523e7970e1cd8d8f75586ab5783fac",
+    "observed_sha256": null,
+    "manifest_sha256": "c71cfc61320e7d18e258fddc5406c848f4523e7970e1cd8d8f75586ab5783fac",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        175,
+        218
+      ]
+    ],
+    "total_lines": 241,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s13",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/context_load.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12893,
+    "git_blob": "add9270463bed6b7db0731e23da7ec070e4fe257",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ec6f975319de72139a6d50c8ab9a756e98dc394dc3162da4a63aa6b5444e4088",
+    "observed_sha256": null,
+    "manifest_sha256": "ec6f975319de72139a6d50c8ab9a756e98dc394dc3162da4a63aa6b5444e4088",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        151,
+        169
+      ]
+    ],
+    "total_lines": 306,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s14",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/reviewer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 30305,
+    "git_blob": "2b0cc13fe7fb5d8418b8a16cb187d6b1b1ab62f7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "observed_sha256": null,
+    "manifest_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        568,
+        587
+      ]
+    ],
+    "total_lines": 712,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s15",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_staging_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4257,
+    "git_blob": "4fb56af049f180dea267180481f9343c78505135",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a86fff8116e0b11270bab93016ae1e662cf0321299b00953470b5c86ad5cc202",
+    "observed_sha256": null,
+    "manifest_sha256": "a86fff8116e0b11270bab93016ae1e662cf0321299b00953470b5c86ad5cc202",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        128
+      ]
+    ],
+    "total_lines": 128,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s16",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_testgen.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6888,
+    "git_blob": "3598c674ab99018801b243dbbb178302c7ae5f20",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8c5280f0024c9eb1b8d5a916e44819d8317a4679b3c878984c5c5f8802b206f4",
+    "observed_sha256": null,
+    "manifest_sha256": "8c5280f0024c9eb1b8d5a916e44819d8317a4679b3c878984c5c5f8802b206f4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        123
+      ]
+    ],
+    "total_lines": 179,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s17",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_skill_surgery.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 14493,
+    "git_blob": "818e372b8801959c0f5f8ba820332c341cc2b943",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "5174596d2bc892a414577fc85956e6b2213e7e7dccab9d74b633a237a6aed7e2",
+    "observed_sha256": null,
+    "manifest_sha256": "5174596d2bc892a414577fc85956e6b2213e7e7dccab9d74b633a237a6aed7e2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        118
+      ]
+    ],
+    "total_lines": 311,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s18",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_pipeline/overlays/java.overlay.yaml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5590,
+    "git_blob": "ce3073f91114dc2c1382bcd37fd687eca9bb8cc9",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "721ecb3b3cd1e32e6c02322d0b76517bea517eac38b0206a9469af75f58ce591",
+    "observed_sha256": null,
+    "manifest_sha256": "721ecb3b3cd1e32e6c02322d0b76517bea517eac38b0206a9469af75f58ce591",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        120
+      ]
+    ],
+    "total_lines": 196,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s19",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/spec_bundle_emit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8661,
+    "git_blob": "fc99b2c61f1d65325d33d296643b4e07890db0c4",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1ca194153c5e4440d0842ed1bb26e9acbe42cbe4d1363206446f65f66c6cd9d6",
+    "observed_sha256": null,
+    "manifest_sha256": "1ca194153c5e4440d0842ed1bb26e9acbe42cbe4d1363206446f65f66c6cd9d6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        83,
+        142
+      ]
+    ],
+    "total_lines": 189,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s20",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ensemble_evaluator.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 37538,
+    "git_blob": "b5c38bd67a5579d40617d9080a70fc62ca157738",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ea09df2fe95ae9656bf053f71fc9574ea557003e5fc43be5a55264b210f39ff3",
+    "observed_sha256": null,
+    "manifest_sha256": "ea09df2fe95ae9656bf053f71fc9574ea557003e5fc43be5a55264b210f39ff3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        284,
+        296
+      ]
+    ],
+    "total_lines": 895,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "id": "s21",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/quota_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7246,
+    "git_blob": "8480e91b8e5e15618605d270840dee7982ffb2a5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "observed_sha256": null,
+    "manifest_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        158
+      ]
+    ],
+    "total_lines": 158,
+    "body_read_complete": true,
+    "read_basis": "prior_full_body_same_bytes_reused_not_fresh",
+    "prior_ref": {
+      "ledger": "docs/full-analysis/baldrix-lib-006/files.json",
+      "ledger_sha256": "d0cee0ec773edb24b0c098e1c853b9d7b9aa3f10956768714ae48a40a1d8f40f",
+      "row": {
+        "source": "baldrix",
+        "path": "scripts/lib/quota_tracker.py",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "bytes": 7246,
+        "git_blob": "8480e91b8e5e15618605d270840dee7982ffb2a5",
+        "raw_git_blob_status": "matched",
+        "pinned_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+        "observed_sha256": null,
+        "manifest_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+        "manifest_sha256_status": "matched",
+        "read_ranges": [
+          [
+            1,
+            158
+          ]
+        ],
+        "total_lines": 158,
+        "body_read_complete": true,
+        "read_basis": "fresh_pinned_body_read",
+        "partition": "baldrix:scripts/lib:006",
+        "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+        "disposition": "body_reviewed_call_test_trace_pending",
+        "primary_status": "body_reviewed_call_test_trace_pending",
+        "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f19",
+        "supporting_ids": [
+          "s09",
+          "s11",
+          "s12",
+          "s21"
+        ],
+        "tests_executed": [],
+        "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+        "tests_not_run": [
+          "all upstream tests",
+          "Windows/Linux/WSL host behavior"
+        ],
+        "remaining": [
+          "full caller/config/test closure",
+          "actual Claude and model qualification",
+          "license",
+          "human experience acceptance",
+          "Zeus adoption approval"
+        ],
+        "adoption_approved": false,
+        "prior_primary": null
+      },
+      "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f19",
+      "review_sha256": "85f7f86e420136f9c10052c222f343fc41c3fa558a2c60248b961972bd722c61",
+      "same_revision_raw_sha_git_blob": true,
+      "bound_full_range": [
+        [
+          1,
+          158
+        ]
+      ],
+      "new_primary_coverage": false
+    },
+    "id": "s22",
+    "counted_as_primary": false,
+    "tests_executed": []
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/psmux.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11022,
+    "git_blob": "077a8b0e350300a4affcdce0444b4522a7f52fa0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8d283a25624bf435932d4f6b82959511362e781035539bc04642381bfc008c01",
+    "observed_sha256": null,
+    "manifest_sha256": "8d283a25624bf435932d4f6b82959511362e781035539bc04642381bfc008c01",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        340
+      ]
+    ],
+    "total_lines": 340,
+    "body_read_complete": true,
+    "read_basis": "prior_full_body_same_bytes_reused_not_fresh",
+    "prior_ref": {
+      "ledger": "docs/full-analysis/baldrix-lib-006/files.json",
+      "ledger_sha256": "d0cee0ec773edb24b0c098e1c853b9d7b9aa3f10956768714ae48a40a1d8f40f",
+      "row": {
+        "source": "baldrix",
+        "path": "scripts/lib/psmux.py",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "bytes": 11022,
+        "git_blob": "077a8b0e350300a4affcdce0444b4522a7f52fa0",
+        "raw_git_blob_status": "matched",
+        "pinned_sha256": "8d283a25624bf435932d4f6b82959511362e781035539bc04642381bfc008c01",
+        "observed_sha256": null,
+        "manifest_sha256": "8d283a25624bf435932d4f6b82959511362e781035539bc04642381bfc008c01",
+        "manifest_sha256_status": "matched",
+        "read_ranges": [
+          [
+            1,
+            340
+          ]
+        ],
+        "total_lines": 340,
+        "body_read_complete": true,
+        "read_basis": "fresh_pinned_body_read",
+        "partition": "baldrix:scripts/lib:006",
+        "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+        "disposition": "body_reviewed_call_test_trace_pending",
+        "primary_status": "body_reviewed_call_test_trace_pending",
+        "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f18",
+        "supporting_ids": [
+          "s10",
+          "s18"
+        ],
+        "tests_executed": [],
+        "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+        "tests_not_run": [
+          "all upstream tests",
+          "Windows/Linux/WSL host behavior"
+        ],
+        "remaining": [
+          "full caller/config/test closure",
+          "actual Claude and model qualification",
+          "license",
+          "human experience acceptance",
+          "Zeus adoption approval"
+        ],
+        "adoption_approved": false,
+        "prior_primary": null
+      },
+      "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f18",
+      "review_sha256": "85f7f86e420136f9c10052c222f343fc41c3fa558a2c60248b961972bd722c61",
+      "same_revision_raw_sha_git_blob": true,
+      "bound_full_range": [
+        [
+          1,
+          340
+        ]
+      ],
+      "new_primary_coverage": false
+    },
+    "id": "s23",
+    "counted_as_primary": false,
+    "tests_executed": []
+  }
+]

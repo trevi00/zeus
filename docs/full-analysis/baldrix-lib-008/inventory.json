@@ -1,0 +1,100 @@
+{
+  "partition": "baldrix:scripts/lib:008",
+  "scope_sha256": "29299330d5dc5b16003d0a5f260023b4f86f8a28ae0d723b80e50f710c811650",
+  "bytes": 196126,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/skill_surgery.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/skill_token_budget.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/spec_bundle.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/spec_facets.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/staging_guard.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/stop_phrases.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/strike_dispatcher.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/stub_faker_lint.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/stub_faker_mutation.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/subagent_invocation_log.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/team_mailbox.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/team_policy.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/team_runtime.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/team_worker_loop.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/tech_stack.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/tech_stack_nudge.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/telemetry_log.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/telemetry_read.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/testgen.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/thin_skill_advisor.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/threshold_policy.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/tier1_counts.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/timefmt.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

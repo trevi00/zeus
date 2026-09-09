@@ -1,0 +1,22 @@
+{
+  "scope": "docs/full-analysis/baldrix-lib-008 only",
+  "metadata": {
+    "command": "python -X utf8 docs/full-analysis/baldrix-lib-008/build_index.py",
+    "exit_code": 0,
+    "result": "passed",
+    "checks": ["23 primary / 196126 bytes", "23 supporting with no primary duplication", "exact partition row", "revision", "raw SHA-256", "raw Git blob", "byte size", "line ranges", "review anchors", "prior ledger and review hash", "prior full body extent", "UTF-8 LF", "JSON parse"],
+    "recorder_correction": "Initial run stopped because a prior ledger uses read_extent=full_body instead of body_read_complete. The recorder now accepts that explicit full-body schema and still requires revision/raw SHA/Git blob equality; final run passed."
+  },
+  "own_ruff": {
+    "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/baldrix-lib-008/build_index.py",
+    "exit_code": 0,
+    "result": "All checks passed!"
+  },
+  "upstream_execution": 0,
+  "upstream_import": 0,
+  "upstream_tests": 0,
+  "probes": 0,
+  "network": 0,
+  "install": 0,
+  "limits": "Metadata and own recorder lint only. No upstream behavior, actual Claude, license, host OS or human acceptance validation."
+}

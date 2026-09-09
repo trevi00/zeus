@@ -1,0 +1,35 @@
+{
+  "partition": "baldrix:scripts/lib/observers:001",
+  "scope_sha256": "3febc60e9994a8aef5daa7e32cf300bcc257c9379549268479d2fd254794ccd1",
+  "record_scope_sha256": "c6525b4a9e50d3a60257ae8fe18b3c2c0a035f6e88b752754704f1431b3aefb6",
+  "record_scope_hash_encoding": "Python json.dumps(scope, sort_keys=True), UTF-8",
+  "scope_items": [
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/observers/__init__.py",
+      "sha256": "b6ac552a2230b9325c69184cec1bab4a6c58608feba0199f312680cb716f3bdd"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/observers/evidence_fab.py",
+      "sha256": "fe72048099654c7bc1f7a0ed970693d36d3f22114e6c19012155fd571afb5660"
+    }
+  ],
+  "primary_count": 2,
+  "primary_bytes": 7819,
+  "primary_body_read_complete": true,
+  "root_supporting_count": 4,
+  "root_supporting_full": 2,
+  "root_supporting_partial": 2,
+  "original_unit_modules_executed": 1,
+  "original_unit_tests_passed": 11,
+  "original_component_programs_completed": 1,
+  "unit_fixture_limits": "Original unit invokes real methods, files and controlled children with synthetic claims; RC backoff mutation does not change imported float. Not human/model acceptance.",
+  "component_limits": "Original methods and actual isolated files/permissions/controlled Python children; no clock/method/subprocess/provider patch. Synthetic claims do not establish historical fabrication or human/model/OS acceptance.",
+  "actual_provider_model_invocations": 0,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false
+}

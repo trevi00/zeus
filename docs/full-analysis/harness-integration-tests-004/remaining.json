@@ -1,0 +1,24 @@
+{
+  "partition": "harness:tests/integration:004",
+  "primary_body_remaining": [],
+  "remaining": [
+    "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+    "Full transitive callers, fixtures, policies, tests and deployment closure.",
+    "Authenticated human acceptance and real product/device evidence.",
+    "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+    "Actual independent Claude review managed by root.",
+    "License and redistribution review; adoption approval and Zeus implementation."
+  ],
+  "specific_partial_traces": [
+    "Mutation exact replacement sites, equivalent mutants, worktree concurrency and baseline outcome classification.",
+    "Ownership tail dispatcher, all live contracts/cards, actual incident and human response.",
+    "Parameter direction policy, detector receipt binding, nonfinite input and concurrent updates.",
+    "Delegate mixed hook preservation, runtime pins and Windows/Linux/WSL execution.",
+    "Precondition errors and raw-byte/environment fidelity, counterfactual crash restoration.",
+    "Prompt logging loss notification, retention policy, second digest write, backdated concurrent rows.",
+    "Proposal retirement positive human proof, signed artifact/version and brief versus arming parity.",
+    "Actual recall backend and judged retrieval relevance, PG hybrid and real model qualification.",
+    "RLM execution limits, process tree cleanup and device replay, complete role contract delivery."
+  ],
+  "review_ref": "docs/full-analysis/harness-integration-tests-004/review.md#unknowns"
+}

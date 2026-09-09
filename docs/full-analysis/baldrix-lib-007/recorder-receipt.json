@@ -1,0 +1,37 @@
+{
+  "recorder": {
+    "argv": [
+      "python",
+      "-X",
+      "utf8",
+      "docs/full-analysis/baldrix-lib-007/record_review.py"
+    ],
+    "cwd": "C:/Users/rudtn/zeus",
+    "sha256": "baefb612c6729986393e3936dc93e5811c649769da581501d909af2325b7e0f2",
+    "exit_code": 0,
+    "stdout": "{\"primary\": 21, \"bytes\": 197444, \"fresh\": 21, \"reused\": 0, \"supporting\": 15, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\r\n",
+    "stderr": "",
+    "tool_chunk_id": "410a6e"
+  },
+  "ruff": {
+    "argv": [
+      ".venv/Scripts/ruff.exe",
+      "check",
+      "docs/full-analysis/baldrix-lib-007"
+    ],
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": "",
+    "tool_chunk_id": "a8137b"
+  },
+  "checks": {
+    "primary_count": 21,
+    "primary_bytes": 197444,
+    "anchors_exist": true,
+    "utf8_no_replacement_or_lost_question_sequences": true,
+    "python_lf": true,
+    "prior_overlap_hashes_reverified": 4,
+    "source_executions": 0
+  },
+  "notes": "Recorder adapted from lib005 for this scope; no upstream imports or execution. Raw recorder remains unchanged after execution. Static support ranges only; no coverage promotion. Prior full-body four files were freshly re-read; same-byte overlap does not increase global unique coverage."
+}

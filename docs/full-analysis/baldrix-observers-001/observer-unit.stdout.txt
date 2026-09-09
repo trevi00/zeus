@@ -1,0 +1,13 @@
+  [OK] test_empty_envelope_is_clean
+  [OK] test_arm_a_missing_file_path_is_fabrication
+  [OK] test_arm_a_existing_file_with_no_replay_is_clean
+  [OK] test_arm_b_passed_with_rc_zero_is_clean
+  [OK] test_arm_b_passed_with_rc_nonzero_twice_is_fabrication
+  [OK] test_arm_b_flake_observed_first_fail_then_pass
+  [OK] test_arm_a_short_circuits_arm_b
+  [OK] test_worst_case_across_entries
+  [OK] test_malformed_evidence_entries_are_skipped
+  [OK] test_nested_envelope_shape_is_accepted
+  [OK] test_replay_timeout_is_treated_as_failure
+
+[OK] 11 tests passed

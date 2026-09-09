@@ -1,0 +1,15 @@
+{
+  "actual_imported_backoff": 5.0,
+  "directory_as_evidence": "clean",
+  "empty_envelope": "clean",
+  "invalid_utf8_exception": "UnicodeDecodeError",
+  "missing_executable": "fabrication_confirmed",
+  "nul_path_exception": "ValueError",
+  "outer_empty_hides_nested_missing": "clean",
+  "passed_without_replay": "clean",
+  "permission_denied_path": "clean",
+  "relative_path_cwd_mismatch": "fabrication_confirmed",
+  "replay_created_file": true,
+  "replay_write_verdict": "clean",
+  "uid": 65534
+}

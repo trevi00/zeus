@@ -1,0 +1,34 @@
+{
+  "kind": "local_validation_tool_result_transcription",
+  "source": "exec_command/write_stdin terminal results; not raw process stdout",
+  "base_revision": "bc2ba7fe82502c2cc52f3221d3af91f63f27a383",
+  "scope": "Completed observer/lib007/lib008/integration004 review artifacts and verifier; runtime src/tests/workflows unchanged",
+  "pytest": {
+    "argv": ["uv", "run", "pytest", "-q"],
+    "session_id": 2064,
+    "terminal_chunk": "9bc984",
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 174.57
+  },
+  "ruff": {
+    "argv": ["uv", "run", "ruff", "check", "."],
+    "terminal_chunk": "e7ec85",
+    "returncode": 0,
+    "output": "All checks passed!"
+  },
+  "identity_verifier": {
+    "argv": ["uv", "run", "python", "docs/full-analysis/verify-observer-workflow-checkpoint.py"],
+    "terminal_chunk": "3e541b",
+    "returncode": 0,
+    "primary_records": 63,
+    "supporting_records": 98,
+    "process_receipts": 4,
+    "artifact_hashes": 56
+  },
+  "upstream_actual_model_invocations": 0,
+  "upstream_native_windows_wsl_acceptance": false,
+  "whole_analysis_complete": false,
+  "adoption_approved": false
+}

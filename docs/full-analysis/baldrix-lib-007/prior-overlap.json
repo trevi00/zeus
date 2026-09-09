@@ -1,0 +1,101 @@
+[
+  {
+    "path": "scripts/lib/similarity.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "713dfbe2e5b925be8250bd4e383d828342bcfc8f",
+    "pinned_sha256": "f6a28aa99d031077b27eeca800f0cf4cc08b8e97cc36d74dd95acda3c92ff4de",
+    "prior_ledger": "docs/full-analysis/baldrix-engine-001/supporting-evidence.json",
+    "prior_ledger_sha256": "a74645d9c3df7136ff030d7a9156fbfa7911097a42d5c6711b369366d8d1dfb8",
+    "prior_review": "docs/full-analysis/baldrix-engine-001/resolution.md",
+    "prior_review_sha256": "15ac84b1b80b28e9d21cb40fe073fd2d4bbff6798edb572a414970e9e713a2c1",
+    "prior_read_extent": "full_body",
+    "prior_read_ranges": [
+      [
+        1,
+        45
+      ]
+    ],
+    "current_fresh_read_ranges": [
+      [
+        1,
+        45
+      ]
+    ],
+    "prior_ranges_missing": false,
+    "current_read": "fresh full re-read; not inherited completion",
+    "global_coverage_increment": false,
+    "prior_execution_inherited": false
+  },
+  {
+    "path": "scripts/lib/skill_score.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d908ed7de5a2d3179486a53104536c5d5aed31f3",
+    "pinned_sha256": "54b750cd2a2409999145ff484dc0ac33266720661a0f1cb2974ab985c03c7564",
+    "prior_ledger": "docs/full-analysis/cross-review-common-quality/supporting-evidence.json",
+    "prior_ledger_sha256": "bc2d66863754a021a720ae6422c89fd0551560341560bf2e470aab0741b1be5a",
+    "prior_review": "docs/full-analysis/cross-review-common-quality/resolution.md",
+    "prior_review_sha256": "82f3d52398664a52ccbaf7b8ad8d617be8a9fbb142e19879cea175e85b76ea14",
+    "prior_read_extent": "full_body",
+    "prior_read_ranges": null,
+    "current_fresh_read_ranges": [
+      [
+        1,
+        270
+      ]
+    ],
+    "prior_ranges_missing": true,
+    "current_read": "fresh full re-read; not inherited completion",
+    "global_coverage_increment": false,
+    "prior_execution_inherited": false
+  },
+  {
+    "path": "scripts/lib/skill_match_render.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f12750478c90193a9c583365a390cfd5e5f81c5b",
+    "pinned_sha256": "2123360eea20f84d97e4bb6f0c62aef1c7baeeed4d3d9be242b98e0a225895fc",
+    "prior_ledger": "docs/full-analysis/baldrix-skill-routing-runtime/files.json",
+    "prior_ledger_sha256": "a131d2ec1b6288d260f7b259fa4c7428af7e7cdfb3d77978fd7a36a4159aafe8",
+    "prior_review": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md",
+    "prior_review_sha256": "58ec83f45137309c197783f3fa1e8520d9c081ff4206fe2d842d1870d97515f4",
+    "prior_read_extent": "full_body",
+    "prior_read_ranges": null,
+    "current_fresh_read_ranges": [
+      [
+        1,
+        138
+      ]
+    ],
+    "prior_ranges_missing": true,
+    "current_read": "fresh full re-read; not inherited completion",
+    "global_coverage_increment": false,
+    "prior_execution_inherited": false
+  },
+  {
+    "path": "scripts/lib/skill_structure_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5464369f0f6ca69d2f00814f0c3d86bfcf724a0e",
+    "pinned_sha256": "46aad44fb9f9548aaff2350098325d946e773027f24d4e1a86083591cdd059e1",
+    "prior_ledger": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+    "prior_ledger_sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d",
+    "prior_review": "docs/full-analysis/baldrix-validators-002/review.md",
+    "prior_review_sha256": "a18bcb853a4cc4c72ec28043acf963e11457fe448b515503ca891e135a371a2c",
+    "prior_read_extent": "full",
+    "prior_read_ranges": [
+      {
+        "start": 1,
+        "end": 97,
+        "raw_range_sha256": "46aad44fb9f9548aaff2350098325d946e773027f24d4e1a86083591cdd059e1"
+      }
+    ],
+    "current_fresh_read_ranges": [
+      [
+        1,
+        97
+      ]
+    ],
+    "prior_ranges_missing": false,
+    "current_read": "fresh full re-read; not inherited completion",
+    "global_coverage_increment": false,
+    "prior_execution_inherited": false
+  }
+]

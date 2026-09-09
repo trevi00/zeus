@@ -80,7 +80,12 @@
 - [Baldrix lib 006](baldrix-lib-006/review.md): 24개 전문·지원21개. quota 저장·원자성, 산출물 존재 기반 단계 판단, 재현 없이 True인 probe, 경로·회고·pane 입력 결과를 대조했다. 원본 실행0이다.
 - [Harness 통합 테스트 003](harness-integration-tests-003/review.md): 14개 전문·지원42개. 기본 카나리아의 tuple/bool 불일치, HUD 상태 쓰기, 로그 승인 추정·동시성, 실제 서비스/부분 SKIP·순차 멱등 시험의 범위를 확인했다. 원본 실행0이다.
 
-현재 고정 2,736개 중 972개에 검토 기록이 있으며 **1,764개는 아직 unreviewed**다. 이번 묶음 57개 중 이전 primary와 겹친 1개는 중복 집계하지 않았다. 972개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
+- [증거 감지 공동 검토](baldrix-observers-001/resolution.md): 2개 전문·지원4개, 실제 Claude 독립 검토·토론·정정. 원본 단위11개 및 격리 파일·권한·자식 관측으로 cwd 오판, 미검사 CLEAN, 자식 쓰기와 인코딩 예외를 확인했다. 실제 과거 위조나 사람 인수의 증명은 아니다.
+- [Baldrix lib 007](baldrix-lib-007/review.md): 21개 전문·지원15개. 구조화 추출·거주 메모리·후보 쓰기·실제 주입과 평가 차이를 추적했다. 원본 실행0이다.
+- [Baldrix lib 008](baldrix-lib-008/review.md): 23개 전문·지원23개. 스펙/테스트 생성, 변이 분모, 팀 종료/메일함, telemetry 손실과 승인값을 대조했다. 원본 실행0이다.
+- [Harness 통합 테스트 004](harness-integration-tests-004/review.md): 17개 전문·지원56개. 브리프 승인/HMAC 장전, query-hit 지표/실제 검색 소비, 카드 전문/실제 step 전달과 로그 보존 시험 경계를 확인했다. 원본 실행0이다.
+
+현재 고정 2,736개 중 1,031개에 검토 기록이 있으며 **1,705개는 아직 unreviewed**다. 이번 묶음 63개 중 이전 primary와 겹친 4개는 중복 집계하지 않았다. 1,031개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`과 [root 검토](observer-workflow-root-review.md)를 따른다.
 
 Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 
