@@ -66,6 +66,12 @@ def test_bound_budget_cannot_be_raised_after_restart_and_conflict_does_not_starv
     first = workflow.submit(assignment())
     lease = workflow.claim('worker:implementation', 'first', max_attempts=1)
     workflow.fail(lease, 'Malformed result')
+    with workflow.store.transaction() as tx:
+        row = tx.get('tasks', first['id'])
+        # The assertion below observes a conflict only if this row is inspected
+        # before the healthy sibling. Same-clock UUID order is tested separately.
+        row['created_at'] = '2000-01-01T00:00:00+00:00'
+        tx.put('tasks', first['id'], row)
     second = workflow.submit(assignment())
     fresh = Workflow(workflow.store, workflow.org)
     next_lease = fresh.claim('worker:implementation', 'new-process', max_attempts=2)

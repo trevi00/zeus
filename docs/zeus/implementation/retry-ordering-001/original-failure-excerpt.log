@@ -1,0 +1,28 @@
+2026-09-09T17:11:32.5125351Z ================================== FAILURES ===================================
+2026-09-09T17:11:32.5126175Z _ test_bound_budget_cannot_be_raised_after_restart_and_conflict_does_not_starve_other_task[memory] _
+2026-09-09T17:11:32.5126701Z
+2026-09-09T17:11:32.5127253Z workflow = <codex_harness.application.workflow.Workflow object at 0x0000022318C09F40>
+2026-09-09T17:11:32.5127774Z
+2026-09-09T17:11:32.5128188Z     def test_bound_budget_cannot_be_raised_after_restart_and_conflict_does_not_starve_other_task(workflow):
+2026-09-09T17:11:32.5128853Z         first = workflow.submit(assignment())
+2026-09-09T17:11:32.5129385Z         lease = workflow.claim('worker:implementation', 'first', max_attempts=1)
+2026-09-09T17:11:32.5129924Z         workflow.fail(lease, 'Malformed result')
+2026-09-09T17:11:32.5130335Z         second = workflow.submit(assignment())
+2026-09-09T17:11:32.5130755Z         fresh = Workflow(workflow.store, workflow.org)
+2026-09-09T17:11:32.5131341Z         next_lease = fresh.claim('worker:implementation', 'new-process', max_attempts=2)
+2026-09-09T17:11:32.5131943Z         assert next_lease['id'] == second['id']
+2026-09-09T17:11:32.5132402Z         fresh.fail(next_lease, 'Not retryable', retryable=False)
+2026-09-09T17:11:32.5176523Z         assert fresh.claim('worker:implementation', 'new-process') is None
+2026-09-09T17:11:32.5177399Z         with workflow.store.transaction() as tx:
+2026-09-09T17:11:32.5180784Z             original = tx.get('tasks', first['id'])
+2026-09-09T17:11:32.5181560Z             assert original['retry_budget']['max_attempts'] == original['attempt'] == 1
+2026-09-09T17:11:32.5184952Z             assert original['status'] == 'failed' and original['error'] == 'attempt budget exhausted'
+2026-09-09T17:11:32.5186123Z >           assert len([r for r in tx.scan('events') if r['type'] == 'execution.retry_budget_conflict']) == 1
+2026-09-09T17:11:32.5186901Z E           assert 0 == 1
+2026-09-09T17:11:32.5187242Z E            +  where 0 = len([])
+2026-09-09T17:11:32.5187470Z
+2026-09-09T17:11:32.5187692Z tests\test_retry_state.py:79: AssertionError
+2026-09-09T17:11:32.5188280Z =========================== short test summary info ===========================
+2026-09-09T17:11:32.5189521Z FAILED tests/test_retry_state.py::test_bound_budget_cannot_be_raised_after_restart_and_conflict_does_not_starve_other_task[memory] - assert 0 == 1
+2026-09-09T17:11:32.5190532Z  +  where 0 = len([])
+2026-09-09T17:11:32.5190966Z 1 failed, 797 passed, 214 skipped in 246.83s (0:04:06)

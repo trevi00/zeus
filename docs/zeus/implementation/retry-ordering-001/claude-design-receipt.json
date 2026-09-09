@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Read tests/test_retry_state.py and Workflow.claim sorting. CI run34380908590 Windows3.12 failed bound_budget_cannot_be_raised_after_restart test because len(conflict events)=0, healthy sibling chosen before failed first task when created_at ties. Root now sets first task created_at to 2000-01-01 UTC before submitting sibling, exactly isolating conflict-before-sibling requirement. Separate both equal-time UUID ordering cases remain. Verify this fixes invalid test scheduling assumption without relaxing runtime invariant or hiding real budget reset, and check this file for other same-clock order assumptions. Read-only, no execution/new issue, <=200 words."
+  ],
+  "returncode": 0,
+  "duration_seconds": 30.974344730377197,
+  "stdout_sha256": "2701c06a96b1e6b8091aefc9fbf216226232134fe78ab024564b6a8ce3989d79",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "edc75c46-f047-4f9a-b456-c2eac1cf30f6",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 10,
+    "cache_creation_input_tokens": 11567,
+    "cache_read_input_tokens": 52961,
+    "output_tokens": 1760,
+    "output_tokens_details": {
+      "thinking_tokens": 680
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 11567,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 642,
+        "cache_read_input_tokens": 15252,
+        "cache_creation_input_tokens": 1150,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1150
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.1873385,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1053,
+      "outputTokens": 17,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001138,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 10,
+      "outputTokens": 1760,
+      "cacheReadInputTokens": 52961,
+      "cacheCreationInputTokens": 11567,
+      "webSearchRequests": 0,
+      "costUSD": 0.1862005,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 680,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

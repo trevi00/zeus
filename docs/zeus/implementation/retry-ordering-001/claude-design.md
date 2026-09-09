@@ -1,0 +1,7 @@
+**Verdict: the fix is sound.**
+
+`Workflow.claim` sorts by `(created_at, id)` (`workflow.py:86`), and `id` is `message_id` (`workflow.py:41`), so on Windows' coarse clock two submissions can tie and random UUIDs decide order. Backdating the first row's `created_at` makes it deterministically first, which is exactly the precondition the assertion needs: `retry_limit` emits `execution.retry_budget_conflict` and returns `None` only when the pinned row is visited with a mismatched `max_attempts` (`execution_budget.py:46-52`), then `claim` falls through to the healthy sibling.
+
+No invariant is relaxed: only `created_at` is rewritten, before the sibling exists; the budget is already pinned by the `max_attempts=1` claim at line 67, and the assertions at `test_retry_state.py:83-84` still prove `max_attempts == attempt == 1` and terminal exhaustion. A real budget reset would change `retry_budget`/`attempt` and still fail. Ordering only selects *which* row is inspected first, never whether the pin holds.
+
+Other same-clock assumptions in the file: `test_corrupted_stored_deadline_or_budget...` already uses the same backdating (line 220); `test_equal_creation_times...` pins both `created_at` and sequential UUIDs, so it is deterministic by design. `test_dependency_wait_does_not_pin_a_budget` has two tasks but different agents, so ordering is irrelevant. No further gaps.
