@@ -1,0 +1,20 @@
+{
+  "partition": "baldrix:scripts/validators:001",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "scope_sha256": "65be5a814113bf702f72c324932604ae34e638b30e00c68cdc03b376b09afcb9",
+  "primary_total": 27,
+  "primary_bodies_read": 27,
+  "primary_bytes_read": 194606,
+  "primary_remaining": [],
+  "body_coverage_complete": true,
+  "partition_complete": false,
+  "adoption_ready": false,
+  "tests_executed": 0,
+  "supporting_records": 10,
+  "manifest_sha256_missing": [],
+  "historical_checkpoints": "checkpoint-notes.md (8/27) and checkpoint-17.md retained unchanged; superseded by this final body checkpoint.",
+  "remaining": [
+    "Full transitive/effective-config/test execution/license/joint adoption gates remain pending"
+  ],
+  "stop_reason": "Bounded primary static review completed; no upstream/probe/source/runtime/shared-coverage/commit/push action."
+}

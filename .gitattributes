@@ -11,3 +11,5 @@ docs/zeus/wsl-validation/*.stdout -whitespace
 docs/zeus/wsl-validation/*.stderr -whitespace
 # Preserve the captured Claude report, including its original trailing space.
 docs/full-analysis/baldrix-skill-routing-runtime/claude-initial.md -whitespace
+# Preserve the exact pinned-source search receipt, including source trailing spaces.
+docs/full-analysis/baldrix-validators-001/caller-test-search.stdout -whitespace

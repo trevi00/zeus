@@ -1,0 +1,749 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/cli/invariants_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "395c8bbdfc5d938057a6e36229b277a3b1aada2c50d916b68b291f3c881706b9",
+    "git_blob": "1df82f15cb43d21c13fd047bcbd40850219f0a6a",
+    "bytes": 26694,
+    "lines": 526,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "395c8bbdfc5d938057a6e36229b277a3b1aada2c50d916b68b291f3c881706b9",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        526
+      ]
+    ],
+    "semantic_summary": "Text declaration/use/test-label census; attributed mutation command.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C06"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/mutation.py",
+      "config/paths.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_inv_bite_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/judge_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "afdc85a7847ccfa7b4f6e0aa5bc7e5dc9864b641316a7044e9dc58675007fb77",
+    "git_blob": "8c9cc54c0b90407291c1b0b938b1436688fdbe22",
+    "bytes": 20205,
+    "lines": 411,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "afdc85a7847ccfa7b4f6e0aa5bc7e5dc9864b641316a7044e9dc58675007fb77",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        411
+      ]
+    ],
+    "semantic_summary": "Provider pool dispatch, guarded advisory votes and axis/quorum projection.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C05"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/evaluator.py",
+      "scripts/lib/codex_provider.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_jury_quorum_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/ladder_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "09003bea416d59799d969cde2f8b32231d5f93dc3d64eae02d62574448f38bf2",
+    "git_blob": "07702421572c40211ebbb2c4a60be7b8a018a72f",
+    "bytes": 6647,
+    "lines": 141,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "09003bea416d59799d969cde2f8b32231d5f93dc3d64eae02d62574448f38bf2",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        141
+      ]
+    ],
+    "semantic_summary": "Validator policy sweep, status, promotion, demotion and threshold adjustment.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/pr4.py",
+      "scripts/engine/golden.py",
+      "config/policy/validator-ladder.json"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_ladder_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/mirror_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "482e15732b42001b20782399d33d5ae32622627d49ce739df09dabcfec5787d8",
+    "git_blob": "f1f40391a6aa6975d4b5f4506a15a17294092c87",
+    "bytes": 2181,
+    "lines": 63,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "482e15732b42001b20782399d33d5ae32622627d49ce739df09dabcfec5787d8",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        63
+      ]
+    ],
+    "semantic_summary": "Knowledge index and kickoff coverage projection writes.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C08"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/mirror.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_mirror_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/ontology_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "1b30d6f325d8b6037ee4901ccde00eaffc11105843537cd5123c3675bdfc9b02",
+    "git_blob": "ba79eab7b07f0afde1db2cd180c82f988e1caf00",
+    "bytes": 2849,
+    "lines": 78,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1b30d6f325d8b6037ee4901ccde00eaffc11105843537cd5123c3675bdfc9b02",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "semantic_summary": "Index generation then subprocess validation; cached node/edge query.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C08"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/ontology_index.py",
+      "config/paths.yaml"
+    ],
+    "tests_read_in_part": [],
+    "tests_executed": [],
+    "test_limits": "No dedicated test body selected in this bounded review.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/pollution_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "1764dd4f383b436896ecb492b51f86acdb7058860d8fca9ca7de9f9197bf7d87",
+    "git_blob": "96ef9a4d644a21bcfd3fdceeb767b60a60829a88",
+    "bytes": 2505,
+    "lines": 69,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1764dd4f383b436896ecb492b51f86acdb7058860d8fca9ca7de9f9197bf7d87",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "semantic_summary": "Burst-based pollution diagnosis and dry-run/execute tombstone contract.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C11"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/pollution.py",
+      "scripts/lib/derive_state.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_pollution_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/probe_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "4924752685013db329b4a86aea77c0acd6dde9bacffa1ffb2c32e720654b36c1",
+    "git_blob": "f82317b231d223c1599572213e154d55b1841b83",
+    "bytes": 4768,
+    "lines": 114,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "4924752685013db329b4a86aea77c0acd6dde9bacffa1ffb2c32e720654b36c1",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        114
+      ]
+    ],
+    "semantic_summary": "Counterfactual output mutation/restoration and blindspot declaration surface.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C06"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/counterfactual.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_probe_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/prompts_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "04c53fb162c872746c4418c92be700259a274650282410fa7c46d3d310978b9e",
+    "git_blob": "e4a0c7d97727c33ffd64a0f32acbd4b178f70e04",
+    "bytes": 8543,
+    "lines": 186,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "04c53fb162c872746c4418c92be700259a274650282410fa7c46d3d310978b9e",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        186
+      ]
+    ],
+    "semantic_summary": "Prompt SQLite statistics, clustering, manual pruning and weekly rollup.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C07"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/handlers/stop/prompt_rollup.py",
+      "scripts/handlers/prompt/promptlog.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_prompt_rollup_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/quality_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "93d6077a8e177128cccad0c09d4a1b87e40c50eec664997a6d44f357abaae49c",
+    "git_blob": "b5d5b5eac274965ca1d5a270f20f309aa9d1fbb9",
+    "bytes": 10113,
+    "lines": 183,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "93d6077a8e177128cccad0c09d4a1b87e40c50eec664997a6d44f357abaae49c",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        183
+      ]
+    ],
+    "semantic_summary": "Golden/mutation runner exits and skill-usage versus stage-verdict correlation.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C06",
+      "C09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/golden.py",
+      "scripts/engine/mutation.py",
+      "scripts/engine/skill_router.py"
+    ],
+    "tests_read_in_part": [],
+    "tests_executed": [],
+    "test_limits": "No dedicated test body selected in this bounded review.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/recall_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "5523fa78bd5c894449b3d7f4d4feca44c5e03f2fcf080f33a500d0348cbe60f5",
+    "git_blob": "e23e47b3199b076f6f86edcae24d82467e6968cc",
+    "bytes": 2304,
+    "lines": 64,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "5523fa78bd5c894449b3d7f4d4feca44c5e03f2fcf080f33a500d0348cbe60f5",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        64
+      ]
+    ],
+    "semantic_summary": "Incremental FTS index and advisory retrieval with snippet scanning.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C08"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/recall.py"
+    ],
+    "tests_read_in_part": [],
+    "tests_executed": [],
+    "test_limits": "No dedicated test body selected in this bounded review.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/residual_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "358644347ea15989f51340e1e727f54d47c105ef757dcfee102db59cbd9c881f",
+    "git_blob": "c62cdd1c84cb57a9b88c0f8966e661d2e803ab7c",
+    "bytes": 6557,
+    "lines": 132,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "358644347ea15989f51340e1e727f54d47c105ef757dcfee102db59cbd9c881f",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        132
+      ]
+    ],
+    "semantic_summary": "Human residual listing and operator gate-check writes.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/gate_runner.py",
+      "scripts/lib/derive_state.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_cli_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/roster_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "73ba08416e980af9e73915667eec5d245c540f98b44e199981324dfeb46cfc7c",
+    "git_blob": "fa1b82ce2913e5c31ee4847abaa84a18247dcdf1",
+    "bytes": 10541,
+    "lines": 222,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "73ba08416e980af9e73915667eec5d245c540f98b44e199981324dfeb46cfc7c",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        222
+      ]
+    ],
+    "semantic_summary": "Role-card rendering, textual callsite census and dispatch tally.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/step_cmd.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_roster_contract_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/run_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "a5bfa1c7f898da4117412fb734a8e3d8928a7fcbc038e94715a7aa884d700f47",
+    "git_blob": "720f5bd6837e2dc81118e36a42c05a2f1986eb7f",
+    "bytes": 18018,
+    "lines": 322,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a5bfa1c7f898da4117412fb734a8e3d8928a7fcbc038e94715a7aa884d700f47",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        322
+      ]
+    ],
+    "semantic_summary": "Validated pipeline arming, binding projection, disarm event and status.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C04"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/guardian_contract.py",
+      "scripts/lib/derive_state.py",
+      "scripts/cron/l2_driver.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_cli_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/safety_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "0fc9c6e0b075f23cc1431376fecbbd0ac9cf24ef28fd85ef1c8d7f732f2ef28e",
+    "git_blob": "6c535ba97415062cc9fb263f764b9e5697107a2e",
+    "bytes": 5744,
+    "lines": 126,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "0fc9c6e0b075f23cc1431376fecbbd0ac9cf24ef28fd85ef1c8d7f732f2ef28e",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        126
+      ]
+    ],
+    "semantic_summary": "Time-window hook decision/post-event correlation and denominator reporting.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C10"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/hook_journal.py",
+      "scripts/handlers/stop/prompt_rollup.py"
+    ],
+    "tests_read_in_part": [],
+    "tests_executed": [],
+    "test_limits": "No dedicated test body selected in this bounded review.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/sandbox_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "b275120af02d83daa1bd60a9f35f44a331ab24dc44fb245be4e10a467d7790ce",
+    "git_blob": "f0eb07ce2b87c32878b871af73739351bc1d1451",
+    "bytes": 13069,
+    "lines": 255,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "b275120af02d83daa1bd60a9f35f44a331ab24dc44fb245be4e10a467d7790ce",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        255
+      ]
+    ],
+    "semantic_summary": "Patch classification, suite floor, environment seal, parking and promotion.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C03"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/sandbox.py",
+      "scripts/handlers/pre_tool/write_boundary.py",
+      "scripts/lib/hook_protocol.py"
+    ],
+    "tests_read_in_part": [],
+    "tests_executed": [],
+    "test_limits": "No dedicated test body selected in this bounded review.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/scaffold_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "589cb3bd865e77cf3338ab117848b2cd3017caa65bf0f87bd08a47cc9e31ee97",
+    "git_blob": "dadf064f14335a88d24c92cec81755c6d9bd1992",
+    "bytes": 3517,
+    "lines": 97,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "589cb3bd865e77cf3338ab117848b2cd3017caa65bf0f87bd08a47cc9e31ee97",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        97
+      ]
+    ],
+    "semantic_summary": "Common/stack template inventory and non-overwrite issuance.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C10"
+    ],
+    "caller_or_dependency_trace": [
+      "config/paths.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_scaffold_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/skill_eval_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "81c9737c20e14511145a0ede93d92eab142e0dedea403c66d6d2ef2c430d5f92",
+    "git_blob": "6d34cb34d3dbbb8c8c16b743c0acba106e839097",
+    "bytes": 22551,
+    "lines": 414,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "81c9737c20e14511145a0ede93d92eab142e0dedea403c66d6d2ef2c430d5f92",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        414
+      ]
+    ],
+    "semantic_summary": "Synthetic self-routing, declaration, slice and axis delivery evaluation.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/skill_eval.py",
+      "scripts/engine/skill_router.py",
+      "scripts/engine/pipeline_loader.py",
+      "scripts/cli/autoheart_cmd.py",
+      "config/retriever.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_skill_eval.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "Listed test ranges read only; synthetic fixtures are not acceptance.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/skills_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "7aa48071d5b6f8440f2cf0aebd246688451f0098ecc041c8aabdecfaf33bef46",
+    "git_blob": "4a40686171c8cf7a723e727db0ddf3d0fb684c6d",
+    "bytes": 4371,
+    "lines": 116,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "7aa48071d5b6f8440f2cf0aebd246688451f0098ecc041c8aabdecfaf33bef46",
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "upstream_disposition_unchanged": "unreviewed",
+    "partition": "harness:scripts/cli:003",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        116
+      ]
+    ],
+    "semantic_summary": "Frontmatter/corpus contract audit and mixed JSON/human CLI result.",
+    "review_ref": "docs/full-analysis/harness-cli-003/review.md",
+    "finding_sections": [
+      "C09"
+    ],
+    "caller_or_dependency_trace": [
+      "config/paths.yaml",
+      "config/retriever.yaml"
+    ],
+    "tests_read_in_part": [],
+    "tests_executed": [],
+    "test_limits": "No dedicated test body selected in this bounded review.",
+    "remaining": [
+      "Upstream execution and current-runtime reproduction not performed.",
+      "Supporting trace limited to listed ranges; not complete subsystem analysis.",
+      "Windows/Linux/WSL, real-device acceptance and authenticated approval unverified."
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

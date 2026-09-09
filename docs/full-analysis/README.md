@@ -50,7 +50,12 @@
 - [Harness CLI 002](harness-cli-002/review.md): 11개 전문. health/HUD 부작용, 오류 계약 모집단, latency의 Bash 선택, feed 커서와 incident 해소 상태를 추적했다. 정적 검토이며 원본 실행은 0건이다.
 - [Harness cron 001](harness-cron-001/review.md): 11개 전문. 소비 거절이 spawned 기록으로 바뀌는 경로, safe-mode 후처리, 스폰·회계 원자성, DBA 빈 projection heartbeat를 대조했다. 정적 검토이며 원본 실행은 0건이다.
 
-현재 고정 2,736개 중 640개에 검토 기록이 있으며 **2,096개는 아직 unreviewed**다. 640개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
+- [Baldrix engine 001 공동 검토](baldrix-engine-001/resolution.md): 11개 전문, root 지원 24개, 실제 Claude 독립 검토·토론·정정. 원본 retry 단위 테스트 6개 및 격리 원본 함수 관측으로 shard 세대 역행·손상 원문 삭제·phase/ack 계약 불일치를 확인했다. 최초 의존성 import 실패도 보존했다.
+- [Baldrix validators 001](baldrix-validators-001/review.md): 27개 전문. 호출자의 반환값/skip 처리, bridge 전체 삭제·warm cache, 명세 누락 PASS, 의미 검사와 문자열 검사 범위를 추적했다. 정적 검토이며 원본 실행 0건이다.
+- [Harness CLI 003](harness-cli-003/review.md): 18개 전문. 카나리아 튜플 반환형, 판정 문장 귀속, patch 승인 identity, judge 기록, prompt 원문 폐기와 모델 자격을 추적했다. 정적 검토이며 원본 실행 0건이다.
+- [Harness cron 002](harness-cron-002/review.md): 11개 전문. consumed→spawned, reachable/distillable 재판정, 실제 compose/cycle 배선, 파일 존재 완료율·미상 승인 귀속을 추적했다. 정적 검토이며 원본 실행 0건이다.
+
+현재 고정 2,736개 중 707개에 검토 기록이 있으며 **2,029개는 아직 unreviewed**다. 707개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
 
 Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 
@@ -58,4 +63,4 @@ Guardian의 전체 13개 의미 검토 및 pinned/observed 각 5스위트 실행
 
 harness lib의 정상 gate writer 추가 분석은 검토 도구의 자동 보안 검사로 중단됐다. 그 중단을 테스트 결과로 취급하지 않으며 기존 FA-005의 미검증 범위는 유지한다. `harness-lib/continuation-status.md`에 중단과 미실행 초안을 기록했다.
 
-분석 결과는 각 폴더의 `files.json`과 리뷰 문서에 연결한다. 현재 전체 의미 분석은 **미완료**다. 아직 처리하지 않은 파일과 하위 시스템을 후속 파티션으로 계속 분석한다. 사용자 요청에 따라 독립 `trevi00/zeus` 저장소를 만들고 [GitHub 이슈 15개](../tickets/README.md)를 로컬 PostgreSQL 원장과 연동했다. Common 품질 공동 검토는 [미검사 PASS #12](https://github.com/trevi00/zeus/issues/12)와 [평가·실제 주입 불일치 #13](https://github.com/trevi00/zeus/issues/13)에, 후속 게이트 공동 검토는 [판정 귀속·PARTIAL #14](https://github.com/trevi00/zeus/issues/14)와 [스펙·인수 생성 계약 #15](https://github.com/trevi00/zeus/issues/15)에 연결했다. 이는 운영 배포나 기능 도입 승인이 아니다. 이후 작업 루트는 `C:/Users/rudtn/zeus`이며 과거 증거의 원본 경로는 당시 사실로 유지한다.
+분석 결과는 각 폴더의 `files.json`과 리뷰 문서에 연결한다. 현재 전체 의미 분석은 **미완료**다. 아직 처리하지 않은 파일과 하위 시스템을 후속 파티션으로 계속 분석한다. 사용자 요청에 따라 독립 `trevi00/zeus` 저장소를 만들고 [GitHub 이슈 16개](../tickets/README.md)를 로컬 PostgreSQL 원장과 연동했다. Common 품질 공동 검토는 [미검사 PASS #12](https://github.com/trevi00/zeus/issues/12)와 [평가·실제 주입 불일치 #13](https://github.com/trevi00/zeus/issues/13)에, 후속 게이트 공동 검토는 [판정 귀속·PARTIAL #14](https://github.com/trevi00/zeus/issues/14)와 [스펙·인수 생성 계약 #15](https://github.com/trevi00/zeus/issues/15)에 연결했다. CLI005 writeback 공동 검토는 [승인 대상·단일 소비·복구 #16](https://github.com/trevi00/zeus/issues/16)으로 분리했다. 이는 운영 배포나 기능 도입 승인이 아니다. 이후 작업 루트는 `C:/Users/rudtn/zeus`이며 과거 증거의 원본 경로는 당시 사실로 유지한다.

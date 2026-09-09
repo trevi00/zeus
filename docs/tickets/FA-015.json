@@ -1,0 +1,58 @@
+{
+  "id": "ZEUS-39d3d0633060",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "Zeus의 개선 제안 적용 계약에 immutable proposal/patch/revision/환경/정규 대상 ID와 preimage/postimage 해시를 결속한다.",
+      "PG runtime SSOT의 승인·소비 상태 전이와 실제 파일 변경의 crash recovery/outbox·영수증을 설계한다. PG 트랜잭션만으로 파일 변경까지 원자적이라고 주장하지 않는다.",
+      "FA-003은 lease epoch, FA-004는 일반 멱등키 경쟁이다. 이 티켓은 writeback의 승인 대상 결속과 apply/rollback 복구에 한정하며 공통 동시성 계약은 기존 티켓과 공유한다.",
+      "기존 Claude 하네스와 codex-harness 운영 저장소는 수정하지 않는다. 전수 분석 후 합의된 Zeus 구현은 주 Codex가 맡는다."
+    ],
+    "title": "[FA-015] writeback 승인 대상 결속·단일 소비·다중 파일 복구 계약 보강",
+    "impact": "승인한 변경과 실제 적용 대상이 어긋나거나 같은 승인이 중복 소비되고, 중간 실패 뒤 파일·감사 기록이 서로 다른 상태로 남을 수 있다. 자가개선을 반복 적용하는 Zeus에서 변경 재현성과 되돌리기 근거가 무너질 수 있다.",
+    "problem": "Baldrix CLI005의 실제 Codex·Claude 독립 검토와 토론에서 writeback token이 proposal ID와 preimage 해시만 묶고 검토한 patch hash·canonical target identity를 묶지 않는 점을 확인했다. consume은 read/check/unlink 사이를 직렬화하지 않고 unlink 오류를 무시한 뒤 OK를 반환한다. apply의 동일 캡처 바이트 재사용은 유효한 방어지만 capture→replace 경합은 남는다. rollback은 감사된 대상 집합과 sidecar 선언 경로·preimage 내용의 일치를 요구하지 않으며 감사 실패와 부분 복구도 완결된 트랜잭션이 아니다. 이는 정적 공동 검토이며 원본 writeback 실행·동시성 재현은 0회다.",
+    "rollback": "새 적용기는 자격 검증 전 비활성 상태로 유지한다. 적용 중 장애는 검증된 preimage와 불변 journal을 통해 복구하며, 복구 실패 시 자동 승격을 중단하고 미완료 기록과 증거를 보존한다.",
+    "verification": [
+      "CLI005의 원본 단위19개와 UTC/KST 함수 관측은 telemetry/빈 frontend routing 증거다. 이를 writeback 실행 증거로 쓰지 않는다.",
+      "초기 Claude의 전체 TOCTOU 폐쇄·single-use 보장·CRLF 항상 실패 표현은 final resolution에서 정정됐다. raw 초기 보고보다 최종 정정과 범위를 따른다.",
+      "operator pid/sid/cwd나 토큰 문자열 보유는 실제 사람 승인 신원의 증거가 아니다. 승인자·검토 대상·증적을 독립적으로 검증한다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/a7ed8524fff531680727b45e71f0445ee43f3117/docs/full-analysis/baldrix-cli-005/resolution.md",
+      "https://github.com/trevi00/zeus/blob/a7ed8524fff531680727b45e71f0445ee43f3117/docs/full-analysis/baldrix-cli-005/codex-initial.md",
+      "https://github.com/trevi00/zeus/blob/a7ed8524fff531680727b45e71f0445ee43f3117/docs/full-analysis/baldrix-cli-005/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/a7ed8524fff531680727b45e71f0445ee43f3117/docs/full-analysis/baldrix-cli-005/supporting-evidence.json",
+      "https://github.com/trevi00/zeus/blob/a7ed8524fff531680727b45e71f0445ee43f3117/docs/full-analysis/baldrix-cli-005/checkpoint.json"
+    ],
+    "acceptance_criteria": [
+      "arm 이후 patch·target·기준 revision 중 하나가 바뀌면 같은 preimage 내용이어도 승인 소비를 거절한다.",
+      "같은 승인에 동시에 접근한 두 실행 중 하나만 변경 권한을 획득하며 unlink/영수증 기록 실패를 성공으로 취급하지 않는다.",
+      "모든 쓰기·감사 경계의 crash/lost-ack를 구분하고 재시작 시 파일별 상태를 실제 해시로 대조해 재개 또는 복구한다. 부분 복구 실패는 명시적 미완료 상태로 남는다.",
+      "rollback은 저장된 preimage 내용·길이·개수·정규 대상 집합을 검증하며 손상/절단/중복/구분자 포함 경로를 조용히 성공 처리하지 않는다.",
+      "Windows/Linux/WSL의 실제 격리 파일·프로세스·동시 접근, LF/CRLF, 별칭·junction·설정 루트 차이를 검증한다. 실제 사용자 인수와 독립 승인 영수증 없이는 운영 승격하지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T05:39:29.940777+00:00",
+  "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T05:39:31.776352+00:00",
+      "id": "8946b5a9efa626e86ae1edaa9bdc1848a0557f1dad6059fefa750c8031007721",
+      "url": "https://github.com/trevi00/zeus/issues/16",
+      "number": 16,
+      "status": "synced",
+      "body_hash": "54627d86e2c9c6e7a8c4e8e41d6303517d0a346ade8d6b5be5ad1fdf0bbf3644",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

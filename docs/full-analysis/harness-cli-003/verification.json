@@ -1,0 +1,14 @@
+{
+  "metadata_validation": "passed",
+  "recorder_command": "python docs/full-analysis/harness-cli-003/record_review.py",
+  "recorder_exit": 0,
+  "ruff_command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/harness-cli-003",
+  "ruff_exit": 0,
+  "review_sha256": "5c6ed062b685880d497fdda91e7b5fbb6043a428320f4a7a5b8f9b1dbf36301f",
+  "primary_files": 18,
+  "primary_bytes": 171177,
+  "supporting_files": 43,
+  "upstream_tests_executed": [],
+  "upstream_execution_count": 0,
+  "claim_limit": "Own metadata and recorder lint only; not source tests or behavior reproduction."
+}

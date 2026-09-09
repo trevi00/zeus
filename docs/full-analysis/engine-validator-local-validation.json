@@ -1,0 +1,25 @@
+{
+  "kind": "root_observed_local_check_summary",
+  "baseline_head": "a7ed8524fff531680727b45e71f0445ee43f3117",
+  "platform": "Windows host PowerShell",
+  "runtime_source_tests_workflow_lock_changed": false,
+  "pytest": {
+    "command": "uv run pytest -q",
+    "exec_session_id": 29298,
+    "terminal_chunk_id": "ab9a26",
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 172.37,
+    "evidence_kind": "Terminal tool output transcribed; not a separately captured raw stdout receipt"
+  },
+  "ruff": {
+    "repository_command": "uv run ruff check .",
+    "repository_result": "All checks passed",
+    "explicit_review_scripts": "Checkpoint verifier, four active engine review scripts, validator recorder, CLI recorder and cron build-index",
+    "explicit_result": "All checks passed",
+    "historical_failed_attempt_program_runner": "Preserved unchanged as evidence; not represented as current linted implementation"
+  },
+  "identity_verification": "engine-validator-checkpoint-verification.json",
+  "limits": "Zeus local tests are separate from original harness component observations and the six injected-callback retry unit tests. Skips are not passes. This is not upstream Windows execution, real device/user acceptance, service deployment or full-analysis completion."
+}

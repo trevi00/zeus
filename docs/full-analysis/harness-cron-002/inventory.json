@@ -1,0 +1,52 @@
+{
+  "partition": "harness:scripts/cron:002",
+  "scope_sha256": "45e7f8d1ecdb36ab57c867b33db769881c1a7b4dde8f603bf456f0ca089d1c81",
+  "bytes": 114584,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "scripts/cron/re_anchor.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/reachability.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/research_collector.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/research_queue.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/role_supervisor.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/session_handoff.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/source_queue.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/topic_reaper.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/uptake_routes.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/youtube_collector.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/youtube_queue.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

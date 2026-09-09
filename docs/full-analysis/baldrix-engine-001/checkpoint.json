@@ -1,0 +1,31 @@
+{
+  "partition": "baldrix:scripts/engine:001",
+  "scope_sha256": "07fd9d56ed2e63147bb863375c8bfe7e96202549211df12cb3be48567c298bd2",
+  "primary_paths": 11,
+  "primary_bytes": 80138,
+  "primary_bodies_complete": true,
+  "supporting_paths": 24,
+  "supporting_full": 19,
+  "supporting_partial": 5,
+  "prior_full_body_reads_explicitly_reused": 3,
+  "source_hashes_verified": true,
+  "original_unit_tests": {
+    "module": "test_dispatch_retry",
+    "passed": 6,
+    "failed": 0,
+    "injected_callbacks": true,
+    "acceptance": false
+  },
+  "component_attempts": {
+    "dependency_import_failed": 1,
+    "completed_original_function_run": 1,
+    "mocking": false,
+    "temporary_input_fixtures": true
+  },
+  "actual_provider_worker_validator_hook_executions": 0,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false,
+  "runtime_implemented": false,
+  "limits": "Claude static review and root original unit/component execution are separate. No real user/device/E2E, Windows/WSL upstream execution, original source or live-state mutation. Supporting paths do not increase primary coverage."
+}

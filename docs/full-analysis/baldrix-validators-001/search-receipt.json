@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "ai_spec_eval_coverage|atlas_frontmatter|atlas_structure|ci|claim_verifier|code_blind_proceed|codegen|collab|commit_layer_adjacency|context_coupling|contract|convention|coverage_gate|ddl|design_slop_a11y|doc_code_drift|er|exit_contract_coverage|falsy_zero|flow|git_flow|handoff_drift|harness_bridge_state_block|hashline|insight_index_importer_whitelist|logical",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\scripts\\tests",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\commands",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\skills",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\agents",
+    "--glob",
+    "*.py",
+    "--glob",
+    "*.md"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "8f44ed6ae9b62610f27fd44e2b746464b809835603eaa0d407931e725233c7dc",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "meaning": "Discovery only; full primary bodies and explicit supporting ranges constitute actual reading."
+}

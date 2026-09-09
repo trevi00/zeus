@@ -1,0 +1,518 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/cron/l2_driver.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 119098,
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "pinned_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "observed_sha256": null,
+    "manifest_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 2044,
+    "read_ranges": [
+      [
+        448,
+        507
+      ],
+      [
+        848,
+        856
+      ],
+      [
+        949,
+        979
+      ],
+      [
+        1577,
+        1582
+      ],
+      [
+        1891,
+        1906
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S01",
+    "purpose": "reaper actual caller, kind mapping, blocked consumption and prompt composition",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "infra/fleet/docker-compose.yml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13244,
+    "git_blob": "3689a96fc5ee6d1a1dad7c9a764e2f5d6e49d0d7",
+    "pinned_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6",
+    "observed_sha256": null,
+    "manifest_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 231,
+    "read_ranges": [
+      [
+        93,
+        178
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S02",
+    "purpose": "researcher scheduling, state mounts, exit suppression and healthcheck",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/completion_line.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4568,
+    "git_blob": "de466f89378100fa6dbc4e0416610b26aa9a7980",
+    "pinned_sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "observed_sha256": null,
+    "manifest_sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 87,
+    "read_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S03",
+    "purpose": "completion path-existence semantics",
+    "disposition": "supporting_body_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/ledger.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 23573,
+    "git_blob": "5e7534695489901c673ed95f65f7fd634390549d",
+    "pinned_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "observed_sha256": null,
+    "manifest_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 429,
+    "read_ranges": [
+      [
+        304,
+        345
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S04",
+    "purpose": "autonomous false means unknown, not human authorization",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/backlog.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 12691,
+    "git_blob": "6d2a2fdbb715d8f22b589bc3163e59eddabf7664",
+    "pinned_sha256": "39600fa9f0de271db99336f6b6c2ed6a31f7809329ed69fba76e5d02fd89fc07",
+    "observed_sha256": null,
+    "manifest_sha256": "39600fa9f0de271db99336f6b6c2ed6a31f7809329ed69fba76e5d02fd89fc07",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 238,
+    "read_ranges": [
+      [
+        218,
+        238
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S05",
+    "purpose": "latest verdict event fold",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_role_supervisor_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 33391,
+    "git_blob": "40ef635ca3ed0dcad762c008946068a23c23c97b",
+    "pinned_sha256": "4da60355ee555c65e28b184245c799f58c11756bfed81c6a86b982fd0af9e1c8",
+    "observed_sha256": null,
+    "manifest_sha256": "4da60355ee555c65e28b184245c799f58c11756bfed81c6a86b982fd0af9e1c8",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 649,
+    "read_ranges": [
+      [
+        70,
+        265
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S06",
+    "purpose": "stub, synthetic host watermark and spawned expectation",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_verdict_reprobe_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7663,
+    "git_blob": "c912523ebf605ed850f3b8134bc1e061a0dfc680",
+    "pinned_sha256": "48ba3952039637bac578332b3991880401b64dd1707c518e39fa5be5b088b7af",
+    "observed_sha256": null,
+    "manifest_sha256": "48ba3952039637bac578332b3991880401b64dd1707c518e39fa5be5b088b7af",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 161,
+    "read_ranges": [
+      [
+        55,
+        161
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S07",
+    "purpose": "reachable true never stale and injected probe assertions",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_topic_reaper_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11829,
+    "git_blob": "16c4722b584d5c98e017f530a92e8b0339f3839e",
+    "pinned_sha256": "5d90bf453f81b004fcaf56d1bfa33def3bc97884a22a818da64d68af938d6ede",
+    "observed_sha256": null,
+    "manifest_sha256": "5d90bf453f81b004fcaf56d1bfa33def3bc97884a22a818da64d68af938d6ede",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 225,
+    "read_ranges": [
+      [
+        45,
+        200
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S08",
+    "purpose": "name/time predicate, AST caller presence and direct inventory fixture",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_uptake_routes_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 16416,
+    "git_blob": "7c30c5b3940826404691fb443cb960eea36dbbdc",
+    "pinned_sha256": "c03e179559d4dc2e48437f3868c26fce170d1de576b2146ac1f85fd00788e090",
+    "observed_sha256": null,
+    "manifest_sha256": "c03e179559d4dc2e48437f3868c26fce170d1de576b2146ac1f85fd00788e090",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 285,
+    "read_ranges": [
+      [
+        55,
+        145
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S09",
+    "purpose": "route checks and distinction from runtime write-boundary",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_research_collector_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10663,
+    "git_blob": "9714c958b94b723d5879a483fc4cb74c3bbdecac",
+    "pinned_sha256": "a63265911a2add60a355570a708a4c4b9f2637ca62f55e5e8fadad0c15943ebb",
+    "observed_sha256": null,
+    "manifest_sha256": "a63265911a2add60a355570a708a4c4b9f2637ca62f55e5e8fadad0c15943ebb",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 222,
+    "read_ranges": [
+      [
+        50,
+        160
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S10",
+    "purpose": "injected HTML/Atom, partial success and serial dedup",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_research_queue_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6643,
+    "git_blob": "7483f40c71d9dfa29d2c6fbc9fcbfad4ef6e23ae",
+    "pinned_sha256": "cd6fc4c1b1a1d41ad914ce23244c0b0fa8724e8f915e3b4b2845c5d023496365",
+    "observed_sha256": null,
+    "manifest_sha256": "cd6fc4c1b1a1d41ad914ce23244c0b0fa8724e8f915e3b4b2845c5d023496365",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 159,
+    "read_ranges": [
+      [
+        65,
+        159
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S11",
+    "purpose": "synthetic timestamp window and missing timestamp first-inclusion",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_youtube_queue_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11854,
+    "git_blob": "d5d06e23241de7a7dbf327ef3b0aa9a3c5bf7157",
+    "pinned_sha256": "830f4804430f98edd68ec9e10d81be631a27dfaf6cf1a78b428b71dd392e5776",
+    "observed_sha256": null,
+    "manifest_sha256": "830f4804430f98edd68ec9e10d81be631a27dfaf6cf1a78b428b71dd392e5776",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 230,
+    "read_ranges": [
+      [
+        60,
+        155
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S12",
+    "purpose": "serial queue identity and unreadable queue fixture",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_source_note_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11229,
+    "git_blob": "005fbfee94adcaa9698ed35d061b30d8d1b4546e",
+    "pinned_sha256": "3a259bd5a396e79e697d802e56a86d005b6b68a423aed937d6006fab38edb906",
+    "observed_sha256": null,
+    "manifest_sha256": "3a259bd5a396e79e697d802e56a86d005b6b68a423aed937d6006fab38edb906",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 214,
+    "read_ranges": [
+      [
+        55,
+        115
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S13",
+    "purpose": "pipeline gate vocabulary and output paths",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_session_handoff_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10017,
+    "git_blob": "1121a8008550dec1a27c2d0b67fc87abbe5c0339",
+    "pinned_sha256": "a31ee1035eb8141d8ad051d7bec28e631b29172ae2f3daec726ca6449be3fff6",
+    "observed_sha256": null,
+    "manifest_sha256": "a31ee1035eb8141d8ad051d7bec28e631b29172ae2f3daec726ca6449be3fff6",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 205,
+    "read_ranges": [
+      [
+        60,
+        140
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S14",
+    "purpose": "synthetic event/cycle tail and source wiring",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_reanchor_binding_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11542,
+    "git_blob": "9367cb05c576bda4b7859bccbf27052e6f6ecc26",
+    "pinned_sha256": "45356ee772fd05760a1b0c183dcf9c38ff09c0de331b2e8f4d7d4a4803f81b03",
+    "observed_sha256": null,
+    "manifest_sha256": "45356ee772fd05760a1b0c183dcf9c38ff09c0de331b2e8f4d7d4a4803f81b03",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 216,
+    "read_ranges": [
+      [
+        40,
+        128
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S15",
+    "purpose": "subprocess fixture with path-existence evidence and synthetic approvals",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/atomic_jsonl.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4048,
+    "git_blob": "990144faa806dd3a50303b277920939421ba7546",
+    "pinned_sha256": "4d0fc06aa212e9df5b7c12ac36708d07f1d17171d27ef3ed52a9cc60854ec9b8",
+    "observed_sha256": null,
+    "manifest_sha256": "4d0fc06aa212e9df5b7c12ac36708d07f1d17171d27ef3ed52a9cc60854ec9b8",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 106,
+    "read_ranges": [
+      [
+        1,
+        106
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S16",
+    "purpose": "append requires caller lock; replace uses shared temporary filename",
+    "disposition": "supporting_body_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/external_text.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1853,
+    "git_blob": "7e377c3f483030ea3f2094f780d59a7611ebc138",
+    "pinned_sha256": "fd4de5e4cd7375e83f05d7a911508bcff3463ebc682992b4660e25bda31ed8ac",
+    "observed_sha256": null,
+    "manifest_sha256": "fd4de5e4cd7375e83f05d7a911508bcff3463ebc682992b4660e25bda31ed8ac",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 39,
+    "read_ranges": [
+      [
+        1,
+        39
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S17",
+    "purpose": "finite marker scan and data banner",
+    "disposition": "supporting_body_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/sandbox.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 32037,
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "pinned_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "observed_sha256": null,
+    "manifest_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 551,
+    "read_ranges": [
+      [
+        75,
+        157
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S18",
+    "purpose": "patch grade classification and missing policy defaults; return tail not read",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/source-note.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6732,
+    "git_blob": "bd5a76fc0d3cb43b6e7ef67fa51b6b53dd356889",
+    "pinned_sha256": "a93df0703ddcbc807a862e920dce5e1fce7e10a79fbb05fe0849bb37f6497873",
+    "observed_sha256": null,
+    "manifest_sha256": "a93df0703ddcbc807a862e920dce5e1fce7e10a79fbb05fe0849bb37f6497873",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 116,
+    "read_ranges": [
+      [
+        39,
+        116
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S19",
+    "purpose": "two-stage note/uptake, selection wording, marker expectations and routes caller",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/role-request.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4997,
+    "git_blob": "33c715f7432f8f9a269da797c5a1122ee9bdffe2",
+    "pinned_sha256": "aafac00407fd125c82e24a3207419b0de4a1c8d5ed4229d2c6f85f6ba4b50ca1",
+    "observed_sha256": null,
+    "manifest_sha256": "aafac00407fd125c82e24a3207419b0de4a1c8d5ed4229d2c6f85f6ba4b50ca1",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 83,
+    "read_ranges": [
+      [
+        34,
+        82
+      ]
+    ],
+    "body_read_complete": false,
+    "tests_executed": [],
+    "execution_count": 0,
+    "id": "S20",
+    "purpose": "one-stage report and marker/canary expectations",
+    "disposition": "supporting_selected_ranges_read",
+    "test_limits": "Read only. Unread portions, dependencies and runtime behavior are not verified."
+  }
+]

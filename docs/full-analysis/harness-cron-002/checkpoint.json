@@ -1,0 +1,23 @@
+{
+  "partition": "harness:scripts/cron:002",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "parent_declared_zeus_baseline": "a7ed852",
+  "scope_sha256": "45e7f8d1ecdb36ab57c867b33db769881c1a7b4dde8f603bf456f0ca089d1c81",
+  "primary_files": 11,
+  "primary_bytes": 114584,
+  "primary_bodies_read": 11,
+  "supporting_files": 20,
+  "supporting_full_bodies": 3,
+  "manifest_sha256_missing": [],
+  "hash_validation": "All available manifest SHA-256 values and every Git blob/size matched; computed SHA-256 recorded for every body",
+  "status": "bounded_static_body_review_checkpoint",
+  "upstream_execution_count": 0,
+  "tests_executed": [],
+  "current_failure_reproduction": false,
+  "repository_fully_analyzed": false,
+  "adoption_approved": false,
+  "source_runtime_shared_coverage_edits": 0,
+  "commit_push_performed": false,
+  "validation": "Inert recorder assertions and review-section reconciliation only; not source tests",
+  "stop": "Bounded scope saved; full caller/test and execution gaps retained"
+}

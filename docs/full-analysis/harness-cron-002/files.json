@@ -1,0 +1,480 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/cron/re_anchor.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13399,
+    "git_blob": "ffb08034a4af72f98707046dd8a7de8bfcacf378",
+    "pinned_sha256": "d719e272ea860fb7aacd25ff54ee1b0435896c0353a0f5cb19e232b32a31d49f",
+    "observed_sha256": null,
+    "manifest_sha256": "d719e272ea860fb7aacd25ff54ee1b0435896c0353a0f5cb19e232b32a31d49f",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 247,
+    "read_ranges": [
+      [
+        1,
+        247
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#re_anchorpy",
+    "supporting_ids": [
+      "S01",
+      "S03",
+      "S04",
+      "S05",
+      "S15"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_reanchor_binding_smoke.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Approval identity/revision, retraction semantics, content acceptance versus path existence, task-bound goal authority"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/reachability.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 14657,
+    "git_blob": "838e3ab5fc6cc969a2de74a4b0dabf76fe792a78",
+    "pinned_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "observed_sha256": null,
+    "manifest_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 333,
+    "read_ranges": [
+      [
+        1,
+        333
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#reachabilitypy",
+    "supporting_ids": [
+      "S02",
+      "S07"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_verdict_reprobe_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Blocked-but-reachable retry, source/id collision, immutable body receipt, URL/redirect/byte/deadline boundaries, complete HTTP tests"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/research_collector.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11860,
+    "git_blob": "ffb9e29ffa8f14410c1c0b21d34a6a684102a24c",
+    "pinned_sha256": "86bf12b452bc21cc2f406690869a83a8b364400492d89e58353ce25884240fa7",
+    "observed_sha256": null,
+    "manifest_sha256": "86bf12b452bc21cc2f406690869a83a8b364400492d89e58353ce25884240fa7",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 280,
+    "read_ranges": [
+      [
+        1,
+        280
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#research_collectorpy",
+    "supporting_ids": [
+      "S02",
+      "S10",
+      "S16",
+      "S17"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_research_collector_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Concurrent dedup, write failure/status ordering, parser correctness on pinned responses, full dependency review"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/research_queue.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7491,
+    "git_blob": "1fb3b66c5fd2b61b01cb5e3b9a7f6d6c6fd67643",
+    "pinned_sha256": "fab86c2547e989d01bccf36fe0383572775fdd6431afc93d6894b518348b9d6f",
+    "observed_sha256": null,
+    "manifest_sha256": "fab86c2547e989d01bccf36fe0383572775fdd6431afc93d6894b518348b9d6f",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 169,
+    "read_ranges": [
+      [
+        1,
+        169
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#research_queuepy",
+    "supporting_ids": [
+      "S02",
+      "S11",
+      "S16",
+      "S20"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_research_queue_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Same timestamp/late append, missing timestamp recurrence, concurrent/crash enqueue, content-bound window identity"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/role_supervisor.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13132,
+    "git_blob": "1c749fbfdafca3a18185cefd0a9c090d0a11bcba",
+    "pinned_sha256": "c6b8f29fc9f76d35b05ca03163776a8176e8cb1616e7efd35ceb17eff4b564d4",
+    "observed_sha256": null,
+    "manifest_sha256": "c6b8f29fc9f76d35b05ca03163776a8176e8cb1616e7efd35ceb17eff4b564d4",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 263,
+    "read_ranges": [
+      [
+        1,
+        263
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#role_supervisorpy",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S06",
+      "S16"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_role_supervisor_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Blocked versus spawned result, duplicate result replay, process result receipt, parallel supervisor fencing, complete test body"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/session_handoff.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7815,
+    "git_blob": "47abbae9bc9daeddb22dd157caae5280819502be",
+    "pinned_sha256": "b191db0234c84200ab4721cb3114fa92489a145308183ba644548ba3bfd01ee2",
+    "observed_sha256": null,
+    "manifest_sha256": "b191db0234c84200ab4721cb3114fa92489a145308183ba644548ba3bfd01ee2",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 192,
+    "read_ranges": [
+      [
+        1,
+        192
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#session_handoffpy",
+    "supporting_ids": [
+      "S01",
+      "S14"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_session_handoff_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Task-bound cycles and open items, unknown versus absent, immutable handoff, complete downstream sandbox/pr4 trace"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/source_queue.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6388,
+    "git_blob": "9227cefbfe8b245f9fba565a3e22925986380ae3",
+    "pinned_sha256": "92f773ed376c7dc0bf8ff93bb572384c925cacc1dc2462056552e22d17e97678",
+    "observed_sha256": null,
+    "manifest_sha256": "92f773ed376c7dc0bf8ff93bb572384c925cacc1dc2462056552e22d17e97678",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 161,
+    "read_ranges": [
+      [
+        1,
+        161
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#source_queuepy",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S13",
+      "S16",
+      "S19"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_source_note_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Feed census caller missing in observed compose path, source/id identity, request-to-artifact binding, full producer/result retry tests"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/topic_reaper.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11840,
+    "git_blob": "fa0f3979893bf8f31a89551aead63b0cdd5e9cdb",
+    "pinned_sha256": "7c7065fd0f438025729ef5072f13eef2a011dd290968d9f590bc08e3178d5ca6",
+    "observed_sha256": null,
+    "manifest_sha256": "7c7065fd0f438025729ef5072f13eef2a011dd290968d9f590bc08e3178d5ca6",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 273,
+    "read_ranges": [
+      [
+        1,
+        273
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#topic_reaperpy",
+    "supporting_ids": [
+      "S01",
+      "S08",
+      "S16"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_topic_reaper_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "L2 inventory wiring, topic ownership/current activity, partitions and timestamps, individual failure receipts, actual isolated broker tests"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/uptake_routes.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8673,
+    "git_blob": "2115cf0257e56ff9c3b17cc3691139db1bac7131",
+    "pinned_sha256": "716ebcc2f5c37044e3c44e1159406c5baeb7a66ff0bb1a7c4db86d207f0192af",
+    "observed_sha256": null,
+    "manifest_sha256": "716ebcc2f5c37044e3c44e1159406c5baeb7a66ff0bb1a7c4db86d207f0192af",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 185,
+    "read_ranges": [
+      [
+        1,
+        185
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#uptake_routespy",
+    "supporting_ids": [
+      "S09",
+      "S18",
+      "S19"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_uptake_routes_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Directory representative grade, missing/unknown policy, actual write gate rather than patch grade, section warning/exit behavior"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/youtube_collector.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9322,
+    "git_blob": "90e3162011aabdbdb7431c83e7b151ceb499fc77",
+    "pinned_sha256": "64f6224bb3e297c9b6dbc9ac19eb90b98bc5f6a37a5a9a30b1a6dc4f91dd0d7e",
+    "observed_sha256": null,
+    "manifest_sha256": "64f6224bb3e297c9b6dbc9ac19eb90b98bc5f6a37a5a9a30b1a6dc4f91dd0d7e",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 213,
+    "read_ranges": [
+      [
+        1,
+        213
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#youtube_collectorpy",
+    "supporting_ids": [
+      "S02",
+      "S16"
+    ],
+    "tests_not_run": [],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Whole-cycle cap across channels, all-watch-failure heartbeat, fetch/parser tests not located by targeted search, metadata freshness and injection scan"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/youtube_queue.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10007,
+    "git_blob": "743630b717ea9c88d8d4bf81c347737b9a02781c",
+    "pinned_sha256": "e15e6a75f6ab020744f7fdcb310e551440626f815ec56f1d55e7713d95883f69",
+    "observed_sha256": null,
+    "manifest_sha256": "e15e6a75f6ab020744f7fdcb310e551440626f815ec56f1d55e7713d95883f69",
+    "hash_basis": "manifest SHA-256 and Git blob/bytes",
+    "total_lines": 211,
+    "read_ranges": [
+      [
+        1,
+        211
+      ]
+    ],
+    "body_read_complete": true,
+    "tests_executed": [],
+    "execution_count": 0,
+    "partition": "harness:scripts/cron:002",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-002/review.md#youtube_queuepy",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S07",
+      "S12",
+      "S16"
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_verdict_reprobe_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      },
+      {
+        "path": "tests/contract/test_youtube_queue_contract.py",
+        "reason": "Static-only bounded review; no upstream execution permitted"
+      }
+    ],
+    "test_limits": "No upstream execution, current reproduction, production/model canary or full call/test validation. Supporting ranges are explicit.",
+    "remaining": [
+      "Rejected request requeue, true-but-undistillable stale verdict, concurrent/source duplicate IDs, batch and context budgets"
+    ],
+    "historical_claim_status": "Source-derived claims only; not independently executed",
+    "adoption_approved": false,
+    "implementation_equivalence_proven": false
+  }
+]

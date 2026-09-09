@@ -1,0 +1,87 @@
+{
+  "kind": "actual_original_component_observations",
+  "pyyaml_version": "6.0.3",
+  "empty_proposal_fast_path": true,
+  "history_after_current_gen_append": [
+    {
+      "fields": [
+        {
+          "id": "x",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "fields": [
+        {
+          "id": "x",
+          "value": 2
+        }
+      ]
+    }
+  ],
+  "phase_id_after_update": "",
+  "valid_wrong_shape_child_sidecar": "list",
+  "pane_state_before_merge": {
+    "ts": "2025-01-01T00:00:00Z",
+    "payload": {
+      "pane_id": "p1",
+      "status": "running",
+      "generation": 2
+    },
+    "pane_id": "p1",
+    "status": "running",
+    "generation": 2,
+    "_latest_ts": "2025-01-01T00:00:00Z",
+    "_latest_type": "pane_status"
+  },
+  "merged_count": 1,
+  "pane_state_after_merge": {
+    "ts": "2026-09-09T05:49:42Z",
+    "payload": {
+      "type": "pane_status",
+      "pane_id": "p1",
+      "status": "exited",
+      "generation": 1
+    },
+    "pane_id": "p1",
+    "status": "exited",
+    "generation": 1,
+    "_latest_ts": "2026-09-09T05:49:42Z",
+    "_latest_type": "pane_status",
+    "sid": "orch-1788932982-2fbd0f"
+  },
+  "merged_row": {
+    "ts": "2026-09-09T05:49:42Z",
+    "type": "pane_status",
+    "sid": "orch-1788932982-2fbd0f",
+    "payload": {
+      "type": "pane_status",
+      "pane_id": "p1",
+      "status": "exited",
+      "generation": 1
+    }
+  },
+  "all_invalid_merge_count": 0,
+  "all_invalid_shard_preserved": false,
+  "json_with_ack": {
+    "returncode": 0,
+    "report": {
+      "schema_version": "1",
+      "total_prompts": 0,
+      "strict_design_matched": 0,
+      "pending": 0,
+      "acknowledged": 0,
+      "last_ts": "",
+      "last_strict_ts": "",
+      "top_phases": [],
+      "top_cwds": [],
+      "recent_strict": []
+    },
+    "ack_file_exists": false
+  },
+  "duplicate_bulk_ack_count": 2,
+  "unique_ack_keys": [
+    "same-event-key"
+  ]
+}

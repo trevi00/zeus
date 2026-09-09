@@ -1,0 +1,8 @@
+  [OK] test_success_first_try_no_sleep
+  [OK] test_transient_then_success
+  [OK] test_permanent_reraises_immediately
+  [OK] test_transient_exhaustion_reraises_last
+  [OK] test_backoff_cap_respected
+  [OK] test_full_jitter_bounds
+
+[OK] 6 passed

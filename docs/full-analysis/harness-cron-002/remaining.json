@@ -1,0 +1,325 @@
+{
+  "partition": "harness:scripts/cron:002",
+  "primary_unread": [],
+  "primary_bodies_read": 11,
+  "primary_full_call_test_trace_complete": 0,
+  "upstream_execution_count": 0,
+  "adoption_approved": false,
+  "repository_fully_analyzed": false,
+  "supporting_partial": [
+    {
+      "path": "scripts/cron/l2_driver.py",
+      "read_ranges": [
+        [
+          448,
+          507
+        ],
+        [
+          848,
+          856
+        ],
+        [
+          949,
+          979
+        ],
+        [
+          1577,
+          1582
+        ],
+        [
+          1891,
+          1906
+        ]
+      ],
+      "total_lines": 2044
+    },
+    {
+      "path": "infra/fleet/docker-compose.yml",
+      "read_ranges": [
+        [
+          93,
+          178
+        ]
+      ],
+      "total_lines": 231
+    },
+    {
+      "path": "scripts/lib/ledger.py",
+      "read_ranges": [
+        [
+          304,
+          345
+        ]
+      ],
+      "total_lines": 429
+    },
+    {
+      "path": "scripts/lib/backlog.py",
+      "read_ranges": [
+        [
+          218,
+          238
+        ]
+      ],
+      "total_lines": 238
+    },
+    {
+      "path": "tests/contract/test_role_supervisor_contract.py",
+      "read_ranges": [
+        [
+          70,
+          265
+        ]
+      ],
+      "total_lines": 649
+    },
+    {
+      "path": "tests/contract/test_verdict_reprobe_contract.py",
+      "read_ranges": [
+        [
+          55,
+          161
+        ]
+      ],
+      "total_lines": 161
+    },
+    {
+      "path": "tests/contract/test_topic_reaper_contract.py",
+      "read_ranges": [
+        [
+          45,
+          200
+        ]
+      ],
+      "total_lines": 225
+    },
+    {
+      "path": "tests/contract/test_uptake_routes_contract.py",
+      "read_ranges": [
+        [
+          55,
+          145
+        ]
+      ],
+      "total_lines": 285
+    },
+    {
+      "path": "tests/contract/test_research_collector_contract.py",
+      "read_ranges": [
+        [
+          50,
+          160
+        ]
+      ],
+      "total_lines": 222
+    },
+    {
+      "path": "tests/contract/test_research_queue_contract.py",
+      "read_ranges": [
+        [
+          65,
+          159
+        ]
+      ],
+      "total_lines": 159
+    },
+    {
+      "path": "tests/contract/test_youtube_queue_contract.py",
+      "read_ranges": [
+        [
+          60,
+          155
+        ]
+      ],
+      "total_lines": 230
+    },
+    {
+      "path": "tests/contract/test_source_note_contract.py",
+      "read_ranges": [
+        [
+          55,
+          115
+        ]
+      ],
+      "total_lines": 214
+    },
+    {
+      "path": "tests/contract/test_session_handoff_contract.py",
+      "read_ranges": [
+        [
+          60,
+          140
+        ]
+      ],
+      "total_lines": 205
+    },
+    {
+      "path": "tests/integration/test_reanchor_binding_smoke.py",
+      "read_ranges": [
+        [
+          40,
+          128
+        ]
+      ],
+      "total_lines": 216
+    },
+    {
+      "path": "scripts/engine/sandbox.py",
+      "read_ranges": [
+        [
+          75,
+          157
+        ]
+      ],
+      "total_lines": 551
+    },
+    {
+      "path": "pipelines/source-note.yaml",
+      "read_ranges": [
+        [
+          39,
+          116
+        ]
+      ],
+      "total_lines": 116
+    },
+    {
+      "path": "pipelines/role-request.yaml",
+      "read_ranges": [
+        [
+          34,
+          82
+        ]
+      ],
+      "total_lines": 83
+    }
+  ],
+  "tests_not_run": [
+    {
+      "path": "tests/contract/test_role_supervisor_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_verdict_reprobe_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_topic_reaper_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_uptake_routes_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_research_collector_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_research_queue_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_youtube_queue_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_source_note_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/contract/test_session_handoff_contract.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    },
+    {
+      "path": "tests/integration/test_reanchor_binding_smoke.py",
+      "reason": "No execution authorized; static inspection only",
+      "follow_up": "Review full test and transitive dependencies, then separately authorize isolated execution with actual receipts and skip accounting"
+    }
+  ],
+  "remaining": [
+    {
+      "path": "scripts/cron/re_anchor.py",
+      "remaining": [
+        "Approval identity/revision, retraction semantics, content acceptance versus path existence, task-bound goal authority"
+      ]
+    },
+    {
+      "path": "scripts/cron/reachability.py",
+      "remaining": [
+        "Blocked-but-reachable retry, source/id collision, immutable body receipt, URL/redirect/byte/deadline boundaries, complete HTTP tests"
+      ]
+    },
+    {
+      "path": "scripts/cron/research_collector.py",
+      "remaining": [
+        "Concurrent dedup, write failure/status ordering, parser correctness on pinned responses, full dependency review"
+      ]
+    },
+    {
+      "path": "scripts/cron/research_queue.py",
+      "remaining": [
+        "Same timestamp/late append, missing timestamp recurrence, concurrent/crash enqueue, content-bound window identity"
+      ]
+    },
+    {
+      "path": "scripts/cron/role_supervisor.py",
+      "remaining": [
+        "Blocked versus spawned result, duplicate result replay, process result receipt, parallel supervisor fencing, complete test body"
+      ]
+    },
+    {
+      "path": "scripts/cron/session_handoff.py",
+      "remaining": [
+        "Task-bound cycles and open items, unknown versus absent, immutable handoff, complete downstream sandbox/pr4 trace"
+      ]
+    },
+    {
+      "path": "scripts/cron/source_queue.py",
+      "remaining": [
+        "Feed census caller missing in observed compose path, source/id identity, request-to-artifact binding, full producer/result retry tests"
+      ]
+    },
+    {
+      "path": "scripts/cron/topic_reaper.py",
+      "remaining": [
+        "L2 inventory wiring, topic ownership/current activity, partitions and timestamps, individual failure receipts, actual isolated broker tests"
+      ]
+    },
+    {
+      "path": "scripts/cron/uptake_routes.py",
+      "remaining": [
+        "Directory representative grade, missing/unknown policy, actual write gate rather than patch grade, section warning/exit behavior"
+      ]
+    },
+    {
+      "path": "scripts/cron/youtube_collector.py",
+      "remaining": [
+        "Whole-cycle cap across channels, all-watch-failure heartbeat, fetch/parser tests not located by targeted search, metadata freshness and injection scan"
+      ]
+    },
+    {
+      "path": "scripts/cron/youtube_queue.py",
+      "remaining": [
+        "Rejected request requeue, true-but-undistillable stale verdict, concurrent/source duplicate IDs, batch and context budgets"
+      ]
+    }
+  ],
+  "cross_cutting": [
+    "No current external website verification; source historical measurements not confirmed",
+    "No Windows Task Scheduler registration or Linux/WSL live execution verified",
+    "Zeus src equivalence, eight-stage SDD execution and human acceptance not verified",
+    "No full dependency/license review or independent Claude adoption decision",
+    "Targeted unsuccessful test search does not establish repository-wide test absence"
+  ],
+  "blocked_probe_retried": false
+}
