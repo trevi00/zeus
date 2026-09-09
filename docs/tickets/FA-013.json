@@ -1,0 +1,55 @@
+{
+  "id": "ZEUS-fb2ab61807b4",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "독립 Zeus의 게이트 계약에 고정 statement ID, 정의·산출물·환경 해시, run/cycle, reviewer decision/runner receipt 귀속을 반영한다.",
+      "같은 이벤트의 철회·재개방·컴팩션·부분 검증을 쓰기와 모든 소비 경로에서 일관되게 처리한다.",
+      "원본 Claude 하네스와 기존 codex-harness 운영은 수정하지 않는다. 전체 분석 후 주 Codex가 합의된 구현을 진행한다."
+    ],
+    "title": "[FA-013] 외부 게이트의 문장 귀속·철회·PARTIAL 소비 불일치",
+    "impact": "여러 문장의 승인 또는 거부가 한 판정으로 합쳐지고, 부분 검증이 사람 대기 대신 반복 게이트 지시로 이어질 수 있다. 사용자 QA·알파/라이브 승인 범위를 정확히 결속하는 Zeus 설계에 반영해야 한다.",
+    "problem": "pinned harness에서 judge/residual CLI는 문장별 판정을 쓰지만 gate_runner는 stage+mode 최신값만 소비한다. PARTIAL은 gate_runner/residual에서 대기인 반면 tick은 None만 대기로 분류한다. retraction 필터와 외부 판정 소비도 갈린다. 실제 Codex·Claude 독립 정적 검토와 후속 토론이며 원본 실행 재현은 0건이다.",
+    "rollback": "후속 구현은 별도 후보에서 검증한다. 승인된 release에 적용한 뒤 회귀가 생기면 이전 검증 release로 복귀하고 판정·철회·실패 이력은 보존한다.",
+    "verification": [
+      "원문 심볼과 최종 공동 resolution을 기준으로 판단한다. raw 초기 보고의 과장·오류는 정정 기록을 따른다.",
+      "FA-005의 정상 gate-writer ERROR probe는 과거 자동 검사 중단으로 미실행이며 본 정적 검토를 실행 영수증으로 대체하지 않는다.",
+      "실제 인간 QA와 독립 reviewer 검증 전에는 이 티켓 또는 원본 actor 문자열로 배포를 승인하지 않는다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-gate-consumer-joint/resolution.md",
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-gate-consumer-joint/codex-initial.md",
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-gate-consumer-joint/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-gate-consumer-joint/checkpoint.json"
+    ],
+    "acceptance_criteria": [
+      "같은 단계의 A=FAIL/B=PASS, A=PASS/B=PARTIAL, 판정 부재·철회·재개방·다른 revision 사례가 문장별로 독립 처리된다.",
+      "PARTIAL은 미종결로 표시되고 동일 입력만으로 게이트 재실행을 반복하지 않으며 변경 또는 승인 이벤트에 따라 재개된다.",
+      "모든 필수 게이트의 실제 결과와 사람 승인 범위가 현재 후보에 결속되고, 재검증 ERROR·증거 누락·정의 변경이 과거 PASS를 재사용하지 못한다.",
+      "검토와 실제 실행 영수증을 구분하고 Windows/Linux/WSL 해당 경로 및 동시 claim·재개·복구를 검증한다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T05:14:41.783107+00:00",
+  "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T05:14:43.513274+00:00",
+      "id": "7b8f10a7f600d24397da1c9fe6a72030b5d92db63284efa959f20260c3db2599",
+      "url": "https://github.com/trevi00/zeus/issues/14",
+      "number": 14,
+      "status": "synced",
+      "body_hash": "9f7a8b05e83871b1cf8545e1bd6c1e80f69135ed8e3520f052fac83d2d2bc706",
+      "ticket_id": "ZEUS-fb2ab61807b4",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

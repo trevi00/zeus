@@ -1,0 +1,57 @@
+{
+  "id": "ZEUS-f5a496e41ac2",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "Zeus의 구조화 스펙과 사람이 검토하는 시나리오를 공통 의미 모델로 연결하고 안정 ID·원본 스펙 revision을 유지한다.",
+      "검토 골격·실행 가능한 테스트·실행 결과·사람 인수를 별도 상태로 관리한다.",
+      "실제 device/live/replay와 금전 backend 검증은 사용자 일정에 맞춰 후속 구현하며, 미준비 상태를 mock PASS로 대체하지 않는다."
+    ],
+    "title": "[FA-014] 스펙 템플릿·GWT 검사·인수 테스트 생성의 계약 불일치",
+    "impact": "스펙이 통과해도 시나리오가 도출되지 않거나, 인수 단언 없이 테스트 명령만 성공할 수 있다. SDD부터 실기기 실측·E2E 코드까지 연결하려는 목표에 직접 영향을 준다.",
+    "problem": "pinned usecase 템플릿과 lint는 한 줄 Given/When/Then을 허용하지만 testgen은 개행 구문을 요구한다. 생성된 pytest는 xfail(strict=False)+NotImplementedError 골격이며 행동 oracle이 없다. AC 귀속·120자 절단·문자열 escaping·재생성 덮어쓰기 경계도 있다. 현재 결과는 원문 정적 검토이고 실제 사용자 인수를 실행한 증거가 아니다.",
+    "rollback": "기존 구현 테스트와 원본 스펙을 보존한 별도 생성 후보를 사용한다. 회귀 시 이전 검증된 생성기/release로 복귀하되 실패 입력과 시나리오 귀속 이력은 남긴다.",
+    "verification": [
+      "현재 Zeus SDD는 준비 계층이며 모든 단계 blocked, acceptance_passed=false이다. 이 상태 자체를 전체 기능 구현 완료로 계산하지 않는다.",
+      "초기 코드 생성은 테스트 실행 성공의 증거가 아니다. 문서·정적 분석·관측·실제 E2E·사람 승인을 구분한다.",
+      "변경 후 Codex·Claude 검수, Windows/Linux/WSL 생성·실행 계약과 실기기 후속 증적을 연결한다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-gate-consumer-joint/resolution.md",
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-gate-consumer-joint/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-gate-consumer-joint/supporting-evidence.json",
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/full-analysis/harness-engine-extractors/review.md",
+      "https://github.com/trevi00/zeus/blob/a10ba0e124e2dfbea24ae06562d768143ff7f981/docs/sdd/README.md"
+    ],
+    "acceptance_criteria": [
+      "실제 제공 템플릿에서 검증→시나리오 도출→검토 VIEW→테스트 생성이 같은 AC/GWT와 전제·기대 결과를 보존한다.",
+      "AC별 미도출·중복·미귀속·절단·미실행·skip/xfail/xpass를 계획 분모와 비교하여 명시하며 필수 인수의 빈 성공을 거부한다.",
+      "생성 코드의 안전한 literal encoding과 기존 사람이 구현한 테스트 보존을 검증한다. strict=True 전환만으로 구현 완료를 주장하지 않는다.",
+      "실제 대상 앱·기기/환경·초기화·backend revision·사람이 검토한 oracle에 결속된 반복 실행과 실패 대조군을 통해 E2E 자산을 승격한다.",
+      "금전 흐름은 실제 격리 backend의 거래·멱등·취소·정산 대조가 미충족이면 인수 승인되지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T05:14:43.658095+00:00",
+  "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T05:14:45.360009+00:00",
+      "id": "d9c584db548ffe747d4fa6f74912b3f0cf03b3498ba5b58f7a16ce8f3d187385",
+      "url": "https://github.com/trevi00/zeus/issues/15",
+      "number": 15,
+      "status": "synced",
+      "body_hash": "84c74fbe3e5d8a9c0b6d2896b805581234fed7190c6149311d8a224c42661350",
+      "ticket_id": "ZEUS-f5a496e41ac2",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

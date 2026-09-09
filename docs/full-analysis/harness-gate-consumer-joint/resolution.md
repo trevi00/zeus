@@ -49,3 +49,5 @@ Claude는 Codex와 독립적으로 다문장 판정 소비 누락, PARTIAL, ERRO
 새 토픽 초안은 `ticket-drafts.json`의 FA-013(판정 소비)과 FA-014(스펙/인수 생성)에 분리했다. 증거 커밋 게시 후 로컬 PostgreSQL 티켓과 GitHub Issues로 동기화한다. 기존 FA-005와 이번 정적 추적은 이어지지만, 과거 자동 검토가 중단한 정상 gate-writer ERROR probe는 **그대로 미실행**이며 재시도/우회하지 않았다. 정적 토론을 그 실행 영수증으로 대체하지 않는다.
 
 나머지 caller/config/tests 전체 추적, 실제 shell·플랫폼·원장 복구·동시성 실행, 라이선스/의존성, 기기·결제 인수, Astra→Sol→Terra 동등 자격 검증은 남는다. 일부 upstream subprocess나 생성물 PASS는 사용자 경험과 금융 흐름의 실제 검증을 대신하지 않는다.
+
+게시 후 연결: 증거 커밋 `a10ba0e124e2dfbea24ae06562d768143ff7f981`을 고정해 [FA-013 / #14](https://github.com/trevi00/zeus/issues/14), [FA-014 / #15](https://github.com/trevi00/zeus/issues/15)를 로컬 PostgreSQL 원장에서 생성·동기화했다. 15개 전체 티켓의 원격 제목·본문·귀속 marker를 로컬 버전과 대조해 모두 일치함을 확인했다. 티켓 게시를 구현 검수 또는 채택 승인으로 계산하지 않는다.
