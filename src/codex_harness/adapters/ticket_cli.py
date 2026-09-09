@@ -33,13 +33,20 @@ def execute(tickets, args):
         with output.open("xb") as stream:
             stream.write(prepared["signing_payload"].encode("utf-8"))
         return {k: v for k, v in prepared.items() if k != "signing_payload"} | {"signing_file": str(output)}
-    if args.ticket_command == "close":
+    if args.ticket_command in {"close", "review-close"}:
         with args.packet.open("rb") as stream:
             raw = stream.read(1024 * 1024 + 1)
         require(len(raw) <= 1024 * 1024, "Closure packet exceeds budget")
         packet = parse_json(raw.decode("utf-8"))
         require(isinstance(packet, dict) and packet.get("ticket_id") == args.ticket_id
                 and raw == canonical(packet).encode("utf-8"), "Ticket identity or canonical signing bytes mismatch")
+        if args.ticket_command == "review-close":
+            from codex_harness.adapters.sdd import write_export
+            from codex_harness.adapters.ticket_review import render_ticket_review
+            require(not args.output.resolve().is_relative_to(life.artifacts.root), "Review output must be outside artifact storage")
+            review = life.review(packet)
+            return {**write_export(args.output, render_ticket_review(review, str(args.packet.resolve()))),
+                    "packet_ref": review["packet_ref"], "approval_granted": False}
         ref = life.artifacts.put(raw.decode("utf-8"), "externally-signed-ticket-packet")["ref"]
         signatures = []
         for value in args.signature:

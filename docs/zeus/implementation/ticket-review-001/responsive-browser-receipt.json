@@ -1,0 +1,225 @@
+{
+  "mode": "actual Chrome desktop browser; viewport emulation, not Samsung device tests",
+  "human_acceptance": false,
+  "html_sha256": "a2e661e12592e68f3a4af31456b4b1debcaadbea9fda3923ab66cb9981b6ba53",
+  "results": [
+    {
+      "args": [
+        "get",
+        "url"
+      ],
+      "exit_code": 0,
+      "stdout": "file:///C:/Users/rudtn/zeus/docs/zeus/implementation/ticket-review-001/example-review-responsive.html\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "set",
+        "viewport",
+        "1440",
+        "1000"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Done\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "window.scrollTo(0,0)"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"interrupted\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,details:document.querySelectorAll(\"details\").length,openDetails:document.querySelectorAll(\"details[open]\").length,resources:performance.getEntriesByType(\"resource\").map(r=>r.name)})"
+      ],
+      "exit_code": 0,
+      "stdout": "\"{\\\"width\\\":1440,\\\"scrollWidth\\\":1440,\\\"details\\\":5,\\\"openDetails\\\":0,\\\"resources\\\":[]}\"\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "screenshot",
+        "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-desktop.png"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Screenshot saved to C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-desktop.png\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "set",
+        "viewport",
+        "768",
+        "1024"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Done\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "window.scrollTo(0,0)"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"interrupted\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,details:document.querySelectorAll(\"details\").length,openDetails:document.querySelectorAll(\"details[open]\").length,resources:performance.getEntriesByType(\"resource\").map(r=>r.name)})"
+      ],
+      "exit_code": 0,
+      "stdout": "\"{\\\"width\\\":768,\\\"scrollWidth\\\":768,\\\"details\\\":5,\\\"openDetails\\\":0,\\\"resources\\\":[]}\"\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "screenshot",
+        "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-tablet.png"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Screenshot saved to C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-tablet.png\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "set",
+        "viewport",
+        "390",
+        "844"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Done\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "window.scrollTo(0,0)"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"interrupted\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,details:document.querySelectorAll(\"details\").length,openDetails:document.querySelectorAll(\"details[open]\").length,resources:performance.getEntriesByType(\"resource\").map(r=>r.name)})"
+      ],
+      "exit_code": 0,
+      "stdout": "\"{\\\"width\\\":390,\\\"scrollWidth\\\":390,\\\"details\\\":5,\\\"openDetails\\\":0,\\\"resources\\\":[]}\"\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "screenshot",
+        "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-phone.png"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Screenshot saved to C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-phone.png\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "press",
+        "Tab"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Done\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "press",
+        "Enter"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Done\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "snapshot"
+      ],
+      "exit_code": 0,
+      "stdout": "- main\n  - sectionheader\n    - StaticText \"ZEUS · 종료 전 검토\"\n    - heading \"Zeus 종료 근거 검토 — 실제 계측 예제\" [level=1, ref=e1]\n    - paragraph\n      - StaticText \"이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.\"\n    - paragraph\n      - StaticText \"저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.\"\n    - paragraph\n      - StaticText \"ZEUS-bd2bcff7c9bd · 개정 1 · 작업 주기 0\"\n  - generic\n    - heading \"무엇을 해결했는가\" [level=2, ref=e2]\n    - paragraph\n      - StaticText \"사람이 원문 인수 기준과 측정한 결과를 함께 읽고 종료 근거를 판단할 수 있어야 합니다.\"\n    - heading \"영향\" [level=3, ref=e3]\n    - paragraph\n      - StaticText \"이 예제는 실제 GitHub·격리 PostgreSQL 관측을 보여줍니다. 제품 인수나 사람 승인을 대신하지 않습니다.\"\n    - heading \"범위\" [level=3, ref=e4]\n    - list\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"전용 시험 이슈 #34의 실제 조회\"\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"격리 PostgreSQL의 보존된 이력\"\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"읽기 전용 검토 화면\"\n    - heading \"종료 요청 사유\" [level=3, ref=e5]\n    - paragraph\n      - StaticText \"원문과 실측을 연결한 검토 화면 확인\"\n  - generic\n    - heading \"필요한 승인\" [level=2, ref=e6]\n    - paragraph\n      - StaticText \"사람 승인 요구 없음 — 이 정책은 자동화 서명만으로 종료할 수 있습니다.\"\n    - list\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"test-only-not-a-human@zeus.invalid · automation\"\n    - paragraph\n      - StaticText \"서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.\"\n    - DescriptionList\n      - term \"발행\"\n      - definition\n        - StaticText \"2026-09-09T15:25:48.289412+00:00\"\n      - term \"서명 기한\"\n      - definition\n        - StaticText \"2026-09-09T16:25:48.289412+00:00\"\n      - term \"해결 커밋\"\n      - definition\n        - StaticText \"33240ab4f0d759adfb2205db1de74c1e2c76212e\"\n  - generic\n    - heading \"인수 기준과 증거 · 3개\" [level=2, ref=e7]\n    - paragraph\n      - StaticText \"‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.\"\n    - article\n      - StaticText \"인수 기준 1\"\n      - heading \"시험용 이슈 #34의 제목과 본문이 PostgreSQL 원장의 내용과 일치한다.\" [level=3, ref=e11]\n      - paragraph\n        - StaticText \"제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.\"\n      - group\n        - DisclosureTriangle \"증거 내용 보기 · 1,698 bytes\" [expanded=true]\n          - StaticText \"증거 내용 보기 · 1,698 bytes\"\n        - paragraph\n          - StaticText \"sha256:d2e229940711beed01cc65bd4074f06c14dad108f22b3872786641e0504d3a9c\"\n        - paragraph\n          - StaticText \"관측 시각: 2026-09-09T15:25:48.081088+00:00\"\n        - StaticText \"{\\n  \\\"content_hash\\\": \\\"00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be\\\",\\n  \\\"criterion_index\\\": 0,\\n  \\\"details\\\": {\\n    \\\"actual_remote\\\": {\\n      \\\"body\\\": \\\"<!-- zeus-ticket:ZEUS-c4bcef7b11b0 -->\\\\n\\\\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\\\n\\\\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\\\\n\\\\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\\\\n\\\\n## Problem\\\\n\\\\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\\\\n\\\\n## Impact\\\\n\\\\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\\\\n\\\\n## Rollback\\\\n\\\\nRetain test receipts and close only this dedicated issue after verification.\\\\n\\\\n## Evidence Refs\\\\n\\\\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\\\\n\\\\n## Scope\\\\n\\\\n- Isolated PostgreSQL schema\\\\n- This dedicated GitHub issue\\\\n- Ephemeral automation signer only\\\\n\\\\n## Acceptance Criteria\\\\n\\\\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\\\\n\\\\n## Verification\\\\n\\\\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\\\\n\\\\n## Reviewer findings\\\\n\\\\nNo review recorded for this revision.\\\\n\\\",\\n      \\\"comments\\\": [],\\n      \\\"number\\\": 34,\\n      \\\"state\\\": \\\"CLOSED\\\",\\n      \\\"title\\\": \\\"[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\\",\\n      \\\"url\\\": \\\"https://github.com/trevi00/zeus/issues/34\\\"\\n    },\\n    \\\"canonical_title_and_body_match\\\": true\\n  },\\n  \\\"kind\\\": \\\"ticket-criterion-evidence-v1\\\",\\n  \\\"observed_at\\\": \\\"2026-09-09T15:25:48.081088+00:00\\\",\\n  \\\"outcome\\\": \\\"passed\\\",\\n  \\\"revision\\\": 1,\\n  \\\"solution_commit\\\": \\\"33240ab4f0d759adfb2205db1de74c1e2c76212e\\\",\\n  \\\"ticket_id\\\": \\\"ZEUS-bd2bcff7c9bd\\\"\\n}\"\n    - article\n      - StaticText \"인수 기준 2\"\n      - heading \"종료와 재개를 포함한 네 개의 작업 주기 이벤트가 실제 PostgreSQL에 보존되어 있다.\" [level=3, ref=e12]\n      - paragraph\n        - StaticText \"제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.\"\n      - group\n        - DisclosureTriangle \"증거 내용 보기 · 2,953 bytes\" [expanded=false]\n          - StaticText \"증거 내용 보기 · 2,953 bytes\"\n    - article\n      - StaticText \"인수 기준 3\"\n      - heading \"기존 개선 이슈 #30은 해결된 것으로 처리되지 않고 OPEN 상태를 유지한다.\" [level=3, ref=e13]\n      - paragraph\n        - StaticText \"제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.\"\n      - group\n        - DisclosureTriangle \"증거 내용 보기 · 5,227 bytes\" [expanded=false]\n          - StaticText \"증거 내용 보기 · 5,227 bytes\"\n  - generic\n    - heading \"환경 확인\" [level=2, ref=e8]\n    - group\n      - DisclosureTriangle \"증거 내용 보기 · 463 bytes\" [expanded=false]\n        - StaticText \"증거 내용 보기 · 463 bytes\"\n  - generic\n    - heading \"되돌리기\" [level=2, ref=e9]\n    - paragraph\n      - StaticText \"이 HTML 검토 문서를 폐기해도 이슈·승인 상태는 바뀌지 않습니다.\"\n  - generic\n    - heading \"서명할 원본 식별\" [level=2, ref=e10]\n    - paragraph\n      - StaticText \"HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.\"\n    - DescriptionList\n      - term \"원본 파일\"\n      - definition\n        - StaticText \"C:\\\\Users\\\\rudtn\\\\zeus\\\\docs\\\\zeus\\\\implementation\\\\ticket-review-001\\\\example-packet.json\"\n      - term \"원본 SHA-256 · 1,408 bytes\"\n      - definition\n        - StaticText \"sha256:e8586539bf2eeb3784bb9b7d0b66a67cd3d747b0441606f86816abae3355bd44\"\n      - term \"신뢰 정책 커밋\"\n      - definition\n        - StaticText \"379070b4c79fe80436d9ac977a2d034b9d9126de\"\n      - term \"정책 해시\"\n      - definition\n        - StaticText \"135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e\"\n    - group\n      - DisclosureTriangle \"정확한 서명 대상 JSON 보기\" [expanded=false]\n        - StaticText \"정확한 서명 대상 JSON 보기\"\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,details:document.querySelectorAll(\"details\").length,openDetails:document.querySelectorAll(\"details[open]\").length,resources:performance.getEntriesByType(\"resource\").map(r=>r.name)})"
+      ],
+      "exit_code": 0,
+      "stdout": "\"{\\\"width\\\":390,\\\"scrollWidth\\\":390,\\\"details\\\":5,\\\"openDetails\\\":1,\\\"resources\\\":[]}\"\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "screenshot",
+        "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-phone-evidence.png"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Screenshot saved to C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\responsive-phone-evidence.png\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "document.querySelectorAll(\"details\").forEach(e=>e.open=true)"
+      ],
+      "exit_code": 0,
+      "stdout": "null\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "snapshot"
+      ],
+      "exit_code": 0,
+      "stdout": "- main\n  - sectionheader\n    - StaticText \"ZEUS · 종료 전 검토\"\n    - heading \"Zeus 종료 근거 검토 — 실제 계측 예제\" [level=1, ref=e1]\n    - paragraph\n      - StaticText \"이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.\"\n    - paragraph\n      - StaticText \"저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.\"\n    - paragraph\n      - StaticText \"ZEUS-bd2bcff7c9bd · 개정 1 · 작업 주기 0\"\n  - generic\n    - heading \"무엇을 해결했는가\" [level=2, ref=e2]\n    - paragraph\n      - StaticText \"사람이 원문 인수 기준과 측정한 결과를 함께 읽고 종료 근거를 판단할 수 있어야 합니다.\"\n    - heading \"영향\" [level=3, ref=e3]\n    - paragraph\n      - StaticText \"이 예제는 실제 GitHub·격리 PostgreSQL 관측을 보여줍니다. 제품 인수나 사람 승인을 대신하지 않습니다.\"\n    - heading \"범위\" [level=3, ref=e4]\n    - list\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"전용 시험 이슈 #34의 실제 조회\"\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"격리 PostgreSQL의 보존된 이력\"\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"읽기 전용 검토 화면\"\n    - heading \"종료 요청 사유\" [level=3, ref=e5]\n    - paragraph\n      - StaticText \"원문과 실측을 연결한 검토 화면 확인\"\n  - generic\n    - heading \"필요한 승인\" [level=2, ref=e6]\n    - paragraph\n      - StaticText \"사람 승인 요구 없음 — 이 정책은 자동화 서명만으로 종료할 수 있습니다.\"\n    - list\n      - listitem [level=1]\n        - ListMarker \"• \"\n        - StaticText \"test-only-not-a-human@zeus.invalid · automation\"\n    - paragraph\n      - StaticText \"서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.\"\n    - DescriptionList\n      - term \"발행\"\n      - definition\n        - StaticText \"2026-09-09T15:25:48.289412+00:00\"\n      - term \"서명 기한\"\n      - definition\n        - StaticText \"2026-09-09T16:25:48.289412+00:00\"\n      - term \"해결 커밋\"\n      - definition\n        - StaticText \"33240ab4f0d759adfb2205db1de74c1e2c76212e\"\n  - generic\n    - heading \"인수 기준과 증거 · 3개\" [level=2, ref=e7]\n    - paragraph\n      - StaticText \"‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.\"\n    - article\n      - StaticText \"인수 기준 1\"\n      - heading \"시험용 이슈 #34의 제목과 본문이 PostgreSQL 원장의 내용과 일치한다.\" [level=3, ref=e11]\n      - paragraph\n        - StaticText \"제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.\"\n      - group\n        - DisclosureTriangle \"증거 내용 보기 · 1,698 bytes\" [expanded=true]\n          - StaticText \"증거 내용 보기 · 1,698 bytes\"\n        - paragraph\n          - StaticText \"sha256:d2e229940711beed01cc65bd4074f06c14dad108f22b3872786641e0504d3a9c\"\n        - paragraph\n          - StaticText \"관측 시각: 2026-09-09T15:25:48.081088+00:00\"\n        - StaticText \"{\\n  \\\"content_hash\\\": \\\"00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be\\\",\\n  \\\"criterion_index\\\": 0,\\n  \\\"details\\\": {\\n    \\\"actual_remote\\\": {\\n      \\\"body\\\": \\\"<!-- zeus-ticket:ZEUS-c4bcef7b11b0 -->\\\\n\\\\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\\\n\\\\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\\\\n\\\\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\\\\n\\\\n## Problem\\\\n\\\\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\\\\n\\\\n## Impact\\\\n\\\\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\\\\n\\\\n## Rollback\\\\n\\\\nRetain test receipts and close only this dedicated issue after verification.\\\\n\\\\n## Evidence Refs\\\\n\\\\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\\\\n\\\\n## Scope\\\\n\\\\n- Isolated PostgreSQL schema\\\\n- This dedicated GitHub issue\\\\n- Ephemeral automation signer only\\\\n\\\\n## Acceptance Criteria\\\\n\\\\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\\\\n\\\\n## Verification\\\\n\\\\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\\\\n\\\\n## Reviewer findings\\\\n\\\\nNo review recorded for this revision.\\\\n\\\",\\n      \\\"comments\\\": [],\\n      \\\"number\\\": 34,\\n      \\\"state\\\": \\\"CLOSED\\\",\\n      \\\"title\\\": \\\"[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\\\",\\n      \\\"url\\\": \\\"https://github.com/trevi00/zeus/issues/34\\\"\\n    },\\n    \\\"canonical_title_and_body_match\\\": true\\n  },\\n  \\\"kind\\\": \\\"ticket-criterion-evidence-v1\\\",\\n  \\\"observed_at\\\": \\\"2026-09-09T15:25:48.081088+00:00\\\",\\n  \\\"outcome\\\": \\\"passed\\\",\\n  \\\"revision\\\": 1,\\n  \\\"solution_commit\\\": \\\"33240ab4f0d759adfb2205db1de74c1e2c76212e\\\",\\n  \\\"ticket_id\\\": \\\"ZEUS-bd2bcff7c9bd\\\"\\n}\"\n    - article\n      - StaticText \"인수 기준 2\"\n      - heading \"종료와 재개를 포함한 네 개의 작업 주기 이벤트가 실제 PostgreSQL에 보존되어 있다.\" [level=3, ref=e12]\n      - paragraph\n        - StaticText \"제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.\"\n      - group\n        - DisclosureTriangle \"증거 내용 보기 · 2,953 bytes\" [expanded=true]\n          - StaticText \"증거 내용 보기 · 2,953 bytes\"\n        - paragraph\n          - StaticText \"sha256:8c55213b305c8d0d7fc1e0050594748bc6347fe5856cc8b6dc2c6968b9906878\"\n        - paragraph\n          - StaticText \"관측 시각: 2026-09-09T15:25:48.081088+00:00\"\n        - StaticText \"{\\n  \\\"content_hash\\\": \\\"00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be\\\",\\n  \\\"criterion_index\\\": 1,\\n  \\\"details\\\": {\\n    \\\"actual_postgres_history\\\": [\\n      {\\n        \\\"at\\\": \\\"2026-09-09T15:04:49.399939+00:00\\\",\\n        \\\"content_hash\\\": \\\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\\\",\\n        \\\"from_sequence\\\": 0,\\n        \\\"id\\\": \\\"60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8\\\",\\n        \\\"kind\\\": \\\"closed\\\",\\n        \\\"packet_ref\\\": \\\"sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397\\\",\\n        \\\"previous_event\\\": null,\\n        \\\"previous_status\\\": \\\"open\\\",\\n        \\\"previous_updated_at\\\": \\\"2026-09-09T15:04:44.386692+00:00\\\",\\n        \\\"proof_ref\\\": \\\"sha256:23f3676d69f29479092af78a766fa8058e4232d7e780482851f5611d5f6bb9ec\\\",\\n        \\\"reason\\\": \\\"Dedicated automated acceptance cycle: first_close\\\",\\n        \\\"request_id\\\": null,\\n        \\\"revision\\\": 1,\\n        \\\"sequence\\\": 1,\\n        \\\"ticket_id\\\": \\\"ZEUS-c4bcef7b11b0\\\"\\n      },\\n      {\\n        \\\"at\\\": \\\"2026-09-09T15:04:55.033456+00:00\\\",\\n        \\\"content_hash\\\": \\\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\\\",\\n        \\\"from_sequence\\\": 1,\\n        \\\"id\\\": \\\"a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18\\\",\\n        \\\"kind\\\": \\\"reopened\\\",\\n        \\\"packet_ref\\\": null,\\n        \\\"previous_event\\\": \\\"60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8\\\",\\n        \\\"previous_status\\\": \\\"closed\\\",\\n        \\\"previous_updated_at\\\": \\\"2026-09-09T15:04:49.399939+00:00\\\",\\n        \\\"proof_ref\\\": null,\\n        \\\"reason\\\": \\\"Automated acceptance exercises a recurrence\\\",\\n        \\\"request_id\\\": \\\"356cd9d2366129d21a6ec554ac5a44306ead2be710d6b7681393a1bdb3b504f1\\\",\\n        \\\"revision\\\": 1,\\n        \\\"sequence\\\": 2,\\n        \\\"ticket_id\\\": \\\"ZEUS-c4bcef7b11b0\\\"\\n      },\\n      {\\n        \\\"at\\\": \\\"2026-09-09T15:05:02.744760+00:00\\\",\\n        \\\"content_hash\\\": \\\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\\\",\\n        \\\"from_sequence\\\": 2,\\n        \\\"id\\\": \\\"42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254\\\",\\n        \\\"kind\\\": \\\"reopened\\\",\\n        \\\"packet_ref\\\": null,\\n        \\\"previous_event\\\": \\\"a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18\\\",\\n        \\\"previous_status\\\": \\\"open\\\",\\n        \\\"previous_updated_at\\\": \\\"2026-09-09T15:04:55.033456+00:00\\\",\\n        \\\"proof_ref\\\": null,\\n        \\\"reason\\\": \\\"Reconcile the injected external close\\\",\\n        \\\"request_id\\\": \\\"2f9ac10cefb8d34f6c0a3b1578fb20879286bf85bb9726c225fdb42a526ca584\\\",\\n        \\\"revision\\\": 1,\\n        \\\"sequence\\\": 3,\\n        \\\"ticket_id\\\": \\\"ZEUS-c4bcef7b11b0\\\"\\n      },\\n      {\\n        \\\"at\\\": \\\"2026-09-09T15:05:07.501306+00:00\\\",\\n        \\\"content_hash\\\": \\\"9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a\\\",\\n        \\\"from_sequence\\\": 3,\\n        \\\"id\\\": \\\"261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac\\\",\\n        \\\"kind\\\": \\\"closed\\\",\\n        \\\"packet_ref\\\": \\\"sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2\\\",\\n        \\\"previous_event\\\": \\\"42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254\\\",\\n        \\\"previous_status\\\": \\\"open\\\",\\n        \\\"previous_updated_at\\\": \\\"2026-09-09T15:05:02.744760+00:00\\\",\\n        \\\"proof_ref\\\": \\\"sha256:54efc8ae14a9a6d7ac7d90b9c20a0cf8ac5b8a0c01697f3c0e77db9b080a0600\\\",\\n        \\\"reason\\\": \\\"Dedicated automated acceptance cycle: final_close\\\",\\n        \\\"request_id\\\": null,\\n        \\\"revision\\\": 1,\\n        \\\"sequence\\\": 4,\\n        \\\"ticket_id\\\": \\\"ZEUS-c4bcef7b11b0\\\"\\n      }\\n    ]\\n  },\\n  \\\"kind\\\": \\\"ticket-criterion-evidence-v1\\\",\\n  \\\"observed_at\\\": \\\"2026-09-09T15:25:48.081088+00:00\\\",\\n  \\\"outcome\\\": \\\"passed\\\",\\n  \\\"revision\\\": 1,\\n  \\\"solution_commit\\\": \\\"33240ab4f0d759adfb2205db1de74c1e2c76212e\\\",\\n  \\\"ticket_id\\\": \\\"ZEUS-bd2bcff7c9bd\\\"\\n}\"\n    - article\n      - StaticText \"인수 기준 3\"\n      - heading \"기존 개선 이슈 #30은 해결된 것으로 처리되지 않고 OPEN 상태를 유지한다.\" [level=3, ref=e13]\n      - paragraph\n        - StaticText \"제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.\"\n      - group\n        - DisclosureTriangle \"증거 내용 보기 · 5,227 bytes\" [expanded=true]\n          - StaticText \"증거 내용 보기 · 5,227 bytes\"\n        - paragraph\n          - StaticText \"sha256:a5f6eb84eca53bd66429b2dc8d42b223d9b31b46578c7a7a9d7e04e185654e39\"\n        - paragraph\n          - StaticText \"관측 시각: 2026-09-09T15:25:48.081088+00:00\"\n        - StaticText \"{\\n  \\\"content_hash\\\": \\\"00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be\\\",\\n  \\\"criterion_index\\\": 2,\\n  \\\"details\\\": {\\n    \\\"actual_remote\\\": {\\n      \\\"body\\\": \\\"<!-- zeus-ticket:ZEUS-db4ecdcd9fa8 -->\\\\n\\\\n# [FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정\\\\n\\\\nZeus `ZEUS-db4ecdcd9fa8` · revision 1 · `9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691`\\\\n\\\\n> Local ledger is authoritative. Reviews below are advisory, not deployment approval.\\\\n\\\\n## Problem\\\\n\\\\n현재 Zeus Tickets와 CLI에는 close/reopen이 없고 GitHub sync는 본문만 투영한다. 원격 CLOSED 상태여도 synced로 기록될 수 있어 사용자 요구인 해결 및 인수 검증 후 양쪽 종료를 아직 구현하지 못한다.\\\\n\\\\n## Impact\\\\n\\\\n분석 완료·코드 작성·본문 동기화를 실제 해결로 오해하거나 한쪽만 종료된 상태를 놓칠 수 있다. 재발·개정 변경과 실패 복구에도 증거에 결속된 상태 전이가 필요하다.\\\\n\\\\n## Rollback\\\\n\\\\n종료 동기화에 모순이 있으면 자동 종료 처리를 중단하고 PG 결정·원격 관측·실패 증거를 보존한다. 수동 조정도 이유와 기대 개정을 기록하며 원래 이슈의 미해결 기준을 삭제하지 않는다.\\\\n\\\\n## Evidence Refs\\\\n\\\\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/docs/ticket-lifecycle-review.md\\\\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/src/codex_harness/application/tickets.py\\\\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/src/codex_harness/adapters/github_tickets.py\\\\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/src/codex_harness/cli.py\\\\n\\\\n## Scope\\\\n\\\\n- Zeus application Tickets, GitHub adapter, CLI 및 실제 PG/GitHub 검증을 대상으로 한다.\\\\n- 전체 분석 중 발견한 원본 milestone 종결 문제와 구분해 Zeus의 현재 미구현 계약을 다룬다.\\\\n- 현재는 정적 감사다. 실제 Claude 공동 검토와 SDD 설계 후 root가 구현한다.\\\\n\\\\n## Acceptance Criteria\\\\n\\\\n- 티켓 개정/content hash/해결 commit과 모든 인수 기준의 결과·불변 증거·필요한 사람 승인에 결속된 close 결정을 PG에 남긴다. 누락·실패·unknown·skip·오래된 증거로 닫지 않는다.\\\\n- close/reopen은 기대 개정과 상태를 검증하며 재발·변경 이유와 과거 증거를 보존한다. actor 문자열만으로 사람 인수를 인정하지 않는다.\\\\n- PG 결정과 GitHub 반영을 재개 가능한 단계로 분리하고 pending과 실제 원격 상태 확인 완료를 구분한다. 양쪽 동시 원자성을 주장하지 않는다.\\\\n- ACK 유실·PG 후속 실패·중복 요청·동시 종료/재개·중간 개정 변경·lease 만료 후 늦은 응답에서 잘못된 완료나 중복 결정을 방지하고 조정 절차를 제공한다.\\\\n- 원격 수동 종료와 외부 제목/본문 변경을 관측하고 충돌을 표시한다. 외부 상태로 로컬 인수 승인을 자동 생성하지 않는다.\\\\n- 실제 PG 및 승인된 별도 GitHub 시험 이슈로 종료·재개·재시도 흐름을 검증한다. 실제 열린 개선 이슈를 시험 목적으로 닫지 않는다.\\\\n\\\\n## Verification\\\\n\\\\n- 18c91d6의 Tickets, GitHubTickets, CLI 및 직접 테스트에 대한 Codex 정적 감사와 root 구현 대조를 수행했다.\\\\n- close/reopen API 및 인수 기준별 증거 거부·종료 상태 일치·종료 중 PG 실패 복구 검사는 현재 없다.\\\\n- 이번 감사는 실행·DB 변경·GitHub 종료 0회이며 실제 Claude 검토와 실제 외부 종료 인수는 미완료다.\\\\n\\\\n## Reviewer findings\\\\n\\\\n### Codex root (Codex) — changes_requested\\\\n\\\\nFresh inbox workflow review: limit100 without complete pagination, parsed --repo not threaded to shown gh actions, missing stale timestamp and label/template presence as approval proxies. These cannot authorize closing Zeus issues. Close/reopen and local/GitHub state synchronization remain unimplemented until correction, exact-revision acceptance and required human approval; no close/reopen operation.\\\\n\\\\nEvidence: https://github.com/trevi00/zeus/blob/1bc034f0e67d65f762ce3fb31c9a1891e8ca415d/docs/full-analysis/baldrix-gsd-workflows-003/file-reviews.md#file-03\\\\n\\\\n### Codex root (Codex) — changes_requested\\\\n\\\\nJoint review rejects append-only storage necessarily requiring new slug: typed correction/reopen events are possible. Historical resolved text/PASS/severity does not prove current closure. Zeus close/reopen/state sync remains unimplemented and this checkpoint performs zero close/reopen operations.\\\\n\\\\nEvidence: https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md\\\\n\\\",\\n      \\\"comments\\\": [],\\n      \\\"number\\\": 30,\\n      \\\"state\\\": \\\"OPEN\\\",\\n      \\\"title\\\": \\\"[FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정\\\",\\n      \\\"url\\\": \\\"https://github.com/trevi00/zeus/issues/30\\\"\\n    }\\n  },\\n  \\\"kind\\\": \\\"ticket-criterion-evidence-v1\\\",\\n  \\\"observed_at\\\": \\\"2026-09-09T15:25:48.081088+00:00\\\",\\n  \\\"outcome\\\": \\\"passed\\\",\\n  \\\"revision\\\": 1,\\n  \\\"solution_commit\\\": \\\"33240ab4f0d759adfb2205db1de74c1e2c76212e\\\",\\n  \\\"ticket_id\\\": \\\"ZEUS-bd2bcff7c9bd\\\"\\n}\"\n  - generic\n    - heading \"환경 확인\" [level=2, ref=e8]\n    - group\n      - DisclosureTriangle \"증거 내용 보기 · 463 bytes\" [expanded=true]\n        - StaticText \"증거 내용 보기 · 463 bytes\"\n      - paragraph\n        - StaticText \"sha256:906a6b0c2fe039b29f54172b55fed61782af291eb82636e98a9da2343622b071\"\n      - paragraph\n        - StaticText \"관측 시각: 2026-09-09T15:25:48.081088+00:00\"\n      - StaticText \"{\\n  \\\"content_hash\\\": \\\"00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be\\\",\\n  \\\"details\\\": {\\n    \\\"github_repository\\\": \\\"trevi00/zeus\\\",\\n    \\\"human_acceptance\\\": false,\\n    \\\"platform\\\": \\\"Windows-11-10.0.26200-SP0\\\",\\n    \\\"postgres_schema\\\": \\\"ticket_live_10fa6da78a9a417d958b2cba6f39e243\\\",\\n    \\\"python\\\": \\\"3.14.7\\\"\\n  },\\n  \\\"kind\\\": \\\"ticket-environment-v1\\\",\\n  \\\"observed_at\\\": \\\"2026-09-09T15:25:48.081088+00:00\\\",\\n  \\\"revision\\\": 1,\\n  \\\"solution_commit\\\": \\\"33240ab4f0d759adfb2205db1de74c1e2c76212e\\\",\\n  \\\"ticket_id\\\": \\\"ZEUS-bd2bcff7c9bd\\\"\\n}\"\n  - generic\n    - heading \"되돌리기\" [level=2, ref=e9]\n    - paragraph\n      - StaticText \"이 HTML 검토 문서를 폐기해도 이슈·승인 상태는 바뀌지 않습니다.\"\n  - generic\n    - heading \"서명할 원본 식별\" [level=2, ref=e10]\n    - paragraph\n      - StaticText \"HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.\"\n    - DescriptionList\n      - term \"원본 파일\"\n      - definition\n        - StaticText \"C:\\\\Users\\\\rudtn\\\\zeus\\\\docs\\\\zeus\\\\implementation\\\\ticket-review-001\\\\example-packet.json\"\n      - term \"원본 SHA-256 · 1,408 bytes\"\n      - definition\n        - StaticText \"sha256:e8586539bf2eeb3784bb9b7d0b66a67cd3d747b0441606f86816abae3355bd44\"\n      - term \"신뢰 정책 커밋\"\n      - definition\n        - StaticText \"379070b4c79fe80436d9ac977a2d034b9d9126de\"\n      - term \"정책 해시\"\n      - definition\n        - StaticText \"135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e\"\n    - group\n      - DisclosureTriangle \"정확한 서명 대상 JSON 보기\" [expanded=true]\n        - StaticText \"정확한 서명 대상 JSON 보기\"\n      - StaticText \"{\\\"content_hash\\\":\\\"00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be\\\",\\\"criteria\\\":[{\\\"criterion_hash\\\":\\\"dab62929db54f955a76e353079790031a41ef52d922ee9a820110666aea4ddc5\\\",\\\"evidence_refs\\\":[\\\"sha256:d2e229940711beed01cc65bd4074f06c14dad108f22b3872786641e0504d3a9c\\\"],\\\"index\\\":0,\\\"outcome\\\":\\\"passed\\\"},{\\\"criterion_hash\\\":\\\"2edc72ba92033b1e2ad86e85cd6fd3fc3475a1d06d357704e607a23739af19aa\\\",\\\"evidence_refs\\\":[\\\"sha256:8c55213b305c8d0d7fc1e0050594748bc6347fe5856cc8b6dc2c6968b9906878\\\"],\\\"index\\\":1,\\\"outcome\\\":\\\"passed\\\"},{\\\"criterion_hash\\\":\\\"18cc25d2fe554569bc16130493ef0db165dd6a47b3c0427b1e77df0a889ad8da\\\",\\\"evidence_refs\\\":[\\\"sha256:a5f6eb84eca53bd66429b2dc8d42b223d9b31b46578c7a7a9d7e04e185654e39\\\"],\\\"index\\\":2,\\\"outcome\\\":\\\"passed\\\"}],\\\"criteria_hash\\\":\\\"f2df8ea343935450ff450d178ff4aa476f4be3fdae6d285735a56970dacd08c6\\\",\\\"environment_ref\\\":\\\"sha256:906a6b0c2fe039b29f54172b55fed61782af291eb82636e98a9da2343622b071\\\",\\\"expected_status\\\":\\\"open\\\",\\\"expires_at\\\":\\\"2026-09-09T16:25:48.289412+00:00\\\",\\\"issued_at\\\":\\\"2026-09-09T15:25:48.289412+00:00\\\",\\\"policy_commit\\\":\\\"379070b4c79fe80436d9ac977a2d034b9d9126de\\\",\\\"policy_hash\\\":\\\"135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e\\\",\\\"reason\\\":\\\"원문과 실측을 연결한 검토 화면 확인\\\",\\\"revision\\\":1,\\\"scope\\\":\\\"test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243\\\",\\\"sequence\\\":0,\\\"solution_commit\\\":\\\"33240ab4f0d759adfb2205db1de74c1e2c76212e\\\",\\\"ticket_id\\\":\\\"ZEUS-bd2bcff7c9bd\\\",\\\"version\\\":1}\"\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "eval",
+        "JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,details:document.querySelectorAll(\"details\").length,openDetails:document.querySelectorAll(\"details[open]\").length,resources:performance.getEntriesByType(\"resource\").map(r=>r.name)})"
+      ],
+      "exit_code": 0,
+      "stdout": "\"{\\\"width\\\":390,\\\"scrollWidth\\\":390,\\\"details\\\":5,\\\"openDetails\\\":5,\\\"resources\\\":[]}\"\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "errors"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "network",
+        "requests"
+      ],
+      "exit_code": 0,
+      "stdout": "[9B884351471F2421738F33650A501462] GET file:///C:/Users/rudtn/zeus/docs/zeus/implementation/ticket-review-001/example-review-responsive.html (Document) 200\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "close"
+      ],
+      "exit_code": 0,
+      "stdout": "✓ Browser closed\n",
+      "stderr": ""
+    }
+  ]
+}

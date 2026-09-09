@@ -1,0 +1,49 @@
+import base64
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import subprocess
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/ticket-review-001'
+base = [shutil.which('npm.cmd'), 'exec', '--yes', '--package=agent-browser@0.37.1', '--',
+        'agent-browser', '--session', 'zeus-ticket-review-20260910']
+results = []
+
+def run(*args):
+    cli_args = ('eval', '--base64', base64.b64encode(args[1].encode()).decode()) if args[0] == 'eval' else args
+    result = subprocess.run([*base, *cli_args], cwd=root, capture_output=True, encoding='utf-8')
+    results.append({'args': args, 'exit_code': result.returncode, 'stdout': result.stdout, 'stderr': result.stderr})
+    assert result.returncode == 0, result.stderr
+    return result.stdout
+
+def inspect():
+    value = json.loads(run('eval', 'JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,details:document.querySelectorAll("details").length,openDetails:document.querySelectorAll("details[open]").length,resources:performance.getEntriesByType("resource").map(r=>r.name)})'))
+    value = json.loads(value) if isinstance(value, str) else value
+    assert value['scrollWidth'] <= value['width'], value
+    assert value['details'] == 5 and not value['resources'], value
+    return value
+
+for label, width, height in [('desktop', 1440, 1000), ('tablet', 768, 1024), ('phone', 390, 844)]:
+    run('set', 'viewport', str(width), str(height))
+    run('eval', 'window.scrollTo(0,0)')
+    inspect()
+    run('screenshot', str(out / f'{label}.png'))
+run('press', 'Tab')
+run('press', 'Enter')
+run('snapshot')
+assert inspect()['openDetails'] == 1
+run('screenshot', str(out / 'phone-evidence.png'))
+run('eval', 'document.querySelectorAll("details").forEach(e=>e.open=true)')
+run('snapshot')
+assert inspect()['openDetails'] == 5
+run('errors')
+run('network', 'requests')
+run('close')
+receipt = {'mode': 'actual Chrome desktop browser; viewport emulation, not Samsung device tests',
+           'human_acceptance': False, 'html_sha256': hashlib.sha256((out / 'example-review.html').read_bytes()).hexdigest(),
+           'results': results}
+(out / 'browser-receipt.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+(out / 'browser-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'result': 'passed', 'commands': len(results), 'viewport_sizes': [[1440, 1000], [768, 1024], [390, 844]]}))

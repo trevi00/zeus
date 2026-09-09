@@ -206,7 +206,7 @@ def parser() -> argparse.ArgumentParser:
     create = ticket_commands.add_parser("create")
     create.add_argument("--file", type=Path, required=True)
     create.add_argument("--author", default="operator")
-    for name in ("show", "export", "update", "review", "dispatch", "sync", "pull", "evidence", "prepare-close", "close", "reopen"):
+    for name in ("show", "export", "update", "review", "dispatch", "sync", "pull", "evidence", "prepare-close", "close", "reopen", "review-close"):
         sub = ticket_commands.add_parser(name)
         sub.add_argument("ticket_id")
         if name == "show":
@@ -236,6 +236,9 @@ def parser() -> argparse.ArgumentParser:
         if name == "close":
             sub.add_argument("--packet", type=Path, required=True)
             sub.add_argument("--signature", action="append", required=True, help="PRINCIPAL=SIGNATURE_FILE; repeat per signer")
+        if name == "review-close":
+            sub.add_argument("--packet", type=Path, required=True)
+            sub.add_argument("--output", type=Path, required=True, help="Read-only HTML review; never grants approval")
         if name == "reopen":
             sub.add_argument("--revision", type=int, required=True)
             sub.add_argument("--sequence", type=int, required=True)
@@ -266,7 +269,7 @@ def ticket_command(service, args):
     elif command == "dispatch":
         executor = build_executor(service)
         emit(tickets.dispatch(args.ticket_id, args.revision, executor.git._git("rev-parse", "HEAD")))
-    elif command in {"evidence", "prepare-close", "close", "reopen"}:
+    elif command in {"evidence", "prepare-close", "close", "reopen", "review-close"}:
         from codex_harness.adapters.ticket_cli import execute
         emit(execute(tickets, args))
     else:

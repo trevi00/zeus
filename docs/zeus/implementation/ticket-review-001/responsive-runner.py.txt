@@ -1,0 +1,57 @@
+import hashlib
+import json
+import os
+import platform
+import subprocess
+from pathlib import Path
+
+from psycopg.conninfo import make_conninfo
+
+from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.git import GitWorkspace
+from codex_harness.adapters.github_tickets import GitHubTickets
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.adapters.ticket_authority import TicketAuthority
+from codex_harness.application.ticket_lifecycle import TicketLifecycle
+from codex_harness.application.tickets import Tickets, render_ticket
+from codex_harness.bootstrap import database_url
+from codex_harness.domain.model import canonical, digest, utcnow
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/ticket-review-001'
+control = root / '.runtime/ticket-review-example-state.json'
+assert control.exists()
+prior = json.loads((root / '.runtime/ticket-lifecycle-live-state.json').read_text('utf-8'))
+run_root = root / '.runtime' / ('ticket-live-' + prior['run_id'])
+dsn = make_conninfo(database_url(), options='-c search_path=ticket_live_' + prior['run_id'] + ',public')
+store = PostgresStore(dsn)
+tickets, artifacts = Tickets(store, None), FileArtifacts(run_root / 'artifacts')
+git = GitWorkspace(str(run_root / 'trust-repository'), str(run_root / 'workspaces'))
+life = TicketLifecycle(tickets, artifacts, TicketAuthority(git, artifacts, prior['trust_commit']))
+ticket = tickets.get(json.loads(control.read_text('utf-8'))['ticket_id'])
+packet_path, html_path = out / 'example-packet.json', out / 'example-review-responsive.html'
+packet = {'packet_ref': 'sha256:' + hashlib.sha256(packet_path.read_bytes()).hexdigest()}
+with store.transaction() as tx:
+    before = tx.records()
+files_before = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in artifacts.root.iterdir()}
+env = dict(os.environ)
+env.update(HARNESS_DATABASE_URL=dsn, ZEUS_DATABASE_URL=dsn, ZEUS_RUNTIME_DIR=str(run_root),
+           HARNESS_RUNTIME_DIR=str(run_root), ZEUS_REPOSITORY=str(git.repository),
+           ZEUS_TICKET_TRUST_COMMIT=prior['trust_commit'])
+argv = ['uv', 'run', 'zeus', 'ticket', 'review-close', ticket['id'], '--packet', str(packet_path), '--output', str(html_path)]
+result = subprocess.run(argv, cwd=root, env=env, capture_output=True, check=True)
+with store.transaction() as tx:
+    after = tx.records()
+assert before == after
+assert files_before == {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in artifacts.root.iterdir()}
+record = {'mode': 'actual CLI, actual isolated PostgreSQL, actual GitHub observations; no signature or human approval',
+    'argv': argv, 'exit_code': result.returncode, 'result': json.loads(result.stdout),
+    'postgres_unchanged_during_export': True, 'artifact_store_unchanged_during_export': True,
+    'html_sha256': hashlib.sha256(html_path.read_bytes()).hexdigest(), 'packet_ref': packet['packet_ref'],
+    'ticket_id': ticket['id'], 'human_acceptance': False,
+    'source_sha256': {p: hashlib.sha256((root/p).read_bytes()).hexdigest() for p in [
+        'src/codex_harness/adapters/ticket_review.py', 'src/codex_harness/adapters/ticket_cli.py',
+        'src/codex_harness/application/ticket_lifecycle.py', 'src/codex_harness/adapters/ticket_authority.py', 'src/codex_harness/cli.py']}}
+(out / 'actual-cli-responsive-export.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8', newline='\n')
+(out / 'responsive-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'export':'passed', 'HTML':str(html_path), 'PG_unchanged':True,'artifacts_unchanged':True}))

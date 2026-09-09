@@ -1,0 +1,87 @@
+import hashlib
+import json
+import os
+import platform
+import subprocess
+from pathlib import Path
+
+from psycopg.conninfo import make_conninfo
+
+from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.git import GitWorkspace
+from codex_harness.adapters.github_tickets import GitHubTickets
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.adapters.ticket_authority import TicketAuthority
+from codex_harness.application.ticket_lifecycle import TicketLifecycle
+from codex_harness.application.tickets import Tickets, render_ticket
+from codex_harness.bootstrap import database_url
+from codex_harness.domain.model import canonical, digest, utcnow
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/ticket-review-001'
+control = root / '.runtime/ticket-review-example-state.json'
+assert not control.exists(), 'Preserve the previous example rather than creating another test ticket'
+prior = json.loads((root / '.runtime/ticket-lifecycle-live-state.json').read_text('utf-8'))
+run_root = root / '.runtime' / ('ticket-live-' + prior['run_id'])
+dsn = make_conninfo(database_url(), options='-c search_path=ticket_live_' + prior['run_id'] + ',public')
+store = PostgresStore(dsn)
+tickets, artifacts = Tickets(store, None), FileArtifacts(run_root / 'artifacts')
+git = GitWorkspace(str(run_root / 'trust-repository'), str(run_root / 'workspaces'))
+life = TicketLifecycle(tickets, artifacts, TicketAuthority(git, artifacts, prior['trust_commit']))
+github = GitHubTickets(tickets, artifacts)
+remote34, remote30 = github._read('trevi00/zeus', 34), github._read('trevi00/zeus', 30)
+original = tickets.get(prior['ticket_id'])
+assert remote34['state'] == 'CLOSED' and remote34['body'] == render_ticket(original)
+assert remote34['title'] == original['content']['title'] and remote30['state'] == 'OPEN'
+assert len(original['lifecycle_history']) == 4
+criteria = ['시험용 이슈 #34의 제목과 본문이 PostgreSQL 원장의 내용과 일치한다.',
+            '종료와 재개를 포함한 네 개의 작업 주기 이벤트가 실제 PostgreSQL에 보존되어 있다.',
+            '기존 개선 이슈 #30은 해결된 것으로 처리되지 않고 OPEN 상태를 유지한다.']
+ticket = tickets.create({'title': 'Zeus 종료 근거 검토 — 실제 계측 예제',
+    'problem': '사람이 원문 인수 기준과 측정한 결과를 함께 읽고 종료 근거를 판단할 수 있어야 합니다.',
+    'impact': '이 예제는 실제 GitHub·격리 PostgreSQL 관측을 보여줍니다. 제품 인수나 사람 승인을 대신하지 않습니다.',
+    'scope': ['전용 시험 이슈 #34의 실제 조회', '격리 PostgreSQL의 보존된 이력', '읽기 전용 검토 화면'],
+    'rollback': '이 HTML 검토 문서를 폐기해도 이슈·승인 상태는 바뀌지 않습니다.',
+    'evidence_refs': ['https://github.com/trevi00/zeus/issues/34'], 'acceptance_criteria': criteria,
+    'verification': ['실제 GitHub 조회 및 PostgreSQL 이력 대조', '화면 생성 전후 원장 스냅샷 일치 확인']})
+control.write_text(json.dumps({'ticket_id': ticket['id'], 'schema': 'ticket_live_' + prior['run_id']}) + '\n', encoding='utf-8')
+base = {'ticket_id': ticket['id'], 'revision': 1, 'content_hash': ticket['content_hash'],
+        'solution_commit': prior['code_commit'], 'observed_at': utcnow()}
+details = [{'actual_remote': remote34, 'canonical_title_and_body_match': True},
+           {'actual_postgres_history': original['lifecycle_history']}, {'actual_remote': remote30}]
+refs = []
+for index, observation in enumerate(details):
+    refs.append(artifacts.put(canonical({**base, 'kind': 'ticket-criterion-evidence-v1', 'criterion_index': index,
+        'outcome': 'passed', 'details': observation}), 'actual-review-example-observation')['ref'])
+env_ref = artifacts.put(canonical({**base, 'kind': 'ticket-environment-v1', 'details': {
+    'platform': platform.platform(), 'python': platform.python_version(), 'postgres_schema': 'ticket_live_' + prior['run_id'],
+    'github_repository': 'trevi00/zeus', 'human_acceptance': False}}), 'actual-review-example-environment')['ref']
+packet = life.prepare(ticket['id'], {'solution_commit': prior['code_commit'], 'reason': '원문과 실측을 연결한 검토 화면 확인',
+    'environment_ref': env_ref, 'criteria': [{'index': i, 'criterion_hash': digest(text), 'outcome': 'passed',
+                                            'evidence_refs': [refs[i]]} for i, text in enumerate(criteria)]})
+packet_path, html_path = out / 'example-packet.json', out / 'example-review.html'
+packet_path.write_text(packet['signing_payload'], encoding='utf-8', newline='\n')
+with store.transaction() as tx:
+    before = tx.records()
+files_before = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in artifacts.root.iterdir()}
+env = dict(os.environ)
+env.update(HARNESS_DATABASE_URL=dsn, ZEUS_DATABASE_URL=dsn, ZEUS_RUNTIME_DIR=str(run_root),
+           HARNESS_RUNTIME_DIR=str(run_root), ZEUS_REPOSITORY=str(git.repository),
+           ZEUS_TICKET_TRUST_COMMIT=prior['trust_commit'])
+argv = ['uv', 'run', 'zeus', 'ticket', 'review-close', ticket['id'], '--packet', str(packet_path), '--output', str(html_path)]
+result = subprocess.run(argv, cwd=root, env=env, capture_output=True, check=True)
+with store.transaction() as tx:
+    after = tx.records()
+assert before == after
+assert files_before == {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in artifacts.root.iterdir()}
+record = {'mode': 'actual CLI, actual isolated PostgreSQL, actual GitHub observations; no signature or human approval',
+    'argv': argv, 'exit_code': result.returncode, 'result': json.loads(result.stdout),
+    'postgres_unchanged_during_export': True, 'artifact_store_unchanged_during_export': True,
+    'html_sha256': hashlib.sha256(html_path.read_bytes()).hexdigest(), 'packet_ref': packet['packet_ref'],
+    'ticket_id': ticket['id'], 'human_acceptance': False,
+    'source_sha256': {p: hashlib.sha256((root/p).read_bytes()).hexdigest() for p in [
+        'src/codex_harness/adapters/ticket_review.py', 'src/codex_harness/adapters/ticket_cli.py',
+        'src/codex_harness/application/ticket_lifecycle.py', 'src/codex_harness/adapters/ticket_authority.py', 'src/codex_harness/cli.py']}}
+(out / 'actual-cli-export.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8', newline='\n')
+(out / 'example-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'export':'passed', 'HTML':str(html_path), 'PG_unchanged':True,'artifacts_unchanged':True}))

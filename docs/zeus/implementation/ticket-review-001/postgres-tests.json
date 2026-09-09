@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/test_ticket_review.py",
+    "tests/test_ticket_lifecycle.py",
+    "-q",
+    "--junitxml=.runtime/ticket-review-pg.xml"
+  ],
+  "integration_enabled": true,
+  "returncode": 0,
+  "seconds": 94.25250172615051,
+  "mode": "real isolated PostgreSQL and memory; GitHub unit transport fixtures, not live GitHub"
+}

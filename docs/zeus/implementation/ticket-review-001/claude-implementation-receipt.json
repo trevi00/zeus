@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--resume",
+    "2dc41532-c263-4a29-8689-c8b385e1da27",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Root accepted your design concerns and implemented current patch. Review adapters/ticket_review.py, application/ticket_lifecycle.py review method/_evidence return and adapters/ticket_cli.py review-close branch plus parser. No verify_closed/_anchor writes or signatures/network in review. Expired packets structurally validate at issued_at but visibly show expired; future-dated marked too; close stillstrictnow. Removed downloadable copy; originalfilepath + exact SHA/bytecount + escapedcanonicalJSON only. Reuses write_export idempotentbytes/exclusivechanges .html and rejectsartifactroot. Rendering escapesallhtmlattrs/text, noJS/forms/images/network; CSP default/script none inlineCSSonly. Evidence preview uses JSONEncoder.iterencode bounded64KiB/document and256KiBtotal (not fullprettyJSON then clipping), explicitpartialnotice+fullref/bytes. Koreancriteriaoriginal and requiredhumanemptywarning prominent. FinalPG snapshotrecheck preventsconcurrentticket/anchorchange; stateunchanged test coming. Please inspect concrete correctness and approve or identify actualdefects. No broadreports, newissues, writes or execution. Root will run actualbrowser UI plus tests; no humanacceptanceclaim."
+  ],
+  "returncode": 0,
+  "duration_seconds": 92.82119989395142,
+  "stdout_sha256": "c53ec6d7c72feefe1c816fa54685a3cfe98d36da0aa099682795c668704014ce",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus GitHub ticket projection patch review; no execution",
+  "session_id": "2dc41532-c263-4a29-8689-c8b385e1da27",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 8,
+    "cache_creation_input_tokens": 17571,
+    "cache_read_input_tokens": 806635,
+    "output_tokens": 6438,
+    "output_tokens_details": {
+      "thinking_tokens": 4414
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 17571,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 2425,
+        "cache_read_input_tokens": 207593,
+        "cache_creation_input_tokens": 4874,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 4874
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.7400175,
+  "model_usage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 8,
+      "outputTokens": 6438,
+      "cacheReadInputTokens": 806635,
+      "cacheCreationInputTokens": 17571,
+      "webSearchRequests": 0,
+      "costUSD": 0.7400175,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 4414,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

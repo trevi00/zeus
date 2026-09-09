@@ -1,0 +1,36 @@
+{
+  "mode": "actual CLI, actual isolated PostgreSQL, actual GitHub observations; no signature or human approval",
+  "argv": [
+    "uv",
+    "run",
+    "zeus",
+    "ticket",
+    "review-close",
+    "ZEUS-bd2bcff7c9bd",
+    "--packet",
+    "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\example-packet.json",
+    "--output",
+    "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\example-review.html"
+  ],
+  "exit_code": 0,
+  "result": {
+    "path": "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\ticket-review-001\\example-review.html",
+    "bytes": 22094,
+    "content_hash": "91854e05db587708e8d962ca8af4785b6bfc1a9d726378c66c01b5b492caca94",
+    "packet_ref": "sha256:e8586539bf2eeb3784bb9b7d0b66a67cd3d747b0441606f86816abae3355bd44",
+    "approval_granted": false
+  },
+  "postgres_unchanged_during_export": true,
+  "artifact_store_unchanged_during_export": true,
+  "html_sha256": "87d1a31381ed4a3c337a2caef666a2801c225650b5f326f48e6fbf649d369bf7",
+  "packet_ref": "sha256:e8586539bf2eeb3784bb9b7d0b66a67cd3d747b0441606f86816abae3355bd44",
+  "ticket_id": "ZEUS-bd2bcff7c9bd",
+  "human_acceptance": false,
+  "source_sha256": {
+    "src/codex_harness/adapters/ticket_review.py": "8f320a924586d37b058691b1f1d2cfaa8201c796972c41026960727287232348",
+    "src/codex_harness/adapters/ticket_cli.py": "b448da09e6da952953217825296e122b26a9e605d52a95ab054aea059ff27099",
+    "src/codex_harness/application/ticket_lifecycle.py": "79414dd1387f4b5922e33d295c4dfd47c920cb5820e6a41717a60763c05be8c0",
+    "src/codex_harness/adapters/ticket_authority.py": "e8f575694e9abedccf445f4a5873e4e1f6de8b594ac0c675d183bc6e7992fd1d",
+    "src/codex_harness/cli.py": "7dde4640314a6804afe574353f90d6f6c67733010a1d0bcbb6418df04e7a111d"
+  }
+}

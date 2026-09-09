@@ -93,6 +93,11 @@ uv run zeus ticket dispatch ZEUS-0123456789ab --revision 1
 한 번만 계획 작업을 원장에 등록하며, 실제 실행은 supervisor가 담당합니다. 티켓 피드백은
 기존 코드 검수·카나리아·배포 조건을 대신하지 않습니다.
 
+종료 전에는 `zeus ticket review-close ID --packet packet.json --output review.html`로
+인수 기준 원문, 실제 관측 증거, 환경, 필요한 서명자와 서명 대상 해시를 함께 확인할 수 있습니다.
+화면을 열어도 승인·종료되지 않습니다. [종료·재개 절차](docs/zeus/implementation/ticket-lifecycle-002/README.md)와
+[검토 화면 사용법 및 실측 예제](docs/zeus/implementation/ticket-review-001/README.md)를 참고하세요.
+
 ## 기존 설치에서 전환
 
 `uv sync --frozen` 후 `zeus`, `zeus-supervisor`, `zeus-monitor`, `python -m zeus`를 사용할 수 있습니다.

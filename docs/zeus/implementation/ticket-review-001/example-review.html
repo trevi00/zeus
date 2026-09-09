@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; form-action 'none'; base-uri 'none'">
+<title>Zeus 종료 검토 · Zeus 종료 근거 검토 — 실제 계측 예제</title>
+<style>
+:root{--bg:#f4f6f8;--ink:#182a3b;--muted:#50677b;--line:#d7e0e7;--accent:#235a75;--paper:#fff;--warn:#754600}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,"Malgun Gothic",sans-serif}
+main{max-width:1160px;margin:auto;padding:40px 24px 80px}header{border-top:6px solid var(--accent);padding:28px;background:var(--paper);border-radius:8px}
+h1{font-size:clamp(25px,4vw,38px);line-height:1.25;margin:10px 0 18px;overflow-wrap:anywhere}h2{font-size:23px;margin:0 0 16px}h3{font-size:20px;margin:8px 0}
+p{margin:10px 0}.eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--accent)}.muted{color:var(--muted)}
+.notice{background:#fff3d8;color:var(--warn);border-left:4px solid #bc861f;padding:12px 16px;border-radius:4px}
+.grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px;margin:20px 0}section,.criterion{background:var(--paper);padding:24px;border:1px solid var(--line);border-radius:8px;margin-top:20px;min-width:0}
+.grid section{margin:0}.criterion{border-left:4px solid var(--accent)}.hash,code{font:13px/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+.claim{color:var(--muted);font-size:14px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f1f5f7;padding:16px;border-radius:6px;font:13px/1.6 ui-monospace,Consolas,monospace;max-height:480px;overflow:auto}
+summary{cursor:pointer;font-weight:600;padding:12px 0;color:var(--accent)}summary:focus-visible{outline:3px solid #bc861f;outline-offset:4px}details{border-top:1px solid var(--line);margin-top:12px}li{overflow-wrap:anywhere}dl{margin:0}dt{color:var(--muted);font-size:13px;margin-top:12px}dd{margin:2px 0;overflow-wrap:anywhere}
+@media(max-width:760px){main{padding:20px 12px 40px}header,section,.criterion{padding:18px}.grid{grid-template-columns:1fr}h2{font-size:21px}}
+@media print{body{background:#fff}main{padding:0}pre{max-height:none}.grid{grid-template-columns:1fr}}
+</style></head><body><main>
+<header><div class="eyebrow">ZEUS · 종료 전 검토</div><h1>Zeus 종료 근거 검토 — 실제 계측 예제</h1>
+<p>이 화면을 열거나 읽어도 승인·종료되지 않습니다. 기준 원문과 실제 관측 내용을 비교한 뒤 원본 패킷을 서명하세요.</p>
+<p class="notice">저장된 검토 화면입니다. 종료 요청 시 시각·개정·서명을 다시 검증합니다.</p>
+<p class="hash">ZEUS-bd2bcff7c9bd · 개정 1 · 작업 주기 0</p></header>
+<div class="grid"><section><h2>무엇을 해결했는가</h2><p>사람이 원문 인수 기준과 측정한 결과를 함께 읽고 종료 근거를 판단할 수 있어야 합니다.</p>
+<h3>영향</h3><p>이 예제는 실제 GitHub·격리 PostgreSQL 관측을 보여줍니다. 제품 인수나 사람 승인을 대신하지 않습니다.</p><h3>범위</h3><ul><li>전용 시험 이슈 #34의 실제 조회</li><li>격리 PostgreSQL의 보존된 이력</li><li>읽기 전용 검토 화면</li></ul>
+<h3>종료 요청 사유</h3><p>원문과 실측을 연결한 검토 화면 확인</p></section>
+<section><h2>필요한 승인</h2><p class="notice">사람 승인 요구 없음 — 이 정책은 자동화 서명만으로 종료할 수 있습니다.</p><ul><li>test-only-not-a-human@zeus.invalid <span class="muted">· automation</span></li></ul>
+<p class="muted">서명 검증은 이 화면에서 실행하지 않습니다. 등록된 키의 권한과 실제 사람의 현장 확인은 별개입니다.</p>
+<dl><dt>발행</dt><dd>2026-09-09T15:25:48.289412+00:00</dd><dt>서명 기한</dt><dd>2026-09-09T16:25:48.289412+00:00</dd>
+<dt>해결 커밋</dt><dd class="hash">33240ab4f0d759adfb2205db1de74c1e2c76212e</dd></dl></section></div>
+<section><h2>인수 기준과 증거 · 3개</h2><p class="muted">‘통과’는 제출된 관측 결과입니다. 원문 기준을 충족하는지 검토자의 판단이 필요합니다.</p><article class="criterion"><div class="eyebrow">인수 기준 1</div><h3>시험용 이슈 #34의 제목과 본문이 PostgreSQL 원장의 내용과 일치한다.</h3><p class="claim">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 1,698 bytes</summary><p class="hash">sha256:d2e229940711beed01cc65bd4074f06c14dad108f22b3872786641e0504d3a9c</p><p>관측 시각: 2026-09-09T15:25:48.081088+00:00</p><pre>{
+  &quot;content_hash&quot;: &quot;00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be&quot;,
+  &quot;criterion_index&quot;: 0,
+  &quot;details&quot;: {
+    &quot;actual_remote&quot;: {
+      &quot;body&quot;: &quot;&lt;!-- zeus-ticket:ZEUS-c4bcef7b11b0 --&gt;\n\n# [Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen\n\nZeus `ZEUS-c4bcef7b11b0` · revision 1 · `9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a`\n\n&gt; Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\nDedicated automated acceptance issue for the signed ticket lifecycle implementation.\n\n## Impact\n\nTest only. This does not resolve FA-029 or any improvement issue and is not human acceptance.\n\n## Rollback\n\nRetain test receipts and close only this dedicated issue after verification.\n\n## Evidence Refs\n\n- https://github.com/trevi00/zeus/commit/33240ab4f0d759adfb2205db1de74c1e2c76212e\n\n## Scope\n\n- Isolated PostgreSQL schema\n- This dedicated GitHub issue\n- Ephemeral automation signer only\n\n## Acceptance Criteria\n\n- The dedicated test issue is read back with its exact current title and body from real GitHub.\n\n## Verification\n\n- Actual GitHub readback and PostgreSQL state are retained before each signed closure.\n\n## Reviewer findings\n\nNo review recorded for this revision.\n&quot;,
+      &quot;comments&quot;: [],
+      &quot;number&quot;: 34,
+      &quot;state&quot;: &quot;CLOSED&quot;,
+      &quot;title&quot;: &quot;[Zeus lifecycle acceptance test] Actual PG/GitHub close and reopen&quot;,
+      &quot;url&quot;: &quot;https://github.com/trevi00/zeus/issues/34&quot;
+    },
+    &quot;canonical_title_and_body_match&quot;: true
+  },
+  &quot;kind&quot;: &quot;ticket-criterion-evidence-v1&quot;,
+  &quot;observed_at&quot;: &quot;2026-09-09T15:25:48.081088+00:00&quot;,
+  &quot;outcome&quot;: &quot;passed&quot;,
+  &quot;revision&quot;: 1,
+  &quot;solution_commit&quot;: &quot;33240ab4f0d759adfb2205db1de74c1e2c76212e&quot;,
+  &quot;ticket_id&quot;: &quot;ZEUS-bd2bcff7c9bd&quot;
+}</pre></details></article><article class="criterion"><div class="eyebrow">인수 기준 2</div><h3>종료와 재개를 포함한 네 개의 작업 주기 이벤트가 실제 PostgreSQL에 보존되어 있다.</h3><p class="claim">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 2,953 bytes</summary><p class="hash">sha256:8c55213b305c8d0d7fc1e0050594748bc6347fe5856cc8b6dc2c6968b9906878</p><p>관측 시각: 2026-09-09T15:25:48.081088+00:00</p><pre>{
+  &quot;content_hash&quot;: &quot;00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be&quot;,
+  &quot;criterion_index&quot;: 1,
+  &quot;details&quot;: {
+    &quot;actual_postgres_history&quot;: [
+      {
+        &quot;at&quot;: &quot;2026-09-09T15:04:49.399939+00:00&quot;,
+        &quot;content_hash&quot;: &quot;9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a&quot;,
+        &quot;from_sequence&quot;: 0,
+        &quot;id&quot;: &quot;60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8&quot;,
+        &quot;kind&quot;: &quot;closed&quot;,
+        &quot;packet_ref&quot;: &quot;sha256:d63cd10ac6d3a65f312f9d71aea5c76cdb8ad5dd3678a932af9fe6168abc6397&quot;,
+        &quot;previous_event&quot;: null,
+        &quot;previous_status&quot;: &quot;open&quot;,
+        &quot;previous_updated_at&quot;: &quot;2026-09-09T15:04:44.386692+00:00&quot;,
+        &quot;proof_ref&quot;: &quot;sha256:23f3676d69f29479092af78a766fa8058e4232d7e780482851f5611d5f6bb9ec&quot;,
+        &quot;reason&quot;: &quot;Dedicated automated acceptance cycle: first_close&quot;,
+        &quot;request_id&quot;: null,
+        &quot;revision&quot;: 1,
+        &quot;sequence&quot;: 1,
+        &quot;ticket_id&quot;: &quot;ZEUS-c4bcef7b11b0&quot;
+      },
+      {
+        &quot;at&quot;: &quot;2026-09-09T15:04:55.033456+00:00&quot;,
+        &quot;content_hash&quot;: &quot;9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a&quot;,
+        &quot;from_sequence&quot;: 1,
+        &quot;id&quot;: &quot;a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18&quot;,
+        &quot;kind&quot;: &quot;reopened&quot;,
+        &quot;packet_ref&quot;: null,
+        &quot;previous_event&quot;: &quot;60b922296af884ead3cea2353da6b10d7ef1cc76f57d5a04dfa02abfe5f136b8&quot;,
+        &quot;previous_status&quot;: &quot;closed&quot;,
+        &quot;previous_updated_at&quot;: &quot;2026-09-09T15:04:49.399939+00:00&quot;,
+        &quot;proof_ref&quot;: null,
+        &quot;reason&quot;: &quot;Automated acceptance exercises a recurrence&quot;,
+        &quot;request_id&quot;: &quot;356cd9d2366129d21a6ec554ac5a44306ead2be710d6b7681393a1bdb3b504f1&quot;,
+        &quot;revision&quot;: 1,
+        &quot;sequence&quot;: 2,
+        &quot;ticket_id&quot;: &quot;ZEUS-c4bcef7b11b0&quot;
+      },
+      {
+        &quot;at&quot;: &quot;2026-09-09T15:05:02.744760+00:00&quot;,
+        &quot;content_hash&quot;: &quot;9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a&quot;,
+        &quot;from_sequence&quot;: 2,
+        &quot;id&quot;: &quot;42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254&quot;,
+        &quot;kind&quot;: &quot;reopened&quot;,
+        &quot;packet_ref&quot;: null,
+        &quot;previous_event&quot;: &quot;a9944d34299707f580af4aa96382d7de63872ca7af9d6a699f050138cc9bec18&quot;,
+        &quot;previous_status&quot;: &quot;open&quot;,
+        &quot;previous_updated_at&quot;: &quot;2026-09-09T15:04:55.033456+00:00&quot;,
+        &quot;proof_ref&quot;: null,
+        &quot;reason&quot;: &quot;Reconcile the injected external close&quot;,
+        &quot;request_id&quot;: &quot;2f9ac10cefb8d34f6c0a3b1578fb20879286bf85bb9726c225fdb42a526ca584&quot;,
+        &quot;revision&quot;: 1,
+        &quot;sequence&quot;: 3,
+        &quot;ticket_id&quot;: &quot;ZEUS-c4bcef7b11b0&quot;
+      },
+      {
+        &quot;at&quot;: &quot;2026-09-09T15:05:07.501306+00:00&quot;,
+        &quot;content_hash&quot;: &quot;9ef4edf5e03b097c71a73ea4ebaa1cb9db2c56fdc972760ded4a44a3fc44d90a&quot;,
+        &quot;from_sequence&quot;: 3,
+        &quot;id&quot;: &quot;261be2d1c98b381470823e448ece2c238f1e498950b09e0e3504aab36ae40aac&quot;,
+        &quot;kind&quot;: &quot;closed&quot;,
+        &quot;packet_ref&quot;: &quot;sha256:1061b2166c0cf753cd05f6080dbdfe682b3353a960798d22fb78e5151a6cd6d2&quot;,
+        &quot;previous_event&quot;: &quot;42e3e7edd812dc0c9a2fe2d54a029ccf93cf1420f5cf03aef19ff41ce2e0a254&quot;,
+        &quot;previous_status&quot;: &quot;open&quot;,
+        &quot;previous_updated_at&quot;: &quot;2026-09-09T15:05:02.744760+00:00&quot;,
+        &quot;proof_ref&quot;: &quot;sha256:54efc8ae14a9a6d7ac7d90b9c20a0cf8ac5b8a0c01697f3c0e77db9b080a0600&quot;,
+        &quot;reason&quot;: &quot;Dedicated automated acceptance cycle: final_close&quot;,
+        &quot;request_id&quot;: null,
+        &quot;revision&quot;: 1,
+        &quot;sequence&quot;: 4,
+        &quot;ticket_id&quot;: &quot;ZEUS-c4bcef7b11b0&quot;
+      }
+    ]
+  },
+  &quot;kind&quot;: &quot;ticket-criterion-evidence-v1&quot;,
+  &quot;observed_at&quot;: &quot;2026-09-09T15:25:48.081088+00:00&quot;,
+  &quot;outcome&quot;: &quot;passed&quot;,
+  &quot;revision&quot;: 1,
+  &quot;solution_commit&quot;: &quot;33240ab4f0d759adfb2205db1de74c1e2c76212e&quot;,
+  &quot;ticket_id&quot;: &quot;ZEUS-bd2bcff7c9bd&quot;
+}</pre></details></article><article class="criterion"><div class="eyebrow">인수 기준 3</div><h3>기존 개선 이슈 #30은 해결된 것으로 처리되지 않고 OPEN 상태를 유지한다.</h3><p class="claim">제출 결과: 통과 · 사람의 승인 여부는 확인되지 않았습니다.</p><details><summary>증거 내용 보기 · 5,227 bytes</summary><p class="hash">sha256:a5f6eb84eca53bd66429b2dc8d42b223d9b31b46578c7a7a9d7e04e185654e39</p><p>관측 시각: 2026-09-09T15:25:48.081088+00:00</p><pre>{
+  &quot;content_hash&quot;: &quot;00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be&quot;,
+  &quot;criterion_index&quot;: 2,
+  &quot;details&quot;: {
+    &quot;actual_remote&quot;: {
+      &quot;body&quot;: &quot;&lt;!-- zeus-ticket:ZEUS-db4ecdcd9fa8 --&gt;\n\n# [FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정\n\nZeus `ZEUS-db4ecdcd9fa8` · revision 1 · `9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691`\n\n&gt; Local ledger is authoritative. Reviews below are advisory, not deployment approval.\n\n## Problem\n\n현재 Zeus Tickets와 CLI에는 close/reopen이 없고 GitHub sync는 본문만 투영한다. 원격 CLOSED 상태여도 synced로 기록될 수 있어 사용자 요구인 해결 및 인수 검증 후 양쪽 종료를 아직 구현하지 못한다.\n\n## Impact\n\n분석 완료·코드 작성·본문 동기화를 실제 해결로 오해하거나 한쪽만 종료된 상태를 놓칠 수 있다. 재발·개정 변경과 실패 복구에도 증거에 결속된 상태 전이가 필요하다.\n\n## Rollback\n\n종료 동기화에 모순이 있으면 자동 종료 처리를 중단하고 PG 결정·원격 관측·실패 증거를 보존한다. 수동 조정도 이유와 기대 개정을 기록하며 원래 이슈의 미해결 기준을 삭제하지 않는다.\n\n## Evidence Refs\n\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/docs/ticket-lifecycle-review.md\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/src/codex_harness/application/tickets.py\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/src/codex_harness/adapters/github_tickets.py\n- https://github.com/trevi00/zeus/blob/6fca1d49e39f2a57dc2f94922adc117c91d06b5f/src/codex_harness/cli.py\n\n## Scope\n\n- Zeus application Tickets, GitHub adapter, CLI 및 실제 PG/GitHub 검증을 대상으로 한다.\n- 전체 분석 중 발견한 원본 milestone 종결 문제와 구분해 Zeus의 현재 미구현 계약을 다룬다.\n- 현재는 정적 감사다. 실제 Claude 공동 검토와 SDD 설계 후 root가 구현한다.\n\n## Acceptance Criteria\n\n- 티켓 개정/content hash/해결 commit과 모든 인수 기준의 결과·불변 증거·필요한 사람 승인에 결속된 close 결정을 PG에 남긴다. 누락·실패·unknown·skip·오래된 증거로 닫지 않는다.\n- close/reopen은 기대 개정과 상태를 검증하며 재발·변경 이유와 과거 증거를 보존한다. actor 문자열만으로 사람 인수를 인정하지 않는다.\n- PG 결정과 GitHub 반영을 재개 가능한 단계로 분리하고 pending과 실제 원격 상태 확인 완료를 구분한다. 양쪽 동시 원자성을 주장하지 않는다.\n- ACK 유실·PG 후속 실패·중복 요청·동시 종료/재개·중간 개정 변경·lease 만료 후 늦은 응답에서 잘못된 완료나 중복 결정을 방지하고 조정 절차를 제공한다.\n- 원격 수동 종료와 외부 제목/본문 변경을 관측하고 충돌을 표시한다. 외부 상태로 로컬 인수 승인을 자동 생성하지 않는다.\n- 실제 PG 및 승인된 별도 GitHub 시험 이슈로 종료·재개·재시도 흐름을 검증한다. 실제 열린 개선 이슈를 시험 목적으로 닫지 않는다.\n\n## Verification\n\n- 18c91d6의 Tickets, GitHubTickets, CLI 및 직접 테스트에 대한 Codex 정적 감사와 root 구현 대조를 수행했다.\n- close/reopen API 및 인수 기준별 증거 거부·종료 상태 일치·종료 중 PG 실패 복구 검사는 현재 없다.\n- 이번 감사는 실행·DB 변경·GitHub 종료 0회이며 실제 Claude 검토와 실제 외부 종료 인수는 미완료다.\n\n## Reviewer findings\n\n### Codex root (Codex) — changes_requested\n\nFresh inbox workflow review: limit100 without complete pagination, parsed --repo not threaded to shown gh actions, missing stale timestamp and label/template presence as approval proxies. These cannot authorize closing Zeus issues. Close/reopen and local/GitHub state synchronization remain unimplemented until correction, exact-revision acceptance and required human approval; no close/reopen operation.\n\nEvidence: https://github.com/trevi00/zeus/blob/1bc034f0e67d65f762ce3fb31c9a1891e8ca415d/docs/full-analysis/baldrix-gsd-workflows-003/file-reviews.md#file-03\n\n### Codex root (Codex) — changes_requested\n\nJoint review rejects append-only storage necessarily requiring new slug: typed correction/reopen events are possible. Historical resolved text/PASS/severity does not prove current closure. Zeus close/reopen/state sync remains unimplemented and this checkpoint performs zero close/reopen operations.\n\nEvidence: https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md\n&quot;,
+      &quot;comments&quot;: [],
+      &quot;number&quot;: 30,
+      &quot;state&quot;: &quot;OPEN&quot;,
+      &quot;title&quot;: &quot;[FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정&quot;,
+      &quot;url&quot;: &quot;https://github.com/trevi00/zeus/issues/30&quot;
+    }
+  },
+  &quot;kind&quot;: &quot;ticket-criterion-evidence-v1&quot;,
+  &quot;observed_at&quot;: &quot;2026-09-09T15:25:48.081088+00:00&quot;,
+  &quot;outcome&quot;: &quot;passed&quot;,
+  &quot;revision&quot;: 1,
+  &quot;solution_commit&quot;: &quot;33240ab4f0d759adfb2205db1de74c1e2c76212e&quot;,
+  &quot;ticket_id&quot;: &quot;ZEUS-bd2bcff7c9bd&quot;
+}</pre></details></article></section>
+<section><h2>환경 확인</h2><details><summary>증거 내용 보기 · 463 bytes</summary><p class="hash">sha256:906a6b0c2fe039b29f54172b55fed61782af291eb82636e98a9da2343622b071</p><p>관측 시각: 2026-09-09T15:25:48.081088+00:00</p><pre>{
+  &quot;content_hash&quot;: &quot;00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be&quot;,
+  &quot;details&quot;: {
+    &quot;github_repository&quot;: &quot;trevi00/zeus&quot;,
+    &quot;human_acceptance&quot;: false,
+    &quot;platform&quot;: &quot;Windows-11-10.0.26200-SP0&quot;,
+    &quot;postgres_schema&quot;: &quot;ticket_live_10fa6da78a9a417d958b2cba6f39e243&quot;,
+    &quot;python&quot;: &quot;3.14.7&quot;
+  },
+  &quot;kind&quot;: &quot;ticket-environment-v1&quot;,
+  &quot;observed_at&quot;: &quot;2026-09-09T15:25:48.081088+00:00&quot;,
+  &quot;revision&quot;: 1,
+  &quot;solution_commit&quot;: &quot;33240ab4f0d759adfb2205db1de74c1e2c76212e&quot;,
+  &quot;ticket_id&quot;: &quot;ZEUS-bd2bcff7c9bd&quot;
+}</pre></details></section>
+<section><h2>되돌리기</h2><p>이 HTML 검토 문서를 폐기해도 이슈·승인 상태는 바뀌지 않습니다.</p></section>
+<section><h2>서명할 원본 식별</h2><p>HTML이나 화면 복사본이 아닌 원본 JSON 파일을 서명하세요.</p>
+<dl><dt>원본 파일</dt><dd class="hash">C:\Users\rudtn\zeus\docs\zeus\implementation\ticket-review-001\example-packet.json</dd><dt>원본 SHA-256 · 1,408 bytes</dt>
+<dd class="hash">sha256:e8586539bf2eeb3784bb9b7d0b66a67cd3d747b0441606f86816abae3355bd44</dd><dt>신뢰 정책 커밋</dt><dd class="hash">379070b4c79fe80436d9ac977a2d034b9d9126de</dd>
+<dt>정책 해시</dt><dd class="hash">135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e</dd></dl>
+<details><summary>정확한 서명 대상 JSON 보기</summary><pre>{&quot;content_hash&quot;:&quot;00ee136a061a6c96f7b96cc5b7c114afaced85ef97acb08ad1eeb27b706dc2be&quot;,&quot;criteria&quot;:[{&quot;criterion_hash&quot;:&quot;dab62929db54f955a76e353079790031a41ef52d922ee9a820110666aea4ddc5&quot;,&quot;evidence_refs&quot;:[&quot;sha256:d2e229940711beed01cc65bd4074f06c14dad108f22b3872786641e0504d3a9c&quot;],&quot;index&quot;:0,&quot;outcome&quot;:&quot;passed&quot;},{&quot;criterion_hash&quot;:&quot;2edc72ba92033b1e2ad86e85cd6fd3fc3475a1d06d357704e607a23739af19aa&quot;,&quot;evidence_refs&quot;:[&quot;sha256:8c55213b305c8d0d7fc1e0050594748bc6347fe5856cc8b6dc2c6968b9906878&quot;],&quot;index&quot;:1,&quot;outcome&quot;:&quot;passed&quot;},{&quot;criterion_hash&quot;:&quot;18cc25d2fe554569bc16130493ef0db165dd6a47b3c0427b1e77df0a889ad8da&quot;,&quot;evidence_refs&quot;:[&quot;sha256:a5f6eb84eca53bd66429b2dc8d42b223d9b31b46578c7a7a9d7e04e185654e39&quot;],&quot;index&quot;:2,&quot;outcome&quot;:&quot;passed&quot;}],&quot;criteria_hash&quot;:&quot;f2df8ea343935450ff450d178ff4aa476f4be3fdae6d285735a56970dacd08c6&quot;,&quot;environment_ref&quot;:&quot;sha256:906a6b0c2fe039b29f54172b55fed61782af291eb82636e98a9da2343622b071&quot;,&quot;expected_status&quot;:&quot;open&quot;,&quot;expires_at&quot;:&quot;2026-09-09T16:25:48.289412+00:00&quot;,&quot;issued_at&quot;:&quot;2026-09-09T15:25:48.289412+00:00&quot;,&quot;policy_commit&quot;:&quot;379070b4c79fe80436d9ac977a2d034b9d9126de&quot;,&quot;policy_hash&quot;:&quot;135b17e9176b9626c60c49cad4418ea8d52d8e07684f3176353d25e91649894e&quot;,&quot;reason&quot;:&quot;원문과 실측을 연결한 검토 화면 확인&quot;,&quot;revision&quot;:1,&quot;scope&quot;:&quot;test-only-lifecycle:10fa6da78a9a417d958b2cba6f39e243&quot;,&quot;sequence&quot;:0,&quot;solution_commit&quot;:&quot;33240ab4f0d759adfb2205db1de74c1e2c76212e&quot;,&quot;ticket_id&quot;:&quot;ZEUS-bd2bcff7c9bd&quot;,&quot;version&quot;:1}</pre></details></section>
+</main></body></html>

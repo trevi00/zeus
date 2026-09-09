@@ -113,8 +113,7 @@ class TicketAuthority:
         require(set(policy["definition"]["required_signers"]) <= seen, "Incomplete required signature set")
         if heartbeat:
             heartbeat()
-        require(self.git._git("merge-base", packet["solution_commit"], "HEAD") == packet["solution_commit"],
-                "Solution commit must be merged into the configured repository HEAD")
+        self.require_merged(packet["solution_commit"])
         finished = datetime.now(timezone.utc)
         require(all(finished < timestamp(policy["enrolled"][p]["valid_before"]) for p in seen),
                 "Signer expired during verification")
@@ -123,3 +122,8 @@ class TicketAuthority:
                 "required_signers": policy["definition"]["required_signers"],
                 "required_human_signers": policy["definition"]["required_human_signers"],
                 "attestation_scope": "configured_key_authority_only", "physical_human_presence_verified": False}
+
+    def require_merged(self, commit):
+        require(isinstance(commit, str) and COMMIT.fullmatch(commit), "Full solution commit required")
+        require(self.git._git("merge-base", commit, "HEAD") == commit,
+                "Solution commit must be merged into the configured repository HEAD")

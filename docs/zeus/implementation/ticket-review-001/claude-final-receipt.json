@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--resume",
+    "2dc41532-c263-4a29-8689-c8b385e1da27",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Final bounded review of the same ticket review UI patch, max 300 words. Fixed your two conditions: environment_preview is rendered/reserved before criteria in ticket_review.py; shared TicketAuthority.require_merged checks solution ancestry for review and signature verification. Added test for existing orphan/unmerged commit and exhausted criteria preview budget. Current revision/status/content/sequence and anchor checked read-only after evidence validation. Re-export across expiry boundary intentionally requires a new output path when bytes differ, to be documented. Inspect final diff and tests/test_ticket_review.py only, no broad new scope or execution. Approve or name remaining concrete blocker."
+  ],
+  "returncode": 0,
+  "duration_seconds": 24.623607873916626,
+  "stdout_sha256": "6e26c0f91021d551c7a4e1b8b52364a0bf300d0416386b6da10785d6d17f0d51",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus GitHub ticket projection patch review; no execution",
+  "session_id": "2dc41532-c263-4a29-8689-c8b385e1da27",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 8,
+    "cache_creation_input_tokens": 10191,
+    "cache_read_input_tokens": 865620,
+    "output_tokens": 1281,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 10191,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 741,
+        "cache_read_input_tokens": 219976,
+        "cache_creation_input_tokens": 2682,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2682
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.566785,
+  "model_usage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 8,
+      "outputTokens": 1281,
+      "cacheReadInputTokens": 865620,
+      "cacheCreationInputTokens": 10191,
+      "webSearchRequests": 0,
+      "costUSD": 0.566785,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

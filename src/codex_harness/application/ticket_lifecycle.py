@@ -93,6 +93,28 @@ class TicketLifecycle:
         for criterion in packet["criteria"]:
             require(all(documents[ref].get("criterion_index") == criterion["index"]
                         for ref in criterion["evidence_refs"]), "Evidence belongs to another acceptance criterion")
+        return documents
+
+    def review(self, packet):
+        """Inspect a current packet, including expired grants, without recording authority."""
+        require(isinstance(packet, dict) and isinstance(packet.get("ticket_id"), str), "Closure ticket ID required")
+        ticket, policy = self.tickets.get(packet["ticket_id"]), self.authority.policy()
+        documents = self._evidence(packet, ticket, policy, timestamp(packet["issued_at"]))
+        self.authority.require_merged(packet["solution_commit"])
+        with self.store.transaction() as tx:
+            current = tx.get("tickets", ticket["id"])
+            require(current and all(current[k] == ticket[k] for k in ("revision", "content_hash", "status"))
+                    and current.get("lifecycle_sequence", 0) == ticket["lifecycle_sequence"], "Ticket changed during review export")
+            verify_chain(tx, current)
+            anchor = tx.get("ticket_trust_anchors", "deployment")
+            require(anchor is None or all(anchor[k] == policy[k] for k in ("policy_commit", "policy_hash", "scope")),
+                    "Review policy differs from pinned authority")
+        now = datetime.now(timezone.utc)
+        time_status = ("expired" if now >= timestamp(packet["expires_at"]) else
+                       "future" if now < timestamp(packet["issued_at"]) else "recheck_at_close")
+        return {"ticket": ticket, "packet": packet, "packet_ref": "sha256:" + digest(packet),
+                "policy": policy["definition"], "documents": documents, "time_status": time_status,
+                "status": "unapproved_review_snapshot", "approval_granted": False}
 
     @staticmethod
     def _anchor(tx, policy):
