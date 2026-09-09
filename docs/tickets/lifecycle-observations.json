@@ -1,0 +1,263 @@
+{
+  "kind": "read_only_ticket_lifecycle_observation",
+  "observed_at": "2026-09-09T10:20:24.136975+00:00",
+  "argv": [
+    "gh",
+    "issue",
+    "list",
+    "--repo",
+    "trevi00/zeus",
+    "--state",
+    "all",
+    "--limit",
+    "100",
+    "--json",
+    "number,url,state"
+  ],
+  "records": [
+    {
+      "topic": "ZEUS-ANALYSIS",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/1"
+    },
+    {
+      "topic": "FA-001",
+      "ticket_id": "ZEUS-ba0de9a2623e",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/2"
+    },
+    {
+      "topic": "FA-002",
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/3"
+    },
+    {
+      "topic": "FA-003",
+      "ticket_id": "ZEUS-429c533aab0e",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/4"
+    },
+    {
+      "topic": "FA-004",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/5"
+    },
+    {
+      "topic": "FA-005",
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/6"
+    },
+    {
+      "topic": "FA-006",
+      "ticket_id": "ZEUS-fb340b746179",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/7"
+    },
+    {
+      "topic": "FA-007",
+      "ticket_id": "ZEUS-2dd28a919f60",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/8"
+    },
+    {
+      "topic": "FA-008",
+      "ticket_id": "ZEUS-4e7e2e2b01a9",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/9"
+    },
+    {
+      "topic": "FA-009",
+      "ticket_id": "ZEUS-49fb81e7348d",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/10"
+    },
+    {
+      "topic": "FA-010",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/11"
+    },
+    {
+      "topic": "FA-011",
+      "ticket_id": "ZEUS-74e61b578afa",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/12"
+    },
+    {
+      "topic": "FA-012",
+      "ticket_id": "ZEUS-97f3257c362a",
+      "revision": 2,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/13"
+    },
+    {
+      "topic": "FA-013",
+      "ticket_id": "ZEUS-fb2ab61807b4",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/14"
+    },
+    {
+      "topic": "FA-014",
+      "ticket_id": "ZEUS-f5a496e41ac2",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/15"
+    },
+    {
+      "topic": "FA-015",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/16"
+    },
+    {
+      "topic": "FA-016",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/17"
+    },
+    {
+      "topic": "FA-017",
+      "ticket_id": "ZEUS-3875a025c20d",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/18"
+    },
+    {
+      "topic": "FA-018",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/19"
+    },
+    {
+      "topic": "FA-019",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/20"
+    },
+    {
+      "topic": "FA-020",
+      "ticket_id": "ZEUS-0ecf8213b0da",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/21"
+    },
+    {
+      "topic": "FA-021",
+      "ticket_id": "ZEUS-916e0f1f4333",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/22"
+    },
+    {
+      "topic": "FA-022",
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/23"
+    },
+    {
+      "topic": "FA-023",
+      "ticket_id": "ZEUS-5f46ad3a1d56",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/24"
+    },
+    {
+      "topic": "FA-024",
+      "ticket_id": "ZEUS-8bbe68a96580",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/25"
+    },
+    {
+      "topic": "FA-025",
+      "ticket_id": "ZEUS-9495da500988",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/26"
+    },
+    {
+      "topic": "FA-026",
+      "ticket_id": "ZEUS-430121f4256d",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/27"
+    },
+    {
+      "topic": "FA-027",
+      "ticket_id": "ZEUS-92ca5e645c56",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/28"
+    },
+    {
+      "topic": "FA-028",
+      "ticket_id": "ZEUS-79ad5a0e514a",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/29"
+    },
+    {
+      "topic": "FA-029",
+      "ticket_id": "ZEUS-db4ecdcd9fa8",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/30"
+    }
+  ],
+  "issue_close_or_reopen_operations": 0,
+  "lifecycle_sync_implemented": false,
+  "all_remote_open": true,
+  "local_all_unresolved": true
+}

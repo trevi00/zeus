@@ -131,3 +131,5 @@ harness lib의 정상 gate writer 추가 분석은 검토 도구의 자동 보�
 계약 추출 공동 검토는 [누락·변환 충돌·판정 권위 #25](https://github.com/trevi00/zeus/issues/25)에 연결했다. 근거는 `9929b04`에 고정했다. 저장소는 사용자 요청으로 공개 전환했으며 서비스 운영 배포와는 별개다.
 
 예제 구성·테스트 분모 검토는 [선언 그래프·실측 시나리오·필수 검사 분모 #28](https://github.com/trevi00/zeus/issues/28)에 연결했다. 근거는 `1f3851212d3725811868b75ac9d2fa9b7270c9d5`에 고정했으며 PostgreSQL 원장과 GitHub 28개 티켓의 제목·본문·연결 marker가 일치한다.
+
+Synthetic fleet 검토는 [봉투·RPC·실제 인수 범위 #29](https://github.com/trevi00/zeus/issues/29), 사용자 종료 기준과 Zeus의 구현 공백은 [증거 기반 종료·재개·상태 조정 #30](https://github.com/trevi00/zeus/issues/30)에 연결했다. 근거는 `6fca1d49e39f2a57dc2f94922adc117c91d06b5f`에 고정했고 PG/GitHub 30개 티켓의 제목·본문·marker 일치를 확인했다. [별도 상태 관측](../tickets/lifecycle-observations.json) 당시 모두 OPEN이며 로컬도 미해결 상태다. 이는 종료 동기화 기능 검증이 아니며 해결 구현과 인수 검증이 남은 이슈를 닫지 않았다.

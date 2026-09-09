@@ -222,5 +222,21 @@
     "url": "https://github.com/trevi00/zeus/issues/28",
     "number": 28,
     "sync_status": "synced"
+  },
+  {
+    "topic": "FA-028",
+    "id": "ZEUS-79ad5a0e514a",
+    "revision": 1,
+    "url": "https://github.com/trevi00/zeus/issues/29",
+    "number": 29,
+    "sync_status": "synced"
+  },
+  {
+    "topic": "FA-029",
+    "id": "ZEUS-db4ecdcd9fa8",
+    "revision": 1,
+    "url": "https://github.com/trevi00/zeus/issues/30",
+    "number": 30,
+    "sync_status": "synced"
   }
 ]

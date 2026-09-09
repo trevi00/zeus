@@ -2,6 +2,8 @@
 
 로컬 PostgreSQL 원장의 버전별 export 및 GitHub 연결입니다. Git export는 공유용 snapshot이며 런타임 원장을 대체하지 않습니다.
 
+이슈는 해결 구현과 해당 개정의 인수 기준 검증 후 증거를 연결해 닫습니다. 분석·코드 작성만 끝난 항목은 열어 둡니다. 현재 종료/재개와 상태 동기화는 [#30](https://github.com/trevi00/zeus/issues/30)의 미구현 범위입니다. [종료 계약 검토](../ticket-lifecycle-review.md)와 [상태 관측](lifecycle-observations.json)을 참고하세요.
+
 - [ZEUS-ANALYSIS](https://github.com/trevi00/zeus/issues/1) · `ZEUS-8f1322ec0a67` · revision 1
 - [FA-001](https://github.com/trevi00/zeus/issues/2) · `ZEUS-ba0de9a2623e` · revision 1
 - [FA-002](https://github.com/trevi00/zeus/issues/3) · `ZEUS-7fcc5f0308e7` · revision 1
@@ -30,3 +32,5 @@
 - [FA-025](https://github.com/trevi00/zeus/issues/26) · `ZEUS-9495da500988` · revision 1
 - [FA-026](https://github.com/trevi00/zeus/issues/27) · `ZEUS-430121f4256d` · revision 1
 - [FA-027](https://github.com/trevi00/zeus/issues/28) · `ZEUS-92ca5e645c56` · revision 1
+- [FA-028](https://github.com/trevi00/zeus/issues/29) · `ZEUS-79ad5a0e514a` · revision 1
+- [FA-029](https://github.com/trevi00/zeus/issues/30) · `ZEUS-db4ecdcd9fa8` · revision 1
