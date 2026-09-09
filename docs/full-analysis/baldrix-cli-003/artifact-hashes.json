@@ -1,0 +1,42 @@
+[
+  {
+    "path": "caller-test-search.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "caller-test-search.stdout",
+    "sha256": "f1e86be348591da0bde39a579d25c2446a9f9ab3831e2c7e471d7d29c7774490"
+  },
+  {
+    "path": "checkpoint.json",
+    "sha256": "dedc9d933d650fe5feba5f9ffd7890ae887ae9a6ef9d9a2f0d25e4aec84f8265"
+  },
+  {
+    "path": "files.json",
+    "sha256": "d21a897740356e98c1d71e1e5218aca81496a61f67ac7a8e94c41c481b712569"
+  },
+  {
+    "path": "record_review.py",
+    "sha256": "3b07c78af368c0bb3d3f24f29988af3cd6bcd3d2603dbd8632f83833dd868760"
+  },
+  {
+    "path": "remaining.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "review.md",
+    "sha256": "c89e2ba113e48545ddbda61a83cf985ee4a39a1ceb88f148db89a88ee4345184"
+  },
+  {
+    "path": "search-receipt.json",
+    "sha256": "6f9a7a469ff47b182f35903c1591d848381b963b3ad9285b642b040c28a3d96f"
+  },
+  {
+    "path": "semantic-notes.json",
+    "sha256": "2552b4d130b67a530ff38aaa591751446cddd36609f468a5fb5fe538c191ea90"
+  },
+  {
+    "path": "supporting-evidence.json",
+    "sha256": "754a4a31c71cc4fdf1e4b3da6c8adb5dd15693a645a9d33c317b0cebd2b3f73d"
+  }
+]

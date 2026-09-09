@@ -1,0 +1,60 @@
+## 대조 산출물 — 전문 읽음
+
+`docs/full-analysis/baldrix-skill-routing-runtime/` 의 `codex-initial.md`, `observe_components.py`, `observations.stdout.txt`, `observations.receipt.json`, `test_skill_token_budget.{stdout,receipt}`, `test_tech_stack.{stdout,receipt}`, `test_skill_match_render.{stdout,receipt}` — 전문. 재대조를 위해 지정 6파일 중 `skill_match.py:418-436`, `skill_token_budget.py:66-105`, `tech_stack.py:91-131,146-151`, `pipeline_yaml.py:47-69,178-188`, `threshold_policy.py:34-44,89-97,105-112`, `threshold_registry.py`(전문, 앞 회차 읽음) 재확인. 실행은 Codex가 했고 나는 산출물만 읽었다.
+
+---
+
+## 1. 합의
+
+- **역사적 서술과 현재 동작의 분리**: `fit_top_skill` 도입 후 "1위 무제한 주입"은 현행 결함이 아니다. Codex 첫 항목과 내 F3(주석 잔존)이 같은 지점을 양쪽에서 짚었다 — 결함은 코드가 아니라 `skill_match.py:68-71, 420-423`의 낡은 주석이다.
+- **문자 예산 ≠ 전체 입력 상한**: 4000/3000/3은 전문 본문에만 걸린다. 포인터·교차참조·phase·XML 포장은 예산 밖. 특히 포인터는 `MAX_POINTERS=8`로 잘리는데 `build_cross_references`는 상한이 없고, Codex 지적대로 **예산에서 탈락한 후보까지 matched로 취급**한다(`skill_match.py:551`이 post-budget `full_skills`가 아닌 pre-budget `matched_skills`를 넘긴다).
+- **경로 해석 이원화(내 F5 = Codex 6번)**: 관측이 확정했다. `stack_root_vs_subdir` → root `["_common","python/lang","python"]`, subdir `null`. 서브디렉터리 실행은 후보 집합을 바꾼다.
+- **block sequence 소비 불일치(내 F9 = Codex 7번)**: 컴포넌트 수준에서 실제 `AttributeError: 'list' object has no attribute 'strip'` 관측. `parse_stages`가 `skills: ["qa"]` 네이티브 리스트를 그대로 넘긴 것도 `block_skills_parsed`로 찍혔다.
+- **단계 추천 휴리스틱의 약함(내 F8 = Codex 6번)**: `sparse_later_output`(a 없고 빈 b.md만) → verify 추천, `all_outputs_exist` → 마지막 verify 재추천, `optional_next` → optional 단계가 next로 선택, `directory_counts` → **디렉터리도 산출물 존재로 카운트**. 내가 정적으로 예상한 것보다 관측이 더 넓다(디렉터리 케이스는 내 분석에 없었다).
+- **threshold 계약의 공백**: Codex의 `nan`/`inf` 지적이 내 F13보다 정확하다. `_coerce_num("nan")`은 `int()` 실패 후 `float()`로 NaN을 반환하고, `resolve_threshold`는 **finite/범위/LOCKED 재검사를 하지 않는다**(등록 여부만). 또 `_is_risky`가 현재 override가 아닌 `entry.default` 기준이고, ready-flag는 **이름만 결속**한다(값·기저·근거 무관). 내가 "게이트는 있다"고 정리한 것보다 게이트의 결속이 약하다.
+- **식별자 충돌**: `requires_name_vs_filename` 관측이 키잉 의존을 확정했다 — meta 키가 `"b"`면 추천 0건, `"b.md"`면 1건.
+
+---
+
+## 2. 내 초기 보고에서 정정할 것
+
+**(1) F1 — 예시가 틀렸다.** `skill_match.py:427-433`의 per-body 절단은 `t = truncate_skill_content(_c, 2)` 뒤 **길이를 재검사하지 않고** `if t: _c = t` 로 확정한다. 따라서 트리 3900자 예시에서 최종은 3000 이하가 아니라 **3900 그대로**다. 내 "최종 ≤3000" 서술은 틀렸다. 두 결함을 분리한다:
+- **(1a) PER_BODY_CAP 후조건 누락** — level2 결과 미검사, 그리고 무헤딩 fallback `_c[:3000] + "\n…(생략 — 토큰 절약)"`은 **정의상 3000을 넘는다**. 이름이 cap인데 사후 보장이 없다. (Codex 3번이 맞고, 이쪽이 원래 내 주장보다 강한 발견이다.)
+- **(1b) 배정 후 절단이라 여유가 재배정되지 않음** — 정정된 반례: 1위 본문 3500자(트리 800 + 기타 2700), 2위 900자, 예산 4000. `fit_top_skill`은 3500 ≤ 4000이라 무절단 통과 → remaining 500 → 2위 드롭 → 그 **뒤** cap이 1위를 800자로 줄여 2700자 여유가 남는다. 두 결함 모두 정적이며 **full hook 실행은 아직 없다.**
+
+**(2) F2 — 일반화가 과했다.** `TRUNCATION_MARKER`(40자)는 사라지는 게 아니라 `"\n…(생략 — 토큰 절약)"`로 **교체**된다. 사람에게 생략 사실은 여전히 전달된다. 남는 문제는 좁다: 기계 판정용 특정 마커의 동일성이 깨지고, "필요하면 스킬 파일을 직접 읽어라"는 지시가 빠진다. "조용히 문서가 끝난 줄 안다"는 서술은 철회한다.
+
+**(3) 테스트 커버리지 주장 정정.** "budget 원본 테스트가 모두 `max_chars=8000`"은 **사실과 다르다**. `test_fill_never_exceeds_the_budget`는 800/1500/2500/4000, `test_remaining_budget_is_filled_not_discarded`는 2000, `test_tiny_leftover_is_not_filled`는 계산된 cap, `test_empty_input_returns_empty`는 기본값을 쓴다. 유지되는 좁은 사실은 하나뿐이다 — **`PER_BODY_CAP`과 예산의 조합은 `skill_match.main` 안에만 있고, 실행된 57개(18+17+22, Linux 격리 컨테이너, returncode 0) 중 어느 것도 그 조합을 통과하지 않는다.** 57 PASS가 hook의 cap 조합을 검증한다고 주장하지 않는다. 관측은 경계를 추가로 보여준다: cap 0/1/20 → 실제 40자로 **초과**, cap 4000 → 정확히 4000(등호 성립).
+
+**(4) F6/F5 — "파이프라인 완전히 꺼짐"은 철회.** `resolve_stages_path(cwd, None)`는 언어 변형만 건너뛰고 **전역 `stages.yaml`로 폴백**한다. 즉 BOM/서브디렉터리 상황의 실제 결과는 "감지 중단"이 아니라 **스택 무관하게 Java 계열 전역 파이프라인 적용**이다 — 이는 F7을 무력화하는 게 아니라 오히려 F7의 도달 경로를 넓힌다. BOM 영향 범위도 좁힌다: BOM은 **첫 비어있지 않은 줄 하나**에만 붙으므로, 파일이 `stack:`으로 시작할 때 그 블록이 유실되고 주석으로 시작하면 영향이 없다. **"현대 Windows 메모장 기본 인코딩" 주장과 "한글 문자당 토큰 배수" 주장은 이번에 검증하지 않았으므로 삭제한다.** F12에서 남는 검증된 부분은 "구현 단위는 유니코드 문자수이고 토큰/바이트가 아니다"라는 사실뿐이다.
+
+**(5) 관측의 지위 한정.** 위 단계 추천 결과는 **추천 컴포넌트의 동작**이다. 실제 승인·인수 우회를 실행한 증거가 아니다. block 케이스도 **picker 컴포넌트에서 예외가 관측된 것**이고, 그 예외가 `main`의 광역 `except`에 삼켜져 `<activated-skills>`가 통째로 사라진다는 부분은 **여전히 정적 증거**다. F10도 좁힌다: `detect_project_type`이 앞서 `scan_root_unresolved`를 발행할 수 있으므로 "telemetry가 전혀 없다"가 아니라 **"그 실패 자체에 대한 관측이 없다"**로 한정한다. 마찬가지로 F11은 "출력 본문에 드러나지 않는다"로 좁힌다 — `matched_count`와 `full_body_count`/`pointer_count`의 차로 산술 추론은 가능하되 전용 필드는 없다.
+
+**(6) F4 한정.** `_disp` 충돌은 `SKILL.md` 전용이 아니라 **서로 다른 경로의 동명 일반 파일**에도 발생한다(Codex 4번이 맞다). 그리고 "SKILL.md 스킬은 파이프라인 부스트를 영원히 못 받는다"는 **통상적인 name 매핑에 한정**해야 한다 — 단계가 `skills: [SKILL]`을 선언하면 `"SKILL.md"`가 되어 모든 `SKILL.md`에 부스트가 걸리는 반대 극단이 생긴다. 이 특수 입력은 별개 사례로 구분한다.
+
+**(7) threshold 실행 상태.** 정책 writer 실행은 0이다. `calibration/__init__`가 proposer와 breaker_proposer를 import해 전이 의존 독해가 끝나지 않아 Codex가 실행을 미뤘다. 거짓 자료로 PASS를 만들거나 원본 flag를 건드리지 않았다는 점을 그대로 기록한다.
+
+**(8) 자격 배분 재조정.** "수정 줄 수가 적다"는 이유만으로 Terra로 내리지 않는다. 재배분:
+- **Astra(설계)**: 예산 파이프라인의 **후조건 명세**(cap이 사후 보장인지 최선노력인지) + 배정·절단 순서, 프로젝트 루트 단일 정의, threshold의 값 도메인(finite/범위)과 근거 결속.
+- **Sol(중요)**: F1a/F1b, F4, F5, F7, F8, F9, F10, F13 — 라우팅 결과가 바뀌거나 실패가 무음이거나 권한·예산·미관측이 결속된 것 전부. **F6(BOM)도 여기다** — 한 줄 수정이지만 후보 집합 의미를 바꾼다.
+- **Terra(단순)**: F3(주석 정정), F2의 마커 동일성 정도. 이것도 동일행동·회귀·독립검토를 통과해야 한다.
+- PG 트랜잭션은 override·flag·history의 원자성만 준다. **외부 모델 입력 도달·행동·side effect까지 원자화하지 못한다** — 이 한계를 설계 전제로 적는다.
+
+---
+
+## 3. 남는 불일치 / 보완
+
+- **불일치라 할 만한 것은 없다.** Codex가 나보다 정확한 지점(per-body 후조건, nan/inf, default 기준 방향)과 내가 추가로 짚은 지점(전역 `stages.yaml`이 Java 전용이라는 grep 근거, 교차참조 무상한, `filename` vs `_disp` 부스트 경로)이 겹치지 않고 보완된다.
+- **상태 갱신 하나**: Codex 초기 판단의 "PyYAML·overlay 경로 미실행" 중 `parse_stages`(PyYAML)는 이후 관측에서 실제 실행됐다. **overlay 병합 경로(`load_merged`/`has_overlay`)는 여전히 미실행**이다.
+
+---
+
+## 4. 후속 미검증 (실행 없음)
+
+1. `skill_match.main` 전체 — F1a/F1b/F9/F10/F11의 hook 수준 귀결.
+2. overlay 병합 경로, 전역 `stages.yaml`을 통과하는 실제 단계 추천(F7/F8은 grep + 합성 stages 관측까지만).
+3. threshold policy writer, ready-flag 소모, 히스토리 원자성 — proposer 전이 의존 독해 미완료로 보류.
+4. Windows/WSL/root 실동작(관측은 Linux 컨테이너 단독), BOM 실파일 케이스.
+5. 실제 스킬 코퍼스 규모 기준 F4/F14 영향량, 토큰 단위 실측.
+
+이 토론은 지정 6파일과 명시한 supporting 범위에 한정된다. 전체 분석·흡수·배포 승인이 아니다.

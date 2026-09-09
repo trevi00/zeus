@@ -9,3 +9,5 @@ docs/tickets/** -text
 # Captured process streams retain trailing blank lines as part of their hashes.
 docs/zeus/wsl-validation/*.stdout -whitespace
 docs/zeus/wsl-validation/*.stderr -whitespace
+# Preserve the captured Claude report, including its original trailing space.
+docs/full-analysis/baldrix-skill-routing-runtime/claude-initial.md -whitespace

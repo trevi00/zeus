@@ -1,0 +1,18 @@
+  [OK] test_candidates_full_triple
+  [OK] test_candidates_lang_only
+  [OK] test_candidates_lang_framework_no_version
+  [OK] test_candidates_major_version_xform
+  [OK] test_candidates_dedupe
+  [OK] test_flat_schema_full
+  [OK] test_flat_schema_with_extensions
+  [OK] test_nested_backend_only
+  [OK] test_nested_backend_plus_frontend_ecommerce_v2_shape
+  [OK] test_nested_with_mobile_block
+  [OK] test_nested_block_order_preserved
+  [OK] test_read_language_flat
+  [OK] test_read_language_nested_backend
+  [OK] test_read_language_nested_frontend_only
+  [OK] test_missing_file_returns_none
+  [OK] test_empty_cwd_returns_none
+  [OK] test_no_language_anywhere_returns_none
+[OK] 17 tests passed

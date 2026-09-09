@@ -1,0 +1,24 @@
+  [OK] test_detect_routing_korean_find
+  [OK] test_detect_routing_english_grep
+  [OK] test_detect_routing_korean_read
+  [OK] test_detect_routing_korean_edit
+  [OK] test_detect_routing_no_match
+  [OK] test_detect_routing_one_per_rule
+  [OK] test_sensor_reminder_implement
+  [OK] test_sensor_reminder_review
+  [OK] test_sensor_reminder_both_phases
+  [OK] test_sensor_reminder_other_phase_no_match
+  [OK] test_sensor_reminder_empty
+  [OK] test_phase_guidance_empty_returns_empty_string
+  [OK] test_phase_guidance_implement_includes_korean_label
+  [OK] test_phase_guidance_unknown_phase_uses_phase_name_as_label
+  [OK] test_phase_guidance_sorted_alphabetically
+  [OK] test_phase_guidance_matched_skills_unused
+  [OK] test_cross_refs_empty_inputs
+  [OK] test_cross_refs_recommends_required_skill
+  [OK] test_cross_refs_skips_already_matched
+  [OK] test_cross_refs_dedupe_across_matches
+  [OK] test_cross_refs_skips_unknown_required
+  [OK] test_prompt_tool_routing_hints_shape
+
+[OK] 22 tests passed

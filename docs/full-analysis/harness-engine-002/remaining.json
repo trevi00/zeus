@@ -1,0 +1,143 @@
+{
+  "primary_body_pending": [],
+  "primary_body_reviewed": 16,
+  "status": "body_reviewed_call_test_trace_pending",
+  "upstream_executions": 0,
+  "gaps": [
+    {
+      "path": "scripts/engine/ontology_index.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/pipeline_loader.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/pollution.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/pr4.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/projection_pg.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/recall.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/reflect.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/reverse.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/rlm_kernel.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/sandbox.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/select_ready.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/skill_router.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/staleness.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/testgen.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/tick.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    },
+    {
+      "path": "scripts/engine/workup.py",
+      "remaining": [
+        "전체 caller/config/test 폐쇄 추적",
+        "후보·환경·권한·시험 분모 결속 확인",
+        "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+      ]
+    }
+  ],
+  "global": [
+    "derive_state 및 각 추출기·validator·check runner의 전체 구현은 이번 supporting 범위에 포함되지 않았다.",
+    "PG stale-write/동시 claim/승격 트랜잭션과 인증된 사람 승인, 실제 모델 자격은 별도 구현·실행 증거가 필요하다.",
+    "Windows/Linux/WSL 동작·격리·자원 제한을 이번 분석에서 시험하지 않았다.",
+    "외부 원문·과거 수치의 독립 재현, source tests의 전체 dependency 검토·실행은 하지 않았다."
+  ],
+  "adoption_approved": false
+}

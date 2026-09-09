@@ -1,0 +1,214 @@
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-tracer.md:11:You are **Tracer**. Explain observed outcomes through disciplined, evidence-driven causal tracing.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-tracer.md:51:1. **OBSERVE**: restate the observed result precisely, no interpretation.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-tracer.md:66:[What was observed, no interpretation]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-tracer.md:93:- Observation drift (rewriting observed result to fit theory).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:90:**Change one variable:** Make one change, test, observe, document, repeat. Multiple changes = no idea what mattered.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:143:1. **Prediction:** If H is true, I will observe X
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:172:3. **Have evidence, not just theory?** You've observed directly, not guessing
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:746:Can I observe the behavior directly?
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:863:  found: [what observed]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:983:- Run app/tests to observe behavior
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:1208:- Need user to verify something you can't observe
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-debugger.md:1238:**human-verify:** Need user to confirm something you can't observe
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-codebase-mapper.md:466:- [Pattern observed]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-codebase-mapper.md:469:- [Pattern observed]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-codebase-mapper.md:472:- [Pattern observed]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-codebase-mapper.md:475:- [Pattern observed]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-codebase-mapper.md:512:- [Guidelines observed]
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\harness-designer.md:21:Your expertise lives in the `_common` design skills. **Read the ones relevant to the task before implementing** (absolute path `~/.claude/skills/_common/…`, or the repo's skill tree if mirrored):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:3:description: Operator runbook for promoting auto-detected skill candidates via cli/promote_skill.py — token gate, body authoring, atomic commit sequence, exit code recovery.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:4:keywords: skill-promotion, enable-skill, promote_skill, operator-cli, harness-mutation-token, atomic-commit
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:9:> 본 스킬은 `cli/promote_skill.py` (debate-1779507623-8a6f45 73-LOCK consumer)의 operator workflow를 영구화합니다. wave 20 architectural gap → wave 21 consumer land → wave 22 첫 의미적 promote.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:22:> **CLI** = `python -m cli.promote_skill` (운영자가 명시적으로 shell에서 실행).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:27:3. **Dry-run** — `python -m cli.promote_skill --candidate <cid> --body-from /path/to/body.md --as gsd-<name> --dry-run`. 출력의 `target=<...>` 경로가 `SKILLS_DIR/<name>/SKILL.md` 형식인지 확인. **실제 promote 전 항상 `--dry-run` 1회.**
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:88:python -m cli.promote_skill \
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:124:- 금지: `harness-*` 또는 bare `harness` (validators/skill_frontmatter.py와 mirror)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\gsd-skill-promotion-runbook\SKILL.md:145:`promote_skill`은 cron/hook/posttooluse/subagent로 호출 금지 (LOCK invariant). 운영자가 명시적으로 shell에서 실행. 자동화하려면 새 토큰 정의 + 별도 wrapper (이번 LOCK 외).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-team.md:69:     deterministic consumer ONCE (mirrors harness-debate.md step-4's
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-roadmapper.md:109:List what users can observe/do when the phase completes.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\research-stack-onboarder.md:3:description: Researches a new language/framework's pipeline idioms (build tool, test framework, project layout, gate conditions) and emits ONE typed artifact state/research/onboard/<lang>.yaml. Automates what was hand-done for rust. RESEARCH-ONLY — never writes pipeline files; the deterministic cli.onboard_stack consumes the artifact. Spawned to onboard a stack into the unified pipeline.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\research-stack-onboarder.md:11:You are **Research Stack Onboarder**. Given a target language/framework (e.g. `go`, `python`, `csharp`), you research how that ecosystem builds, tests, and structures a backend project, and you emit ONE typed artifact: `state/research/onboard/<lang>.yaml`. You are the **LLM-research half** of new-stack onboarding (research-subsystem debate-1781688992-250894, sha `9d281b9f`). The deterministic `cli.onboard_stack` consumes your artifact to scaffold the candidate pipeline.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\research-stack-onboarder.md:72:python -m cli.onboard_stack scaffold --lang <lang>   # writes INERT candidates/ (overlay+stages+expected+golden_pin)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\research-stack-onboarder.md:73:python -m cli.onboard_stack verify   --lang <lang>   # (A) structural round-trip check
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\research-stack-onboarder.md:77:python -m cli.onboard_stack promote  --lang <lang> --token onboard-stack --allow-in-source
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\agents\kha-user-profiler.md:102:6. **Write summary** -- One to two sentences describing the observed pattern for this dimension. Include context-dependent notes if applicable.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-pinit.md:29:   cd ~/.claude/scripts && python -m cli.project_analyze --root <PATH>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-pinit.md:81:[ ] Re-run `python -m cli.project_analyze --root <PATH>` to confirm
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-pinit.md:110:- artifact: NONE by default (read-only analysis). `cli.project_analyze` writes nothing.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-pinit.md:119:- **mutation contract** (Round-3 P0 #7 fix): pinit ITSELF is read-only — `cli.project_analyze` never writes. The command markdown's "Confirm + commit" section refers to follow-up actions the user explicitly approves; bootstrap writes (creating `<root>/.claude/tech-stack.yaml`) require explicit `--write` confirmation per asset, not pinit's default.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-milestone.md:17:`cli.milestone_step` 한 호출 안에 있다. **그 판정을 네가 다시 하지 마라** —
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-milestone.md:39:python -m cli.milestone_step --open --ms-sid "$MS_SID" --repo <repo> --planned <id 콤마>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-milestone.md:82:python -m cli.milestone_step \
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-milestone.md:109:python -m cli.milestone_verdict list  --ms-sid "$MS_SID"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-milestone.md:110:python -m cli.milestone_verdict set   --ms-sid "$MS_SID" --result pass --item <id>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-milestone.md:111:python -m cli.milestone_verdict close --ms-sid "$MS_SID"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-debate.md:32:     - `prior_debates` (**M1 — resurface failed/accepted directions, 2026-06-16**): in **generation 1 only**, run `python -m cli.debate_aggregate --topic "<2-4 key terms from the topic>" --format planner-context` and include its stdout verbatim (empty stdout ⇒ include nothing). This deterministic reader surfaces prior debates on a similar topic — REJECTED/STALLED directions (do NOT re-propose as-is without addressing why they failed) + ACCEPTED decisions (you MAY build on). **Advisory only — the Planner weighs it; it NEVER auto-vetoes a proposal.** Closes the previously dead-end `cli.debate_aggregate.aggregate()` reader (write side wired, read side 0); mirrors AutoScientists "preserve + resurface success/failure to cut redundant exploration". Later generations already carry `prior_generation`/`critic_feedback`, so skip there.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-debate.md:50:   - **Isolation leak scan (defense-in-depth, 2026-05-09)**: call `lib.debate_output_audit.scan_for_isolation_leaks(<full critique text>)`. If non-empty, append an `isolation_leak_observed` event with `lib.debate_output_audit.render_leak_advisory('harness-critic', leaks)` payload. Catches platform-isolation degradation (subagent output mentioning `state/debates/`, `events.jsonl`, sid prefixes, prior-turn phrases, role-override injection attempts, Korean equivalents). Observability only — Architect treats leaks as a verdict confidence reducer.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-debate.md:60:   - **Isolation leak scan (defense-in-depth, 2026-05-09)**: call `lib.debate_output_audit.scan_for_isolation_leaks(<full verdict text>)`. If non-empty, append an `isolation_leak_observed` event with actor=`harness-architect` payload. Same defense-in-depth contract as Critic step (observability only, no auto-respawn). Architect leaks are particularly concerning because they may indicate verdict was influenced by forbidden context.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\commands\harness-debate.md:122:Every Planner / Critic / Architect dispatch within this session is recorded to `state/subagent_invocations/<session_id>.jsonl` via `lib.subagent_invocation_log.record_invocation(...)` immediately AFTER the Agent tool returns (so a successful return is observed before the audit append — failed dispatches are surfaced via the existing parse-failure path, not the audit log).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_autopilot_pane_spawn.py:307:            # the primary success signal — capture_pane content mirroring
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_autopilot_pane_spawn.py:324:            # the D2 (a) primitive promises — visualization mirror, NOT
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-plan-phase\SKILL.md:58:`python -m cli.phase_graph build --root .planning`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-plan-phase\SKILL.md:60:`python -m cli.phase_graph query --root .planning --kind depends-on --node phase-3 --direction in`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kha-plan-phase\SKILL.md:71:- artifact: `.planning/_graph/phase-graph.json` — typed-edge phase graph (deterministic projection; refreshed by the post-step `python -m cli.phase_graph build --root .planning`)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_autopilot_compaction.py:58:    # mirror the wire logic in handlers/stop/autopilot_continue.py: parts gets an extra entry ONLY when set
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\run_units.py:209:# kha_normalize/project_analyze→skills); the rest are junctioned defensively.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_autopilot_parallel_e2e_smoke.py:107:            # by appending lines. Pane's tail -f mirrors them.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_completion_gate.py:36:    (mirrors engine.orchestrator._append_event shape)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commit_layer_adjacency.py:64:    # Synthesize a violating file in a tempdir mirroring scripts/handlers/...
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commit_layer_adjacency.py:122:    p = _SCRIPTS / "cli" / "observe.py"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_commit_layer_adjacency.py:145:    src = """from cli.observe import main\n"""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_critic_policy_override_cli.py:4:cli.breaker_override 1:1 mirror — token gate 양방향 + invalid + idempotent + CLI.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_aggregate.py:323:            _verdict(2, "approved", accepted=["mirror under atlas", "global brain"]),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_aggregate.py:334:        assert "mirror under atlas" in block
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:5:같다 — D5(`harness-map.json` + 수기 맵 + validator)와 `cli/ontology_query.py`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:47:    text = "From the planner_transcript I observe..."
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:122:    assert "[isolation-leak-observed]" in msg
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:137:        "D3 should mirror build_research_dispatch_payload. The harness-git-master "
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:148:    isolation_leak_observed event to events.jsonl. End-to-end exercise of
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:170:    assert "[isolation-leak-observed]" in advisory
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:179:            "type": "isolation_leak_observed",
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit.py:191:        assert rec["type"] == "isolation_leak_observed"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_debate_output_audit_contract.py:5:토론 `debate-1788517038-vqa7c8` gen-2 에서 `isolation_leak_observed` 가
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\rabbitmq-idempotent-event-contracts.md:24:| RabbitMQ | **4.x** (4.2.x 안정선, 4.3 최신) | classic **mirrored queue 제거**(4.0~) → 복제 HA는 **quorum queue 단일 선택**. quorum `x-delivery-limit` **default 20** = poison 자동 dead-letter |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\rabbitmq-idempotent-event-contracts.md:123:    // 메인 큐 = quorum (4.x: classic mirrored 제거 → HA는 quorum 단일)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kookmin-sanghoe\rabbitmq-idempotent-event-contracts.md:217:- **RabbitMQ 4.0: classic mirrored queue 완전 제거**. 3.x policy의 `ha-mode`는 4.x에서 **무효(silent no-op)**. HA 큐는 `.quorum()`으로 선언. classic queue 자체는 동작하나 **단일 복제**(non-HA).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\ml\model-serving-realtime.md:38:3. shadow traffic — KServe first-class 아님. Istio `VirtualService.mirror`로 별도 구성
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kotlin\lang\flow-stateflow-sharedflow-and-one-shot-event-boundaries.md:71:    val state: StateFlow<CartUiState> = repo.observeCart()
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kotlin\lang\flow-stateflow-sharedflow-and-one-shot-event-boundaries.md:126:fun observeOrders(): Flow<List<Order>> = flow {
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_endpoint_graph_subsumes_ontology.py:36:from cli.ontology_query import build_graph, q_shared, q_touches, q_orphans  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_endpoint_graph_subsumes_ontology.py:57:    # q_shared keeps the graph-node "seam:" prefix (ontology_query:86); fleet_atlas + q_touches use bare
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\register-to-artifacthub\SKILL.md:126:same database**, not a mirror — verified 2026-07-30 by comparing both hostnames
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\mobile\ios\swift-concurrency-mainactor-and-cancellation-boundaries.md:108:                await viewModel.observeUpdates()
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_outpos\common-infra.md:413:- Talker observer로 들어온 로그를 `lc_log` 테이블에 INSERT
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_outpos\violations.md:50:| `print(` | `lib/src/Common/Util/log_utils.dart` | 파일 첫 줄 `// ignore_for_file: avoid_print`. Talker observer 내부 fallback. |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_evidence_fab.py:2:"""Tests for lib.observers.evidence_fab (v15.10 D1).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_evidence_fab.py:25:from lib.observers.evidence_fab import EvidenceVerdict, detect  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_evidence_fab.py:92:def test_arm_b_flake_observed_first_fail_then_pass():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_evidence_fab.py:226:    test_arm_b_flake_observed_first_fail_then_pass,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\mobile\ios\uikit-and-xctest-foundations.md:24:3. `viewWillAppear`마다 — 데이터 새로고침, observer 등록
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\mobile\ios\uikit-and-xctest-foundations.md:25:4. `viewWillDisappear`/`deinit`에서 — observer 해제, timer invalidate (retain cycle 차단)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\mobile\ios\uikit-and-xctest-foundations.md:79:| 신뢰성 | weak delegate + observer 해제로 retain cycle 차단 |
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_example_fleet.py:20:from cli.ontology_query import build_graph, q_orphans, q_shared, q_touches  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kotlin\2.1.x\swift-export-surface-design-and-generic-boundaries.md:134:public suspend fun observeUpdates(): Flow<Cart>          // suspend + Flow → 직접 노출 어려움
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kotlin\android\coroutines-flow-viewmodel-and-compose-state-boundaries.md:89:            runCatching { repo.observeCart() }
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\abstraction-first.md:133:- **시그니처**: `struct Store { file: Mutex<File>, mirror: Vec<T> }` + `append(&self, record: &T)`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\abstraction-first.md:192:- **시그니처**: `struct Accumulator { ... }` + `fn observe(&mut self, event)` + `fn snapshot(&self) -> Option<Record>`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\abstraction-first.md:216:- **시그니처**: `struct Event { ... N 카테고리 denormalized Option 필드 }` + `fn extract_evidence(&self) -> Vec<Evidence>` + `fn apply_to_observer(event, &dyn Trait) -> Result<usize, Error>`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\abstraction-first.md:385:- **evidence 11 (impl-170 `d3d1b4c`) ★★★★★ NEW — V20 vanilla 11th + cross-struct enum 재사용 sub-variation Stage 2 정식 등록 promotion (impl-162 was 1st on bridgectl, impl-170 is 2nd mirror on discord-bridge)**: `discord-bridge::WorkerSupervisorAlert.status: String → WorkerStageStatus` (impl-156 kha-core enum 재사용, **no new enum**). discord-bridge-internal struct file-internal scope. Same wire (snake_case) and same corpus (6 known) as impl-156. 2 caller sites Display-only (`worker_alert_key` format!, `render_worker_alert_outbound` format!), 0 tolerant-comparison callers. 2 test fixtures migrated from PascalCase string literals (`"Quarantined"`, `"Failed"`) to proper enum variants — PascalCase fixtures never valid gateway-hub wire (production snake_case). **Cross-struct enum 재사용 sub-variation lineage**: impl-162 was 1st (bridgectl::WorkerSupervisorJsonAlert.status), impl-170 is **2nd evidence** (discord-bridge::WorkerSupervisorAlert.status on OTHER binary). Both reuse impl-156 kha-core::WorkerStageStatus single enum across distinct binaries and struct types. **Sub-variation Stage 2 정식 등록 promotion** (CLAUDE.md self-improvement loop §3 "2회 누적 정식 등록" 도달, cross-struct enum 재사용 sub-variation). atomic single commit +3/-3 LOC (smallest V20 commit to date). regression 0 (discord-bridge 244 unchanged, total 864/864 PASS unchanged from v14.25 — kha-core::WorkerStageStatus unit tests via shared enum auto-cover new consumer).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\kotlin\android\workmanager-room-datastore-and-background-execution-guardrails.md:221:    fun observeByUser(userId: Long): Flow<List<CartEntity>>
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_handoff_drift.py:12:Pattern mirrors test_subagent_refs.py — main() inspects signatures and
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:2:"""Unit tests for the per-project mirror context brain (debate-1781435805-qb14p7,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:13:Run: python tests/test_mirror_drift.py
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:66:    d = Path(tempfile.mkdtemp(prefix="mirror-test-"))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:83:        print("  [SKIP] git not available — mirror_drift set-equality test skipped (BIND-5)")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:87:    from lib import mirror_drift
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:88:    from lib.mirror_extractors import compute_fingerprint, get_extractor
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:93:    res = mirror_drift.regenerate(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:95:    manifest = mirror_drift.read_manifest(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:103:    r = mirror_drift.scan(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:111:    r = mirror_drift.scan(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:118:    r = mirror_drift.scan(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:125:    r = mirror_drift.scan(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:131:    mirror_drift.regenerate(str(d))  # re-baseline
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:132:    r0 = mirror_drift.scan(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:136:    r = mirror_drift.scan(str(d))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:141:    empty = Path(tempfile.mkdtemp(prefix="mirror-empty-"))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:142:    r = mirror_drift.scan(str(empty))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:144:    _check(mirror_drift.status_line(str(empty)) is None, "inert project -> no status line")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:148:    nd = Path(tempfile.mkdtemp(prefix="mirror-narr-"))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:157:    # crashes on UTF-8 on a Korean (cp949) console — the mirror's git calls pin
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:160:    res = mirror_drift.regenerate(str(nd))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:161:    narr = nd / "atlas" / "mirror" / "NARRATIVE.md"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:167:    r = mirror_drift.scan(str(nd))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:172:    from lib.mirror_extractors import detect_extractor
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:173:    rd = Path(tempfile.mkdtemp(prefix="mirror-det-"))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:176:    pg = Path(tempfile.mkdtemp(prefix="mirror-pg-"))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:185:    mirror_drift.regenerate(str(fp))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:186:    r = mirror_drift.scan(str(fp))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:190:    r = mirror_drift.scan(str(fp))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:195:    r = mirror_drift.scan(str(fp))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:200:    mirror_drift.regenerate(str(fp))  # re-baseline (commit-less dirty now clean vs manifest)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:202:    r = mirror_drift.scan(str(sub))  # scan from a SUBDIR
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:203:    _check(r.get("root") == str(fp.resolve()), "scan from subdir walks up to the project mirror root")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:204:    _check(r.get("marker") is True, "mirror is discoverable from a subdir (not just project root)")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:208:    bad = Path(tempfile.mkdtemp(prefix="mirror-bad-"))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:209:    badman = bad / "atlas" / "mirror" / "manifest.json"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:214:    r = mirror_drift.scan(str(bad))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mirror_drift.py:216:    line = mirror_drift.status_line(str(bad))
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_verdict.py:2:"""Unit tests for cli/milestone_verdict.py — 사람의 판정이 시스템으로 돌아오는 경로.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_verdict.py:8:스파인은 실제 `milestone_step` 실행으로 만든다 — 손으로 만든 픽스처는 두 CLI
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_verdict.py:24:from cli import milestone_step as STEP        # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_verdict.py:25:from cli import milestone_verdict as VD       # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_verdict.py:294:            print(f"milestone_verdict: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\repeat-error-tracker.md:92:**evidence**: Compaction summary "Errors and fixes" §3 (PreferenceObserver trait not in scope for `observer.candidates()` call).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\repeat-error-tracker.md:96:**증상**: `use crate::session_event::{apply_to_observer, NOTIFICATION_ACK_HIGH_THRESHOLD};` 같은 import를 file top-level에 두면 production code에서 미사용 → unused-import warning.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_step.py:2:"""Unit tests for cli/milestone_step.py — 무인 루프의 결정론 스텝.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_step.py:26:from cli import milestone_step as STEP           # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_step.py:298:            print(f"milestone_step: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_operator_ledger.py:2:"""Tests for lib.operator_ledger + cli.operator_override (v15.10 D5).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_operator_ledger.py:33:from cli.operator_override import main as cli_main  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\trace.md:3:description: Evidence-driven tracing workflow — orchestrates competing hypotheses via harness-tracer to explain WHY an observed result happened.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\skills\_common\trace.md:12:Ambiguous, causal, evidence-heavy questions where the goal is to **explain why** an observed result happened — not to jump into fixing/rewriting code.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_rewind.py:25:from cli import milestone_step as STEP           # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_milestone_rewind.py:26:from cli import milestone_verdict as VD          # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mutation_runner.py:90:    _ok(weak["mutation_score"] is not None and weak["mutation_score"] < 1.0,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mutation_runner.py:91:        f"weak score < 1.0 (got {weak.get('mutation_score')})")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mutation_runner.py:93:    _ok(strong["survivors"] == [] and strong["mutation_score"] == 1.0,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_mutation_runner.py:94:        f"strong test -> all killed, score 1.0 (got {strong.get('mutation_score')}, {strong.get('survivors')})")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:2:"""Tests for cli/onboard_stack.py — deterministic new-stack onboarding (D1/D3/D5)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:47:    from cli.onboard_stack import onboard_artifact_path
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:57:        from cli.onboard_stack import scaffold, candidate_overlay_path, candidate_stages_path, candidate_expected_path, candidate_goldenpin_path
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:75:        from cli.onboard_stack import scaffold
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:88:        from cli.onboard_stack import scaffold, verify_candidate
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:99:        from cli.onboard_stack import scaffold, promote
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:111:        from cli.onboard_stack import scaffold, promote, candidate_expected_path, ONBOARD_STACK_TOKEN
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_onboard_stack.py:130:        from cli.onboard_stack import scaffold
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:64:    ("cli.observe", "_claude_home"),
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_path_delegation.py:181:    for rel in ("cli/action_evolver.py", "cli/observe.py", "cli/sensor_anomaly.py"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_orchestrator.py:41:    (observed 2026-06-03: burst of orchestrator records polluting
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_ontology_query.py:2:"""Regression for cli.ontology_query — the deterministic knowledge-graph demo.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_ontology_query.py:6:2-run determinism. Self-running: `python tests/test_ontology_query.py` -> exit 0/1.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_ontology_query.py:18:from cli.ontology_query import build_graph, q_shared, q_touches, q_orphans  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_ontology_query.py:103:    import cli.ontology_query as oq
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_output_schema_audit.py:2:"""Tests for cli.output_schema_audit (v15.10 A7).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_output_schema_audit.py:24:from cli.output_schema_audit import audit, classify_agent, main as cli_main  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_phase_graph_builder.py:2:"""Tests for lib/phase_graph_builder.py — ROADMAP/-PLAN -> typed-edge graph (P2 D1)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_phase_graph_builder.py:14:from lib import phase_graph_builder as b  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_phase_graph_query.py:2:"""Tests for lib/phase_graph_query.py — typed-edge query helper (P2 D1)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_phase_graph_query.py:14:from lib import phase_graph_query as q  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_project_analyze.py:2:"""Unit tests for cli/project_analyze.py."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_project_analyze.py:13:from cli import project_analyze as pa  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_reflexion_loop.py:99:    """I3 (<=1 write/turn via single driver) + the read-half observes the write."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_reflexion_integration.py:6:threading state forward exactly as the live Stop hook does, to observe the COMPLETE
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:83:def test_mutmirror_fires_on_missing_token():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:86:        if name == "HARNESS-GUIDE.md":  # mirror missing one token → must WARN
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:88:        # canonical + atlas mirror carry all 6
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:94:        warns = s.check_mut_mirror()
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:99:    # ONLY the drifting mirror warns; the canonical + atlas note (both 5/5) stay
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:102:    assert len(warns) == 1, f"only the drifting mirror should warn, got: {warns}"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:105:def test_mutmirror_silent_when_all_in_sync():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:112:        assert s.check_mut_mirror() == [], "all-in-sync mirrors must produce zero WARN"
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:119:    assert set(r) == {"tools_warns", "scriptref_warns", "mutmirror_warns"}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:129:    drift = {"tools_warns": ["[WARN] creep"], "scriptref_warns": [], "mutmirror_warns": []}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:130:    clean = {"tools_warns": [], "scriptref_warns": [], "mutmirror_warns": []}
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:169:        test_mutmirror_fires_on_missing_token,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_self_model_drift.py:170:        test_mutmirror_silent_when_all_in_sync,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_structure_depth.py:70:    """lib mirrors the validators constants (lib may not import validators); this
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_skill_structure_depth.py:71:    test layer cross-checks both so the mirror never drifts."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_timefmt.py:32:    # The shape observe.py had and action_evolver/sensor_anomaly LACKED.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_timefmt.py:36:def test_tz_offset_regression_observe_gap():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_timefmt.py:37:    # The shape observe.py LACKED (silently dropped). Must now parse to the absolute epoch.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_timefmt.py:85:    test_tz_offset_regression_observe_gap,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:9:  W6 resolution precedence: <project>/atlas/mirror/PHASES.md > global ~/.claude/
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:129:    # per-project: a mirror project with PHASES.md takes precedence (different tree)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:131:    (proj / "atlas" / "mirror").mkdir(parents=True)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:132:    (proj / "atlas" / "mirror" / "manifest.json").write_text('{"scopes":[]}', encoding="utf-8")  # marker for find_mirror_root
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:133:    (proj / "atlas" / "mirror" / "PHASES.md").write_text(_BLOCK, encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:149:    (proj / "atlas" / "mirror").mkdir(parents=True)
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:150:    (proj / "atlas" / "mirror" / "manifest.json").write_text('{"scopes":[]}', encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_tree.py:151:    (proj / "atlas" / "mirror" / "PHASES.md").write_text(_BLOCK, encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_unit_store.py:277:# ── kha SDLC one-way state mirror (debate-1781871696-sdoggn G5 seam) ─────────
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_unit_store.py:307:def test_kha_planning_state_mirror() -> None:
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_unit_store.py:308:    print("test_kha_planning_state_mirror (debate-1781871696 G5 seam)")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_work_unit_store.py:375:        test_kha_planning_state_mirror,

@@ -1,0 +1,20 @@
+  [OK] test_truncate_level2_keeps_only_decision_tree
+  [OK] test_truncate_level1_keeps_decision_and_gotchas
+  [OK] test_truncate_no_section_returns_empty
+  [OK] test_empty_input_returns_empty
+  [OK] test_within_budget_returns_unchanged
+  [OK] test_top_skill_no_longer_bypasses_the_budget
+  [OK] test_oversized_top_skill_stops_evicting_the_rest
+  [OK] test_top_skill_without_sections_is_sliced_not_dropped
+  [OK] test_lower_skill_truncated_to_level1
+  [OK] test_skill_dropped_when_no_budget_for_level2
+  [OK] test_multiple_lower_skills_truncated_progressively
+  [OK] test_remaining_budget_is_filled_not_discarded
+  [OK] test_fill_never_exceeds_the_budget
+  [OK] test_fill_cuts_on_line_boundaries_only
+  [OK] test_tiny_leftover_is_not_filled
+  [OK] test_level1_still_wins_when_it_fits
+  [OK] test_partial_marker_differs_from_hard_slice
+  [OK] test_fill_full_file_is_not_reported_as_tight
+
+[OK] 18 tests passed

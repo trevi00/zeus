@@ -1,0 +1,13 @@
+이제 Codex 독립 결과와 실제 원본 단위 실행을 비교 토론한다. 읽기 전용 유지, 명령실행/쓰기/웹/개인설정 접근 금지. docs/full-analysis/baldrix-skill-routing-runtime/codex-initial.md, observe_components.py, observations.stdout.txt, observations.receipt.json 및 test_*.receipt.json과 test_*.stdout.txt를 전문 읽고 지정 원문을 재대조하라. 프로그램 실행자는 Codex이며 Claude 본인이 실행했다고 쓰지 않는다. 원본 unit 18+17+22=57개 PASS, Linux 격리 컨테이너. 별도 관측은 실제 component API와 임시 입력만 사용했고 main 전체/모델/인수/정책 writer는 실행하지 않았다.
+
+우선 대조·정정할 점:
+1. F1 예시의 의사결정 트리3900자이면 per-body의 level1이3000초과→level2도3900이지만 마지막 if t는 길이를 검사하지 않아 그대로 남는다. ‘최종<=3000’은 그 예시에서는 틀렸다. 순서 때문에 예산 여유를 버리는 일반 문제와 per-body 후조건 누락을 구분하라. no-heading 단독 예시에서는 c[:3000]+마커 자체가3000초과다. 실제 full hook 실행은 아직 없음.
+2. F2는 원래 TRUNCATION_MARKER가 다른 생략 마커로 교체되므로 ‘표식이 사라져 조용히 문서가 끝남’으로 일반화하면 안 된다. 기계 판정용 특정 marker와 사람에게 생략 알림이 있는지 구분하라.
+3. budget 원본 테스트가 모두 max_chars8000이라는 주장은 사실과 다르다. 800/1500/2000/2500/4000과 기본값 사례도 있다. 57개 실제 PASS가 hook의 cap조합까지 검증한다는 주장은 하지 않는다. 관측에 cap0/1/20→실제40자로 초과, 기본4000→정확4000 포함.
+4. cwd/BOM때 read_language=None이어도 resolve_stages_path는 글로벌 pipeline으로 폴백한다. ‘파이프라인 완전히 꺼짐’은 단정하지 말라. 실제 root vs subdir 후보는 관측으로 확인됨. BOM 문제는 첫block에한정해 기술하고 현대 Windows 메모장 기본인코딩/한글문자당토큰배수는 이번에 검증안했으므로 삭제/미검증으로 정정.
+5. 실제 관측: 앞단계a없고빈b.md존재→verify추천, 전부존재→마지막verify다시추천, optionalnext선택, directory도완료, block skills실제AttributeError. 이것은 추천컴포넌트 동작이지 실제 승인/인수 우회 실행이 아니다. hook broadexcept경로도정적증거와구분. 일부선행telemetry가발행될수있어 ‘telemetry도전혀없음’은 실패자체관측부재로 좁혀라.
+6. _disp충돌은SKILL뿐아니라서로다른경로의동명일반파일에도발생가능. req name vs filename 실제helper관측도있다. SKILL부스트 ‘영원히불가’는 통상 name매핑에한정하고 특별히SKILL.md를지정한입력과구분하라.
+7. threshold_registry 전문 확인 후 reader finite/range/no-lock-check, ready flag이름만binding·현재override대신default기준방향·atomicity 우려는 정적이다. policywriter실행은0; package calibration/__init__가proposer와breaker_proposer를import하므로전이의존독해미완료로실행미룸. false자료로PASS만들거나원본flag를건드리지않았다.
+8. 자격배분에서 수정줄수가적다는이유만으로 Terra 안전구현으로결정하지말라. 모델은동일행동/회귀/독립검토를통과해야하고예산·권한·미관측이결속된부분은중요설계다. PG트랜잭션도외부모델입력도달/행동/sideeffect를혼자원자화하지는못한다.
+
+합의/정정/불일치/후속미검증을 간결하게 반환하라. 원문을 더 읽으면 실제파일·범위를 명시한다. 이 토론은 여섯파일과명시적supporting범위이며 전체분석·흡수·배포승인이 아니다.

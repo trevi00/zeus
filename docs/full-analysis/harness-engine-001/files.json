@@ -1,0 +1,588 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/asset_gate.py",
+    "pinned_sha256": "b754ad11f7b2a3d46d795b120ddb014355e138a32450008c08af690e237c460c",
+    "git_blob": "e1748c2584cd5c68f9583be681323f22553cf239",
+    "bytes": 2602,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "필수 키 존재·본문 4000자·휴리스틱 필터. 값 타입/진위/토큰 예산의 최종 경계는 아님.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E04"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/curator.py",
+      "scripts/engine/debate.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_curator_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/checks.py",
+    "pinned_sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27",
+    "git_blob": "ed9d1a309a0d8eb789d831e6d57d3ca8c6a84e41",
+    "bytes": 13179,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "8종 결과 정형화와 ERROR 구분. metric/trigger 종료 코드 미반영, shell/반복 전체 예산·실제 관측 귀속 공백.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/gate_runner.py",
+      "scripts/engine/counterfactual.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_checks_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/circuit.py",
+    "pinned_sha256": "0d44112c110168c01b236559af29fa76b695c7748b2b6bee1013033e46e374a6",
+    "git_blob": "2d0777115652491c962b29180631fa2ad26c7541",
+    "bytes": 10367,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "stuck/fruitless·냉각·trial·storm. trial 시각 뒤 임의 PASS, 메타 초기화와 호출부 fail-open, 비용 직접 측정 유예.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E07"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/l2_driver.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_circuit_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/code_graph.py",
+    "pinned_sha256": "54aaeed5334e577c883295f57595087ce9c60b1d861bda80907bea8221e6b087",
+    "git_blob": "6c43e6614ed2272c659879ec51a4b87bb890e1da",
+    "bytes": 5250,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Java tree-sitter 구조·메서드 추출. parse_errors는 오류 파일 수이며 심볼 참조·빌드 결과 아님.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/graph_queries.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_graph_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/cohesion.py",
+    "pinned_sha256": "a6a782891e6da4677b5f538791269e4cf661e1dc7fff865658895c8dd47083fd",
+    "git_blob": "2400d2e3261b4885eda1283d6400e7c07026db03",
+    "bytes": 6482,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "git co-change/Jaccard 근사로 상시 로드 표면 분해 발의. 자동 분해 아님; 드라이버가 proposed와 notification에 연결.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E10"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/l2_driver.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_context_programming_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/counterfactual.py",
+    "pinned_sha256": "592a306dd787e22dd8677028c80f451b63f9465cbe774e4b90753be67688a37d",
+    "git_blob": "09d9344b4f6a99fea088414678cff5e4216e1442",
+    "bytes": 5008,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "기준선·주입·복원 대조. 실제 target 직접 수정/고정 백업, ERROR도 LIVE 후보; 임시 복사 격리 주장과 다름. 미실행.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E08"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/probe_cmd.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_probe_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/curator.py",
+    "pinned_sha256": "ca374df01b09b231e82e1a36c6732dc4353076441aed58e869dabf687099b2f7",
+    "git_blob": "94e2cdaebb1559290fbd5c1623969b0781e4b2bc",
+    "bytes": 16968,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "해결 계보와 노트 수확·bake/pinned/lifecycle. 재수확 빈도가 재성공으로 누적되고 인과·프로젝트 키·혼합 digest 대기 공백.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E03"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/l2_driver.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_curator_smoke.py",
+      "tests/unit/test_golden_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/debate.py",
+    "pinned_sha256": "a46d9f27ccaa83506248d4fdcc96d16dabca0e4b97e389878c88bfb2092b5ebf",
+    "git_blob": "5a3146326ecb30fe572f7d109eecc3ba678c446b",
+    "bytes": 10398,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "원장 수렴·비평/의심 보존·순차 재생. gen1 architect 단독 수렴, 패널 인증/동시 종결/카드 원자성은 미보장.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E06"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/debate_cmd.py",
+      "scripts/lib/debate_rules.py",
+      "scripts/lib/ledger.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_debate_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/endpoint_graph.py",
+    "pinned_sha256": "a077e247e82c81266db4ead3529f62447bba68721d5ef95f92856985ef9999d2",
+    "git_blob": "c3987244efd1b08e5ee4f0a679c79ffc14e9b253",
+    "bytes": 8168,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "동일 catalog/scope/parity로 문서·seam·필드 1-hop atlas. 같은 이름 JOIN은 의미나 실제 배포 영향의 완전 분석 아님.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/endpoint_cmd.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_endpoint_graph_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/evolve.py",
+    "pinned_sha256": "236de559d43024fbb2c18a8d6aae803d913038c81072d39b507b750660a56849",
+    "git_blob": "130e92771f3c66b9c34492f20ff19c677c01c399",
+    "bytes": 12697,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "모호 표지/시그니처·동결·정체·세대. executed 입력이 성공 권위, lease 전 재독·종결/상한 후 호출·frozen 축소 공백.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E05"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/evolve_cmd.py",
+      "scripts/lib/lease.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_evolve_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/fleet_contracts.py",
+    "pinned_sha256": "63a2e223e3a5c623cfaac251f7086ef5af1a6aad0cb094759eb57230e78105af",
+    "git_blob": "961f5eef84607e596f24868e8d4b89e54b224694",
+    "bytes": 20271,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Dart/C#/Spring/proto/WS/Kotlin/Intent 및 fanout 휴리스틱. 기본 atlas 범위와 함수 존재 구분; type 조회가 top 제한 후 검색.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E10"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/fleet_contracts_cmd.py"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_fleet_contracts_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/gate_ratchet.py",
+    "pinned_sha256": "b4aa178f9ce00bc2142926cb8561937fb5737a5eb7e95f93e728a1c4602d558d",
+    "git_blob": "9cd080e7ff65c2c143176215832487a32a7416d8",
+    "bytes": 3173,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "과거 stage+statement 삭제와 명명 waiver. 같은 문장의 check/regex/threshold 변경은 검사하지 않으며 tick 예외는 fail-open.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/tick.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_gate_ratchet_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/gate_runner.py",
+    "pinned_sha256": "b0781fd1e40d0d7970f426c20ad0d47febffeaf38ad19a1cec9b199589070e59",
+    "git_blob": "bc111a1d469611f3549862df0b1df32578cd0610",
+    "bytes": 9074,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "machine·외부 판정 합산, ERROR/PARTIAL 파킹과 cycle 철회. 소비자는 statement/hash/by 미대조, marker는 잠금 아님.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E02"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/step_cmd.py",
+      "scripts/engine/tick.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_probe_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/golden.py",
+    "pinned_sha256": "51f2be3a39f11f6aeca84127f2006089c23cfe263b76e6bcb6ec1e7a05570a02",
+    "git_blob": "0fa768baa313fdcbdfa16181150dd2f0b1774644",
+    "bytes": 3261,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "명령·기대 결과 회귀. 0사례 gate=true, held-out 라우팅 분리와 접근 격리 구분, curator 갱신 후 검증 부재.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E04"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/curator.py",
+      "scripts/cli/quality_cmd.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_golden_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/graph_queries.py",
+    "pinned_sha256": "f4b93486880f467c1c001b4149589a432af81cca738f2284055e1690fc874152",
+    "git_blob": "c1e01a808ce6694e64ab668f3fe1b2c97b30b0b5",
+    "bytes": 38341,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "0건 방어·overlay ERROR·구조/문자열/소유/parity 판정. 파싱 오류 advisory, 모집단 제외·문턱·자동 승급 소실 경계.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/checks.py",
+      "scripts/engine/endpoint_graph.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_graph_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/ladder_probe.py",
+    "pinned_sha256": "9a5de2f038f53e6655a57e7e9f5e4feecf3f04e67436b679cbf44d8be5c371c1",
+    "git_blob": "02c60b2a69669cfc21e7062a124a4b8387f237d2",
+    "bytes": 10203,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "guardian 합성 조건 반전과 실물 형태 감사 분리. sibling/sys.executable, 실행 코드 미확인 progress 문자열 관측. 미실행.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E08"
+    ],
+    "caller_or_dependency_trace": [
+      "tests/integration/test_ladder_probe_smoke.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_ladder_probe_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/mirror.py",
+    "pinned_sha256": "7b378a4420c56cb26bb91923fc6a4633208ac36079c8879c46c2c0b317f3ce39",
+    "git_blob": "72de013e67414633a8a0d2e075bff6baa2b27143",
+    "bytes": 7425,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "제한된 코드/앵커와 ref 존재로 KEEP/ABSENT/DROP. 주장 의미·행 실존은 미검증, 제목뿐 wiki/앵커0 ready 경계.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/mirror_cmd.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_mirror_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/mutation.py",
+    "pinned_sha256": "d5b5effb92572d112860c44f5f646092e67c32af50d9faa43251098b50cbd5f5",
+    "git_blob": "130af60f5d43e8dd931cffcc62e7e74c83b129a5",
+    "bytes": 7307,
+    "partition": "harness:scripts/engine:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "HEAD worktree baseline/0suite 방어와 변이 측정. 후보 위치와 원문 첫 치환 불일치, 격리 경계·등가 변이; CLI는 하한 차단.",
+    "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+    "finding_sections": [
+      "E08"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/quality_cmd.py",
+      "scripts/engine/sandbox.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_mutation_baseline_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 기존 테스트의 읽은 구간만 기록하며 실행 성공이나 결함 재현을 주장하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 교차 검수",
+      "안전한 격리/권한 경계 설계",
+      "기존 테스트와 플랫폼별 경계 재현",
+      "라이선스·현재 공식 자료 확인",
+      "Zeus PG runtime 적응과 인수 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

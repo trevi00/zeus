@@ -1,0 +1,17 @@
+{
+  "partition": "harness:scripts/engine:002",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "primary_paths": 16,
+  "primary_bytes": 184493,
+  "primary_sha256_matches": 16,
+  "primary_git_blob_matches": 16,
+  "primary_full_body_read": 16,
+  "supporting_files": 37,
+  "upstream_executions": 0,
+  "tests_executed": [],
+  "validation_kind": "metadata_integrity_only",
+  "foreign_imports": 0,
+  "implementation_changed": false,
+  "scope_sha256": "05962d645a878a116b540235001dde652b6dbb9d3576eebd425b6bf9ff01d27e",
+  "limits": "메타기록기를 실행한 결과는 원본 테스트 통과가 아니다."
+}

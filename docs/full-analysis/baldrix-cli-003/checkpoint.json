@@ -1,0 +1,18 @@
+{
+  "partition": "baldrix:scripts/cli:003",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "scope_sha256": "5743b9196d92e6ee3e36ddbcc4c4ee191d5f72c23a85d6b2b2a7e06acf0ce16a",
+  "primary_total": 14,
+  "primary_bodies_read": 14,
+  "primary_bytes_read": 179681,
+  "primary_remaining": [],
+  "body_coverage_complete": true,
+  "partition_complete": false,
+  "adoption_ready": false,
+  "tests_executed": 0,
+  "supporting_records": 19,
+  "remaining": [
+    "Dependency/effective configuration and execution/license/independent adoption gates remain; see per-file rows."
+  ],
+  "stop_reason": "Bounded primary static review completed; no expansion to another partition."
+}

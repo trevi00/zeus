@@ -1,0 +1,80 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/skill_token_budget.py",
+    "pinned_sha256": "b2fdc976251444ed2207f1fea6f2896efd2f96d1816652864dd77d624f5e874f",
+    "git_blob": "94ba77d82abad9b4ec841dc8a694875d8eeea0cb",
+    "bytes": 8830,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "Pure character allocation/truncation ladder. Historical unlimited-first bug fixed; small caps below marker length exceed bound, confirmed through original fit_top_skill. Full emitted context and later per-body cap not covered by this helper.",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/threshold_policy.py",
+    "pinned_sha256": "f89bb8613b90dd6465cff4bbeb0b8ee146081d000b602bc4d34d90d13c5bd3a1",
+    "git_blob": "d3e381d5d974977bac06a737dc531615fbd58625",
+    "bytes": 7052,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "Registered numeric overrides and token/flag gated writer. Reader lacks finite/domain checks; ready flag is not bound to value/evidence; direction compares default; direct write and post-write flag/history are not atomic. Writer not executed; transitive package imports remain pending.",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/tech_stack.py",
+    "pinned_sha256": "c990d4309891ad56d41d3c4b44b3eca0909a0d38a38dd63737e40d7b4a9d3c7f",
+    "git_blob": "186bea7bd23a7d5270ad67051c174082e8c0d028",
+    "bytes": 6309,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "Minimal YAML subset and ordered stack candidate paths. Exact-cwd resolver differs from parent-project resolver; root vs subdir difference observed. BOM/inline comment concerns static, not Windows reproduction.",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/pipeline_stage_picker.py",
+    "pinned_sha256": "8e7ff66ac4b7bb2edfbfb7be84a1b16f4e43a673e1577a2d25ea2f178a8842c0",
+    "git_blob": "01f26d67b12e6fafcb43fa115998b2ef5e16def8",
+    "bytes": 4150,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "Artifact-existence next-stage heuristic, not acceptance authority. Sparse/out-of-order/optional/directory/block-sequence outcomes observed with original APIs and temporary project overrides.",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/skill_match_render.py",
+    "pinned_sha256": "2123360eea20f84d97e4bb6f0c62aef1c7baeeed4d3d9be242b98e0a225895fc",
+    "git_blob": "f12750478c90193a9c583365a390cfd5e5f81c5b",
+    "bytes": 6029,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "Advisory text and cross references. filename-only requires can miss name-key SKILL candidates, observed with original function. Text/token/budget/identity and complete-model-input trace remain distinct.",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "bytes": 26592,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "Six-stage runtime assembly plus rendering/telemetry. Full body read in previous common-quality turn and same pinned bytes retained. Static source trace for missing second-cap length check, identity collisions, pre-budget telemetry, silent exception boundary; full hook and actual model not executed.",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md"
+  }
+]

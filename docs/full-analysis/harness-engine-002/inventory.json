@@ -1,0 +1,72 @@
+{
+  "partition": "harness:scripts/engine:002",
+  "scope_sha256": "05962d645a878a116b540235001dde652b6dbb9d3576eebd425b6bf9ff01d27e",
+  "bytes": 184493,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "scripts/engine/ontology_index.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/pipeline_loader.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/pollution.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/pr4.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/projection_pg.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/recall.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/reflect.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/reverse.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/rlm_kernel.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/sandbox.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/select_ready.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/skill_router.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/staleness.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/testgen.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/tick.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/engine/workup.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

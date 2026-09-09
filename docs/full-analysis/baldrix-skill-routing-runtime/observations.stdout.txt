@@ -1,0 +1,83 @@
+{
+  "budget_0": {
+    "max_chars": 0,
+    "actual_chars": 40,
+    "cut": true,
+    "within_cap": false
+  },
+  "budget_1": {
+    "max_chars": 1,
+    "actual_chars": 40,
+    "cut": true,
+    "within_cap": false
+  },
+  "budget_20": {
+    "max_chars": 20,
+    "actual_chars": 40,
+    "cut": true,
+    "within_cap": false
+  },
+  "budget_4000": {
+    "max_chars": 4000,
+    "actual_chars": 4000,
+    "cut": true,
+    "within_cap": true
+  },
+  "sparse_later_output": {
+    "missing_a": true,
+    "b_bytes": 0,
+    "recommendation": [
+      [
+        "qa.md"
+      ],
+      "",
+      "verify"
+    ]
+  },
+  "all_outputs_exist": [
+    [
+      "qa.md"
+    ],
+    "",
+    "verify"
+  ],
+  "optional_next": [
+    [
+      "code.md"
+    ],
+    "",
+    "implementation"
+  ],
+  "directory_counts": true,
+  "block_skills_parsed": [
+    {
+      "id": "one",
+      "output": "missing.md",
+      "skills": [
+        "qa"
+      ]
+    }
+  ],
+  "block_skills_error": {
+    "type": "AttributeError",
+    "message": "'list' object has no attribute 'strip'"
+  },
+  "stack_root_vs_subdir": {
+    "root": [
+      "_common",
+      "python/lang",
+      "python"
+    ],
+    "subdir": null
+  },
+  "requires_name_vs_filename": {
+    "name_key": [],
+    "filename_key": [
+      [
+        "a.md",
+        "b.md",
+        "dependency"
+      ]
+    ]
+  }
+}

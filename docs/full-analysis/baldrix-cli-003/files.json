@@ -1,0 +1,711 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_step.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "70350b38cbbed7496ab848637274c2ba1ee3b2fe",
+    "pinned_sha256": "c27719a5c25e971325d0ff281104ef655175f33fabe5030f60caa4bdcd233f23",
+    "manifest_bytes": 35973,
+    "pinned_bytes": 35973,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 631,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#milestone_step.py",
+    "semantic_review": {
+      "purpose": "phase 재료 수집, Tier1/변이/전제/Tier2 실행, gate 및 체크리스트 발행",
+      "analysis": "본문 1–631 전문. _run_tier1은 CLI 또는 .planning/config.json의 문자열을 shlex.split하여 호스트 환경/cwd에서 실행하고 600자 tail·exit만 기록한다. --no-tier2는 Tier2만 끄며 Tier1/변이/프로브/상태쓰기는 그대로이므로 일반 dry-run이 아니다. _run_probe는 nonzero returncode 자체를 failures에 반영하지 않고 JSON ok:false만 센다(149–164,503–519): rc1+비JSON출력은 ran:true failures0으로 빠진다. gate에는 outcomes=[현재phase]만 전달(575), milestone_gate321–363은 누락phase 중 처음을 다음으로 반환하므로 planned1,2에서 phase2 종료 뒤 phase1로 돌아갈 수 있다. 기존 test_milestone_step89–97은 첫phase→2만 검사한다. phase_degraded_codes278–318은 tier2_completeness를 사용하지 않아 approved/false도 이 코드상 completeness사유가 없다. 새 checklist는 현재phase항목만 구성하고 직전판정은 전체spine에서 읽는다. 여러append/외부실행/파일쓰기 사이 크래시 가능하므로 docstring의 부분실행불가능 주장은 실제 트랜잭션 보장이 아니다. 시작base-rev는 명시값 유효성검사없이 수용, --planned는 open에서 빈목록도허용. evaluator직접호출은 model인자를주지않고 생성자계열과비교하지않는다. quota읽기와실행후record분리·예외시record누락. 경로토큰정규식치환은 컨텍스트/권한격리의 증명이 아니다.",
+      "authority": "임의Tier1/프로브 실행, git/변이 worktree·외부Codex 호출, 로컬spine/checklist쓰기. 입력명령/모델결과 자체는 승인아님.",
+      "platform": "POSIX shlex는 Windows 역슬래시/따옴표 경로와 불일치 가능. subprocess UTF8 replace는 decode크래시를줄이지만원시바이트유실. WSL경로·모델shim·프로세스트리종료 미검증.",
+      "tests": "test_milestone_step.py30–108 partial read, 나머지tests 검색발견만. 반복phase누락/completeness false/nonJSON probe비정상종료 회귀 필요.",
+      "decision": "변형 후보: 단계 orchestration/usecase화, PG phase정본에서 전체outcome 재구성, runner receipt/lease/자격모델바인딩 및 unfinished별도상태. 현재실행기복제 제외."
+    },
+    "actual_callability": "python -m cli.milestone_step; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형 후보: 단계 orchestration/usecase화, PG phase정본에서 전체outcome 재구성, runner receipt/lease/자격모델바인딩 및 unfinished별도상태. 현재실행기복제 제외.",
+    "claude_dependencies": "임의Tier1/프로브 실행, git/변이 worktree·외부Codex 호출, 로컬spine/checklist쓰기. 입력명령/모델결과 자체는 승인아님. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "POSIX shlex는 Windows 역슬래시/따옴표 경로와 불일치 가능. subprocess UTF8 replace는 decode크래시를줄이지만원시바이트유실. WSL경로·모델shim·프로세스트리종료 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib",
+      "lib.evaluator_dispatcher",
+      "lib.milestone_spine",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_milestone_step.py30–108 partial read, 나머지tests 검색발견만. 반복phase누락/completeness false/nonJSON probe비정상종료 회귀 필요.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_verdict.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d19252359267d2b5453e1525e47b5780836a6c35",
+    "pinned_sha256": "94edcb256f6dbaffaa13b1d459489207100f0c05bccf936dbdce7350d5a06739",
+    "manifest_bytes": 12110,
+    "pinned_bytes": 12110,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 258,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#milestone_verdict.py",
+    "semantic_review": {
+      "purpose": "blocking item별 pass/fail/blocked append 및 최신 checklist 종결 판단",
+      "analysis": "본문전문. 최소4자 unique prefix확인 및 전항목검증 후쓰기 장점. 그러나 resolved목록별append는 DB트랜잭션이아니며 중간I/O실패·중복item부분쓰기 가능. actor='human'은 호출자상수가며 인증아님. 최신 checklist만쓰고 digest재검증없음(milestone_spine145–152). --rewind-exhausted로 실패있어도강등종결할수있고 blocked note는8자+isalnum뿐. closure는 known verdict키가있으나 result미지값이어도 evaluate_closure389–406에서 missing/fail/blocked에안걸려성공가능(변조스냅샷/원장검증필요). 빈blocking도종결. 문서D3미배선과payload rewind_wired:true 상충; 이CLI자체는rewind실행안함.",
+      "authority": "사람판정·종결을 localEventStore에쓰기. 사용자인증/승인서명·현재gen바인딩없음.",
+      "platform": "UTF8 JSON출력은 Windows stdout코덱상태의존. 파일잠금/CRLF/동시append/WSL다중프로세스 미실행.",
+      "tests": "test_milestone_verdict.py 및test_milestone_rewind.py 검색발견, 본문미독. 사용자대신set하지말라는commands70–130 대조.",
+      "decision": "변형: PG원장에사용자principal·checklist전체hash·generation·expectedversion을묶고실패/blocked/완료분리."
+    },
+    "actual_callability": "python -m cli.milestone_verdict; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: PG원장에사용자principal·checklist전체hash·generation·expectedversion을묶고실패/blocked/완료분리.",
+    "claude_dependencies": "사람판정·종결을 localEventStore에쓰기. 사용자인증/승인서명·현재gen바인딩없음. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "UTF8 JSON출력은 Windows stdout코덱상태의존. 파일잠금/CRLF/동시append/WSL다중프로세스 미실행.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib",
+      "lib.milestone_spine",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_milestone_verdict.py 및test_milestone_rewind.py 검색발견, 본문미독. 사용자대신set하지말라는commands70–130 대조.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/mirror.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5a3f15f00d544c9c0eff7934bedbdfb1763fb77f",
+    "pinned_sha256": "368bc8583cc43bd1b97c43ff8a1f911298379d5415442c92b96ec75407fa03e8",
+    "manifest_bytes": 2256,
+    "pinned_bytes": 2256,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 60,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#mirror.py",
+    "semantic_review": {
+      "purpose": "project mirror 재생성/드리프트조회CLI",
+      "analysis": "60행전문. regenerate는mirror_drift로위임해JSON+설명문출력, status/scan도STALE이면JSON뒤주석을붙여scan의machineJSON설명과다름. argv첫토큰만보아추가인자를무시한다. lib113–255: 모든scan예외를marker:false clean모양으로환원, invalid/unverifiable도exit0. HEAD+trackedcleanfastpath는manifestfingerprint조작을재계산하지않는다. regenerate는상위mirror를찾아cwd보다위에쓸수있고manifest를먼저쓴뒤extract_structure/STRUCTURE/NARRATIVE이어서부분갱신가능. source주석의commit+push는출력권고데이터이며실제로gitpush하지않음.",
+      "authority": "atlas/mirror파생파일재작성및git읽기; scan의clean모양은승격자격아님.",
+      "platform": "_emit가UTF8바이트를써stdout코덱차이완화. native/WSL경계·symlink·Git파일명 처리미검증.",
+      "tests": "mirror_drift관련테스트전문미독; read-only fingerprint/재생성실패·상위root회귀필요.",
+      "decision": "변형: Git정의로재생성가능한파생projection, unknown을clean과분리하고PG승인정본에사용금지."
+    },
+    "actual_callability": "python -m cli.mirror; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: Git정의로재생성가능한파생projection, unknown을clean과분리하고PG승인정본에사용금지.",
+    "claude_dependencies": "atlas/mirror파생파일재작성및git읽기; scan의clean모양은승격자격아님. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "_emit가UTF8바이트를써stdout코덱차이완화. native/WSL경계·symlink·Git파일명 처리미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. mirror_drift관련테스트전문미독; read-only fingerprint/재생성실패·상위root회귀필요.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/mutation_score.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "af7e9017206e73c26e634c04f72c1dcc97f0f57f",
+    "pinned_sha256": "e85185568e13dba83073b07a274bd8b3be7684ef7222f2accc38c7d82385ab2d",
+    "manifest_bytes": 3264,
+    "pinned_bytes": 3264,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 74,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#mutation_score.py",
+    "semantic_review": {
+      "purpose": "대상모듈을변이시켜자체테스트의killed/survived비율보고·mutbak복구",
+      "analysis": "본문전문. 절대target/test허용, 상대경로는scripts기준. low score와error모두exit0(advisory), argparse/uncaughtIO는예외다. docstring curatedallowlist와달리읽은score_module143–203에는allowlist검사가없다. 직접target을write_text로교체하고원본backup을만든다. baseline실패시scoreNone; timeout124도killed이며환경실패/멈춤과실제검출구분없음. survivor만재실행하여unstable을분모에서제외. _restore가OSError를삼킨뒤finally가backup을삭제해복구불능창존재. restore는scripts전체*.mutbak을복구하고실패누락시에도CLIexit0. total0에서도human출력no survivors/everyfaultcaught문구가능.",
+      "authority": "실제원본변경·테스트실행·복구파일삭제. score자체배포승인아님.",
+      "platform": "Windows열린파일쓰기실패와Linuxrename차이, bytecodecache/mtime동일변이재실행미검증. 별도정규화없는텍스트복구는바이트동등성보장안됨.",
+      "tests": "test_mutation_runner.py 검색발견만. 이번실행0.",
+      "decision": "변형: read-only원본+폐기가능격리copy에서측정, infra/timeout/invalid와kill분리, backup삭제경로복제제외."
+    },
+    "actual_callability": "python -m cli.mutation_score; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: read-only원본+폐기가능격리copy에서측정, infra/timeout/invalid와kill분리, backup삭제경로복제제외.",
+    "claude_dependencies": "실제원본변경·테스트실행·복구파일삭제. score자체배포승인아님. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "Windows열린파일쓰기실패와Linuxrename차이, bytecodecache/mtime동일변이재실행미검증. 별도정규화없는텍스트복구는바이트동등성보장안됨.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib.mutation_runner",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_mutation_runner.py 검색발견만. 이번실행0.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/observe.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "9d82cefa6e71e9d0cb7817f8a5079a2c5763aad2",
+    "pinned_sha256": "595d63a5208886b11658ec96ffd28036e9d0fc06cf7bd33d39a54eaef65ecd2f",
+    "manifest_bytes": 29932,
+    "pinned_bytes": 29932,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 745,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#observe.py",
+    "semantic_review": {
+      "purpose": "events/sessions/seeds/operatorledger/residual집계및embeddedselfcheck",
+      "analysis": "745행전문(처음출력잘림구간450–745 재독). event type별집계는taxonomy import실패시unknown집계도안하고JSON형태오류일부만무시한다. timestamp미지정/해석불능은since필터를통과. sessions는디스크파일있으면active로부르고만료필터없음; heartbeat없으면mtime사용, 미래시각은age0. seedhash를경로조합하며스키마검증없음. ledger success/verified_by는문자열자기신고집계이며자격아님. settings전체JSON에agent_depth_guard문자열포함만검사하므로유효hook등록증명아님. cron잔여는항상출력. --section도모든store를먼저읽고표시만필터. --self-check는CLAUDE_HOME을임시값으로바꾸고복원안함; 별도실행0, fixtures성공문구를과거실제실행으로간주안함.",
+      "authority": "일반집계읽기, self-check임시상태쓰기와프로세스환경변경. 원장은PG가아닌Claude state파일.",
+      "platform": "stdout UTF8재설정, OScron자동검지불가를명시. timestamptimezone/mtime/WSL파일공유미검증.",
+      "tests": "embedded_self_check586–707전문읽음. seed/ledger/timefilter 등구성하지만malformedshape·동시snapshot·환경복원검사부족. 실행0.",
+      "decision": "변형: PG관측projection에시간범위·자료손상·unknown·미보고분리; 빈집계는건강판정이나모델자격아님."
+    },
+    "actual_callability": "python -m cli.observe; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: PG관측projection에시간범위·자료손상·unknown·미보고분리; 빈집계는건강판정이나모델자격아님.",
+    "claude_dependencies": "일반집계읽기, self-check임시상태쓰기와프로세스환경변경. 원장은PG가아닌Claude state파일. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "stdout UTF8재설정, OScron자동검지불가를명시. timestamptimezone/mtime/WSL파일공유미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "dataclasses",
+      "lib.event_taxonomy",
+      "lib.paths",
+      "lib.timefmt",
+      "pathlib",
+      "typing"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. embedded_self_check586–707전문읽음. seed/ledger/timefilter 등구성하지만malformedshape·동시snapshot·환경복원검사부족. 실행0.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/onboard_stack.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5b25b218df5db7f8425ebe5a711f9e8470cdeb3b",
+    "pinned_sha256": "03853cdd86335c39944521c7a5107f88d7dda7c81d250241e3ef6bb9e61204e7",
+    "manifest_bytes": 18522,
+    "pinned_bytes": 18522,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 391,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#onboard_stack.py",
+    "semantic_review": {
+      "purpose": "연구artifact에서pipeline candidate/expected/test생성·structuralverify·live승격",
+      "analysis": "본문전문. lang을경로/생성Python문자열에검증없이삽입하므로절대/../경로및따옴표주입에취약한설계. artifact.expected.operator_authored는setdefault(False)라원본true를그대로믿어인간작성표시가능. verify는merge와자체dumplegacy키동등성만보며oracle실행안함. promote는공개token정확일치+structural_ok+truthyoperator_authored만검사해독립oracle실행이나CLAUDE.md행존재를강제하지않는다. test107–123도flag만true로바꾸고promotedassert한다. 생성test(A)는CLIverify와달리input/artifact키를빼고(B)는pytest.xfail호출로중단할뿐strictxfaildecorator없으며직접python실행은A만돈다. emptyexpectedstageids/token은공허assert가능. _guarded_variants_edit는비이스케이프source문자열삽입→astparse→실제importreload라AST통과가안전성검증아님. variants편집후두copy사이실패에는전체rollback없고기존java/flutter/rust lang도금지안해docstringneveredits와상충. promotion은test/expected를live로옮기지않고template도계속candidates를읽는다.",
+      "authority": "candidate쓰기→선택적Python소스편집/import실행→livepipeline덮어쓰기. 공개token은권한인증아님.",
+      "platform": "lang경로분리자·Windowsdrive/역슬래시·reservedname미검증, copy2/encoding/부분실패WindowsLinuxWSL실행0.",
+      "tests": "test_onboard_stack.py165행전문읽음6함수, fakego/realcorecopy. tests실행0, oracle진실성/경로공격/복구미검증.",
+      "decision": "변형: inertcandidate단계만개념채택가능; Git정의+PG불변후보/독립검사receipt/자격모델/정확revision승격사용. 공개token·자가oracle·in-source삽입제외."
+    },
+    "actual_callability": "python -m cli.onboard_stack; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: inertcandidate단계만개념채택가능; Git정의+PG불변후보/독립검사receipt/자격모델/정확revision승격사용. 공개token·자가oracle·in-source삽입제외.",
+    "claude_dependencies": "candidate쓰기→선택적Python소스편집/import실행→livepipeline덮어쓰기. 공개token은권한인증아님. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "lang경로분리자·Windowsdrive/역슬래시·reservedname미검증, copy2/encoding/부분실패WindowsLinuxWSL실행0.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib.paths",
+      "lib.pipeline_overlay",
+      "lib.pipeline_yaml",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_onboard_stack.py165행전문읽음6함수, fakego/realcorecopy. tests실행0, oracle진실성/경로공격/복구미검증.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/ontology_query.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2c5104b9d7a0afcbf16331b346d6c060d78c813e",
+    "pinned_sha256": "8e8ec90c7bf8ad9dc2aa74f5308c64bec12604a251f207070abd723304cce6df",
+    "manifest_bytes": 6614,
+    "pinned_bytes": 6614,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 153,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#ontology_query.py",
+    "semantic_review": {
+      "purpose": "seam_scan에서Repo/Enum/Seam/Value그래프를만들어shared/touches/orphans조회하는교육데모",
+      "analysis": "본문전문. BLOCKED seam도repo/enum노드는추가하고value엣지만제외. wire값을전역value:id로합쳐같은문자열의서로다른의미도결합. q_shared는seam:prefix유지, q_touches는제거. graph자체에BLOCKED상태와출처revision/scan누락근거가없어emptyquery를모든seam검토결과로해석불가. 정렬/set로결정론성을목표로하나seam_scan의입력파싱/파일읽기범위전문미독. 실제fleetdisjoint및가치없음주장은원문fleet/debate미검증.",
+      "authority": "YAML fleet/spec로읽기범위선택; 파생조회만. 생성데모를실제자산정본이나자가개선근거로격상금지.",
+      "platform": "UTF8stdout보정, 외부fleet경로해석/WSL경로변환은seam_scan의미검토범위.",
+      "tests": "test_ontology_query.py,test_example_fleet.py,test_endpoint_graph_subsumes_ontology.py검색연결만본문미독.",
+      "decision": "보류/변형: graph를원본근거색인으로만사용하고도메인namespace·revision·unknownedge표시추가;데모채택자격없음."
+    },
+    "actual_callability": "python -m cli.ontology_query; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "보류/변형: graph를원본근거색인으로만사용하고도메인namespace·revision·unknownedge표시추가;데모채택자격없음.",
+    "claude_dependencies": "YAML fleet/spec로읽기범위선택; 파생조회만. 생성데모를실제자산정본이나자가개선근거로격상금지. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "UTF8stdout보정, 외부fleet경로해석/WSL경로변환은seam_scan의미검토범위.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "cli.seam_scan",
+      "collections",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_ontology_query.py,test_example_fleet.py,test_endpoint_graph_subsumes_ontology.py검색연결만본문미독.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/operator_override.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b70f7f58b74ba0a57a7636bc613e5d6a5d4ede39",
+    "pinned_sha256": "c968d47427bd6700de240ab56db532a2f248d34ee479447b08d7fa7c08dc16ea",
+    "manifest_bytes": 2790,
+    "pinned_bytes": 2790,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 101,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#operator_override.py",
+    "semantic_review": {
+      "purpose": "force_close/force_open/skip_critic_once를operatorledger에append",
+      "analysis": "본문전문. argparseaction폐집합과필수token,Permission3/Value2를구분. apply_override306–355는reasonnonempty와공개문자열token정확일치만검사하고human_override를append한다. CLI에서emit_fn미지정이라기본noop로이벤트송신안됨. principal/서명/만료/일회성/대상revision바인딩은이경로에없다. append_record의실효파일잠금/소비자정책은미검증.",
+      "authority": "프로젝트별critic정책override원장쓰기;자동호출도같은token주면가능한표현적장벽.",
+      "platform": "project-root는cwd기본. 경로정규화/동일프로젝트WinWSLidentity미검증.",
+      "tests": "test_operator_ledger.py검색발견만,실행0.",
+      "decision": "변형: PGscope/actor/expiry/generation/감사원장과유스케이스인가로대체. override를모델평가자격/독립승인우회에사용금지."
+    },
+    "actual_callability": "python -m cli.operator_override; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: PGscope/actor/expiry/generation/감사원장과유스케이스인가로대체. override를모델평가자격/독립승인우회에사용금지.",
+    "claude_dependencies": "프로젝트별critic정책override원장쓰기;자동호출도같은token주면가능한표현적장벽. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "project-root는cwd기본. 경로정규화/동일프로젝트WinWSLidentity미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib.operator_ledger",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_operator_ledger.py검색발견만,실행0.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/output_schema_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "fb591fd7e5803617e1fe0e379f917d6bd0e5515c",
+    "pinned_sha256": "49d5961da0f7f7a0cf1fc499a33bcb3101eaa490359aa550addf7ca1aeb8ac65",
+    "manifest_bytes": 5937,
+    "pinned_bytes": 5937,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 169,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#output_schema_audit.py",
+    "semantic_review": {
+      "purpose": "agent output_schema선언존재감사",
+      "analysis": "본문전문. frontmatter값str(nonempty)이면PRESENT,XML은시작태그정규식만으로PRESENT. strict는XML을제외하지만실제JSONschema의의미/유효성은검증안함. 폴더없음/빈폴더는total0all_coveredtrue로activationunblocked출력. test121–133이빈/없는폴더PASS를명시적으로오라클화한다. structural._layer_schema175–182는dict아니면검사생략하므로free_text/JSON문자열PRESENT는실효검증보장못함.",
+      "authority": "read-only선언존재지표; activation권한으로사용하면coverage공허통과.",
+      "platform": "UTF8stdout,glob*.md루트만/대소문자OS차이/parsefrontmatter실효구현미독.",
+      "tests": "test_output_schema_audit.py207행전문12tests읽음;실행0. null/빈값판정은실제frontmatterparser추적필요.",
+      "decision": "변형: inventory고정분모·누락폴더오류·schema컴파일/지원키/실제검증receipt분리. free_text는명시적미검증상태."
+    },
+    "actual_callability": "python -m cli.output_schema_audit; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: inventory고정분모·누락폴더오류·schema컴파일/지원키/실제검증receipt분리. free_text는명시적미검증상태.",
+    "claude_dependencies": "read-only선언존재지표; activation권한으로사용하면coverage공허통과. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "UTF8stdout,glob*.md루트만/대소문자OS차이/parsefrontmatter실효구현미독.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib.frontmatter",
+      "lib.paths",
+      "pathlib",
+      "typing"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_output_schema_audit.py207행전문12tests읽음;실행0. null/빈값판정은실제frontmatterparser추적필요.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/output_schema_migrate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "e27c52cf966939b68abae774bc6b2ee441dfa67e",
+    "pinned_sha256": "a3c239ad307a22c8ff825170db5b57fbe51e88edd32fedec900085b7174f153c",
+    "manifest_bytes": 5205,
+    "pinned_bytes": 5205,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 135,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#output_schema_migrate.py",
+    "semantic_review": {
+      "purpose": "agentfrontmatter에output_schema:free_text를기계삽입",
+      "analysis": "본문전문. default실제쓰기, --dry-run만미쓰기. text.split('---',2)는행fence가아닌내용안구분자에도반응. 이미있는빈output_schema는auditmissing이어도migrate가skip해복구못함. 파일전체write_text는비원자/라인엔딩변경가능. 모든candidate가skip이어도0,없으면1이므로일반CI성공의미와엇갈림. --include-xml은형식strict감사를통과시키되실제schema검사층을skip시키는free_text로채움. 실제구조개선/검증확대라고보고불가.",
+      "authority": "Claudeagent정의일괄쓰기;별도token/checkpoint/backup없음.",
+      "platform": "read_textnewline정규화후write_textOS개행,CRLF보존안됨. UTF8BOM/permissions/부분쓰기미검증.",
+      "tests": "별도migrationtest전문미독/실행0. audit/structural연결직접확인.",
+      "decision": "제외(그대로): 선언채우기로검증우회. 필요하면Git변경제안으로스키마별독립oracle작성후채택."
+    },
+    "actual_callability": "python -m cli.output_schema_migrate; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "제외(그대로): 선언채우기로검증우회. 필요하면Git변경제안으로스키마별독립oracle작성후채택.",
+    "claude_dependencies": "Claudeagent정의일괄쓰기;별도token/checkpoint/backup없음. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "read_textnewline정규화후write_textOS개행,CRLF보존안됨. UTF8BOM/permissions/부분쓰기미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "cli.output_schema_audit",
+      "lib.paths",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. 별도migrationtest전문미독/실행0. audit/structural연결직접확인.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/phase_graph.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1165476e134578a7701441ffba882b4823bf8f1f",
+    "pinned_sha256": "ec6e539734f419b7ab2b99b8cb8725e0a535d3c49446f7e261e1a479bb1f8788",
+    "manifest_bytes": 3124,
+    "pinned_bytes": 3124,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 86,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#phase_graph.py",
+    "semantic_review": {
+      "purpose": "ROADMAP/PLAN에서typededgegraph빌드및조회CLI",
+      "analysis": "86행전문. build는write_graph후load/count;ROADMAP없음만exit1처리. --strictquery는존재만검사하며validschema/freshness검사안함. queryhelper는missing/nonmapping을빈그래프로치환;malformedJSON은예외. builder179–201은read→비원자write_text이고출처hash/commit을여기서는검증안함. kha-plan-phase48–75호출계약은poststep실패best-effortskip이므로graph존재로계획완료증명불가. typededge계산본체/planparser전문미독.",
+      "authority": "planning/_graph파일파생쓰기. graph는Git정의의색인이지PG실행상태정본아님.",
+      "platform": "stdout보정없고path.cwd의존,WinWSL경로/파일잠금미검증.",
+      "tests": "phasegraph별도test본문/실행미검증;queryhelper전문읽음.",
+      "decision": "변형: immutabledefinitionrevision에projection바인딩,unknown/stale구분,실행의존성인가PG유스케이스유지."
+    },
+    "actual_callability": "python -m cli.phase_graph; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: immutabledefinitionrevision에projection바인딩,unknown/stale구분,실행의존성인가PG유스케이스유지.",
+    "claude_dependencies": "planning/_graph파일파생쓰기. graph는Git정의의색인이지PG실행상태정본아님. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "stdout보정없고path.cwd의존,WinWSL경로/파일잠금미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib",
+      "lib.phase_graph_builder",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. phasegraph별도test본문/실행미검증;queryhelper전문읽음.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/project_analyze.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "02d12e8e023ca8a130e1868a49be1cd75476d407",
+    "pinned_sha256": "0eb294c1d0bc4f495e59d7f3d0a3834ff99f8c7e2bf5c32d25e4a1c5eb3c5bb0",
+    "manifest_bytes": 20533,
+    "pinned_bytes": 20533,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 562,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#project_analyze.py",
+    "semantic_review": {
+      "purpose": "프로젝트스택탐지·스킬활성후보·초안preview·validator보고",
+      "analysis": "562행전문. package.json존재만으로typescript,Flutter버전3.x상수,regex버전탐지와숫자confidence는통계적교정없음. Java우선firstmatch는혼합stack누락;한레벨subroot만검색하고같은block은최고confidence하나로축약. extractor별첫성공후break라여러subroot완전커버아님. 명시적쓰기없지만extractor실제호출/validate_project.run실행하므로순수읽기증명은전이호출검토필요. validate_project142–174는validator.main반환값을무시하고SystemExit/출력FAIL regex로판정: return1+출력없음이면PASS가능. os.chdir를프로세스전체에적용. root잘못되면exit2라always0문서도한정. markdown/XMLpreview이스케이프없음. 전체소스의미역공학아님.",
+      "authority": "타깃읽기와동적extractor/validator실행;제안yaml/preview는미검증초안. 등록모듈부작용전문미독.",
+      "platform": "예시/c/Users는GitBash형식이며WSL/mnt/c와다름;utf8출력stdoutlocale의존,subrootcase/symlink미검증.",
+      "tests": "test_project_analyze.py검색발견만. extractorREGISTRY/tech_stack전문이번범위미독.",
+      "decision": "변형: staticdiscovery와실행검사분리,PGinspectionreceipt및정확읽은파일원장필수. 스택추측으로전체분석완료나모델자격판정금지."
+    },
+    "actual_callability": "python -m cli.project_analyze; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: staticdiscovery와실행검사분리,PGinspectionreceipt및정확읽은파일원장필수. 스택추측으로전체분석완료나모델자격판정금지.",
+    "claude_dependencies": "타깃읽기와동적extractor/validator실행;제안yaml/preview는미검증초안. 등록모듈부작용전문미독. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "예시/c/Users는GitBash형식이며WSL/mnt/c와다름;utf8출력stdoutlocale의존,subrootcase/symlink미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "cli.validate_project",
+      "dataclasses",
+      "lib.extractors",
+      "lib.paths",
+      "lib.tech_stack",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. test_project_analyze.py검색발견만. extractorREGISTRY/tech_stack전문이번범위미독.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/promote_atlas_note.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1d6db085cd6cb18d42b416ff16b95c9805c9e75c",
+    "pinned_sha256": "63e7306173be7b832cacafc675d4a451fc7d8f081ba55b33bc4fcbc173b6e4d0",
+    "manifest_bytes": 16145,
+    "pinned_bytes": 16145,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 452,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#promote_atlas_note.py",
+    "semantic_review": {
+      "purpose": "subAtlas문서를CoreAtlas로복사·감사log·ack",
+      "analysis": "452행전문. main만token검사하고promote공개함수는검사없음;axes도main형식검사와달리promote는len>=3만본다. _core_registered_domains가빈집합이면domain검사를건너뛰므로registrymissing/unreadable도허용. _derive_target은첫atlas컴포넌트사용,3개이상추가경로를납작화하며type허용집합/id파일명일치검사없음. targetexists→os.replace간경합으로nooverwrite보장안됨. copy→audit→sourceupdate→ack여러단계는전체원자성이없고중간실패재시도는이미target있어서막힘. sourcefrontmatter업데이트는fm마지막줄개행을빼고붙여기존마지막값에promoted_to가연결될가능성(237–264). token불일치값을오류에그대로출력. Unicode재설정unconditional은StringIO같은host에서AttributeError가능.",
+      "authority": "CoreAtlas쓰기/선택적원본수정/ack;3project·Architectapproval·30일은ABC자기확인뿐. remote원문/실제승인미확인.",
+      "platform": "os.replaceWindows열린handle실패및POSIX경합,registry대소문자/rootsymlink대응미검증. UTF8text복사≠원시바이트복사.",
+      "tests": "직접promotion회귀test본문미독/실행0. atomicwrite와멀티리소스원자성을구분해검증필요.",
+      "decision": "변형: PG정확revision·증거hash·독립승인·outbox가필요. 로컬누적횟수/기간/공개token을승인으로채택금지."
+    },
+    "actual_callability": "python -m cli.promote_atlas_note; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: PG정확revision·증거hash·독립승인·outbox가필요. 로컬누적횟수/기간/공개token을승인으로채택금지.",
+    "claude_dependencies": "CoreAtlas쓰기/선택적원본수정/ack;3project·Architectapproval·30일은ABC자기확인뿐. remote원문/실제승인미확인. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "os.replaceWindows열린handle실패및POSIX경합,registry대소문자/rootsymlink대응미검증. UTF8text복사≠원시바이트복사.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib.advisory_ack",
+      "lib.frontmatter",
+      "lib.paths",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. 직접promotion회귀test본문미독/실행0. atomicwrite와멀티리소스원자성을구분해검증필요.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/promote_skill.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "e75968f0a4385f481c895cd10dd8c88f692344ea",
+    "pinned_sha256": "59129f625a634acfccb2c0c0283775a5e5771240866eb5a68e263f90ea29116c",
+    "manifest_bytes": 17276,
+    "pinned_bytes": 17276,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "line_count": 448,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-003/semantic-notes.json#promote_skill.py",
+    "semantic_review": {
+      "purpose": "skillcandidate를liveSKILL.md로승격·candidatearchive·ack",
+      "analysis": "448행전문. maintoken만검사하며promote직접호출은우회. candidateJSON은parse만하고형태/자격/본문hash연결검사없음. 본문shape검사후다시읽어쓰기하여TOCTOU. gsd-분기는'/'만거부하고역슬래시허용하므로Windows에서gsd-x\\..\\..\\outside같은경로가namespace밖을가리킬수있음(정적추론,미실행). _gsd분기는regex로제한. marker는exists→write_text라독점생성아님. target기존존재검사없이os.replace하여덮어씀. candidate이동/ack실패에도finallymarker삭제하므로실패재진입방지주장과다름. 후보보관성공후ack실패는재시도에서candidate없음으로막힘. depth/reachability경고는nonblocking;허용namespace는gsd/_gsd뿐이라_common권고를CLI로수행못함. keywords필수라reachabilitywarning도항상가능. 모델평가/테스트/독립승인경로없음.",
+      "authority": "live스킬덮어쓰기·candidate이름변경·marker삭제·ack. 'enable-skill'문자열은인가자격아님.",
+      "platform": "Windows역슬래시pathtraversal과열린파일오류,POSIXrename기존대상덮어쓰기의차이,WSLcrossfilesystem미검증.",
+      "tests": "promotion/skillfrontmatter/matcher실효테스트본문미독,실행0. 경로·경합·부분실패·자격결합회귀필요.",
+      "decision": "변형: 프로젝트스킬후보→독립검토→Git정의릴리스+PG승격원장으로설계. 기존토큰/marker/overwrite구현제외."
+    },
+    "actual_callability": "python -m cli.promote_skill; main and direct calls read; effective live registration/transitive imports not fully verified",
+    "adoption_decision": "변형: 프로젝트스킬후보→독립검토→Git정의릴리스+PG승격원장으로설계. 기존토큰/marker/overwrite구현제외.",
+    "claude_dependencies": "live스킬덮어쓰기·candidate이름변경·marker삭제·ack. 'enable-skill'문자열은인가자격아님. Claude homes/assets/state and operator-role contracts are upstream DATA.",
+    "windows_linux": "Windows역슬래시pathtraversal과열린파일오류,POSIXrename기존대상덮어쓰기의차이,WSLcrossfilesystem미검증.",
+    "zeus_modules": [
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/domain/model_routing.py",
+      "src/codex_harness/domain/project_skills.py",
+      "src/codex_harness/adapters/store.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only. audit_gate/model_routing fully read; project_skills/store mapped by repository role and AGENTS, not full implementation equivalence.",
+    "direct_imports": [
+      "__future__",
+      "lib.advisory_ack",
+      "lib.frontmatter",
+      "lib.paths",
+      "lib.skill_structure_depth",
+      "pathlib"
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit static-only task. Read test bodies/search hits are not executed receipts. promotion/skillfrontmatter/matcher실효테스트본문미독,실행0. 경로·경합·부분실패·자격결합회귀필요.",
+    "license_status": "Original upstream license, linked external source/debate/fleet and copied-code provenance not verified.",
+    "duplicate_status": "No file claimed generated or byte-equivalent. Onboard-generated tests examined in template; actual generated outputs/core merge equivalence not reconciled.",
+    "remaining": [
+      "Transitive implementation and effective live configuration/caller completion",
+      "Source-specific malformed input, authorization, concurrency and crash regression execution in authorized isolation",
+      "License and external original/source-output provenance verification",
+      "Independent lead/conductor exact-source and current-Zeus revision review; no adoption authorization"
+    ]
+  }
+]

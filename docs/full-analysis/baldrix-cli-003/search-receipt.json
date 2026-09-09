@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "milestone_step|milestone_verdict|mirror|mutation_score|observe|onboard_stack|ontology_query|operator_override|output_schema_audit|output_schema_migrate|phase_graph|project_analyze|promote_atlas_note|promote_skill",
+    "pinned/scripts/tests",
+    "pinned/commands",
+    "pinned/skills",
+    "pinned/agents",
+    "--glob",
+    "*.py",
+    "--glob",
+    "*.md"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "f1e86be348591da0bde39a579d25c2446a9f9ab3831e2c7e471d7d29c7774490",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "meaning": "Discovery only, not semantic review. Only supporting ranges marked read."
+}

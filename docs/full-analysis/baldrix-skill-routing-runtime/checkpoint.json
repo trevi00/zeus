@@ -1,0 +1,12 @@
+{
+  "primary_full_body_reads": 6,
+  "supporting_full_body_reads_including_prior_same_pinned": 13,
+  "all_manifest_hashes_match": true,
+  "original_test_processes": 3,
+  "original_tests_passed": 57,
+  "original_component_observation_processes": 1,
+  "full_hook_executed": false,
+  "threshold_writer_executed": false,
+  "whole_analysis_complete": false,
+  "adoption_status": "not_approved_not_incorporated"
+}

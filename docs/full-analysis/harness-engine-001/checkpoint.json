@@ -1,0 +1,30 @@
+{
+  "source": "harness",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "partitions": [
+    "harness:scripts/engine:001"
+  ],
+  "expected": 18,
+  "full_body_reviewed": 18,
+  "bytes_verified": 190174,
+  "scope_sha256": "909c1840c9b3c47d016dcd630a6527772221e4de10343348167dbd96fe73daaf",
+  "unreviewed_paths_in_partition": [],
+  "tests_executed": [],
+  "upstream_execution_count": 0,
+  "blocked_gate_writer_probe_retried_or_bypassed": false,
+  "subsystem_complete": false,
+  "adoption_approved": false,
+  "claude_independent_review": "pending",
+  "status": "static_review_complete_execution_and_independent_review_pending",
+  "review_ref": "docs/full-analysis/harness-engine-001/review.md",
+  "other_reviews_consulted_for_this_partition": [],
+  "output_truncation_recovery": [
+    "fleet_contracts.py:330-409 재독",
+    "ladder_probe.py:1-35 재독"
+  ],
+  "search_limits": "초기 넓은 rg 출력은 절단됨. 이후 실제 경로를 확정해 supporting 구간을 직접 읽음. 검색 히트나 타 파티션 구간을 전문 커버리지로 계산하지 않음.",
+  "deferred": [
+    "Samsung 실제 기기",
+    "Device Farm SDK/MCP/replay 구축·인수"
+  ]
+}

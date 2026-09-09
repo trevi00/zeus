@@ -1,0 +1,472 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/engine/ontology_index.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 14189,
+    "git_blob": "e8316fff06a491bb29993ca0f82f4a9d3ca23d96",
+    "pinned_sha256": "b0270420b01efe00615a10c479067e450ba9163b09b562b2c04c08b75997c2d6",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        288
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#ontology_indexpy",
+    "supporting_refs": [
+      "config/paths.yaml",
+      "scripts/cli/ontology_cmd.py",
+      "tests/contract/test_ontology_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/pipeline_loader.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 22805,
+    "git_blob": "31763ff0da1a1e26942c288faebd991c0c8abc35",
+    "pinned_sha256": "8731d0d2325e1cc293269a27f8e21eeb58ed8555cacecab130c27460a2ea601c",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        467
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#pipeline_loaderpy",
+    "supporting_refs": [
+      "scripts/engine/gate_runner.py",
+      "tests/integration/test_engine_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/pollution.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5247,
+    "git_blob": "16e7b6556fec426e145d71a957073988de2d9c12",
+    "pinned_sha256": "9b7dd3b7ce55e9faec1a78a3d61afd965951ced3640050edbac5921e6c743b2e",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        121
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#pollutionpy",
+    "supporting_refs": [
+      "scripts/cli/pollution_cmd.py",
+      "tests/integration/test_pollution_smoke.py",
+      "scripts/lib/params.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/pr4.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9550,
+    "git_blob": "d494e5cf248ff9555d6fd5587a704c47403a0587",
+    "pinned_sha256": "1faa167746d59086af48ab3125c9d2fca4c44384f4c7aa0218a8790fe3d37405",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        224
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#pr4py",
+    "supporting_refs": [
+      "config/policy/validator-ladder.json",
+      "scripts/cli/ladder_cmd.py",
+      "tests/integration/test_ladder_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/projection_pg.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3203,
+    "git_blob": "9c5846caafb330332492c71bf7c7bc505b5fbab2",
+    "pinned_sha256": "121dbbe308159d3663c4e2ddebce514b68611bd43eddd25f735a680d88ea7b42",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        67
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#projection_pgpy",
+    "supporting_refs": [
+      "config/profile.yaml",
+      "scripts/cli/fleet_status_cmd.py",
+      "tests/integration/test_fleet_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/recall.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5889,
+    "git_blob": "bb2f68f3bf8f1b1281b451119b9dd590bea4b2f7",
+    "pinned_sha256": "35ced88a586c08e3979d5ec5ae1c0a86e3916553bc0cea3721e9c8a2b6b937c0",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        147
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#recallpy",
+    "supporting_refs": [
+      "scripts/cli/recall_cmd.py",
+      "tests/unit/test_recall_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/reflect.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3320,
+    "git_blob": "016c8ae0973cc0fbd4e4b3ce9cf0788ef8a8718d",
+    "pinned_sha256": "c1f4f56fb465133a5e3d57a249855d8c0c815e10351348a406a15bf2b2b31459",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        73
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#reflectpy",
+    "supporting_refs": [
+      "scripts/handlers/stop/reflector_fork.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/reverse.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 14103,
+    "git_blob": "707a6e850e08fcbd0a1a3a1d2b436cbbdc1522a0",
+    "pinned_sha256": "0b3f0c9e9512a071c89d83005857d5a1a2f85501e0f68aeea6599f6cbb5c0f55",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        263
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#reversepy",
+    "supporting_refs": [
+      "tests/unit/test_reverse_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/rlm_kernel.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9907,
+    "git_blob": "f6673602a72cf85e87b5fbd480e4f838d7cada57",
+    "pinned_sha256": "6281f0f50d05f8a63dd1928340595d3ac11af05587e64c33054f9eb3fb0634ae",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        237
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#rlm_kernelpy",
+    "supporting_refs": [
+      ".mcp.json",
+      "scripts/handlers/rlm_launcher.sh",
+      "tests/integration/test_rlm_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/sandbox.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 32037,
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "pinned_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        551
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#sandboxpy",
+    "supporting_refs": [
+      "scripts/cli/sandbox_cmd.py",
+      "tests/contract/test_entrance_reconfirm_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/select_ready.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4240,
+    "git_blob": "757ad7ab51eaba44d0a47da66fc16d16714c472b",
+    "pinned_sha256": "97a8ceb28f55ee4d239c0b236eca569db7a285c9cd6aed1822b4619b7cf2dcb2",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        99
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#select_readypy",
+    "supporting_refs": [
+      "tests/integration/test_engine_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/skill_router.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 20749,
+    "git_blob": "a78178ce818870217c09907b6957164eb91b39dd",
+    "pinned_sha256": "8ddc0a6a20ede4207905acd5a5ad6fb86edf8c5a5947824d3d353e0f604b1ee9",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        397
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#skill_routerpy",
+    "supporting_refs": [
+      "config/retriever.yaml",
+      "scripts/cli/step_cmd.py",
+      "tests/unit/test_router_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/staleness.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1780,
+    "git_blob": "b05817acb753b7dfc7fcb68778cb3e88b040f4e1",
+    "pinned_sha256": "b3ea2f71bc30b3617e6d7ec3ad9e7c29fdf863461900f854f20b8fbc13e9c501",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        46
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#stalenesspy",
+    "supporting_refs": [
+      "scripts/lib/preconditions.py",
+      "tests/integration/test_preconditions_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/testgen.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 2767,
+    "git_blob": "1674b127d23137cd7db826eb31e9cf33439d8fcc",
+    "pinned_sha256": "c2b7c3a6a902bd6297e47904d65032a940a8a4b21a0eab659a2570af517d5344",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        70
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#testgenpy",
+    "supporting_refs": [
+      "scripts/cli/testgen_cmd.py",
+      "tests/integration/test_small_batch_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/tick.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 23020,
+    "git_blob": "2e406b67fd578c7f04457c93a6a9629de3273223",
+    "pinned_sha256": "108a2f93e5a85a98d67cbb0dfeefde2b3f38f6f29e7a6a8e6e9620b2fc07506d",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        379
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#tickpy",
+    "supporting_refs": [
+      "scripts/cron/l2_driver.py",
+      "scripts/handlers/stop/reenforce.py",
+      "scripts/engine/gate_runner.py",
+      "tests/integration/test_engine_smoke.py",
+      "scripts/lib/params.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/workup.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11687,
+    "git_blob": "d8c3564374f00de250ec935a6dee27a05e68117e",
+    "pinned_sha256": "7e6135654797e2f50fec23cc152255f4b9d5ddddfc81a157c34dfdc90c83b867",
+    "observed_sha256": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "read_ranges": [
+      [
+        1,
+        225
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-engine-002/review.md#workuppy",
+    "supporting_refs": [
+      "scripts/cli/workup_cmd.py",
+      "tests/unit/test_workup_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본·테스트·생성 코드 실행 0. 일부 supporting 구간 정적 검토만 수행. 현재 결함 재현 또는 구현 등가 주장 없음.",
+    "remaining": [
+      "전체 caller/config/test 폐쇄 추적",
+      "후보·환경·권한·시험 분모 결속 확인",
+      "안전성 검토 이후 별도 실제 실행 및 사람 인수"
+    ],
+    "adoption_approved": false
+  }
+]
