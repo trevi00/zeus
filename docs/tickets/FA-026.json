@@ -43,18 +43,36 @@
   "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T12:00:15.515814+00:00",
+      "id": "569f1ff9e7613535da9c467323f61fbe3c486769627f7d631c249901614433a1",
+      "summary": "Nine original isolation scenarios in immutable offline Linux container: no-prior real_state leaves new override; equal errors and same-size/same-mtime rewrites can appear stable. Prior-value restoration and changed-input controls passed. Literal isolate() presence does not prove import order. Source suite and generic process-tree termination unverified; named container cleanup separately verified.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-430121f4256d",
+      "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/3f7ec97104c13ba2de042d6c7aec11ccd966d3c5/docs/full-analysis/harness-environment-fixtures-001/observations.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T09:31:27.792905+00:00",
+      "at": "2026-09-09T12:00:17.429744+00:00",
       "id": "a45b769d327bca3028206c26e75364356553bd2fb56ce147f19bb75284d0c0f5",
       "url": "https://github.com/trevi00/zeus/issues/27",
       "number": 27,
       "status": "synced",
-      "body_hash": "6874505e6526b1bc40bd3285bc0457660f25eb690921f79e8c7cf0d585f66b34",
+      "body_hash": "6cb311863043b8984996b72cab486d9b391dcbe2463d1bfe20664193febd3e6f",
       "ticket_id": "ZEUS-430121f4256d",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "569f1ff9e7613535da9c467323f61fbe3c486769627f7d631c249901614433a1"
+      ],
       "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
       "synced_revision": 1
     }

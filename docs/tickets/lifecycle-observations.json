@@ -1,6 +1,6 @@
 {
   "kind": "read_only_ticket_lifecycle_observation",
-  "observed_at": "2026-09-09T11:32:28.844605+00:00",
+  "observed_at": "2026-09-09T12:00:28.864061+00:00",
   "argv": [
     "gh",
     "issue",

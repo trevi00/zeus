@@ -30,18 +30,36 @@
   "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
   "claimed_author": "Codex: user-authorized Zeus repository bootstrap",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T12:00:02.531350+00:00",
+      "id": "28af6f639a36436fe21a4c9c67844cb74875e8708a5376e0ef3d7b80876651e2",
+      "summary": "Static planning lock review: exclusive creation is real, but stale-age unlink lacks demonstrated owner fencing and timeout falls through without reacquisition. No race/crash execution; not a proven operational incident. Preserve generation ownership and atomic transition requirements.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/3f7ec97104c13ba2de042d6c7aec11ccd966d3c5/docs/full-analysis/baldrix-gsd-workflows-001/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T03:07:36.882175+00:00",
+      "at": "2026-09-09T12:00:04.447506+00:00",
       "id": "0bf747cf0fb8e608613565ac45a06418988799f61768db10cd823b61cd786174",
       "url": "https://github.com/trevi00/zeus/issues/5",
       "number": 5,
       "status": "synced",
-      "body_hash": "139060d355b6136f207fd57ebd23deb69ae28c0e5586cfeb78f3627d25445b44",
+      "body_hash": "24ce910e7e7500fece97bd988598f019f5f3e80f7b124823173406a056d25c94",
       "ticket_id": "ZEUS-6d62d42d9333",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "28af6f639a36436fe21a4c9c67844cb74875e8708a5376e0ef3d7b80876651e2"
+      ],
       "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
       "synced_revision": 1
     }

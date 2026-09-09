@@ -59,19 +59,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:00:10.968344+00:00",
+      "id": "8b3f8b8d23903979d98a08a53fa88630fd83987925635f877cf53d166abd0d5b",
+      "summary": "Fresh static model/config review: documented opus-to-inherit mapping differs from actual alias return; context setting names and generic Task instructions differ across consumers. Config defaults and raw config access have distinct paths. No Astra/Sol/Terra qualification, actual Claude invocation or model capability transfer in this GSD partition.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/3f7ec97104c13ba2de042d6c7aec11ccd966d3c5/docs/full-analysis/baldrix-gsd-references-001/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:32:05.764082+00:00",
+      "at": "2026-09-09T12:00:13.051521+00:00",
       "id": "70762c25dbf581fc55f5e07958ce18e2aa50081b37121ae72322fe6b180499f9",
       "url": "https://github.com/trevi00/zeus/issues/20",
       "number": 20,
       "status": "synced",
-      "body_hash": "096cf3bf0337cad76fecd56a02edaa9040c302f5234bbed0d0e12a12999f0c5d",
+      "body_hash": "2e30636c2d3f372f58a5be76ff0094e24c194b66de3ec4d4cf097844cbaf1f1c",
       "ticket_id": "ZEUS-15c0d970315a",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "8b3f8b8d23903979d98a08a53fa88630fd83987925635f877cf53d166abd0d5b",
         "f086480570da2bb2cf5c246575cce408a84e541ab520c5cea6390010b6b90f86"
       ],
       "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",

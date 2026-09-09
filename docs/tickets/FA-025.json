@@ -54,20 +54,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:00:13.156418+00:00",
+      "id": "4aa0f40a708618af52fe0d0867dcbafa46dbc434cf55a2aee4c11cb89f06741b",
+      "summary": "Joint static fleet review: read-only source mounts are real; shared state, floating install inputs and seven-stage loop health need actual environment qualification. Source PG projection is not Zeus runtime authority. Install failure exits container; loop preserves error streams. No fleet operation, real PG sync or Windows/WSL acceptance.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-9495da500988",
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/3f7ec97104c13ba2de042d6c7aec11ccd966d3c5/docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:32:09.657244+00:00",
+      "at": "2026-09-09T12:00:15.409734+00:00",
       "id": "bd07e564483139323647f0798908cfeaf613b16ec8e822227597952a0fdf56f4",
       "url": "https://github.com/trevi00/zeus/issues/26",
       "number": 26,
       "status": "synced",
-      "body_hash": "4e70161f7bc33846f8f07b7eeaf53619dfed308d3687f399e9b1b5db7688c5e8",
+      "body_hash": "27a38fd10191fa738e660f31a86959d193e6f89614c516bb2bbdb4e1dc4b6f9d",
       "ticket_id": "ZEUS-9495da500988",
       "repository": "trevi00/zeus",
       "review_ids": [
-        "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924"
+        "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924",
+        "4aa0f40a708618af52fe0d0867dcbafa46dbc434cf55a2aee4c11cb89f06741b"
       ],
       "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
       "synced_revision": 1

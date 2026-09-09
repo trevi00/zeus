@@ -57,20 +57,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:00:17.528596+00:00",
+      "id": "a3df365647f35d20bdc1dafe6c4e325e8df48443548ab686d2bc1f810aa7ee25",
+      "summary": "Fresh static denominator review: UAT aggregation counts contributing files/items and excludes selected issue states or layouts; roadmap/summary counts and phase-complete warnings are not human acceptance. Archive and repair-output contracts also diverge in selected consumers. No original workflow execution, complete gate bypass or adoption approval.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-92ca5e645c56",
+      "content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/3f7ec97104c13ba2de042d6c7aec11ccd966d3c5/docs/full-analysis/baldrix-gsd-workflows-001/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:09:35.962529+00:00",
+      "at": "2026-09-09T12:00:19.696782+00:00",
       "id": "8e12f69876249ada11c5fca57b674065e1b5f5e82c636e934e0bd3b25d4b2060",
       "url": "https://github.com/trevi00/zeus/issues/28",
       "number": 28,
       "status": "synced",
-      "body_hash": "d05fcfd38c9e40b2ad45be2a311d859d211dfbdaafddc689ced70176be57b9d6",
+      "body_hash": "b39948a925e12258a7cf7b9db2f680e4cdd21c29b07311fe78df7d2dfab9802f",
       "ticket_id": "ZEUS-92ca5e645c56",
       "repository": "trevi00/zeus",
       "review_ids": [
-        "6d36cec8cfccb24d93dc76543837a5b287503054e1f7de5cd7424faeb3f54117"
+        "6d36cec8cfccb24d93dc76543837a5b287503054e1f7de5cd7424faeb3f54117",
+        "a3df365647f35d20bdc1dafe6c4e325e8df48443548ab686d2bc1f810aa7ee25"
       ],
       "content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
       "synced_revision": 1

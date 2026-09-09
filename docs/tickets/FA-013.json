@@ -50,20 +50,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:00:04.562745+00:00",
+      "id": "39e5fb0cab1c069b666ea82c5c343250d6cbbe873931a0e2210ff96e2e5d581f",
+      "summary": "Static GSD review: auto mode can approve human verification or choose first options; inferred decisions must remain separate from actual user approval. Existing explicit checkpoints and decision preservation remain useful. No actual human/model execution in this scope.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-fb2ab61807b4",
+      "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/3f7ec97104c13ba2de042d6c7aec11ccd966d3c5/docs/full-analysis/baldrix-gsd-references-001/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:31:59.655369+00:00",
+      "at": "2026-09-09T12:00:06.642778+00:00",
       "id": "7b8f10a7f600d24397da1c9fe6a72030b5d92db63284efa959f20260c3db2599",
       "url": "https://github.com/trevi00/zeus/issues/14",
       "number": 14,
       "status": "synced",
-      "body_hash": "9aa4cc1af2dee9879f4e8fe0704d53ac870088da464a3e2c5a6a0b260518d68f",
+      "body_hash": "b6d39c8242cf554059d2de7d9ea75dfa3f7ad7a0851271a64551a4b2189b6f2f",
       "ticket_id": "ZEUS-fb2ab61807b4",
       "repository": "trevi00/zeus",
       "review_ids": [
-        "1e3f82240016bf865cb050f6e0f7ef3ffb11a0cb6129bb75367887134d4cc8cb"
+        "1e3f82240016bf865cb050f6e0f7ef3ffb11a0cb6129bb75367887134d4cc8cb",
+        "39e5fb0cab1c069b666ea82c5c343250d6cbbe873931a0e2210ff96e2e5d581f"
       ],
       "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
       "synced_revision": 1

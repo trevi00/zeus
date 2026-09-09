@@ -73,21 +73,37 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:00:08.950083+00:00",
+      "id": "b926dc82cfd99fcb4b079ef86b37b643b159c3615ff4a382f2a00c5aeacfabb3",
+      "summary": "Joint Codex/actual Claude root review and isolated original golden.run: missing or invalid-but-parseable definitions produce zero cases/no failures; duplicate names count twice; invalid expect_exit is checked after side effects. Seven calls, five scratch child commands. Existing smoke floor and expected-nonzero controls retained; no full curator/promotion bypass or source suite acceptance.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/3f7ec97104c13ba2de042d6c7aec11ccd966d3c5/docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:32:03.936911+00:00",
+      "at": "2026-09-09T12:00:10.846618+00:00",
       "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
       "url": "https://github.com/trevi00/zeus/issues/19",
       "number": 19,
       "status": "synced",
-      "body_hash": "3a7a3df14bab2049d563898c65758a346ead60445a60a15c5aa7826369227217",
+      "body_hash": "5acb1439bdf67e5e7f617c1d7f9c38094692d50909cb47606708362f8e0b435f",
       "ticket_id": "ZEUS-07f94a1a4390",
       "repository": "trevi00/zeus",
       "review_ids": [
         "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2",
-        "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f"
+        "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f",
+        "b926dc82cfd99fcb4b079ef86b37b643b159c3615ff4a382f2a00c5aeacfabb3"
       ],
       "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
       "synced_revision": 1
