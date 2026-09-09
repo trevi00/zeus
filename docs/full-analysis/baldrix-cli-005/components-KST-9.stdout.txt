@@ -1,0 +1,76 @@
+{
+  "kind": "actual_original_component_observations",
+  "timezone": "KST-9",
+  "timestamp": {
+    "input": "2026-05-01T06:15:35Z",
+    "expected_utc": 1777616135.0,
+    "actual": 1777583735.0,
+    "delta_seconds": -32400.0
+  },
+  "one_hour_filter": {
+    "input": {
+      "ts": "2026-09-09T05:25:06Z",
+      "name": "one-minute-old"
+    },
+    "kept": []
+  },
+  "error_without_duration": {},
+  "boolean_duration": {
+    "bool-hook": {
+      "n": 1,
+      "p50_ms": 1.0,
+      "p95_ms": 1.0,
+      "max_ms": 1.0,
+      "errors": 0
+    }
+  },
+  "unknown_time_kept": [
+    {
+      "ts": "broken"
+    }
+  ],
+  "numeric_timestamp_error": "AttributeError",
+  "nan_window_accepted": true,
+  "frontend_discovery": [
+    {
+      "marker": "package.json",
+      "returncode": 0,
+      "output": {
+        "root": "/tmp/zeus-cli005-fee739z0",
+        "subroots": [
+          {
+            "path": "/tmp/zeus-cli005-fee739z0",
+            "kind": "ts-fe",
+            "rationale": "has package.json (Node/TS frontend)"
+          }
+        ],
+        "results": [],
+        "counts": {
+          "PASS": 0,
+          "SKIP": 0,
+          "FAIL": 0
+        }
+      }
+    },
+    {
+      "marker": "pubspec.yaml",
+      "returncode": 0,
+      "output": {
+        "root": "/tmp/zeus-cli005-2kkmypr9",
+        "subroots": [
+          {
+            "path": "/tmp/zeus-cli005-2kkmypr9",
+            "kind": "flutter",
+            "rationale": "has pubspec.yaml (Flutter/Dart)"
+          }
+        ],
+        "results": [],
+        "counts": {
+          "PASS": 0,
+          "SKIP": 0,
+          "FAIL": 0
+        }
+      }
+    }
+  ]
+}

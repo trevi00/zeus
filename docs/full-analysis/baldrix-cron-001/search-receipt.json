@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "check_brain_push|check_l2_promotion|check_ledger_compaction|check_pollution|check_role_cycle|check_surgery_cycle|probe_hook_latency|register_task|register_task|run_brain_push|run_l2_promotion|run_ledger_compaction|run_pollution_cleanup|run_role_cycle|run_scheduler|run_scheduler_hidden|run_surgery_cycle|scheduler_driver",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\scripts\\tests",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\commands",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\skills",
+    "C:\\Users\\rudtn\\zeus\\.runtime\\absorption\\sources\\baldrix\\pinned\\agents",
+    "--glob",
+    "*.py",
+    "--glob",
+    "*.md"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "aabeb4f980d252aa6cf35ef54278e498544dd0fc67d7648d1ccf850914b2303a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "meaning": "Discovery only. Only supporting ranges and primary full bodies were semantically read."
+}

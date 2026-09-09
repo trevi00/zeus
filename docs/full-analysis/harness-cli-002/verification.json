@@ -1,0 +1,12 @@
+{
+  "metadata_generation": "passed: primary manifest SHA256/Git blob/bytes; supporting range bounds verified",
+  "json_checks": "passed: 11 primary / 178390 bytes / 34 supporting files",
+  "supporting_exception": ".claude/settings.json: manifest SHA256 absent; manifest Git blob and bytes match; observed SHA256 recorded",
+  "ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/harness-cli-002",
+    "result": "passed"
+  },
+  "upstream_execution_count": 0,
+  "review_sha256": "0b82c832478eee92f678e809da06feaeff11e4f4219a9b5790909681a2fc3e5e",
+  "scope": "Static receipts only; no execution or adoption approval"
+}

@@ -1,0 +1,430 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/cron/bus_tailer.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7141,
+    "pinned_sha256": "c76bacd12546e196305ae173de282863da8b9edb981c4d376b3fd46e58cbc540",
+    "observed_sha256": null,
+    "git_blob": "5e99669e5083b15e747129935d81fa7859ac5ff6",
+    "total_lines": 136,
+    "read_ranges": [
+      [
+        1,
+        136
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#bus_tailerpy",
+    "supporting_ids": [
+      "S10",
+      "S12"
+    ],
+    "primary_caller_trace": "scripts/cron/l2_driver.py (full primary body)",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_bus_watermark_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Partial-delivery replay, log compaction/generation cursor, concurrent writers, successful broker receipt, driver held-result reporting"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/collab_ask_audit.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7461,
+    "pinned_sha256": "ae0efa867753449a5f1431402b2936b7b484df398f4e854257ec026ae5713b34",
+    "observed_sha256": null,
+    "git_blob": "474f61f6472f8b6d7070390fb63fd3840189479c",
+    "total_lines": 162,
+    "read_ranges": [
+      [
+        1,
+        162
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#collab_ask_auditpy",
+    "supporting_ids": [],
+    "primary_caller_trace": "See per-file review; no transitive completeness claim",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Actual approval tool receipts, historical policy identity, path matcher and Git failure cases; concrete policy caller/tests not body traced"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/commit_scope.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5981,
+    "pinned_sha256": "3f988bfe41bac6027dcdf8f4c00419b01c06ef095e7a8ce0f220cd492451bb74",
+    "observed_sha256": null,
+    "git_blob": "f33a63231403a4b1ca35f85ae4e2cf44c311d8b6",
+    "total_lines": 145,
+    "read_ranges": [
+      [
+        1,
+        145
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#commit_scopepy",
+    "supporting_ids": [
+      "S13"
+    ],
+    "primary_caller_trace": "scripts/cron/l2_driver.py (full primary body)",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_commit_scope_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Combined brief conflict and actual Git index enforcement; complete pipeline parser and authorship trace"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/consume_gate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6187,
+    "pinned_sha256": "79b29e6266a91fdc7d00dee7ef9f8c69f57d70feee25e1c42da435c2b5adcbc2",
+    "observed_sha256": null,
+    "git_blob": "af29182fd98dfa546b5be089110bc55f1db34e26",
+    "total_lines": 144,
+    "read_ranges": [
+      [
+        1,
+        144
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#consume_gatepy",
+    "supporting_ids": [
+      "S04",
+      "S06"
+    ],
+    "primary_caller_trace": "scripts/cron/l2_driver.py (full primary body)",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_consume_gate_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Blocked consumption must not become spawned receipt; fresh provenance-bound verdict; full reachability producer trace"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/dba_projection.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5070,
+    "pinned_sha256": "0aabfb256e1fa65f3b2d9298e96d8d87cd0a71cd69d69a77516c7321f1b0ab48",
+    "observed_sha256": null,
+    "git_blob": "cd7e4f3a9d5607810dff11b9b45d1da95769e611",
+    "total_lines": 108,
+    "read_ranges": [
+      [
+        1,
+        108
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#dba_projectionpy",
+    "supporting_ids": [
+      "S03",
+      "S07",
+      "S08",
+      "S12"
+    ],
+    "primary_caller_trace": "See per-file review; no transitive completeness claim",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_dba_projection_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Zero-event heartbeat, multi-home label collision, real PG transaction receipt and source completeness"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/known_issues.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8360,
+    "pinned_sha256": "dc3255792c3faa9074d553b4d5bede71ed0b46aa3f2243ffdd6f2ebf8cf8951d",
+    "observed_sha256": null,
+    "git_blob": "3cfac1da20fee1601e3541934f367cb699db35c8",
+    "total_lines": 191,
+    "read_ranges": [
+      [
+        1,
+        191
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#known_issuespy",
+    "supporting_ids": [],
+    "primary_caller_trace": "scripts/cron/l2_driver.py (full primary body)",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Proposal provenance/lifecycle, full producer/tests and Git path behavior"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/l2_driver.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 119098,
+    "pinned_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "observed_sha256": null,
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "total_lines": 2044,
+    "read_ranges": [
+      [
+        1,
+        2044
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#l2_driverpy",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S04",
+      "S08",
+      "S09",
+      "S13"
+    ],
+    "primary_caller_trace": "See per-file review; no transitive completeness claim",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      },
+      {
+        "path": "tests/contract/test_commit_scope_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Crash boundaries, child fencing, concurrent binding changes, complete downstream hooks/arming/curator/circuit, actual host scheduler definition and Win/Linux/WSL behavior"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/latency_gate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10813,
+    "pinned_sha256": "c593e0469d6319f134e0991031400c1a7354bdc7948be79a047e564ac925fbcb",
+    "observed_sha256": null,
+    "git_blob": "f8a831f4a625750a70fa7a392f889fc2dbd06736",
+    "total_lines": 200,
+    "read_ranges": [
+      [
+        1,
+        200
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#latency_gatepy",
+    "supporting_ids": [
+      "S05",
+      "S14"
+    ],
+    "primary_caller_trace": "scripts/cron/l2_driver.py (full primary body)",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_latency_consumer_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Expected event denominator, probe source/receipt binding, full producer and remaining test axes"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/lesson_spot.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 14654,
+    "pinned_sha256": "eec93461ebda4bbae57804b3bd316f438e5e74fd38c5eb4ddcebe5808bb1fa8c",
+    "observed_sha256": null,
+    "git_blob": "9e73e94ee967996c95b3ad09461163252ca9fe52",
+    "total_lines": 286,
+    "read_ranges": [
+      [
+        1,
+        286
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#lesson_spotpy",
+    "supporting_ids": [],
+    "primary_caller_trace": "See per-file review; no transitive completeness claim",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Full schema/indexer/curator/write-boundary implementation chain; required fields and missing-schema behavior"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/note_archive.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7944,
+    "pinned_sha256": "64145e19fd5c7bc271e022fb95f54ca024e8854bfdf227e70f1864d829d62bee",
+    "observed_sha256": null,
+    "git_blob": "39637be324079b02a7923f2040c244482892c2e0",
+    "total_lines": 193,
+    "read_ranges": [
+      [
+        1,
+        193
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#note_archivepy",
+    "supporting_ids": [
+      "S11"
+    ],
+    "primary_caller_trace": "scripts/cron/l2_driver.py (full primary body)",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_note_accumulation_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Final gate receipt binding, immutable versions, collisions and concurrent overwrite/index snapshot"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/orchestrator-brief.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5784,
+    "pinned_sha256": "d27403f2f195fed4d92cdadd21194fa6ed95b73e4c097e482836bba86bf55d35",
+    "observed_sha256": null,
+    "git_blob": "271bef5f5343f5848dc966ebe8ec3ab73370fe5a",
+    "total_lines": 25,
+    "read_ranges": [
+      [
+        1,
+        25
+      ]
+    ],
+    "body_read_complete": true,
+    "partition": "harness:scripts/cron:001",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-cron-001/review.md#orchestrator-briefmd",
+    "supporting_ids": [
+      "S09",
+      "S13"
+    ],
+    "primary_caller_trace": "scripts/cron/l2_driver.py (full primary body)",
+    "tests_executed": [],
+    "execution_count": 0,
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      },
+      {
+        "path": "tests/contract/test_commit_scope_contract.py",
+        "reason": "Upstream execution prohibited in this bounded static review"
+      }
+    ],
+    "test_limits": "All upstream tests not run. Supporting bodies/ranges read only; no current failure reproduction, actual model canary, host verification or full call-chain validation.",
+    "remaining": [
+      "Actual qualified model behavior, 8-stage SDD receipts, human experience acceptance, actual cwd and prompt conflict"
+    ],
+    "adoption_approved": false,
+    "historical_claim_status": "Source-derived statements only; not independently re-executed"
+  }
+]

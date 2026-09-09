@@ -1,0 +1,84 @@
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_check_brain_push.py:2:"""Tests for cron/check_brain_push.py — dual trigger (① live→file + ②③ file→remote)."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_check_brain_push.py:16:    """Run check_brain_push.evaluate() with brain_store.status + brain_git_status.at_risk
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_check_brain_push.py:18:    import cron.check_brain_push as c
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:81:    통과시킬 수 있으니 검사가 아니다(register_task 에서 한 번 밟은 함정).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_dashboard.py:194:    from cron import scheduler_driver as S
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:5:check_* flag emission/quiet logic, run_ledger_compaction archive+rewrite+idempotency,
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:43:    import cron.run_ledger_compaction as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:48:    import cron.run_pollution_cleanup as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:53:    import cron.run_brain_push as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:59:    for modname in ("cron.run_ledger_compaction", "cron.run_pollution_cleanup", "cron.run_brain_push"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:80:    import cron.check_ledger_compaction as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:95:    import cron.check_ledger_compaction as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:112:    import cron.run_ledger_compaction as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:113:    import cron.check_ledger_compaction as chk
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:136:    import cron.run_ledger_compaction as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:148:    import cron.check_brain_push as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:158:def test_check_brain_push_fires_on_divergence():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:159:    import cron.check_brain_push as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:172:def test_check_pollution_fires_on_confirmed():
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:173:    import cron.check_pollution as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:188:    """run_pollution_cleanup.cleanup() must NOT import lib.insight_index — it
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:190:    import cron.run_pollution_cleanup as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_cron_jobs.py:214:    src = (_SCRIPTS / "cron" / "run_pollution_cleanup.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:2:"""Tests for lib/hook_latency.py + cron/probe_hook_latency.py.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_hook_latency.py:143:    from cron import scheduler_driver as D
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_insight_index_pollution_detector.py:90:    check_pollution self-quiets. include_retracted=True restores the raw view."""
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_register_task.py:2:"""Tests for cron/register_task.py — 스케줄러 OS 등록기.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_register_task.py:27:from cron import register_task as R  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_register_task.py:30:_SRC = (_SCRIPTS / "cron" / "register_task.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_register_task.py:214:        print(f"{_NL}register_task: {failed} FAILED")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:7:(`lib.breaker` · `lib.golden_signals` · `cli.decisions` · `cron.run_role_cycle`).
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_resident_compaction.py:437:    for rel in ("lib/golden_signals.py", "lib/breaker.py", "cron/run_role_cycle.py"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:2:"""Tests for cron.scheduler_driver (M20) — cadence + token-gate respect + fail-soft.
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:16:from cron.scheduler_driver import CronJob, is_due, run_pass  # noqa: E402
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:46:        from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:165:    from cron.scheduler_driver import CRON_JOBS, _gc_tasks, ENABLE_CRON_TOKEN
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:186:    from cron.scheduler_driver import effective_interval_hours
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:219:    from cron.scheduler_driver import _read_state, _write_state
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:239:    from cron.scheduler_driver import _acquire_pass_lock, run_pass
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:253:    from cron.scheduler_driver import _acquire_pass_lock, _lock_path, _stale_lock_ms
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:267:    from cron.scheduler_driver import run_pass, liveness_status, _history_path
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:281:    from cron.scheduler_driver import run_pass, liveness_status
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:292:    from cron.scheduler_driver import run_pass, liveness_status, _LIVENESS_MAX_H
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:302:    from cron.scheduler_driver import gc_history, _history_path, _HOUR_MS as H, _HISTORY_KEEP_DAYS
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:316:    from cron.scheduler_driver import cron_health, _write_state, CRON_JOBS
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:355:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:372:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:396:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:403:           "cron" / "scheduler_driver.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:413:    푸시**한다(`run_brain_push` → `brain-snapshots`). 로컬 원장 압축과 GitHub
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:417:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:434:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:444:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:456:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:464:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:480:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:498:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_scheduler_driver.py:505:    from cron import scheduler_driver as m
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_state_root_env.py:12:  - `cron/scheduler_driver.py:170`
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:180:    from cron import run_role_cycle as RC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:192:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:197:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:210:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:226:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:232:    from cron import check_role_cycle as CC
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:249:    src = (_SCRIPTS / "cron" / "run_role_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:257:    src = (_SCRIPTS / "cron" / "run_role_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:265:    src = (_SCRIPTS / "cron" / "run_role_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:271:    from cron import scheduler_driver as D
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:289:    src = (_SCRIPTS / "cron" / "run_surgery_cycle.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:307:    from cron import check_surgery_cycle as CS
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:319:    from cron import run_surgery_cycle as RS
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:329:    from cron import scheduler_driver as D
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:363:    from cron import register_task as R
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:370:    from cron import register_task as R
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:376:    """실측 2026-08-30: 알림 경로가 run_role_cycle·run_surgery_cycle 둘에만
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:381:    로는 안 된다 — `scheduler_driver._state_dir()` 이 `state_dir()` 이 아니라
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:391:            from cron import scheduler_driver as D
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:405:    src = (_SCRIPTS / "cron" / "scheduler_driver.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:412:    src = (_SCRIPTS / "cron" / "scheduler_driver.py").read_text(encoding="utf-8")
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended.py:426:    from cron import scheduler_driver as D
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:63:                     "cron.check_role_cycle", "cron.run_role_cycle"):
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:66:        from cron import check_role_cycle, run_role_cycle
+C:\Users\rudtn\zeus\.runtime\absorption\sources\baldrix\pinned\scripts\tests\test_unattended_e2e.py:68:        self.CC, self.RC = check_role_cycle, run_role_cycle

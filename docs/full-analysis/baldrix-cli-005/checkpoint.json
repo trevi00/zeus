@@ -1,0 +1,25 @@
+{
+  "partition": "baldrix:scripts/cli:005",
+  "primary_paths": 6,
+  "primary_bytes": 83631,
+  "primary_bodies_complete": true,
+  "supporting_paths": 17,
+  "supporting_full": 11,
+  "supporting_partial": 6,
+  "source_hashes_verified": true,
+  "original_unit_tests": {
+    "module": "test_telemetry_report",
+    "passed": 19,
+    "failed": 0
+  },
+  "original_component_runs": [
+    "UTC0",
+    "KST-9"
+  ],
+  "original_writeback_policy_worker_executions": 0,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false,
+  "runtime_implemented": false,
+  "limits": "Root unit/component execution is separate from Claude static review. No E2E, real user/device, live source mutation, or Windows/WSL upstream execution. Supporting records do not increase primary coverage."
+}

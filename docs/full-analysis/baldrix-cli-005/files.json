@@ -1,0 +1,152 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/team_watch.py",
+    "bytes": 12076,
+    "git_blob": "754c274d21da99cfb6f8df683536902ee400822a",
+    "pinned_sha256": "14831213d91fcf042ff7cabf7ff4b1c8efebc21f8fa9fa763212adc669d2e63c",
+    "matches_manifest_sha256": true,
+    "line_count": 353,
+    "read_ranges": [
+      [
+        1,
+        353
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-cli-005/resolution.md",
+    "remaining": [
+      "Complete effective registration and transitive callers/config/tests",
+      "Independent platform and acceptance validation",
+      "License/provenance and Zeus implementation/qualification decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/telemetry_report.py",
+    "bytes": 15827,
+    "git_blob": "e7ad2ea7b187eab89fc6eaa717ab5c8d6049f2a5",
+    "pinned_sha256": "4f57b08035d7008e015dafe601be161aa88438225af125b0ce17af67e9783a8d",
+    "matches_manifest_sha256": true,
+    "line_count": 431,
+    "read_ranges": [
+      [
+        1,
+        431
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-cli-005/resolution.md",
+    "remaining": [
+      "Complete effective registration and transitive callers/config/tests",
+      "Independent platform and acceptance validation",
+      "License/provenance and Zeus implementation/qualification decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/threshold_override.py",
+    "bytes": 2015,
+    "git_blob": "c25e6790c7ed37c1681abcc0d654560476f36411",
+    "pinned_sha256": "269f7bcc2d16f688442c87c075b784ceba39ce6b23f2e7e9f14134a120cc30ac",
+    "matches_manifest_sha256": true,
+    "line_count": 57,
+    "read_ranges": [
+      [
+        1,
+        57
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-cli-005/resolution.md",
+    "remaining": [
+      "Complete effective registration and transitive callers/config/tests",
+      "Independent platform and acceptance validation",
+      "License/provenance and Zeus implementation/qualification decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/trending.py",
+    "bytes": 12449,
+    "git_blob": "8138406a3fa95bad82e385dc145e254890d69a30",
+    "pinned_sha256": "2bd08e8aa75d82862c34e51213109c90f99b9a0b4798fbb7b0e7b6449bff7fd4",
+    "matches_manifest_sha256": true,
+    "line_count": 312,
+    "read_ranges": [
+      [
+        1,
+        312
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-cli-005/resolution.md",
+    "remaining": [
+      "Complete effective registration and transitive callers/config/tests",
+      "Independent platform and acceptance validation",
+      "License/provenance and Zeus implementation/qualification decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/validate_project.py",
+    "bytes": 9584,
+    "git_blob": "c75497d93b42ee5b95b9f047596ec8b3201a71f4",
+    "pinned_sha256": "1b4f6c5ea9c010ab50a835c24d6bd5610ffd7c811f9f5200a4dae14d310b1d3b",
+    "matches_manifest_sha256": true,
+    "line_count": 279,
+    "read_ranges": [
+      [
+        1,
+        279
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-cli-005/resolution.md",
+    "remaining": [
+      "Complete effective registration and transitive callers/config/tests",
+      "Independent platform and acceptance validation",
+      "License/provenance and Zeus implementation/qualification decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/writeback_inspect.py",
+    "bytes": 31680,
+    "git_blob": "64e1bd4c498f2f71bc8549639df0284787626f9f",
+    "pinned_sha256": "0fa3ebcc8b13abeb3473922f7e14dd2271eb05036f69bc8961ae5b3788ecc11b",
+    "matches_manifest_sha256": true,
+    "line_count": 867,
+    "read_ranges": [
+      [
+        1,
+        867
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-cli-005/resolution.md",
+    "remaining": [
+      "Complete effective registration and transitive callers/config/tests",
+      "Independent platform and acceptance validation",
+      "License/provenance and Zeus implementation/qualification decision"
+    ]
+  }
+]

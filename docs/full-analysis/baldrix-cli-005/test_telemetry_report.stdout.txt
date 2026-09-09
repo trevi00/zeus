@@ -1,0 +1,21 @@
+  [OK] test_parse_since_arg_units
+  [OK] test_parse_since_arg_unknown_unit
+  [OK] test_parse_since_arg_empty
+  [OK] test_percentile_empty_returns_zero
+  [OK] test_percentile_single_value
+  [OK] test_percentile_p50_p95
+  [OK] test_ts_to_epoch_valid
+  [OK] test_ts_to_epoch_none_input
+  [OK] test_ts_to_epoch_invalid_format
+  [OK] test_filter_since_no_filter_returns_all
+  [OK] test_filter_since_drops_old
+  [OK] test_filter_since_keeps_unparseable_ts
+  [OK] test_report_hook_latency_groups_by_name
+  [OK] test_report_hook_latency_skips_non_numeric_duration
+  [OK] test_report_skill_match_aggregates_top_skills
+  [OK] test_report_skill_match_empty
+  [OK] test_report_debate_triggers_strict_pct
+  [OK] test_render_text_no_crash_on_empty
+  [OK] test_build_report_without_telemetry_dir
+
+[OK] 19 tests passed

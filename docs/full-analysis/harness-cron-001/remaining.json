@@ -1,0 +1,244 @@
+{
+  "partition": "harness:scripts/cron:001",
+  "primary_bodies_unread": [],
+  "primary_body_reviewed": 11,
+  "primary_call_test_trace_complete": 0,
+  "upstream_executions": 0,
+  "actual_model_canaries": 0,
+  "adoption_approved": false,
+  "tests_not_run": [
+    {
+      "path": "tests/contract/test_consume_gate_contract.py",
+      "read_ranges": [
+        [
+          1,
+          195
+        ]
+      ],
+      "reason": "Static-only authorization; source execution and dependency installation prohibited",
+      "follow_up": "Independently review transitive dependencies and isolation before an authorized execution; retain skip/failure/real-result distinctions"
+    },
+    {
+      "path": "tests/contract/test_dba_projection_contract.py",
+      "read_ranges": [
+        [
+          1,
+          145
+        ]
+      ],
+      "reason": "Static-only authorization; source execution and dependency installation prohibited",
+      "follow_up": "Independently review transitive dependencies and isolation before an authorized execution; retain skip/failure/real-result distinctions"
+    },
+    {
+      "path": "tests/integration/test_l2_driver_smoke.py",
+      "read_ranges": [
+        [
+          1,
+          240
+        ]
+      ],
+      "reason": "Static-only authorization; source execution and dependency installation prohibited",
+      "follow_up": "Independently review transitive dependencies and isolation before an authorized execution; retain skip/failure/real-result distinctions"
+    },
+    {
+      "path": "tests/contract/test_bus_watermark_contract.py",
+      "read_ranges": [
+        [
+          65,
+          130
+        ],
+        [
+          190,
+          241
+        ]
+      ],
+      "reason": "Static-only authorization; source execution and dependency installation prohibited",
+      "follow_up": "Independently review transitive dependencies and isolation before an authorized execution; retain skip/failure/real-result distinctions"
+    },
+    {
+      "path": "tests/contract/test_note_accumulation_contract.py",
+      "read_ranges": [
+        [
+          1,
+          194
+        ]
+      ],
+      "reason": "Static-only authorization; source execution and dependency installation prohibited",
+      "follow_up": "Independently review transitive dependencies and isolation before an authorized execution; retain skip/failure/real-result distinctions"
+    },
+    {
+      "path": "tests/contract/test_commit_scope_contract.py",
+      "read_ranges": [
+        [
+          53,
+          127
+        ]
+      ],
+      "reason": "Static-only authorization; source execution and dependency installation prohibited",
+      "follow_up": "Independently review transitive dependencies and isolation before an authorized execution; retain skip/failure/real-result distinctions"
+    },
+    {
+      "path": "tests/contract/test_latency_consumer_contract.py",
+      "read_ranges": [
+        [
+          147,
+          230
+        ]
+      ],
+      "reason": "Static-only authorization; source execution and dependency installation prohibited",
+      "follow_up": "Independently review transitive dependencies and isolation before an authorized execution; retain skip/failure/real-result distinctions"
+    }
+  ],
+  "supporting_partial_files": [
+    {
+      "path": "scripts/cron/role_supervisor.py",
+      "read_ranges": [
+        [
+          140,
+          250
+        ]
+      ],
+      "total_lines": 263
+    },
+    {
+      "path": "scripts/cli/health_cmd.py",
+      "read_ranges": [
+        [
+          537,
+          582
+        ]
+      ],
+      "total_lines": 957
+    },
+    {
+      "path": "infra/fleet/docker-compose.yml",
+      "read_ranges": [
+        [
+          170,
+          231
+        ]
+      ],
+      "total_lines": 231
+    },
+    {
+      "path": "tests/integration/test_l2_driver_smoke.py",
+      "read_ranges": [
+        [
+          1,
+          240
+        ]
+      ],
+      "total_lines": 403
+    },
+    {
+      "path": "tests/contract/test_bus_watermark_contract.py",
+      "read_ranges": [
+        [
+          65,
+          130
+        ],
+        [
+          190,
+          241
+        ]
+      ],
+      "total_lines": 262
+    },
+    {
+      "path": "tests/contract/test_commit_scope_contract.py",
+      "read_ranges": [
+        [
+          53,
+          127
+        ]
+      ],
+      "total_lines": 127
+    },
+    {
+      "path": "tests/contract/test_latency_consumer_contract.py",
+      "read_ranges": [
+        [
+          147,
+          230
+        ]
+      ],
+      "total_lines": 352
+    }
+  ],
+  "unread_transitive_areas": [
+    "Actual Windows L2 task registration definition not established by targeted source search",
+    "run_cmd, pipeline parser, tick, circuit, curator, hook fencing, guardian token issuer and proposal producers not body traced in this partition",
+    "lesson schema/indexer/write-boundary enforcement chain not body traced",
+    "Zeus src implementation equivalence and current cross-platform behavior not verified",
+    "Licenses and full upstream execution dependencies not reviewed in this partition"
+  ],
+  "per_file": [
+    {
+      "path": "scripts/cron/bus_tailer.py",
+      "remaining": [
+        "Partial-delivery replay, log compaction/generation cursor, concurrent writers, successful broker receipt, driver held-result reporting"
+      ]
+    },
+    {
+      "path": "scripts/cron/collab_ask_audit.py",
+      "remaining": [
+        "Actual approval tool receipts, historical policy identity, path matcher and Git failure cases; concrete policy caller/tests not body traced"
+      ]
+    },
+    {
+      "path": "scripts/cron/commit_scope.py",
+      "remaining": [
+        "Combined brief conflict and actual Git index enforcement; complete pipeline parser and authorship trace"
+      ]
+    },
+    {
+      "path": "scripts/cron/consume_gate.py",
+      "remaining": [
+        "Blocked consumption must not become spawned receipt; fresh provenance-bound verdict; full reachability producer trace"
+      ]
+    },
+    {
+      "path": "scripts/cron/dba_projection.py",
+      "remaining": [
+        "Zero-event heartbeat, multi-home label collision, real PG transaction receipt and source completeness"
+      ]
+    },
+    {
+      "path": "scripts/cron/known_issues.py",
+      "remaining": [
+        "Proposal provenance/lifecycle, full producer/tests and Git path behavior"
+      ]
+    },
+    {
+      "path": "scripts/cron/l2_driver.py",
+      "remaining": [
+        "Crash boundaries, child fencing, concurrent binding changes, complete downstream hooks/arming/curator/circuit, actual host scheduler definition and Win/Linux/WSL behavior"
+      ]
+    },
+    {
+      "path": "scripts/cron/latency_gate.py",
+      "remaining": [
+        "Expected event denominator, probe source/receipt binding, full producer and remaining test axes"
+      ]
+    },
+    {
+      "path": "scripts/cron/lesson_spot.py",
+      "remaining": [
+        "Full schema/indexer/curator/write-boundary implementation chain; required fields and missing-schema behavior"
+      ]
+    },
+    {
+      "path": "scripts/cron/note_archive.py",
+      "remaining": [
+        "Final gate receipt binding, immutable versions, collisions and concurrent overwrite/index snapshot"
+      ]
+    },
+    {
+      "path": "scripts/cron/orchestrator-brief.md",
+      "remaining": [
+        "Actual qualified model behavior, 8-stage SDD receipts, human experience acceptance, actual cwd and prompt conflict"
+      ]
+    }
+  ],
+  "next_authority": "Root handles independent Claude review, synthesis and any adoption; this checkpoint grants none"
+}

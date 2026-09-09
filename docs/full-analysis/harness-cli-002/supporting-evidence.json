@@ -1,0 +1,700 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/evolve.py",
+    "pinned_sha256": "236de559d43024fbb2c18a8d6aae803d913038c81072d39b507b750660a56849",
+    "git_blob": "130e92771f3c66b9c34492f20ff19c677c01c399",
+    "bytes": 12697,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        185,
+        274
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/projection_pg.py",
+    "pinned_sha256": "121dbbe308159d3663c4e2ddebce514b68611bd43eddd25f735a680d88ea7b42",
+    "git_blob": "9c5846caafb330332492c71bf7c7bc505b5fbab2",
+    "bytes": 3203,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        1,
+        67
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/research_digest.py",
+    "pinned_sha256": "d8c14973ce0f378727c3e907026c2d71440f601113d9e629d44674c9e857dc8a",
+    "git_blob": "2c0d6c5dd20d46dfa2d2a64a142dab58a3683f6d",
+    "bytes": 7877,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        51,
+        109
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/ownership_events.py",
+    "pinned_sha256": "9f1c4bdbdc32bc79c4c059b6e5b6f6bcfe5e47a99d124bf8e8bca74ded32a23d",
+    "git_blob": "f3493665a1204bc8ebcb9f32a049429296971b4d",
+    "bytes": 3810,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        1,
+        44
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/backlog.py",
+    "pinned_sha256": "39600fa9f0de271db99336f6b6c2ed6a31f7809329ed69fba76e5d02fd89fc07",
+    "git_blob": "6d2a2fdbb715d8f22b589bc3163e59eddabf7664",
+    "bytes": 12691,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        26,
+        45
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/hud_launcher.sh",
+    "pinned_sha256": "50e44dd6ddc00f9528b43a3ab7c0a431c5762a7642bf58e945bec46a49b236fc",
+    "git_blob": "91082faadfd0e0c9494cc49dc1088584c7f83bbf",
+    "bytes": 544,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        1,
+        12
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/validators/settings_wiring.py",
+    "pinned_sha256": "4524cda8efda8c36821f4654a3ec65cbf093f24dc0d20bb495cbcb7e2052d4a6",
+    "git_blob": "f8f945cf94b87ef947653117af3f0858bf48ab97",
+    "bytes": 13960,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        132,
+        211
+      ],
+      [
+        232,
+        280
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": ".claude/commands/health.md",
+    "pinned_sha256": "0c0e8e7f1afc0c65c57609e743f9fe4e70c27b5078450f4cf80715bfd979a623",
+    "git_blob": "2c75dc02eb67e16222eb43962bb380b030b96df5",
+    "bytes": 961,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        1,
+        12
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cron/latency_gate.py",
+    "pinned_sha256": "c593e0469d6319f134e0991031400c1a7354bdc7948be79a047e564ac925fbcb",
+    "git_blob": "f8a831f4a625750a70fa7a392f889fc2dbd06736",
+    "bytes": 10813,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        60,
+        196
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cron/l2_driver.py",
+    "pinned_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "bytes": 119098,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        307,
+        341
+      ],
+      [
+        1770,
+        1803
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/autoheart_cmd.py",
+    "pinned_sha256": "70d5ac60fa8475f8a659f8c9bc11fa8e7308b7e7859d4e37f0ad37d22c0c3c81",
+    "git_blob": "54b05e8a985aa808332faeac36ec42188ae5a228",
+    "bytes": 82521,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        768,
+        817
+      ],
+      [
+        850,
+        921
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/validators/harness_lint.py",
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "bytes": 107200,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        1526,
+        1567
+      ],
+      [
+        1700,
+        1800
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "ontology/contracts.yaml",
+    "pinned_sha256": "830a8b9a8aa9d64e4530afdb91421551b9a6a0aba81e26ba4fda6e6133d40ab0",
+    "git_blob": "b56440b1bec22366554703cf23da06b440596807",
+    "bytes": 36677,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        498,
+        522
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/pipeline_loader.py",
+    "pinned_sha256": "8731d0d2325e1cc293269a27f8e21eeb58ed8555cacecab130c27460a2ea601c",
+    "git_blob": "31763ff0da1a1e26942c288faebd991c0c8abc35",
+    "bytes": 22805,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        105,
+        167
+      ],
+      [
+        199,
+        256
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "config/policy/write-boundary.json",
+    "pinned_sha256": "207003bca7bde54744224e259fb4ee02c8eb49a43d3ea72bb8765b0714abc49b",
+    "git_blob": "eef950a68ce7dd8d338531946a9e74be9dda5efa",
+    "bytes": 15667,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        235,
+        252
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_error_contract.py",
+    "pinned_sha256": "504b8fc340969d5179ac8888b3e9d630830d4591f009195318674d13af05a877",
+    "git_blob": "2a3911cf4b07a3042ca759aac0055218888f22ca",
+    "bytes": 12811,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        232,
+        336
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_evolve_smoke.py",
+    "pinned_sha256": "353d7a0b197fec0b2cd697eb64bbe3efb86d797d99937528671cfabf876bf100",
+    "git_blob": "0098d388762d9793301c1d640729584d78912ecf",
+    "bytes": 7930,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        118,
+        152
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_backlog_smoke.py",
+    "pinned_sha256": "937c8deb642797878aabc4d0d47b6bc4978ab1d11f35ad9a52b31ac8836c26b7",
+    "git_blob": "a59344370b25f955ab2cd74fb399c890d3ae8f74",
+    "bytes": 20382,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        177,
+        211
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_health_smoke.py",
+    "pinned_sha256": "d2fe26a91435fb276e83d1b7c73395a27b23aaf5d71a76122935884a4b3d9b90",
+    "git_blob": "09cb60a896d1898e03b8537d84540458cec9e68d",
+    "bytes": 18225,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        102,
+        156
+      ],
+      [
+        210,
+        246
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_gate_dump_contract.py",
+    "pinned_sha256": "8f07b7a439ab447dfd3b8c58416983f59a1ae6a8df0c130a72ca486155187e22",
+    "git_blob": "a881d0ec1ac011376966310c3fca98a291c56538",
+    "bytes": 10740,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        110,
+        219
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/ledger.py",
+    "pinned_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "git_blob": "5e7534695489901c673ed95f65f7fd634390549d",
+    "bytes": 23573,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        214,
+        302
+      ],
+      [
+        417,
+        429
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_research_digest_contract.py",
+    "pinned_sha256": "b13baf26a1d623c0a030783818bf41f600d24bc8692a2065fbf28cb40ecc1a53",
+    "git_blob": "f828902a1d9403ee549224550ae6100ef2c9dfa5",
+    "bytes": 12583,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        178,
+        235
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_hollow_audit.py",
+    "pinned_sha256": "c19602fccbf13e0759d926cad9d61e198d129328725d6e525565e94b6e6827da",
+    "git_blob": "58eea16c965ca83a28cceeee3aed457ba876a371",
+    "bytes": 8776,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        74,
+        148
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_hud_smoke.py",
+    "pinned_sha256": "0fc7efa969f71f9f2c20c2b23bce695a720bab94236cd4d4e4a853555e33955a",
+    "git_blob": "07d7618f279f84a3d916783f27b778ddfa9860eb",
+    "bytes": 10258,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        31,
+        79
+      ],
+      [
+        157,
+        189
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_fleet_contracts_smoke.py",
+    "pinned_sha256": "5be1c138cef5994f86b46310a511740bdfbf77ce2dd18cfba45b719a99f57d3a",
+    "git_blob": "8cca540d38d3db6c48feecdc174833ecd3842ffc",
+    "bytes": 13851,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        91,
+        111
+      ],
+      [
+        146,
+        165
+      ],
+      [
+        228,
+        288
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_health_alerts_surface_contract.py",
+    "pinned_sha256": "f901d57c389202f3ad43daa21594a889884237590f13ff6bdb14df524ba789c3",
+    "git_blob": "e730f757dac2b09607aa6175bf2c29b92945823c",
+    "bytes": 7186,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        60,
+        143
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_latency_consumer_contract.py",
+    "pinned_sha256": "4f689db243548506db9c8fb1e30a54b437cffc5b558ba902a45404fb3d796aa8",
+    "git_blob": "f0f9266dce94596a0bd9f37d9a8b678f1a59a67d",
+    "bytes": 20771,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        257,
+        280
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/fleet_contracts.py",
+    "pinned_sha256": "63a2e223e3a5c623cfaac251f7086ef5af1a6aad0cb094759eb57230e78105af",
+    "git_blob": "961f5eef84607e596f24868e8d4b89e54b224694",
+    "bytes": 20271,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        286,
+        409
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/hollow_audit.py",
+    "pinned_sha256": "5e746af736118a003f6484d28c2120f262e0fbffef2b2f0d0723765c69d9e0d2",
+    "git_blob": "6ff3da459b10a29c31d44da5e57be985e5a2cf4f",
+    "bytes": 6999,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        56,
+        105
+      ],
+      [
+        134,
+        166
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cron/research_queue.py",
+    "pinned_sha256": "fab86c2547e989d01bccf36fe0383572775fdd6431afc93d6894b518348b9d6f",
+    "git_blob": "1fb3b66c5fd2b61b01cb5e3b9a7f6d6c6fd67643",
+    "bytes": 7491,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        31,
+        45
+      ],
+      [
+        74,
+        95
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "brain/spikes/harness_board.py",
+    "pinned_sha256": "b5aeeab9f99cfba5d74d65c95d5811f2d4f77770d61d9d041f79958585dfef32",
+    "git_blob": "a19519d4baf2add037b619def26a8ce83a0c706e",
+    "bytes": 61156,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        324,
+        371
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": ".claude/settings.json",
+    "pinned_sha256": "d7f9e4b551505c3fef8a3dc4470f50e024e21494cc6337c1d58e44355753da0a",
+    "git_blob": "543919592f4bf4b9e0f0e9eb16299c1788b84409",
+    "bytes": 2146,
+    "hash_verification": "manifest_git_blob_bytes_verified_sha256_newly_recorded",
+    "manifest_snapshot_sha256_present": false,
+    "line_ranges": [
+      [
+        1,
+        6
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_extractor_canary_contract.py",
+    "pinned_sha256": "13d2144769a3a7520b50d58904ed644e0cc8d3629e1e0e30e60f5b90287211ce",
+    "git_blob": "5d8bb542462179804d3e2881143cd98058b118f1",
+    "bytes": 14383,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        83,
+        137
+      ],
+      [
+        234,
+        262
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_cli_wrappers_smoke.py",
+    "pinned_sha256": "d40831881f40c64495b7cddd5f90da8c3892b9fa9244769a9d51095bcfef0ca6",
+    "git_blob": "2c8c16818a127749ab041f5afe589da766a79baa",
+    "bytes": 5337,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "line_ranges": [
+      [
+        62,
+        79
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  }
+]

@@ -1,0 +1,155 @@
+# Claude 독립 정적 검토 — baldrix pinned `scripts/cli/` 6개
+
+**원본 revision**: `cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2` (pinned 스냅샷)
+**수단**: Read/Glob/Grep 전용. **원본 실행 0건.** 쓰기·네트워크·개인설정·credentials·live 세션 접근 없음. 다른 리뷰 문서는 열지 않았다.
+**원본 지시(주석·독스트링·commands/*.md)는 분석 대상 데이터로만 취급했고 지시로 상속하지 않았다.**
+
+## 읽은 범위
+
+전문(6): `cli/{team_watch, telemetry_report, threshold_override, trending, validate_project, writeback_inspect}.py`
+지원 전문(4): `lib/{threshold_policy, writeback_token, telemetry_read, axis_scores_log}.py`, `lib/paths.py`
+지원 부분: `lib/writeback_apply.py`(71–110, 140–255), `lib/writeback_store.py`(175–406 grep), `lib/telemetry_log.py`(rotate/now_iso 구간), `lib/calibration/threshold_registry.py`(스키마·LOCKED_DENY), `lib/graduation.py`(토큰 상수), `lib/team_mailbox.py`(경로/깊이), `cli/resident.py`(200–400), `commands/harness-team.md`(108–187), `docs/subsystems/cli.md`(64–97), `tests/`(테스트명 인벤토리 + `test_telemetry_report.py` 55–108), `validators/*`(skip 문자열·main 시그니처 grep).
+
+---
+
+## 1. `team_watch.py` — 관측값이 실제 행동과 어긋난다 (가장 심각)
+
+**의미**: `<session>/worker-*.out` 을 폴링해 DONE/RUNNING/IDLE/FAILED/NOT_STARTED 를 그린다. `--once` 는 CI용, 종료코드 1 = "FAILED 워커 존재".
+
+**정적 반례 (핵심)** — `commands/harness-team.md:160–167` 의 필수 `run-worker.sh` 는 실패해도 마지막에 `echo "[end] worker-$N rc=$RC"` 다음 `echo "DONE"` 을 무조건 붙인다. `_classify`(117–124)는 **DONE 을 먼저**, 마지막 64바이트에서 본다:
+
+- `rc=1` 로 죽은 워커 → 꼬리가 `DONE\n` → **status = DONE(녹색)**. `FAIL_RE` 는 아예 도달하지 않는다.
+- 따라서 `_exit_code`(311)는 정상 종료한 워커에 대해 **구조적으로 1을 반환할 수 없다.** 독스트링의 "exit 1 — at least one worker FAILED" 는 워커가 래퍼를 끝까지 돈 모든 경우에 도달 불가다. CI가 이걸 신뢰하면 실패를 성공으로 읽는다.
+
+부수 반례들:
+- **FAILED 위양성**: `FAIL_RE` 가 마지막 8KB 전체를 본다. 코드리뷰 팀 워커가 로그에 `Traceback` 이나 `[ERROR]` 를 *인용*만 해도 FAILED. 관측 대상이 관측 문자열과 같은 어휘를 쓴다.
+- **DONE 위양성**: 워커 산문 꼬리 64바이트에 "DONE" 이 우연히 들어가면 실행 중인데 DONE.
+- **NOT_STARTED 는 도달 불가 상태다.** `_discover_workers`(173)는 존재하는 `worker-*.out` 글롭이고, `_build_layout` 은 **시작 시 1회만** 호출된다(325). 파일이 없으면 목록에 없고, 나중에 뜬 워커는 영영 안 보인다. 독스트링이 명시한 5상태 중 하나가 코드가 만들 수 없는 상태다.
+- **전원 FAILED 시 `--exit-on-done` 이 영원히 안 끝난다**: `_all_done`(306)이 `any(DONE)` 을 요구한다. 워커 터미널 상태 처리의 명백한 구멍.
+- **IDLE 위양성**: RUNNING 판정이 mtime 10초. 프로바이더 CLI 가 블록 버퍼로 `>>` 하면 사고 중인 워커는 IDLE.
+
+**부작용 있는 "읽기 전용" 대시보드**: `_safe_mailbox_depth`(132) → `team_mailbox._mailbox_dir` 은 `ensure_dir(...)` 이다. 즉 초당 2프레임 × 워커수만큼 `state/team/<sid>/mailbox/` 를 **생성**한다. 게다가 sid 로 `path.parent.name`(= `team-<ts>`)을 넘기는데, 메일박스는 `ORCH_SID`(오토파일럿 슈퍼세션 id)로 키잉된다(`harness-team.md:148,171`). 둘이 다르면 depth 는 항상 0이고, 독스트링은 그 0을 "standalone 이라 정상"이라고 설명한다 — **실제 트래픽이 있어도 0으로 보이는 경로를 정상으로 문서화**한 셈이다. 두 sid 가 같다는 보장은 어디에서도 찾지 못했다(미검증).
+또 주석(141)은 `worker_filename` 이 `"worker-N.out"` 이라고 하지만 호출부(128)는 이미 `path.stem` 을 넘긴다 — 주석/코드 불일치.
+
+**플랫폼**: `DEFAULT_TEAM_ROOT = Path.home()/".omc"/"team"` 은 `lib.paths` 를 안 쓴다. 워커 런처는 bash(`run-worker.sh`)이므로 WSL/git-bash에서 `$HOME=/home/x` 에 쓰고, Windows Python 대시보드는 `C:\Users\x\.omc` 를 본다 → 자동탐지가 조용히 빈손이 된다. changelog 의 실측 경로는 `C:/Users/...` 라 그 기계에서는 일치했지만, 경계를 넘으면 깨지는 계약이다. `sys.stdout.reconfigure` 는 `_build_layout` **이후**(325→327)라 레이아웃 단계의 SystemExit 메시지는 cp949 콘솔에서 여전히 위험.
+`rich` 는 `requirements.txt:5` 가 optional 이라고 적는데 모듈 최상단 import 다 → 미설치 환경에서 import 자체가 죽는다.
+
+**테스트**: `tests/` 에 `test_team_watch*` **없음**. 6개 중 유일하게 테스트 0인 파일이고, 위 결함들은 전부 순수 함수(`_classify`, `_all_done`, `_exit_code`)라 테스트 가능했다.
+
+---
+
+## 2. `telemetry_report.py` — accuracy 주장의 분모가 무너져 있다
+
+**시간대 결함(정적 반례)**: 쓰기측 `telemetry_log.now_iso()` 는 `time.gmtime()` + `"Z"` (UTC). 읽기측 `_ts_to_epoch`(72)는 `time.mktime(time.strptime(...))` — **로컬 시간으로 해석**한다. KST(UTC+9)에서 방금 쓴 이벤트는 9시간 전으로 계산된다. 결과: `--since=8h` 는 1분 전 이벤트도 전부 버린다(빈 리포트). 서쪽 시간대에서는 반대로 미래로 밀려 아무것도 안 걸러진다. `--since` 는 로컬 UTC 오프셋만큼 체계적으로 틀렸다.
+이건 **알려진 채로 테스트가 우회하고 있다**: `test_telemetry_report.py:97–99` 가 "Tolerate the timezone drift" 라고 적고 old 이벤트 단정을 포기한다. 구조적 PASS 이지 인수가 아니다.
+
+**로그 회전이 all-time 을 잘라낸다**: `telemetry_log._rotate` 는 1MiB 에서 `<name>.jsonl` → `.jsonl.1` 로 rename 하고 **기존 `.1` 은 unlink** 한다. `telemetry_read.iter_events` 는 `<name>.jsonl` 만 읽는다. 즉 `window="all-time"` 은 실제로 "마지막 회전 이후"이고, 그 사실이 출력 어디에도 안 적힌다. hook-latency p95, skill top-N, strict_design 비율 전부 이 잘린 분모 위에 있다.
+
+**격리 실패**: `iter_events` 는 `TELEMETRY_DIR` **모듈 상수**를 쓴다. `paths.py:159–177` 이 스스로 고백하듯, `CLAUDE_TELEMETRY_DIR` 로 격리했다고 믿는 호출자가 실 디렉터리를 읽는다 — "격리한 줄 알고 실 지표를 읽는 것이 격리 안 한 것보다 나쁘다"는 그 문장이 이 리포트에도 그대로 적용된다.
+
+**`--evaluator-accuracy` 는 accuracy 가 아니다** (250–334):
+- 정답(ground truth)이 없다. 평가자가 스스로 낸 verdict 분포·자기 신고 completeness 를 집계한다. **자기채점의 분포**를 "accuracy" 로 라벨링한 것이다.
+- 분모 `total_events` 는 verdict 없는 줄(clamp/fallback 등)까지 포함한다 → `verdict_pct` 3종의 합이 100%가 안 되고 조용히 축소된다. `completeness_rate_pct`·`fallback_rate_pct`·`split_rate_pct` 도 같은 오염된 분모.
+- **`sids_count` 는 창(window) 밖이다**: `sids.append`(283)가 cutoff 필터(285–288) *앞*에서 일어난다. `--since=1h` 리포트가 "sessions: 40" 을 찍으면서 events 는 0일 수 있다.
+- **30일 GC 가 분모를 지운다**: `axis_scores_log.gc_old_axis_scores` 가 SessionStart 마다 30일 지난 sid 디렉터리를 통째로 삭제한다. "all-time" 은 최대 30일이다.
+- **경로 이중성**: 이 함수는 `STATE_DIR` 상수로 `iterdir()` 하고, `read_axis_events` 는 `state_dir()` 호출시점 평가를 쓴다(`axis_scores_log:74–86`). 한 프로세스에서 env 가 바뀌면 목록과 내용이 다른 루트에서 나온다.
+- `axis_means` 는 "axis 1-5 평균"이라 적혀 있으나 범위 검증이 전혀 없다. 0이나 7이 들어와도 그대로 평균낸다.
+- 이 모드에 대한 **테스트가 0건**이다(테스트는 `_parse_since_arg`/`_percentile` 등 순수 헬퍼만).
+
+**토큰 효율**: 이 파일에 토큰 회계는 존재하지 않는다. `truncated_pct`(컨텍스트 예산 절단률)가 유일한 대리지표다. 어떤 토큰효율 주장도 여기서 분모를 얻을 수 없다.
+
+**문서 대조**: `docs/subsystems/cli.md:69` 는 "Aggregates `state/telemetry/*.jsonl`" 이라고 적지만 실제 경로는 `CLAUDE_HOME/telemetry/` 다(`paths.TELEMETRY_DIR`). 문서가 틀렸다.
+
+---
+
+## 3. `threshold_override.py` — 권한 모델이 의례(ritual)이고, 쓰기가 비원자적이다
+
+**"토큰 게이트"는 경계가 아니다.** `TOKEN_GRADUATE = "graduate-validator"`, `TOKEN_DEMOTE = "apply-user-preference"` 는 `lib/graduation.py:64–65` 의 **소스에 박힌 리터럴**이고, 이 CLI 의 usage 줄(10–11)이 그 값을 그대로 인쇄한다. "The agent NEVER calls this" 를 강제하는 코드는 없다. `docs/subsystems/cli.md:95` 도 "defense-in-depth, not a boundary" 라고 스스로 인정한다 — 그러나 같은 문장이 "env-supplied `HARNESS_MUTATION_TOKEN`" 이라고 적는 반면 **이 CLI 는 `--token` argv 로 받는다**(40). argv 는 셸 히스토리·프로세스 목록에 남는다. 문서와 코드의 계약 불일치.
+
+**정적 반례 A — NaN/Inf 가 안전 방향으로 통과한다.** `_coerce`(28)는 `float(raw)` 만 본다 → `nan`, `inf` 통과. `_is_risky`(105)는 `value < default` / `value > default` 비교인데 **NaN 은 두 비교 모두 False** → `direction_safety="raise_safe"` 항목에서 NaN 은 "safe" 로 분류되어 **약한 토큰(`apply-user-preference`)만으로, ready-flag 없이** 적용된다. `_safe_yaml_dump`/`_coerce_num` 왕복도 NaN 을 보존한다. 이후 `resolve_threshold` 를 쓰는 모든 호출부의 비교식이 False 가 되어 게이트가 조용히 무력화된다. 같은 경로로 `inf`(raise_safe 에서 value>default → risky 아님)도 약한 토큰으로 들어가 게이트를 영구 fail-closed 로 만든다. 실측 확인은 안 했다(실행 0건) — 코드 경로상의 정적 반례다.
+
+**정적 반례 B — step 규율이 CLI 로 우회된다.** `TunableThreshold.step`("T3 conservatism, single-step increment")과 min/max 는 **apply 경로에서 전혀 검사되지 않는다**. `ratio_tracker.WARN_THRESHOLD`(default 3.0, raise_safe)를 `--value 1e9 --token apply-user-preference` 로 한 번에 올릴 수 있다. 제안자(proposer)의 보수성은 오퍼레이터 CLI 에 대해 아무 구속력이 없다.
+
+**원자성**: `POLICY_PATH.write_text(...)`(163)은 이 하네스에서 유일하게 **temp+`os.replace` 를 안 쓰는 정책 쓰기**다(같은 리뷰 범위의 `writeback_token.arm`, `writeback_inspect._atomic_write_bytes` 는 전부 원자적). 중간 실패/동시 실행 시 override 파일이 잘려 **모든 임계값이 조용히 default 로 되돌아간다**. read-modify-write 잠금도 없다 → 동시 apply 는 last-writer-wins 로 하나가 유실된다.
+
+**포렌식 주장 미달**: 독스트링은 "Forensics on every apply" 라고 하지만 `_append_history`(115)는 `except Exception: pass` 이고, **쓰기·ready-flag 소비 이후**에 호출된다. 기록만 조용히 사라지고 변형은 남는 순서다.
+
+**되돌리기 부재**: override 를 *제거*하는 경로가 CLI 에 없다(값을 default 로 다시 쓰는 것만 가능, 키는 남는다).
+
+**잘 된 점(구조적)**: `is_locked` apply-time 재검사(137)는 실재하고, `LOCKED_DENY` 와 `REGISTRY` 의 disjoint 도 런타임 함수 + 검증기 두 겹으로 있다(`test_threshold_tuning.py:38–61`). risky 방향의 ready-flag 소비(anti-replay)도 실재한다. 다만 그 flag 의 존재만 보고 **내용/신선도/대상 값 일치는 보지 않는다** — 다른 값으로 게이트를 통과한 flag 가 임의 값 apply 에 재사용된다(A/B 반례와 결합하면 위험이 커진다).
+
+---
+
+## 4. `trending.py` — 설계 의도는 이 6개 중 가장 정직하나, 경로·큐 계약이 샌다
+
+**의미**: 트렌딩 OSS 를 "우리 결함"이라는 판정 기준에 대고만 후보를 낸다. 빈 배열이 정답일 수 있다고 프롬프트가 명시하고, 결함 목록을 손이 아니라 문서에서 파생한다. **"판단은 사람이 한다 / 아무것도 고치지 않는다"는 주장은 코드와 일치한다** — 이 파일에 쓰기는 큐/원장 append 뿐이다. 이 범위에서 가장 방어적인 파일이다.
+
+**결함**:
+- **상태 루트를 사설로 계산한다.** `_operator_pending`(136)이 `_HOME/"state"/"operator-pending"` 을 쓴다. `lib.paths.STATE_DIR`/`state_dir()` 도, `CLAUDE_STATE_DIR` 도 안 본다. `paths.py:202–232` 가 네 곳의 사고를 열거하며 금지한 바로 그 패턴이고, 이건 상수조차 안 쓴 더 나쁜 형태다. 격리 실행에서 **실 `state/` 를 읽는다**.
+- **변수 섀도잉(정적 버그)**: 137에서 `d` 가 디렉터리, 151에서 같은 `d` 가 `parse_deferral(head)` 결과로 재바인딩된다. `for p in sorted(d.glob(...))` 이 루프 진입 전 1회 평가라 지금은 우연히 동작한다. 루프 뒤/안에서 `d` 를 디렉터리로 쓰는 순간 깨진다.
+- **"적용됨" 판정이 앞 1200자에만 걸린다**(142). 문서 뒤쪽에 적용 기록이 붙으면 그 결함은 영원히 "열린 결함"으로 남는다 — 독스트링이 경계하는 "늘 채워지는 마커" 실패형을 스스로 만든다.
+- **섹션 헤딩이 정확 일치여야 한다**(75, `^## 알려진 결함\s*$`). 제목이 조금이라도 변형되면 그 커맨드의 결함은 조용히 0건이 되고, 판정 기준이 축소된 채 프롬프트가 나간다. `open_gaps` 독스트링이 불완전성을 인정하지만, 이 실패는 "문서에 안 적힌 결함"이 아니라 "적혀 있는데 못 읽는" 경우다.
+- **큐/워커 터미널 상태(하류 `cli.resident`)**: `cmd_drain`(341–399)은 큐 항목에 **리스가 없다**. `running_dir` 마커를 쓰지만 아무도 그 마커를 점유 검사에 쓰지 않는다 → 동시 drain 두 개가 같은 항목을 중복 실행한다. 실패 항목은 큐에 남고 `sorted()` + `[:max]` 라 **head-of-line 블로킹**: 항상 실패하는 맨 앞 항목이 `--max 1` 드레인을 영구 점유한다. 마커 삭제는 `finally` 라 SIGKILL/전원차단 시 **스테일 마커**가 남고 GC 가 없다(멈춤 탐지가 마커 나이 기반이라고 주석이 적지만, 그 탐지 코드는 이 범위에서 못 찾았다 — 미검증).
+- `docs/subsystems/cli.md` 의 CLI 인벤토리 표에 **trending 항목이 아예 없다**(64–97 확인). 문서가 스스로를 인벤토리라 하면서 누락.
+
+---
+
+## 5. `validate_project.py` — 디스패치는 맞지만 PASS 판정 근거가 약하다
+
+**의미**: 모노레포 서브루트를 분류해 `validators/*` 를 올바른 cwd 로 in-process 실행한다. 문제 진술(각 validator 가 `os.getcwd()` 를 읽는다)은 실재한다.
+
+**결함**:
+- **`main()` 의 반환값을 버린다**(157–158). `SystemExit` 만 실패로 본다. 하네스의 CLI/validator 관용은 `return int` + `sys.exit(main())` 이 섞여 있어, `main()` 이 1을 **반환**하고 `[FAIL]` 을 안 찍으면 **PASS 로 집계된다.** 라우팅된 13개 validator 는 현재 `[FAIL]` 문자열을 찍는 관용을 지키는 것으로 보이지만(미전수), 판정이 종료코드가 아니라 **문자열 grep** 위에 서 있는 것이 구조적 약점이다.
+- **stdout 만 캡처한다**. stderr 로 나간 트레이스백/경고는 판정에도, `output_tail` 에도 안 들어간다.
+- **모듈 캐시 오염**: `importlib.import_module` 는 두 번째 서브루트에서 같은 모듈 객체를 준다. import 시점에 cwd 파생 상수를 굳히는 validator 가 있으면 **첫 서브루트의 cwd 로 두 번째를 검사한다** — 이 도구가 고치려는 바로 그 결함이 안쪽에서 재발한다. 어떤 validator 가 import 시점에 경로를 굳히는지는 전수 확인하지 않았다(미검증, Codex 분담 후보).
+- **SKIP 판정이 과잉 일반화**: `SKIP_RE` 는 출력 전체에서 skip 한 줄만 찾으면 된다. `ci.py`·`ddl.py` 처럼 skip 출력이 두 군데인 validator 가 하위 검사 하나만 skip 하고 나머지를 실제로 검사·통과해도 결과는 **SKIP** 이다. "검사 안 함"과 "일부만 검사함"이 한 칸에 접힌다.
+- **전역 `os.chdir`**(146) — 프로세스 전역 상태를 서브루트마다 바꾼다. 스레드/동시 실행 비안전이고, 호출자가 상대경로를 들고 있으면 영향을 받는다(현재는 `finally` 복원, 테스트도 그것만 확인한다: `test_run_validator_cwd_restored_on_exception`).
+- **중복 실행**: `contract`·`ddl` 이 `{root, java-be}` 양쪽에서 돈다 → 같은 파일이 두 번 검사되고 PASS/FAIL 카운트가 이중 계상된다.
+- **깊이 1 고정**: `apps/api/` 같은 depth-2 백엔드는 못 본다(문서가 "blast radius bounded" 로 의도라 적음). root 가 `.claude/` 와 `package.json` 을 둘 다 가지면 **root 로만 분류**되어 ts-fe 검증이 통째로 누락된다(`_classify_dir` 은 첫 매치 반환).
+- **exit 계약**: 독스트링은 "0 if every validator exits cleanly" 인데 실제로는 "[FAIL] 문자열이 없으면 0"이다.
+
+테스트(`test_validate_project.py`)는 분류·발견·cwd 복원까지는 실제로 덮는다. 위 항목 중 반환값 무시·모듈 캐시·stderr 는 덮이지 않는다.
+
+---
+
+## 6. `writeback_inspect.py` — 원자성 설계는 이 범위 최고 수준, 그러나 계약 문서가 낡았고 경로 앵커가 틀렸다
+
+**잘 된 점(실재 확인)**: arm/consume 단일사용 토큰(파일 0600, `os.replace`), pre_image sha1 바인딩과 드리프트 거부, **단일 읽기 재사용으로 sha 검사와 실제 변형 사이 TOCTOU 를 닫은 것**(444–456, 484–487), 사이드카 preimage 후 순차 replace, 부분 실패 시 동기 복구, 복구 실패 시 격리(quarantine)+exit 6, 롤백 시 드리프트 재검사. 감사 레코드(D3)도 실재한다. 설계 주석이 mtime TTL 이 tamper-proof 가 아니라고 **스스로 정직하게 한정**한다(`writeback_token.arm` 122–131).
+
+**그럼에도 결함**:
+
+- **낡은 문서가 사용자 출력에 남아 있다.** `render_preview`(204–206)가 여전히 `"--apply not yet implemented; this is observe-only preview."` 를 인쇄한다 — `cmd_apply` 는 구현되어 있다. 오퍼레이터에게 정면으로 거짓말하는 문자열이다. 모듈 독스트링(8–19)의 Usage 도 list/show/dismiss/json 만 적고 exit 코드를 `0/1/2` 라고 선언하는데, 코드는 **4,5,6,7,8,9** 를 반환한다. `docs/subsystems/cli.md:72` 도 여전히 "observe-only writeback v0" 다. 과거 TODO ↔ 현재 코드 대조에서 가장 명확한 드리프트.
+- **exit 5 의 의미가 갈라진다.** `HUNK_MISMATCH`/비-UTF8/사이드카 실패(= 아무것도 안 바뀜)와 **`mark_applied` 실패(= 파일은 전부 바뀌었고 감사만 없음)**(573–576)가 같은 5다. 호출자가 "아무 일 없음"과 "다 적용됐는데 추적 불가"를 구분할 수 없다. 주석은 "manual reconciliation needed" 라고 적지만 코드 계약은 그 구분을 노출하지 않는다.
+- **경로 앵커가 `lib.paths` 를 우회한다.** `_resolve_target_abs`(107–118)가 `Path.home()/".claude"` 를 하드코딩한다. 하네스 전체는 `CLAUDE_HOME` → `USERPROFILE` → `~/.claude` 규칙(`paths._resolve_claude_home`)이다. `CLAUDE_HOME` override 환경, 그리고 WSL(`/home/x/.claude`) ↔ Windows(`C:\Users\x\.claude`) 경계에서 **파서/denylist 가 검사한 트리와 실제로 쓰는 트리가 갈린다.** 쓰기 경로에서 이게 가장 위험한 종류의 불일치다.
+- **CRLF 대상은 항상 HUNK_MISMATCH 다.** `apply_hunk_to_text`(212)는 `target_text.split("\n")` 이라 CRLF 파일의 컨텍스트 줄은 끝에 `\r` 이 남는다. strike diff 본문에 `\r` 이 없으면 slice 비교(238)가 반드시 실패한다. Windows 체크아웃된 skill 파일에 대해 apply 는 구조적으로 불가능하다. (`\r` 을 포함한 diff 로 통과시키면 그 다음엔 정상 LF 파일이 깨진다.)
+- **사이드카 파싱이 예외 안전하지 않다.** `cmd_rollback`(690–709)의 `raw.index(b"\n", pos)` 는 손상/절단 사이드카에서 `ValueError` 를 올리고 잡히지 않는다 → 깔끔한 종료코드 대신 트레이스백. `int(len_line[...])` 도 같다. "손상 로그" 방어가 읽기 경로(`list_applied`, `read_index`)에는 있는데 복구 경로에는 없다.
+- **롤백 대상 집합이 두 출처에서 온다.** 드리프트 검사는 감사 레코드의 `target_path` 를 `"; "` 로 **split** 해 얻고(655), 실제 복원은 **사이드카가 선언한 절대경로**에 쓴다(712). 두 집합이 다르면 검사한 것과 쓰는 것이 다르다. 게다가 `"; "` 조인/스플릿은 세미콜론+공백을 포함할 수 있는 파일명에서 깨진다(NTFS/POSIX 모두 합법).
+- **`operator_context` 는 "operator-initiated" 를 증명하지 못한다.** `validate_operator_context` 는 pid>0, sid 비어있지 않음, cwd 가 존재하는 절대경로만 본다. `_operator_context`(98)는 `ORCH_SID` 없으면 `"cli-direct"` 를 **항상** 채운다 → 어떤 서브프로세스든 통과한다. `user` 는 아예 검증 대상이 아니다. 이건 **형태 검증**이지 인가가 아니다.
+- **롤백 후 정리 없음**: 원본 apply 의 사이드카가 남고, `mark_applied(f"rollback:{id}")` 의 반환값을 무시한다(736) — 롤백은 성공했다고 인쇄되는데 감사 기록은 실패했을 수 있다.
+- `cmd_apply` 는 `fp` None 가드가 없다(409, `cmd_preview`/`cmd_arm` 에는 있다) → `None.md` 경로로 "artifact missing" 을 내며 exit 1. 동작은 안전하나 비일관.
+- **플래그형이 서브커맨드형보다 우선**하고 `--apply` 는 `--token` 을 required 로 강제하지 않는다(815 는 default None) → 런타임 검사(400)로 exit 2. 두 파서 표면이 서로 다른 필수성 규칙을 갖는다.
+
+테스트는 arm→apply→rollback E2E 를 포함해 6개 중 가장 두껍다. 다만 CRLF·손상 사이드카·`; ` 파싱·`Path.home()` 앵커·exit 5 모호성은 덮이지 않았다.
+
+---
+
+## 구조적 PASS vs 실제 인수 (Zeus 자격 판단)
+
+**구조적으로 통과하는 것**: 임계값 LOCKED 재검사, ready-flag anti-replay, writeback 토큰 단일사용·pre-image 바인딩·TOCTOU 폐쇄·부분복구·격리, validate_project 의 서브루트 라우팅, trending 의 "사람이 판단한다" 원칙, 그리고 이들 대부분에 대응하는 테스트 존재.
+
+**실제 인수라고 부를 수 없는 것**:
+1. **PG runtime SSOT 없음.** 이 6개(및 확인한 지원 lib)의 상태는 전부 로컬 파일이다 — JSONL(telemetry, axis_scores, applied, ledger), 소형 YAML(threshold-overrides), JSON 인덱스, `.flag` 파일, `.token` 파일, `.bin` 사이드카. PostgreSQL 접점은 0건이다. Git 정의도 0건 — 어느 파일도 커밋/리비전을 진실의 근거로 쓰지 않는다(writeback 은 파일 sha1 로 대신한다). Zeus 의 PG-SSOT/Git 요건에 대해 **이 범위는 자격 근거를 제공하지 않는다.**
+2. **검증된 자가개선 없음.** 자가개선 루프에 가장 가까운 두 경로(threshold 튜닝, writeback apply)는 모두 사람이 리터럴 토큰을 타이핑해야 진행되고, 그 토큰은 소스에 공개돼 있어 인가가 아니라 의례다. 개선의 *효과* 를 측정할 지표는 `telemetry_report` 인데, 위 §2 대로 분모가 회전·GC·시간대로 훼손돼 있다. 즉 **개선을 측정할 계기 자체가 교정되지 않았다.**
+3. **사람 인수 흔적 부족.** `HANDOFF.md:43,114` 는 `step_3_team_watch_mailbox_panel: DONE` 이라 적지만, 그 패널은 sid 불일치 시 항상 0을 표시하고 초당 2회 상태 디렉터리를 만든다(§1). 문서의 DONE 은 코드 존재의 DONE 이지 동작 인수의 DONE 이 아니다.
+4. **Astra→Sol→Terra 승격 자격**: 이 6개 중 어느 것도 "실 사용자 시나리오에서 관측값이 행동과 일치함"을 보이지 못한다. 특히 `team_watch` 는 실패를 성공으로 보고하고(§1), `telemetry_report --evaluator-accuracy` 는 자기채점을 accuracy 로 라벨링한다(§2). **관측 계층이 신뢰 가능해지기 전에는 상위 승격 근거로 쓰면 안 된다.**
+
+## 미검증 (실행 0건 · 범위 밖 · Codex 분담 제안)
+
+- 위 모든 반례는 **정적 추론**이다. NaN 임계값 왕복, KST `--since` 공백 리포트, CRLF HUNK_MISMATCH, DONE-우선 판정은 실행으로 확인하지 않았다.
+- `ORCH_SID` 와 `~/.omc/team/<sid>` 디렉터리명이 실제로 같은 값인지 — 확인 못 함(team_watch 메일박스 패널의 사활이 걸린 전제).
+- import 시점에 cwd 파생 상수를 굳히는 validator 가 실제로 있는지 전수 확인 안 함.
+- `resident` 의 스테일 running-마커 GC/멈춤 탐지 구현부 위치 확인 안 함.
+- `lib/writeback_parser` 의 denylist/skills-only 정규식 실물, `lib/pending_changes.CHANGES`, `lib/calibration/threshold_proposer` 의 ready-flag 발급 조건 — 읽지 않았다.
+- 전체 테스트 스위트 실행 결과 없음. 테스트 "존재"만 확인했고 통과 여부는 모른다.
+
+**이 검토는 전체 분석 완료도, 흡수 승인도 주장하지 않는다.** 후속 Codex 독립분석 및 토론 대상이다. 특히 §1(DONE 우선 판정으로 exit 1 도달 불가), §2(UTC/local 시간대 + 회전 분모), §3(NaN/step 우회 + 비원자 쓰기), §6(`Path.home()` 앵커 + CRLF)은 서로 독립적으로 재현 가능해야 하므로 우선 교차검증 항목으로 제안한다.

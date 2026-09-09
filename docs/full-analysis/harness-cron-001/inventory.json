@@ -1,0 +1,52 @@
+{
+  "partition": "harness:scripts/cron:001",
+  "scope_sha256": "066c737ee80669ab53b96e76c6ac6be9772027daf6d697d4b575b42db00582ee",
+  "bytes": 198493,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "scripts/cron/bus_tailer.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/collab_ask_audit.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/commit_scope.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/consume_gate.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/dba_projection.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/known_issues.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/l2_driver.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/latency_gate.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/lesson_spot.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/note_archive.py"
+    },
+    {
+      "source": "harness",
+      "path": "scripts/cron/orchestrator-brief.md"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

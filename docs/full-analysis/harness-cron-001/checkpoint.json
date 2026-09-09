@@ -1,0 +1,19 @@
+{
+  "partition": "harness:scripts/cron:001",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "status": "bounded_static_body_review_checkpoint",
+  "scope_sha256": "066c737ee80669ab53b96e76c6ac6be9772027daf6d697d4b575b42db00582ee",
+  "primary_files": 11,
+  "primary_bytes": 198493,
+  "primary_bodies_read": 11,
+  "supporting_files": 16,
+  "supporting_full_bodies": 9,
+  "source_sha256_git_blob_size_matches": true,
+  "validation": "Inert local metadata recorder assertions only; not upstream tests",
+  "upstream_execution_count": 0,
+  "implementation_equivalence_proven": false,
+  "adoption_approved": false,
+  "source_or_runtime_edits": 0,
+  "commit_push_performed": false,
+  "stop": "Bounded scope saved. Remaining call/test and execution work retained in remaining.json"
+}

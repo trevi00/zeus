@@ -1,0 +1,37 @@
+{
+  "source": "harness",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "partitions": [
+    "harness:scripts/cli:002"
+  ],
+  "scope_sha256": "66ee737c398fc778990cd88697ff6699bc0fcc06a7df6caeaa8a36603af4a178",
+  "expected": 11,
+  "full_body_reviewed": 11,
+  "bytes_verified": 178390,
+  "unreviewed_paths_in_partition": [],
+  "tests_executed": [],
+  "upstream_execution_count": 0,
+  "blocked_probe_retried_or_bypassed": false,
+  "subsystem_complete": false,
+  "adoption_approved": false,
+  "claude_independent_review": "pending",
+  "status": "static_review_complete_execution_and_independent_review_pending",
+  "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+  "searches": [
+    {
+      "scope": [
+        "pipelines"
+      ],
+      "source": "harness-pinned",
+      "pattern": "fleet_contracts_cmd|error_contract_cmd",
+      "matches": 0,
+      "limit": "Exact text search only; indirect callers not ruled out"
+    }
+  ],
+  "search_limits": "탐색 rg 출력 1회 잘림. 전문 coverage에 계산하지 않았고 보고에 쓰는 supporting 본문은 별도 구간으로 읽음. 전체 consumer 감사는 아님.",
+  "deferred": [
+    "Samsung 실기기",
+    "Device Farm SDK/MCP/Replay",
+    "Astra→Sol→Terra 실행 자격 증명"
+  ]
+}

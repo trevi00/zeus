@@ -1,0 +1,81 @@
+{
+  "kind": "root_checkpoint_verification",
+  "primary_records": 47,
+  "source_records": {
+    "baldrix-cli-005": {
+      "files.json": 6,
+      "supporting-evidence.json": 17
+    },
+    "baldrix-cron-001": {
+      "files.json": 19,
+      "supporting-evidence.json": 20
+    },
+    "harness-cli-002": {
+      "files.json": 11,
+      "supporting-evidence.json": 34
+    },
+    "harness-cron-001": {
+      "files.json": 11,
+      "supporting.json": 16
+    }
+  },
+  "receipt_hashes_verified": 5,
+  "artifact_hashes": {
+    "docs/full-analysis/baldrix-cli-005/checkpoint.json": "29a5b57d65a8f2e1a79b6fc94ee379803ec0b96a332d520b031e24775427ec5d",
+    "docs/full-analysis/baldrix-cli-005/claude-discussion-receipt.json": "9715fe5b7849805f84fca9e0eeee48bb09b5226264cd95ca0b273165e5b1bf13",
+    "docs/full-analysis/baldrix-cli-005/claude-discussion.json": "b363a8bbf391e4b521969870f8043c0d3c8755f4d525658adf4de31915515fbd",
+    "docs/full-analysis/baldrix-cli-005/claude-discussion.md": "326a7cd52a80dd1d788ee40ef04256509070c209dc91e3bf136bd5ccf2b765dc",
+    "docs/full-analysis/baldrix-cli-005/claude-discussion.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/full-analysis/baldrix-cli-005/claude-initial-prompt.txt": "76df4171befe5b69a1c720fc07dca784739dd987df52bce0a5c85e13a0fca2d3",
+    "docs/full-analysis/baldrix-cli-005/claude-initial-receipt.json": "04f0936d461b16359afb10268ee75527d47afa9a106bece885671b7a42898e86",
+    "docs/full-analysis/baldrix-cli-005/claude-initial.json": "f10f7f38b06537b506f82cca5112c612e43d8bf6048eb8d96651581047941c1b",
+    "docs/full-analysis/baldrix-cli-005/claude-initial.md": "33fc056ae887f948b4de600b1408ea63c9a8b2c4bc1ee1e82eab04e1aaaa4cf0",
+    "docs/full-analysis/baldrix-cli-005/claude-initial.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/full-analysis/baldrix-cli-005/codex-initial.md": "3040b8b1e2f2db60ef2f225c74c09d607a10f2ab32c3e344b9f36a447639f35a",
+    "docs/full-analysis/baldrix-cli-005/component_observations.py": "4a3646bd372a8a01ce85401adc012a94bfaad2ec0d7639bda01b9bcd8171b5bc",
+    "docs/full-analysis/baldrix-cli-005/components-KST-9.receipt.json": "11b09e8a6fcc9ef3634066ec46f380f75c29e9afc53b03b8d3d7fc89d02df5b2",
+    "docs/full-analysis/baldrix-cli-005/components-KST-9.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/full-analysis/baldrix-cli-005/components-KST-9.stdout.txt": "9e0a01de89ca23f659fe959b8b7fae09f3cad7cb75052b7736ad549acfe4272c",
+    "docs/full-analysis/baldrix-cli-005/components-UTC0.receipt.json": "a81fac2a90f4fc2ae8aa1654f27f2f17138c7b7cf5c6aeb7bf9a4b701fd48a66",
+    "docs/full-analysis/baldrix-cli-005/components-UTC0.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/full-analysis/baldrix-cli-005/components-UTC0.stdout.txt": "6bf41f042502af0ca02de6c43d42d02051864e13810edec647e857bf96beda8c",
+    "docs/full-analysis/baldrix-cli-005/discussion-prompt.txt": "12278dc37ceadba78fb3b0f2262415b72fb00fbcb3f954d2c2c590376bc2e3c5",
+    "docs/full-analysis/baldrix-cli-005/files.json": "7529ae09a485759a62735d835e9f6850eca0939ffb9ed756b0186261ba229f0f",
+    "docs/full-analysis/baldrix-cli-005/record_review.py": "c7a054ecbe862935bfb9e694cb32ce0a3d13babf028534bddd9a4b2e6f909d2d",
+    "docs/full-analysis/baldrix-cli-005/resolution.md": "8b26821aca5ba1e9716caabc69d1774938b3b601af2b00f94a6c3dff6cd371dc",
+    "docs/full-analysis/baldrix-cli-005/run_components.py": "ac0c431a4e6dcb4b8066e81f137f9f0206e4f902e84604109d4273f5d690ec94",
+    "docs/full-analysis/baldrix-cli-005/run_upstream.py": "86a2d4062413639c394e0706db9aee816ce3bb2cbd97f28e71d1087becef178e",
+    "docs/full-analysis/baldrix-cli-005/supporting-evidence.json": "7062d1afd5e3400a528a67a2f22ed63e298a16b6b2733d7d6ab6311e65560631",
+    "docs/full-analysis/baldrix-cli-005/test_telemetry_report.receipt.json": "4237efe42750ef2790f709ff5b2408b24714649493c6e99beda1ede928937411",
+    "docs/full-analysis/baldrix-cli-005/test_telemetry_report.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/full-analysis/baldrix-cli-005/test_telemetry_report.stdout.txt": "fd73f91f9c653c9d22ca6c6a723fe41057af4fba9ce86cc79340979b29d522f3",
+    "docs/full-analysis/baldrix-cron-001/artifact-hashes.json": "279d32b484266a0b38f651cef92e7c5bd323eba8baafc925fb4e3f51fedb7618",
+    "docs/full-analysis/baldrix-cron-001/caller-test-search.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/full-analysis/baldrix-cron-001/caller-test-search.stdout": "aabeb4f980d252aa6cf35ef54278e498544dd0fc67d7648d1ccf850914b2303a",
+    "docs/full-analysis/baldrix-cron-001/checkpoint.json": "84f06f905c095687d8ed282bd55b4d75ca9ee61e2dee883aaa8c6d1d7d2abfcc",
+    "docs/full-analysis/baldrix-cron-001/files.json": "dce8d0868b711493a2cf7c1edb73d7b5aee8b0bd29af0d2c284c39fdd7ef98a3",
+    "docs/full-analysis/baldrix-cron-001/record_review.py": "ed6cafe0370026b7aa406c421b5891468fb242598b0b2c4a6e7ff2d94b4e0032",
+    "docs/full-analysis/baldrix-cron-001/remaining.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/full-analysis/baldrix-cron-001/review.md": "f49b441be663ccb62d09fae40635ee047b1ff262bbed8b34fddec402d4824077",
+    "docs/full-analysis/baldrix-cron-001/search-receipt.json": "f7420eb0e5380ec080e8c58978ce444e4f01207637ecd6cd7cc4b0365bddda6f",
+    "docs/full-analysis/baldrix-cron-001/semantic-notes.json": "9bf61ffb38ebf8af82251ea84d9f7ca1c1a30b8bcb2cd0b8232e762f48949c20",
+    "docs/full-analysis/baldrix-cron-001/supporting-evidence.json": "cb14c320ba0b7f0ada00aa85601ae31261c1571a93411aa246768cb2e0b77a3a",
+    "docs/full-analysis/harness-cli-002/checkpoint.json": "c47a5cdb1aacbc8892ddad3118126aef8b78b94e319fe6f8d1d1e10b61badad9",
+    "docs/full-analysis/harness-cli-002/files.json": "9e417b68a660cb796af6b956dc09668d53d67d45e78357ccd60d594acf37824e",
+    "docs/full-analysis/harness-cli-002/record_review.py": "6831cb3dbe1d11a9405a4bb1b2033cd18b981de7308c04aa99cd59363c11daad",
+    "docs/full-analysis/harness-cli-002/review.md": "0b82c832478eee92f678e809da06feaeff11e4f4219a9b5790909681a2fc3e5e",
+    "docs/full-analysis/harness-cli-002/supporting-evidence.json": "3fdb5943bbc108fc60581a7334da6a6bdc44149bcd1cb5ec28527c676b9ca378",
+    "docs/full-analysis/harness-cli-002/verification.json": "e9f1168e5b3f50d93e0aea401328813ea1f978ad496b760af23463c67fa6d81c",
+    "docs/full-analysis/harness-cron-001/build-index.py": "2cca984e4ee64a167318b8ce4209dbf9aab32ce58b109ebc1688eba552fba4ef",
+    "docs/full-analysis/harness-cron-001/checkpoint.json": "98e66ee5db9c67fe5f78ecdc19671b8acefb6a70a0d6e9ca1c1e9741b9cf5e8e",
+    "docs/full-analysis/harness-cron-001/files.json": "39a629713bb9e228cb053ca0931fe867f76f2e6dcdeb73a5149008de319ec4f0",
+    "docs/full-analysis/harness-cron-001/inventory.json": "58ade55774706f7b90ce65648207923a0e1b9b5ef1898b11b2b1b177a2c60aec",
+    "docs/full-analysis/harness-cron-001/README.md": "d0ac20fb404ce5a70eb6357cba7cfa9d79b60b4b4365614bb81c38a5935bccf4",
+    "docs/full-analysis/harness-cron-001/remaining.json": "4f4bd36eea3e96f6f8c048337f11e6f286a4cabf2e29c8f818be968afe6c098f",
+    "docs/full-analysis/harness-cron-001/review.md": "3533dbec0956def700ef6eab9ccc21f2e206f705bd47b08c91f9443cff217144",
+    "docs/full-analysis/harness-cron-001/supporting.json": "1b8f5cb9a70b16914158e28a59372d0f4f14ac57b92c9f73ed80113254bd493d"
+  },
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "runtime_modified": false
+}

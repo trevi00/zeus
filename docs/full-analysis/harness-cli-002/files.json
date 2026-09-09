@@ -1,0 +1,471 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/error_contract_cmd.py",
+    "pinned_sha256": "a45da97fd51aebb07b763a26596500736b8babb8a9aed35b69bb3a48137b1366",
+    "git_blob": "7f02b9d61516e91d4ae4727b813fe4fbedb2d2a1",
+    "bytes": 48318,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        1075
+      ]
+    ],
+    "semantic_summary": "AST 오류 계약 required/conditional·문서 채점. 이름/분기/접두/모집단 근사와 불능을 실제 인수와 분리.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C02"
+    ],
+    "caller_or_dependency_trace": [
+      "pipelines exact-name search: no hits; indirect consumers unreviewed"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_error_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/evolve_cmd.py",
+    "pinned_sha256": "bdd1a56e1872d62bc1491762c541d586e0b6d77c945c2d81dbb74fe46048d6ae",
+    "git_blob": "fa5acd6ca4024f64e19bcb4b3bc501fa3421221f",
+    "bytes": 3552,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        85
+      ]
+    ],
+    "semantic_summary": "계보 open/step/status. --executed 자기주장·grade 비검증·frozen 공백·수렴/세대/lease 제한.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C03"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/evolve.py:185-274"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_evolve_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/extractor_canary_cmd.py",
+    "pinned_sha256": "19bda89827845c451d38bd89934bb1ed9e5ff2304dc36aa548f51682fa28d8fe",
+    "git_blob": "914b79d703aa6980f086d543a268218e97695c92",
+    "bytes": 15491,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        292
+      ]
+    ],
+    "semantic_summary": "알려진 합성 답과 6종 본문 독립 재계수. 실제 HEAD/후보 게이트·DEFER 방어, OS 실행 격리/전체 의미 증명 아님.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C04"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cli/autoheart_cmd.py:768-817,850-921",
+      "scripts/validators/harness_lint.py:1526-1567"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_extractor_canary_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/fleet_contracts_cmd.py",
+    "pinned_sha256": "20166359da934691232d5c0981ab9a6098b7fdeaffe6e9d62af87887ac6ec2b4",
+    "git_blob": "eedae02190bbbd77a430b0401f61ef6ff7574024",
+    "bytes": 7061,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        157
+      ]
+    ],
+    "semantic_summary": "정적 atlas/ws/fanout 관찰; exit0≠배포 계약. 중복 키·서버 인자·top 제한과 --type --json 출력 경계.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C05"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/fleet_contracts.py:286-409"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_fleet_contracts_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/fleet_status_cmd.py",
+    "pinned_sha256": "59cf2d8349ba98ec98f726eafc31eb5f20dc4569eb75a027cd69c2477b283ed1",
+    "git_blob": "6aed177d1b9a8d5eb88037eb76d1f7f381d991d0",
+    "bytes": 8421,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        195
+      ]
+    ],
+    "semantic_summary": "PG projection·DDL·근사 done, feed 일부손상/전역시각 watermark/JSON후텍스트. 사람/큐 watermark는 별개.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C06"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/projection_pg.py:1-67",
+      "scripts/lib/research_digest.py:51-109",
+      "brain/spikes/harness_board.py:324-343"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_research_digest_contract.py",
+      "tests/integration/test_cli_wrappers_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/gate_dump_cmd.py",
+    "pinned_sha256": "3ec6e579fda1c3614e62bc7793e4a616412a92a3331237fcf421988b9ac1d845",
+    "git_blob": "c1183c010f47c5ed13f7a32fce95c6417d05c2a5",
+    "bytes": 8787,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        178
+      ]
+    ],
+    "semantic_summary": "실제 로더 정규화 분모·enum·오류를 보고, 0방출 거부. lint는 파생 인자 결손을 유예; 전체실행가능 승인 아님.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C07"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/pipeline_loader.py:199-256",
+      "scripts/validators/harness_lint.py:1700-1800"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_gate_dump_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/health_cmd.py",
+    "pinned_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "git_blob": "ffc56a369eae2661de3f9ac954c8721385966065",
+    "bytes": 49796,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        957
+      ]
+    ],
+    "semantic_summary": "quick의 HUD spawn/쓰기, 부분 strict, 반복 read·형상/시각 오류, role_delivery JSON 부재와 고정 state 경로.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C08"
+    ],
+    "caller_or_dependency_trace": [
+      ".claude/commands/health.md:1-12",
+      "scripts/validators/settings_wiring.py:132-211,232-280",
+      "brain/spikes/harness_board.py:346-364",
+      "scripts/cron/latency_gate.py:60-196"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_health_smoke.py",
+      "tests/contract/test_health_alerts_surface_contract.py",
+      "tests/contract/test_latency_consumer_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/hollow_cmd.py",
+    "pinned_sha256": "bc8e9d67bb318501be0c6b85e070bd99b7ef0de60ca866e79106f6100a9d40b4",
+    "git_blob": "7bc5a60ee37316fae0d60fc7e6e756842b9856ef",
+    "bytes": 6249,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        144
+      ]
+    ],
+    "semantic_summary": "문자열 단언 파일별 래칫·0분모 방어. basename 충돌·동일개수 교체·구문실패/해소범위·WEAK/ABSENT 비차단.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C07"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/hollow_audit.py:56-105,134-166",
+      "ontology/contracts.yaml:498-522"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_hollow_audit.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/hook_latency_probe.py",
+    "pinned_sha256": "e150384a28f73c6be1f78536a775e269fa5c979890a252f71a650fe05e0259cf",
+    "git_blob": "85b7ea609a174db037a468244d1d589b78adba33",
+    "bytes": 7248,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        158
+      ]
+    ],
+    "semantic_summary": "실 spawn 진단·temp state와 latency 직접쓰기. pinned bash 불일치·single event None 출력·repeat/timeout·시각불능 갱신누락.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C09"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/cron/l2_driver.py:307-341,1770-1803",
+      "scripts/cron/latency_gate.py:60-196",
+      ".claude/commands/health.md:1-12"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_health_smoke.py",
+      "tests/contract/test_latency_consumer_contract.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/hud.py",
+    "pinned_sha256": "2c1078eaf1b00515f6d200cd3c75288038b3a27bd2b747f9b32b3b3bfb146bba",
+    "git_blob": "8f58a2d835c017e6e4a4a9f2386ff0c0a4b63004",
+    "bytes": 17273,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        418
+      ]
+    ],
+    "semantic_summary": "ANSI/ASCII·tail·원자마커. 마커≠TUI/렌더/사람확인; P/F사건수·lease상태·git표시·추정토큰의 범위.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C10"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/handlers/hud_launcher.sh:1-12",
+      ".claude/settings.json:1-6",
+      "scripts/validators/settings_wiring.py:162-211"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_hud_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/incident_cmd.py",
+    "pinned_sha256": "1390e6c4782ac0fcd01202dbf238c56e84af8cd7a25c5b8f9ed37b3de5386ce0",
+    "git_blob": "8f9da8108891432b84acd59153c5d74a4bb8298b",
+    "bytes": 6194,
+    "hash_verification": "manifest_sha256_git_blob_bytes",
+    "manifest_snapshot_sha256_present": true,
+    "partition": "harness:scripts/cli:002",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        141
+      ]
+    ],
+    "semantic_summary": "장애 스키마·append lock·재개 이력. resolve note 공백/근거·fp 충돌·read/check/append 경합·손상 줄 건너뜀.",
+    "review_ref": "docs/full-analysis/harness-cli-002/review.md",
+    "finding_sections": [
+      "C01",
+      "C11"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/ownership_events.py:1-44",
+      "scripts/lib/backlog.py:26-45",
+      "scripts/lib/ledger.py:214-302"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_backlog_smoke.py"
+    ],
+    "tests_executed": [],
+    "test_limits": "원본 실행·설치·probe·기기 조작 0건. 읽은 구간과 테스트 선언을 실행 실적 또는 인수로 계산하지 않음.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "공식 자료·라이선스 검토",
+      "전체 consumer와 효과·OS별 격리 실행",
+      "실제 서비스/금융/사람 oracle 인수",
+      "Zeus PG SSOT와 티켓 적응"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

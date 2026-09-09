@@ -1,0 +1,372 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/lib/lease.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5752,
+    "pinned_sha256": "c79fae38c34ece03a67a87d2072c3efea71a40a220dca1fc6d7303d1d6a86244",
+    "observed_sha256": null,
+    "git_blob": "dcf661e9f709c5d81120b462503af0e0fcd9c69a",
+    "total_lines": 144,
+    "read_ranges": [
+      [
+        1,
+        144
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S01",
+    "purpose": "lease acquisition, guard, heartbeat, revocation and update",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/idempotency.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1734,
+    "pinned_sha256": "f5d8f173d156932d1de1cb203ad928529ac5e2c66c5ac30e16a693a205f5336b",
+    "observed_sha256": null,
+    "git_blob": "4168fc06a3fc9e9bb2166f32f9996fa81b31481f",
+    "total_lines": 39,
+    "read_ranges": [
+      [
+        1,
+        39
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S02",
+    "purpose": "write-before-action and read/append boundary",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/projection_pg.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3203,
+    "pinned_sha256": "121dbbe308159d3663c4e2ddebce514b68611bd43eddd25f735a680d88ea7b42",
+    "observed_sha256": null,
+    "git_blob": "9c5846caafb330332492c71bf7c7bc505b5fbab2",
+    "total_lines": 67,
+    "read_ranges": [
+      [
+        1,
+        67
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S03",
+    "purpose": "transaction, derived done and authority direction",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/role_supervisor.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13132,
+    "pinned_sha256": "c6b8f29fc9f76d35b05ca03163776a8176e8cb1616e7efd35ceb17eff4b564d4",
+    "observed_sha256": null,
+    "git_blob": "1c749fbfdafca3a18185cefd0a9c090d0a11bcba",
+    "total_lines": 263,
+    "read_ranges": [
+      [
+        140,
+        250
+      ]
+    ],
+    "body_read_complete": false,
+    "id": "S04",
+    "purpose": "request consumption to spawned result conversion",
+    "disposition": "supporting_selected_ranges_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/health_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 49796,
+    "pinned_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "observed_sha256": null,
+    "git_blob": "ffc56a369eae2661de3f9ac954c8721385966065",
+    "total_lines": 957,
+    "read_ranges": [
+      [
+        537,
+        582
+      ]
+    ],
+    "body_read_complete": false,
+    "id": "S05",
+    "purpose": "latency cache reader and measurement quality",
+    "disposition": "supporting_selected_ranges_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_consume_gate_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9834,
+    "pinned_sha256": "6b2360261129408bea55490ca6bd76aee2fb18206f57f1df2dbfe94448816e74",
+    "observed_sha256": null,
+    "git_blob": "fa0924334bcaa9d1de990cc9286fe77b60d1fa50",
+    "total_lines": 195,
+    "read_ranges": [
+      [
+        1,
+        195
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S06",
+    "purpose": "fail-open and blocked-consumption assertions; live-state optional axis",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_dba_projection_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6133,
+    "pinned_sha256": "620604ed5339228c48b699b7ae36dc7dea8bc1b6e7e825c3425d9481c4a58ce4",
+    "observed_sha256": null,
+    "git_blob": "d31f26f11fde33ef9c74cb53037ae7d0a2f9285b",
+    "total_lines": 145,
+    "read_ranges": [
+      [
+        1,
+        145
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S07",
+    "purpose": "fake projection and heartbeat assertions",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "infra/fleet/docker-compose.yml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13244,
+    "pinned_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6",
+    "observed_sha256": null,
+    "git_blob": "3689a96fc5ee6d1a1dad7c9a764e2f5d6e49d0d7",
+    "total_lines": 231,
+    "read_ranges": [
+      [
+        170,
+        231
+      ]
+    ],
+    "body_read_complete": false,
+    "id": "S08",
+    "purpose": "DBA runtime command, mounts and healthcheck",
+    "disposition": "supporting_selected_ranges_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_l2_driver_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 21590,
+    "pinned_sha256": "9e1051ad614aebb0c5fe6befa3f58b779deeeede0fea174321081211bb69c7d7",
+    "observed_sha256": null,
+    "git_blob": "002e810434bc26abbd525e619da8fa115a06e465",
+    "total_lines": 403,
+    "read_ranges": [
+      [
+        1,
+        240
+      ]
+    ],
+    "body_read_complete": false,
+    "id": "S09",
+    "purpose": "stub process/env, safe mode, lease and partial hung-process tests",
+    "disposition": "supporting_selected_ranges_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_bus_watermark_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13716,
+    "pinned_sha256": "9f982fc4ebeb1102075be19775e66c191e5ab51c756b3e8b2cd96c5a20fdd8b8",
+    "observed_sha256": null,
+    "git_blob": "08e87d464f2440713646cd1bb2d73a8d84be15b7",
+    "total_lines": 262,
+    "read_ranges": [
+      [
+        65,
+        130
+      ],
+      [
+        190,
+        241
+      ]
+    ],
+    "body_read_complete": false,
+    "id": "S10",
+    "purpose": "external dependency skip, failed deliveries and AST success-side assertion",
+    "disposition": "supporting_selected_ranges_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_note_accumulation_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10127,
+    "pinned_sha256": "14231d60b19392b210621bcf578c1f1f0cd74877de4017de31ec8acc14974694",
+    "observed_sha256": null,
+    "git_blob": "ab866bce9172b105b48e2de91c91e4b694ef5e58",
+    "total_lines": 194,
+    "read_ranges": [
+      [
+        1,
+        194
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S11",
+    "purpose": "marker, two IDs, overwrite, index and optional live archive",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "config/profile.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 424,
+    "pinned_sha256": "f94e4256f47955c1aa94f0750f2b6d648c2843bc7ad79c04a3982464a89fcf24",
+    "observed_sha256": null,
+    "git_blob": "6e8b28e4f56a9aedfd2374c3af0b62e0ea0c9ad9",
+    "total_lines": 7,
+    "read_ranges": [
+      [
+        1,
+        7
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S12",
+    "purpose": "fleet and Git JSONL authority declaration",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_commit_scope_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6189,
+    "pinned_sha256": "af9c49d53e3786739dffa67540c047723f0cff0427e7f3f331c2501a3e621c45",
+    "observed_sha256": null,
+    "git_blob": "ee51371bf36adbe3c67c276a3e10c18d93775627",
+    "total_lines": 127,
+    "read_ranges": [
+      [
+        53,
+        127
+      ]
+    ],
+    "body_read_complete": false,
+    "id": "S13",
+    "purpose": "prompt string and derived output checks",
+    "disposition": "supporting_selected_ranges_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_latency_consumer_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 20771,
+    "pinned_sha256": "4f689db243548506db9c8fb1e30a54b437cffc5b558ba902a45404fb3d796aa8",
+    "observed_sha256": null,
+    "git_blob": "f0f9266dce94596a0bd9f37d9a8b678f1a59a67d",
+    "total_lines": 352,
+    "read_ranges": [
+      [
+        147,
+        230
+      ]
+    ],
+    "body_read_complete": false,
+    "id": "S14",
+    "purpose": "AST call and synthetic latency assertions",
+    "disposition": "supporting_selected_ranges_read",
+    "tests_executed": [],
+    "execution_count": 0,
+    "test_limits": "Static reading only. Unread ranges and transitive imports remain unverified."
+  },
+  {
+    "source": "zeus-current-contract",
+    "path": "AGENTS.md",
+    "revision": "working-copy-sha256-bound",
+    "bytes": 1399,
+    "pinned_sha256": "535230bb5054c307c7d90dc14ea26f4a840d1f9a4f8ae2a5c1601df2033da9f2",
+    "observed_sha256": null,
+    "git_blob": null,
+    "total_lines": 17,
+    "read_ranges": [
+      [
+        1,
+        17
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S15",
+    "purpose": "Current Zeus authority and evidence contract, not implementation equivalence",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0
+  },
+  {
+    "source": "zeus-current-contract",
+    "path": "docs/research-standard.md",
+    "revision": "working-copy-sha256-bound",
+    "bytes": 8196,
+    "pinned_sha256": "3328161efffcf50f0aec5b3baf00f8865aa63bee4b6964ceea9ce646ddd87c5f",
+    "observed_sha256": null,
+    "git_blob": null,
+    "total_lines": 108,
+    "read_ranges": [
+      [
+        1,
+        108
+      ]
+    ],
+    "body_read_complete": true,
+    "id": "S16",
+    "purpose": "Current Zeus authority and evidence contract, not implementation equivalence",
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "execution_count": 0
+  }
+]

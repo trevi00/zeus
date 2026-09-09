@@ -45,8 +45,12 @@
 - [추출기](harness-engine-extractors/review.md): 10개 전문. 순번 ID와 의미 보존, 정적 호출과 실제 사용자 시나리오, Python 모델 관계·TS 그래프 소비 범위를 대조했다. 실행·채택은 미완료다.
 - [Harness CLI 001](harness-cli-001/review.md): 13개 전문. 자가개선 검증 대상, 실제 부작용·반환 상태, 완료선·관측·배포 경계와 원본 테스트의 의미를 연결했다. 실행은 0건이다.
 - [게이트 소비·SDD 생성 공동 검토](harness-gate-consumer-joint/resolution.md): 기존 엔진 5개와 supporting 15개를 root가 재검토하고 실제 Claude와 독립 검토·토론·정정을 수행했다. 문장 귀속·PARTIAL·철회·ERROR·검사 분모 및 템플릿→lint→testgen 불일치를 확인했다. 정적 검토이며 원본 실행은 0건이다.
+- [Baldrix CLI 005 공동 검토](baldrix-cli-005/resolution.md): 6개 전문과 root supporting 17개, 실제 Claude 독립 판단·토론·정정. 원본 텔레메트리 테스트 19개와 UTC/KST 원본 함수 관측을 실행했다. 시간대·지표 분모·미검사 frontend exit 0·worker DONE·writeback 적용/복구 계약을 대조했다.
+- [Baldrix cron 001](baldrix-cron-001/review.md): 19개 전문. Windows 예약 등록, 중복 실행 lock, worker timeout, 실패 수술의 commit, 압축 원문 보존을 추적했다. 원본 실행과 실제 예약 설치는 0건이다.
+- [Harness CLI 002](harness-cli-002/review.md): 11개 전문. health/HUD 부작용, 오류 계약 모집단, latency의 Bash 선택, feed 커서와 incident 해소 상태를 추적했다. 정적 검토이며 원본 실행은 0건이다.
+- [Harness cron 001](harness-cron-001/review.md): 11개 전문. 소비 거절이 spawned 기록으로 바뀌는 경로, safe-mode 후처리, 스폰·회계 원자성, DBA 빈 projection heartbeat를 대조했다. 정적 검토이며 원본 실행은 0건이다.
 
-현재 고정 2,736개 중 593개에 검토 기록이 있으며 **2,143개는 아직 unreviewed**다. 593개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
+현재 고정 2,736개 중 640개에 검토 기록이 있으며 **2,096개는 아직 unreviewed**다. 640개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
 
 Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 
