@@ -1,0 +1,63 @@
+{
+  "id": "ZEUS-430121f4256d",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "FA-019 실행 신원, FA-022 unknown, FA-023 승인 권위 및 FA-025 설치/후보 리비전과 연결한다.",
+      "원본 실행기 세 파일의 root/실제 Claude 독립 재검토와 신규 테스트 63개 정적 검토를 근거로 한다. 재검토 세 파일은 새 전수 분석 파일 수에 더하지 않는다.",
+      "전체 분석과 독립 채택 검토 이후 root가 Zeus의 실행·관측·승인 경계에 변형 구현한다. 원본 하네스를 수정하거나 이 검토만으로 배포하지 않는다."
+    ],
+    "title": "[FA-026] 테스트 실행기의 격리·수집 분모·실패 전달",
+    "impact": "불완전하거나 다른 조건의 검사가 자기개선·모델 비용 최적화·배포 판단의 성공 표본으로 누적될 수 있다. 실행 횟수와 실제 인수 증거가 분리되지 않으면 경험이 쌓일수록 잘못된 승급 근거도 함께 늘어난다.",
+    "problem": "원본 실행기가 빈 스크립트 rc0과 stderr 실패 표시를 통과로 받아들이고, 실제 pytest assertion 실패의 메시지를 의존성 부재로 잘못 분류했다. 격리 재실행 예외는 원래 환경의 실행으로 이어질 수 있다. 테스트별 수동 main과 pytest의 수집·실패 전달이 달라 검사 이름이나 초록 종료코드가 같은 검증을 의미하지 않는다.",
+    "rollback": "실행 모드·격리·분모·실패 전달 계약이 깨지면 해당 결과의 신규 승급 사용을 중단한다. 원시 실패와 PG 시도를 남기고 검증된 정책 및 실행기로 재검증한다. 기존 성공이나 약한 대체 실행으로 현재 실패를 덮지 않는다.",
+    "verification": [
+      "읽기 전용 source·네트워크 차단·제한된 scratch의 기존 immutable 컨테이너에서 원본 compaction 수동 6개 테스트를 실행하여 통과를 관측했다.",
+      "별도 실제 원본 helper 관측에서 empty rc0, stderr FAIL 삭제, stdout FAIL→1, 명시 exit2 보존, pytest 수집0→1, assertion 메시지→의존성 부재 오분류, fixture 선택 누락/오탐과 scratch symlink 쓰기를 관측했다. methods/provider/process 반환값을 mock하지 않았다.",
+      "실제 Claude와 root의 독립 검토·토론 및 원시 실행 기록을 보존한다. 원본 전체 suite, 실제 push/host, Windows/WSL 원본 인수, 실제 모델 자격·사람 시나리오는 미검증이다.",
+      "신규 63개 primary는 정적 검토이며 원본 테스트 실행 0회다. 원문의 과거 성공 수치와 합성 fixture를 이번 실행 증거로 계상하지 않는다.",
+      "Claude가 root 기록기의 timeout 영수증 누락/부분 출력 덮어쓰기 위험을 발견했다. 기존 버전은 보존하고 v2의 실행 전 intent·시도 경로·상태 구분을 구현했다. 실제 정상/타임아웃/실행파일 부재/중복 시도 거절 및 명명 Docker timeout 정리 관측을 보존한다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/dad4d261684f53592fae5e1c2f418a2f0cced693/docs/full-analysis/baldrix-test-runners-001/resolution.md",
+      "https://github.com/trevi00/zeus/blob/dad4d261684f53592fae5e1c2f418a2f0cced693/docs/full-analysis/baldrix-test-runners-001/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/dad4d261684f53592fae5e1c2f418a2f0cced693/docs/full-analysis/baldrix-test-runners-001/observations.md",
+      "https://github.com/trevi00/zeus/blob/dad4d261684f53592fae5e1c2f418a2f0cced693/docs/full-analysis/baldrix-test-runners-001/components.receipt.json",
+      "https://github.com/trevi00/zeus/blob/dad4d261684f53592fae5e1c2f418a2f0cced693/docs/full-analysis/baldrix-test-runners-001/run_observations_v2.py",
+      "https://github.com/trevi00/zeus/blob/dad4d261684f53592fae5e1c2f418a2f0cced693/docs/full-analysis/runner-tests-root-review.md",
+      "https://github.com/trevi00/zeus/blob/dad4d261684f53592fae5e1c2f418a2f0cced693/docs/full-analysis/runner-tests-checkpoint-verification.json"
+    ],
+    "acceptance_criteria": [
+      "필수 격리 준비·자식 시작·기한 준수·종료 확인에 실패하면 unavailable/failure로 끝낸다. 원래 환경으로 재실행하여 같은 시도의 성공을 만들지 않고 실패 영수증을 보존한다.",
+      "쓰기 root의 모든 명시 override와 수집/import 시점 환경을 결속한다. asset 링크를 read-only라고 가정하지 않으며 실제 권한·scratch·프로세스 트리 수명으로 경계를 검증한다.",
+      "정의된 시나리오·수집·실행·통과·실패·skip·unavailable의 분모와 실행기 모드를 별도로 기록한다. 수동 TESTS 누락, pytest 미수집, 누적 실패 helper와 종료값 불일치를 검사한다.",
+      "의존성 부재를 임의 stdout/stderr 부분문자열로 판정하지 않는다. 실패한 pytest 결과를 경고 후 더 약한 main 실행으로 대체하지 않고 실제 실패·수집 오류를 유지한다.",
+      "상태 문자열과 실제 행동 결과를 구분한다. rc0 빈 실행, stderr-only 진단, 비표준 실패 표식, 합성 승인·worker 사건·Git 수동 연산을 실제 전체 E2E 성공으로 계수하지 않는다.",
+      "원본 byte identity, 정확한 Zeus 후보 revision, 환경, PG attempt/generation, 입력·출력 digest와 독립 검토를 결속한다. skip 증가·측정 누락·실행 실패 알림은 생성/전달/확인을 각각 기록한다.",
+      "Windows/Linux/WSL에서 실제 실행 및 격리 실패 시 중단을 검증한다. 사람의 핵심 SDD 시나리오와 실제 제품 인수를 별도로 통과시키고 Astra→Sol→Terra 자격 이전을 합성 지표나 rc0만으로 승인하지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T09:31:25.927326+00:00",
+  "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T09:31:27.792905+00:00",
+      "id": "a45b769d327bca3028206c26e75364356553bd2fb56ce147f19bb75284d0c0f5",
+      "url": "https://github.com/trevi00/zeus/issues/27",
+      "number": 27,
+      "status": "synced",
+      "body_hash": "6874505e6526b1bc40bd3285bc0457660f25eb690921f79e8c7cf0d585f66b34",
+      "ticket_id": "ZEUS-430121f4256d",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}
