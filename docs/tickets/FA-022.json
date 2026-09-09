@@ -1,0 +1,67 @@
+{
+  "id": "ZEUS-a9984f5b7caf",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "결정론적 파일·명령 관측을 역사적 진위, 의미 검증, 실제 사람 인수와 분리한다.",
+      "Git 검증 정책과 PG 작업·시도·실행 권한·원본 및 재실행 영수증을 결속한다.",
+      "FA-019 호출 신원, FA-020 차단기, FA-021 평가 분모 및 승인값과 연결하며 이 토픽은 검사 결과 의미와 재실행 권한을 다룬다.",
+      "전체 분석과 합의 후 root가 Zeus에 구현한다. 이번 검토는 기능 도입·배포·모델 자격 승인이 아니다."
+    ],
+    "title": "[FA-022] 증거 검사 unknown·재실행 동일성·실행 권한 결속",
+    "impact": "검사를 못한 상태가 성공으로 기록되거나 환경 차이를 위조 확정으로 오인할 수 있다. 에이전트가 적은 재실행 명령과 실제 승인된 검증의 동일성·권한을 확인하지 않으면 SDD 인수, 모델 자격 및 자동 개선의 근거가 무너진다.",
+    "problem": "고정 Baldrix 증거 감지 원본의 격리 실행에서 entry.cwd 아래 실제 파일이 탐지기 cwd 기준으로 검사되어 FABRICATION_CONFIRMED가 됐다. 빈 증거·디렉터리·재실행 없는 passed·권한 오류는 CLEAN이었고, 봉투가 선택한 재실행 명령은 스크래치 파일을 쓰고 CLEAN을 반환했다. NUL 경로와 잘못된 UTF-8 출력은 예외를 냈다. 원본 테스트 11개 통과는 이 분류 계약의 실행이며 과거 주장 진위나 사람 인수가 아니다.",
+    "rollback": "검사 신원·실행 권한·원본 근거가 불일치하면 해당 결과의 인수/모델 승급 소비를 중단하고 원시 영수증과 PG 세대를 보존한다. 실행 중지·정리 상태를 기록하고 새로운 권한과 동일성이 확인된 시도에서만 재검증한다.",
+    "verification": [
+      "원본 observer 단위 11개 PASS: 실제 원본 함수·임시 파일·Python 자식과 합성 주장 사용.",
+      "별도 관측 프로그램은 method/clock/subprocess/provider patch 없이 실제 격리 파일·권한·자식을 사용했고 두 실행 전후 1648개 원본 바이트가 동일했다.",
+      "실제 Claude 독립 검토와 토론을 수행했다. production 도달 불가·검출률 0/100%·항상 hook 종료·전역 breaker/FLAKE 부재 주장은 철회 및 범위 축소했다.",
+      "hook의 D1 예외가 성공 기록으로 이어질 수 있다는 것은 D2도 실패가 없고 append가 성공하는 조건의 정적 사실이다. 전체 hook/PG/host kill 실측은 이 묶음에 없다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/baldrix-observers-001/resolution.md",
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/baldrix-observers-001/codex-initial.md",
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/baldrix-observers-001/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/baldrix-observers-001/observations.md",
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/baldrix-observers-001/components.stdout.txt",
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/baldrix-observers-001/components.receipt.json",
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/observer-workflow-root-review.md",
+      "https://github.com/trevi00/zeus/blob/c99da02e00c1df96761d14f7363274c3f346dcc4/docs/full-analysis/observer-workflow-checkpoint-verification.json"
+    ],
+    "acceptance_criteria": [
+      "검사 결과는 checked/not_checked/missing/unknown/error/replay_failed/flake_pattern/verified_mismatch를 원인과 함께 표현하며 CLEAN이나 위조 확정으로 조용히 접지 않는다.",
+      "각 증거는 파일 종류·내용 hash·정확한 범위·source revision·작업·시도에 결속한다. 디렉터리나 무관 파일 존재만으로 요구사항을 충족하지 않는다.",
+      "파일 검사와 재실행은 같은 명시적 cwd·환경·source identity를 사용한다. 원본 실행과 replay의 argv·입력·정책·환경 차이는 비교 불가로 표시한다.",
+      "모델이 작성한 봉투의 명령은 그 자체로 실행 권한이 아니다. 실제 runner가 작업/세대/lease/정책에 결속된 capability를 재검증하고 격리된 유계 환경에서만 실행한다.",
+      "기한은 양수·유한·상한을 검증하고 엔트리 수·출력 바이트·전체 시간·재시도·호출자 예산을 함께 제한한다. 자식 전체 종료 결과와 실패한 정리는 별도 영수증으로 남긴다.",
+      "stdout/stderr 원시 바이트·return code·timeout·실행 파일 부재·권한·디코딩 오류와 시도별 결과를 보존한다. 대체 디코딩이나 성공 요약으로 원본 실패를 소실하지 않는다.",
+      "봉투의 외부/중첩 증거 선택을 하나의 schema로 정의하고 잘못된 타입·빈 마스킹·모순된 중복 필드는 명시적으로 처리한다. 검증 실패 후 실행 허용 여부는 정책에 고정한다.",
+      "호출자 판정 우선순위를 정책과 일치시키고 검사 실패가 성공 ledger로 기록되지 않도록 checked 분모와 unknown을 결속한다. 로그 저장 실패·누락은 notification과 재처리 상태로 노출한다.",
+      "실제 동일한 시나리오 결과와 독립 승인만 SDD 인수 및 Astra/Sol/Terra 자격을 만든다. synthetic claim·단위 fixture·두 번 재실행의 패턴은 실제 사람의 인수나 통계적 안정성을 대신하지 않는다.",
+      "Windows/Linux/WSL에서 실제 경로·인코딩·프로세스 트리·PG 기록·재시작·stale authority를 검증한다. 격리 컴포넌트 관측을 호스트/실기기 인수로 확대하지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T08:07:51.682216+00:00",
+  "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T08:07:53.862019+00:00",
+      "id": "762c7b28f0d163d919f17692ddf3524d72daa1e5c226a20798ac2b645f4ce4af",
+      "url": "https://github.com/trevi00/zeus/issues/23",
+      "number": 23,
+      "status": "synced",
+      "body_hash": "816bca52205ee402ecf5fd10dc5ba0cb492d6d80e94122d1ec6a5dead3fa8d9e",
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

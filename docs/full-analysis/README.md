@@ -100,3 +100,5 @@ harness lib의 정상 gate writer 추가 분석은 검토 도구의 자동 보�
 차단기 공동 검토는 [단일 재시험 소유권·저장·정책 #21](https://github.com/trevi00/zeus/issues/21)에 연결했다. 근거는 `315e368`에 고정되어 있으며, 현재 로컬 PostgreSQL 원장과 GitHub 21개 항목의 본문·제목·marker 일치를 확인했다.
 
 평가 보정 공동 검토는 [실제 평가 분모·소비자 동등성·승인값 #22](https://github.com/trevi00/zeus/issues/22)에 연결했다. 근거는 `0737d07`에 고정했으며 로컬 PostgreSQL 원장과 GitHub 22개 항목의 본문·제목·marker 일치를 확인했다.
+
+증거 감지 공동 검토는 [검사 unknown·재실행 동일성·실행 권한 #23](https://github.com/trevi00/zeus/issues/23)에 연결했다. 근거는 `c99da02`에 고정했으며 로컬 PostgreSQL 원장과 GitHub 23개 항목의 본문·제목·marker 일치를 확인했다.
