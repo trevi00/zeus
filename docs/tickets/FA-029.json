@@ -52,19 +52,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:24:13.747097+00:00",
+      "id": "2b87a97a05b4b24e59a419cf4a690d3fa1bb4d6e6b3246f9df3b6c61c906441e",
+      "summary": "Joint review rejects append-only storage necessarily requiring new slug: typed correction/reopen events are possible. Historical resolved text/PASS/severity does not prove current closure. Zeus close/reopen/state sync remains unimplemented and this checkpoint performs zero close/reopen operations.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-db4ecdcd9fa8",
+      "content_hash": "9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:40:47.601594+00:00",
+      "at": "2026-09-09T13:24:16.108846+00:00",
       "id": "0eeada92dcb6321cb49f4e36a1249ed8a71cb06955aeb4d5862c2ff9d86a37b5",
       "url": "https://github.com/trevi00/zeus/issues/30",
       "number": 30,
       "status": "synced",
-      "body_hash": "df8dd75508fa8139753e5c998138775b6c87aee9e4532f4dba00cfcf9504396e",
+      "body_hash": "9075d9b8c75647f78b79759d7ada3a5e20b5d8b5bdc47142f06459f846e9d6fa",
       "ticket_id": "ZEUS-db4ecdcd9fa8",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "2b87a97a05b4b24e59a419cf4a690d3fa1bb4d6e6b3246f9df3b6c61c906441e",
         "f55540e0800f5099e55111d89c556b148a6a9b04c24e81c289324b3c9c768822"
       ],
       "content_hash": "9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691",

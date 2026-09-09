@@ -89,22 +89,38 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:24:06.659051+00:00",
+      "id": "f099832640af05a0237c2be233e87338c8f9ba0aa02eefd3580efcdf2858d4a0",
+      "summary": "Setter rejects documented inherit and accepts adaptive; one planner model row defines vocabulary. Agent versus Task is unqualified adapter mapping, not proof of nonexistent API. No model tier/name/token estimate establishes qualifiedAstra/Sol/Terra transfer. Actual Claude source review is separately bound, not production delegation qualification.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:40:43.688937+00:00",
+      "at": "2026-09-09T13:24:09.021124+00:00",
       "id": "70762c25dbf581fc55f5e07958ce18e2aa50081b37121ae72322fe6b180499f9",
       "url": "https://github.com/trevi00/zeus/issues/20",
       "number": 20,
       "status": "synced",
-      "body_hash": "17c07c2dc8d16cebefb49e2c76b3a84bfb89937e904ea4233eb116ca8b054c15",
+      "body_hash": "1912c7c234c62231970ee832a8d07fa024a7743521a8a0dd5f0db22fb1144bf4",
       "ticket_id": "ZEUS-15c0d970315a",
       "repository": "trevi00/zeus",
       "review_ids": [
         "29a6d85f1be788cde09fd37ddc122cff2c521c0700d36078b1d9480a5a86b4e6",
         "8b3f8b8d23903979d98a08a53fa88630fd83987925635f877cf53d166abd0d5b",
-        "f086480570da2bb2cf5c246575cce408a84e541ab520c5cea6390010b6b90f86"
+        "f086480570da2bb2cf5c246575cce408a84e541ab520c5cea6390010b6b90f86",
+        "f099832640af05a0237c2be233e87338c8f9ba0aa02eefd3580efcdf2858d4a0"
       ],
       "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
       "synced_revision": 1

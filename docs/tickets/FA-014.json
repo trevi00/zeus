@@ -127,19 +127,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:23:59.744398+00:00",
+      "id": "04addc025b5e5882f3f5e01958fc523dab2bed6b38bba4420ddf4f1297def5f1",
+      "summary": "Joint86 primary review: wrapper AUDIT-only/preflight contracts diverge from UAT/VERIFICATION consumers; actual debugger return formats and intel artifact names disagree. Canonical typed artifacts and original acceptance denominator are required. Static only, no implementation or acceptance closure.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-f5a496e41ac2",
+      "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T13:07:38.370163+00:00",
+      "at": "2026-09-09T13:24:01.969690+00:00",
       "id": "d9c584db548ffe747d4fa6f74912b3f0cf03b3498ba5b58f7a16ce8f3d187385",
       "url": "https://github.com/trevi00/zeus/issues/15",
       "number": 15,
       "status": "synced",
-      "body_hash": "d4769e0c4c5b2a03383f39b59e205edd39d8f7459d041378806414a8c5cc292c",
+      "body_hash": "27db72a518e901ec379cdb4614d0e88c991a18bc93ce4246149bd102dbf735c4",
       "ticket_id": "ZEUS-f5a496e41ac2",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "04addc025b5e5882f3f5e01958fc523dab2bed6b38bba4420ddf4f1297def5f1",
         "2dfa26bf131b0f4f776d7e130f9461536cee4c3224e218e4630b38f64a41bac7",
         "39f0c63f315c92a5bf51a608278d81ac3489d71ea95fdf79532fbb556f453a25",
         "44e52dad9853e8a110c0a3ce5b4f45830626a28b640d18ef7ccc5c28918dc20a",

@@ -118,19 +118,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:24:04.518490+00:00",
+      "id": "08c32fc4bb0334999c368f2bd90a0f7257d8d2c62fb364f515ee4c23cf791e37",
+      "summary": "Summary/file/completed-directory/PR checkboxes do not prove8stageSDD or human acceptance. Claude withdrew historical PASS implying current acceptance-coordinate closure. Git definitions and PG typed attempts/accepted/waived/deferred remain necessary; all33 tickets stay unresolved.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:40:41.659489+00:00",
+      "at": "2026-09-09T13:24:06.561445+00:00",
       "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
       "url": "https://github.com/trevi00/zeus/issues/19",
       "number": 19,
       "status": "synced",
-      "body_hash": "a8755ce7d6134b6f7ac20803969bf3c90b8675eb87f3f4c316693090a4bfa637",
+      "body_hash": "e6c2afadf33e2ffced27e8535d21136c210a043dbfac79b31c3099b2bab6886f",
       "ticket_id": "ZEUS-07f94a1a4390",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "08c32fc4bb0334999c368f2bd90a0f7257d8d2c62fb364f515ee4c23cf791e37",
         "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2",
         "49c0c68e13065a735e34664aea7e061394f53f7e5562a61a9d58244c0c19e890",
         "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f",

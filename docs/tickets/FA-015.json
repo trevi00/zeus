@@ -98,23 +98,39 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:24:02.124838+00:00",
+      "id": "e6d318c59bd560eaaef6821dd60b6a7b253c5879c5dcd5bcb39fce1222e78bac",
+      "summary": "Joint entrypoint review traces partial workspace cleanup, global patch target/project snapshot mismatch and PR branch/planning rewrite scope. Exact task/path/revision ownership remains required; source confirmation prose alone is neither enforcement nor a new permission requirement for already authorized work. No source mutations or OS claims.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T13:07:40.520228+00:00",
+      "at": "2026-09-09T13:24:04.392989+00:00",
       "id": "8946b5a9efa626e86ae1edaa9bdc1848a0557f1dad6059fefa750c8031007721",
       "url": "https://github.com/trevi00/zeus/issues/16",
       "number": 16,
       "status": "synced",
-      "body_hash": "740d68a7d82d43fae4b2f0db20ef0ada69a74a7d2b9801c47f2103bcdaecb5d9",
+      "body_hash": "b016f0093a61a9819e36d8c16257a13fb6191d27e7f1ea231bbbccd0be992410",
       "ticket_id": "ZEUS-39d3d0633060",
       "repository": "trevi00/zeus",
       "review_ids": [
         "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143",
         "66d808bbc4ae0fb7fdaf1a0dfc39766a71026136272fbd67f6a628c393679444",
         "792abed2f50540269d9f355607e13cb2709a3a046b8598146333a023883ee5eb",
-        "dcd2d763d2128eaa80791c1b4bcaac45adf30c61ec9d79856bfada7e03e59a54"
+        "dcd2d763d2128eaa80791c1b4bcaac45adf30c61ec9d79856bfada7e03e59a54",
+        "e6d318c59bd560eaaef6821dd60b6a7b253c5879c5dcd5bcb39fce1222e78bac"
       ],
       "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
       "synced_revision": 1

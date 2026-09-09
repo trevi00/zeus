@@ -99,20 +99,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:24:11.545830+00:00",
+      "id": "16717d7d477a83428219abac87558b4f5c02d11611159479c32a8363dbcca5b5",
+      "summary": "Health wrapper rejects legacy --repair while direct workflow implements it; new mode/freshness/snapshot/confirm contract is unconnected. Tool labels/frontmatter and missing Write do not establish actual effects or runtime registration. Static configuration-consumer mismatch, no installation or operating harness change.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-9495da500988",
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:40:45.721361+00:00",
+      "at": "2026-09-09T13:24:13.657871+00:00",
       "id": "bd07e564483139323647f0798908cfeaf613b16ec8e822227597952a0fdf56f4",
       "url": "https://github.com/trevi00/zeus/issues/26",
       "number": 26,
       "status": "synced",
-      "body_hash": "60dae21e1271d00da8498ba734c5b9ac327be169270f0d2406006bf8c3a824d3",
+      "body_hash": "59729418b6931336fc53162ab56afb465f9274145d086aa5318a3b737e1859aa",
       "ticket_id": "ZEUS-9495da500988",
       "repository": "trevi00/zeus",
       "review_ids": [
         "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924",
+        "16717d7d477a83428219abac87558b4f5c02d11611159479c32a8363dbcca5b5",
         "174935eceb5656851c567e5cbfbe116287b0d04d6371301a38854f25be1ee7d1",
         "4aa0f40a708618af52fe0d0867dcbafa46dbc434cf55a2aee4c11cb89f06741b",
         "a029456fd0ac54a7bcfa21ba6ede99655c450d6b80cd0f905a89c2709f019f3d"

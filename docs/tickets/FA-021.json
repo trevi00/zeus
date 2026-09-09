@@ -46,18 +46,36 @@
   "content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T13:24:09.146745+00:00",
+      "id": "b4dcaa9ac772c26e70f698e4dd696623fb5056737a3c321802c1e9fde05b0e95",
+      "summary": "Pinned source already has bus failure callbacks/freshness injection/dropped IDs despite historical card claims. Actual direct consumer suppresses normal held bus result; disappeared proposal None can pass as out-of-scope. Preserve retractions and source revisions; retained severity is not proven faulty lifecycle state. No broker/race execution or new lesson promotion.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-916e0f1f4333",
+      "content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/0ff805d0f0a1ac6aa44b0e7a92c479e1dd3dffe4/docs/full-analysis/kha-entrypoints-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T07:46:35.254425+00:00",
+      "at": "2026-09-09T13:24:11.424203+00:00",
       "id": "ba3625b1b97a67b2800cc754bac91ef5b03e4f11f29203e957779aad61d26d43",
       "url": "https://github.com/trevi00/zeus/issues/22",
       "number": 22,
       "status": "synced",
-      "body_hash": "46175c709b55fd6d3877afa787f0a1d8ef75500f2725be5f1f8fff805715daaa",
+      "body_hash": "27505ec32b111fa2c7df2f91361a90bd71675be96fb9f4fc293abee9e2b3deb3",
       "ticket_id": "ZEUS-916e0f1f4333",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "b4dcaa9ac772c26e70f698e4dd696623fb5056737a3c321802c1e9fde05b0e95"
+      ],
       "content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",
       "synced_revision": 1
     }
