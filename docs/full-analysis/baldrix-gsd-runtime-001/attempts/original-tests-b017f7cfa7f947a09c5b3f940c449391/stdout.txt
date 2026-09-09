@@ -1,0 +1,21 @@
+✔ 1. fast-forward clean: FF merge, no drift -> no reconcile commit (395.425809ms)
+✔ 2. non-fast-forward: main advanced -> real merge commit, code+summary preserved (372.871786ms)
+✔ 3. multi-commit worktree: 2 code commits + SUMMARY -> code_hash = last code commit (348.781475ms)
+✔ 4. --full artifacts: CONTEXT/RESEARCH/VERIFICATION/REVIEW under QUICK_DIR are KEPT (398.376117ms)
+✔ 4b. --full without REVIEW.md: absence is fine, no spurious removal (364.394139ms)
+✔ 5a. resurrection (outside QUICK_DIR): foreign .planning add is swept + reconciled (362.637291ms)
+✔ 5b. same-quick-id junk: non-artifact file UNDER QUICK_DIR is swept; artifacts kept (360.961185ms)
+✔ 6. detached-HEAD worktree: merged by sha, not skipped (D8) (338.034493ms)
+✔ 7. merge conflict: merged=false, worktree LEFT, main tree intact, exit 0 (340.27039ms)
+✔ 8. multi-worktree: per-worktree PRE_MERGE_HEAD; both merged; commit_hash=primary code (440.37323ms)
+✔ 9. STATE drift main-wins: worktree STATE edit discarded, reconcile restores main blob (364.353032ms)
+✔ 10. CRLF immunity: autocrlf checkout does NOT trigger a spurious reconcile (D6) (324.282994ms)
+✔ 11. no worktrees: graceful no-op (266.169536ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4799.426315

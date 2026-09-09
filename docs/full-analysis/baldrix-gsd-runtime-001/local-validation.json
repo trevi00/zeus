@@ -1,0 +1,32 @@
+{
+  "kind": "local_validation_observation",
+  "base_revision": "7eaa42737d0cce4e675c9f309c215ce1e1d97ed4",
+  "working_tree": "untracked review artifacts; no tracked implementation changes",
+  "ruff": {
+    "argv": [
+      "uv",
+      "run",
+      "ruff",
+      "check",
+      "."
+    ],
+    "returncode": 0,
+    "tool_receipt": "04d6e7"
+  },
+  "pytest": {
+    "argv": [
+      "uv",
+      "run",
+      "pytest",
+      "-q"
+    ],
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 259.69,
+    "process_session": 97910,
+    "terminal_tool_receipt": "712d69"
+  },
+  "exact_published_revision_acceptance": false,
+  "upstream_test_results_ref": "docs/full-analysis/baldrix-gsd-runtime-001/verification.json"
+}

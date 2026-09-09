@@ -1,0 +1,42 @@
+{
+  "source_files_verified": 1648,
+  "attempts": [
+    {
+      "attempt": "components-367f9cbb19a94b90ae20392ca0ceb5c3",
+      "exit": 0,
+      "wrapper": "run_component_observations.py",
+      "docker_init": false
+    },
+    {
+      "attempt": "diagnostic-f25b1def7b59447d9f50d119c318add1",
+      "exit": 1,
+      "wrapper": "run_diagnostic.py",
+      "docker_init": false
+    },
+    {
+      "attempt": "environment-6cc818bf75894a37ad7390742dc164f1",
+      "exit": 0,
+      "wrapper": "run_observations.py",
+      "docker_init": false
+    },
+    {
+      "attempt": "original-tests-0f264366c5b44076b3e045457bafceae",
+      "exit": 1,
+      "wrapper": "run_observations.py",
+      "docker_init": false
+    },
+    {
+      "attempt": "original-tests-b017f7cfa7f947a09c5b3f940c449391",
+      "exit": 0,
+      "wrapper": "run_observations_with_init.py",
+      "docker_init": true
+    }
+  ],
+  "original_test_passes": 13,
+  "component_observations": 6,
+  "new_primary_coverage": 0,
+  "acceptance": false,
+  "whole_analysis_complete": false,
+  "actual_claude_receipt_bound": true,
+  "verifier_sha256": "f7bcf61ecfe1b64c004119e562f66b697454faed36927ba09c0f15dccb6762e9"
+}

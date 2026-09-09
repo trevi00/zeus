@@ -1,0 +1,12 @@
+{
+  "mode": "components",
+  "source_files": 1648,
+  "source_tree_hash_before": "91a64542bc52b4a3a1f3e41ec0318bddbb21329f15880d33ed58b0acefb8111d",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "image": "sha256:12ba66164e4c3074725e4e6972ca436f946dac480cd2e426530f3c1b8343ef6c",
+  "wrapper_sha256": "6cc28aa0d3e2bb8e4644c4c8f45604d06f1e72881952f14a51dde9e481f7a561",
+  "recorder_sha256": "8e0e5e2b192ee1c27eb49b917878a1f6c6a96b09c610fb5bad75921b085e6ebf",
+  "component_program_sha256": "12efa6fb07bca2c14871cf8125a352ba99ee803c55982fd60f85d6f0175754c3",
+  "original_test_sha256": "9c9da62867b8e56eb45139525242d1a43d3e435afca9f33d4652fdd86e985280",
+  "source_bytes_unchanged": true
+}
