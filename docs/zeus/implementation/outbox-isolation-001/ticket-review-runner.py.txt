@@ -1,0 +1,31 @@
+import json
+from pathlib import Path
+import subprocess
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/outbox-isolation-001'
+receipt = out / 'ticket-review-projection.json'
+assert not receipt.exists()
+revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().strip()
+assert revision == '49122b1821f9e494a7d96e3801a95ee9d8b00f91'
+base = f'https://github.com/trevi00/zeus/blob/{revision}/docs/zeus/implementation/outbox-isolation-001/'
+steps = []
+def run(*args):
+    p = subprocess.run(['uv', 'run', 'zeus', *args], cwd=root, capture_output=True, check=True)
+    result = json.loads(p.stdout)
+    steps.append({'args': args, 'exit_code': p.returncode, 'result': result})
+    return result
+before = run('ticket', 'show', 'ZEUS-fb340b746179')
+assert before['revision'] == 1 and before['content_hash'] == 'fe13dceb48b66cab295ef14143d4dcb51309927689de35a29cedea26e4f27a0b'
+for reviewer, provider, summary, evidence in [
+    ('Codex root', 'codex', '구현 완료 및 실측 검증: 손상 레코드 격리, 전송 전 의도·내용 결속, 전송별 영수증과 재시도, 모니터 경고. 실제 PostgreSQL·Redis에서 기존 결함과 ACK/커밋 유실 복구를 검증했습니다. Windows 전체 736개, 실제 서비스 대상 58개 테스트 통과. 전체 제품 인수나 운영 승인으로 간주하지 않습니다.', 'README.md'),
+    ('Claude CLI independent reviewer', 'claude', '실제 Claude CLI가 동일 티켓 범위의 설계·구현·최종 코드를 독립 검수하여 차단 결함 없이 승인했습니다. 루트와 페이지 검사 방식, 전송 이후 예외 처리, 전송 전 영속 의도를 논의했고 원인 코드와 불필요한 DB 트랜잭션을 보완했습니다. 이 의견은 배포·사람 인수 권한을 부여하지 않습니다.', 'claude-final.md')]:
+    run('ticket', 'review', before['id'], '--revision', '1', '--reviewer', reviewer,
+        '--provider', provider, '--verdict', 'support', '--summary', summary, '--evidence', base + evidence)
+sync = run('ticket', 'sync', before['id'], '--repo', 'trevi00/zeus')
+after = run('ticket', 'show', before['id'])
+assert after['revision'] == before['revision'] and after['content_hash'] == before['content_hash']
+assert after['status'] == 'open' and after['lifecycle_sequence'] == 0
+receipt.write_text(json.dumps({'code_commit': revision, 'mode': 'Existing-ticket implementation reviews and actual PG/GitHub projection; no new issue or content revision', 'steps': steps}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+(out / 'ticket-review-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'ticket_id': before['id'], 'revision': after['revision'], 'status': after['status'], 'reviews': len(after['reviews']), 'projection': sync.get('status')}))

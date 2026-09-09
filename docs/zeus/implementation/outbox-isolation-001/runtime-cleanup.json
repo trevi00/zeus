@@ -1,0 +1,7 @@
+{
+  "test_container": "zeus-outbox-test-37930b58a2ed44d89b87bfdab29a1ce4",
+  "running": false,
+  "data_retained": true,
+  "production_containers_untouched": true,
+  "closure_trust_commit_configured_in_current_process": false
+}

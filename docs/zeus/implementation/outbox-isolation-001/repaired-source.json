@@ -1,0 +1,566 @@
+{
+  "mode": "Actual isolated PG source repair and Redis enqueue; historical quarantine retained",
+  "result": {
+    "examined": 5,
+    "limit": 100,
+    "published": 1,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 4,
+    "legacy_sent": 0,
+    "error": 0
+  },
+  "postgres": [
+    {
+      "bucket": "events",
+      "id": "2bd41c0c-8c8d-47bd-9f5a-6a37e62cc0c0",
+      "body": {
+        "at": "2026-09-09T15:59:03.064569+00:00",
+        "type": "outbox.retry",
+        "outbox_id": "420544a8-9e23-4786-b135-44e59321c67a",
+        "error_type": "MessageDeliveryError",
+        "evidence_id": "2bd41c0c-8c8d-47bd-9f5a-6a37e62cc0c0"
+      }
+    },
+    {
+      "bucket": "events",
+      "id": "7167e4fac59af3213639245abb9856b3e37ad7accf262dd1c778017e51dc4353",
+      "body": {
+        "at": "2026-09-09T15:59:02.785252+00:00",
+        "type": "outbox.quarantined",
+        "outbox_id": "00000000-0000-4000-8000-000000000002",
+        "error_type": "InvalidOutboxRecord",
+        "evidence_id": "7167e4fac59af3213639245abb9856b3e37ad7accf262dd1c778017e51dc4353"
+      }
+    },
+    {
+      "bucket": "health",
+      "id": "outbox",
+      "body": {
+        "at": "2026-09-09T16:08:43.623969+00:00",
+        "id": "outbox",
+        "error": 0,
+        "limit": 100,
+        "retry": 0,
+        "scope": "last_batch",
+        "status": "observed",
+        "skipped": 4,
+        "examined": 5,
+        "published": 1,
+        "legacy_sent": 0,
+        "quarantined": 0,
+        "quarantined_existing": 0
+      }
+    },
+    {
+      "bucket": "outbox",
+      "id": "00000000-0000-4000-8000-000000000001",
+      "body": {
+        "sent": true,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "lead:improvement",
+            "sender": "conductor",
+            "recipient": "lead:improvement"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "plan",
+            "details": {
+              "objective": "Isolated relay validation only"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T15:46:43.464352+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "00000000-0000-4000-8000-000000000001",
+          "causation_id": null,
+          "correlation_id": "d73be449-bf51-4f60-b279-bf9f1288e2f2",
+          "schema_version": "1.0"
+        }
+      }
+    },
+    {
+      "bucket": "outbox",
+      "id": "00000000-0000-4000-8000-000000000002",
+      "body": {
+        "sent": true,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "lead:improvement",
+            "sender": "conductor",
+            "recipient": "lead:improvement"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "plan",
+            "details": {
+              "objective": "Explicit repair of isolated test source"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T16:08:43.438925+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "00000000-0000-4000-8000-000000000002",
+          "causation_id": null,
+          "correlation_id": "ee1ec31b-994d-431d-a5e3-e9c345bc70a5",
+          "schema_version": "1.0"
+        }
+      }
+    },
+    {
+      "bucket": "outbox",
+      "id": "00000000-0000-4000-8000-000000000003",
+      "body": {
+        "sent": true,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "lead:improvement",
+            "sender": "conductor",
+            "recipient": "lead:improvement"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "plan",
+            "details": {
+              "objective": "Isolated relay validation only"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T15:46:43.477245+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "00000000-0000-4000-8000-000000000003",
+          "causation_id": null,
+          "correlation_id": "133f227c-d3d4-43d0-a84b-14d82ced97b0",
+          "schema_version": "1.0"
+        }
+      }
+    },
+    {
+      "bucket": "outbox",
+      "id": "420544a8-9e23-4786-b135-44e59321c67a",
+      "body": {
+        "sent": true,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "lead:improvement",
+            "sender": "conductor",
+            "recipient": "lead:improvement"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "plan",
+            "details": {
+              "objective": "Isolated transport fault injection"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T15:59:03.000622+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "420544a8-9e23-4786-b135-44e59321c67a",
+          "causation_id": null,
+          "correlation_id": "46ab567c-e93a-4330-9ef6-1dfd49946d8d",
+          "schema_version": "1.0"
+        }
+      }
+    },
+    {
+      "bucket": "outbox",
+      "id": "a92fd603-eae3-4b3f-8ff6-612a70471c60",
+      "body": {
+        "sent": true,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "lead:improvement",
+            "sender": "conductor",
+            "recipient": "lead:improvement"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "plan",
+            "details": {
+              "objective": "Isolated transport fault injection"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T15:59:03.247493+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "a92fd603-eae3-4b3f-8ff6-612a70471c60",
+          "causation_id": null,
+          "correlation_id": "3e86f4bc-2d4e-4d73-aa0a-77742af9dc7d",
+          "schema_version": "1.0"
+        }
+      }
+    },
+    {
+      "bucket": "outbox_attempts",
+      "id": "233886b8-51ef-48be-b48c-3665516d9e92",
+      "body": {
+        "id": "233886b8-51ef-48be-b48c-3665516d9e92",
+        "number": 1,
+        "status": "delivered",
+        "entry_id": "1788969542833-0",
+        "outbox_id": "00000000-0000-4000-8000-000000000003",
+        "started_at": "2026-09-09T15:59:02.800099+00:00",
+        "finished_at": "2026-09-09T15:59:02.835189+00:00",
+        "message_hash": "c66264986c37321fdd1e07913bc8dadd36d3daddee90cf1444a0a83f865e66d0"
+      }
+    },
+    {
+      "bucket": "outbox_attempts",
+      "id": "2bd41c0c-8c8d-47bd-9f5a-6a37e62cc0c0",
+      "body": {
+        "id": "2bd41c0c-8c8d-47bd-9f5a-6a37e62cc0c0",
+        "number": 1,
+        "status": "retry",
+        "outbox_id": "420544a8-9e23-4786-b135-44e59321c67a",
+        "error_type": "MessageDeliveryError",
+        "started_at": "2026-09-09T15:59:03.049842+00:00",
+        "finished_at": "2026-09-09T15:59:03.064569+00:00",
+        "message_hash": "add4202bfd795457b88ecb283b0a2bd6b8337e98f311cdc524d806fceeaebb9f"
+      }
+    },
+    {
+      "bucket": "outbox_attempts",
+      "id": "36b54f13-e356-4275-853f-93a605e44c94",
+      "body": {
+        "id": "36b54f13-e356-4275-853f-93a605e44c94",
+        "number": 1,
+        "status": "delivered",
+        "entry_id": "1788969542767-0",
+        "outbox_id": "00000000-0000-4000-8000-000000000001",
+        "started_at": "2026-09-09T15:59:02.750249+00:00",
+        "finished_at": "2026-09-09T15:59:02.769365+00:00",
+        "message_hash": "4b7eadd6a061a04e2caeb33e29611225c1f5c7e2022fe56ff3da01518c311497"
+      }
+    },
+    {
+      "bucket": "outbox_attempts",
+      "id": "5b378c73-7215-4488-83d1-eb8e9b640dc1",
+      "body": {
+        "id": "5b378c73-7215-4488-83d1-eb8e9b640dc1",
+        "number": 1,
+        "status": "delivered",
+        "entry_id": "1788970123535-0",
+        "outbox_id": "00000000-0000-4000-8000-000000000002",
+        "started_at": "2026-09-09T16:08:43.498097+00:00",
+        "finished_at": "2026-09-09T16:08:43.537304+00:00",
+        "message_hash": "4cfad3f0ea827a75e5e4e1fbb04a71a9758303879fc7a09f9e079860f3aff777"
+      }
+    },
+    {
+      "bucket": "outbox_attempts",
+      "id": "6cb6aaf8-03c1-4a67-b659-24b6f1c0753c",
+      "body": {
+        "id": "6cb6aaf8-03c1-4a67-b659-24b6f1c0753c",
+        "number": 1,
+        "status": "started",
+        "outbox_id": "a92fd603-eae3-4b3f-8ff6-612a70471c60",
+        "started_at": "2026-09-09T15:59:03.319964+00:00",
+        "message_hash": "71454e70cab7483e5d7b6aca018b261c6848ad2fe1828ae832897565f9541c61"
+      }
+    },
+    {
+      "bucket": "outbox_attempts",
+      "id": "a4a5db3c-b3ea-46d3-b2f7-3e69887a044e",
+      "body": {
+        "id": "a4a5db3c-b3ea-46d3-b2f7-3e69887a044e",
+        "number": 2,
+        "status": "delivered",
+        "entry_id": "1788969543231-0",
+        "outbox_id": "420544a8-9e23-4786-b135-44e59321c67a",
+        "started_at": "2026-09-09T15:59:03.199406+00:00",
+        "finished_at": "2026-09-09T15:59:03.232689+00:00",
+        "message_hash": "add4202bfd795457b88ecb283b0a2bd6b8337e98f311cdc524d806fceeaebb9f"
+      }
+    },
+    {
+      "bucket": "outbox_attempts",
+      "id": "b4588161-31bd-4cad-ab05-e5ac7d8dba22",
+      "body": {
+        "id": "b4588161-31bd-4cad-ab05-e5ac7d8dba22",
+        "number": 2,
+        "status": "delivered",
+        "entry_id": "1788969543447-0",
+        "outbox_id": "a92fd603-eae3-4b3f-8ff6-612a70471c60",
+        "started_at": "2026-09-09T15:59:03.433764+00:00",
+        "finished_at": "2026-09-09T15:59:03.448770+00:00",
+        "message_hash": "71454e70cab7483e5d7b6aca018b261c6848ad2fe1828ae832897565f9541c61"
+      }
+    },
+    {
+      "bucket": "outbox_control",
+      "id": "relay",
+      "body": {
+        "at": "2026-09-09T16:08:43.597119+00:00",
+        "cursor": "a92fd603-eae3-4b3f-8ff6-612a70471c60"
+      }
+    },
+    {
+      "bucket": "outbox_delivery",
+      "id": "00000000-0000-4000-8000-000000000001",
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "status": "delivered",
+        "attempts": 1,
+        "updated_at": "2026-09-09T16:08:43.483223+00:00",
+        "source_hash": "c1f569b30f05cdff100021b00d1b7847fb3d1f91283f94ebdb83453070537d77",
+        "last_attempt_id": "36b54f13-e356-4275-853f-93a605e44c94",
+        "bound_message_hash": "4b7eadd6a061a04e2caeb33e29611225c1f5c7e2022fe56ff3da01518c311497",
+        "delivered_entry_id": "1788969542767-0"
+      }
+    },
+    {
+      "bucket": "outbox_delivery",
+      "id": "00000000-0000-4000-8000-000000000002",
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000002",
+        "status": "delivered",
+        "attempts": 1,
+        "updated_at": "2026-09-09T16:08:43.498097+00:00",
+        "source_hash": "85db163a3a1df8bb1e18f189c116114ee40cf4dfa7d12051380c67498dbe571f",
+        "quarantine_id": "7167e4fac59af3213639245abb9856b3e37ad7accf262dd1c778017e51dc4353",
+        "last_attempt_id": "5b378c73-7215-4488-83d1-eb8e9b640dc1",
+        "bound_message_hash": "4cfad3f0ea827a75e5e4e1fbb04a71a9758303879fc7a09f9e079860f3aff777",
+        "delivered_entry_id": "1788970123535-0"
+      }
+    },
+    {
+      "bucket": "outbox_delivery",
+      "id": "00000000-0000-4000-8000-000000000003",
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000003",
+        "status": "delivered",
+        "attempts": 1,
+        "updated_at": "2026-09-09T16:08:43.552443+00:00",
+        "source_hash": "ad43a7ab4880f7067afe0733151605fa8b208e838f2722e23a158ef6cc6605f6",
+        "last_attempt_id": "233886b8-51ef-48be-b48c-3665516d9e92",
+        "bound_message_hash": "c66264986c37321fdd1e07913bc8dadd36d3daddee90cf1444a0a83f865e66d0",
+        "delivered_entry_id": "1788969542833-0"
+      }
+    },
+    {
+      "bucket": "outbox_delivery",
+      "id": "420544a8-9e23-4786-b135-44e59321c67a",
+      "body": {
+        "id": "420544a8-9e23-4786-b135-44e59321c67a",
+        "status": "delivered",
+        "attempts": 2,
+        "updated_at": "2026-09-09T16:08:43.580674+00:00",
+        "source_hash": "33a837eeb26a9d2ef44492729ff39921a35556b19ab9e4f52537852e8d79eb6a",
+        "last_attempt_id": "a4a5db3c-b3ea-46d3-b2f7-3e69887a044e",
+        "bound_message_hash": "add4202bfd795457b88ecb283b0a2bd6b8337e98f311cdc524d806fceeaebb9f",
+        "delivered_entry_id": "1788969543231-0"
+      }
+    },
+    {
+      "bucket": "outbox_delivery",
+      "id": "a92fd603-eae3-4b3f-8ff6-612a70471c60",
+      "body": {
+        "id": "a92fd603-eae3-4b3f-8ff6-612a70471c60",
+        "status": "delivered",
+        "attempts": 2,
+        "updated_at": "2026-09-09T16:08:43.596027+00:00",
+        "source_hash": "80472fb4edca76cb303f0b4f7742e87dbc1ff33d49b149483daada52fd040f0b",
+        "last_attempt_id": "b4588161-31bd-4cad-ab05-e5ac7d8dba22",
+        "bound_message_hash": "71454e70cab7483e5d7b6aca018b261c6848ad2fe1828ae832897565f9541c61",
+        "delivered_entry_id": "1788969543447-0"
+      }
+    },
+    {
+      "bucket": "outbox_quarantine",
+      "id": "7167e4fac59af3213639245abb9856b3e37ad7accf262dd1c778017e51dc4353",
+      "body": {
+        "at": "2026-09-09T15:59:02.784622+00:00",
+        "id": "7167e4fac59af3213639245abb9856b3e37ad7accf262dd1c778017e51dc4353",
+        "reason": "InvalidOutboxRecord",
+        "source": [
+          "malformed notification"
+        ],
+        "source_id": "00000000-0000-4000-8000-000000000002",
+        "source_hash": "a2806617e8ed396d5618b20dad6cdca3af7a45de98ee8d90ecd10ef45caae532"
+      }
+    }
+  ],
+  "redis": [
+    [
+      "1788968849509-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"d73be449-bf51-4f60-b279-bf9f1288e2f2\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"00000000-0000-4000-8000-000000000001\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated relay validation only\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:46:43.464352+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788968849521-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"d73be449-bf51-4f60-b279-bf9f1288e2f2\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"00000000-0000-4000-8000-000000000001\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated relay validation only\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:46:43.464352+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788969542767-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"d73be449-bf51-4f60-b279-bf9f1288e2f2\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"00000000-0000-4000-8000-000000000001\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated relay validation only\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:46:43.464352+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788969542833-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"133f227c-d3d4-43d0-a84b-14d82ced97b0\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"00000000-0000-4000-8000-000000000003\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated relay validation only\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:46:43.477245+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788969543064-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"46ab567c-e93a-4330-9ef6-1dfd49946d8d\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"420544a8-9e23-4786-b135-44e59321c67a\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated transport fault injection\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:59:03.000622+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788969543231-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"46ab567c-e93a-4330-9ef6-1dfd49946d8d\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"420544a8-9e23-4786-b135-44e59321c67a\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated transport fault injection\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:59:03.000622+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788969543356-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"3e86f4bc-2d4e-4d73-aa0a-77742af9dc7d\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"a92fd603-eae3-4b3f-8ff6-612a70471c60\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated transport fault injection\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:59:03.247493+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788969543447-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"3e86f4bc-2d4e-4d73-aa0a-77742af9dc7d\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"a92fd603-eae3-4b3f-8ff6-612a70471c60\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated transport fault injection\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:59:03.247493+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788970123535-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"ee1ec31b-994d-431d-a5e3-e9c345bc70a5\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"00000000-0000-4000-8000-000000000002\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Explicit repair of isolated test source\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T16:08:43.438925+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ]
+  ],
+  "notifications": {
+    "status_counts": {
+      "delivered": 5
+    },
+    "last_batch": {
+      "at": "2026-09-09T16:08:43.811085+00:00",
+      "id": "outbox",
+      "error": 0,
+      "limit": 100,
+      "retry": 0,
+      "scope": "last_batch",
+      "status": "observed",
+      "skipped": 5,
+      "examined": 5,
+      "published": 0,
+      "legacy_sent": 0,
+      "quarantined": 0,
+      "quarantined_existing": 0
+    },
+    "status": "observed",
+    "age_seconds": 0.001963
+  },
+  "quarantine_history_preserved": true,
+  "human_acceptance": false
+}

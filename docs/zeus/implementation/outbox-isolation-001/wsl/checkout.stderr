@@ -1,0 +1,1 @@
+HEAD is now at 49122b1 Isolate malformed outbox records and preserve delivery attempts across failures

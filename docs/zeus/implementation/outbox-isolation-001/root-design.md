@@ -2,7 +2,7 @@
 
 The exact existing ticket is ZEUS-fb340b746179, revision 1, content hash
 fe13dceb48b66cab295ef14143d4dcb51309927689de35a29cedea26e4f27a0b, GitHub #7.
-No new issue or advisory was created. The guardian source finding is prior evidence;
+No new issue or upstream analysis advisory was created. The guardian source finding is prior evidence;
 `baseline.json` independently reproduces the corresponding Zeus failure with actual
 isolated PostgreSQL and Redis against the recorded baseline commit.
 

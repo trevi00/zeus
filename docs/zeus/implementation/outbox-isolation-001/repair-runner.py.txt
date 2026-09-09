@@ -1,0 +1,50 @@
+import json
+from pathlib import Path
+from types import SimpleNamespace
+from uuid import uuid4
+from psycopg.conninfo import make_conninfo
+from codex_harness.adapters.bus import RedisBus
+from codex_harness.adapters.monitoring import DatabaseFacts
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.application.monitoring import Monitoring
+from codex_harness.application.service import Harness
+from codex_harness.bootstrap import database_url, organization
+from codex_harness.domain.model import envelope
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/outbox-isolation-001'
+assert not (out / 'repaired-source.json').exists()
+state = json.loads((root / '.runtime/outbox-live-state.json').read_text('utf-8'))
+store = PostgresStore(make_conninfo(database_url(), options=f"-c search_path={state['schema']},public"))
+service, bus = Harness(store, organization()), RedisBus(state['redis_url'], state['namespace'])
+identity = '00000000-0000-4000-8000-000000000002'
+with store.transaction() as tx:
+    assert tx.get('outbox', identity) == ['malformed notification']
+    original_quarantine = tx.scan('outbox_quarantine')
+    assert len(original_quarantine) == 1
+    message = envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
+                       {'objective': 'Explicit repair of isolated test source'}, str(uuid4()))
+    message['message_id'] = identity
+    tx.put('outbox', identity, {'message': message, 'sent': False})
+for _ in range(2):
+    result = service.flush_outbox(bus)
+    if result['published']:
+        break
+assert result['published'] == 1
+with store.transaction() as tx:
+    assert tx.scan('outbox_quarantine') == original_quarantine
+    assert tx.get('outbox', identity)['sent'] is True
+    assert tx.get('outbox_delivery', identity)['status'] == 'delivered'
+    records = tx.records()
+stream = bus.client.xrange(bus.stream('lead:improvement'))
+assert sum(json.loads(body['body'])['message_id'] == identity for _, body in stream) == 1
+assert service.flush_outbox(bus)['published'] == 0
+snapshot = Monitoring(DatabaseFacts(service, SimpleNamespace())).snapshot()
+assert snapshot['notifications']['status'] == 'observed'
+assert snapshot['notifications']['status_counts'] == {'delivered': 5}
+record = {'mode': 'Actual isolated PG source repair and Redis enqueue; historical quarantine retained',
+          'result': result, 'postgres': records, 'redis': stream, 'notifications': snapshot['notifications'],
+          'quarantine_history_preserved': True, 'human_acceptance': False}
+(out / 'repaired-source.json').write_text(json.dumps(record, indent=2)+'\n', encoding='utf-8', newline='\n')
+(out / 'repair-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'repaired_source_delivered_once': True, 'quarantine_history_preserved': True, 'notifications': snapshot['notifications']['status_counts']}))

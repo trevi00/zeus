@@ -1,0 +1,281 @@
+{
+  "revision": "49122b1821f9e494a7d96e3801a95ee9d8b00f91",
+  "root": "/tmp/zeus-ticket-wsl-9ol2w4su",
+  "runner_pid": 309,
+  "status": "passed",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python": "3.14.4",
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/tmp/zeus-ticket-wsl-9ol2w4su/home",
+    "TMPDIR": "/tmp/zeus-ticket-wsl-9ol2w4su/tmp",
+    "LANG": "C.UTF-8",
+    "PYTHONIOENCODING": "utf-8",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "core.hooksPath",
+    "GIT_CONFIG_VALUE_0": "/dev/null",
+    "UV_CACHE_DIR": "/tmp/zeus-ticket-wsl-9ol2w4su/cache",
+    "UV_PROJECT_ENVIRONMENT": "/tmp/zeus-ticket-wsl-9ol2w4su/venv",
+    "UV_PYTHON": "/usr/bin/python3",
+    "UV_PYTHON_DOWNLOADS": "never"
+  },
+  "stages": [
+    {
+      "name": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-local",
+        "/mnt/c/Users/rudtn/zeus",
+        "/tmp/zeus-ticket-wsl-9ol2w4su/repo"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su",
+      "started_at": "2026-09-09T16:05:05.034281+00:00",
+      "pid": 418,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:06.144666+00:00",
+      "stdout": {
+        "file": "clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "clone.stderr",
+        "sha256": "082157c4e383ed6021f0b0b6d1f15343fd4cf1018bae8c43f1a7178e7a589ae5",
+        "bytes": 53
+      }
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "49122b1821f9e494a7d96e3801a95ee9d8b00f91"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:06.155802+00:00",
+      "pid": 443,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:06.255708+00:00",
+      "stdout": {
+        "file": "checkout.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "checkout.stderr",
+        "sha256": "0dd1fd9de5dfcce21cfb3547a4ce1dbc1e8cee1f7210bbf23aef60d22f06b5c0",
+        "bytes": 103
+      }
+    },
+    {
+      "name": "uv-version",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-9ol2w4su/uv",
+        "--version"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:08.813120+00:00",
+      "pid": 452,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:08.825544+00:00",
+      "stdout": {
+        "file": "uv-version.stdout",
+        "sha256": "6a44d4c958923e8814b792113aa09af992fdbf283c562ee99ce52efb1ac874e2",
+        "bytes": 37
+      },
+      "stderr": {
+        "file": "uv-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "sync",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-9ol2w4su/uv",
+        "sync",
+        "--frozen"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:08.836522+00:00",
+      "pid": 453,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:17.000459+00:00",
+      "stdout": {
+        "file": "sync.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "sync.stderr",
+        "sha256": "1ac61aec2252d0cbefec343a4c04a2efb66b241ab6a70e46adda05345ff23874",
+        "bytes": 1914
+      }
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-9ol2w4su/uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:17.009146+00:00",
+      "pid": 531,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:17.107934+00:00",
+      "stdout": {
+        "file": "ruff.stdout",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "bytes": 19
+      },
+      "stderr": {
+        "file": "ruff.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "pytest",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-9ol2w4su/uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-q",
+        "-ra"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:17.117229+00:00",
+      "pid": 560,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:40.658422+00:00",
+      "stdout": {
+        "file": "pytest.stdout",
+        "sha256": "37d8c6e2f221418f0eea3b718e645594ad6e4651ae88313b2afaba4459bfe73f",
+        "bytes": 8519
+      },
+      "stderr": {
+        "file": "pytest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "build",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-9ol2w4su/uv",
+        "build"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:40.667444+00:00",
+      "pid": 7351,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:42.463188+00:00",
+      "stdout": {
+        "file": "build.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "build.stderr",
+        "sha256": "1de0d6e1d0f3c2eb6754831f8aa82ef4abf4c948d54c51194f21c3b12f8ccc95",
+        "bytes": 185
+      }
+    },
+    {
+      "name": "flush-help",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-9ol2w4su/uv",
+        "run",
+        "--frozen",
+        "zeus",
+        "flush",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:42.472552+00:00",
+      "pid": 7378,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:42.713879+00:00",
+      "stdout": {
+        "file": "flush-help.stdout",
+        "sha256": "a75134c3d5207f908af8d5b46adeea83b87d2683cf66fb646823396a8da170a6",
+        "bytes": 79
+      },
+      "stderr": {
+        "file": "flush-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "inspect-help",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-9ol2w4su/uv",
+        "run",
+        "--frozen",
+        "zeus",
+        "inspect",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:42.722836+00:00",
+      "pid": 7382,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:42.978946+00:00",
+      "stdout": {
+        "file": "inspect-help.stdout",
+        "sha256": "b7e4f339fc4df380d50126806413a496e838f91765031c7aa27150b2d9c35610",
+        "bytes": 456
+      },
+      "stderr": {
+        "file": "inspect-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "final-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-9ol2w4su/repo",
+      "started_at": "2026-09-09T16:05:42.988255+00:00",
+      "pid": 7386,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T16:05:43.077421+00:00",
+      "stdout": {
+        "file": "final-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "final-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "scope": "Native WSL ordinary suite, real OpenSSH signatures; PostgreSQL integration separately verified on Windows",
+  "started_at": "2026-09-09T16:05:05.030067+00:00",
+  "uv": {
+    "version": "0.12.2",
+    "wheel_sha256": "3a8d93d1fe019561b70494a8e1332492afb5f14dadc33d5239569d0964164d10",
+    "binary_sha256": "72c5f455cd0e9793910f6a1db255de37b610a36a8db858afa3c72e34668e23e2",
+    "url": "https://files.pythonhosted.org/packages/a7/fe/a87be2a492440945e745b0dc81aef7fea9730d8194af88d854b7641f5ddf/uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  },
+  "lock_before": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "lock_after": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "runner_sha256": "1904bc24aaa6a880c145a56a40f293bb3d2dd2db491a2429300db59dd7388ef2",
+  "finished_at": "2026-09-09T16:05:43.090915+00:00"
+}
