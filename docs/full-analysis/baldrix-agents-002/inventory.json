@@ -1,0 +1,48 @@
+{
+  "partition": "baldrix:agents:002",
+  "scope_sha256": "7abe8bbacd9eb4ae685a85d2c71b55c3222038547781a6c695f71584d222a218",
+  "bytes": 169185,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "agents/kha-doc-verifier.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-doc-writer.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-domain-researcher.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-executor.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-framework-selector.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-integration-checker.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-intel-updater.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-nyquist-auditor.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-phase-researcher.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "agents/kha-plan-checker.md"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

@@ -1,0 +1,28 @@
+{
+  "primary_body_remaining": [],
+  "supporting_trace_remaining": [
+    "Unlisted intervals and complete transitive consumer/configuration/test closure.",
+    "Pre-tool authorization, sandbox, actual Agent/Task mapping and live hook registration.",
+    "External source snapshots, versions, attribution, present applicability and license.",
+    "Model resolver precedence and Astra/Sol/Terra qualification against real scenarios.",
+    "Independent approval identity, artifact revision, expiration and PG transition consumer.",
+    "Actual Windows/Linux/WSL/browser/service execution and real human task acceptance.",
+    "Samsung phone/tablet and Device Farm SDK/MCP/live/replay remain deferred.",
+    "Git helper, deployment receipts, alpha/live promotion and rollback runtime.",
+    "Session collector privacy scope, retention and artifact writer full closure; no collection done.",
+    "Actual Claude independent review, Zeus implementation adoption and equivalence."
+  ],
+  "upstream_executions": 0,
+  "upstream_imports": 0,
+  "probes": 0,
+  "network_calls": 0,
+  "installs": 0,
+  "model_calls": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adopted": false,
+  "review_ref": "docs/full-analysis/baldrix-agents-003/review.md#unknowns"
+}

@@ -1,0 +1,43 @@
+{
+  "status": "own_metadata_verified",
+  "upstream_execution_count": 0,
+  "primary_count": 12,
+  "primary_bytes": 190117,
+  "primary_lines": 5474,
+  "supporting_rows": 18,
+  "prior_reuse_rows": 0,
+  "review_refs_checked": 56,
+  "manifest_snapshot_sha256_missing_rows": 5,
+  "checks": [
+    "raw Git blob, byte length and SHA-256 of all 30 rows",
+    "source line range hashes and review anchors",
+    "checkpoint artifact hashes",
+    "UTF-8 and LF",
+    "Python AST only; no reviewed source imported"
+  ],
+  "ruff": {
+    "receipt": "5c0fb9",
+    "exit_code": 0,
+    "command": ".venv/Scripts/ruff.exe check docs/full-analysis/baldrix-agents-003/record_review.py",
+    "scope": "record_review.py",
+    "prior_launcher_failures": [
+      "ruff command not on PATH",
+      "global python has no ruff module"
+    ]
+  },
+  "korean_full_readback_receipts": [
+    "7401fb",
+    "efead2"
+  ],
+  "final_changed_paragraph_readback": "This invocation displays line 106 after final change.",
+  "metadata_recorder_receipt": "717d19",
+  "artifact_sha256": {
+    "checkpoint.json": "9b169a3f918d5778b88e9a558a43642b46f255dc15773a69d21f89633edd0d13",
+    "files.json": "4f4a33eb5d9369ca49f924a8ca6871c988826d33c5a82672c82f22c2f356981a",
+    "record_review.py": "d20d994cf57382d42689a3bd50d7116592091beda985d98b7c9f588d2c122d73",
+    "remaining.json": "6fdb88d1c7bfccffdb3ed024ccfedad4ac187566b284bb114f4fddbe0b05908d",
+    "review.md": "e5cbd47a3d98083a44346ce5d5d2921fe5d2ec77dd141f3a62a492768f667eba",
+    "supporting-evidence.json": "ea36b6187fa793ed25ba3f53b85bc88478739956ca3020300fbb048ba0799f3a",
+    "verification.json": "4dcfe1183e98cee1e102b76cdbfe6beb926dc7be69ba8102a78753dc894e8891"
+  }
+}

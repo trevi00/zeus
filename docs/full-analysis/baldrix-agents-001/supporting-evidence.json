@@ -1,0 +1,1059 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "commands/harness-interview.md",
+    "git_blob": "ce498e0361da23bdf6478ed5c03aad79ad3b4980",
+    "pinned_sha256": "2eb1e1b4948db8a39da1f730838fe3cbce5bd5ac8b52ed45c838ca946762ed8d",
+    "pinned_bytes": 10165,
+    "manifest_bytes": 10165,
+    "line_count": 177,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 36,
+        "raw_range_sha256": "47b5e0dea437b08d07a7ca126213355ca296e24977c94e8c93128db0810087b6"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-analyst.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "commands/harness-debate.md",
+    "git_blob": "7e79260c6100f55556aa6fef8486d48280fba251",
+    "pinned_sha256": "89e7c0d185d291f33008d459c5f233be619037c09f98281ef10f6dafc751149f",
+    "pinned_bytes": 25819,
+    "manifest_bytes": 25819,
+    "line_count": 184,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 24,
+        "end": 85,
+        "raw_range_sha256": "91196a26b39e49a64c159b10f0ac52335e2a5a30569de728a8fb39090f80b9cc"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-architect.md",
+      "agents/harness-critic.md",
+      "agents/harness-planner.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "commands/harness-ultrawork.md",
+    "git_blob": "5065384b4c16552471b9d95c3cea1f9c4949f774",
+    "pinned_sha256": "4146defe64f8020bee378d20d3cd2abe28132d8635ce04b2b8743fc256e2915d",
+    "pinned_bytes": 7506,
+    "manifest_bytes": 7506,
+    "line_count": 108,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 16,
+        "end": 36,
+        "raw_range_sha256": "d58400865230d1f81bad5a3007b327fd128bd36444a33df0f84ab2af99080037"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-explore.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "commands/harness-team.md",
+    "git_blob": "3e0d22409051d04cca9e3e70ba88878d42ff19c5",
+    "pinned_sha256": "950ea1bfe81d77a65913a0433351bf386097f16243d55904e1734c943c92884d",
+    "pinned_bytes": 17038,
+    "manifest_bytes": 17038,
+    "line_count": 292,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 209,
+        "end": 236,
+        "raw_range_sha256": "209898799f682f3514d63078dd79bc0cfcd78f5d8298f5e47948a5f99db69988"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-git-master.md",
+      "agents/harness-qa-tester.md",
+      "agents/harness-tracer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/evaluator_dispatcher.py",
+    "git_blob": "00b149bba94765b6bca4c8a03f2bed36ee8d5849",
+    "pinned_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
+    "pinned_bytes": 99934,
+    "manifest_bytes": 99934,
+    "line_count": 2311,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 201,
+        "end": 277,
+        "raw_range_sha256": "fa49a3bbec6f74a068d24d5b48ded9c29cfcf3be322715d83f95997ccebac55c"
+      },
+      {
+        "start": 307,
+        "end": 385,
+        "raw_range_sha256": "2a4da31999ca45c424a7a894580d64b43331c65af8ef8a9c200ed185c900822a"
+      },
+      {
+        "start": 473,
+        "end": 588,
+        "raw_range_sha256": "fa925afb7a1103440f63610145a70dc06569ba0a7c42ac626a25a1a81108ac07"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-evaluator.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/discuss-phase.md",
+    "git_blob": "98ad79317e772219aec4c65ea0873886817c781c",
+    "pinned_sha256": "0eeee62db841ed6dbc32f8c3c93b9be0c4f8c2d72d05988158e0fb04ba8d7619",
+    "pinned_bytes": 51827,
+    "manifest_bytes": 51827,
+    "line_count": 1201,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 550,
+        "end": 590,
+        "raw_range_sha256": "c7dc178e089cd77b5dbd0201707ae1f533270ad6b60edd4d02bb58da23f3153a"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-advisor-researcher.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/discuss-phase-assumptions.md",
+    "git_blob": "c4cde9d6b60f181f753464f395c5e72801e777f7",
+    "pinned_sha256": "ce1e93bf5353bb85fb53225290dbb60e397266936544d9ac32c0046b28ddc377",
+    "pinned_bytes": 22081,
+    "manifest_bytes": 22081,
+    "line_count": 671,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 245,
+        "end": 330,
+        "raw_range_sha256": "cb60c8393914a9f9b7e81ab7d5722a0149791dee9ea8294c9eca70c48e77ad8e"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-assumptions-analyzer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/code-review-fix.md",
+    "git_blob": "bcffcb442cb43504294e9ef12c50dba28cc04481",
+    "pinned_sha256": "8f97b7c56fe6aebe60fa901383a514de0763ac4f1fdfb0d18bbac1a68792e08c",
+    "pinned_bytes": 17935,
+    "manifest_bytes": 17935,
+    "line_count": 497,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 178,
+        "end": 241,
+        "raw_range_sha256": "887ffeb535c3d48fc55df64b9d06089bdf0c2d5b044f90684cf895f71b9d7eae"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/code-review.md",
+    "git_blob": "fb1b3a9ab15b3bd6f8fc6e9b9862b59f33ac86b1",
+    "pinned_sha256": "3aa7e7a7f3ab409053af78fa6777f35556287b0d5d760c99e185f69a9e56c56c",
+    "pinned_bytes": 17052,
+    "manifest_bytes": 17052,
+    "line_count": 515,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 347,
+        "end": 406,
+        "raw_range_sha256": "09b8cf447304fe6031e56407cc262761ecd78f92be06cb4aefce344c11b0c8a8"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-code-reviewer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/map-codebase.md",
+    "git_blob": "97817423d861fae20116d15f21c3200e6ae2c5c3",
+    "pinned_sha256": "088b76722949ba1485a7350c9c65eed2a393465c0df38d1137b6ce0d60d8c658",
+    "pinned_bytes": 12459,
+    "manifest_bytes": 12459,
+    "line_count": 379,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 99,
+        "end": 131,
+        "raw_range_sha256": "d6b0fec6db5886cd36072adc9e674403f237063d1972edd2f6e6af16f030e640"
+      },
+      {
+        "start": 198,
+        "end": 245,
+        "raw_range_sha256": "ddff045a783aec4cb1890c8c46deace019271e3d111b5318e138ae40cfe5e072"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-codebase-mapper.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/workflows/diagnose-issues.md",
+    "git_blob": "aa1b0bdd650ce511c6897060bc809a765435478e",
+    "pinned_sha256": "34c5c36f953ac9aeb2e047f40b307f901bf162e987bb92c37305371f378b02fe",
+    "pinned_bytes": 7567,
+    "manifest_bytes": 7567,
+    "line_count": 238,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 85,
+        "end": 146,
+        "raw_range_sha256": "f496a56abb6f6991629757526fb08462cd90b50842c5265bdfc614c38e702050"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/kha-ai-integration-phase/SKILL.md",
+    "git_blob": "bc82354b8f39fd8be785c9c10689df3b8111a0f9",
+    "pinned_sha256": "19c78547e12a54afdb41ca71f285846fbe26ec6ec12d52f574e03c13628a0c33",
+    "pinned_bytes": 11438,
+    "manifest_bytes": 11438,
+    "line_count": 148,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 118,
+        "end": 148,
+        "raw_range_sha256": "b092f7bbb3a015f32a112fb06a534658e3d44ba95891a64337df51374d4c7fe5"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-ai-researcher.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/design-critic-gate.md",
+    "git_blob": "86512e47f8dd1ddb276e37f009bac2e5c322f402",
+    "pinned_sha256": "563ca47a62a2d7b93e7e439c00ba94427c680ec365f5b0fd58fd3788416d97c1",
+    "pinned_bytes": 6553,
+    "manifest_bytes": 6553,
+    "line_count": 84,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 16,
+        "end": 75,
+        "raw_range_sha256": "6700e146d89f0a2ae49688ed2b2f49d6918322a631448ac5201a4e4fd9010fb5"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-design-critic.md",
+      "agents/harness-designer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/external-context.md",
+    "git_blob": "d3c838e5fc3c7afc4d275c043ef62def65e7d43d",
+    "pinned_sha256": "07a3256793265bbebd5548d85add1dfba63284b464185a6d3fafde426a32b80d",
+    "pinned_bytes": 3221,
+    "manifest_bytes": 3221,
+    "line_count": 110,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 47,
+        "end": 77,
+        "raw_range_sha256": "a4842b6face9021a30e1bdad40ad9dadc11d777785e0938b520c726b28df3ba5"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-document-specialist.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/ultraqa.md",
+    "git_blob": "e58f03f44f113f6cdb2742df98ad74451ff55433",
+    "pinned_sha256": "d0c0c364b96458be2d6c8d3843d19968c85d24a2392fcd4edb0fd9373d9208e9",
+    "pinned_bytes": 4295,
+    "manifest_bytes": 4295,
+    "line_count": 126,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 29,
+        "end": 57,
+        "raw_range_sha256": "641772f49094dcbb627d874a1353118c718e411688fb84c3f9cdd1d9b2b61cd5"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-qa-tester.md",
+      "agents/harness-architect.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/trace.md",
+    "git_blob": "459e44efdd6e5460eb76f489dbf47e059c611c8e",
+    "pinned_sha256": "cf07eeca75068526876a41741d5e40e2184e79831f7616527d8cd52ea9398b6d",
+    "pinned_bytes": 5800,
+    "manifest_bytes": 5800,
+    "line_count": 156,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 24,
+        "end": 116,
+        "raw_range_sha256": "04fe2ebfd398893692bca7738588753406d7151ac2e5d142274fb33d6ff59af1"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-tracer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/requesting-code-review.md",
+    "git_blob": "59fce85545ba5a2d3e847b8a432ef0cd37b81425",
+    "pinned_sha256": "295d55c3845f2a214d652f10b0ef7d38b4fe32e9f226a43689f7d579cc0c8f55",
+    "pinned_bytes": 6574,
+    "manifest_bytes": 6574,
+    "line_count": 222,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 181,
+        "end": 204,
+        "raw_range_sha256": "d5eb324b64d745402afa366f277b0867082c5c2a673da8e3ff065cad215ce2f9"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-code-simplifier.md",
+      "agents/harness-architect.md",
+      "agents/kha-code-reviewer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_subagent_isolation_contract.py",
+    "git_blob": "6208f9d7b7a818ce90f9727a5701367a3fe5a8a9",
+    "pinned_sha256": "7f35ba31bbfb28fd891707ce422276489c1234c53eb8a7a196b57ddf6fdf2e95",
+    "pinned_bytes": 7992,
+    "manifest_bytes": 7992,
+    "line_count": 187,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 59,
+        "end": 137,
+        "raw_range_sha256": "73d981a6b236d7715c97c20350fd7a4ac7aa0f26bc1fb76800c1cf121b8e03b4"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-analyst.md",
+      "agents/harness-architect.md",
+      "agents/harness-code-simplifier.md",
+      "agents/harness-critic.md",
+      "agents/harness-design-critic.md",
+      "agents/harness-designer.md",
+      "agents/harness-document-specialist.md",
+      "agents/harness-evaluator.md",
+      "agents/harness-explore.md",
+      "agents/harness-git-master.md",
+      "agents/harness-planner.md",
+      "agents/harness-qa-tester.md",
+      "agents/harness-researcher.md",
+      "agents/harness-scientist.md",
+      "agents/harness-tracer.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_commands_wiring.py",
+    "git_blob": "48502393b6b1e19a86bc3e33cca6dad1d2fd9ce9",
+    "pinned_sha256": "83057a806c15cc5eea8cd316288e3f00b54f4cbc208c7a96774c5437a4f28c15",
+    "pinned_bytes": 11142,
+    "manifest_bytes": 11142,
+    "line_count": 288,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 132,
+        "end": 152,
+        "raw_range_sha256": "329a988715eeb7a6071541c39de58ae222d94d0d0423c7d700a2252bf8fb394d"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-analyst.md",
+      "agents/harness-explore.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_agent_tool_audit.py",
+    "git_blob": "04cc145ac83417eda3f21f0829b46deff12feef3",
+    "pinned_sha256": "8c3c1b827db8ed3555e536477a6789796e483b2a3cb3e9dbc513022e22fcc088",
+    "pinned_bytes": 12956,
+    "manifest_bytes": 12956,
+    "line_count": 343,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 40,
+        "end": 97,
+        "raw_range_sha256": "6434257957405b52cac34a2af2cb3cd121b7abdbd7faa0992602a10ef572c69b"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-architect.md",
+      "agents/harness-critic.md",
+      "agents/harness-planner.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/commands.cjs",
+    "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+    "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+    "pinned_bytes": 36090,
+    "manifest_bytes": 36090,
+    "line_count": 1013,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 222,
+        "end": 347,
+        "raw_range_sha256": "7d0edb96fff7abda986ff131ebfe736e79d19f0c91bc0cafe46ae91846d7baf2"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-advisor-researcher.md",
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md",
+      "agents/kha-codebase-mapper.md",
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/core.cjs",
+    "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+    "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+    "pinned_bytes": 58568,
+    "manifest_bytes": 58568,
+    "line_count": 1536,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1291,
+        "end": 1339,
+        "raw_range_sha256": "ba260ea9ee6589a7c034717e9514e2648b74b88d12dae6e623061e9d428d110a"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-advisor-researcher.md",
+      "agents/kha-ai-researcher.md",
+      "agents/kha-assumptions-analyzer.md",
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md",
+      "agents/kha-codebase-mapper.md",
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/lib/model-profiles.cjs",
+    "git_blob": "5bb89051b2c0a6d2a1bf84685a329fa8d737be57",
+    "pinned_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777",
+    "pinned_bytes": 3804,
+    "manifest_bytes": 3804,
+    "line_count": 70,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 70,
+        "raw_range_sha256": "28f70a99e63968159f7881f0a8de611c0a8d3b55123e9abc70dcf063d6079777"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-advisor-researcher.md",
+      "agents/kha-ai-researcher.md",
+      "agents/kha-assumptions-analyzer.md",
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md",
+      "agents/kha-codebase-mapper.md",
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/advisory_research_dispatch.py",
+    "git_blob": "1d7b4c6112f40b1e406c872a845bdb49204b3585",
+    "pinned_sha256": "ac0defc28bc723e5e292d28bc1acbdc8488f17b5459af8c4f53be4ee322902d0",
+    "pinned_bytes": 4407,
+    "manifest_bytes": 4407,
+    "line_count": 88,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 42,
+        "end": 88,
+        "raw_range_sha256": "fd0c63a1d2ab3485e4cfd28eec6ab7af9942c6594be49d500b09f023dda43eeb"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-researcher.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/strike_research_consume.py",
+    "git_blob": "a9870918406c9b79e371c9ea29976b107d3860ec",
+    "pinned_sha256": "ee4361f9f8d89fbf74a163d748082042bd69c98ad481ea0d741b1c4b20f28166",
+    "pinned_bytes": 16806,
+    "manifest_bytes": 16806,
+    "line_count": 373,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 60,
+        "end": 70,
+        "raw_range_sha256": "93b177cd965ea7436cd28cf92a4fe75c04bd6ee20247d1cccc5001cac3dd1626"
+      },
+      {
+        "start": 211,
+        "end": 285,
+        "raw_range_sha256": "b865abe389a6542ad137d912b1308ae12aaf8d01c360c515db5a39371618dfcc"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-researcher.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/agent_tool_audit.py",
+    "git_blob": "122be5042be36a3fdf0708244e965eadfb6c86bd",
+    "pinned_sha256": "9b4e6aa81ae47f622be4b55659532d94e4c1f5ccf0ec2668f803642182872915",
+    "pinned_bytes": 5893,
+    "manifest_bytes": 5893,
+    "line_count": 153,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 33,
+        "end": 105,
+        "raw_range_sha256": "ca771e0297da024ee973abc2bac93bc4667e568b27f47b40f45ba5c80ffbe93d"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-analyst.md",
+      "agents/harness-architect.md",
+      "agents/harness-code-simplifier.md",
+      "agents/harness-critic.md",
+      "agents/harness-design-critic.md",
+      "agents/harness-designer.md",
+      "agents/harness-document-specialist.md",
+      "agents/harness-evaluator.md",
+      "agents/harness-explore.md",
+      "agents/harness-git-master.md",
+      "agents/harness-planner.md",
+      "agents/harness-qa-tester.md",
+      "agents/harness-researcher.md",
+      "agents/harness-scientist.md",
+      "agents/harness-tracer.md",
+      "agents/kha-advisor-researcher.md",
+      "agents/kha-ai-researcher.md",
+      "agents/kha-assumptions-analyzer.md",
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md",
+      "agents/kha-codebase-mapper.md",
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/handlers/post_tool/agent_invocation_audit.py",
+    "git_blob": "50fa9cbbcaa592604e5b2cdf268b3a368c28ecbb",
+    "pinned_sha256": "c71cfc61320e7d18e258fddc5406c848f4523e7970e1cd8d8f75586ab5783fac",
+    "pinned_bytes": 9542,
+    "manifest_bytes": 9542,
+    "line_count": 241,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 165,
+        "end": 230,
+        "raw_range_sha256": "2695a48b1d860b6f763e307e2919728f73772613a411a78682124eeb0115a2d4"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-analyst.md",
+      "agents/harness-architect.md",
+      "agents/harness-code-simplifier.md",
+      "agents/harness-critic.md",
+      "agents/harness-design-critic.md",
+      "agents/harness-designer.md",
+      "agents/harness-document-specialist.md",
+      "agents/harness-evaluator.md",
+      "agents/harness-explore.md",
+      "agents/harness-git-master.md",
+      "agents/harness-planner.md",
+      "agents/harness-qa-tester.md",
+      "agents/harness-researcher.md",
+      "agents/harness-scientist.md",
+      "agents/harness-tracer.md",
+      "agents/kha-advisor-researcher.md",
+      "agents/kha-ai-researcher.md",
+      "agents/kha-assumptions-analyzer.md",
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md",
+      "agents/kha-codebase-mapper.md",
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "settings.json",
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "pinned_bytes": 10437,
+    "manifest_bytes": 10437,
+    "line_count": 386,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 243,
+        "end": 252,
+        "raw_range_sha256": "5d9993548993820b1dfe132c9fa953fe5f7b9573ac591430fe3a97795b2fcb75"
+      }
+    ],
+    "supports_primary": [
+      "agents/harness-analyst.md",
+      "agents/harness-architect.md",
+      "agents/harness-code-simplifier.md",
+      "agents/harness-critic.md",
+      "agents/harness-design-critic.md",
+      "agents/harness-designer.md",
+      "agents/harness-document-specialist.md",
+      "agents/harness-evaluator.md",
+      "agents/harness-explore.md",
+      "agents/harness-git-master.md",
+      "agents/harness-planner.md",
+      "agents/harness-qa-tester.md",
+      "agents/harness-researcher.md",
+      "agents/harness-scientist.md",
+      "agents/harness-tracer.md",
+      "agents/kha-advisor-researcher.md",
+      "agents/kha-ai-researcher.md",
+      "agents/kha-assumptions-analyzer.md",
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md",
+      "agents/kha-codebase-mapper.md",
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "get-shit-done/bin/gsd-tools.cjs",
+    "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+    "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+    "pinned_bytes": 43392,
+    "manifest_bytes": 43392,
+    "line_count": 1055,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; raw Git blob/bytes matched, fresh SHA computed",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 444,
+        "end": 466,
+        "raw_range_sha256": "cb7d235f7573b6f77285583ef86a40d70db38f7bd84b94d6f4eca64d7d1df95a"
+      }
+    ],
+    "supports_primary": [
+      "agents/kha-advisor-researcher.md",
+      "agents/kha-code-fixer.md",
+      "agents/kha-code-reviewer.md",
+      "agents/kha-codebase-mapper.md",
+      "agents/kha-debugger.md"
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "prior_reuse": null,
+    "coverage_promotion": false,
+    "new_primary_coverage": false,
+    "review_ref": "docs/full-analysis/baldrix-agents-001/supporting-notes.md#support-all",
+    "tests_executed": [],
+    "remaining": "Unlisted ranges/transitive dependencies/execution remain pending."
+  }
+]

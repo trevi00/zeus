@@ -1,0 +1,24 @@
+{
+  "operation": "Formatting only: exactly one final LF; substantive bytes unchanged",
+  "before_sha256": "d41110fac6db748af58cb3df51769d26bacdf880489f627e5ff65bf7db912278",
+  "after_sha256": "7f20b5cca1a94876db002141711ca47fc2dcbc07ff2fbf5ab28cb5fb5ec1afd9",
+  "before_bytes": 20709,
+  "after_bytes": 20708,
+  "new_semantic_reads": 0,
+  "upstream_execution": 0,
+  "validation_argv": [
+    [
+      "python",
+      "docs/full-analysis/baldrix-agents-001/record_review.py"
+    ],
+    [
+      "python",
+      "docs/full-analysis/baldrix-agents-001/check_metadata.py"
+    ],
+    [
+      ".venv/Scripts/ruff.exe",
+      "check",
+      "docs/full-analysis/baldrix-agents-001"
+    ]
+  ]
+}

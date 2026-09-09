@@ -1,0 +1,156 @@
+{
+  "ledger_path": "docs/full-analysis/path-ledger.json",
+  "ledger_sha256": "9c7c9f1fe5e4b10c3110a26f9bad05bba7dafef0994fae1d51d3a00789fd76b4",
+  "rows": [
+    {
+      "row_index": 34,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-doc-verifier.md",
+        "git_blob": "a5550f9e3e88bcaca755b3320b2183ee34694532",
+        "mode": "100644",
+        "bytes": 11166,
+        "pinned_sha256": "4f424aef9c3e761f67b6eee5c270304860b4785e939893ee02eaa17a9e496949",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 35,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-doc-writer.md",
+        "git_blob": "5d3c6b9f00b3d66564f9bcbaceeec7393b84efff",
+        "mode": "100644",
+        "bytes": 37867,
+        "pinned_sha256": "9deb595d9281930b66f49ba86027cf66117fac026bc5c58496405bd1ad826598",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 36,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-domain-researcher.md",
+        "git_blob": "6aa253bce88ff2010997808d7425adae20d35067",
+        "mode": "100644",
+        "bytes": 4220,
+        "pinned_sha256": "ead927fb9ee7cb4072b77de90150b9fe0d589ca2234754d5159c4fae6d1caf16",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 37,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-executor.md",
+        "git_blob": "b887e5a3ac70e0757d18e4da86cc8d39bf40b582",
+        "mode": "100644",
+        "bytes": 22727,
+        "pinned_sha256": "622b1afade5722fd1b2cedb076ecce755d95c8dbadd622ab44f021c38f793889",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 38,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-framework-selector.md",
+        "git_blob": "3df529f6b063561d6560537961dbcd048397fd79",
+        "mode": "100644",
+        "bytes": 4398,
+        "pinned_sha256": "bbf93c4b12b9bae999ad9e49e326dea5b1e6308e727135a7977c58b6de209d7a",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 39,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-integration-checker.md",
+        "git_blob": "851a433d10e7f583cf1f1608957be6e05bffe6cc",
+        "mode": "100644",
+        "bytes": 13285,
+        "pinned_sha256": "df0efecff75e354a9fa70660551d71ca161f58896dd18a33e9463575d1fefdfc",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 40,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-intel-updater.md",
+        "git_blob": "d2d24cf1b345599988878a9be926d28c8e249191",
+        "mode": "100644",
+        "bytes": 11232,
+        "pinned_sha256": "b20eff3983341044026671652dfa27d359f2edf9ffc07ff0987b92d807642e4d",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 41,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-nyquist-auditor.md",
+        "git_blob": "9b9143826d292ad9b151b8e188fad54ff9ee08b7",
+        "mode": "100644",
+        "bytes": 5341,
+        "pinned_sha256": "8fa73ad0c670760bf2090abea191675f892a8dd6502b57e6376e84a3caea41ea",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 42,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-phase-researcher.md",
+        "git_blob": "9fa01e4c15d9df27bdd06c72073122b821d18927",
+        "mode": "100644",
+        "bytes": 28674,
+        "pinned_sha256": "1bb6b111e60cb28a0bab8efd26f60b6c6e58351d755a698b436dd57703056fca",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 43,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "agents/kha-plan-checker.md",
+        "git_blob": "b18d0ba967163cbf97f5ea450d9e346af6042a64",
+        "mode": "100644",
+        "bytes": 30275,
+        "pinned_sha256": "493840a02c5d6b54124658404756458d17c5e2864337f3b997746872d348451f",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    }
+  ]
+}

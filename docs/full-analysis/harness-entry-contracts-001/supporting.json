@@ -1,0 +1,325 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/checks.py",
+    "bytes": 13179,
+    "git_blob": "ed9d1a309a0d8eb789d831e6d57d3ca8c6a84e41",
+    "pinned_sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 284,
+        "raw_range_sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/paths.py",
+    "bytes": 5363,
+    "git_blob": "c1a7284adf7c53a8fab9f074e0c23c5558d95d22",
+    "pinned_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 123,
+        "raw_range_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/dispatch.sh",
+    "bytes": 1530,
+    "git_blob": "5f3d2ab5bcfc3969450c975fa16635d898a71733",
+    "pinned_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 25,
+        "raw_range_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/hud_launcher.sh",
+    "bytes": 544,
+    "git_blob": "91082faadfd0e0c9494cc49dc1088584c7f83bbf",
+    "pinned_sha256": "50e44dd6ddc00f9528b43a3ab7c0a431c5762a7642bf58e945bec46a49b236fc",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 12,
+        "raw_range_sha256": "50e44dd6ddc00f9528b43a3ab7c0a431c5762a7642bf58e945bec46a49b236fc"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/rlm_launcher.sh",
+    "bytes": 687,
+    "git_blob": "e42d65f2991b52afc58304b537ec8780b16abe70",
+    "pinned_sha256": "28dccce2030fd14622e74e5c600797cf9d7c790a7ee6992c317a480ec2fa8cd3",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 13,
+        "raw_range_sha256": "28dccce2030fd14622e74e5c600797cf9d7c790a7ee6992c317a480ec2fa8cd3"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/residual_cmd.py",
+    "bytes": 6557,
+    "git_blob": "c62cdd1c84cb57a9b88c0f8966e661d2e803ab7c",
+    "pinned_sha256": "358644347ea15989f51340e1e727f54d47c105ef757dcfee102db59cbd9c881f",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 132,
+        "raw_range_sha256": "358644347ea15989f51340e1e727f54d47c105ef757dcfee102db59cbd9c881f"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/git_flow.py",
+    "bytes": 3975,
+    "git_blob": "70d70ccfa57c1dc7d79d9e493ad6c350054b70cc",
+    "pinned_sha256": "177d34c5cffe3d1dc4583b195b91682b95ca44a2f80928985190057a6d49346e",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 87,
+        "raw_range_sha256": "177d34c5cffe3d1dc4583b195b91682b95ca44a2f80928985190057a6d49346e"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/agentsmd_cmd.py",
+    "bytes": 12223,
+    "git_blob": "041fd83ff0266274671271608c4dd871fd796816",
+    "pinned_sha256": "bb97f0e1c71ff201cc82557b77e27998dd792f3955951c2ef76b87bc19a22e25",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 235,
+        "raw_range_sha256": "bb97f0e1c71ff201cc82557b77e27998dd792f3955951c2ef76b87bc19a22e25"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_checks_smoke.py",
+    "bytes": 8842,
+    "git_blob": "75e1068145fe7dd7cc1afe7a1963bc532b5c2ac6",
+    "pinned_sha256": "360e843050fe740d6791fa9f2f399aa1a26ce0a4da5bb8df305a4338001c7354",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 166,
+        "raw_range_sha256": "360e843050fe740d6791fa9f2f399aa1a26ce0a4da5bb8df305a4338001c7354"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/suite_cmd.py",
+    "bytes": 35632,
+    "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+    "pinned_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 170,
+        "raw_range_sha256": "fafffea85e0ff54ba2527de82d06379d4dd0ac2a11ccaf228ac5f0ce00cfdab2"
+      },
+      {
+        "start_line": 376,
+        "end_line": 445,
+        "raw_range_sha256": "914e9d117176899b31b272ead3b25d9e8621562e82f81d10133de08c26b117e5"
+      },
+      {
+        "start_line": 556,
+        "end_line": 602,
+        "raw_range_sha256": "4ffc3003e95900dd6be6ed686dc29cdaee1f96f5e96d673b83fd94b9893b0e04"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/pre_tool/write_boundary.py",
+    "bytes": 64015,
+    "git_blob": "41b30694d38d7ab90ff16e93ced578a66657d5f3",
+    "pinned_sha256": "418418a5ff2fe9c9886316c96d9cca0f84b6ff3b452df1bfe9dde94314a8f60b",
+    "read_ranges": [
+      {
+        "start_line": 636,
+        "end_line": 705,
+        "raw_range_sha256": "8eef555f4545a52a75d003e40d8c052a702e2f9e8943a122fea65bc0cf2d1f66"
+      },
+      {
+        "start_line": 809,
+        "end_line": 875,
+        "raw_range_sha256": "a0351e9f32c328d3510d31f79c63d28d25ed32469c36d38384e2e802ecd5ccdb"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/health_cmd.py",
+    "bytes": 49796,
+    "git_blob": "ffc56a369eae2661de3f9ac954c8721385966065",
+    "pinned_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 145,
+        "raw_range_sha256": "41912b0eab409faff4c362a8ce3f6409bd56cdb65dd729b32a50b70de77334ed"
+      },
+      {
+        "start_line": 411,
+        "end_line": 430,
+        "raw_range_sha256": "cf026d6de0a8697a0e9b43c4a3cb3708c723effa06118ff3024a3a1a3cc0d998"
+      },
+      {
+        "start_line": 739,
+        "end_line": 824,
+        "raw_range_sha256": "c071f9df739f4f9f8ce3e60cc803fa203d1564f0f4403f1735debb16140ce7c8"
+      },
+      {
+        "start_line": 837,
+        "end_line": 900,
+        "raw_range_sha256": "12e5d16ca844d94032cb97b04c3ae943f81ce6d8c1883984b1951c421405f692"
+      },
+      {
+        "start_line": 930,
+        "end_line": 957,
+        "raw_range_sha256": "66d81dbaf98e1e076f2d9b6002686fccb9b01c58fc0b38a2a8f2c216eb1ceb8b"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-entry-contracts-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-entry-contracts-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_primary_executions": 0,
+    "primary_coverage_counted": false
+  }
+]

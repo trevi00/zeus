@@ -96,7 +96,7 @@
 - [Harness 계약 테스트001](harness-contract-tests-001/review.md): 11개 전문·지원29개. acceptance 탑재/인수, 후보 소진, 버스 held 실패 로그 및 실제 승인·전송 분모를 구분했다. 원본 실행0이다.
 - [Harness 계약 테스트002](harness-contract-tests-002/review.md): 19개 전문·지원33개. projection heartbeat 조건, env 복원, 실제 reconfirmation 방어와 fixture/선언/실행 증거의 경계를 대조했다. 원본 실행0이다.
 
-현재 고정 2,736개 중 1,512개에 검토 기록이 있으며 **1,224개는 아직 unreviewed**다. 이번 묶음은 배포 구성 4개와 테스트 79개로 새 primary 83개다. supporting은 새 파일 수에 더하지 않는다. 1,512개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`과 [root 검토](distribution-tests-root-review.md)를 따른다.
+현재 고정 2,736개 중 1,637개에 검토 기록이 있으며 **1,099개는 아직 unreviewed**다. 이번 묶음은 harness 진입 계약 23개와 Baldrix 역할 문서 44개로 새 primary 67개다. supporting 78개는 새 파일 수에 더하지 않는다. 1,637개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`과 [root 검토](entry-agents-root-review.md)를 따른다.
 
 이번 [배포 구성 공동 검토](baldrix-distribution-config-001/resolution.md)는 실제 Claude 독립 검토·토론과 원본 status CLI 7회 관측을 포함한다. CI의 변경 필터와 snapshot 검증 대상의 불일치, 손상/누락 입력의 성공 반환, root/하위 cwd 스택 선택 차이를 기록했다. [tests009](baldrix-tests-009/review.md), [tests010](baldrix-tests-010/review.md), [tests011](baldrix-tests-011/review.md)은 79개 전문 정적 검토이며 원본 실행은 0이다. 83개 모두 직전 원장에서 unreviewed였으며 supporting 131개와 산출물 63개의 정체성을 확인했다. 기록기의 Windows cp949 독해 오류도 보존하고 UTF-8 지정 후 같은 영수증으로 검증했다. 실제 설치·서비스·기기·사람 인수·채택은 미완료다.
 

@@ -1,0 +1,49 @@
+{
+  "primary_count": 12,
+  "primary_bytes": 190117,
+  "primary_lines": 5474,
+  "supporting_rows": 18,
+  "prior_reuse_rows": 0,
+  "review_refs_checked": 56,
+  "raw_blob_size_sha256_verified": true,
+  "range_bounds_verified": true,
+  "utf8_decoding_verified": true,
+  "korean_sentinel_verified": true,
+  "own_python_lf": true,
+  "missing_manifest_snapshot_sha256": 5,
+  "upstream_tests_run": false,
+  "external_claims_verified": 0,
+  "read_receipts": {
+    "primary": [
+      [
+        "168e1f",
+        "1bfc67",
+        "4a6947"
+      ],
+      "a66171",
+      "66f383",
+      "6b8ab9",
+      "66f383",
+      "5c2be7",
+      "a4513d",
+      "05f3e7",
+      "a9833a",
+      [
+        "37f963",
+        "9aa740"
+      ],
+      "a9833a",
+      "a9833a"
+    ],
+    "supporting": [
+      "1296fe",
+      "775bd6",
+      "a865e1",
+      "c6c132",
+      "5d8298",
+      "16bfe1",
+      "b6dfab"
+    ],
+    "note": "7d873b encoding-failed read was repeated in a865e1. Search-only output and nonexistent path candidate agent_output_schema.py are not body coverage. All supporting rows are fresh reads; contiguous displayed intervals are merged."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "source_files": 931,
+  "source_tree_hash_before": "422102e2923d53440237b6de6d2b949ea21cd1c69a39a325a01c566817fd7428",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "program_sha256": "5fab5a5d3949b55c26032972747497778a7475c0457e2dcdf6845bb750e837ae",
+  "wrapper_sha256": "42c3e662b2f91e1d6f5957850fac91bd9d1bcff2bd223f76cfdd466f84102a60",
+  "recorder_sha256": "8e0e5e2b192ee1c27eb49b917878a1f6c6a96b09c610fb5bad75921b085e6ebf",
+  "source_bytes_unchanged": true
+}

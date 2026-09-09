@@ -1,0 +1,52 @@
+{
+  "scope": "Own artifacts only, not source validation or execution",
+  "commands_executed": [
+    {
+      "argv": [
+        "python",
+        "-X",
+        "utf8",
+        "docs/full-analysis/baldrix-agents-002/build_index.py"
+      ],
+      "exit_code": 0,
+      "result": "metadata PASS 10 primary 19 supporting source execution 0"
+    },
+    {
+      "argv": [
+        ".venv/Scripts/ruff.exe",
+        "check",
+        "--no-cache",
+        "docs/full-analysis/baldrix-agents-002/build_index.py"
+      ],
+      "exit_code": 0,
+      "result": "All checks passed!"
+    }
+  ],
+  "checks": {
+    "primary_count_bytes_scope": true,
+    "raw_git_blob_manifest_bytes": true,
+    "manifest_sha_absence_preserved": true,
+    "prior_exact_rows_unreviewed10": true,
+    "primary_fresh_full_read10": true,
+    "supporting19_partial_not_primary": true,
+    "ranges_and_review_anchors_valid": true,
+    "utf8_lf_no_bom": true,
+    "ascii_meaning_readback": true,
+    "own_recorder_ruff": true
+  },
+  "source_execution_count": 0,
+  "source_import_collection_probe_network_install_count": 0,
+  "actual_claude_count": 0,
+  "artifact_sha256": {
+    "build_index.py": "72b9180b8eb30563e1ffaa389369f9b29efee7653d4bd9bbce0f882ff28cc15a",
+    "checkpoint.json": "e02ff28673e5fca29eb922db881e3aceb351a683177b17fa855459042661b7ac",
+    "files.json": "672b7fa91b44b0c81f1dbb523edc366f1298c99bf7f7c1c498a593bdbe0f86e1",
+    "inventory.json": "448f835640fb739a81d19902fb2197047fe3f092b5739ac5d042093811fc982a",
+    "prior-ledger.json": "a25e4241d136329716f9451d6c2f0e4c406413699f8dceeac6c4eb8cb2ecbe59",
+    "read-plan.json": "e4f641e731b8235ca01983c537731f34dcf5116a96bda03fec2e414520617fb4",
+    "README.md": "2c688aa435ae7a40732a6efc3661743d8f6b7c7ebae0204f35242fd757cf3bf5",
+    "remaining.json": "ff1792ba6534b3328d4e6cdf890324131be1809fd63c71330afa531dd5ef87d7",
+    "review.md": "0df2d80d9c55c7fa3293685c8dc20468bba35f57ac728f0a492a4d802d8ea792",
+    "supporting.json": "d0596b2ede11ea23f2dd2202be6b8902a19df63b6e57e0e5b0f0242cb6e159d6"
+  }
+}

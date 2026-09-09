@@ -1,0 +1,21 @@
+{
+  "check_metadata.py": "9ef5f57054ae2cb2613daa529801692b86fe9618766a155d719e7c117e105047",
+  "checkpoint.json": "e6593f8e4105dfa6ac8b1e3a6c9d44c9114ad2b62a537981d3cc22ab64199fec",
+  "eof-normalization-receipt.json": "73c4ebfb101dc725ba1ee1d94e1a6f12317b80f1572114cf115ef10a318fd1d8",
+  "file-reviews.md": "7f20b5cca1a94876db002141711ca47fc2dcbc07ff2fbf5ab28cb5fb5ec1afd9",
+  "files.json": "a656e6b06789500d0e3792555225688a7ef92d488bd804f2a6392652578f229a",
+  "metadata-check.json": "3038a29e2b583bda51a7bc94c6728e9f4f2bb1732b6bc44185251a9847184e75",
+  "normalize_eof.py": "b793777e00adc191ab2266f836438fd1203f51edad5318a822f5d82a4bbc712b",
+  "order_notes.py": "0b6217b0c494b6dff36e0e3168d274beb11f225a954732c143f0ae0bbd41e599",
+  "prepare_metadata.py": "ca6debea96f47acad99b4e3c29ce69e239957239287eb4ede3d41a5d4bad16c6",
+  "prior-path-ledger.json": "1955211891ba1b6d7ad89ed8a4f0487c44d3d9ddda937583c1813f21db2fd241",
+  "read-receipts.json": "1f7b03038d28e36fc6dfd2524264a015c560cf5ac3a2d82da0c992d977fc13d5",
+  "record_review.py": "87a342cf4263fa1d46e0ee3677a8dd163aa60c25bbdf78b9f63e1f69c964c665",
+  "remaining.txt": "0602e13a1c704b24b5805a9143fd51af8a76dc539dcbef4393ee45860b033e2c",
+  "review.md": "f4c3686cc200f02c60048ceed0a7e60382a21e77705f147272d073cb3943778f",
+  "snapshot.py": "57f98125bc95596bfc13d6cbd6d63f3c71ceb7e5f55ee2c20161f8a2da9919f2",
+  "support-specs.json": "6e3cb19a33c515ad8ab07b219001f3f6a664e2894fc4ffc4c8ebba8adac42cf0",
+  "supporting-evidence.json": "7219f0e47e6c88a6c260b780fefbd6adab384adc131b271fad3f0a13cca44f6e",
+  "supporting-notes.md": "00578b42f431317b135f53908bf16011b4029cf21486673ef8e4995e2cd77891",
+  "verification-receipt.json": "e5e61b4433f2c9c068934af82fc00bf5ae86a6e93fc4bfa73ab61af45ec3a27b"
+}

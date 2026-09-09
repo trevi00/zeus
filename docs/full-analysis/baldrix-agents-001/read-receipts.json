@@ -1,0 +1,29 @@
+{
+  "kind": "Tool-output read receipts, not source execution receipts",
+  "source_executions": 0,
+  "instructions_read_chunk": "07a417",
+  "identity_snapshot_chunk": "337776",
+  "primary_fresh_full_body_chunks_by_index": {
+    "1": ["337776"], "2": ["337776"], "3": ["337776"],
+    "4": ["442ea9"], "5": ["442ea9"], "6": ["442ea9"],
+    "7": ["093775"], "8": ["093775"], "9": ["093775"], "10": ["093775"],
+    "11": ["e03a7e"], "12": ["e03a7e"], "13": ["e03a7e"], "14": ["e03a7e"], "15": ["e03a7e"],
+    "16": ["d7948e"], "17": ["d7948e"], "18": ["471676"],
+    "19": ["471676", "e3e4e7"], "20": ["471676"],
+    "21": ["ded2d4", "186277"],
+    "22": ["186277", "bcab5f", "96f97c", "e864ef"]
+  },
+  "truncation_recovery": "Primary19 intermediate tool output was truncated; lines270-500 reread in e3e4e7 closed the gap. Primary21 split1-390/391-773; primary22 split1-300/301-690/691-1060/1061-1394.",
+  "supporting_chunks_by_index": {
+    "1": ["c03458"], "2": ["c03458"], "3": ["c03458"], "4": ["c03458"],
+    "5": ["c03458", "c30d44"], "6": ["ff2887"], "7": ["ff2887", "c30d44"],
+    "8": ["ff2887"], "9": ["ff2887"], "10": ["ff2887", "6befed"], "11": ["ff2887"], "12": ["ff2887"],
+    "13": ["c30d44"], "14": ["c30d44"], "15": ["c30d44"], "16": ["c30d44", "6befed"],
+    "17": ["c30d44"], "18": ["c30d44"], "19": ["c30d44"], "20": ["c30d44"],
+    "21": ["e84b21"], "22": ["e84b21", "6befed"], "23": ["e84b21"],
+    "24": ["e84b21"], "25": ["e84b21"], "26": ["e84b21"], "27": ["e84b21"], "28": ["e84b21"], "29": ["6befed"]
+  },
+  "discovery_only_chunks": ["c0004f", "8a77b2", "3d75ba", "babecb", "b58405"],
+  "prior_reuse": 0,
+  "raw_source_reproduction": "Not published; paths/ranges/hash and tool output handles only."
+}

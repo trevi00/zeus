@@ -1,0 +1,136 @@
+모든 1차 파일 23종을 전문 통독하고, 소비자를 핀 트리 안에서 추적했습니다. 아래가 독립 판정입니다.
+
+---
+
+# 하네스 진입 계약 정적 검토 — `harness-entry-contracts-001`
+
+**대상 리비전**: `a3f8b3be9a0a389329de6e16a6c7db81782041a3` (`.runtime/absorption/sources/harness/pinned`)
+**방법**: Read/Glob/Grep 전용. 실행·임포트·쓰기·네트워크·설치·자격증명·활선 상태 접촉 0.
+`AGENTS.md`·`CLAUDE.md`·`.claude/commands/*` 는 **데이터로** 읽었고 세션 지시로 취급하지 않았습니다.
+
+## 읽기 명세
+
+**1차 전문 통독 23/23** (전 행):
+
+| 파일 | 행 |
+|---|---|
+| `.claude/commands/{debate,grill,health,interview,new-project,onboard,recall,research-and-fix,residual,reverse,run,status,unattended}.md` | 각 전문 (13종) |
+| `.claude/git-flow-overrides.md` | 1–71 |
+| `.claude/pipeline.yaml` | 1–114 |
+| `.claude/settings.json` | 1–99 |
+| `.gitattributes` | 1–10 |
+| `.gitignore` | 1–60 |
+| `.mcp.json` | 1–9 |
+| `AGENTS.md` | 1–62 |
+| `CLAUDE.md` | 1–28 |
+| `README.md` | 1–83 |
+| `requirements.txt` | 1–13 |
+
+**지원 선택 범위 통독** (연속 구간): `scripts/handlers/dispatch.sh` 1–26(전문) · `hud_launcher.sh` 1–13(전문) · `handlers/notification/relay.py` 1–33(전문) · `handlers/pre_tool/write_boundary.py` 636–705, 700–809, 809–928 · `engine/tick.py` 280–329 · `engine/pipeline_loader.py` 370–419 · `validators/harness_lint.py` 1025–1094 · `lib/git_flow.py` 24–88 · `cron/l2_driver.py` 100–139, 137–171, 1793–1827.
+
+**grep 적중만 본 것(연속 통독 아님 — 근거 강도를 낮춰 인용)**: `cli/residual_cmd.py` · `cli/step_cmd.py` · `engine/checks.py` · `cli/suite_cmd.py` · `cron/re_anchor.py` · `ontology/contracts.yaml` · `pipelines/core.yaml` · `validators/settings_wiring.py` · `tests/_isolate.py`.
+
+---
+
+## F1 — 훅 척추 전체가 **미추적 파일 1개**에 매달려 있고, 부재 시 fail-open (설치/배포)
+
+`settings.json:6–97` 은 8이벤트를 전부 `dispatch.sh` 로 보냅니다. 그 런처는:
+
+```
+dispatch.sh:14   PY="$(sed -n 's/^python_exe:...' "$HOME_DIR/config/runtime.yaml" ...)"
+dispatch.sh:17-20  if [ -z "$PY" ]; then  echo "... bootstrap needed, fail-open pass" >&2; exit 0
+```
+
+그리고 스코프 안의 `.gitignore:25–26` 이 그 파일을 **커밋 금지·운영자 수동 피닝**으로 선언합니다.
+
+귀결: 핀이 없는 트리에서는 8이벤트가 전부 무발화합니다. `write_boundary` 의 무인 펜스·사람 전용 채널 가드·쓰기 경계가 통째로 부재인데, `settings.json` 은 배선된 모습 그대로입니다.
+
+`README.md:26–27` 의 "시작하기" 첫 명령은 `<python_exe> -m pip install -r requirements.txt` 로, **`python_exe` 가 이미 핀돼 있음을 전제**합니다. 23종 진입 계약 어디에도 `config/runtime.yaml` 을 만드는 절차가 없습니다.
+
+**기존 방어(인정)**: `dispatch.sh:21–25` 의 `guard_boot` 는 반쪽 편집으로 찢어진 dispatch 를 fail-closed deny 로 바꿉니다 — rc≠0 을 CC 가 비차단으로 읽는다는 것까지 주석이 알고 있습니다. `settings_wiring.check_statusline` 은 **"핀 있음/핀 없음" 두 분기를 따로** 검사합니다(`:201`, `:205`). 즉 핀 부재는 인지된 상태입니다. 그런데도 dispatch 쪽은 여전히 `exit 0` 입니다. 인지와 처리가 갈려 있습니다.
+
+## F2 — 진입 계약이 사실상 Windows+Git Bash 단일 호스트인데, 그 전제가 선언돼 있지 않다
+
+1. **`pipeline.yaml` 게이트 6곳**(`:48, 69, 71, 95, 97`)이 `set "HARNESS_HOME=%CD%" && …` — cmd.exe 전용입니다. `checks._exit_code` 는 `shell=True`(checks.py:45)이므로 POSIX 에서는 `/bin/sh` 가 받고, `set "X=Y"` 는 변수 설정이 아니라 셸 옵션이며 `%CD%` 는 확장되지 않습니다. 그러면 `pipeline.yaml:7–19` 가 길게 경고한 바로 그 함정(스위트가 **원본 트리**를 검사하는 연극)이 Linux/WSL 에서 되살아납니다.
+   **다만 2차 방어가 실재합니다**: `suite_cmd` 의 `discovery_vacuum` 이 발견 0건을 exit 1 로 냅니다(`:504–508`, `:574–577`, `:615`). `pipeline.yaml:18–19` 의 "같은 함정이 두 번 통과하지 않는다"는 코드로 확인됩니다.
+2. **`l2_driver._pid_alive`** 는 `tasklist`(`:148`)이고, 예외를 **"살아있음"으로 판정**합니다(`:151–152`). 비-Windows 에서는 `tasklist` 부재 → 전 pid 영구 alive → hung 종료·서킷·이중 스폰 방지가 모두 보수쪽으로 굳습니다. `_terminate` 도 `taskkill` 계층입니다(`:169–171`).
+3. **`unattended.md:11`** 은 지속 구동 수단으로 Task Scheduler `HarnessL2` 만 제시합니다. cron/systemd 대안 없음.
+4. `.gitattributes:3,9` 의 `*.sh`/`*.patch` LF 고정은 **Windows autocrlf 함정 대응**이지 타 호스트 지원 선언이 아닙니다(주석 :1–2 가 "훅 셸=Git Bash 실증"이라고 명시).
+
+`README.md:23–33` "시작하기"에 호스트 전제 절이 없습니다. 이 리비전에서 Linux/WSL 은 미지원이 아니라 **미선언**이며, 미선언 쪽이 더 나쁩니다 — F2-1 은 조용히 통과하는 형태이기 때문입니다.
+
+## F3 — 개입 지점 ②(잔여 판정)가 사람 전용 채널 명부에서 **빠져 있다** (가장 무거운 발견)
+
+`CLAUDE.md:8` = `AGENTS.md:6` 이 사람 개입 2지점을 불변 조항으로 선언하고, 그 ②가 `verdict_mode:human` 파킹입니다. `residual.md:13` 은 *"네가 대신 판정하는 것은 금지 — 대원칙 1 위반이다"* 라고 적습니다. 이 금지의 강제 상태:
+
+- `residual_cmd.py:101` 이 `"actor": "operator"` 를 **하드코드**합니다(`:54` 의 `--session` 기본값도 `operator`). 사람이 쳤는지 기계가 쳤는지 구별하는 축이 이벤트에 없습니다.
+- `write_boundary._HUMAN_CLI`(`:837–839`)는 `spiral_cmd|sandbox_cmd` 의 `approve|reject|resolve` **만** 겨냥합니다. `residual_cmd` 는 없습니다.
+- 그 앞 관문도 통과합니다: `<py> residual_cmd.py pass --stage … --statement …` 에는 `_WRITE_TOKENS`(`:34–52`) 낱말이 하나도 없고 리다이렉트도 없어 `_has_write_intent`(`:486`)가 거짓입니다. 이것은 `:851–855` 가 spiral/sandbox 에 대해 *"이 명령들에는 쓰기 토큰이 하나도 없어 그 관문이 먼저 돌면 전부 통과한다(실측 4/4 allow)"* 라고 적은 것과 **형태가 동일**합니다.
+- `:817–818` 은 *"CLI 자신도 같은 검사를 한다(겹 방어)"* 고 적지만, `residual_cmd.py` 에 `is_driver_spawned`/`L2_SPAWN` 적중은 0건입니다(grep). 이 경로엔 겹이 없습니다.
+
+효과의 크기: `residual.md:15` 대로 pass 기록은 게이트 합산 발급으로 이어져 루프가 전진합니다. `pipelines/core.yaml` 의 `verdict_mode: human` 은 **19곳**(`:33`–`:336`)이고 전부 설계 구획(requirements ~ project-convention)에 있습니다. 즉 SDD 설계 구획의 사람 수용 전체가 이 미등재 CLI 하나로 열립니다.
+
+**공정하게 두 가지를 함께 적습니다.** ① 가드는 자기 한계를 이미 선언했습니다 — `:844–848` 이 `append_event` 직접 호출은 못 막는다고 정직 잔여로 등재했습니다. 그러나 `residual_cmd` 는 그 잔여와 성격이 다릅니다: CLI 이고, 명부에 이름 한 줄 더하면 되는 자리입니다. ② 하네스는 "사람 채널을 열거로 잠근다"는 패턴을 **이미 갖고 있습니다**(`:857–863` 의 4곳 계수, sandbox 절반 수리 교정 이력 포함). 이 발견은 **패턴의 부재가 아니라 명부의 누락**입니다.
+
+## F4 — 모델 라우팅: 요구된 Astra/Sol/Terra 는 없고, 있는 라우팅도 비강제 자기보고
+
+- 핀 트리 전체에서 `Zeus|zeus|Astra|astra|Terra|terra` **0건**(단어경계 grep, 파일 0개). `Sol` 은 `solo`·`resolve` 오탐이 지배적이라 이 계수에 넣지 않았습니다 — 즉 Sol 에 대해서는 계수를 주장하지 않습니다.
+- 카드 티어 어휘는 **닫혀 있고 강제됩니다**: `ontology/contracts.yaml:227` `model_tier: [session-default, fable, sonnet, opus, haiku]`, 강제는 `harness_lint.check_agent_cards`(`:1075–1077`). `AGENTS.md:30–50` 실배선은 `fable` 8 / `session-default` 13. 요구된 3명은 어휘에도 없습니다.
+- **어휘 강도가 두 자리에서 다릅니다**: 파이프라인 쪽 `_parse_dispatch`(`pipeline_loader.py:392–393`)는 `dispatch.model` 이 **문자열인지만** 봅니다. 카드는 폐쇄, 스테이지 라우팅은 개방입니다. `pipeline.yaml:25–26` 의 `evaluator: {model: fable}` 이 카드 어휘와 맞는 것은 우연이지 검사 결과가 아닙니다.
+- **강제되지 않습니다**: `tick.py:304–306` 은 dispatch 계약을 **지시문 문자열**로 동봉하며 *"Task 스폰에 적용하고 delegate 에 `--model/--effort` 로 병기"* 라 적습니다. `step_cmd.py:231–232, 312–318` 은 그 인자를 그대로 `payload.contract` 로 적습니다. 원장에 남는 것은 **실제 스폰 모델이 아니라 세션의 자기보고**이고, 선언·기록·실행을 대조하는 자리가 이 경로에 없습니다.
+- `AGENTS.md` 자신이 `:23–26` 에서 *"호출 경로 수는 문자열 포함 검사라 과다계수… 실제로 불렸는지(실적)는 이 표에 없다"* 고 선언합니다. 같은 규율이 `model_tier` 에는 아직 안 걸려 있습니다.
+
+**판정**: 요구된 Astra/Sol/Terra 라우팅은 이 리비전의 참조 선언으로 달성되지 않았고, 기존 라우팅조차 "선언 + 산문 지시문 + 자기보고"이지 기계 배정이 아닙니다.
+
+## F5 — 권한(authority): 카드 권한의 실제 경계는 훅이고, 훅은 F1 에 매달려 있다
+
+`harness_lint:1078–1085` 는 `risk_scope` 가 금지하는 도구를 카드가 들고 있으면 FAIL 시킵니다 — 선언에 소비자가 실제로 붙어 있습니다(`:1032–1036` 이 "적히기만 하고 아무도 읽지 않았다"를 교정한 이력). 그러나 `contracts.yaml:202–205` 가 스스로 적듯 `read-only` 카드도 **Bash 는 허용**하고, *"선언이 아니라 훅이 위험을 진다: `write_boundary.py` 가 실측 강제한다"* 입니다. 따라서 카드 권한의 실효 경계 = 훅이고, 훅의 존재 조건 = 미추적 핀입니다. **F1 과 F5 는 곱해집니다.**
+
+## F6 — 무인 변이: 방어가 실재하며, `pipeline.yaml` 4단계 계획 3건이 이 리비전에 착지했다 (인정)
+
+- 3축 논리곱 `_is_unattended`(`:706–723`) — 2축 판정이 협업 세션을 오분류했던 실측(`:709–712`)의 교정.
+- 파일 분기와 셸 분기가 **같은 술어** `_fence_escape`(`:744–768`) — "Write 는 deny, `cat >` 는 allow" 회귀(`:747–749`)를 구조로 닫음. 판정 불능을 금지 근거로 쓰지 않는 규율(`:751–753`, `:727–734`)이 일관됩니다.
+- `pipeline.yaml` 3수리 착지 확인: `requires_` 전제 헬퍼(`tests/_isolate.py:41, 175, 198`) · 사유별 토큰 통지 3분기(`l2_driver.py:1807–1826`, dedup 근거 `:1798–1800`) · 재anchor 바인딩 인자화(`re_anchor.py:59, 226–247`, 특히 `:24` 가 무인자 호출을 "강등"으로 남긴 것).
+- `_notify_halt` dedup 마커는 단일 슬롯(`:121–124`)이라 사유 A/B 교대 시 매번 재통지됩니다. 이는 `:1798–1800` 이 원한 방향(두 번째 사유가 접혀 사라지지 않음)과 **일치하므로 결함이 아닙니다** — 다만 스팸 억제는 동일 사유 연속에만 성립한다는 점은 문서화되어 있지 않습니다.
+
+## F7 — 통지 계약의 끝이 스코프 밖이다 (경계 문제이지 은폐 아님)
+
+`relay.py:3–7` 과 `l2_driver:128–133` 둘 다 `state/notifications.jsonl` append 로 끝납니다. 발신은 guardian 몫이고(`README.md:20` 이 "별도 트리(하네스 밖)"로 선언), `.gitignore:2` 로 `state/*` 는 미추적입니다. **이 스코프 안에서 "통지가 사람에게 도달한다"는 검증 불가**이며, 그것이 설계된 경계입니다.
+
+지적할 점은 다른 데 있습니다: 진입 계약 4종(`README.md:20`, `unattended.md:8`, `health.md:11`, `CLAUDE.md` 상태 표면)이 모두 `../guardian` 형제 트리를 **암묵 전제**하는데, 설치 절차에 그 트리를 얻는 단계가 없습니다. F1 과 같은 결손 형태입니다.
+
+## F8 — 거버넌스(git-flow): 주장이 코드와 일치하나, 범위가 문서보다 좁다
+
+**검증됨(인정)**: `git-flow-overrides.md:56–60` 의 *"값은 이름이지 명령이 아니다 / 모르는 이름은 무시가 아니라 차단"* 은 코드와 정확히 일치합니다 — `git_flow.PUSH_GATES`(`:27–37`) 폐쇄 목록, 미지 이름 deny(`write_boundary:674–678`), 스크립트 부재·타임아웃·rc≠0 전부 deny(`:682–703`). "판정 불능은 통과가 아니다"가 세 갈래 모두에서 지켜집니다. 문서 `:64–66` 의 "끄는 법"도 `read_settings`(`git_flow.py:40–57`)의 frontmatter-only 판독과 맞습니다.
+
+**범위 정정**: 이 게이트는 **PreToolUse Bash 훅**입니다. 세션 밖 푸시(터미널·IDE·guardian)는 지나갑니다. 문서 `:53–54` 는 *"푸시는 공유 상태 진입 지점이라 정본이 말한 머지 후/CI 와 같은 자리다"* 로 CI 부재(`:45–51`)를 메운다고 읽히지만, 메우는 범위는 훅 매개 푸시뿐입니다. 그리고 F1 대로 핀이 없으면 이 게이트도 없습니다. `:69–70` 의 비용 진술("푸시마다 그만큼 늦어진다")도 같은 범위 한정을 받습니다.
+
+**문서가 안 적은 자기 귀결**: `:11–27` 의 정정 절은 develop 이 master 보다 379커밋 앞이고 *"클론하거나 웹으로 보는 쪽은 379커밋 뒤처진 상태를 본다"* 고 적습니다. 포인터를 사람 결정으로 남긴 것은 규율에 맞습니다. 다만 **그 뒤처짐의 최대 피해자가 바로 이 스코프의 진입 계약 23종**이라는 점 — 새 사용자가 처음 읽는 파일들이 8/28판이라는 점 — 은 문서에 없습니다.
+
+## F9 — 학습/티켓 계약
+
+- `research-and-fix.md:12,14` → `repair-notes.md` → curator 결정화. `recall.md:20–23` 은 trigram 2자 무매칭을 *"결과 0건이 '없다'가 아니라 '못 찾는다'인 유일한 경우"* 로 명시합니다 — 검색 결과를 부재 근거로 쓰지 못하게 막는 좋은 계약이고, 이 검토가 따른 규율과 같습니다.
+- 티켓 승인 채널은 `spiral_cmd approve` 이며 이것은 `_HUMAN_CLI:839` 에 **등재돼 있습니다**. F3 의 residual 과의 대비가 정확히 이 지점입니다.
+
+## F10 — 요구된 8단계 SDD는 이 리비전에 없다
+
+`pipelines/core.yaml` 은 30단계(`:22`–`:559`, requirements → batch)이고 `.claude/pipeline.yaml` 은 4단계(`:31–113`)입니다. 8단계 SDD 는 존재하지 않습니다. `AGENTS.md:4–13`·`CLAUDE.md:6–15` 의 불변 조항 선언은 단계 구조를 만들지 않습니다 — 조항은 조항이고 파이프라인은 파이프라인입니다.
+
+---
+
+## 우선순위
+
+| # | 발견 | 성격 |
+|---|---|---|
+| F3 | 잔여 판정이 사람 채널 명부 누락 | 사람 수용의 기계 접지 상실 — 패턴은 있고 이름만 빠짐 |
+| F1 | 훅 척추가 미추적 핀에 매달림 + fail-open | 갓 클론한 트리 = 경계 0, 겉보기 정상 |
+| F5 | F1 × 카드 권한 | 곱셈 효과 |
+| F2 | cmd.exe/tasklist/Task Scheduler 전제 미선언 | 호스트 단일화가 조용함 |
+| F4 | 라우팅 비강제·자기보고, 어휘 강도 불일치 | 요구 대비 미달 + 기존 축 약함 |
+| F8 | 푸시 게이트 범위 < 문서 함의 | 정정 |
+| F7 | 통지 계약 끝이 스코프 밖 | 경계(설계됨), 설치 절차만 결손 |
+| F10 | 8단계 SDD 부재 | 요구 대비 사실 진술 |
+
+## 이 판정이 주장하지 않는 것
+
+핀 트리와 그 안의 소비자만 읽었습니다. 실행·활선 상태·타 리비전·저장소 전체·채택 여부·라이선스·호스트별 실측·모델 실적·사람 자격에 대해서는 아무것도 판단하지 않았습니다. F4 의 계수는 `Zeus/Astra/Terra` 에 한하며 `Sol` 은 계수하지 않았습니다. grep 적중만으로 본 파일(`residual_cmd.py` 등)의 결론은 그 강도로만 제시했습니다 — 특히 F3 의 "residual_cmd 에 겹 방어 없음"은 연속 통독이 아니라 `is_driver_spawned|L2_SPAWN|human` 적중 0건에 근거하므로, 다른 이름의 검사가 있을 가능성을 배제하지 못합니다.

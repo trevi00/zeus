@@ -1,0 +1,20 @@
+{
+  "workdir": "C:/Users/rudtn/zeus",
+  "executed_only": "Owned inert metadata/order/check scripts and Ruff; no upstream imports or execution",
+  "metadata_run_chunk": "091978",
+  "argv": [
+    ["python", "docs/full-analysis/baldrix-agents-001/prepare_metadata.py"],
+    ["python", "docs/full-analysis/baldrix-agents-001/order_notes.py"],
+    ["python", "docs/full-analysis/baldrix-agents-001/record_review.py"],
+    ["python", "docs/full-analysis/baldrix-agents-001/check_metadata.py"],
+    [".venv/Scripts/ruff.exe", "check", "docs/full-analysis/baldrix-agents-001"]
+  ],
+  "result": "All five completed;22/198416 fresh,29support,raw blob bytes hashes ranges refs PASS;Ruff All checks passed",
+  "korean_full_readback_chunk": "80b83f",
+  "korean_readback": "All22 ordered per-file notes, review and29 support notes read back as meaningful Korean; no literal loss. d033e6 was PowerShell default decoder display; UTF8 read b82a97 confirmed original bytes were intact.",
+  "upstream_execution": 0,
+  "upstream_tests_executed": 0,
+  "whole_closure": false,
+  "adoption": false,
+  "artifact_index": "artifact-hashes.json excludes itself; final checker regenerates and verifies after this receipt."
+}
