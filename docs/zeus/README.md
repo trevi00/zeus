@@ -1,5 +1,7 @@
 # Zeus 0.2 작업 기록
 
+이 문서는 초기 0.2 구현 당시의 검토·검증 기록이다. 이후 독립 저장소 생성과 실제 GitHub 이슈 11개 연동, Windows/Linux CI를 완료했다. 최신 게시 검증은 [독립 저장소 검증 기록](repository-bootstrap-validation.md), 남은 전체 요청은 [전체 작업 범위](full-delivery-scope.md)를 따른다. 아래의 당시 미실행 표시는 역사적 상태로 보존한다.
+
 사용자가 선택한 구성은 **로컬 티켓 원장 + GitHub Issues 연동**이다. 로컬 PostgreSQL의 기존
 documents 저장 계층을 사용하며, 별도의 중복 원장을 만들지 않는다. GitHub 게시와 실행 요청은
 명시적인 CLI 명령으로 수행한다. 이 작업 중 운영 supervisor를 기동하거나 실제 이슈를 게시하지 않았다.
