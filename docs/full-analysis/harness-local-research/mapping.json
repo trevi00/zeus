@@ -1,0 +1,1832 @@
+{
+  "source": "harness",
+  "capture": "2026-09-09T02:33:46.259710+00:00",
+  "relationship_limits": "Content-based links; no historical artifact hash or proposal promotion attestation.",
+  "role_logs": [
+    {
+      "path": "ledger/role-runs/researcher/default-55.jsonl",
+      "sha256": "846ce218ceedf19a573044482d1d42993991b196a85b75ec32dad8fdcf24bbea",
+      "events": 11,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 2,
+        "stage_started": 1,
+        "subagent_result": 1,
+        "gate_check": 2,
+        "gate_verdict": 1,
+        "stage_finished": 1,
+        "pipeline_disarmed": 1
+      },
+      "subject": "research_synthesis_outside_note_partition",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "report",
+          "statement": "\ub9ac\ud3ec\ud2b8\uc5d0 \uc694\uccad \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\ubb34\uc5c7\uc744 \ubb3c\uc5c8\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "brain/reports/role-request.md",
+            "expect": "ROLE-REQUEST:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "report",
+          "statement": "\ub9ac\ud3ec\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\uc790\ub8cc\uac00 \uc544\ub2c8\ub77c \uadfc\uac70\uc5ec\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "brain/reports/role-request.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-50.jsonl",
+      "sha256": "def4deadad9e22b83d1d6a6eac82e43086f5c39bbfade66f03856b2d97ea480a",
+      "events": 22,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 5,
+        "stage_started": 2,
+        "subagent_result": 3,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "openclaude_outside_note_partition",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-52.jsonl",
+      "sha256": "672c57c461f90f053862764c8cbd187fb47db01e896f6f98495912256eb7227a",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "protobuf",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-53.jsonl",
+      "sha256": "b544064b428864e7098b74f45e891c73fc7248ed454a92021bc20d6b77a7b19c",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "portless",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-54.jsonl",
+      "sha256": "d561b9db32bc19488845a768905e8437054eb78000dab2bb0d3dc17e27bcbab0",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "humanizer",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-56.jsonl",
+      "sha256": "ff679766c812aae5650f951bc63dfc1669d5bff16192acc92c38a01db996e964",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "caveman",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-57.jsonl",
+      "sha256": "b73abfde387eb3a86089324c609de397ff3e305b610216fb29c477eed7087119",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33135",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-58.jsonl",
+      "sha256": "bde6b8a07d428ab4f2052247e80bbe5d451156ae67c1a5ba668e9f41b6e2326c",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "pdf-inspector",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-59.jsonl",
+      "sha256": "143a7a1072b97ee368ac28dbcd4b88d8fd0e230b2c62036a3f3ce35dcd74b941",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33158",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-60.jsonl",
+      "sha256": "61c659fc778d88a90c658e0ce37188760d2c66d3f7b49066048e5f260ba138ee",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33140_prior_version_unavailable",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-61.jsonl",
+      "sha256": "1ece23739132d38951cefa99046e3e4cd97a4ef9415ef461492daadb603b9689",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33138",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-62.jsonl",
+      "sha256": "566a648661e0b32bf58116b2ef530cca9bda93f53c241e3a0c66fef526590252",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33154",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-63.jsonl",
+      "sha256": "12b090ba7d989e0a523e7d26a97fd47e5af2a171d2ebccdccbad8dc6c4523221",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33152",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-64.jsonl",
+      "sha256": "0faa1d296f932539dc15bf2e3c8fa3f3b0e7f24e2119859f617b5e4dc5225e42",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33151",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-65.jsonl",
+      "sha256": "b6e0b8a304c342e79207172a0fdf8f53fe5a68cd8e662ce0c9103c9b2de8cb28",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33149",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-66.jsonl",
+      "sha256": "efdc5c3f2d4057f63512782c6822e13100ae03fb46690048ef595639ad6be2c8",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33148",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-67.jsonl",
+      "sha256": "980ffdb38098d896a0c99ea9cab6d0ff65c6b45d44a391c0ebce9145edd88754",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33147",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-68.jsonl",
+      "sha256": "6dc2f3ff8fd5b8f40809d7f94980b136f0ed86341c82c578ab4fc0e385c168f0",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33145",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-69.jsonl",
+      "sha256": "9a9553687b0c105de5a4aef582189b141f7c4dd5b164331e6b2a116a00c6eeb0",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33144",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-70.jsonl",
+      "sha256": "a6901aa1aa6ede83f865dc19a18186a7e6552418db97af4c8dfdb788be844fe0",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33141",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-71.jsonl",
+      "sha256": "63022b6b3d1aadefc55e59b9f5feeebfbb55b11e481cb65bfeb80d1895437dbe",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33140",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-72.jsonl",
+      "sha256": "1050c72f88fb4a7cf2cfaee35c1b17a51b9542b171652f056762627a43598d88",
+      "events": 20,
+      "event_counts": {
+        "pipeline_started": 1,
+        "external_action": 1,
+        "dispatch": 4,
+        "stage_started": 2,
+        "subagent_result": 2,
+        "gate_check": 5,
+        "gate_verdict": 2,
+        "stage_finished": 2,
+        "pipeline_disarmed": 1
+      },
+      "subject": "33139",
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uc5d0 \ud56d\ubaa9 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \uc790\ub8cc\ub97c \ubd24\ub294\uc9c0 \uc774\ub984\uc73c\ub85c \uc801\ub294\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "SOURCE-NOTE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\uc8fc\uc7a5\uc5d0 \ucd9c\ucc98\uac00 \ub2ec\ub824 \uc788\ub2e4 (\uadfc\uac70 \uc5c6\ub294 \uc694\uc57d\uc740 \uc790\ub8cc\uac00 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\ucd9c\ucc98:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "note",
+          "statement": "\ub178\ud2b8\uac00 \uce74\ub098\ub9ac\uc544 \uc124\uacc4\ub97c \ub2f4\ub294\ub2e4 (\ubc18\uc601 \uc5ec\ubd80\ub97c \uc7b4 \uc218 \uc788\uc5b4\uc57c \ud55c\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-note.md",
+            "expect": "\uce74\ub098\ub9ac\uc544",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\ud310\uc815\uc5d0 \ub178\ud2b8 \uadc0\uc18d \ub9c8\ucee4\uac00 \uc788\ub2e4 (\uc5b4\ub290 \ub178\ud2b8\ub97c \ud310\uc815\ud588\ub294\uc9c0)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "OPEN-UPTAKE:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        },
+        {
+          "stage": "uptake",
+          "statement": "\uc5f0\uacb0 \ud310\uc815\uc744 \uba85\uc2dc\ud55c\ub2e4 ('\uc5c6\uc74c'\ub3c4 \ud310\uc815\uc774\ub2e4 \u2014 \ube48\uce78\uc740 \uc544\ub2c8\ub2e4)",
+          "check_type": "file_content",
+          "verdict": "PASS",
+          "evidence": {
+            "target": "knowledge/research/open-source-uptake.md",
+            "expect": "\uc5f0\uacb0 \ud310\uc815:",
+            "hit": true
+          },
+          "verdict_mode": "machine"
+        }
+      ],
+      "current_tests_executed": []
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-73.jsonl",
+      "sha256": "93befb7cdf99993c9bffcfdf81d6eeded85c8d76d24845556008ebe9311beffb",
+      "events": 1,
+      "event_counts": {
+        "pipeline_started": 1
+      },
+      "subject": null,
+      "relationship_basis": "captured_log_body_not_artifact_hash_binding",
+      "historical_gate_checks": [],
+      "current_tests_executed": []
+    }
+  ],
+  "event_counts": {
+    "pipeline_started": 23,
+    "external_action": 22,
+    "dispatch": 87,
+    "stage_started": 43,
+    "subagent_result": 44,
+    "gate_check": 107,
+    "gate_verdict": 43,
+    "stage_finished": 43,
+    "pipeline_disarmed": 22
+  },
+  "supporting_pinned_code": [
+    {
+      "path": "pipelines/source-note.yaml",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "sha256": "a93df0703ddcbc807a862e920dce5e1fce7e10a79fbb05fe0849bb37f6497873",
+      "review": "full_text_static_review",
+      "executed": false,
+      "review_ref": "trace.md",
+      "counts_in_61": false
+    },
+    {
+      "path": "scripts/cron/note_archive.py",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "sha256": "64145e19fd5c7bc271e022fb95f54ca024e8854bfdf227e70f1864d829d62bee",
+      "review": "full_text_static_review",
+      "executed": false,
+      "review_ref": "trace.md",
+      "counts_in_61": false
+    },
+    {
+      "path": "scripts/handlers/stop/subagent_harvest.py",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "sha256": "5628ae036cbd94dea8cfe33fdfc4f0506b20c9b4ec7a0126b8e6ce3800f2e45d",
+      "review": "full_text_static_review",
+      "executed": false,
+      "review_ref": "trace.md",
+      "counts_in_61": false
+    },
+    {
+      "path": "tests/contract/test_source_note_contract.py",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "sha256": "3a259bd5a396e79e697d802e56a86d005b6b68a423aed937d6006fab38edb906",
+      "review": "full_text_static_review",
+      "executed": false,
+      "review_ref": "trace.md",
+      "counts_in_61": false
+    },
+    {
+      "path": "agents/researcher.md",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "sha256": "97c69253dff0a04970bbcdaf0b6eec01280f1c7f848d7a0ca4b5607dbec67085",
+      "review": "full_text_static_review",
+      "executed": false,
+      "review_ref": "trace.md",
+      "counts_in_61": false
+    },
+    {
+      "path": "agents/evaluator.md",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "sha256": "952767873857d8ad09a7ab4425bb1f2bb9b385aef10569c0b8f4a62f49713aee",
+      "review": "full_text_static_review",
+      "executed": false,
+      "review_ref": "trace.md",
+      "counts_in_61": false
+    }
+  ]
+}
