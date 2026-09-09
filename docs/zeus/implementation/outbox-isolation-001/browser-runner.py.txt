@@ -1,0 +1,44 @@
+import base64
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import urllib.request
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/outbox-isolation-001'
+base = [r'C:\Users\rudtn\AppData\Local\npm-cache\_npx\9612fddc7eeb8d72\node_modules\agent-browser\bin\agent-browser-win32-x64.exe',
+        '--session', 'zeus-outbox-review']
+results = []
+def run(*args):
+    cli = ['eval', '--base64', base64.b64encode(args[1].encode()).decode()] if args[0] == 'eval' else list(args)
+    p = subprocess.run([*base, *cli], capture_output=True, encoding='utf-8', check=True)
+    results.append({'args': args, 'stdout': p.stdout, 'stderr': p.stderr, 'exit_code': p.returncode})
+    return p.stdout
+run('click', '@e4')
+snapshot = run('snapshot')
+assert '알림 전달 확인' in snapshot and '손상 데이터 격리' in snapshot
+def inspect():
+    raw = run('eval', 'JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,notice:document.querySelector("#notice").textContent,rows:document.querySelector("#notificationRows").textContent,rawLeak:document.body.textContent.includes("malformed notification")})')
+    data = json.loads(raw)
+    data = json.loads(data) if isinstance(data, str) else data
+    assert data['scrollWidth'] <= data['width'] and not data['rawLeak'], data
+    assert '알림 전달 확인 필요' in data['notice'] and '손상 데이터 격리1' in data['rows'], data
+for name, width, height in [('desktop', 1440, 1000), ('phone-width', 390, 844)]:
+    run('set', 'viewport', str(width), str(height))
+    inspect()
+    run('screenshot', str(out / (name + '.png')))
+assert not run('errors').strip()
+server = json.loads((root / '.runtime/outbox-monitor-server.json').read_text('utf-8'))
+with urllib.request.urlopen(server['url'] + '/api/status') as response:
+    body = response.read()
+data = json.loads(body)
+assert data['sources']['database']['data']['notifications']['status_counts'] == {'delivered': 4, 'quarantined': 1}
+(out / 'monitor-snapshot.json').write_bytes(body)
+run('close')
+record = {'mode': 'Actual Chrome and live loopback monitor reading isolated PostgreSQL/Redis; viewport emulation, not real phone',
+          'results': results, 'snapshot_sha256': hashlib.sha256(body).hexdigest(), 'human_acceptance': False}
+(out / 'browser-verification.json').write_text(json.dumps(record, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+(out / 'browser-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+(out / 'monitor-server.py.txt').write_bytes((root / '.runtime/outbox_monitor_server.py').read_bytes())
+print(json.dumps({'status': 'passed', 'actual_delivery_receipts': 4, 'persistent_quarantines': 1, 'commands': len(results)}))

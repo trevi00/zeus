@@ -1,0 +1,50 @@
+import json
+from pathlib import Path
+import subprocess
+from uuid import uuid4
+
+import psycopg
+from psycopg import sql
+from psycopg.conninfo import make_conninfo
+
+from codex_harness.adapters.bus import RedisBus
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.application.service import Harness
+from codex_harness.bootstrap import database_url, organization, redis_url
+from codex_harness.domain.model import envelope
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/outbox-isolation-001'
+state_path = root / '.runtime/outbox-live-state.json'
+assert not (out / 'baseline.json').exists()
+state = json.loads(state_path.read_text('utf-8'))
+schema, namespace = state['schema'], state['namespace']
+store = PostgresStore(make_conninfo(database_url(), options=f'-c search_path={schema},public'))
+store.migrate()
+bus = RedisBus(state['redis_url'], namespace)
+service = Harness(store, organization())
+ids = [f'00000000-0000-4000-8000-{n:012}' for n in (1, 2, 3)]
+with store.transaction() as tx:
+    assert len(tx.scan('outbox')) == 3
+assert bus.client.ping()
+assert bus.client.xlen(bus.stream('lead:improvement')) == 0
+failures = []
+for _ in range(2):
+    try:
+        service.flush_outbox(bus)
+    except TypeError as exc:
+        failures.append(type(exc).__name__)
+with store.transaction() as tx:
+    rows = tx.records()
+stream = bus.client.xrange(bus.stream('lead:improvement'))
+messages = [json.loads(fields['body'])['message_id'] for _, fields in stream]
+assert failures == ['TypeError', 'TypeError']
+assert messages == [ids[0], ids[0]]
+assert all(r['body']['sent'] is False for r in rows if r['id'] != ids[1])
+receipt = {**state, 'mode': 'actual isolated PostgreSQL and Redis; no agents consume this namespace',
+           'errors': failures, 'postgres': rows, 'redis': stream,
+           'first_message_delivered_twice': True, 'later_valid_message_never_delivered': True,
+           'first_send_flag_rolled_back': True}
+(out / 'baseline.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8', newline='\n')
+(out / 'baseline-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({k: receipt[k] for k in ('errors', 'first_message_delivered_twice', 'later_valid_message_never_delivered', 'first_send_flag_rolled_back')}))

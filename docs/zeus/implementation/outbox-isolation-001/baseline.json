@@ -1,0 +1,135 @@
+{
+  "schema": "outbox_live_37930b58a2ed44d89b87bfdab29a1ce4",
+  "namespace": "zeus-outbox-test-37930b58a2ed44d89b87bfdab29a1ce4",
+  "baseline_commit": "17fbc422cb1e67f6eba23e0f14e6e7aa36231779",
+  "redis_url": "redis://127.0.0.1:57321/0",
+  "redis_container": "zeus-outbox-test-37930b58a2ed44d89b87bfdab29a1ce4",
+  "redis_image": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+  "mode": "actual isolated PostgreSQL and Redis; no agents consume this namespace",
+  "errors": [
+    "TypeError",
+    "TypeError"
+  ],
+  "postgres": [
+    {
+      "bucket": "outbox",
+      "id": "00000000-0000-4000-8000-000000000001",
+      "body": {
+        "sent": false,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "lead:improvement",
+            "sender": "conductor",
+            "recipient": "lead:improvement"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "plan",
+            "details": {
+              "objective": "Isolated relay validation only"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T15:46:43.464352+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "00000000-0000-4000-8000-000000000001",
+          "causation_id": null,
+          "correlation_id": "d73be449-bf51-4f60-b279-bf9f1288e2f2",
+          "schema_version": "1.0"
+        }
+      }
+    },
+    {
+      "bucket": "outbox",
+      "id": "00000000-0000-4000-8000-000000000002",
+      "body": [
+        "malformed notification"
+      ]
+    },
+    {
+      "bucket": "outbox",
+      "id": "00000000-0000-4000-8000-000000000003",
+      "body": {
+        "sent": false,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "lead:improvement",
+            "sender": "conductor",
+            "recipient": "lead:improvement"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "plan",
+            "details": {
+              "objective": "Isolated relay validation only"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T15:46:43.477245+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "00000000-0000-4000-8000-000000000003",
+          "causation_id": null,
+          "correlation_id": "133f227c-d3d4-43d0-a84b-14d82ced97b0",
+          "schema_version": "1.0"
+        }
+      }
+    }
+  ],
+  "redis": [
+    [
+      "1788968849509-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"d73be449-bf51-4f60-b279-bf9f1288e2f2\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"00000000-0000-4000-8000-000000000001\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated relay validation only\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:46:43.464352+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ],
+    [
+      "1788968849521-0",
+      {
+        "body": "{\"causation_id\":null,\"correlation_id\":\"d73be449-bf51-4f60-b279-bf9f1288e2f2\",\"how\":{\"acceptance_criteria\":[\"Preserve normal behavior\"],\"constraints\":[],\"context_ref\":null,\"result_schema\":\"six-w.v1\"},\"message_id\":\"00000000-0000-4000-8000-000000000001\",\"schema_version\":\"1.0\",\"type\":\"task.assign\",\"what\":{\"action\":\"plan\",\"details\":{\"objective\":\"Isolated relay validation only\"}},\"when\":{\"after\":[],\"created_at\":\"2026-09-09T15:46:43.464352+00:00\",\"deadline\":null},\"where\":{\"allowed_paths\":[],\"environment\":\"local\",\"repository\":\"codex-harness\",\"revision\":\"bootstrap\"},\"who\":{\"owner\":\"lead:improvement\",\"recipient\":\"lead:improvement\",\"sender\":\"conductor\"},\"why\":{\"evidence_refs\":[],\"objective\":\"Improve harness reliability from verified evidence\"}}"
+      }
+    ]
+  ],
+  "first_message_delivered_twice": true,
+  "later_valid_message_never_delivered": true,
+  "first_send_flag_rolled_back": true
+}

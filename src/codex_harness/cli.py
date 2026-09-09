@@ -194,6 +194,7 @@ def parser() -> argparse.ArgumentParser:
     context.add_argument("--budget", type=int, default=12000)
     inspect = commands.add_parser("inspect")
     inspect.add_argument("bucket", choices=["incidents", "hooks", "sessions", "events", "deliveries", "outbox",
+                                           "outbox_quarantine", "outbox_delivery", "outbox_attempts",
                                            "tasks", "decisions_pending", "releases", "deployment", "release_queue"])
     rollback = commands.add_parser("rollback-hook")
     rollback.add_argument("hook_id")
@@ -410,7 +411,7 @@ def main() -> None:
         elif args.command == "incident":
             emit(service.record_incident(validate_message(json.loads(Path(args.file).read_text(encoding="utf-8")))))
         elif args.command == "flush":
-            emit({"published": service.flush_outbox(RedisBus(redis_url()))})
+            emit(service.flush_outbox(RedisBus(redis_url())))
         elif args.command == "send":
             message = validate_message(json.loads(Path(args.file).read_text(encoding="utf-8")))
             service.org.authorize(message)

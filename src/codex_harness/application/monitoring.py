@@ -29,6 +29,12 @@ class Monitoring:
         facts['operating_status'] = (health.get('status', 'unknown')
                                      if age is not None and age <= 120 else 'unknown')
         facts['health_age_seconds'] = age
+        notifications = facts.setdefault('notifications', {'status_counts': {}, 'last_batch': {}})
+        notification_age = age_seconds(notifications['last_batch'].get('at'), now)
+        attention = any(notifications['status_counts'].get(k, 0) for k in ('quarantined', 'retry', 'error', 'publishing'))
+        notifications['status'] = ('attention' if attention else 'observed'
+                                   if notification_age is not None and notification_age <= 120 else 'unknown')
+        notifications['age_seconds'] = notification_age
         facts['task_counts'] = dict(Counter(row['status'] for row in facts['tasks']))
         for agent in facts['agents']:
             owned = [row for row in facts['tasks'] + facts['decisions'] if row['agent'] == agent['id']]

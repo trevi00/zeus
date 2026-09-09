@@ -1,0 +1,112 @@
+from collections import Counter
+from contextlib import contextmanager
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+from uuid import uuid4
+
+from psycopg.conninfo import make_conninfo
+
+from codex_harness.adapters.bus import RedisBus
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.application.service import Harness
+from codex_harness.bootstrap import database_url, organization
+from codex_harness.domain.model import envelope
+from codex_harness.ports import MessageDeliveryError
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/outbox-isolation-001'
+assert not (out / 'live-verification.json').exists()
+state = json.loads((root / '.runtime/outbox-live-state.json').read_text('utf-8'))
+dsn = make_conninfo(database_url(), options=f"-c search_path={state['schema']},public")
+store, bus = PostgresStore(dsn), RedisBus(state['redis_url'], state['namespace'])
+service = Harness(store, organization())
+def counts():
+    return Counter(json.loads(body['body'])['message_id'] for _, body in bus.client.xrange(bus.stream('lead:improvement')))
+before = counts()
+assert sorted(before.values()) == [2], 'This verifier resumes the baseline once'
+env = dict(os.environ, HARNESS_DATABASE_URL=dsn, ZEUS_DATABASE_URL=dsn,
+           HARNESS_REDIS_URL=state['redis_url'], ZEUS_REDIS_URL=state['redis_url'],
+           HARNESS_REDIS_NAMESPACE=state['namespace'], ZEUS_REDIS_NAMESPACE=state['namespace'])
+argv = ['uv', 'run', 'zeus', 'flush']
+result = subprocess.run(argv, cwd=root, env=env, capture_output=True, check=True)
+cli = json.loads(result.stdout)
+assert cli['published'] == 2 and cli['quarantined'] == 1
+after = counts()
+assert sum(after.values()) == 4
+retry = service.flush_outbox(bus)
+assert retry['published'] == 0 and retry['quarantined_existing'] == 1 and counts() == after
+def create():
+    message = envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
+                       {'objective': 'Isolated transport fault injection'}, str(uuid4()))
+    with store.transaction() as tx:
+        tx.put('outbox', message['message_id'], {'message': message, 'sent': False})
+    return message['message_id']
+
+lost = create()
+publish = bus.publish
+def lose_ack(message):
+    result = publish(message)
+    if message['message_id'] == lost:
+        raise MessageDeliveryError('Deliberately discarded actual Redis ACK')
+    return result
+bus.publish = lose_ack
+# A new UUID can sort before the current cursor; a bounded wrap is intentional.
+for _ in range(2):
+    ack_loss = service.flush_outbox(bus)
+    if ack_loss['retry']:
+        break
+assert ack_loss['retry'] == 1 and counts()[lost] == 1
+bus.publish = publish
+for _ in range(2):
+    ack_recovery = service.flush_outbox(bus)
+    if ack_recovery['published']:
+        break
+assert ack_recovery['published'] == 1 and counts()[lost] == 2
+
+commit_lost = create()
+transaction = store.transaction
+@contextmanager
+def lose_commit():
+    with transaction() as tx:
+        yield tx
+        delivery = tx.get('outbox_delivery', commit_lost)
+        if delivery and delivery['status'] == 'delivered':
+            raise OSError('Injected failure after actual XADD, before PostgreSQL commit')
+store.transaction = lose_commit
+failed = False
+for _ in range(2):
+    try:
+        service.flush_outbox(bus)
+    except OSError:
+        failed = True
+        break
+assert failed and counts()[commit_lost] == 1
+store.transaction = transaction
+with store.transaction() as tx:
+    committed_intent = tx.get('outbox_delivery', commit_lost)
+    assert committed_intent['status'] == 'publishing'
+for _ in range(2):
+    recovered = service.flush_outbox(bus)
+    if recovered['published']:
+        break
+assert recovered['published'] == 1 and counts()[commit_lost] == 2
+with store.transaction() as tx:
+    records = tx.records()
+assert len([r for r in records if r['bucket'] == 'outbox_quarantine']) == 1
+receipt = {'mode': 'Actual PostgreSQL/Redis and actual CLI; explicit ACK-loss and transaction-failure injection',
+           'schema': state['schema'], 'redis_namespace': state['namespace'], 'redis_image': state['redis_image'],
+           'cli_argv': argv, 'cli_exit_code': result.returncode, 'cli_result': cli,
+           'initial_counts': before, 'post_fix_counts': after, 'final_counts': counts(),
+           'unchanged_poison_retries_do_not_duplicate': True, 'ack_loss_id': lost,
+           'commit_loss_id': commit_lost, 'committed_intent_after_lost_commit': committed_intent,
+           'postgres': records, 'redis': bus.client.xrange(bus.stream('lead:improvement')),
+           'delivery_semantics': 'at_least_once_enqueue; no recipient completion or human acceptance',
+           'source_sha256': {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in [
+               'src/codex_harness/application/outbox.py', 'src/codex_harness/application/service.py',
+               'src/codex_harness/adapters/bus.py', 'src/codex_harness/adapters/store.py', 'src/codex_harness/ports.py']}}
+(out / 'live-verification.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8', newline='\n')
+(out / 'live-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'cli': cli, 'ack_loss_recovered': True, 'commit_loss_recovered': True, 'quarantine_count': 1}))

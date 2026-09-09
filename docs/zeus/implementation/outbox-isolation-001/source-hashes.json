@@ -1,0 +1,13 @@
+{
+  "src/codex_harness/adapters/bus.py": "7cfc8dd65a55117c289e6555e13d3b6cc6ff57f0f4e6b35a29beb61bd83ac10a",
+  "src/codex_harness/adapters/monitoring.py": "6afbfb79457bb13857f29640426d561f29fe42e2b22b33e07c49528ca1386076",
+  "src/codex_harness/adapters/store.py": "f6b2d75f1085f993328754aeb979764b611a37fc04934ca7ee9d9ffbfa7ba03f",
+  "src/codex_harness/application/monitoring.py": "ffeb3df78b5523d8910a390ed13cf46e13cc4121e3eee2fae8c6ac3c456fd20c",
+  "src/codex_harness/application/service.py": "0fd2eac16a4ee7caa3c7ebe059ebda2fec24a60eef4a6a82c2393f26413ff4bf",
+  "src/codex_harness/cli.py": "c1a0e66198803e55df533512f79657212660a6172591f123b0a31e414a9c01ee",
+  "src/codex_harness/ports.py": "c103e34431a5c6999698e2bef52e337b1455e2d46d8180281fca73dcf0c57ae3",
+  "src/codex_harness/resources/monitor.html": "3f9cba93a3ccfd8f63ae6af75d451caef4370720a1bb25efd212d18494b6ccba",
+  "tests/test_integration.py": "c7c31b6cfb15538b704696f7854d61aff0bd71f7a2e910643ffaf287ce568afc",
+  "src/codex_harness/application/outbox.py": "471b78dce195cf9f809bd05cc8c9a2e85aadb58ca6fafc3f8e66218819d12a40",
+  "tests/test_outbox.py": "a31f737774e62d8f847970381e7f155d8ae381ccf756516b3e61061a98ad5b65"
+}

@@ -1,0 +1,44 @@
+from http.server import ThreadingHTTPServer
+import json
+import os
+from pathlib import Path
+from threading import Thread
+import time
+from types import SimpleNamespace
+
+from psycopg.conninfo import make_conninfo
+from codex_harness.adapters.monitoring import DatabaseFacts, redis_facts
+from codex_harness.adapters.monitoring_web import handler
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.application.monitoring import Monitoring
+from codex_harness.application.service import Harness
+from codex_harness.bootstrap import database_url, organization
+from codex_harness.domain.model import utcnow
+
+root = Path(__file__).resolve().parents[1]
+state = json.loads((root / '.runtime/outbox-live-state.json').read_text('utf-8'))
+os.environ['ZEUS_REDIS_NAMESPACE'] = state['namespace']
+store = PostgresStore(make_conninfo(database_url(), options=f"-c search_path={state['schema']},public"))
+service = Harness(store, organization())
+snapshot = root / '.runtime/outbox-monitor.json'
+def collect():
+    db = Monitoring(DatabaseFacts(service, SimpleNamespace())).snapshot()
+    data = {'schema': 'harness-monitor.v1', 'collected_at': utcnow(), 'sources': {
+        'database': {'status': 'ok', 'observed_at': utcnow(), 'data': db},
+        'redis': {'status': 'ok', 'observed_at': utcnow(), 'data': redis_facts(state['redis_url'], service.org.agents)},
+        'docker': {'status': 'unavailable', 'observed_at': utcnow(), 'data': None,
+                   'error': 'Not collected in isolated relay UI verification'}}}
+    temporary = snapshot.with_suffix('.tmp')
+    temporary.write_text(json.dumps(data, ensure_ascii=False), encoding='utf-8')
+    temporary.replace(snapshot)
+def refresh():
+    while True:
+        time.sleep(10)
+        collect()
+collect()
+server = ThreadingHTTPServer(('127.0.0.1', 0), handler(snapshot))
+record = {'pid': os.getpid(), 'url': f'http://127.0.0.1:{server.server_port}', 'snapshot': str(snapshot)}
+(root / '.runtime/outbox-monitor-server.json').write_text(json.dumps(record), encoding='utf-8')
+print(json.dumps(record), flush=True)
+Thread(target=refresh, daemon=True).start()
+server.serve_forever()

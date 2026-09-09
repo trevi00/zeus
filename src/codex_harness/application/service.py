@@ -204,15 +204,7 @@ class Harness:
             tx.put("sessions", agent, record)
             return record
 
-    def flush_outbox(self, bus: MessageBus) -> int:
-        count = 0
-        # Serialized for bootstrap correctness. A crash after publish may redeliver;
-        # receiver's message ID must deduplicate it (INV-MESSAGE-001).
-        with self.store.transaction() as tx:
-            for item in tx.scan("outbox"):
-                if not item["sent"]:
-                    bus.publish(item["message"])
-                    item["sent"] = True
-                    tx.put("outbox", item["message"]["message_id"], item)
-                    count += 1
-        return count
+    def flush_outbox(self, bus: MessageBus, limit: int = 100) -> dict:
+        from codex_harness.application.outbox import relay
+
+        return relay(self.store, self.org, bus, limit)

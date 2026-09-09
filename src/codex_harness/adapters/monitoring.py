@@ -1,6 +1,7 @@
 """Host-side collection. The HTTP server never imports this Docker/DB adapter."""
 import json
 import re
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -29,6 +30,8 @@ class DatabaseFacts:
                     'research_audits', 'research_partitions')}
             active, health = tx.get('deployment', 'active'), tx.get('health', 'latest')
             audit_control = tx.get('research_control', 'activation') or {}
+            outbox_health = tx.get('health', 'outbox') or {}
+            outbox_counts = dict(Counter(row['status'] for row in tx.scan('outbox_delivery')))
         progress_by_id = {p['id']: p for p in data['execution_progress']}
         def work(row, decision=False):
             message = row.get('message', {})
@@ -96,6 +99,7 @@ class DatabaseFacts:
                            for name, check in row.get('checks', {}).items()}})
         audits = audit_progress(data, audit_control)
         return {'agents': agents, 'tasks': tasks, 'decisions': decisions, 'hooks': hooks, 'releases': releases,
+                'notifications': {'status_counts': outbox_counts, 'last_batch': outbox_health},
                 'audits': audits,
                 'active': {k: (active or {}).get(k) for k in ('release_id', 'revision', 'at')},
                 'health': {k: (health or {}).get(k) for k in ('status', 'checked_at')},

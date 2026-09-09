@@ -11,6 +11,10 @@ Codex 기반 작업·검수·배포 하네스입니다. Zeus 0.2는 기존 실�
 지휘자 → 연구·고도화 팀장 → 전문 팀원이 육하원칙 JSON으로 협업합니다.
 판단은 독립 Codex 세션이, 수집·저장·스케줄링·검증·배포는 Python 스크립트가 처리합니다.
 
+발송 대기열은 [손상 레코드 격리와 전송 영수증](docs/zeus/implementation/outbox-isolation-001/README.md)을
+보존합니다. `zeus flush`는 정상 메시지를 계속 전송하면서 격리·재시도 건수를 반환하고,
+모니터는 해결되지 않은 전달 문제를 별도로 표시합니다.
+
 첫 실제 자기 개선은 [PR #1](https://github.com/trevi00/codex-harness/pull/1)입니다.
 팀원이 Redis Streams 정리를 구현하고, 팀장·지휘자가 각각 실제 Codex로 검수했습니다.
 기존 평가 기준의 통합 테스트와 Docker 안의 실제 Codex 파일 작업 카나리아를 통과한 커밋을 병합·반영했습니다.

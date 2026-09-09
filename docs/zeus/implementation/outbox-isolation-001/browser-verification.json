@@ -1,0 +1,98 @@
+{
+  "mode": "Actual Chrome and live loopback monitor reading isolated PostgreSQL/Redis; viewport emulation, not real phone",
+  "results": [
+    {
+      "args": [
+        "click",
+        "@e4"
+      ],
+      "stdout": "✓ Done\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "snapshot"
+      ],
+      "stdout": "- banner\n  - StaticText \"ZEUS / LOCAL OBSERVATORY\"\n  - heading \"하네스 운영 모니터\" [level=1, ref=e1]\n  - StaticText \"페이지 연결 정상\"\n  - StaticText \"수집: 2026. 9. 10. 오전 1:01:22\"\n- main\n  - StaticText \"조회 전용\"\n  - StaticText \"기록은 PostgreSQL · 실측은 Docker / Redis · 5초마다 새로고침\"\n  - button \"지금 갱신\" [ref=e2]\n  - StaticText \"docker: 수집 실패 · 알림 전달 확인 필요 · 격리되거나 미완료된 기록이 있습니다.\"\n  - generic\n    - StaticText \"운영 상태\"\n    - StaticText \"확인 불가\"\n    - StaticText \"마지막 검사 관측 없음\"\n    - StaticText \"진행 중인 실행\"\n    - StaticText \"0\"\n    - StaticText \"동시 실행 상한 2\"\n    - StaticText \"작업 성공 / 실패\"\n    - StaticText \"0 / 0\"\n    - StaticText \"과거 실패 기록 포함 · SLO 판정 아님\"\n    - StaticText \"운영 커밋\"\n    - StaticText \"—\"\n    - StaticText \"관측 없음\"\n  - navigation\n    - button \"진행 점검\" [ref=e3]\n    - button \"전체 현황\" [ref=e4]\n    - button \"작업 · 검수\" [ref=e5]\n    - button \"세션 · 컨텍스트\" [ref=e6]\n    - button \"배포 · 훅\" [ref=e7]\n    - button \"자원 · 메시지\" [ref=e8]\n  - heading \"에이전트 조직 · 노드를 눌러 상세 보기\" [level=2, ref=e9]\n  - generic\n    - button \"conductor 대기 대기 0 · 만료된 실행 0 컨텍스트 관측 없음 · 마지막 체크포인트\" [ref=e13]\n      - strong\n        - StaticText \"conductor\"\n      - StaticText \"대기\"\n      - StaticText \"대기 0 · 만료된 실행 0\"\n      - StaticText \"컨텍스트 관측 없음 · 마지막 체크포인트\"\n    - button \"lead:research 대기 대기 0 · 만료된 실행 0 컨텍스트 관측 없음 · 마지막 체크포인트\" [ref=e14]\n      - strong\n        - StaticText \"lead:research\"\n      - StaticText \"대기\"\n      - StaticText \"대기 0 · 만료된 실행 0\"\n      - StaticText \"컨텍스트 관측 없음 · 마지막 체크포인트\"\n    - button \"worker:github 대기 대기 0 · 만료된 실행 0 컨텍스트 관측 없음 · 마지막 체크포인트\" [ref=e15]\n      - strong\n        - StaticText \"worker:github\"\n      - StaticText \"대기\"\n      - StaticText \"대기 0 · 만료된 실행 0\"\n      - StaticText \"컨텍스트 관측 없음 · 마지막 체크포인트\"\n    - button \"worker:geeknews 대기 대기 0 · 만료된 실행 0 컨텍스트 관측 없음 · 마지막 체크포인트\" [ref=e16]\n      - strong\n        - StaticText \"worker:geeknews\"\n      - StaticText \"대기\"\n      - StaticText \"대기 0 · 만료된 실행 0\"\n      - StaticText \"컨텍스트 관측 없음 · 마지막 체크포인트\"\n    - button \"lead:improvement 대기 대기 0 · 만료된 실행 0 컨텍스트 관측 없음 · 마지막 체크포인트\" [ref=e17]\n      - strong\n        - StaticText \"lead:improvement\"\n      - StaticText \"대기\"\n      - StaticText \"대기 0 · 만료된 실행 0\"\n      - StaticText \"컨텍스트 관측 없음 · 마지막 체크포인트\"\n    - button \"worker:implementation 대기 대기 0 · 만료된 실행 0 컨텍스트 관측 없음 · 마지막 체크포인트\" [ref=e18]\n      - strong\n        - StaticText \"worker:implementation\"\n      - StaticText \"대기\"\n      - StaticText \"대기 0 · 만료된 실행 0\"\n      - StaticText \"컨텍스트 관측 없음 · 마지막 체크포인트\"\n  - heading \"현재 작업\" [level=2, ref=e10]\n  - paragraph\n    - StaticText \"현재 실행 기록 없음\"\n  - heading \"알림 전달 확인\" [level=2, ref=e11]\n  - paragraph\n    - StaticText \"전송 기록은 버스 등록 응답입니다. 수신자의 처리 완료를 뜻하지 않습니다.\"\n  - generic\n    - table\n      - rowgroup\n        - row\n          - columnheader \"기록 상태\" [ref=e29]\n          - columnheader \"건수\" [ref=e30]\n      - row\n        - cell \"전송 응답 확인\" [ref=e19]\n        - cell \"4\" [ref=e20]\n      - row\n        - cell \"손상 데이터 격리\" [ref=e21]\n        - cell \"1\" [ref=e22]\n      - row\n        - cell \"재시도 필요\" [ref=e23]\n        - cell \"0\" [ref=e24]\n      - row\n        - cell \"미완료 전송 의도\" [ref=e25]\n        - cell \"0\" [ref=e26]\n      - row\n        - cell \"예외 확인 필요\" [ref=e27]\n        - cell \"0\" [ref=e28]\n    - paragraph\n      - StaticText \"마지막 검사 2026. 9. 10. 오전 12:59:03 · 전체 대기열 건수와 다릅니다.\"\n  - heading \"최근 이벤트\" [level=2, ref=e12]\n  - generic\n    - StaticText \"outbox.retry\"\n    - StaticText \"2026. 9. 10. 오전 12:59:03\"\n    - StaticText \"outbox.quarantined\"\n    - StaticText \"2026. 9. 10. 오전 12:59:02\"\n  - paragraph\n    - StaticText \"출처별 관측 시각과 수집 실패를 표시합니다. 페이지 연결 정상은 하네스 정상 판정과 다릅니다.\"\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "set",
+        "viewport",
+        "1440",
+        "1000"
+      ],
+      "stdout": "✓ Done\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "eval",
+        "JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,notice:document.querySelector(\"#notice\").textContent,rows:document.querySelector(\"#notificationRows\").textContent,rawLeak:document.body.textContent.includes(\"malformed notification\")})"
+      ],
+      "stdout": "\"{\\\"width\\\":1440,\\\"scrollWidth\\\":1440,\\\"notice\\\":\\\"docker: 수집 실패 · 알림 전달 확인 필요 · 격리되거나 미완료된 기록이 있습니다.\\\",\\\"rows\\\":\\\"기록 상태건수전송 응답 확인4손상 데이터 격리1재시도 필요0미완료 전송 의도0예외 확인 필요0마지막 검사 2026. 9. 10. 오전 12:59:03 · 전체 대기열 건수와 다릅니다.\\\",\\\"rawLeak\\\":false}\"\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "screenshot",
+        "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\outbox-isolation-001\\desktop.png"
+      ],
+      "stdout": "✓ Screenshot saved to C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\outbox-isolation-001\\desktop.png\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "set",
+        "viewport",
+        "390",
+        "844"
+      ],
+      "stdout": "✓ Done\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "eval",
+        "JSON.stringify({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,notice:document.querySelector(\"#notice\").textContent,rows:document.querySelector(\"#notificationRows\").textContent,rawLeak:document.body.textContent.includes(\"malformed notification\")})"
+      ],
+      "stdout": "\"{\\\"width\\\":390,\\\"scrollWidth\\\":390,\\\"notice\\\":\\\"docker: 수집 실패 · 알림 전달 확인 필요 · 격리되거나 미완료된 기록이 있습니다.\\\",\\\"rows\\\":\\\"기록 상태건수전송 응답 확인4손상 데이터 격리1재시도 필요0미완료 전송 의도0예외 확인 필요0마지막 검사 2026. 9. 10. 오전 12:59:03 · 전체 대기열 건수와 다릅니다.\\\",\\\"rawLeak\\\":false}\"\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "screenshot",
+        "C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\outbox-isolation-001\\phone-width.png"
+      ],
+      "stdout": "✓ Screenshot saved to C:\\Users\\rudtn\\zeus\\docs\\zeus\\implementation\\outbox-isolation-001\\phone-width.png\n",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "errors"
+      ],
+      "stdout": "",
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "close"
+      ],
+      "stdout": "✓ Browser closed\n",
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "snapshot_sha256": "f29b574eb0ba219c2c1831428f8b2dbf3a948aed46b17f0067fb6c896018a099",
+  "human_acceptance": false
+}

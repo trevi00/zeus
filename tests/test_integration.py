@@ -210,8 +210,8 @@ def test_real_bus_crash_redelivery_and_outbox(pgstore, bus):
     assert service.record_incident(bus.decode(fields))["occurrences"] == 1
     bus.ack("lead:improvement", recovered_id)
     service.record_incident(message())
-    assert service.flush_outbox(bus) == 1
-    assert service.flush_outbox(bus) == 0
+    assert service.flush_outbox(bus)["published"] == 1
+    assert service.flush_outbox(bus)["published"] == 0
     received_id, fields = bus.receive("conductor", "conductor-test")
     notification = bus.decode(fields)
     assert notification["type"] == "hook.required"

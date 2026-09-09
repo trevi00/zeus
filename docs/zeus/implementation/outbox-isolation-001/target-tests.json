@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "tests/test_outbox.py",
+    "tests/test_integration.py",
+    "tests/test_monitoring.py",
+    "-q"
+  ],
+  "seconds": 16.34355902671814,
+  "exit_code": 0,
+  "scope": "Memory plus actual isolated PostgreSQL schemas and Redis test namespaces; explicit dedicated Redis port"
+}

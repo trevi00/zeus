@@ -26,6 +26,10 @@ class MemoryTransaction:
         return [{"bucket": bucket, "id": key, "body": deepcopy(value)}
                 for (bucket, key), value in sorted(self.data.items())]
 
+    def entries(self, bucket: str, after: str = "", limit: int = 100) -> list[dict]:
+        return [{"id": key, "body": deepcopy(value)}
+                for (name, key), value in sorted(self.data.items()) if name == bucket and key > after][:limit]
+
 
 class MemoryStore:
     def __init__(self):
@@ -60,6 +64,11 @@ class PostgresTransaction:
     def records(self) -> list[dict]:
         return [dict(zip(("bucket", "id", "body"), row)) for row in self.conn.execute(
             "SELECT bucket,id,body FROM documents ORDER BY bucket,id").fetchall()]
+
+    def entries(self, bucket: str, after: str = "", limit: int = 100) -> list[dict]:
+        return [{"id": row[0], "body": row[1]} for row in self.conn.execute(
+            "SELECT id,body FROM documents WHERE bucket=%s AND id>%s ORDER BY id LIMIT %s",
+            (bucket, after, limit)).fetchall()]
 
 
 class PostgresStore:

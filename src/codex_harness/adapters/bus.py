@@ -1,10 +1,11 @@
 import json
 
 from redis import Redis
-from redis.exceptions import ResponseError
+from redis.exceptions import RedisError, ResponseError
 
 from codex_harness.adapters.contracts import validate_message
 from codex_harness.domain.model import canonical
+from codex_harness.ports import MessageDeliveryError
 
 
 class RedisBus:
@@ -70,9 +71,16 @@ return redis.call('XTRIM', key, 'MINID', '=', boundary)
     def stream(self, agent: str) -> str:
         return f"{self.namespace}:agent:{agent}"
 
+    @staticmethod
+    def validate(message: dict) -> dict:
+        return validate_message(message)
+
     def publish(self, message: dict) -> str:
-        validate_message(message)
-        return self.client.xadd(self.stream(message["who"]["recipient"]), {"body": canonical(message)})
+        self.validate(message)
+        try:
+            return self.client.xadd(self.stream(message["who"]["recipient"]), {"body": canonical(message)})
+        except RedisError as exc:
+            raise MessageDeliveryError(type(exc).__name__) from exc
 
     def ensure_group(self, agent: str) -> None:
         try:
