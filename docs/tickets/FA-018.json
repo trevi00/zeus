@@ -1,0 +1,63 @@
+{
+  "id": "ZEUS-07f94a1a4390",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "Zeus 완료 판정은 PG가 소유한 task/attempt/generation, Git spec revision, 평가 artifact hash, 실제 runner invocation 및 검토자 신원에 결속한다.",
+      "완료 근거의 producer와 consumer 양쪽에 닫힌 schema와 불변 evidence reference를 적용하며 timestamp만으로 세대나 권한을 추론하지 않는다.",
+      "FA-005 미검사 PASS, FA-014 스펙·시나리오 계약, FA-017 재시도 보존과 연결하되 이 토픽은 evaluator 결과의 완료 권위에 집중한다.",
+      "원본을 수정하지 않고 전체 분석 뒤 합의한 Zeus 구현은 root가 담당한다. 이번 관측은 실제 provider/host/human 인수가 아니다."
+    ],
+    "title": "[FA-018] 완료 판정에 실제 평가 실행·대상·시도 신원 결속",
+    "impact": "실제 사용자 시나리오를 평가하지 않았거나 다른 대상·시도의 기록인 경우에도 완료 근거로 오인할 수 있다. 금전 흐름 QA, 배포 승인, 학습 자격과 자동 개선의 근거가 왜곡될 위험이 있다.",
+    "problem": "고정 Baldrix 완료 판정 원본 helper를 격리 실행한 결과 schema_version=null, 임의 event, completeness=false 및 caller timestamp를 가진 approved 기록이 저장·선택됐다. NaN timestamp와 NaN freshness floor도 approved로 처리됐다. 현재 selector가 확인하는 verdict와 timestamp만으로 실제 평가 실행·대상 artifact·시도·검사 분모를 증명할 수 없다. 별도 pure gate는 문자열 false를 참으로 소비했다. 원본 evaluator 부재 시 require_evaluator=True가 iterate하는 방어는 유지된다.",
+    "rollback": "신규 완료 권위 경로는 자격 검증 전 비활성으로 둔다. 문제 발생 시 완료/승격 dispatch를 중단하고 PG 기록·원본 결과·판정 영수증을 유지한다. 이전 자기신고만의 완료 경로로 자동 강등하지 않는다.",
+    "verification": [
+      "원본 completion self-check 28 assertions, AC 단위 테스트 17개 PASS와 별도 helper 실측을 분리 보존했다. AC 단위 테스트는 공급한 predicate/callback을 사용하며 실제 E2E 인수가 아니다.",
+      "원본 helper 관측은 network none/read-only source/nonroot 고정 Linux 이미지와 실제 임시 JSONL을 사용했다. source 1648파일은 전후 동일했고 mocking은 없다.",
+      "현재 fallback_to_legacy_e2의 읽은 구현은 iterate/escalate만 반환한다. fallback 이벤트를 selector가 허용한다는 사실을 현재 fallback producer가 approved를 발행한다는 주장으로 확대하지 않는다.",
+      "전체 writer 부재, 유한 미래 timestamp의 영구 fresh, 30일 후 무조건 모든 증거 소실로 일반화하지 않는다. 실제 실행/문서 위임/정적 결함과 미검증 범위를 공동 검토 기록에서 구분한다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/da0a94d3b68a5e3b61687b39c05112305053c856/docs/full-analysis/baldrix-completion-authority-001/resolution.md",
+      "https://github.com/trevi00/zeus/blob/da0a94d3b68a5e3b61687b39c05112305053c856/docs/full-analysis/baldrix-completion-authority-001/codex-initial.md",
+      "https://github.com/trevi00/zeus/blob/da0a94d3b68a5e3b61687b39c05112305053c856/docs/full-analysis/baldrix-completion-authority-001/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/da0a94d3b68a5e3b61687b39c05112305053c856/docs/full-analysis/baldrix-completion-authority-001/components.stdout.txt",
+      "https://github.com/trevi00/zeus/blob/da0a94d3b68a5e3b61687b39c05112305053c856/docs/full-analysis/baldrix-completion-authority-001/components.receipt.json",
+      "https://github.com/trevi00/zeus/blob/da0a94d3b68a5e3b61687b39c05112305053c856/docs/full-analysis/baldrix-completion-authority-001/component_observations.py",
+      "https://github.com/trevi00/zeus/blob/da0a94d3b68a5e3b61687b39c05112305053c856/docs/full-analysis/completion-hooks-checkpoint-verification.json"
+    ],
+    "acceptance_criteria": [
+      "schema 버전 누락/알 수 없는 값/null, 비유한 timestamp, 잘못된 verdict shape와 truthy 문자열을 구조화 오류로 거절하고 알림 로그에 남긴다.",
+      "올바른 approved라도 대상 artifact/spec/attempt/generation/검토자/실행 영수증이 다르거나 빠지면 완료 권위를 부여하지 않는다. 같은 초·미래 시각·역순 수집으로 잘못된 기록이 선택되지 않는다.",
+      "원장 없음·전손상·부분손상·읽기 불가·평가 미실행을 구별하며 새 cold-start 경로로 조용히 평가 요구를 해제하지 않는다.",
+      "모든 기대 사용자 시나리오와 AC를 분모로 확인하고 빈 AC/빈 atlas/알 수 없는 scope를 전체 인수 성공으로 소비하지 않는다. 허용된 범위 제외는 사람이 승인한 revision과 이유를 남긴다.",
+      "AC 판단과 증거 저장이 분리 실패하면 미확인 상태로 유지한다. 서로 다른 predicate/spec가 같은 설명을 쓰더라도 결과 identity를 혼동하지 않는다.",
+      "cross-target 기록은 caller bool이 아닌 실제 평가 대상 및 실행 영수증에서 도출하며 중복/동시 기록·재시도에도 자격 실적을 부풀리지 않는다.",
+      "Windows/Linux/WSL 실제 PG·파일·프로세스 검증으로 권한/오류/재시작·저장 실패를 확인한다. 실제 모델 평가와 사람 시나리오 승인은 단위 테스트의 callback이나 합성 데이터로 대체하지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T06:43:27.379205+00:00",
+  "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T06:43:29.155563+00:00",
+      "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
+      "url": "https://github.com/trevi00/zeus/issues/19",
+      "number": 19,
+      "status": "synced",
+      "body_hash": "0802cdf02ccbcae92ea8b54a48c2fb9c8a7a42160c18068fc08890a3fdbea79c",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}
