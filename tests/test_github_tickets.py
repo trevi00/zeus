@@ -28,6 +28,12 @@ def setup(request, tmp_path, monkeypatch):
                               if state["issue"] and state["indexed"] else [])
         if args[:2] == ["issue", "view"]:
             return json.dumps(state["issue"])
+        if args[:2] in (["issue", "close"], ["issue", "reopen"]):
+            state["issue"]["state"] = "CLOSED" if args[1] == "close" else "OPEN"
+            state.setdefault("state_writes", []).append(args[1])
+            if state["lose_ack"]:
+                raise TimeoutError("fixture response lost after state change")
+            return state["issue"]["url"]
         body = Path(args[args.index("--body-file") + 1]).read_text("utf-8")
         title = args[args.index("--title") + 1]
         if args[:2] == ["issue", "create"]:

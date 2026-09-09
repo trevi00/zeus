@@ -1,0 +1,35 @@
+Read all seven files plus `store.py` and `artifacts.py` to answer the five questions you named. The patch is well-constructed; findings below are specific and none of them invalidate the design.
+
+## The five verification questions
+
+**Lock ordering — clean.** `FileArtifacts._body`/`text`/`document` take no `FileLock`; only `put` does (`artifacts.py:21`). Every `artifacts.put` in this patch runs outside a store transaction (`ticket_lifecycle.py:112`, `:67`, `ticket_cli.py:27/42/51`, `_observe`), and the reads inside the transaction at `:124`/`:128` are lock-free. So there is no PG↔FileLock inversion. Worth keeping as an explicit rule, since `PgStore.transaction` takes a global advisory lock (`store.py:84`) and would serialize behind any file lock held elsewhere.
+
+**Sequence uniqueness — sound, and doubly guarded.** Because every PG transaction takes `pg_advisory_xact_lock(734219)`, the read-then-write of `ticket_closure_sequences` at `:129-130` is not a TOCTOU. Two concurrent closes with different packets at the same sequence are rejected twice over: the loser fails at `:124` (`_evidence` re-runs `validate_packet`, which sees `ticket["status"] == "closed"`) before ever reaching the slot check.
+
+**Expired-packet replay — safe, but reads badly.** The fast path at `:101-108` returns the existing receipt without loading the policy, without re-checking expiry, and with an empty signature list (`test_ticket_lifecycle.py:77`). It cannot create a decision and it requires the ticket to still be in exactly that closed state, so the security property holds. Two consequences worth addressing (see defect 3).
+
+**Authorization before sync — correctly ordered.** `verify_closed` runs at `github_tickets.py:81`, before `_claim`, so no subprocess runs under the lease. The snapshot's `lifecycle_sequence` is re-checked under the owner at `:154` and again at `:225`, so a reopen racing the remote call yields `outdated`, never a false `synced`. `verify_closed` correctly evaluates the packet at `timestamp(event["at"])` (`:168`) rather than now, so a long-closed ticket doesn't fail on expiry.
+
+**Signer policy — one real ambiguity** (defect 4) plus a receipt gap (defect 5).
+
+## Defects
+
+**1. Evidence has no maximum age (moderate).** `validate_evidence` requires `observed_at <= issued_at`, and `_evidence` requires `observed_at >= ticket updated_at` (`ticket_lifecycle.py:80`). Since `transition` sets `updated_at = event["at"]`, a new cycle correctly invalidates old evidence — that property is nicely enforced. But *within* one cycle the lower bound is a lifecycle timestamp, not wall-clock, so an environment artifact observed at revision creation can back a closure months later. An environment observation is a decaying system-state claim. Add a max age (`issued_at - observed_at <= N`), ideally a policy field so it's anchored rather than hardcoded.
+
+**2. Reopen authority is never consumed (moderate).** `state_conflict = ... and lifecycle_event is None` (`:148`) forces conflict off whenever a lifecycle event exists. After a reopen, `ticket["lifecycle_event"]` keeps pointing at that reopen event indefinitely — `Tickets.update` preserves it — so from then on a manual remote close is silently reverted on every sync, forever. A never-reopened ticket in the same situation raises a conflict. That asymmetry isn't stated in the design, and it weakens "a manually closed remote issue never creates local acceptance" into "…except on any ticket that was ever reopened". The record already stores `lifecycle_event` (`:214`), so the fix is cheap: treat the authority as consumed once a link has successfully projected that event, and require a fresh local transition afterwards.
+
+**3. `close(ref, [])` succeeds with no signatures and no trust configuration (low-moderate).** The fast path precedes `self.authority.policy()`, so after one successful close a replay works even with `ZEUS_TICKET_TRUST_COMMIT` unset, returns a value indistinguishable from a freshly verified closure, and accepts an empty signature list. Nothing is mutated, so this isn't an authorization hole — but a caller cannot tell a replay from a verification, which is exactly the confusion this feature exists to prevent. Return `{**event, "replayed": True}` (or require the submitted signature set to match the receipt) so the distinction is on the record.
+
+**4. A principal may be both required and revoked (low).** `policy()` validates `revoked ⊆ enrolled` (`ticket_authority.py:58`) but never rejects `set(revoked) & set(required_signers)`. Such a policy loads successfully and then makes every closure fail at `:81` with "Signer revoked", followed by "Incomplete required signature set" — fail-closed, but undiagnosable from the message. Reject the intersection at load time.
+
+**5. The receipt doesn't record what the policy required (low).** `proof` carries per-signature `role` and `attestation_scope`, but not `required_signers`/`required_human_signers`. With `required_human_signers: []` — as the test policy uses — a fully automation-signed closure is valid, and an auditor reading the closure event cannot see that zero human signatures were required without re-resolving the anchored policy. Given FA-029 AC 1, copy both lists into the proof dict at `:105-107`.
+
+**6. Signature bytes aren't newline-normalized (low, Windows).** `ticket_cli.py:47-51` reads the signature file and decodes it; `ticket_authority.py:89` writes with `newline="\n"`, which does not translate pre-existing `\r`. A CRLF-saved `.sig` reaches `ssh-keygen` with CRLF intact. The tests never hit this because the fixture writes via `ssh-keygen` itself. Same failure class as the PROGRAMDATA/255 issue you just chased — normalize on read.
+
+**Nits:** `verify_closed:163` doesn't guard `revision is not None` before `{**revision, ...}`. `_anchor` runs after `verify` in `verify_closed` (`:170-172`), so an anchor change surfaces as "Stale signing policy" rather than the precise anchor-mismatch message. `ticket_authority.py:52`'s "Duplicate signer public key" also fires on an empty decode.
+
+## Otherwise confirmed
+
+Exact canonical signing bytes enforced on both sides (`ticket_cli.py:41`, `ticket_authority.py:70`); anchor supplied only out-of-band with no packet/CLI override (`:19-22`) and TOFU-pinned with the bootstrap caveat recorded (`ticket_lifecycle.py:94-95`); merged-ancestry check via `merge-base` (`:103`); `TicketClosed` routed through the terminal handlers; legacy sequence-0 bindings accepted and nonzero requiring explicit sequence (`tickets.py:39-60`); expiry genuinely re-validated inside the commit transaction via `_evidence` at `:124`. `test_repo_commit_cannot_replace_anchored_signers` is the right test and it passes for the right reason.
+
+Given the pending work you listed (concurrency, PG rollback, late-response/reopen race, malformed-policy tests, real PG/GH issue, WSL/CI), defects 1 and 2 are the two I'd fix before that acceptance run; 3–6 are small and can ride along. FA-029 stays open.

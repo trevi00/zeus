@@ -40,10 +40,12 @@ class FileArtifacts:
             metadata.write_text(canonical(receipt), encoding="utf-8")
         return receipt
 
-    def _body(self, reference: str) -> str:
+    def _body(self, reference: str, max_bytes: int | None = None) -> str:
         require(bool(re.fullmatch(r"sha256:[0-9a-f]{64}", reference)), "Invalid artifact reference")
         key = reference.partition(":")[2]
-        data = (self.root / (key + ".txt")).read_bytes()
+        with (self.root / (key + ".txt")).open("rb") as stream:
+            data = stream.read() if max_bytes is None else stream.read(max_bytes + 1)
+        require(max_bytes is None or len(data) <= max_bytes, "Artifact exceeds text budget")
         require(hashlib.sha256(data).hexdigest() == key, "Artifact modified")
         return data.decode("utf-8")
 
@@ -56,9 +58,7 @@ class FileArtifacts:
     def text(self, reference: str, max_bytes: int) -> str:
         """One integrity-checked bounded document read for mechanical consumers."""
         require(type(max_bytes) is int and 0 < max_bytes <= 1024 * 1024, 'Invalid text budget')
-        body = self._body(reference)
-        require(len(body.encode('utf-8')) <= max_bytes, 'Artifact exceeds text budget')
-        return body
+        return self._body(reference, max_bytes)
 
     def read(self, reference: str, start: int = 0, length: int = 8000) -> str:
         require(start >= 0 and 0 < length <= 32000, "Artifact read exceeds budget")

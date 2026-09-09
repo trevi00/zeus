@@ -12,6 +12,10 @@ class TicketSuperseded(ContractError):
     """The request changed; retain execution evidence without downstream authority."""
 
 
+class TicketClosed(TicketSuperseded):
+    """Acceptance ended this work cycle; preserve results and stop downstream work."""
+
+
 def validate_content(content):
     require(isinstance(content, dict) and set(content) == set(TEXT_FIELDS + LIST_FIELDS),
             "Ticket needs title, problem, impact, rollback, evidence_refs, scope, acceptance_criteria, verification")
@@ -32,7 +36,8 @@ def ticket_binding(tx, value):
         if isinstance(item, dict):
             if "zeus_ticket" in item:
                 bound = item["zeus_ticket"]
-                require(isinstance(bound, dict) and set(bound) == {"id", "revision", "content_hash"},
+                require(isinstance(bound, dict) and set(bound) in ({"id", "revision", "content_hash"},
+                        {"id", "revision", "content_hash", "lifecycle_sequence"}),
                         "Invalid Zeus ticket binding")
                 bindings.append(bound)
             for key, child in item.items():
@@ -48,6 +53,11 @@ def ticket_binding(tx, value):
     bound = bindings[0]
     current = tx.get("tickets", bound["id"])
     require(current is not None, "Ticket missing")
+    if current["status"] == "closed":
+        raise TicketClosed("Ticket closed; downstream work stopped")
+    if (type(bound.get("lifecycle_sequence", 0)) is not int
+            or bound.get("lifecycle_sequence", 0) != current.get("lifecycle_sequence", 0)):
+        raise TicketSuperseded("Ticket lifecycle changed; old work cannot resume")
     if current["revision"] != bound["revision"] or current["content_hash"] != bound["content_hash"]:
         raise TicketSuperseded("Ticket changed; reassessment required")
     revision = tx.get("ticket_revisions", f'{bound["id"]}:{bound["revision"]}')
@@ -77,6 +87,7 @@ class Tickets:
         with self.store.transaction() as tx:
             row = tx.get("tickets", ticket_id)
             require(row and row["revision"] == expected_revision, "Stale ticket edit")
+            require(row["status"] != "closed", "Reopen the closed ticket before editing")
             for intent in tx.scan("promotion_intents"):
                 if intent.get("candidate", {}).get("zeus_ticket", {}).get("id") == ticket_id:
                     require(intent["status"] in {"completed", "abandoned"},
@@ -103,7 +114,12 @@ class Tickets:
                        and r["revision"] == row["revision"]]
             links = [r for r in tx.scan("ticket_github") if r["ticket_id"] == ticket_id]
             observations = [r for r in tx.scan("ticket_remote_observations") if r["ticket_id"] == ticket_id]
+            lifecycle = [r for r in tx.scan("ticket_lifecycle_events") if r["ticket_id"] == ticket_id]
         return {**row, "current_revision": current["revision"], "status": current["status"],
+                "updated_at": current.get("updated_at", current["created_at"]),
+                "lifecycle_sequence": current.get("lifecycle_sequence", 0),
+                "lifecycle_event": current.get("lifecycle_event"),
+                "lifecycle_history": sorted(lifecycle, key=lambda r: r["sequence"]),
                 "reviews": sorted(reviews, key=lambda r: (r["at"], r["id"])),
                 "github": sorted(links, key=lambda r: r["id"]),
                 "external_observations": sorted(observations, key=lambda r: (r["at"], r["id"]))}
@@ -141,6 +157,8 @@ class Tickets:
             ticket = tx.get("tickets", ticket_id)
             require(ticket and ticket["revision"] == expected_revision, "Stale ticket dispatch")
             bound = {key: ticket[key] for key in ("id", "revision", "content_hash")}
+            if ticket.get("lifecycle_sequence", 0):
+                bound["lifecycle_sequence"] = ticket["lifecycle_sequence"]
             ticket_binding(tx, {"zeus_ticket": bound})
             key = digest(bound)
             previous = tx.get("ticket_dispatches", key)

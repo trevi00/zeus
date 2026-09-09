@@ -1,0 +1,48 @@
+{
+  "base_revision": "825979da94c889bf9ece20ad814bef325d209ee4",
+  "source_sha256": {
+    "src/codex_harness/adapters/artifacts.py": "24dac964b9f443e71ec9ce6e5b96971026339110391294c1ada4c15dff6fc9ea",
+    "src/codex_harness/adapters/github_tickets.py": "1e014a4015e4a16b25304bda94c03ce8c7e3341af9a383af9a436d4437153d7e",
+    "src/codex_harness/adapters/ticket_authority.py": "c1ea701c448f3a9539233681b6d7a8ed358f682fbf0d776b12f7bea227bdf11c",
+    "src/codex_harness/adapters/ticket_cli.py": "be4a9d699bb6f448006f3516980ecea929ca488c0972c24120eaea8080c542df",
+    "src/codex_harness/application/tickets.py": "51143a669a4e1d37b43b41c7ced9851df98d1169d3b0a4975f18ea9e56f9584a",
+    "src/codex_harness/application/ticket_lifecycle.py": "85a2f2aad1a221153fabde75e8c7317e1b69be06ca8631688a3af64910af02dc",
+    "src/codex_harness/domain/ticket_lifecycle.py": "17b4288a392737fe22bf62c615aa9f39667648adec944336e47e585ad9fe6d7d",
+    "src/codex_harness/cli.py": "dae4905908d1e103ebccbbf128d47b67af32a134154ffacc0d28c128f85608e2",
+    "tests/test_github_tickets.py": "bdbc978de2e0bfb920f2c4ad84cbc528e83a917673ef08ed619867684495208e",
+    "tests/test_ticket_lifecycle.py": "6bafd851993fa006843ce0727b971bbe19275deeb8ee3aa5c74f0c4e55f551b4"
+  },
+  "checks": [
+    {
+      "command": "uv run ruff check .",
+      "status": "passed",
+      "tool": "734dce"
+    },
+    {
+      "command": "uv run pytest",
+      "passed": 716,
+      "skipped": 132,
+      "duration_seconds": 280.42,
+      "tool": "31a9b2",
+      "scope": "Windows ordinary full suite, optional integrations skipped"
+    },
+    {
+      "command": "HARNESS_INTEGRATION=1 uv run pytest tests/test_ticket_lifecycle.py -q",
+      "passed": 80,
+      "skipped": 0,
+      "duration_seconds": 79.4,
+      "tool": "a82c0f",
+      "scope": "memory and isolated actual PostgreSQL, real SSH verification, substituted GitHub transport"
+    }
+  ],
+  "review": {
+    "provider": "actual Claude CLI",
+    "session_id": "2dc41532-c263-4a29-8689-c8b385e1da27",
+    "verdict": "approved code, no blockers",
+    "evidence": "claude-final.md"
+  },
+  "live_github": "pending",
+  "native_wsl": "pending",
+  "ci": "pending",
+  "fa_029": "open"
+}

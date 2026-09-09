@@ -12,8 +12,9 @@ from codex_harness.domain.model import canonical, digest, require, utcnow
 
 
 class GitHubTickets:
-    def __init__(self, tickets, artifacts):
+    def __init__(self, tickets, artifacts, lifecycle=None):
         self.tickets, self.store, self.artifacts = tickets, tickets.store, artifacts
+        self.lifecycle = lifecycle
 
     @staticmethod
     def _repo(repository):
@@ -71,9 +72,16 @@ class GitHubTickets:
                 and datetime.fromisoformat(row["lease_until"]) > datetime.now(timezone.utc), "Stale ticket sync")
         return row
 
+    def _renew(self, claim):
+        with self.store.transaction() as tx:
+            current = self._owned(tx, claim)
+            tx.put("ticket_syncs", claim["id"], {**current,
+                "lease_until": (datetime.now(timezone.utc) + timedelta(seconds=300)).isoformat()})
+
     def sync(self, ticket_id, repository, *, reconcile_observation=None, expected_revision=None):
         repository = self._repo(repository)
         ticket = self.tickets.get(ticket_id)
+        desired_state, lifecycle_event = "OPEN", None
         require(expected_revision is None or expected_revision == ticket["revision"], "Stale ticket sync revision")
         require(reconcile_observation is None or expected_revision is not None,
                 "Reconciliation requires the current ticket revision")
@@ -82,6 +90,20 @@ class GitHubTickets:
         key = digest({"ticket_id": ticket_id, "repository": repository})
         claim = self._claim(key)
         try:
+            if ticket["status"] == "closed":
+                require(self.lifecycle is not None, "Closure authority is required to project CLOSED")
+                lifecycle_event = self.lifecycle.verify_closed(ticket, heartbeat=lambda: self._renew(claim))
+                desired_state = "CLOSED"
+            elif ticket.get("lifecycle_event"):
+                from codex_harness.application.ticket_lifecycle import event_document, verify_chain
+                with self.store.transaction() as tx:
+                    verify_chain(tx, ticket)
+                    event = event_document(tx, ticket["lifecycle_event"])
+                require(event["ticket_id"] == ticket_id and event["sequence"] == ticket["lifecycle_sequence"],
+                        "Invalid reopen authority")
+                if event["kind"] == "reopened":
+                    lifecycle_event = event
+            self._renew(claim)
             with self.store.transaction() as tx:
                 link = tx.get("ticket_github", key)
                 previous = (tx.get("ticket_revisions", f'{ticket_id}:{link["synced_revision"]}')
@@ -131,13 +153,14 @@ class GitHubTickets:
                         "GitHub issue title changed externally; pull and reconcile before syncing")
             else:
                 require(reconcile_observation is None, "Cannot reconcile an undiscovered issue")
-            desired_state = "OPEN"  # Closing requires a separate evidence-bound lifecycle decision.
-            state_conflict = issue is not None and issue["state"] != desired_state
+            state_authorized = lifecycle_event is not None and (link or {}).get("projected_lifecycle_event") != lifecycle_event["id"]
+            state_conflict = issue is not None and issue["state"] != desired_state and not state_authorized
             with self.store.transaction() as tx:
                 current = self._owned(tx, claim)
                 live = tx.get("tickets", ticket_id)
                 require(live["revision"] == ticket["revision"] and live["content_hash"] == ticket["content_hash"]
-                        and live["status"] == ticket["status"], "Ticket changed before sync")
+                        and live["status"] == ticket["status"]
+                        and live.get("lifecycle_sequence", 0) == ticket["lifecycle_sequence"], "Ticket changed before sync")
                 tx.put("ticket_syncs", key, {**current, "pending_body_hash": digest(body),
                     "lease_until": (datetime.now(timezone.utc) + timedelta(seconds=300)).isoformat(),
                     "pending_title_hash": digest(ticket["content"]["title"]),
@@ -170,11 +193,20 @@ class GitHubTickets:
                     with self.store.transaction() as tx:
                         current = self._owned(tx, claim)
                         tx.put("ticket_syncs", key, {**current, "created_number": issue["number"]})
+            state_attempted = not state_conflict and issue.get("state", "OPEN") != desired_state
+            if state_attempted:
+                require(lifecycle_event is not None, "State change requires a local lifecycle decision")
+                args = ["issue", "close" if desired_state == "CLOSED" else "reopen", str(issue["number"]), "--repo", repository]
+                if desired_state == "CLOSED":
+                    args.extend(["--reason", "completed"])
+                self._call(args)
             remote = self._read(repository, issue["number"])
             observation = self._observe(ticket_id, repository, remote, "post_write")
             if not state_conflict:
                 require(remote["body"] == body and remote["title"] == ticket["content"]["title"],
                         "GitHub issue readback does not match the requested projection")
+            if state_attempted:
+                require(remote["state"] == desired_state, "GitHub state readback does not match lifecycle decision")
             state_conflict = remote["state"] != desired_state
             projection_matches = remote["body"] == body and remote["title"] == ticket["content"]["title"]
             record = {"id": key, "ticket_id": ticket_id, "repository": repository,
@@ -187,6 +219,8 @@ class GitHubTickets:
                       "observed_body_hash": digest(remote["body"]), "observed_title_hash": digest(remote["title"]),
                       "title": remote["title"],
                       "desired_state": desired_state, "observed_state": remote["state"],
+                      "lifecycle_sequence": ticket["lifecycle_sequence"],
+                      "lifecycle_event": lifecycle_event["id"] if lifecycle_event else None,
                       "observation_ref": observation["evidence_ref"], "observation_id": observation["id"], "at": utcnow()}
             record["review_ids"] = sorted(row["id"] for row in ticket["reviews"])
             with self.store.transaction() as tx:
@@ -196,10 +230,14 @@ class GitHubTickets:
                                     if row["ticket_id"] == ticket_id and row["revision"] == ticket["revision"])
                 current_snapshot = (live["revision"] == ticket["revision"]
                                     and live["content_hash"] == ticket["content_hash"]
-                                    and live["status"] == ticket["status"] and review_ids == record["review_ids"])
+                                    and live["status"] == ticket["status"]
+                                    and live.get("lifecycle_sequence", 0) == ticket["lifecycle_sequence"]
+                                    and review_ids == record["review_ids"])
                 record["status"] = ("outdated" if not current_snapshot else "state_conflict" if state_conflict
                                     else "synced" if remote["body"] == body
                                     and remote["title"] == ticket["content"]["title"] else "outdated")
+                record["projected_lifecycle_event"] = (lifecycle_event["id"] if lifecycle_event and record["status"] == "synced"
+                                                      else (link or {}).get("projected_lifecycle_event"))
                 tx.put("ticket_github", key, record)
                 tx.put("ticket_syncs", key, {**current, "owner": None, "status": record["status"],
                     "creation_uncertain": False, "pending_body_hash": None, "pending_title_hash": None,

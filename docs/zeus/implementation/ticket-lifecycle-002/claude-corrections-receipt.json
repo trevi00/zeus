@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--resume",
+    "2dc41532-c263-4a29-8689-c8b385e1da27",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Final bounded review of same ticket lifecycle patch corrections. Root accepted your six findings and implemented: pinned-policy max_evidence_age_seconds(60..86400), consumed state transition using separate link projected_lifecycle_event advanced only on current successful readback (applies close and reopen); new explicit reopen --expected-state open/dispatched supports reasserting OPEN after a later external close, binds expectedstate+sequence+reason. Close now returns {decision,replayed,verification} so replay lacks implicit fresh approval. Policy rejects required/revoked intersection; proof carries required signer/human lists. Signature armor CRLF normalized for verification only, signed packet bytes unchanged and raw artifact retained. Tests added all these plus CLI, concurrent same/different packets, actualPG rollback, edits duringverify, lateclose vs localreopen/expiredlease, missingauthorityinvalidatesprevioussync. Important root correction to your prior review: verify_closed before _claim allowed failed/revoked authority to leave previous link synced. Moved authority verification inside claim try before remote access; processes are outside PGtx, lease rechecked beforewrites, failure marksneedsattention; addedtest. Generic FileArtifacts.text now bounds actual file read before hashing instead of reading wholefile then rejecting; closure8MiB cap is real. Full lifecycle chain is traversed/validated before transition and closedprojection, not only lastnode; corruption test added. Latest pre-final correction suite124passed realPG; current expanded suite running. Inspect changed code and tests for concrete remaining blockers only. No execution, writes, broad research, or issue proposals; actual external acceptance still pending and #30open."
+  ],
+  "returncode": 0,
+  "duration_seconds": 145.76198768615723,
+  "stdout_sha256": "82062c6bc5f1dd40ce6894f38fcadf529c799625c59aad406fcc86d1a3e6c0d0",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus GitHub ticket projection patch review; no execution",
+  "session_id": "2dc41532-c263-4a29-8689-c8b385e1da27",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 10,
+    "cache_creation_input_tokens": 28821,
+    "cache_read_input_tokens": 793574,
+    "output_tokens": 9973,
+    "output_tokens_details": {
+      "thinking_tokens": 7204
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 28821,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 9111,
+        "cache_read_input_tokens": 169021,
+        "cache_creation_input_tokens": 2649,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2649
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.934372,
+  "model_usage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 10,
+      "outputTokens": 9973,
+      "cacheReadInputTokens": 793574,
+      "cacheCreationInputTokens": 28821,
+      "webSearchRequests": 0,
+      "costUSD": 0.934372,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 7204,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

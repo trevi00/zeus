@@ -206,7 +206,7 @@ def parser() -> argparse.ArgumentParser:
     create = ticket_commands.add_parser("create")
     create.add_argument("--file", type=Path, required=True)
     create.add_argument("--author", default="operator")
-    for name in ("show", "export", "update", "review", "dispatch", "sync", "pull"):
+    for name in ("show", "export", "update", "review", "dispatch", "sync", "pull", "evidence", "prepare-close", "close", "reopen"):
         sub = ticket_commands.add_parser(name)
         sub.add_argument("ticket_id")
         if name == "show":
@@ -229,6 +229,19 @@ def parser() -> argparse.ArgumentParser:
             sub.add_argument("--preview", action="store_true", help="Print projection; no network or state changes")
             sub.add_argument("--reconcile-observation", help="Explicitly replace the observed title/body with the local projection")
             sub.add_argument("--revision", type=int, help="Required current revision when reconciling")
+        if name in {"evidence", "prepare-close"}:
+            sub.add_argument("--file", type=Path, required=True)
+        if name == "prepare-close":
+            sub.add_argument("--output", type=Path, required=True, help="New canonical packet file for external signing")
+        if name == "close":
+            sub.add_argument("--packet", type=Path, required=True)
+            sub.add_argument("--signature", action="append", required=True, help="PRINCIPAL=SIGNATURE_FILE; repeat per signer")
+        if name == "reopen":
+            sub.add_argument("--revision", type=int, required=True)
+            sub.add_argument("--sequence", type=int, required=True)
+            sub.add_argument("--reason", required=True)
+            sub.add_argument("--expected-state", choices=["closed", "open", "dispatched"], default="closed",
+                             help="Use open/dispatched explicitly to reconcile a new external close")
     return p
 
 
@@ -253,11 +266,14 @@ def ticket_command(service, args):
     elif command == "dispatch":
         executor = build_executor(service)
         emit(tickets.dispatch(args.ticket_id, args.revision, executor.git._git("rev-parse", "HEAD")))
+    elif command in {"evidence", "prepare-close", "close", "reopen"}:
+        from codex_harness.adapters.ticket_cli import execute
+        emit(execute(tickets, args))
     else:
-        from codex_harness.adapters.artifacts import FileArtifacts
-        from codex_harness.adapters.configuration import runtime_dir
         from codex_harness.adapters.github_tickets import GitHubTickets
-        github = GitHubTickets(tickets, FileArtifacts(runtime_dir() / "artifacts"))
+        from codex_harness.adapters.ticket_cli import build_lifecycle
+        lifecycle = build_lifecycle(tickets)
+        github = GitHubTickets(tickets, lifecycle.artifacts, lifecycle)
         if command == "sync":
             emit(github.sync(args.ticket_id, args.repo,
                             reconcile_observation=args.reconcile_observation, expected_revision=args.revision))
