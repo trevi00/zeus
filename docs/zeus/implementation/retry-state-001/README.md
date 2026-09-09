@@ -55,6 +55,16 @@ zeus inspect events
 경험의 품질을 측정했다고 해석하지 않습니다. 빈 JSON을 파싱하는 자식 프로세스 검사도 설치된
 Claude/Codex 모델의 실제 잘못된 출력을 관측한 시험으로 바꾸어 표현하지 않습니다.
 
+## 소스 커밋과 WSL 검증
+
+구현 커밋은 `93c89149b2c54d2f503885bb909e3119432e98bd`입니다.
+`wsl/receipt.json`은 해당 커밋을 별도 Linux 디렉터리에 복제하여 실행한 11개 단계의
+성공과 출력 해시를 기록합니다. WSL 전체 테스트는 **769 passed, 174 skipped**이며,
+실제 PostgreSQL에 연결한 재시도 테스트는 별도로 **55 passed**입니다.
+임시 연결정보 파일의 삭제와 공개 증적 내 연결정보·비밀번호 부재를 확인했습니다.
+GitHub CI는 [34378291426](https://github.com/trevi00/zeus/actions/runs/34378291426)에서
+실행하며, 이 문서 작성 시점에는 Windows 작업이 진행 중입니다.
+
 ## 운영 적용 전에 남은 작업
 
 기존 시도/한도/종료 원인과 근거를 대조하는 이관 및 versioned recovery 전이가 먼저 필요합니다.
