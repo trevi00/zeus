@@ -1,0 +1,380 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/ai_spec_eval_coverage.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5ab4a154554e4e35faf9eeaf02c70594903b0297",
+    "pinned_sha256": "efb9c8bb6c8a2c50468dafbce5ba0f6fcf83783f95d4eb7ebf1d879fd6b61fad",
+    "pinned_bytes": 13842,
+    "manifest_bytes": 13842,
+    "line_count": 317,
+    "read_ranges": [
+      [
+        71,
+        237
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 71,
+        "end": 237,
+        "raw_range_sha256": "db3558ae3081a1e9453e4f12ad67c24f5ba66ccec75385395b98eb79eb829bb8"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "partial",
+    "primary_indexes": [
+      3
+    ],
+    "tool_output_chunks": [
+      "1c5f64",
+      "c83fdb"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-03"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_ai_spec_eval_coverage.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "646feef6333baf1d5d5873fd8422319606c04caa",
+    "pinned_sha256": "6d9150948cfa1f87f1a1f1a33231a41b65420786ad64425ac608381603c286fc",
+    "pinned_bytes": 8168,
+    "manifest_bytes": 8168,
+    "line_count": 214,
+    "read_ranges": [
+      [
+        1,
+        214
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 214,
+        "raw_range_sha256": "6d9150948cfa1f87f1a1f1a33231a41b65420786ad64425ac608381603c286fc"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "full",
+    "primary_indexes": [
+      3
+    ],
+    "tool_output_chunks": [
+      "c83fdb",
+      "ac9609"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-03"
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/phase.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "730e712dbf8057507e8119d82c09ce700909b004",
+    "pinned_sha256": "e71444af06a86925f53183edd71918a1083be8928a78cab38dd78054beed9961",
+    "pinned_bytes": 35757,
+    "manifest_bytes": 35757,
+    "line_count": 931,
+    "read_ranges": [
+      [
+        87,
+        153
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 87,
+        "end": 153,
+        "raw_range_sha256": "eb79e81ded59f13cc683c2fe2a030ed50470597bf68719ab65355b33397c2ea7"
+      }
+    ],
+    "manifest_sha256_status": "absent_computed_only",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "partial",
+    "primary_indexes": [
+      9
+    ],
+    "tool_output_chunks": [
+      "1c5f64",
+      "41348f"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-09"
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/commands.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+    "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+    "pinned_bytes": 36090,
+    "manifest_bytes": 36090,
+    "line_count": 1013,
+    "read_ranges": [
+      [
+        38,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 38,
+        "end": 56,
+        "raw_range_sha256": "359634fcd808b635eae2779a28bc64b29f24b8b742ba60f472b9ad0a77d72750"
+      }
+    ],
+    "manifest_sha256_status": "absent_computed_only",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "partial",
+    "primary_indexes": [
+      9,
+      15
+    ],
+    "tool_output_chunks": [
+      "1c5f64"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-09"
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/workflows/plant-seed.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "881bf83c3228c85e96922d06b52e8d9abdcc6ace",
+    "pinned_sha256": "6616e4b1ef4bcab15ba09410fe493c319838c149d4759bbf025f41391dbb28be",
+    "pinned_bytes": 3730,
+    "manifest_bytes": 3730,
+    "line_count": 169,
+    "read_ranges": [
+      [
+        1,
+        169
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 169,
+        "raw_range_sha256": "6616e4b1ef4bcab15ba09410fe493c319838c149d4759bbf025f41391dbb28be"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "full",
+    "primary_indexes": [
+      11
+    ],
+    "tool_output_chunks": [
+      "1c5f64"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-11"
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/intel.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "02856ce48e31d3b24010ffcae803efefe0aa1295",
+    "pinned_sha256": "c0ed6c580934a4ac69d14c73cffc2cc974958528bbfd008663f92533ca4a76f7",
+    "pinned_bytes": 20862,
+    "manifest_bytes": 20862,
+    "line_count": 660,
+    "read_ranges": [
+      [
+        1,
+        122
+      ],
+      [
+        183,
+        344
+      ],
+      [
+        389,
+        474
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 122,
+        "raw_range_sha256": "69c3d630ef6520c31ee369f6b5ef65b6b0a3849e624f760544a142c6a114e2d5"
+      },
+      {
+        "start": 183,
+        "end": 344,
+        "raw_range_sha256": "070d45907859fea34d9a7d92ba7f8974eac914c9dcf04c80dcdee0ab4d33c039"
+      },
+      {
+        "start": 389,
+        "end": 474,
+        "raw_range_sha256": "b9d771ef2d8f331af60b87cdbdf78e12a1ece6f2dbdaee3215f891d7b63bc300"
+      }
+    ],
+    "manifest_sha256_status": "absent_computed_only",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "partial",
+    "primary_indexes": [
+      25
+    ],
+    "tool_output_chunks": [
+      "41348f",
+      "c83fdb",
+      "ac9609"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-25"
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-debugger.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1b973fbf0fd71566a1464c4867b7b0f2625d7e41",
+    "pinned_sha256": "6feffc2a61596db35aaf20f09e1f33d4dfbe34741d028127289046781985c601",
+    "pinned_bytes": 44260,
+    "manifest_bytes": 44260,
+    "line_count": 1394,
+    "read_ranges": [
+      [
+        900,
+        941
+      ],
+      [
+        992,
+        1128
+      ],
+      [
+        1360,
+        1385
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 900,
+        "end": 941,
+        "raw_range_sha256": "1c8ede93f850c456fe99b56de8c42928bc1624196b3377c2c1af7dd8f4fd8b92"
+      },
+      {
+        "start": 992,
+        "end": 1128,
+        "raw_range_sha256": "a134f6bb19f49ed57349f803e13bc5b71d8099b2df1a0b1131e4321ad82e5c74"
+      },
+      {
+        "start": 1360,
+        "end": 1385,
+        "raw_range_sha256": "0fac8f0f1b17af5767e461bce7436ecd818d5362bb2e46369fa2ab1300c7c302"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "partial",
+    "primary_indexes": [
+      16
+    ],
+    "tool_output_chunks": [
+      "41348f"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-16"
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/gsd-tools.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+    "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+    "pinned_bytes": 43392,
+    "manifest_bytes": 43392,
+    "line_count": 1055,
+    "read_ranges": [
+      [
+        978,
+        1044
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 978,
+        "end": 1044,
+        "raw_range_sha256": "c40847b3363ecb2b0e0c9c3d92e46f43cf818d2fb8d22bb24c9af68f9f4abb37"
+      }
+    ],
+    "manifest_sha256_status": "absent_computed_only",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Unlisted direct/transitive implementation/config/caller/tests remain pending.",
+      "Source execution/import/collection/probe/network/install and actual Claude are zero.",
+      "License, Windows/Linux/WSL, qualified models, real human acceptance remain pending.",
+      "Whole subsystem closure, Zeus equivalence and adoption approval are false."
+    ],
+    "read_method": "fresh direct supporting ranges",
+    "read_extent": "partial",
+    "primary_indexes": [
+      25
+    ],
+    "tool_output_chunks": [
+      "c83fdb"
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/file-reviews.md#file-25"
+  }
+]

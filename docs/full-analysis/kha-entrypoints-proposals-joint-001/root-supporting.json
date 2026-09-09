@@ -1,0 +1,16 @@
+{
+  "source": "baldrix",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "path": "get-shit-done/workflows/audit-fix.md",
+  "read_ranges": [
+    [
+      1,
+      130
+    ]
+  ],
+  "source_sha256": "df37688d0079bafc319238789f1aad718925823f97fff742a48770d7579b8d3e",
+  "range_sha256": "186274b10b8ad32f368d0263f0b2bce96d81560b13c3822bf5dc07f7208ef144",
+  "read_tool_receipt": "c124a7",
+  "new_primary_coverage": 0,
+  "original_execution": false
+}

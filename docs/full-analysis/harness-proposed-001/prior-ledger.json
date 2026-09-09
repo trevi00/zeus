@@ -1,0 +1,261 @@
+{
+  "ledger_path": "docs/full-analysis/path-ledger.json",
+  "ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+  "rows": [
+    {
+      "row_index": 1756,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-acceptance-coordinate-not-unique-on-retry.json",
+        "git_blob": "13154db1d005084ca94ed5b4685a5d2523f98484",
+        "mode": "100644",
+        "bytes": 11280,
+        "pinned_sha256": "1b46f2b0df2a3b88dc1300eafe1915302ac9c99ea35439f586dd2801204d209b",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1757,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-agent-eval-axes.json",
+        "git_blob": "ab8b194876f9b5ccd5a73948c54d34eef7b420dd",
+        "mode": "100644",
+        "bytes": 12849,
+        "pinned_sha256": "02773d24dbec705d349a638a6dce86c4a9c4dac2f1717837b3d8cea867107d69",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1758,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-agentsmd-counts-words-as-callsites.json",
+        "git_blob": "e3d518a8170c9ea9fa8cbf472e81d8223715b4d6",
+        "mode": "100644",
+        "bytes": 17333,
+        "pinned_sha256": "367b43a8b67e30a7709d85157cd9c2fdd956c9436bd39b18bfd1f25aa388b7ab",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1759,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-approval-hardware-presence.json",
+        "git_blob": "e1aad24736b9e96688b99f70d5de41889b91b8a5",
+        "mode": "100644",
+        "bytes": 8468,
+        "pinned_sha256": "0fcbe55a5e8b111a2e2cb6245093c42ed7f1f58c8e703b3b77c21a40df222fc3",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1760,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-architecture-index-absent.json",
+        "git_blob": "7efc0336b9dc58d80ccddd04576071bc9172aa69",
+        "mode": "100644",
+        "bytes": 6385,
+        "pinned_sha256": "1d6fb7fdca8688782a74e768e6c000b8ffe531244b67a76aabaa707f194ee7d4",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1761,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-archive-copies-outside-commit-scope.json",
+        "git_blob": "f39ce5fafd94a680ce34e80480163eb6a12305dd",
+        "mode": "100644",
+        "bytes": 13653,
+        "pinned_sha256": "950501e871b65d3aee9ad30043bd64d7a0ed847e7681644555be7fd62f0140f6",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1762,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-arm-does-not-reopen-cycle.json",
+        "git_blob": "eacec6f1e667fd82eb2da9aa0fa44247790a8c58",
+        "mode": "100644",
+        "bytes": 5428,
+        "pinned_sha256": "3940b94c77d9ba7ff0528c35498e41dde179df5b4e4a3e637b3f521df487ce4a",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1763,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-arming-preview-drop-opaque.json",
+        "git_blob": "1f658dad2b6d1661c07d33398fe63ed7dd2a5833",
+        "mode": "100644",
+        "bytes": 1816,
+        "pinned_sha256": "c9bedbbf633cd59838c59312057a46cd9717f553f8a8cfde1c1912c4f05b42cd",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1764,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-arming-skips-freshness.json",
+        "git_blob": "a7a93cd7da8eb4e28c4e7370350c5f501be9f2fb",
+        "mode": "100644",
+        "bytes": 5368,
+        "pinned_sha256": "74799f6d1a293a588401b4e5ece7dcc69e3da0f94437064c3da95ddfd859ab73",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1765,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-ask-evaporates-under-bypass.json",
+        "git_blob": "76e2ae8c1239f787418b2b29ea6460d6aca3e503",
+        "mode": "100644",
+        "bytes": 8075,
+        "pinned_sha256": "14f6d46f6d6d9be4197569700837d4fae73d49ea2f53cea176136be33aa2806c",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1766,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-bash-fence-absent.json",
+        "git_blob": "1b727872e09f7909cee0b7e89e51200481f5d18e",
+        "mode": "100644",
+        "bytes": 16076,
+        "pinned_sha256": "a799de8a3f96363d2ac5de7260a6b1dc8efb92f7b8a7cd0249c2463d62ae3b09",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1767,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-blackbox-stage-names-unpinned-mcp.json",
+        "git_blob": "2d4ae531583ebeb045552e927efc1a79a9e8453e",
+        "mode": "100644",
+        "bytes": 8629,
+        "pinned_sha256": "a4dcf8f522e580c600789fb7a600e3264a7d0792026183af9c7bd75606d33b43",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1768,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-blocker-severity-key-unvalidated.json",
+        "git_blob": "816c1c5ddd5ab0fa8fa98d77d00e2d9fd2f9deef",
+        "mode": "100644",
+        "bytes": 21430,
+        "pinned_sha256": "60d87b4be66bdb7a0e4883c4b16a7b2aa5ee3f236bcecfa7fc3fc96167174c96",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1769,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-bus-tailer-discards-unflushed.json",
+        "git_blob": "d768c3e603e9b1ce3520c80869d324e3711fd145",
+        "mode": "100644",
+        "bytes": 10123,
+        "pinned_sha256": "7637af902e62c594c75610fbda52535635a8b13b2f1636115752e6d1747fd44d",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1770,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-caption-langs-promises-unreachable-text.json",
+        "git_blob": "4f5ddab7e12405420e8ca1341b2d50a4902a2e10",
+        "mode": "100644",
+        "bytes": 25050,
+        "pinned_sha256": "150b95bd93bf6de0ca44287253b1a22fffbe487fc81df39e8f0bad9a8f2cba78",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1771,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-case-folding-depends-on-host-os.json",
+        "git_blob": "c5dfbc9b1cbc834dd1c648855274743a06644779",
+        "mode": "100644",
+        "bytes": 8374,
+        "pinned_sha256": "4d2cec6418bcfcda3c4e737ec1f9445d2ba1851ff79b8923eab97271d335fe17",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 1772,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "brain/proposed/backlog-catalog-index-pagination.json",
+        "git_blob": "e85e4e9adb9a0ce97092afebff8eb024b8679d8b",
+        "mode": "100644",
+        "bytes": 2183,
+        "pinned_sha256": "51135013e04db69a24d5b4fba0039bfa7bfc0f3040a7e97ec23789908e858c1b",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    }
+  ]
+}

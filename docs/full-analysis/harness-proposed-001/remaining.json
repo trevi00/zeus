@@ -1,0 +1,15 @@
+{
+  "primary_unread": [],
+  "limits": [
+    "Full transitive caller/config/test closure is pending.",
+    "Historical measurements and PASS labels are not current execution receipts.",
+    "Actual Claude, license, model qualification, Windows/Linux/WSL and human acceptance pending.",
+    "Current Zeus equivalence and adoption approval are not established."
+  ],
+  "unavailable": [
+    "Harness pinned config/runtime.yaml is not captured.",
+    "No pinned nfx-kr SUT read; catalog proposal remains unverified.",
+    "No fresh architecture-view bodies read for f05."
+  ],
+  "source_operations_executed": 0
+}

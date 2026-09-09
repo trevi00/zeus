@@ -1,0 +1,32 @@
+{
+  "kind": "local_validation_observation",
+  "base_revision": "b5a4026abb5af13854c84a3fddd8dde4904e0224",
+  "scope": "86-primary review artifacts and coverage; no tracked product implementation changes",
+  "ruff": {
+    "argv": [
+      "uv",
+      "run",
+      "ruff",
+      "check",
+      "."
+    ],
+    "returncode": 0,
+    "tool_receipt": "f23e2b"
+  },
+  "pytest": {
+    "argv": [
+      "uv",
+      "run",
+      "pytest",
+      "-q"
+    ],
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 271.89,
+    "session": 67629,
+    "terminal_tool_receipt": "08af52"
+  },
+  "exact_published_revision_acceptance": false,
+  "upstream_execution_in_this_batch": 0
+}

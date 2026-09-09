@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "scope": "Owned metadata only; no source behavioral verification",
+  "primary": 33,
+  "fresh_full_primary": 7,
+  "prior_full_body_reused": 26,
+  "checks": [
+    "scope equals pinned manifest directory range",
+    "prior unreviewed rows retained",
+    "raw blob/bytes/SHA and actual range SHA",
+    "existing exact prior rows/review/receipt hashes",
+    "33 ordered unique anchors",
+    "UTF8/LF/one final LF/no trailing whitespace",
+    "git diff --no-index --check for every owned file",
+    "Ruff owned scripts"
+  ],
+  "ruff_stdout": "All checks passed!\n",
+  "ruff_stderr": "",
+  "source_execution_count": 0
+}

@@ -1,0 +1,76 @@
+{
+  "partition": "harness:brain/proposed:001",
+  "scope_sha256": "35abe700d3711ad77bcdf643eab4e1ed7e1a6e7d0b79f94144c9eb75da03a4e8",
+  "bytes": 182520,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-acceptance-coordinate-not-unique-on-retry.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-agent-eval-axes.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-agentsmd-counts-words-as-callsites.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-approval-hardware-presence.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-architecture-index-absent.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-archive-copies-outside-commit-scope.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-arm-does-not-reopen-cycle.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-arming-preview-drop-opaque.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-arming-skips-freshness.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-ask-evaporates-under-bypass.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-bash-fence-absent.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-blackbox-stage-names-unpinned-mcp.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-blocker-severity-key-unvalidated.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-bus-tailer-discards-unflushed.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-caption-langs-promises-unreachable-text.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-case-folding-depends-on-host-os.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-catalog-index-pagination.json"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

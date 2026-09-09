@@ -1,0 +1,11 @@
+{
+  "ruff": {
+    "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/harness-proposed-001/build_index.py docs/full-analysis/harness-proposed-001/validate_index.py",
+    "scope": "Own metadata scripts only",
+    "exit_code": 0,
+    "output": "All checks passed!"
+  },
+  "source_tests_executed": [],
+  "initial_metadata_validation": "Failed because the validator matched its own three-question-mark corruption detector literal; detector expression corrected. No report text was corrupt.",
+  "test_limits": "Original source and test execution remain prohibited and unperformed."
+}

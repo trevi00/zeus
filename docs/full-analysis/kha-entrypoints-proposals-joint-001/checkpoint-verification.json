@@ -1,0 +1,615 @@
+{
+  "primary_records": 86,
+  "primary_bytes": 418088,
+  "supporting_rows": 84,
+  "supporting_reuse_rows": 71,
+  "fresh_primary_bodies": 54,
+  "prior_full_body_reused": 32,
+  "original_source_executions": 0,
+  "whole_analysis_complete": false,
+  "scope_sha256": "cbd11994f351b310947b93fce040c218588e04dc590263cac743205a1246f982",
+  "rows": [
+    {
+      "source": "baldrix",
+      "path": "skills/kha-add-phase/SKILL.md",
+      "bytes": 2219,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-advance/SKILL.md",
+      "bytes": 2027,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-ai-integration-phase/SKILL.md",
+      "bytes": 11438,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-analyze-dependencies/SKILL.md",
+      "bytes": 2090,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-archive-completed-phases/SKILL.md",
+      "bytes": 1583,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-audit-milestone/SKILL.md",
+      "bytes": 2217,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-audit-planning-health/SKILL.md",
+      "bytes": 5090,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-audit-uat-backlog/SKILL.md",
+      "bytes": 1397,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-capture-backlog/SKILL.md",
+      "bytes": 3266,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-capture-note/SKILL.md",
+      "bytes": 2169,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-capture-seed/SKILL.md",
+      "bytes": 1729,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-capture-todo/SKILL.md",
+      "bytes": 2279,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-clarify-phase/SKILL.md",
+      "bytes": 5747,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-complete-milestone/SKILL.md",
+      "bytes": 8113,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-context-thread/SKILL.md",
+      "bytes": 4231,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-debug/SKILL.md",
+      "bytes": 9318,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-dispatch/SKILL.md",
+      "bytes": 1907,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-execute-phase/SKILL.md",
+      "bytes": 6337,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-explore-idea/SKILL.md",
+      "bytes": 1918,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-forensics/SKILL.md",
+      "bytes": 3271,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-generate-tests/SKILL.md",
+      "bytes": 2664,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-help/SKILL.md",
+      "bytes": 1199,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-import-plan/SKILL.md",
+      "bytes": 2534,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-insert-phase/SKILL.md",
+      "bytes": 2238,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-intel-index/SKILL.md",
+      "bytes": 6407,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-join-discord/SKILL.md",
+      "bytes": 874,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-list-workspaces/SKILL.md",
+      "bytes": 1378,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-map-codebase/SKILL.md",
+      "bytes": 4282,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-milestone-manager/SKILL.md",
+      "bytes": 3045,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-milestone-summary/SKILL.md",
+      "bytes": 3450,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-new-milestone/SKILL.md",
+      "bytes": 3986,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-new-project/SKILL.md",
+      "bytes": 4062,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-new-workspace/SKILL.md",
+      "bytes": 3588,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-pause-work/SKILL.md",
+      "bytes": 2414,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-phase-assumptions/SKILL.md",
+      "bytes": 2412,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-plan-gap-phases/SKILL.md",
+      "bytes": 1974,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-plan-phase/SKILL.md",
+      "bytes": 5540,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-prepare-pr-branch/SKILL.md",
+      "bytes": 1669,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-project-stats/SKILL.md",
+      "bytes": 1322,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-reapply-local-patches/SKILL.md",
+      "bytes": 14062,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-remediate-audit-findings/SKILL.md",
+      "bytes": 3473,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-remediate-code-review/SKILL.md",
+      "bytes": 3234,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-remove-phase/SKILL.md",
+      "bytes": 3539,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-remove-workspace/SKILL.md",
+      "bytes": 1953,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-research-phase/SKILL.md",
+      "bytes": 7702,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-resume-work/SKILL.md",
+      "bytes": 2578,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-revert-work/SKILL.md",
+      "bytes": 2578,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-review-code/SKILL.md",
+      "bytes": 3434,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-review-plan-peer/SKILL.md",
+      "bytes": 2040,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-review-ui/SKILL.md",
+      "bytes": 1568,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-run-adhoc/SKILL.md",
+      "bytes": 4686,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-run-milestone/SKILL.md",
+      "bytes": 5597,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-run-trivial/SKILL.md",
+      "bytes": 1924,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-scan-codebase/SKILL.md",
+      "bytes": 2276,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-self-update/SKILL.md",
+      "bytes": 2345,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-session-report/SKILL.md",
+      "bytes": 1762,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-set-model-profile/SKILL.md",
+      "bytes": 1275,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-settings/SKILL.md",
+      "bytes": 2373,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-spec-ui-phase/SKILL.md",
+      "bytes": 1745,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-status/SKILL.md",
+      "bytes": 1859,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-submit-pr/SKILL.md",
+      "bytes": 3781,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-sync-docs/SKILL.md",
+      "bytes": 3946,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-triage-backlog/SKILL.md",
+      "bytes": 3804,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-triage-todos/SKILL.md",
+      "bytes": 2287,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-user-profile/SKILL.md",
+      "bytes": 2960,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-validate-nyquist-phase/SKILL.md",
+      "bytes": 1835,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-verify-security-phase/SKILL.md",
+      "bytes": 1861,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-verify-uat/SKILL.md",
+      "bytes": 2301,
+      "reuse": true,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/kha-workstream-manager/SKILL.md",
+      "bytes": 7406,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-acceptance-coordinate-not-unique-on-retry.json",
+      "bytes": 11280,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-agent-eval-axes.json",
+      "bytes": 12849,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-agentsmd-counts-words-as-callsites.json",
+      "bytes": 17333,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-approval-hardware-presence.json",
+      "bytes": 8468,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-architecture-index-absent.json",
+      "bytes": 6385,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-archive-copies-outside-commit-scope.json",
+      "bytes": 13653,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-arm-does-not-reopen-cycle.json",
+      "bytes": 5428,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-arming-preview-drop-opaque.json",
+      "bytes": 1816,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-arming-skips-freshness.json",
+      "bytes": 5368,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-ask-evaporates-under-bypass.json",
+      "bytes": 8075,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-bash-fence-absent.json",
+      "bytes": 16076,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-blackbox-stage-names-unpinned-mcp.json",
+      "bytes": 8629,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-blocker-severity-key-unvalidated.json",
+      "bytes": 21430,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-bus-tailer-discards-unflushed.json",
+      "bytes": 10123,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-caption-langs-promises-unreachable-text.json",
+      "bytes": 25050,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-case-folding-depends-on-host-os.json",
+      "bytes": 8374,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-catalog-index-pagination.json",
+      "bytes": 2183,
+      "reuse": false,
+      "record_ref": "docs/full-analysis/harness-proposed-001/files.json"
+    }
+  ]
+}

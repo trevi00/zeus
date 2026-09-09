@@ -1,0 +1,1102 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/lib/derive_state.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 27995,
+    "git_blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "observed_sha256": null,
+    "manifest_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "manifest_sha256_status": "matched",
+    "line_count": 547,
+    "read_ranges": [
+      [
+        277,
+        426
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s01",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f01"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/agentsmd_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 12223,
+    "git_blob": "041fd83ff0266274671271608c4dd871fd796816",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bb97f0e1c71ff201cc82557b77e27998dd792f3955951c2ef76b87bc19a22e25",
+    "observed_sha256": null,
+    "manifest_sha256": "bb97f0e1c71ff201cc82557b77e27998dd792f3955951c2ef76b87bc19a22e25",
+    "manifest_sha256_status": "matched",
+    "line_count": 235,
+    "read_ranges": [
+      [
+        28,
+        83
+      ],
+      [
+        132,
+        180
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s02",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f03"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/arming.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 55065,
+    "git_blob": "cca667f7678154033dcd5ee7755ae2f4427eed42",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "18fcbea068dfcfbc3895f75321770130071e81d05b8df709f30716fac2cfdbab",
+    "observed_sha256": null,
+    "manifest_sha256": "18fcbea068dfcfbc3895f75321770130071e81d05b8df709f30716fac2cfdbab",
+    "manifest_sha256_status": "matched",
+    "line_count": 931,
+    "read_ranges": [
+      [
+        314,
+        410
+      ],
+      [
+        419,
+        442
+      ],
+      [
+        574,
+        737
+      ],
+      [
+        884,
+        928
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s03",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f04",
+      "docs/full-analysis/harness-proposed-001/review.md#f07",
+      "docs/full-analysis/harness-proposed-001/review.md#f09"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/paths.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5363,
+    "git_blob": "c1a7284adf7c53a8fab9f074e0c23c5558d95d22",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "observed_sha256": null,
+    "manifest_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "manifest_sha256_status": "matched",
+    "line_count": 123,
+    "read_ranges": [
+      [
+        94,
+        121
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s04",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f16"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/arming_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11637,
+    "git_blob": "da9104ea2a8648aaaa4712fd44f988ac33caf16e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8bffcf1740d4a3371975e95bedbfca884469e8d89ca4280e79d490194ffa1b43",
+    "observed_sha256": null,
+    "manifest_sha256": "8bffcf1740d4a3371975e95bedbfca884469e8d89ca4280e79d490194ffa1b43",
+    "manifest_sha256_status": "matched",
+    "line_count": 193,
+    "read_ranges": [
+      [
+        64,
+        177
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s05",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f08",
+      "docs/full-analysis/harness-proposed-001/review.md#f09"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/note_archive.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7944,
+    "git_blob": "39637be324079b02a7923f2040c244482892c2e0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "64145e19fd5c7bc271e022fb95f54ca024e8854bfdf227e70f1864d829d62bee",
+    "observed_sha256": null,
+    "manifest_sha256": "64145e19fd5c7bc271e022fb95f54ca024e8854bfdf227e70f1864d829d62bee",
+    "manifest_sha256_status": "matched",
+    "line_count": 193,
+    "read_ranges": [
+      [
+        66,
+        180
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s06",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f06"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/approval_proof.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6479,
+    "git_blob": "dc7422ff096acc0b32763c302e8cffa7dea102b8",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f516df6534ce6af4fa7a9e169968016499a5540da5a8b90d113968397446c843",
+    "observed_sha256": null,
+    "manifest_sha256": "f516df6534ce6af4fa7a9e169968016499a5540da5a8b90d113968397446c843",
+    "manifest_sha256_status": "matched",
+    "line_count": 136,
+    "read_ranges": [
+      [
+        55,
+        136
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s07",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f04"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/bus_tailer.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7141,
+    "git_blob": "5e99669e5083b15e747129935d81fa7859ac5ff6",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c76bacd12546e196305ae173de282863da8b9edb981c4d376b3fd46e58cbc540",
+    "observed_sha256": null,
+    "manifest_sha256": "c76bacd12546e196305ae173de282863da8b9edb981c4d376b3fd46e58cbc540",
+    "manifest_sha256_status": "matched",
+    "line_count": 136,
+    "read_ranges": [
+      [
+        1,
+        136
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s08",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f14"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/debate_rules.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 15098,
+    "git_blob": "8aa45dfa085c53f8563973cf49e103234ceb71fb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "790cbda256eabeb2a453332cb5b730367c24758a210e7a1c3dcb7ea8956e05ba",
+    "observed_sha256": null,
+    "manifest_sha256": "790cbda256eabeb2a453332cb5b730367c24758a210e7a1c3dcb7ea8956e05ba",
+    "manifest_sha256_status": "matched",
+    "line_count": 361,
+    "read_ranges": [
+      [
+        89,
+        149
+      ],
+      [
+        255,
+        274
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s09",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f13"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/debate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10398,
+    "git_blob": "5a3146326ecb30fe572f7d109eecc3ba678c446b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a46d9f27ccaa83506248d4fdcc96d16dabca0e4b97e389878c88bfb2092b5ebf",
+    "observed_sha256": null,
+    "manifest_sha256": "a46d9f27ccaa83506248d4fdcc96d16dabca0e4b97e389878c88bfb2092b5ebf",
+    "manifest_sha256_status": "matched",
+    "line_count": 226,
+    "read_ranges": [
+      [
+        72,
+        103
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s10",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f13"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/pre_tool/write_boundary.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 64015,
+    "git_blob": "41b30694d38d7ab90ff16e93ced578a66657d5f3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "418418a5ff2fe9c9886316c96d9cca0f84b6ff3b452df1bfe9dde94314a8f60b",
+    "observed_sha256": null,
+    "manifest_sha256": "418418a5ff2fe9c9886316c96d9cca0f84b6ff3b452df1bfe9dde94314a8f60b",
+    "manifest_sha256_status": "matched",
+    "line_count": 1102,
+    "read_ranges": [
+      [
+        706,
+        770
+      ],
+      [
+        924,
+        1102
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s11",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f10",
+      "docs/full-analysis/harness-proposed-001/review.md#f11",
+      "docs/full-analysis/harness-proposed-001/review.md#f16"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/sandbox.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 32037,
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "observed_sha256": null,
+    "manifest_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "manifest_sha256_status": "matched",
+    "line_count": 551,
+    "read_ranges": [
+      [
+        89,
+        161
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s12",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f16"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/reachability.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 14657,
+    "git_blob": "838e3ab5fc6cc969a2de74a4b0dabf76fe792a78",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "observed_sha256": null,
+    "manifest_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "manifest_sha256_status": "matched",
+    "line_count": 333,
+    "read_ranges": [
+      [
+        111,
+        165
+      ],
+      [
+        216,
+        258
+      ],
+      [
+        274,
+        313
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s15",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f15"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/l2_driver.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 119098,
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "observed_sha256": null,
+    "manifest_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "manifest_sha256_status": "matched",
+    "line_count": 2044,
+    "read_ranges": [
+      [
+        512,
+        559
+      ],
+      [
+        716,
+        832
+      ],
+      [
+        1204,
+        1244
+      ],
+      [
+        1277,
+        1345
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s16",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f07",
+      "docs/full-analysis/harness-proposed-001/review.md#f09",
+      "docs/full-analysis/harness-proposed-001/review.md#f14"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/commit_scope.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5981,
+    "git_blob": "f33a63231403a4b1ca35f85ae4e2cf44c311d8b6",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "3f988bfe41bac6027dcdf8f4c00419b01c06ef095e7a8ce0f220cd492451bb74",
+    "observed_sha256": null,
+    "manifest_sha256": "3f988bfe41bac6027dcdf8f4c00419b01c06ef095e7a8ce0f220cd492451bb74",
+    "manifest_sha256_status": "matched",
+    "line_count": 145,
+    "read_ranges": [
+      [
+        1,
+        140
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s17",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f06"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/spiral_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 37440,
+    "git_blob": "0a05aad322125ff120a61b4261bc180630d5f825",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ae2544523614c9c3ddcc64d3b5b78954397ff57420e7dee8926fb07165d03f97",
+    "observed_sha256": null,
+    "manifest_sha256": "ae2544523614c9c3ddcc64d3b5b78954397ff57420e7dee8926fb07165d03f97",
+    "manifest_sha256_status": "matched",
+    "line_count": 679,
+    "read_ranges": [
+      [
+        54,
+        79
+      ],
+      [
+        133,
+        177
+      ],
+      [
+        266,
+        290
+      ],
+      [
+        309,
+        384
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s18",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f08",
+      "docs/full-analysis/harness-proposed-001/review.md#f09"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/core.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 29324,
+    "git_blob": "32ce4144cb0e420b6961d663e1907e79ffb92339",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2816cf7b6b0c94961f68e42e01aaf88abb80c172c5be36444ad141a5c31084fe",
+    "observed_sha256": null,
+    "manifest_sha256": "2816cf7b6b0c94961f68e42e01aaf88abb80c172c5be36444ad141a5c31084fe",
+    "manifest_sha256_status": "matched",
+    "line_count": 581,
+    "read_ranges": [
+      [
+        477,
+        489
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s19",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f12"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/youtube-note.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8459,
+    "git_blob": "ff5b9aa4fb5d3632728c2f3e036d96fd6ff12970",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "d2dfaed4586d2c7829c536edfbd99cb9d789f6ab0a661dbb8b519f1622a0c450",
+    "observed_sha256": null,
+    "manifest_sha256": "d2dfaed4586d2c7829c536edfbd99cb9d789f6ab0a661dbb8b519f1622a0c450",
+    "manifest_sha256_status": "matched",
+    "line_count": 140,
+    "read_ranges": [
+      [
+        47,
+        108
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s20",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f06",
+      "docs/full-analysis/harness-proposed-001/review.md#f15"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/youtube_collector.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9322,
+    "git_blob": "90e3162011aabdbdb7431c83e7b151ceb499fc77",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "64f6224bb3e297c9b6dbc9ac19eb90b98bc5f6a37a5a9a30b1a6dc4f91dd0d7e",
+    "observed_sha256": null,
+    "manifest_sha256": "64f6224bb3e297c9b6dbc9ac19eb90b98bc5f6a37a5a9a30b1a6dc4f91dd0d7e",
+    "manifest_sha256_status": "matched",
+    "line_count": 213,
+    "read_ranges": [
+      [
+        130,
+        139
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s21",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f15"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "agents/design-critic.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1154,
+    "git_blob": "e5d470e718b37e1941448d5ad1d6a4726218b493",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2a31ac669be070f3b551d72876bb876d5ec9cb84e3bcd3b697b1cb353ddc5b06",
+    "observed_sha256": null,
+    "manifest_sha256": "2a31ac669be070f3b551d72876bb876d5ec9cb84e3bcd3b697b1cb353ddc5b06",
+    "manifest_sha256_status": "matched",
+    "line_count": 20,
+    "read_ranges": [
+      [
+        1,
+        20
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s22",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f12"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "agents/critic.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 797,
+    "git_blob": "ccc431bb49bcd9f7d29f1dd2f1066dd54ac57af0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "87391edcd9d928da787fc71d77a862639a864f920132e6a6f99c9c699e414d21",
+    "observed_sha256": null,
+    "manifest_sha256": "87391edcd9d928da787fc71d77a862639a864f920132e6a6f99c9c699e414d21",
+    "manifest_sha256_status": "matched",
+    "line_count": 19,
+    "read_ranges": [
+      [
+        1,
+        19
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s23",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f13"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/registry.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5748,
+    "git_blob": "a7697308e6b79bc466276dd13c011bc1dbffc8bd",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "fb1f148241c27cc78481c8f8e32747582cf5b492183754c4cce0a72cdca766a4",
+    "observed_sha256": null,
+    "manifest_sha256": "fb1f148241c27cc78481c8f8e32747582cf5b492183754c4cce0a72cdca766a4",
+    "manifest_sha256_status": "matched",
+    "line_count": 97,
+    "read_ranges": [
+      [
+        38,
+        61
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s24",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f10"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/dispatch.sh",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1530,
+    "git_blob": "5f3d2ab5bcfc3969450c975fa16635d898a71733",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df",
+    "observed_sha256": null,
+    "manifest_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df",
+    "manifest_sha256_status": "matched",
+    "line_count": 25,
+    "read_ranges": [
+      [
+        1,
+        25
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s25",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f16"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_acceptance_coverage_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 21084,
+    "git_blob": "1a015d0af17c69221a3e5bb6d5e58dbc29499917",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6877e079084a14864b8e6a2ecb376cb73d12b89dd360c832fb2e4cba45511a6c",
+    "observed_sha256": null,
+    "manifest_sha256": "6877e079084a14864b8e6a2ecb376cb73d12b89dd360c832fb2e4cba45511a6c",
+    "manifest_sha256_status": "matched",
+    "line_count": 351,
+    "read_ranges": [
+      [
+        182,
+        294
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s28",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f01"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_arming_freshness_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 24546,
+    "git_blob": "c58da669dbbeceee5e9a9d74fdf58873b766b907",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9bd9051dd44b472590bd191fa24552ed5a5f495df2a461d5b4f763aad8254d6b",
+    "observed_sha256": null,
+    "manifest_sha256": "9bd9051dd44b472590bd191fa24552ed5a5f495df2a461d5b4f763aad8254d6b",
+    "manifest_sha256_status": "matched",
+    "line_count": 475,
+    "read_ranges": [
+      [
+        143,
+        196
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s29",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f09"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_bus_watermark_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13716,
+    "git_blob": "08e87d464f2440713646cd1bb2d73a8d84be15b7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9f982fc4ebeb1102075be19775e66c191e5ab51c756b3e8b2cd96c5a20fdd8b8",
+    "observed_sha256": null,
+    "manifest_sha256": "9f982fc4ebeb1102075be19775e66c191e5ab51c756b3e8b2cd96c5a20fdd8b8",
+    "manifest_sha256_status": "matched",
+    "line_count": 262,
+    "read_ranges": [
+      [
+        196,
+        261
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s30",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f14"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_debate_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 12788,
+    "git_blob": "1fe57681ac6cfde59a75458df4d16e63ed7b8e17",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "dcf7906d4919ea7238ca9be8d9a7874977054360d28645f6666a5c3066a3b890",
+    "observed_sha256": null,
+    "manifest_sha256": "dcf7906d4919ea7238ca9be8d9a7874977054360d28645f6666a5c3066a3b890",
+    "manifest_sha256_status": "matched",
+    "line_count": 242,
+    "read_ranges": [
+      [
+        72,
+        102
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s31",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f13"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/harness_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 107200,
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "observed_sha256": null,
+    "manifest_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "manifest_sha256_status": "matched",
+    "line_count": 2092,
+    "read_ranges": [
+      [
+        1419,
+        1447
+      ],
+      [
+        2031,
+        2071
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s32",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f03",
+      "docs/full-analysis/harness-proposed-001/review.md#f05"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/health_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 49796,
+    "git_blob": "ffc56a369eae2661de3f9ac954c8721385966065",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "observed_sha256": null,
+    "manifest_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "manifest_sha256_status": "matched",
+    "line_count": 957,
+    "read_ranges": [
+      [
+        603,
+        629
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s33",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f02"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/dispatch.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 15100,
+    "git_blob": "9632145bbdbadf27ffabc2d8140a9e510829c4bb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e6a991db9cc472e64f580a022d78c275ef0ea47bb8e908d841b64fd86af44092",
+    "observed_sha256": null,
+    "manifest_sha256": "e6a991db9cc472e64f580a022d78c275ef0ea47bb8e908d841b64fd86af44092",
+    "manifest_sha256_status": "matched",
+    "line_count": 311,
+    "read_ranges": [
+      [
+        1,
+        70
+      ],
+      [
+        197,
+        280
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s34",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f02",
+      "docs/full-analysis/harness-proposed-001/review.md#f10"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": ".mcp.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 121,
+    "git_blob": "72b89be63f2dece75418b6450d25da2384b1e57f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e20236c7dc0278493e64791c8945c0ccb04d7f8ecebc1e86d56c623741b99f9e",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent",
+    "line_count": 8,
+    "read_ranges": [
+      [
+        1,
+        8
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s35",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f12"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/debate_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4480,
+    "git_blob": "9203f587e355d40560cf2e0b549ede976610a4e0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "b4f33ad674c391f5e710f95aa94030959fdcae0952db631505f00ecd32aad6be",
+    "observed_sha256": null,
+    "manifest_sha256": "b4f33ad674c391f5e710f95aa94030959fdcae0952db631505f00ecd32aad6be",
+    "manifest_sha256_status": "matched",
+    "line_count": 121,
+    "read_ranges": [
+      [
+        64,
+        94
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s36",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f13"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": ".claude/settings.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 2146,
+    "git_blob": "543919592f4bf4b9e0f0e9eb16299c1788b84409",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "d7f9e4b551505c3fef8a3dc4470f50e024e21494cc6337c1d58e44355753da0a",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent",
+    "line_count": 98,
+    "read_ranges": [
+      [
+        29,
+        40
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s37",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f10"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/write-boundary.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 15667,
+    "git_blob": "eef950a68ce7dd8d338531946a9e74be9dda5efa",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "207003bca7bde54744224e259fb4ee02c8eb49a43d3ea72bb8765b0714abc49b",
+    "observed_sha256": null,
+    "manifest_sha256": "207003bca7bde54744224e259fb4ee02c8eb49a43d3ea72bb8765b0714abc49b",
+    "manifest_sha256_status": "matched",
+    "line_count": 261,
+    "read_ranges": [
+      [
+        32,
+        53
+      ],
+      [
+        96,
+        109
+      ],
+      [
+        145,
+        158
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s38",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f10",
+      "docs/full-analysis/harness-proposed-001/review.md#f11",
+      "docs/full-analysis/harness-proposed-001/review.md#f13"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_bus_tailer_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 11190,
+    "git_blob": "6949ea700ee51568cfaf8efb589b26dbb2baf5b2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "63806f33c50d4e60519bfbdfcdb6e7e6f52f86f7bac4d6a856270e2e8e93efdd",
+    "observed_sha256": null,
+    "manifest_sha256": "63806f33c50d4e60519bfbdfcdb6e7e6f52f86f7bac4d6a856270e2e8e93efdd",
+    "manifest_sha256_status": "matched",
+    "line_count": 242,
+    "read_ranges": [
+      [
+        56,
+        87
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "No original execution/import/collection/probe/network/install/Claude or live access.",
+    "id": "s39",
+    "role": "supporting_not_primary",
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-001/review.md#f14"
+    ],
+    "prior_full_body_reused": false,
+    "remaining": "Unlisted body and transitive dependencies are not claimed read."
+  }
+]

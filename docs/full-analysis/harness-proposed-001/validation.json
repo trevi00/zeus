@@ -1,0 +1,31 @@
+{
+  "metadata_validation": "PASS",
+  "primary": 17,
+  "bytes": 182520,
+  "supporting_paths": 35,
+  "source_operations_executed": 0,
+  "checks": [
+    "UTF8 and readable ASCII report",
+    "exactly one LF and no trailing whitespace",
+    "raw SHA256/Gitblob/bytes",
+    "range bounds",
+    "review anchors",
+    "captured prior unreviewed rows",
+    "primary/support denominator separation"
+  ],
+  "source_tests_passed": null,
+  "artifacts_sha256": {
+    "build_index.py": "0f49f8efd45f52f8823bd70881d27a299a939a2b3e9889f28bba3ad9b8a7374c",
+    "checkpoint.json": "5a46faabd3e2b52fa63ac8786a839c8c3919999d44bd8c1b90352f362f7600fb",
+    "files.json": "68d618e3d4ddfc0104ebe19c0286e0474d4c7a1db3eb4f61265d0ab4eb14d1ee",
+    "inventory.json": "c64ec702447fa28ad31066c97d688cf389c60394b1d4ba7bb9828ce162caef95",
+    "own-checks.json": "d786e21e607f801b7592fb31e95ca60dee31ebfcbc7b96489166a78555a37f25",
+    "prior-ledger.json": "9280d4b817632dcae8ca8236ec9a75dff3f9a23f61e761b75f5d83c400f5a567",
+    "reading-notes.md": "be34134aabdc4f98eed94350ca438cc2881ef5c5bf096587ed61a2ea272aace6",
+    "README.md": "f0659a3ef064db151e7a81656e6b585cf4683e5bf3394d9d10b05b08567f9d11",
+    "remaining.json": "c61e3a46482b388fe87f46fd546cc7418e216bb173a083350025ddf2f6e925f0",
+    "review.md": "1cc8860bbdafab3085529c44dcbb241bbb50ee64628179b292048ebdff90842a",
+    "supporting.json": "1e6f1ebfadea64bfd8d3faf93240c812f059fd8d5e9cbbcbb2a15405e49f3b15",
+    "validate_index.py": "4de819a72af5b49cd4fa556a4c252f3ba380f9280f0c6abf463b176f00ade471"
+  }
+}

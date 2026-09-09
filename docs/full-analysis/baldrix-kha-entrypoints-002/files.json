@@ -1,0 +1,2530 @@
+[
+  {
+    "source": "baldrix",
+    "path": "skills/kha-pause-work/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "2a27e30747a200100d6eeff002bfb4b2b0010c9666a3bb29c34c1d7176fafc11",
+    "git_blob": "5c99beff287ed65894e904a4f4f43bf2c8250dc6",
+    "bytes": 2414,
+    "lines": 63,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2a27e30747a200100d6eeff002bfb4b2b0010c9666a3bb29c34c1d7176fafc11",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1483,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-pause-work/SKILL.md",
+      "git_blob": "5c99beff287ed65894e904a4f4f43bf2c8250dc6",
+      "mode": "100644",
+      "bytes": 2414,
+      "pinned_sha256": "2a27e30747a200100d6eeff002bfb4b2b0010c9666a3bb29c34c1d7176fafc11",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "acb8f9f4a1ca3261c114d395b26dbb4803c0529c48f49ca3f236d352ee76bd3d",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-pause-work:001",
+    "scope_sha256": "e0b8e1759023e9fd7bad3d9a16096397bb96a16d57973aa57f85f59d5c38fd6d",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        63
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "06d2c4",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i01",
+    "semantic_summary": "Read/Write/Bash로 HANDOFF.json과 사람용 continue-here를 기록하고 WIP commit을 요구한다(1–63). pause-work.md 61–103의 구조는 완료/진행중 task, blockers, human_actions, uncommitted files, next action을 보존해 SDD 반복 작업의 인계 후보가 된다. 204–224는 helper commit 후 고정 WIP 완료 안내를 내므로 committed:false/skip와 실제 commit 성공을 구분해야 한다. JSON 존재는 원본 실행 증거나 PG lease가 아니며 전체 문맥·증적을 완벽히 복원한다는 설명은 검증되지 않았다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/pause-work.md",
+      "get-shit-done/bin/lib/commands.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-phase-assumptions/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "b2216b84aea94ccae16aa46003d391bdb632731ad9e7bed685daa1ee331f7094",
+    "git_blob": "0f5d527b069fe4945b35114168feea53e18add5a",
+    "bytes": 2412,
+    "lines": 68,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "b2216b84aea94ccae16aa46003d391bdb632731ad9e7bed685daa1ee331f7094",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1484,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-phase-assumptions/SKILL.md",
+      "git_blob": "0f5d527b069fe4945b35114168feea53e18add5a",
+      "mode": "100644",
+      "bytes": 2412,
+      "pinned_sha256": "b2216b84aea94ccae16aa46003d391bdb632731ad9e7bed685daa1ee331f7094",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "0bd4942d3ae5e634f3322f62037eadf877293f23cf6832e8046e08b325184fe1",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-phase-assumptions:001",
+    "scope_sha256": "c57cb57cebd57351d13661fcf7c2c928f64b4cb373b2378b9901c02c2ab69180",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        68
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "06d2c4",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i02",
+    "semantic_summary": "Read/Bash/Grep/Glob, mutates:no로 phase/roadmap을 확인하고 접근·순서·범위·위험·의존성 다섯 영역의 가정을 대화로 제시한다. user correction은 저장하지 않는다는 59–61의 경계와 list-phase-assumptions.md 129–150의 대화 acknowledgement가 연결된다. SDD 1단계 인간 핵심 시나리오와 가정 정정에 적합한 선언이나 Assumptions validated 문구는 승인된 spec revision 기록이 아니다. 후속 clarify/plan이 그 수정을 확실히 수용하는 전이와 persistent evidence는 미완료다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/list-phase-assumptions.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-plan-gap-phases/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e863364a94da4acd24626aca13788776492574bcac885be3475b0b00cb142190",
+    "git_blob": "e3d2a077b522eaa76227455e2f66352c8569df8b",
+    "bytes": 1974,
+    "lines": 57,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e863364a94da4acd24626aca13788776492574bcac885be3475b0b00cb142190",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1485,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-plan-gap-phases/SKILL.md",
+      "git_blob": "e3d2a077b522eaa76227455e2f66352c8569df8b",
+      "mode": "100644",
+      "bytes": 1974,
+      "pinned_sha256": "e863364a94da4acd24626aca13788776492574bcac885be3475b0b00cb142190",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "21ce6203f6ba4005435f65778e2907d66e5ece24cd285fc07e5e70ba4e7f778f",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-plan-gap-phases:001",
+    "scope_sha256": "6688cc5212226bd639d17ff109e4956c724e8649cce2483bbfa67385dc2d33ac",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        57
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "06d2c4",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i03",
+    "semantic_summary": "최근 milestone audit gaps를 must/should/nice로 분류하고 사용자 확인 후 ROADMAP/REQUIREMENTS와 phase directory를 바꾸도록 한다. skill 47의 traceability 불일치 시 roadmap 쓰기 전 중단과 달리, 직접 plan-milestone-gaps.md 100–151은 roadmap 갱신 뒤 requirements를 재배정/unchecked로 돌리고 Pending 문자열 개수를 확인한다. 확인 질문은 있지만 사전 검사·다중파일 원자성·중복 phase 생성 방지는 이 구간에서 강제되지 않는다. SDD 6→1의 잔여 인수 항목 재기획 후보이며 gap 이동은 충족·승인과 다르게 기록해야 한다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/plan-milestone-gaps.md",
+      "get-shit-done/bin/lib/commands.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-plan-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e5af1073e32f03e9c83b3b94f1be59261c13f145469353354ff7e7eb370532f9",
+    "git_blob": "6ecbb28d976b69954dd0a3f6643f8b60fde1b464",
+    "bytes": 5540,
+    "lines": 96,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e5af1073e32f03e9c83b3b94f1be59261c13f145469353354ff7e7eb370532f9",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1486,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-plan-phase/SKILL.md",
+      "git_blob": "6ecbb28d976b69954dd0a3f6643f8b60fde1b464",
+      "mode": "100644",
+      "bytes": 5540,
+      "pinned_sha256": "e5af1073e32f03e9c83b3b94f1be59261c13f145469353354ff7e7eb370532f9",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "fea6f8cf9180b7c9356ed08647a65997a06d1e1930a7cd4a51ce641ec2aaa2a5",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-plan-phase:001",
+    "scope_sha256": "4f2f76edc9b987aea3b0d1cb6e2ce49cacf414f600c12f66120e07d6a634869a",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        96
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "06d2c4",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i04",
+    "semantic_summary": "Task/WebFetch/Context7 등을 허용하며 research→plan→checker, --prd/--reviews/--gaps와 skip flags를 정의한다. graph post-step은 실제 scripts/cli/phase_graph.py 1–86의 build/query로 연결되지만 모듈 실행은 scripts import path와 `--root .planning`의 cwd에 의존한다. workflow 868–934는 null/TBD requirement 분모를 skip하고 문자열 ID/CONTEXT objective 대응 뒤 gap 수용·다음 phase 이월을 허용한다. planned-phase 기록은 실제 인수 PASS가 아니다. 읽은 graph tests는 합성 ROADMAP/graph fixture의 노드·edge·query assertion 및 수동 runner 일부이며 미실행이다. 그래프는 Git 정의의 파생 투영으로 적응할 후보이지 PG 실행 권위나 모델 자격 증명은 아니다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/plan-phase.md",
+      "get-shit-done/bin/lib/core.cjs",
+      "scripts/cli/phase_graph.py",
+      "scripts/tests/test_phase_graph_builder.py",
+      "scripts/tests/test_phase_graph_query.py"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-prepare-pr-branch/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "a0d2b555f01e967ebf8b2d939adc012233c5914d0f4c9a2428fa736b1f6f9462",
+    "git_blob": "7d25cba25882c0911b1c54e6aa90327903631606",
+    "bytes": 1669,
+    "lines": 45,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a0d2b555f01e967ebf8b2d939adc012233c5914d0f4c9a2428fa736b1f6f9462",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1487,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-prepare-pr-branch/SKILL.md",
+      "git_blob": "7d25cba25882c0911b1c54e6aa90327903631606",
+      "mode": "100644",
+      "bytes": 1669,
+      "pinned_sha256": "a0d2b555f01e967ebf8b2d939adc012233c5914d0f4c9a2428fa736b1f6f9462",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "9f814d35e8e2615bfcbc73461a4f84d2e24b64d0f0c03f0f9f1afa8fc4cded7c",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-prepare-pr-branch:001",
+    "scope_sha256": "1d390a16148c94bc18e0a705d6b3733c820ee55405230fcd73219e1a6e5a7516",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        45
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "06d2c4",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i05",
+    "semantic_summary": "Bash/Read/AskUserQuestion으로 planning-only commit을 제외한 PR branch를 만들며 mixed commit의 `.planning`을 제거한다. pr-branch.md 72–129는 cherry-pick --no-commit 후 `git rm -r --cached .planning/`와 원 commit 메시지 commit, diff count 표시를 한다. base가 이미 planning 파일을 추적하면 이 명령은 기존 파일 삭제까지 stage할 수 있으며 count가 0인지 차단하는 분기가 이 구간에는 없다. skill은 실패 중간 branch 보존/비완료를 요구하지만 명령별 rc·사후 의미 등가·인수 재실행은 미검증이다. SDD 7 준비와 리뷰 가독성의 후보이며 “planning 정보는 code review와 무관”이라는 원문 가정은 Zeus의 spec/evidence 추적 요구에 그대로 적용하지 않는다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/pr-branch.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-project-stats/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "a5086a725298a8eddd039b5106a27a7b5d115fd6a43b4d8f765c62eb05abbfd0",
+    "git_blob": "5e5ff014a217dff189b0d43c81a72e2f85fd71a3",
+    "bytes": 1322,
+    "lines": 41,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a5086a725298a8eddd039b5106a27a7b5d115fd6a43b4d8f765c62eb05abbfd0",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1488,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-project-stats/SKILL.md",
+      "git_blob": "5e5ff014a217dff189b0d43c81a72e2f85fd71a3",
+      "mode": "100644",
+      "bytes": 1322,
+      "pinned_sha256": "a5086a725298a8eddd039b5106a27a7b5d115fd6a43b4d8f765c62eb05abbfd0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "5f16e9293aef4090e75d33d42e21890be2ea1a8bc44798fff02bc1e6dda6e7e3",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-project-stats:001",
+    "scope_sha256": "c9f4a0ef5c173eea651c3822fefd439319f515fdbd885494e1d0462ab3940e90",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        41
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "06d2c4",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i06",
+    "semantic_summary": "Read/Bash, read-only telemetry 선언이며 stats.md 11–60에서 `stats json`을 표시한다. commands.cjs 808–944는 PLAN/SUMMARY 파일 수, regex requirements checkbox, Git 횟수로 비율을 계산하고 여러 읽기 오류를 catch하여 초기 0/null 값을 유지한다. skill의 unavailable metric을 부분으로 명시한다는 요구와 helper의 결측/실제 0 구분은 같지 않다. SDD 진행 VIEW에는 실행/skip/미파싱 분모와 source revision을 함께 보여야 하며 100%를 실제 사람 인수로 쓰면 안 된다. determinePhaseStatus의 전체 구현은 이 supporting 구간 밖이다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/stats.md",
+      "get-shit-done/bin/lib/commands.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-reapply-local-patches/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1c13e3518beb07a6c53d779f848e8164ee2b3333a8c2dfe6c1b34fd22dbbbd10",
+    "git_blob": "fe889e1d7293b469caa3e3837c4accee50a34c93",
+    "bytes": 14062,
+    "lines": 320,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1c13e3518beb07a6c53d779f848e8164ee2b3333a8c2dfe6c1b34fd22dbbbd10",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1489,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-reapply-local-patches/SKILL.md",
+      "git_blob": "fe889e1d7293b469caa3e3837c4accee50a34c93",
+      "mode": "100644",
+      "bytes": 14062,
+      "pinned_sha256": "1c13e3518beb07a6c53d779f848e8164ee2b3333a8c2dfe6c1b34fd22dbbbd10",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "7fc7d117dfcd2f52170ece22f422f395a344ad766a807587d0682b1d929d6ea3",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-reapply-local-patches:001",
+    "scope_sha256": "4f9fb4fbe63cc5afda7d8e789b172cf6d73fc1a4e0448afdf4d0c7970f55653d",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        320
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "beada3",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i07",
+    "semantic_summary": "별도 workflow가 아니라 이 320줄 안에 runtime별 patch 위치 탐색→baseline→3-way/2-way merge→live overwrite→cleanup을 정의한다. allowed-tools 목록은 없다. 백업된 파일은 절대 SKIP하지 말라는 11·200–241·267과, 후반 dry-run skip/JSONL status skipped/그 파일 resume skip(303–316)이 같은 문서에서 충돌한다. git first-add commit은 자동으로 올바른 pre-update pristine임을 보증하지 않으며 backup-meta 해시/경로 containment/실제 installer baseline 생산의 독립 검증은 이 본문에서 강제되지 않는다.\n\nKilo→OpenCode→Gemini→Codex→Claude의 첫 발견 순서가 실행 runtime과 결속되지 않고 여러 설치가 있으면 다른 백업을 택할 여지가 있다. 후반 snapshot 경로는 프로젝트 `.planning`인데 적용 target은 global 설치일 수도 있다. hunk 첫 줄/line count 경고는 실제 동작 보존이나 모든 삭제·순서 변경의 오라클이 아니고 경고 후에도 live 수정이 남는다. SDD 8의 회귀 경험 보존 후보지만 무결성 baseline·승인 scope·최종 대상 digest·복구 receipt가 필요하다. 설치된 원본/live/backup 대상 파일을 실제로 읽거나 합치지 않았다.",
+    "caller_or_dependency_trace": [],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-remediate-audit-findings/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "869b8dbb07f6c7d9ce1031782a74e54c9d784a31828ba0b8b5d608da6c4d9b19",
+    "git_blob": "9689ac139073c489fa75eba8227b1a3de0092485",
+    "bytes": 3473,
+    "lines": 88,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "869b8dbb07f6c7d9ce1031782a74e54c9d784a31828ba0b8b5d608da6c4d9b19",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1490,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-remediate-audit-findings/SKILL.md",
+      "git_blob": "9689ac139073c489fa75eba8227b1a3de0092485",
+      "mode": "100644",
+      "bytes": 3473,
+      "pinned_sha256": "869b8dbb07f6c7d9ce1031782a74e54c9d784a31828ba0b8b5d608da6c4d9b19",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "ecfc54905e9cec608bc60bb3fd294ab94686fae63b96f7fa34ccc6b5d26fd7be",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-remediate-audit-findings:001",
+    "scope_sha256": "117002ceea435e147902c2398912e9cae1b64fbcdf8e7c367c3dcce24e4e959a",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        88
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "beada3",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i08",
+    "semantic_summary": "Agent/AskUserQuestion/Edit 등과 autonomous audit→fix라는 앞 설명에, 기존 AUDIT만 소비·기본 dry-run·--apply --confirm·snapshot 규칙이 추가되어 있다. 60–62는 commit 뒤 test 실패 rollback 후 다음 finding 계속, 78은 첫 실패 중단으로 서로 다르다. audit-fix.md 13–125는 기존 UAT/VERIFICATION에서 findings를 뽑고 명시적 --dry-run일 때만 멈춘 뒤 executor→`npm test | tail -20`→commit, 실패 시 checkout/중단으로 진행한다. 현재 workflow를 실제 새 보안 audit 전체 실행이라고 과장하지 않으며, skill의 AUDIT.md 전용 계약/기본 dry-run/두 flag gate와 일치하지 않는다고 기록한다. 테스트 pipeline rc/timeout·변경 scope 복구는 별도 관측이 필요하다. SDD QA→수정에서는 finding ID·PG 승인·실측 회귀 오라클을 결속해야 한다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/audit-fix.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-remediate-code-review/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "9cdcc5a8847fd436711353de513175cee37d68de3d3df524a018b9ba61fc2a03",
+    "git_blob": "3a553ad501598a1a3ec62ae30d4d6beae3873160",
+    "bytes": 3234,
+    "lines": 75,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "9cdcc5a8847fd436711353de513175cee37d68de3d3df524a018b9ba61fc2a03",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1491,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-remediate-code-review/SKILL.md",
+      "git_blob": "3a553ad501598a1a3ec62ae30d4d6beae3873160",
+      "mode": "100644",
+      "bytes": 3234,
+      "pinned_sha256": "9cdcc5a8847fd436711353de513175cee37d68de3d3df524a018b9ba61fc2a03",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "1f72b98c5a2295b01e4b2f07b5a9fddf623c966ed8ae886161d96b8d8ec08fe2",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-remediate-code-review:001",
+    "scope_sha256": "76231b600c585434a5d04ef4ab762b7b8da819eb13bfe17bc7b2549155076114",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        75
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "beada3",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i09",
+    "semantic_summary": "REVIEW.md만 소비하여 fixer, Info 포함 여부, --auto 최대 3회와 REVIEW-FIX를 정의한다. 후반 dry-run→snapshot→confirm은 직접 code-review-fix.md 91–136, 180–230에서 unknown status에도 fix 시도, Task 즉시 실행하는 흐름과 연결이 부족하다. 실패 시 report가 없으면 No fixes applied라 표시한 뒤 “commits may already exist”를 안내하므로 파일 부재를 무변경으로 인증할 수 없다. 345–379의 validator는 REVIEW_PATH만 env로 전달하고 process.env.FIX_REPORT_PATH를 읽는다. FIX_REPORT_PATH가 별도 export되지 않은 실행 문맥이면 검사 실패할 수 있는 정적 조건이다. 전체 env export 경로는 미독이므로 확정 재현이라고 하지 않는다. SDD 4·6의 수정 결과와 확인 실패를 분리하고 actual commit/receipt를 원장에 보존해야 한다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/code-review-fix.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-remove-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e59a43230e4c5afc51ccf5dacdd56cfd56272f2206fe5be230c39a978590ed1a",
+    "git_blob": "9819be610b369a09c974ee5b34491c40052c23f4",
+    "bytes": 3539,
+    "lines": 79,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e59a43230e4c5afc51ccf5dacdd56cfd56272f2206fe5be230c39a978590ed1a",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1492,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-remove-phase/SKILL.md",
+      "git_blob": "9819be610b369a09c974ee5b34491c40052c23f4",
+      "mode": "100644",
+      "bytes": 3539,
+      "pinned_sha256": "e59a43230e4c5afc51ccf5dacdd56cfd56272f2206fe5be230c39a978590ed1a",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "d2f6618b99368a8881ced8d562fde610b90377bb33b521130b1b6e336c707b92",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-remove-phase:001",
+    "scope_sha256": "5d5eb1f913e081be3ecf5cee9ea615802b3e6b7253e5481094906a1e5ba4696a",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        79
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "beada3",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i10",
+    "semantic_summary": "미착수 future phase 삭제·renumber, dry-run/--apply·snapshot·단일 commit·force 확인을 선언한다. remove-phase.md 41–110은 미래 phase 및 사용자 확인을 거치지만 CJS 587–650은 자체적으로 현재 phase 비교/승인 token 없이 SUMMARY 존재만 force guard로 삼는다. target 삭제 뒤 rename 오류를 빈 catch로 넘기고 roadmap/state를 갱신한다. 따라서 단일 Git commit이라는 설명은 다중 파일·directory 변경의 all-or-nothing 복구를 뜻하지 않는다. explicit confirmation 방어와 실패 복구의 간극을 함께 기록했다. SDD 1의 범위 취소는 취소 이력·stable requirement ID와 PG active task fence가 필요하며 실제 삭제는 하지 않았다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/remove-phase.md",
+      "get-shit-done/bin/lib/phase.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-remove-workspace/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "59f40f2c8ec57126c08d9836a37e2f748c191aaf6b97ee9951612663ba15cfdd",
+    "git_blob": "53b870ebf7dad8856a821f30fa1dccd5bc249907",
+    "bytes": 1953,
+    "lines": 49,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "59f40f2c8ec57126c08d9836a37e2f748c191aaf6b97ee9951612663ba15cfdd",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1493,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-remove-workspace/SKILL.md",
+      "git_blob": "53b870ebf7dad8856a821f30fa1dccd5bc249907",
+      "mode": "100644",
+      "bytes": 1953,
+      "pinned_sha256": "59f40f2c8ec57126c08d9836a37e2f748c191aaf6b97ee9951612663ba15cfdd",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "faf7d2e2b5a4ac6696051311e6536292913fb18490eb88881b8d3756a886f4a5",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-remove-workspace:001",
+    "scope_sha256": "4caf81c728cfb09f97e94efa09bb5df934fa1e67e93bedfd67654ebe7c4905c8",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        49
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "beada3",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i11",
+    "semantic_summary": "workspace name 입력, dirty repo 차단, typed-name 확인 및 worktree cleanup을 요구한다. 직접 workflow 11–90은 이 확인을 수행하도록 하나 cleanup 실패 뒤 계속 directory 삭제하고 deleted/모든 repo cleaned 안내를 출력한다. init.cjs 1369–1429는 name을 defaultBase와 path.join으로 결합하고 별도 containment 검증이 없으며 manifest table의 `\\S+` 때문에 공백 경로 row가 빠질 수 있다. manifest/status 오류 또는 누락 repo는 best-effort로 넘어가 dirty_repos가 빈 목록으로 남을 수 있다. 이는 원본 실행·외부 경로 삭제 재현이 아닌 정적 위험 조건이다. Zeus는 검증된 절대 경로·전체 대상 inventory·결측 상태·삭제 전 lease/승인·사후 남은 경로의 증거가 필요하다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/remove-workspace.md",
+      "get-shit-done/bin/lib/init.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-research-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f170eab7f3c6091a80662539cf197f0144fb61a1aa59734b8f89ce95c27bef81",
+    "git_blob": "f9b64565a39ae4aa818083061c6a6353469efcd3",
+    "bytes": 7702,
+    "lines": 227,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f170eab7f3c6091a80662539cf197f0144fb61a1aa59734b8f89ce95c27bef81",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1494,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-research-phase/SKILL.md",
+      "git_blob": "f9b64565a39ae4aa818083061c6a6353469efcd3",
+      "mode": "100644",
+      "bytes": 7702,
+      "pinned_sha256": "f170eab7f3c6091a80662539cf197f0144fb61a1aa59734b8f89ce95c27bef81",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "0647a733e790bb341800dd1f4b86b9839d22f66d074a57f79b0c8ab6c6c30946",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-research-phase:001",
+    "scope_sha256": "e67631a1a7a4b49d6019ea38fb40b83a209b89a74282731738060f0ed70c2647",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        227
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "562537",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i12",
+    "semantic_summary": "Read/Bash/Task만 허용한 standalone research orchestrator다. 내부 init phase-op과 resolve-model, ROADMAP 확인, 기존 연구 view/update/skip, researcher COMPLETE/CHECKPOINT/INCONCLUSIVE와 continuation을 구체적으로 선언한다. UI entry와 달리 CHECKPOINT 소비가 명시되어 있다. paths는 helper의 nullable phase_dir/padded_phase/기존 context 결과에 의존하고 후반 unresolved path abort 규칙은 유용하지만 실제 loader/Task host 강제가 아니다. official docs·복수 출처·confidence 요구는 SDD 1–2 연구 후보이며 외부 URL/권위 이름으로 채택을 승인할 수 없다. 갱신 가능한 동일 경로라는 사실을 idempotent라고 부른 226의 표현은 출력/근거가 같다는 보장이 아니며 model label도 자격 증명은 아니다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/plan-phase.md",
+      "get-shit-done/bin/lib/init.cjs",
+      "get-shit-done/bin/lib/core.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-resume-work/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "3efd47ca27d47fe7e6f987df37a056ec8af1ec1072146ee1525e6d3289f8f7cc",
+    "git_blob": "d1bf7c33842737c943549b426cd41295d5566b68",
+    "bytes": 2578,
+    "lines": 66,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "3efd47ca27d47fe7e6f987df37a056ec8af1ec1072146ee1525e6d3289f8f7cc",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1495,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-resume-work/SKILL.md",
+      "git_blob": "d1bf7c33842737c943549b426cd41295d5566b68",
+      "mode": "100644",
+      "bytes": 2578,
+      "pinned_sha256": "3efd47ca27d47fe7e6f987df37a056ec8af1ec1072146ee1525e6d3289f8f7cc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "e856cb8b465689771e1ffc159f8a45310b8b25274d1539546c72983e2851cc61",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-resume-work:001",
+    "scope_sha256": "e116c845e8daf1f47a98d86c443eeec2bf62acbc0b970530480c89cf21107319",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        66
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "562537",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i13",
+    "semantic_summary": "Read/Bash/Write/AskUserQuestion/SlashCommand로 STATE 복원, HANDOFF 우선, PLAN 없는 SUMMARY가 아니라 PLAN에 SUMMARY가 없는 경우 미완료 탐지, 중단 agent 및 다음 행동을 연결한다. resume-project.md 62–113은 uncommitted list와 git status 비교 및 성공적 resume 후 HANDOFF 삭제를 명시한다. 좋은 불일치 경고지만 단일파일 one-shot 삭제와 “완전한 문맥 복원”은 durable event history/PG generation fencing과 다르다. 문서·agent id가 실제 실행 인가를 재생성하지 않도록 SDD 모든 단계의 미완료·증적 참조·stale 실행 무효화를 적응해야 한다. 실제 session 복구는 미실행이다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/resume-project.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-revert-work/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+    "git_blob": "2a66d86778d767d9a7fe3f2e3fb8b485dcd4d5ff",
+    "bytes": 2578,
+    "lines": 61,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1496,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-revert-work/SKILL.md",
+      "git_blob": "2a66d86778d767d9a7fe3f2e3fb8b485dcd4d5ff",
+      "mode": "100644",
+      "bytes": 2578,
+      "pinned_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "58d10ce0b9df725a7a2f7befc0aa76930d4ecbd7996cca4851b5498d49f8b565",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-revert-work:001",
+    "scope_sha256": "307c6e036a3da39a6c03ef383e8ac52a36fb193b4b79b50b71746e36220e8d61",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        61
+      ]
+    ],
+    "read_basis": "prior_full_body_reused",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "previous_review_reuse": {
+      "prior_ledger_ref": "docs/full-analysis/baldrix-gsd-workflows-005/supporting-evidence.json",
+      "prior_ledger_sha256": "e19255702fbfbb5fd2e397c6c686c1e3e4cf0ba974da5947677df0f47cd7b295",
+      "prior_row_index": 21,
+      "prior_row_sha256": "6a093b741e00c88bbd1bdb301e19d98bcbd01f5a8e9809936b1a059d0292f09a",
+      "prior_row": {
+        "source": "baldrix",
+        "path": "skills/kha-revert-work/SKILL.md",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "pinned_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+        "git_blob": "2a66d86778d767d9a7fe3f2e3fb8b485dcd4d5ff",
+        "bytes": 2578,
+        "lines": 61,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+        "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+        "path_ledger_row_index": 1496,
+        "path_ledger_disposition_at_recording": "unreviewed",
+        "path_ledger_row_at_recording": {
+          "source": "baldrix",
+          "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+          "path": "skills/kha-revert-work/SKILL.md",
+          "git_blob": "2a66d86778d767d9a7fe3f2e3fb8b485dcd4d5ff",
+          "mode": "100644",
+          "bytes": 2578,
+          "pinned_sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93",
+          "disposition": "unreviewed",
+          "review_records": [],
+          "adoption_status": "not_approved_not_incorporated"
+        },
+        "path_ledger_row_sha256": "58d10ce0b9df725a7a2f7befc0aa76930d4ecbd7996cca4851b5498d49f8b565",
+        "upstream_disposition_unchanged": "unreviewed",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "support_id": "S22",
+        "disposition": "supporting_read_only",
+        "line_ranges": [
+          [
+            1,
+            61
+          ]
+        ],
+        "read_extent": "full_body_supporting",
+        "read_basis": "fresh_displayed_supporting_intervals_current_review",
+        "read_receipt": [
+          "db5f41"
+        ],
+        "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+        "review_refs": [
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i03"
+        ],
+        "counted_as_primary_body": false,
+        "range_sha256": [
+          {
+            "start": 1,
+            "end": 61,
+            "sha256": "2b93728df5f3dcba8bba060b2b418f9d4b3be1f26b3b9ca5dca3063858bdef93"
+          }
+        ],
+        "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+      },
+      "prior_review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i03",
+      "prior_review_sha256": "213f2d1ff4653736ff92f9d9719c87cece5f16b8aee46edb76396c9c44b52237",
+      "original_read_receipt": [
+        "db5f41"
+      ],
+      "original_line_ranges": [
+        [
+          1,
+          61
+        ]
+      ],
+      "reuse_qualification": "identical_revision_raw_blob_bytes_sha256_full_body_and_per_file_semantic_caller_risk_review"
+    },
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i14",
+    "semantic_summary": "원래 workflows005 supporting S22의 1–61줄, receipt db5f41 및 review#i03의 전체 의미/호출/실패 판단을 재사용한다. Bash/Read/Glob/Grep/AskUserQuestion, 세 Git revert 모드·dirty guard·확인·비멱등 resume가 목적이다. 연결된 undo workflow 전문은 이전 files.json의 동일 원시 bytes로 결속한다. conflict abort/reset/restore 뒤 cleanup 성공 확인 없이 clean을 안내하는 간극은 그대로 한정한다. SDD 7–8의 Git 정의 되돌림 후보일 뿐 실제 서비스·DB·PG 상태 rollback과 등가가 아니다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/undo.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-review-code/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f65d81ae922ac6d39679d4e7ca04877f7be63d00004d95b69115179db82ee9c1",
+    "git_blob": "14cbe704607cb8139fbc5464719481c9b60aa3ac",
+    "bytes": 3434,
+    "lines": 78,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f65d81ae922ac6d39679d4e7ca04877f7be63d00004d95b69115179db82ee9c1",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1497,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-review-code/SKILL.md",
+      "git_blob": "14cbe704607cb8139fbc5464719481c9b60aa3ac",
+      "mode": "100644",
+      "bytes": 3434,
+      "pinned_sha256": "f65d81ae922ac6d39679d4e7ca04877f7be63d00004d95b69115179db82ee9c1",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "94f384cb1fd15e751156636191a5115ad5b427eee7ae61e75cdecb17732058a1",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-review-code:001",
+    "scope_sha256": "a0057efafb240dbde60c9d3976b5ddf02789a3d393b4c056faa192c5d43ee59f",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "562537",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i15",
+    "semantic_summary": "Read/Bash/Glob/Grep/Write/Task, mutates:no는 구현 read-only를 뜻하며 REVIEW 문서 작성은 명시한다. explicit --files > SUMMARY > Git scope, quick/standard/deep 분모, config/empty scope skip을 구분하는 계약이다. code-review.md 307–341은 빈 scope에서 파일도 만들지 않는 방어, 381–412는 REVIEW 파일과 status 문자열을 확인하되 commit_docs는 commit만 제어한다. skill 63의 docs persistence 때만 optional persisted라는 설명은 이 workflow의 파일 존재 기대와 동일하지 않다. status 문자열·문서 갱신은 독립 인수 증거가 아니며 같은 scope에서도 결과가 달라질 수 있다는 원문 인정은 보존한다. SDD 4·6의 파일별 검토 기록 후보다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/code-review.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-review-plan-peer/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "00c9f10320972d6e18f130596a76bf7e0ed6b68facf90526df5b50947e24545d",
+    "git_blob": "85f39fea20b896f432a24d0e827ce61b0fe9ec94",
+    "bytes": 2040,
+    "lines": 60,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "00c9f10320972d6e18f130596a76bf7e0ed6b68facf90526df5b50947e24545d",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1498,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-review-plan-peer/SKILL.md",
+      "git_blob": "85f39fea20b896f432a24d0e827ce61b0fe9ec94",
+      "mode": "100644",
+      "bytes": 2040,
+      "pinned_sha256": "00c9f10320972d6e18f130596a76bf7e0ed6b68facf90526df5b50947e24545d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "17eb08a5afe9bf846b7e516b85920c8bc928ecb9fa5230d5739f1c9bd7374b0f",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-review-plan-peer:001",
+    "scope_sha256": "65b8958be181e50082f5b19cc114ed943451059726e9b994b498bf3d4aad340d",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        60
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "562537",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i16",
+    "semantic_summary": "외부 Claude/Gemini/Codex/OpenCode CLI를 별도 reviewer로 사용하고 raw output 이후 REVIEWS/합의를 만드는 선언이다. review.md 13–69는 현재 runtime과 다른 CLI가 필요하지만 non-Claude 환경은 AI 자기 식별에 의존한다. 141–187의 실제 제시 명령은 고정 `/tmp/...phase` 파일에 stdout을 덮고 stderr를 숨기며 OpenCode만 명시적 empty output 검사한다. CodeRabbit은 같은 prompt를 받지 않고 현 git diff를 검토하므로 skill의 모든 reviewer 동일 context와 다르다. CLI 이름 분리만으로 고정 모델·revision·증거·독립 actor가 입증되지 않는다. 사용자가 요구한 독립 검토/토론 후보이지만 여기서 actual Claude 호출은 0이다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/review.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-review-ui/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+    "git_blob": "396b713ccf8e7be77ab9a92e2bed0689c8852899",
+    "bytes": 1568,
+    "lines": 55,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1499,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-review-ui/SKILL.md",
+      "git_blob": "396b713ccf8e7be77ab9a92e2bed0689c8852899",
+      "mode": "100644",
+      "bytes": 1568,
+      "pinned_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "4a7d4404ec0a7f3ec7d155201e4ae37b67689006a79ac3390280331b03d8c726",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-review-ui:001",
+    "scope_sha256": "b7440d1a31f2f7c2871ee8ffc9341c61c285478ea9e31bc82f8cbca608b4cd75",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        55
+      ]
+    ],
+    "read_basis": "prior_full_body_reused",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "previous_review_reuse": {
+      "prior_ledger_ref": "docs/full-analysis/baldrix-gsd-workflows-005/supporting-evidence.json",
+      "prior_ledger_sha256": "e19255702fbfbb5fd2e397c6c686c1e3e4cf0ba974da5947677df0f47cd7b295",
+      "prior_row_index": 20,
+      "prior_row_sha256": "d16d69f78fd679a8d6b39f5c2a69825ef4c9eb422302696aac43003bab57bb7c",
+      "prior_row": {
+        "source": "baldrix",
+        "path": "skills/kha-review-ui/SKILL.md",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "pinned_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+        "git_blob": "396b713ccf8e7be77ab9a92e2bed0689c8852899",
+        "bytes": 1568,
+        "lines": 55,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+        "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+        "path_ledger_row_index": 1499,
+        "path_ledger_disposition_at_recording": "unreviewed",
+        "path_ledger_row_at_recording": {
+          "source": "baldrix",
+          "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+          "path": "skills/kha-review-ui/SKILL.md",
+          "git_blob": "396b713ccf8e7be77ab9a92e2bed0689c8852899",
+          "mode": "100644",
+          "bytes": 1568,
+          "pinned_sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8",
+          "disposition": "unreviewed",
+          "review_records": [],
+          "adoption_status": "not_approved_not_incorporated"
+        },
+        "path_ledger_row_sha256": "4a7d4404ec0a7f3ec7d155201e4ae37b67689006a79ac3390280331b03d8c726",
+        "upstream_disposition_unchanged": "unreviewed",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "support_id": "S21",
+        "disposition": "supporting_read_only",
+        "line_ranges": [
+          [
+            1,
+            55
+          ]
+        ],
+        "read_extent": "full_body_supporting",
+        "read_basis": "fresh_displayed_supporting_intervals_current_review",
+        "read_receipt": [
+          "db5f41"
+        ],
+        "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+        "review_refs": [
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i02"
+        ],
+        "counted_as_primary_body": false,
+        "range_sha256": [
+          {
+            "start": 1,
+            "end": 55,
+            "sha256": "ffa50d418a449c439b6955cd11521b399abc87ad0ddc67b800c838383c893aa8"
+          }
+        ],
+        "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+      },
+      "prior_review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i02",
+      "prior_review_sha256": "213f2d1ff4653736ff92f9d9719c87cece5f16b8aee46edb76396c9c44b52237",
+      "original_read_receipt": [
+        "db5f41"
+      ],
+      "original_line_ranges": [
+        [
+          1,
+          55
+        ]
+      ],
+      "reuse_qualification": "identical_revision_raw_blob_bytes_sha256_full_body_and_per_file_semantic_caller_risk_review"
+    },
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i17",
+    "semantic_summary": "workflows005 S21 전문 1–55, db5f41, review#i02를 재사용한다. UI 점수와 구현 비수정/리뷰 파일 쓰기·SUMMARY 전제·generic baseline을 구분한다. 연결된 ui-review 전문은 screenshot unavailable 허용과 조건부 browser 검증을 명시하므로 점수/24를 실제 사용자 시나리오 PASS로 쓰지 않는다. SDD 2·4·6 후보이며 삼성 기기 인수는 유예다. 새 fresh count에 넣지 않았다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/ui-review.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-run-adhoc/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "35468c8db04644d078905ec514f53375f0fdbe43e56e190051b23b5120f09709",
+    "git_blob": "c74cbd49bcffd23b95fac3cd9d0d86afa0177b65",
+    "bytes": 4686,
+    "lines": 79,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "35468c8db04644d078905ec514f53375f0fdbe43e56e190051b23b5120f09709",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1500,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-run-adhoc/SKILL.md",
+      "git_blob": "c74cbd49bcffd23b95fac3cd9d0d86afa0177b65",
+      "mode": "100644",
+      "bytes": 4686,
+      "pinned_sha256": "35468c8db04644d078905ec514f53375f0fdbe43e56e190051b23b5120f09709",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "cad4bccb5e1db3835a32d67292dfbcb21b424fdba504244da873507e10d6e237",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-run-adhoc:001",
+    "scope_sha256": "db6618cf608120d5a90a9cc078f906e866ba787b859b1b0726b5ad5639ce1606",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        79
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "562537",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i18",
+    "semantic_summary": "quick default는 research/discuss/checker/verifier를 생략하고 full/validate/research/discuss로 추가한다. scratch는 mockup/실험을 uncommitted `.planning/scratch`에 남기고 roadmap·state row·commit·worktree를 생략한다는 예외를 명시하며 quick.md 24–95, 787–820에서 연결된다. “NO permanent artifact”는 무파일/무부수효과가 아니라 삭제 가능한 파일이 남는다는 뜻이다. 원문의 scratch mockup은 설계 실험으로 분리하고 no mocked acceptance를 대체할 수 없다. SDD 3의 작은 작업 경로는 위험 기반 scope와 실제 검증을 유지해야 하며 rerun이 새 quick id를 만든다는 비멱등 경계도 보존한다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/quick.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-run-milestone/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "3d1cbed95712c27f26009c952422f383186cda875e47855d93b5ff490496ebf0",
+    "git_blob": "c78642e90740cfd8faaaa8ccacdacad104b523d7",
+    "bytes": 5597,
+    "lines": 103,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "3d1cbed95712c27f26009c952422f383186cda875e47855d93b5ff490496ebf0",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1501,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-run-milestone/SKILL.md",
+      "git_blob": "c78642e90740cfd8faaaa8ccacdacad104b523d7",
+      "mode": "100644",
+      "bytes": 5597,
+      "pinned_sha256": "3d1cbed95712c27f26009c952422f383186cda875e47855d93b5ff490496ebf0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "ebac3d30a54d9fd0e19203622efd37feb24fb752fd0c55766c0b3ccbaeaf6467",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-run-milestone:001",
+    "scope_sha256": "c174a437b8821cde3c593f5ec4c9e5c8939c0f506c71c14b0e65d707300c7d9f",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        103
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "72c5ba",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i19",
+    "semantic_summary": "Task/AskUserQuestion 등으로 phase별 discuss→plan→execute 및 audit→complete→cleanup을 호출한다. 동일 본문에 `.run-milestone.lock`와 `.locks/run-milestone.lock`, RUN-MILESTONE.json과 별도 JSONL resume가 존재하고 blocker skip/continue(66)와 실패 halt(99–101)가 충돌한다. autonomous.md 15–77, 792–845, 975–1012는 fresh roadmap 재탐색과 사용자 skip/retry/stop을 실제로 선언하지만 lock/token 문자열 지정 검색은 해당 보장 구현을 찾지 못했다. 전체 파일의 나머지 간접 구현 부재까지 증명한 것은 아니다. SDD 자동 반복은 phase 실패/인수/유예를 구분하는 PG lease·generation·deadline·append-only receipt가 필요하다. 단일 run idempotent나 complete/cleaned 설명을 제품 live 완료로 승격하지 않는다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/autonomous.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-run-trivial/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1424f7503b0602035a4526980249c16d23924d11cc22b141d5f1821a75e26ba8",
+    "git_blob": "c57c3874315189f649809f85087d09eaa1525965",
+    "bytes": 1924,
+    "lines": 51,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1424f7503b0602035a4526980249c16d23924d11cc22b141d5f1821a75e26ba8",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1502,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-run-trivial/SKILL.md",
+      "git_blob": "c57c3874315189f649809f85087d09eaa1525965",
+      "mode": "100644",
+      "bytes": 1924,
+      "pinned_sha256": "1424f7503b0602035a4526980249c16d23924d11cc22b141d5f1821a75e26ba8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "c767c23683d3ef6f864a18ecf3fb91c6169489d32dab0bac59ae0a5e0ac3ccbf",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-run-trivial:001",
+    "scope_sha256": "41b1e6736958909dc2d67e8f162ec2b63a36fa90e4c7bc35bfa4bb83620c1d74",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        51
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "72c5ba",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i20",
+    "semantic_summary": "subagent/PLAN 없이 3파일 정도의 단순 작업, sanity/existing test, commit과 선택적 STATE row를 정의한다. fast.md 24–77은 ≤1분 기준(스킬 설명은 2분), `git add -A`로 전체 작업공간을 stage하고 commit 뒤 STATE row를 append한다. 원자적 요청 범위 commit이라는 주장과 unrelated changes 포함·나중 STATE 미커밋을 구분해야 한다. 변경이 작다는 모델 판단은 금전 흐름 등 위험의 작음이나 Terra 자격을 뜻하지 않는다. SDD 3–4를 축소할 후보이나 실제 검증·작업 범위는 별도다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/fast.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-scan-codebase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "cf70e975b34edc35b0b63e4de1c27388e8f8e6b3cd22e4aefb508f50258ff5c2",
+    "git_blob": "8a60c4d085a77f5931e5b934a04e49693b075dc6",
+    "bytes": 2276,
+    "lines": 55,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "cf70e975b34edc35b0b63e4de1c27388e8f8e6b3cd22e4aefb508f50258ff5c2",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1503,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-scan-codebase/SKILL.md",
+      "git_blob": "8a60c4d085a77f5931e5b934a04e49693b075dc6",
+      "mode": "100644",
+      "bytes": 2276,
+      "pinned_sha256": "cf70e975b34edc35b0b63e4de1c27388e8f8e6b3cd22e4aefb508f50258ff5c2",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "cf6ff8f22611290382d6bd39aa0e807786a9ca5879aadd4ea837722f491fb59f",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-scan-codebase:001",
+    "scope_sha256": "7fe706d0f9191449522111e6ccd1f924b39bf5291537868c852e9a85aced255f",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        55
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "72c5ba",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i21",
+    "semantic_summary": "Agent/Write/Bash 등을 사용한 단일 focus codebase 문서 scan이며 mutates:no와 문서 작성은 구분해야 한다. scan.md 27–101은 focus validation 및 overwrite 거절 시 exit, mapper Task로 정해진 문서를 생성한다. actual body의 resolved_model 변수는 해당 구간에서 해결 경로가 보이지 않으며 Agent/Task 표면의 실제 adapter 대응도 미검증이다. 정확한 문서 수/line count는 원본 전체 의미·test 실행 coverage가 아니다. SDD 1–2의 discovery에 쓰되 사용자 요구인 전체 분석 완료를 이 얕은 scan으로 대체하지 않는다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/scan.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-self-update/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+    "git_blob": "c8c15055e0464f9e716e3d0597edf0cd1265dc3f",
+    "bytes": 2345,
+    "lines": 59,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1504,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-self-update/SKILL.md",
+      "git_blob": "c8c15055e0464f9e716e3d0597edf0cd1265dc3f",
+      "mode": "100644",
+      "bytes": 2345,
+      "pinned_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "be4d539541fff1eafbd617fa5607d75850a91301fd35c84293740e6006c4bfdd",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-self-update:001",
+    "scope_sha256": "9eda709d97b2b048e8da7784db5f71930fa7ca862e971acec54ebc2735022310",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        59
+      ]
+    ],
+    "read_basis": "prior_full_body_reused",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "previous_review_reuse": {
+      "prior_ledger_ref": "docs/full-analysis/baldrix-gsd-workflows-005/supporting-evidence.json",
+      "prior_ledger_sha256": "e19255702fbfbb5fd2e397c6c686c1e3e4cf0ba974da5947677df0f47cd7b295",
+      "prior_row_index": 22,
+      "prior_row_sha256": "28f43cb618c1cce54d630c2147a4cace7d28f1efe987110199b9fadb8008bc28",
+      "prior_row": {
+        "source": "baldrix",
+        "path": "skills/kha-self-update/SKILL.md",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "pinned_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+        "git_blob": "c8c15055e0464f9e716e3d0597edf0cd1265dc3f",
+        "bytes": 2345,
+        "lines": 59,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+        "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+        "path_ledger_row_index": 1504,
+        "path_ledger_disposition_at_recording": "unreviewed",
+        "path_ledger_row_at_recording": {
+          "source": "baldrix",
+          "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+          "path": "skills/kha-self-update/SKILL.md",
+          "git_blob": "c8c15055e0464f9e716e3d0597edf0cd1265dc3f",
+          "mode": "100644",
+          "bytes": 2345,
+          "pinned_sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5",
+          "disposition": "unreviewed",
+          "review_records": [],
+          "adoption_status": "not_approved_not_incorporated"
+        },
+        "path_ledger_row_sha256": "be4d539541fff1eafbd617fa5607d75850a91301fd35c84293740e6006c4bfdd",
+        "upstream_disposition_unchanged": "unreviewed",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "support_id": "S23",
+        "disposition": "supporting_read_only",
+        "line_ranges": [
+          [
+            1,
+            59
+          ]
+        ],
+        "read_extent": "full_body_supporting",
+        "read_basis": "fresh_displayed_supporting_intervals_current_review",
+        "read_receipt": [
+          "db5f41"
+        ],
+        "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+        "review_refs": [
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i04"
+        ],
+        "counted_as_primary_body": false,
+        "range_sha256": [
+          {
+            "start": 1,
+            "end": 59,
+            "sha256": "bde8555636e60b06127210ed7c500575349c018e497a470c5d6c2a285611d9f5"
+          }
+        ],
+        "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+      },
+      "prior_review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i04",
+      "prior_review_sha256": "213f2d1ff4653736ff92f9d9719c87cece5f16b8aee46edb76396c9c44b52237",
+      "original_read_receipt": [
+        "db5f41"
+      ],
+      "original_line_ranges": [
+        [
+          1,
+          59
+        ]
+      ],
+      "reuse_qualification": "identical_revision_raw_blob_bytes_sha256_full_body_and_per_file_semantic_caller_risk_review"
+    },
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i22",
+    "semantic_summary": "workflows005 S23 전문 1–59, db5f41, review#i04를 재사용한다. Bash/AskUserQuestion로 하네스 installer/runtime 선택·changelog·확인·cache·재시작을 선언한다. prior update 전문의 실제 argv는 발견 custom 경로와 승인 버전 digest를 직접 결속하지 않는다. 설치 실패 시 기존 설치 보존이라는 skill 주장에 대한 installer/rollback 구현은 미검증이다. 제품 alpha/live pipeline과 분리하며 실제 업데이트는 0이다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/update.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-session-report/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "98d40018a137d350beba06cb0335bbe0278197fb336e5c899e022bd34be4c26b",
+    "git_blob": "42a64d7a920da0ce0f8068b1157663c5634c0bbe",
+    "bytes": 1762,
+    "lines": 42,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "98d40018a137d350beba06cb0335bbe0278197fb336e5c899e022bd34be4c26b",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1505,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-session-report/SKILL.md",
+      "git_blob": "42a64d7a920da0ce0f8068b1157663c5634c0bbe",
+      "mode": "100644",
+      "bytes": 1762,
+      "pinned_sha256": "98d40018a137d350beba06cb0335bbe0278197fb336e5c899e022bd34be4c26b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "eef1c938ddfe3d89f317d454371cd5212fc969650258861ef13029ab446fbed3",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-session-report:001",
+    "scope_sha256": "f289960a4aa8cbdcf0cc5636e8c6caf218c13f09c83b3a9eeaa5b48f8f2f4a2b",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        42
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "72c5ba",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i23",
+    "semantic_summary": "Read/Bash/Write, mutates:no로 session report를 생성한다. session-report.md 11–69는 최근 24시간 commit, HEAD~10 diff, PLAN/SUMMARY에서 세션/토큰을 추정하고 exact instrumentation이 아니라고 명시한다. 시간/commit 분모가 실제 한 세션과 일치하지 않을 수 있으며 고정 per-plan token 및 spawn 배수는 실제 토큰 청구/모델 성과 데이터가 아니다. SDD 8의 회고 VIEW 후보이나 절감 자격이나 자가개선 채택을 이런 추정치만으로 결정해서는 안 된다. 날짜별 report 이름 충돌·유실/임시파일 전체 복구는 미검증이다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/session-report.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-set-model-profile/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d9d008a35d5beb1bf5691e669cb3ffc1c3ab709a609f88b374fe68d7de7b41c2",
+    "git_blob": "673dee635bdbf0331752a89a0d9d6a6597b498d5",
+    "bytes": 1275,
+    "lines": 33,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "d9d008a35d5beb1bf5691e669cb3ffc1c3ab709a609f88b374fe68d7de7b41c2",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1506,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-set-model-profile/SKILL.md",
+      "git_blob": "673dee635bdbf0331752a89a0d9d6a6597b498d5",
+      "mode": "100644",
+      "bytes": 1275,
+      "pinned_sha256": "d9d008a35d5beb1bf5691e669cb3ffc1c3ab709a609f88b374fe68d7de7b41c2",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "e2efd6292ff67085bef3f741572169b47ca6132471c663171dda8b03fc27e26e",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-set-model-profile:001",
+    "scope_sha256": "6c3c94cc2d4ff62bf4eb7b74b62ffd791c9118382d60b4c54d1e475eaf66d005",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        33
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "72c5ba",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i24",
+    "semantic_summary": "Bash 한 inline command로 quality/balanced/budget/inherit를 받는다고 한다. config.cjs 405–459는 입력 정규화 후 VALID_PROFILES를 검증하며 model-profiles.cjs 1–33은 planner 키 quality/balanced/budget/adaptive로 목록을 만든다. 따라서 이 setter는 문서상 inherit를 거절하고 문서에 없는 adaptive를 허용하는 정적 계약 차이가 있다. core.cjs 1303–1334의 runtime resolver가 inherit를 처리하는 것과 setter의 허용 목록은 다른 경계다. setter routing table도 per-agent override/omit의 최종 적용과 별도로 확인해야 한다. 설정 이름은 Astra→Sol→Terra의 실제 가드레일 전수·검증 자격이 아니다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/settings.md",
+      "get-shit-done/bin/lib/config.cjs",
+      "get-shit-done/bin/lib/model-profiles.cjs",
+      "get-shit-done/bin/lib/core.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-settings/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "50f51ae87f9cbc18d67db6fa27232a8ab14c6365e1f71d619b0b81bd347d01a1",
+    "git_blob": "a97fcd52ee8dbdfaea6fd4f069f8a5e1858acb24",
+    "bytes": 2373,
+    "lines": 58,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "50f51ae87f9cbc18d67db6fa27232a8ab14c6365e1f71d619b0b81bd347d01a1",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1507,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-settings/SKILL.md",
+      "git_blob": "a97fcd52ee8dbdfaea6fd4f069f8a5e1858acb24",
+      "mode": "100644",
+      "bytes": 2373,
+      "pinned_sha256": "50f51ae87f9cbc18d67db6fa27232a8ab14c6365e1f71d619b0b81bd347d01a1",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "af1626cf8f49cae30951905b06cadfb4a99e93b0c96793d923e12e47001e4919",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-settings:001",
+    "scope_sha256": "c875d1aa8eedc7381da896dbd11dce426d389421e086706c9070a70e4ade305d",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        58
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "72c5ba",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i25",
+    "semantic_summary": "Read/Write/Bash/AskUserQuestion으로 project config와 선택적 global defaults를 바꾼다. settings.md 171–249는 adaptive까지 포함한 모델·workflow/git/hooks object와 global defaults를 직접 쓰도록 한다. top-level existing spread와 nested object 구성은 해당되지 않은 하위키 보존/동시 writer/부분 project 성공 후 defaults 실패의 처리를 별도 검증해야 한다. skill의 no-corruption 보장과 실제 원자적 writer는 동일하지 않다. SDD 모든 단계의 정책 정의는 Git 검토/고정 revision으로, runtime activation은 PG 승인 전이로 분리해야 한다. OS 실제 config-path 소비와 host permission 적용은 미검증이다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/settings.md",
+      "get-shit-done/bin/lib/config.cjs",
+      "get-shit-done/bin/lib/model-profiles.cjs",
+      "get-shit-done/bin/lib/core.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-spec-ui-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+    "git_blob": "11afe51a17adcca3b4a049c782b4da51dac61b91",
+    "bytes": 1745,
+    "lines": 57,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1508,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-spec-ui-phase/SKILL.md",
+      "git_blob": "11afe51a17adcca3b4a049c782b4da51dac61b91",
+      "mode": "100644",
+      "bytes": 1745,
+      "pinned_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "ab6e535850ec5b03d48ccedf7eb4cc2560c63b53870d6c3583c8750e080632db",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-spec-ui-phase:001",
+    "scope_sha256": "dd30f79b35e98428d24c54032f64bd2e26804de2a548461c6ff60a06f3433ee1",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        57
+      ]
+    ],
+    "read_basis": "prior_full_body_reused",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "previous_review_reuse": {
+      "prior_ledger_ref": "docs/full-analysis/baldrix-gsd-workflows-005/supporting-evidence.json",
+      "prior_ledger_sha256": "e19255702fbfbb5fd2e397c6c686c1e3e4cf0ba974da5947677df0f47cd7b295",
+      "prior_row_index": 19,
+      "prior_row_sha256": "8a39623f0de20d5cc6cb6027a623e841ceb1301f9e878eb62de9d960cf48323d",
+      "prior_row": {
+        "source": "baldrix",
+        "path": "skills/kha-spec-ui-phase/SKILL.md",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "pinned_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+        "git_blob": "11afe51a17adcca3b4a049c782b4da51dac61b91",
+        "bytes": 1745,
+        "lines": 57,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+        "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+        "path_ledger_row_index": 1508,
+        "path_ledger_disposition_at_recording": "unreviewed",
+        "path_ledger_row_at_recording": {
+          "source": "baldrix",
+          "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+          "path": "skills/kha-spec-ui-phase/SKILL.md",
+          "git_blob": "11afe51a17adcca3b4a049c782b4da51dac61b91",
+          "mode": "100644",
+          "bytes": 1745,
+          "pinned_sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220",
+          "disposition": "unreviewed",
+          "review_records": [],
+          "adoption_status": "not_approved_not_incorporated"
+        },
+        "path_ledger_row_sha256": "ab6e535850ec5b03d48ccedf7eb4cc2560c63b53870d6c3583c8750e080632db",
+        "upstream_disposition_unchanged": "unreviewed",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "support_id": "S20",
+        "disposition": "supporting_read_only",
+        "line_ranges": [
+          [
+            1,
+            57
+          ]
+        ],
+        "read_extent": "full_body_supporting",
+        "read_basis": "fresh_displayed_supporting_intervals_current_review",
+        "read_receipt": [
+          "db5f41"
+        ],
+        "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+        "review_refs": [
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01"
+        ],
+        "counted_as_primary_body": false,
+        "range_sha256": [
+          {
+            "start": 1,
+            "end": 57,
+            "sha256": "73f86c3cc908eb210b1878829267d7c369101efc705aea00aa0618cd4e560220"
+          }
+        ],
+        "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+      },
+      "prior_review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i01",
+      "prior_review_sha256": "213f2d1ff4653736ff92f9d9719c87cece5f16b8aee46edb76396c9c44b52237",
+      "original_read_receipt": [
+        "db5f41"
+      ],
+      "original_line_ranges": [
+        [
+          1,
+          57
+        ]
+      ],
+      "reuse_qualification": "identical_revision_raw_blob_bytes_sha256_full_body_and_per_file_semantic_caller_risk_review"
+    },
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i26",
+    "semantic_summary": "workflows005 S20 전문 1–57, db5f41, review#i01을 재사용한다. Write/Task/WebFetch/Context7/AskUserQuestion 등과 researcher→checker 구조가 UI contract 생성의 표면이다. prior ui-phase 전문 및 이미 결속된 역할 근거에서 researcher CHECKPOINT handler 누락, PASS/FLAG/skip/override와 고정 6/6 안내의 차이를 기록했다. checker 반환 표제는 실제 연결되어 있으므로 단순 이름 불일치로 주장하지 않는다. SDD 디자인 입력 후보이며 실제 UI/기기/Storybook 인수와 채택은 미완료다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/ui-phase.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-status/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "308fcdc1e2b0217d26f26f1ef330e4a53e25ba86801d8f328df78c9e4b101002",
+    "git_blob": "8f08e343c880af454dfdf56f3656f36bf934df0c",
+    "bytes": 1859,
+    "lines": 47,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "308fcdc1e2b0217d26f26f1ef330e4a53e25ba86801d8f328df78c9e4b101002",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1509,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-status/SKILL.md",
+      "git_blob": "8f08e343c880af454dfdf56f3656f36bf934df0c",
+      "mode": "100644",
+      "bytes": 1859,
+      "pinned_sha256": "308fcdc1e2b0217d26f26f1ef330e4a53e25ba86801d8f328df78c9e4b101002",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "4856bfc2db9af994d37d335a476938ab3e6bc3e06162c7c0de965f194fade179",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-status:001",
+    "scope_sha256": "bc125263f95a14e0fea2fa18c7c22721b7073aa199848f757a73293c058fe3d7",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        47
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "72c5ba",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i27",
+    "semantic_summary": "Read/Bash/Grep/Glob/SlashCommand로 진행 VIEW와 단일 다음 route를 선택한다. progress.md 138–195, 295–339는 plan/summary count 및 current UAT partial/diagnosed를 구분하고 cross-phase audit debt를 비차단 경고로 표시한다. 이는 skill 40과 일치하는 현행 경계다. count·문서 status·parser 결과는 실제 인수 분모가 아니고 이전 phase 경고가 있어도 primary route는 지속될 수 있다. SDD 사용자 VIEW에는 보류·skip·실행 미측정과 실제 promotion eligibility를 함께 표시해야 한다. SlashCommand 위임 후 권한 전이는 이번 범위에서 검증하지 않았다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/progress.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-submit-pr/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e2506dbcc848f8453929699278d8cfcf10fe928047696c1bf74ec5ac6dded1ea",
+    "git_blob": "96552278192e5d68efabe2c30904bdd824fe0afc",
+    "bytes": 3781,
+    "lines": 74,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e2506dbcc848f8453929699278d8cfcf10fe928047696c1bf74ec5ac6dded1ea",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1510,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-submit-pr/SKILL.md",
+      "git_blob": "96552278192e5d68efabe2c30904bdd824fe0afc",
+      "mode": "100644",
+      "bytes": 3781,
+      "pinned_sha256": "e2506dbcc848f8453929699278d8cfcf10fe928047696c1bf74ec5ac6dded1ea",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "2c119637d48cad52da1773d035a0d79bd976603575b970e55fbc09708c87ddf2",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-submit-pr:001",
+    "scope_sha256": "01931e0264462c1d12c701b7ed940af2a73bfd2248dbc31458cb43826c6bbdb3",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        74
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "63be3f",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i28",
+    "semantic_summary": "Read/Bash/Write/AskUserQuestion으로 push/PR 생성과 shipping 기록을 선언하며 후반 --dry-run/--apply, SHA/test/preflight, preview before push를 추가한다. 직접 ship.md 38–161은 VERIFICATION status를 보고 gaps/no report도 사용자 확인으로 진행할 수 있고, push가 PR body 생성보다 먼저이며 실제 test-runner/원격 freshness 검증과 dry-run/apply 분기는 이 구간에서 연결되지 않는다. PR body 고정 Verified 체크는 예외 수용을 실제 PASS로 표시할 여지가 있다. gh 생성 retry/idempotency와 remote mutation은 실제 관측 0이다. SDD 7의 준비 후보이나 PR 생성/merge는 alpha/live 배포·사람 인수 완료가 아니다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/ship.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-sync-docs/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "13ee081d2ecc058312a46bb3e2b537fa6ed31d4cd12c21eae545e2e2847a4a9d",
+    "git_blob": "11668b41823bb29d6c7f733eafd72305a8f743b0",
+    "bytes": 3946,
+    "lines": 71,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "13ee081d2ecc058312a46bb3e2b537fa6ed31d4cd12c21eae545e2e2847a4a9d",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1511,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-sync-docs/SKILL.md",
+      "git_blob": "11668b41823bb29d6c7f733eafd72305a8f743b0",
+      "mode": "100644",
+      "bytes": 3946,
+      "pinned_sha256": "13ee081d2ecc058312a46bb3e2b537fa6ed31d4cd12c21eae545e2e2847a4a9d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "d96aa5db910b2f6c8128fa6a6961c11a436ecbc9d30393d0e09c360b726e445e",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-sync-docs:001",
+    "scope_sha256": "82143ce0e7c4ed9ccf204b8f22e74b45108599e9e267b462ad72c0de19e71ea7",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        71
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "63be3f",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i29",
+    "semantic_summary": "9종 문서와 package README, Task writer/verifier를 사용하며 literal flag만 활성화, force가 verify-only보다 우선한다. docs-update.md 332–370에서도 같은 우선순위와 질문 도구 부재 시 hand-written preserve를 확인했다. 반면 skill 39의 verify-only는 marker count 및 Phase4 필요 설명이 남아 있으나 workflow 948–997은 실제 verifier를 호출하고 `.planning/tmp/verify-*.json`을 읽고 삭제한다. 따라서 “no files written”은 제품 docs 비생성과 임시 증적 쓰기를 구분해야 한다. SDD 문서와 코드의 동기화 후보지만 사실 확인·전체 검증·secret handling·인수는 runner receipt와 source revision으로 별도 결속해야 한다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/docs-update.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-triage-backlog/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "2b1ac28dc373f16afe16cc0d1a8e8b2066648d23d05abe9ab40a7291ff67b19e",
+    "git_blob": "fad8dd8defe338018867e7c1c29ca59f0f6c8904",
+    "bytes": 3804,
+    "lines": 103,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2b1ac28dc373f16afe16cc0d1a8e8b2066648d23d05abe9ab40a7291ff67b19e",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1512,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-triage-backlog/SKILL.md",
+      "git_blob": "fad8dd8defe338018867e7c1c29ca59f0f6c8904",
+      "mode": "100644",
+      "bytes": 3804,
+      "pinned_sha256": "2b1ac28dc373f16afe16cc0d1a8e8b2066648d23d05abe9ab40a7291ff67b19e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "3e7b47a719b489cb7d2e6e5ba05132cb07732b28bcbdb0f44d2fa3e1c1c0fa1e",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-triage-backlog:001",
+    "scope_sha256": "2fb3082ef6b29a306f9f6c88027d080148c72b55e5f3bbc37688424558e63a42",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        103
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "63be3f",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i30",
+    "semantic_summary": "별도 workflow 없는 본문이 999.x backlog→promote/keep/remove 및 snapshot/apply를 정의한다. 읽고 쓰는 정본은 ROADMAP/phase directory인데 snapshot 항목은 BACKLOG.md라고 되어 있어 실제 변경 대상 backup 계약과 다르다. “atomic/no checkpoint/no lock”과 첫 실패 시 이미 적용된 변경을 보존한다는 97의 partial 처리도 구분해야 한다. phase add CJS 313–390은 mkdir/.gitkeep와 roadmap을 먼저 쓰고 raw padded id를 반환하며 뒤 artifact 이동·backlog entry 제거는 caller 단계다. skill commit argv는 ROADMAP만 지정하므로 이동/삭제 artifact 전체가 commit된다고 보장하지 않는다. SDD 1·8의 ticket 승격은 stable issue ID·GitHub sync·PG lease/일관성·삭제 이력이 필요하다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/bin/lib/phase.cjs",
+      "get-shit-done/bin/lib/commands.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-triage-todos/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ee36a946b75f476ad84ddd78388b6331b9020340d600491c8c7e299f5dc44c6d",
+    "git_blob": "a0003c3b557288e021ea7e8e69f665a0d96aadf1",
+    "bytes": 2287,
+    "lines": 65,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ee36a946b75f476ad84ddd78388b6331b9020340d600491c8c7e299f5dc44c6d",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1513,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-triage-todos/SKILL.md",
+      "git_blob": "a0003c3b557288e021ea7e8e69f665a0d96aadf1",
+      "mode": "100644",
+      "bytes": 2287,
+      "pinned_sha256": "ee36a946b75f476ad84ddd78388b6331b9020340d600491c8c7e299f5dc44c6d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "4f5c0c33cce975d9e76d7eb2a2cc8fa71a3e69dbe75acfdc1f4f8b1dc0c9cdf9",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-triage-todos:001",
+    "scope_sha256": "b8f2360ce12c4d1e1898a4fc84a9801ec3ee8dcf3d23064a735fc9e1555d98e6",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        65
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "63be3f",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i31",
+    "semantic_summary": "Read/Write/Bash/AskUserQuestion으로 todo 선택/roadmap 대응/실행 route를 정한다. check-todos.md 102–162는 Work now를 고르면 실제 작업 완료 전에 pending 파일을 completed로 이동하고 todo count/state를 갱신한다. skill 52가 이를 숨기지 않고 status를 todo_started라고 명시하는 점은 보존한다. 그러나 completed 디렉터리를 인수 완료로 소비하는 후속 시스템에는 오해가 생긴다. SDD 1→3의 claim/start와 6의 accepted를 PG에서 구분하고 실패 때 todo를 열린 상태로 유지할 계약이 필요하다. GitHub Issues와 양방향 연동 구현은 이 범위에서 확인하지 않았다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/check-todos.md",
+      "get-shit-done/bin/lib/commands.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-user-profile/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "a685cd567bcd2ba0efe338300092301e67fc1f06a0ab907228f3dda112d1a4ac",
+    "git_blob": "161b044929c4c63072898c90941a131a24202810",
+    "bytes": 2960,
+    "lines": 68,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a685cd567bcd2ba0efe338300092301e67fc1f06a0ab907228f3dda112d1a4ac",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1514,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-user-profile/SKILL.md",
+      "git_blob": "161b044929c4c63072898c90941a131a24202810",
+      "mode": "100644",
+      "bytes": 2960,
+      "pinned_sha256": "a685cd567bcd2ba0efe338300092301e67fc1f06a0ab907228f3dda112d1a4ac",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "dd24884ed68fe57e19f92ddf082450a365cde170f944bef9c7cdcf984ea0f29c",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-user-profile:001",
+    "scope_sha256": "72e524c5c1d52436db8384be567740a99a96b5369484fa4bb5918613477717e4",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        68
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "63be3f",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i32",
+    "semantic_summary": "세션 분석 또는 설문, consent, profiler Task, USER-PROFILE와 선택적 global/project CLAUDE section을 만든다. profile-user.md 18–144는 기존 profile refresh backup을 consent보다 먼저 수행하므로 skill 59의 consent 취소 시 no writes는 refresh backup까지 포함하면 맞지 않는다. consent 화면의 외부 전송 없음/민감정보 자동 제외는 화면상의 주장이지 여기서 검증된 runtime 사실이 아니다. 416–435의 temp cleanup은 마지막 단계이며 중간 실패도 완전히 정리한다고 보장하지 않는다. 사용자의 과거 경험 흡수 후보이나 세션 수집/의미 분석·개인정보·모델 호출/독립 승인 전체가 미완료이고 이 검토에서 실제 세션/credentials 접근은 0이다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/profile-user.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-validate-nyquist-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+    "git_blob": "3356bb288dd2a8e6a07a865f1ceca1a03797143f",
+    "bytes": 1835,
+    "lines": 58,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1515,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-validate-nyquist-phase/SKILL.md",
+      "git_blob": "3356bb288dd2a8e6a07a865f1ceca1a03797143f",
+      "mode": "100644",
+      "bytes": 1835,
+      "pinned_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "c63faedb16da61ef4ca7874184f7564369ca81a97d66142ccb2408063f2c0518",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-validate-nyquist-phase:001",
+    "scope_sha256": "da27f03bcf8f75c97b89b93da7235bd27b6e296033d772dfe9a46452662d6dc8",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        58
+      ]
+    ],
+    "read_basis": "prior_full_body_reused",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "previous_review_reuse": {
+      "prior_ledger_ref": "docs/full-analysis/baldrix-gsd-workflows-005/supporting-evidence.json",
+      "prior_ledger_sha256": "e19255702fbfbb5fd2e397c6c686c1e3e4cf0ba974da5947677df0f47cd7b295",
+      "prior_row_index": 23,
+      "prior_row_sha256": "a9d81b7bad4a0a8575fbe018fd8f104b7205109e8182c5a3a696c6010ed5d1e2",
+      "prior_row": {
+        "source": "baldrix",
+        "path": "skills/kha-validate-nyquist-phase/SKILL.md",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "pinned_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+        "git_blob": "3356bb288dd2a8e6a07a865f1ceca1a03797143f",
+        "bytes": 1835,
+        "lines": 58,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+        "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+        "path_ledger_row_index": 1515,
+        "path_ledger_disposition_at_recording": "unreviewed",
+        "path_ledger_row_at_recording": {
+          "source": "baldrix",
+          "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+          "path": "skills/kha-validate-nyquist-phase/SKILL.md",
+          "git_blob": "3356bb288dd2a8e6a07a865f1ceca1a03797143f",
+          "mode": "100644",
+          "bytes": 1835,
+          "pinned_sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7",
+          "disposition": "unreviewed",
+          "review_records": [],
+          "adoption_status": "not_approved_not_incorporated"
+        },
+        "path_ledger_row_sha256": "c63faedb16da61ef4ca7874184f7564369ca81a97d66142ccb2408063f2c0518",
+        "upstream_disposition_unchanged": "unreviewed",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "support_id": "S24",
+        "disposition": "supporting_read_only",
+        "line_ranges": [
+          [
+            1,
+            58
+          ]
+        ],
+        "read_extent": "full_body_supporting",
+        "read_basis": "fresh_displayed_supporting_intervals_current_review",
+        "read_receipt": [
+          "db5f41"
+        ],
+        "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+        "review_refs": [
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05"
+        ],
+        "counted_as_primary_body": false,
+        "range_sha256": [
+          {
+            "start": 1,
+            "end": 58,
+            "sha256": "5fe90f2593834179a01e24d895c801cab58cf8465ee2cac2158a8684a65c8ed7"
+          }
+        ],
+        "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+      },
+      "prior_review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i05",
+      "prior_review_sha256": "213f2d1ff4653736ff92f9d9719c87cece5f16b8aee46edb76396c9c44b52237",
+      "original_read_receipt": [
+        "db5f41"
+      ],
+      "original_line_ranges": [
+        [
+          1,
+          58
+        ]
+      ],
+      "reuse_qualification": "identical_revision_raw_blob_bytes_sha256_full_body_and_per_file_semantic_caller_risk_review"
+    },
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i33",
+    "semantic_summary": "workflows005 S24 전문 1–58, db5f41, review#i05를 재사용한다. test 생성 및 기존 requirement coverage 감사, 사용자의 fix/skip/cancel, 구현 read-only·3회 제한·ESCALATE 경계를 보존한다. prior validate-phase 전문은 기존 coverage no gaps 단축과 실제 receipt 확인의 간극, 구현 bug를 manual-only로 이동하는 분류, docs commit 기본 scope를 기록했다. SDD 3–4 자동 검증 후보지만 fixture/녹색 문장으로 실제 사람 인수를 대체하지 않는다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/validate-phase.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-verify-security-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "842a0b4291045c05e46d5083133920445d627b271846c75b10e88e24af23b247",
+    "git_blob": "7309aa3690067953388a556688069801e147613c",
+    "bytes": 1861,
+    "lines": 58,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "842a0b4291045c05e46d5083133920445d627b271846c75b10e88e24af23b247",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1516,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-verify-security-phase/SKILL.md",
+      "git_blob": "7309aa3690067953388a556688069801e147613c",
+      "mode": "100644",
+      "bytes": 1861,
+      "pinned_sha256": "842a0b4291045c05e46d5083133920445d627b271846c75b10e88e24af23b247",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "5702420c2627c0131923ddec31616ee07285d389f3f4e5faa82b6ede5856b041",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-verify-security-phase:001",
+    "scope_sha256": "c5a089f67a13b7dd971bf5093dd91a4525d8ce03420404bc1c2dacb3fbffc9d6",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        58
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "63be3f",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i34",
+    "semantic_summary": "Write/Edit/Task/AskUserQuestion로 기존 threat model/SUMMARY를 검증하고 SECURITY를 갱신한다. secure-phase.md 35–164는 mitigation found뿐 아니라 accepted risk/transfer도 CLOSED로 분류하며 0이면 auditor를 건너뛴다. open threat 잔여 시 next-phase route를 내지 않는 방어는 실제 문서에 존재한다. 따라서 모두 무차단이라고 주장하지 않는다. 이 방어는 새로운 위협 전체 scan, active exploit·실환경 회귀, 승인 actor/hash 검증을 의미하지 않고 accepted risk는 실제 완화와 다르다. SDD 4·6에서 위험 수용과 실측 검증·PG promotion을 분리해야 한다. config/commit helper의 전이 폐쇄는 미완료다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/workflows/secure-phase.md",
+      "get-shit-done/bin/lib/commands.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-verify-uat/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+    "git_blob": "1e0a07fa500ca77782fd65fbb746847fd92d174e",
+    "bytes": 2301,
+    "lines": 61,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1517,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-verify-uat/SKILL.md",
+      "git_blob": "1e0a07fa500ca77782fd65fbb746847fd92d174e",
+      "mode": "100644",
+      "bytes": 2301,
+      "pinned_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "dbed05a8274bef155896fa563da4c07af44eb7d086ccfd59180853cded13c2bd",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-verify-uat:001",
+    "scope_sha256": "963ef2e14546cd6434af631206811ff3dd2a085a99d95358389817cd9c07d619",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        61
+      ]
+    ],
+    "read_basis": "prior_full_body_reused",
+    "read_receipt": [
+      "db5f41"
+    ],
+    "previous_review_reuse": {
+      "prior_ledger_ref": "docs/full-analysis/baldrix-gsd-workflows-005/supporting-evidence.json",
+      "prior_ledger_sha256": "e19255702fbfbb5fd2e397c6c686c1e3e4cf0ba974da5947677df0f47cd7b295",
+      "prior_row_index": 24,
+      "prior_row_sha256": "e5e06e2beb8e92d776bb5da68f332d9c1b7027c206f1eedb178dc93b6bddd3dc",
+      "prior_row": {
+        "source": "baldrix",
+        "path": "skills/kha-verify-uat/SKILL.md",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "pinned_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+        "git_blob": "1e0a07fa500ca77782fd65fbb746847fd92d174e",
+        "bytes": 2301,
+        "lines": 61,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+        "hash_verification": "raw_git_blob_size_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+        "path_ledger_row_index": 1517,
+        "path_ledger_disposition_at_recording": "unreviewed",
+        "path_ledger_row_at_recording": {
+          "source": "baldrix",
+          "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+          "path": "skills/kha-verify-uat/SKILL.md",
+          "git_blob": "1e0a07fa500ca77782fd65fbb746847fd92d174e",
+          "mode": "100644",
+          "bytes": 2301,
+          "pinned_sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0",
+          "disposition": "unreviewed",
+          "review_records": [],
+          "adoption_status": "not_approved_not_incorporated"
+        },
+        "path_ledger_row_sha256": "dbed05a8274bef155896fa563da4c07af44eb7d086ccfd59180853cded13c2bd",
+        "upstream_disposition_unchanged": "unreviewed",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "support_id": "S25",
+        "disposition": "supporting_read_only",
+        "line_ranges": [
+          [
+            1,
+            61
+          ]
+        ],
+        "read_extent": "full_body_supporting",
+        "read_basis": "fresh_displayed_supporting_intervals_current_review",
+        "read_receipt": [
+          "db5f41"
+        ],
+        "review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+        "review_refs": [
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#trace",
+          "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07"
+        ],
+        "counted_as_primary_body": false,
+        "range_sha256": [
+          {
+            "start": 1,
+            "end": 61,
+            "sha256": "e5c521ce714d8a55e31d6335af2a44d77d39729c65c9d38197895e170e6adbf0"
+          }
+        ],
+        "purpose": "Fresh bounded direct skill entry, workflow/agent consumer, helper/router/config/parser/template and state authority trace; no original execution."
+      },
+      "prior_review_ref": "docs/full-analysis/baldrix-gsd-workflows-005/review.md#i07",
+      "prior_review_sha256": "213f2d1ff4653736ff92f9d9719c87cece5f16b8aee46edb76396c9c44b52237",
+      "original_read_receipt": [
+        "db5f41"
+      ],
+      "original_line_ranges": [
+        [
+          1,
+          61
+        ]
+      ],
+      "reuse_qualification": "identical_revision_raw_blob_bytes_sha256_full_body_and_per_file_semantic_caller_risk_review"
+    },
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i35",
+    "semantic_summary": "workflows005 S25 전문 1–61, db5f41, review#i07을 재사용한다. 사람의 실제 동작을 한 항목씩 묻고 status/testing/partial/complete와 gap 계획을 기록하는 목적이다. prior verify-work 전문과 helper 증거에서 empty/next pass, partial에도 all passed 안내, SUMMARY 유래 분모, init uat_path 누락, literal pending parser 차이, 5 pass 배치 손실 경계를 기록했다. no implementation fix 경계는 무파일/무위임이 아니다. SDD 6에서 정확한 인간 시나리오·빌드/device/actor/실측 receipt가 있어야 하며 삼성 기기 단계는 유예다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/bin/lib/init.cjs",
+      "get-shit-done/workflows/verify-work.md"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-workstream-manager/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "dda46b1ec68c3e0d9331d5f3168f699343e4c7adf0be44131ce68f5221f15e5e",
+    "git_blob": "fee0c5e767ae6cbeb6dd3afb1d8c7bbc177d086e",
+    "bytes": 7406,
+    "lines": 115,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "dda46b1ec68c3e0d9331d5f3168f699343e4c7adf0be44131ce68f5221f15e5e",
+    "hash_verification": "raw_git_blob_bytes_and_separate_sha256_compared_to_manifest_when_present_and_path_ledger",
+    "path_ledger_row_index": 1518,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/kha-workstream-manager/SKILL.md",
+      "git_blob": "fee0c5e767ae6cbeb6dd3afb1d8c7bbc177d086e",
+      "mode": "100644",
+      "bytes": 7406,
+      "pinned_sha256": "dda46b1ec68c3e0d9331d5f3168f699343e4c7adf0be44131ce68f5221f15e5e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "0dc0ec09743b57f5da050d6825ceda0c7550aae4971d5119be8662615aa205d0",
+    "upstream_disposition_unchanged": "unreviewed",
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "model_qualification_verified": false,
+    "os_runtime_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "partition": "baldrix:skills/kha-workstream-manager:001",
+    "scope_sha256": "282c27a30bc20046d33ecee4c3acd056adad58acb92ea96fb6eb868fed39d474",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "line_ranges": [
+      [
+        1,
+        115
+      ]
+    ],
+    "read_basis": "fresh_displayed_full_primary_body_current_review",
+    "read_receipt": "63be3f",
+    "previous_review_reuse": null,
+    "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#i36",
+    "semantic_summary": "Read/Bash로 list/create/status/switch/progress/complete/resume CLI를 호출한다. 후반 create/switch/complete 전 explicit confirm/preview/snapshot은 상위 선언이며 직접 workstream.cjs 279–367은 name validation과 존재 확인 후 pointer 변경·archive를 수행하고 승인 token/미완료 work guard를 읽지 않는다. archive 실패 시 이동 파일을 되돌리려는 방어는 있지만 reverse rename 실패를 무시한 후 archive directory를 재귀 삭제하여 복구가 보장되지 않는 조건을 남긴다. 원본 실행/실제 손실 재현은 0이다. 본문 말미 worker 완료 로그 및 다른 스킬 경계 토론은 기록된 주장으로만 읽었으며 그 DONE을 구현 완료로 세지 않는다. SDD 병렬 팀은 Git 정의와 PG session/task lease·안전한 artifact 이동 및 증거 기반 승인으로 적응해야 한다.",
+    "caller_or_dependency_trace": [
+      "get-shit-done/bin/lib/workstream.cjs",
+      "get-shit-done/bin/lib/core.cjs"
+    ],
+    "test_kind": "entry_skill_declaration_not_executed_test_suite",
+    "denominator_basis": "36 primary: 30 fresh full reads, 6 exact prior full-body reused; 0 source execution."
+  }
+]

@@ -1,0 +1,200 @@
+[
+  {
+    "path": "skills/kha-add-phase/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-add-phase:001"
+    ]
+  },
+  {
+    "path": "skills/kha-advance/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-advance:001"
+    ]
+  },
+  {
+    "path": "skills/kha-ai-integration-phase/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-ai-integration-phase:001"
+    ]
+  },
+  {
+    "path": "skills/kha-analyze-dependencies/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-analyze-dependencies:001"
+    ]
+  },
+  {
+    "path": "skills/kha-archive-completed-phases/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-archive-completed-phases:001"
+    ]
+  },
+  {
+    "path": "skills/kha-audit-milestone/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-audit-milestone:001"
+    ]
+  },
+  {
+    "path": "skills/kha-audit-planning-health/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-audit-planning-health:001"
+    ]
+  },
+  {
+    "path": "skills/kha-audit-uat-backlog/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-audit-uat-backlog:001"
+    ]
+  },
+  {
+    "path": "skills/kha-capture-backlog/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-capture-backlog:001"
+    ]
+  },
+  {
+    "path": "skills/kha-capture-note/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-capture-note:001"
+    ]
+  },
+  {
+    "path": "skills/kha-capture-seed/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-capture-seed:001"
+    ]
+  },
+  {
+    "path": "skills/kha-capture-todo/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-capture-todo:001"
+    ]
+  },
+  {
+    "path": "skills/kha-clarify-phase/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-clarify-phase:001"
+    ]
+  },
+  {
+    "path": "skills/kha-complete-milestone/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-complete-milestone:001"
+    ]
+  },
+  {
+    "path": "skills/kha-context-thread/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-context-thread:001"
+    ]
+  },
+  {
+    "path": "skills/kha-debug/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-debug:001"
+    ]
+  },
+  {
+    "path": "skills/kha-dispatch/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-dispatch:001"
+    ]
+  },
+  {
+    "path": "skills/kha-execute-phase/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-execute-phase:001"
+    ]
+  },
+  {
+    "path": "skills/kha-explore-idea/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-explore-idea:001"
+    ]
+  },
+  {
+    "path": "skills/kha-forensics/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-forensics:001"
+    ]
+  },
+  {
+    "path": "skills/kha-generate-tests/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-generate-tests:001"
+    ]
+  },
+  {
+    "path": "skills/kha-help/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-help:001"
+    ]
+  },
+  {
+    "path": "skills/kha-import-plan/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-import-plan:001"
+    ]
+  },
+  {
+    "path": "skills/kha-insert-phase/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-insert-phase:001"
+    ]
+  },
+  {
+    "path": "skills/kha-intel-index/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-intel-index:001"
+    ]
+  },
+  {
+    "path": "skills/kha-join-discord/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-join-discord:001"
+    ]
+  },
+  {
+    "path": "skills/kha-list-workspaces/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-list-workspaces:001"
+    ]
+  },
+  {
+    "path": "skills/kha-map-codebase/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-map-codebase:001"
+    ]
+  },
+  {
+    "path": "skills/kha-milestone-manager/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-milestone-manager:001"
+    ]
+  },
+  {
+    "path": "skills/kha-milestone-summary/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-milestone-summary:001"
+    ]
+  },
+  {
+    "path": "skills/kha-new-milestone/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-new-milestone:001"
+    ]
+  },
+  {
+    "path": "skills/kha-new-project/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-new-project:001"
+    ]
+  },
+  {
+    "path": "skills/kha-new-workspace/SKILL.md",
+    "partitions": [
+      "baldrix:skills/kha-new-workspace:001"
+    ]
+  }
+]

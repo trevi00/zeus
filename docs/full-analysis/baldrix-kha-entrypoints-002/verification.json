@@ -1,0 +1,43 @@
+{
+  "primary_count": 36,
+  "primary_bytes": 117515,
+  "primary_lines": 2785,
+  "fresh_primary_count": 30,
+  "fresh_primary_bytes": 105143,
+  "fresh_primary_lines": 2434,
+  "prior_full_body_reused_count": 6,
+  "prior_full_body_reused_bytes": 12372,
+  "prior_full_body_reused_lines": 351,
+  "supporting_rows": 41,
+  "fresh_supporting_rows": 35,
+  "prior_full_supporting_reused_rows": 6,
+  "fresh_supporting_read_lines": 3208,
+  "prior_supporting_reused_lines": 2148,
+  "review_refs_checked": 146,
+  "raw_blob_size_sha256_verified": true,
+  "range_bounds_verified": true,
+  "prior_rows_full_extent_and_raw_identity_verified": true,
+  "upstream_tests_run": false,
+  "tests_read_in_part": [
+    "scripts/tests/test_phase_graph_builder.py",
+    "scripts/tests/test_phase_graph_query.py"
+  ],
+  "search_only_not_body": [
+    "214a29",
+    "89e8be",
+    "74c3e2",
+    "bec13e"
+  ],
+  "failed_search_not_counted": "bd2d52: PowerShell brace-list parsing error; no source execution or body coverage.",
+  "missing_manifest_snapshot_sha256_paths": [
+    "get-shit-done/bin/lib/config.cjs",
+    "get-shit-done/bin/lib/model-profiles.cjs",
+    "get-shit-done/bin/lib/init.cjs",
+    "get-shit-done/bin/lib/phase.cjs",
+    "get-shit-done/bin/lib/workstream.cjs",
+    "get-shit-done/bin/lib/commands.cjs",
+    "get-shit-done/bin/lib/core.cjs"
+  ],
+  "full_analysis_complete": false,
+  "adoption_approved": false
+}

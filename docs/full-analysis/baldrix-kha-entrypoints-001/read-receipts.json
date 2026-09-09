@@ -1,0 +1,49 @@
+{
+  "fresh_full_primary_chunks": [
+    "6390d0",
+    "793b7f"
+  ],
+  "fresh_header_supplement_chunk": "45170d",
+  "failed_read": {
+    "chunk": "db6ee4",
+    "error": "cp949 UnicodeEncodeError after first two lines; no full-read credit",
+    "recovered_by": "6390d0 using python -X utf8, source never executed"
+  },
+  "metadata_check_failure": {
+    "chunk": "bd6f94",
+    "error": "Checker matched its own literal three question marks.",
+    "correction": "Build sentinel with chr(63)*3; no original bytes or semantic scope changed."
+  },
+  "review_readback_chunks": [
+    "70d84c",
+    "3c6c98"
+  ],
+  "owned_korean_full_readback": {
+    "chunk": "3b7ac7",
+    "result": "review.md and all 33 per-file sections read back without truncation; Korean meaning retained",
+    "earlier_failed_chunk": "d34e6c",
+    "failure": "PowerShell quoting broke inline Python readback; no write or source execution"
+  },
+  "prior_review_reads": "def6b3 was truncated; relevant omitted sections read separately, not full fresh review claim.",
+  "search_receipts": [
+    {
+      "chunk": "6379e8",
+      "query": "AI-SPEC literal in skill/workflow plan-phase",
+      "result": "no matches; no whole-consumer absence proof"
+    },
+    {
+      "chunk": "ac9609",
+      "query": "seed case-insensitive lines in new-milestone.md",
+      "result": []
+    },
+    {
+      "chunk": "f6eb89",
+      "query": "intelStatus in bin *test*, ROOT CAUSE CANDIDATES in scripts/tests",
+      "result": "no matches; names/other locations remain pending"
+    }
+  ],
+  "source_execution_count": 0,
+  "source_collection_count": 0,
+  "source_network_install_import_probe_count": 0,
+  "actual_claude_count": 0
+}

@@ -1,0 +1,30 @@
+{
+  "primary_body_remaining": [],
+  "supporting_trace_remaining": [
+    "All source ranges not explicitly listed; complete loader/caller/helper/config/test/hook closure.",
+    "Actual command execution, graph test complete bodies and runner collection, PR/installer/rollback/device/OS observations.",
+    "Authoritative approval actor/spec/artifact hashes, PG task generation/lease, interruption and concurrency recovery.",
+    "Actual Claude independence, model qualifications, license/dependency/source attribution and acceptance.",
+    "Samsung phone/tablet Device Farm SDK/MCP/live/replay remains deferred."
+  ],
+  "upstream_executions": 0,
+  "upstream_imports": 0,
+  "collections": 0,
+  "probes": 0,
+  "network_calls": 0,
+  "installs": 0,
+  "model_calls": 0,
+  "actual_claude_calls": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adopted": false,
+  "actual_claude_review_complete": false,
+  "license_review_complete": false,
+  "model_qualification_verified": false,
+  "os_runtime_verified": false,
+  "human_acceptance_verified": false,
+  "review_ref": "docs/full-analysis/baldrix-kha-entrypoints-002/review.md#unknowns"
+}
