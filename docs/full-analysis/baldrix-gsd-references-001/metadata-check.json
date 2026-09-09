@@ -1,0 +1,15 @@
+{
+  "primary": 32,
+  "primary_bytes": 178518,
+  "supporting": 20,
+  "primary_hash_blob_bytes": true,
+  "supporting_hash_blob_bytes_ranges": true,
+  "references": true,
+  "utf8_and_literal_loss_scan": true,
+  "python_lf": true,
+  "source_execution": 0,
+  "upstream_tests_executed": 0,
+  "whole_closure": false,
+  "adoption": false,
+  "note": "Mechanical metadata checks only; Korean prose separately read back."
+}

@@ -1,0 +1,328 @@
+{
+  "workdir": "C:\\Users\\rudtn\\zeus",
+  "primary_anchors_in_order": 32,
+  "exact_path_binding": true,
+  "metadata_run_chunk": "44afca",
+  "korean_full_readback_chunk": "087034",
+  "initial_checker_failure": "7a4bfb expected git --no-index0 but got1 with empty output for added file; corrected exit semantics, raw helper preserved.",
+  "korean_readback": "All32 per-file notes, review and20 support notes read back; prose intact.",
+  "standard_git_whitespace_checks": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\check_metadata.py"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\checkpoint.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\file-reviews.md"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\files.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\final_checks.before-exit-correction.executed.txt"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\final_checks.py"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\metadata-check.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\order_notes.py"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\prepare_metadata.py"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\prior-path-ledger.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\read-receipts.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\read_source.py"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\read_support.py"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\record_review.py"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\remaining.txt"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\review.md"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\support-specs.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\supporting-evidence.json"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab",
+        "diff",
+        "--no-index",
+        "--check",
+        "--",
+        "/dev/null",
+        "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001\\supporting-notes.md"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "ruff": {
+    "argv": [
+      ".venv/Scripts/ruff.exe",
+      "check",
+      "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-gsd-references-001"
+    ],
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  "source_execution": 0,
+  "upstream_tests_executed": 0,
+  "scope": "Owned metadata/format checks only; no semantic coverage added by this script."
+}

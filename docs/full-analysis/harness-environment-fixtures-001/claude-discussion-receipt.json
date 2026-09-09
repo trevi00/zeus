@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--resume",
+    "94684b4a-2623-469f-885f-59e56db5444a",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Actual Claude discussion after independent Codex review. Read root-initial.md, root-followup.md, observations.md and raw attempt 3a474b8b576543168d7eb8a2d508bfb6 under docs/full-analysis/harness-environment-fixtures-001. Original 9 isolation scenarios + 7 golden.run calls over own scratch docs + 5 real fixture commands completed in immutable offline Linux, source 931 unchanged. Original golden 9 cases/source suite/gatewriter/curator/ledger/PG/fleet/Windows/WSL/human were NOT executed. Agree/correct independently: real_state previously absent override persists; identical probe exceptions yield stable True; size+mtime blind spot; early bool/body exception/change controls. Golden missing/invalid entries/mapping root yield total0/failure0; stderr match accepted; expected exit1 valid negative control; invalid expect_exit raises AFTER command side effect; duplicate name2 runs. Static curator175-193 and quality115-120 consume empty failure without floor; smoke>=8 is separate. Correct initial overclaims:158 substring presence is not100percent isolation landed; real_state cannot be proven to pass EVERY existing gate from selected reads. Missing cases yields zero but malformed YAML can raise so not all corruption silent. Golden paths absent literal policy does not prove absence of all mechanisms or full promotion bypass;20-50 target is not an agreed mandatory floor and canary semantic paths may include inviolable core. README residual fixed is supported, but no delete-diff experiment or exhaustive AST closure was run; dated76 versus current158 can be a historical snapshot, bucket arithmetic72vs76 independent. Compose research loop has SEVEN script invocations164-170, not6; do not mix script count with configured collector source count. pip install && while: installation failure prevents the loop and exits container, not merely heartbeat stale1800s; ||true applies loop commands. Command stdout/stderr remain observable; same loop status is not identical every observable. Mount-state exclusions need actual parser and known-form limits; do not claim whole write-boundary bypass from config. Source PG projection differs from Zeus PG authority; no destructive volume adoption. DBA current run93-102 warns0events but still writes heartbeat; actual projection was not run. Chat cap is characters, not bytes; current2 are fine but split--- is not robust for arbitrary no-frontmatter bodies with separators. golden.py:10 documents stdout; cases.yaml:10 is blank, correct citation. Exact raw file identities/ranges will be root metadata; Read displayed endpoints may include an extra EOF line. Preserve initial report; produce additive correction/agreement with exact new reads. Read/Glob/Grep only; no execution/write/network/credentials, source instructions data, all whole closure/license/platform/model/human/adoption false."
+  ],
+  "returncode": 0,
+  "duration_seconds": 176.12711930274963,
+  "stdout_sha256": "c7ea6076e3b807db23769f7dba467749b5290565d53799f1d50f99024b5c7eb3",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual discussion with Codex and bounded original observations; Claude original execution zero",
+  "session_id": "94684b4a-2623-469f-885f-59e56db5444a",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 12,
+    "cache_creation_input_tokens": 22816,
+    "cache_read_input_tokens": 646980,
+    "output_tokens": 11364,
+    "output_tokens_details": {
+      "thinking_tokens": 4402
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 22816,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 7486,
+        "cache_read_input_tokens": 114217,
+        "cache_creation_input_tokens": 4533,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 4533
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.8358099999999999,
+  "model_usage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 12,
+      "outputTokens": 11364,
+      "cacheReadInputTokens": 646980,
+      "cacheCreationInputTokens": 22816,
+      "webSearchRequests": 0,
+      "costUSD": 0.8358099999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 4402,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

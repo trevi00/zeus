@@ -1,0 +1,76 @@
+{
+  "partition": "baldrix:get-shit-done/workflows:001",
+  "scope_sha256": "ce00547715201b4d06a82ae16356987b817e848597ff0d432eb364a126333b8c",
+  "bytes": 197087,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/add-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/add-tests.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/add-todo.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/analyze-dependencies.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/audit-fix.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/audit-milestone.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/audit-uat.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/autonomous.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/check-todos.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/cleanup.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/code-review-fix.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/code-review.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/complete-milestone.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/diagnose-issues.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/discovery-phase.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/discuss-phase-assumptions.md"
+    },
+    {
+      "source": "baldrix",
+      "path": "get-shit-done/workflows/discuss-phase-power.md"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

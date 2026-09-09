@@ -1,0 +1,392 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/golden.py",
+    "bytes": 3261,
+    "git_blob": "0fa768baa313fdcbdfa16181150dd2f0b1774644",
+    "pinned_sha256": "51f2be3a39f11f6aeca84127f2006089c23cfe263b76e6bcb6ec1e7a05570a02",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 76,
+        "raw_range_sha256": "51f2be3a39f11f6aeca84127f2006089c23cfe263b76e6bcb6ec1e7a05570a02"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/paths.py",
+    "bytes": 5363,
+    "git_blob": "c1a7284adf7c53a8fab9f074e0c23c5558d95d22",
+    "pinned_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 123,
+        "raw_range_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cron/dba_projection.py",
+    "bytes": 5070,
+    "git_blob": "cd7e4f3a9d5607810dff11b9b45d1da95769e611",
+    "pinned_sha256": "0aabfb256e1fa65f3b2d9298e96d8d87cd0a71cd69d69a77516c7321f1b0ab48",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 108,
+        "raw_range_sha256": "0aabfb256e1fa65f3b2d9298e96d8d87cd0a71cd69d69a77516c7321f1b0ab48"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_golden_smoke.py",
+    "bytes": 5875,
+    "git_blob": "c414cf1212765c9fec98a6a4965bda8d17c79977",
+    "pinned_sha256": "7705a9f7f91dc215362f8f11394527fe2e0bd8329c4772e43eaccdf4efd1c565",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 132,
+        "raw_range_sha256": "7705a9f7f91dc215362f8f11394527fe2e0bd8329c4772e43eaccdf4efd1c565"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_dba_projection_contract.py",
+    "bytes": 6133,
+    "git_blob": "d31f26f11fde33ef9c74cb53037ae7d0a2f9285b",
+    "pinned_sha256": "620604ed5339228c48b699b7ae36dc7dea8bc1b6e7e825c3425d9481c4a58ce4",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 145,
+        "raw_range_sha256": "620604ed5339228c48b699b7ae36dc7dea8bc1b6e7e825c3425d9481c4a58ce4"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/sandbox.py",
+    "bytes": 32037,
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "pinned_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 65,
+        "raw_range_sha256": "baaa37ff5adc78b0afd8f24b53f67e3dcc5a9574f5b7af8a8bf7b06550591e08"
+      },
+      {
+        "start_line": 150,
+        "end_line": 257,
+        "raw_range_sha256": "97febd99f9531b2df1fa6aff4b7dc785670fda15fa8087a45fa47e05f8bdab63"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/validators/harness_lint.py",
+    "bytes": 107200,
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "read_ranges": [
+      {
+        "start_line": 437,
+        "end_line": 505,
+        "raw_range_sha256": "bddc55f4c11fd573a09400460be57e917582c353bf8d573572971be0d927f3f1"
+      },
+      {
+        "start_line": 601,
+        "end_line": 658,
+        "raw_range_sha256": "218a6f5a2aa1b80df9edac5f6fe7d34c6afa37b4481e2c9a7a4b5046c3d35532"
+      },
+      {
+        "start_line": 740,
+        "end_line": 795,
+        "raw_range_sha256": "1cedcc73d3e447c30dc16f41e174c415fa1f98637c36e8295de879f34d9b3b27"
+      },
+      {
+        "start_line": 992,
+        "end_line": 1030,
+        "raw_range_sha256": "ea3d9ff9ae025de68bad3039673216655a0718dcb86d6651416c28887d63c31b"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/suite_cmd.py",
+    "bytes": 35632,
+    "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+    "pinned_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "read_ranges": [
+      {
+        "start_line": 78,
+        "end_line": 110,
+        "raw_range_sha256": "b864b9a0d099ecae73e2d3c4f0d69e8d9a976d3cad70cb2086b58e5fc2dda04f"
+      },
+      {
+        "start_line": 345,
+        "end_line": 375,
+        "raw_range_sha256": "a8367143a7d32152091a958e2db1fef455f83ef4f40ede426bbec320a7909fd2"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/curator.py",
+    "bytes": 16968,
+    "git_blob": "94e2cdaebb1559290fbd5c1623969b0781e4b2bc",
+    "pinned_sha256": "ca374df01b09b231e82e1a36c6732dc4353076441aed58e869dabf687099b2f7",
+    "read_ranges": [
+      {
+        "start_line": 145,
+        "end_line": 235,
+        "raw_range_sha256": "23e8b70b64a1c9f1a731cd07c1904649cc2c3b9c6b06def398dede7ca4e25ca7"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/quality_cmd.py",
+    "bytes": 10113,
+    "git_blob": "b5d5b5eac274965ca1d5a270f20f309aa9d1fbb9",
+    "pinned_sha256": "93d6077a8e177128cccad0c09d4a1b87e40c50eec664997a6d44f357abaae49c",
+    "read_ranges": [
+      {
+        "start_line": 108,
+        "end_line": 128,
+        "raw_range_sha256": "c9b1b520a97c12e112e37eb74beda9ee4dbdcf49a2d52906d8715994a89ce044"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cron/research_collector.py",
+    "bytes": 11860,
+    "git_blob": "ffb9e29ffa8f14410c1c0b21d34a6a684102a24c",
+    "pinned_sha256": "86bf12b452bc21cc2f406690869a83a8b364400492d89e58353ce25884240fa7",
+    "read_ranges": [
+      {
+        "start_line": 235,
+        "end_line": 280,
+        "raw_range_sha256": "cfc1b5bd45340713d6f84e2e13572ee3915c264187beea8b6f94629954792399"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/prompt/seeding.py",
+    "bytes": 4576,
+    "git_blob": "0980a03a4820f6e87cb3ef35bd357a473bb5109e",
+    "pinned_sha256": "b66dd23a437bc9103d3179e8f4b6e917e0dd2cfa5507404dc5fb9f2181690e69",
+    "read_ranges": [
+      {
+        "start_line": 68,
+        "end_line": 99,
+        "raw_range_sha256": "695de24f226575fab07fc7d9bfc3904635e93236905dce730f4c09b68cd865d3"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/ontology_index.py",
+    "bytes": 14189,
+    "git_blob": "e8316fff06a491bb29993ca0f82f4a9d3ca23d96",
+    "pinned_sha256": "b0270420b01efe00615a10c479067e450ba9163b09b562b2c04c08b75997c2d6",
+    "read_ranges": [
+      {
+        "start_line": 91,
+        "end_line": 123,
+        "raw_range_sha256": "d84033c0e81c1c332b35be65c4d45b7d34f6108fc6ace10cbd0f7d3f819a6c68"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_fleet_mount_boundary_contract.py",
+    "bytes": 5482,
+    "git_blob": "ed8bebea4aa81469b9cd1ec97a4858338acdcf2e",
+    "pinned_sha256": "53114a93c0459709167932e86a9cedf20f9b8c113448e95ca108e7a73a08ef9d",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 121,
+        "raw_range_sha256": "53114a93c0459709167932e86a9cedf20f9b8c113448e95ca108e7a73a08ef9d"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "disposition": "supporting_static_read",
+    "tests_executed": [],
+    "primary_coverage_counted": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_research_collector_contract.py",
+    "bytes": 10663,
+    "git_blob": "9714c958b94b723d5879a483fc4cb74c3bbdecac",
+    "pinned_sha256": "a63265911a2add60a355570a708a4c4b9f2637ca62f55e5e8fadad0c15943ebb",
+    "read_ranges": [
+      {
+        "start_line": 158,
+        "end_line": 179,
+        "raw_range_sha256": "f3576d07eeb9afca8537d4ab9f45b17182d14e2ad2eb26302e42c4e6387f11c1"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "disposition": "supporting_static_read",
+    "tests_executed": [],
+    "primary_coverage_counted": false
+  }
+]

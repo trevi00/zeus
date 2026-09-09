@@ -1,0 +1,66 @@
+{
+  "kind": "local_validation_observations",
+  "starting_head": "5acaeced22de71ae3eb8584643e00557762745c0",
+  "checks": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "result": "All checks passed!",
+      "tool_chunk": "875fc1"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "session": 38668,
+      "exit_code": 0,
+      "passed": 660,
+      "skipped": 68,
+      "duration_seconds": 259.09,
+      "terminal_tool_chunk": "9ba038"
+    },
+    {
+      "argv": [
+        "python",
+        "docs/full-analysis/harness-environment-fixtures-001/verify_evidence.py"
+      ],
+      "exit_code": 0,
+      "tool_chunk": "0ed938",
+      "scope": "Original observation and actual Claude receipt integrity; no upstream reexecution"
+    },
+    {
+      "argv": [
+        "python",
+        ".runtime/absorption/environment001_checkpoint.py"
+      ],
+      "exit_code": 0,
+      "tool_chunk": "0ed938",
+      "primary_records": 108,
+      "supporting_records": 95,
+      "review_refs": 374
+    }
+  ],
+  "publication_checks": {
+    "tool_chunk": "2a92c9",
+    "staged_artifact_hashes_verified": 68,
+    "staged_files_before_this_receipt": 75,
+    "selected_secret_pattern_hits": 0,
+    "not_universal_secret_scan": true,
+    "whitespace_tool_chunk": "3e1c5b",
+    "whitespace": "PASS"
+  },
+  "limits": [
+    "Skipped checks are not passed",
+    "Existing Zeus tests and bounded receipt checks are not complete source acceptance, human acceptance, OS qualification or adoption",
+    "Only this finalized environment/GSD batch is published. Subsequent delegated partitions are separate uncommitted work and require their own verification."
+  ]
+}

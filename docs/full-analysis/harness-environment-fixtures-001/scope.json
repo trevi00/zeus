@@ -1,0 +1,142 @@
+{
+  "partitions": [
+    "harness:infra/fleet:001",
+    "harness:knowledge/chat:001",
+    "harness:knowledge/golden:001",
+    "harness:sandbox:001",
+    "harness:state:001",
+    "harness:tests:001",
+    "harness:var:001"
+  ],
+  "paths": [
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "infra/fleet/docker-compose.yml",
+      "bytes": 13244,
+      "git_blob": "3689a96fc5ee6d1a1dad7c9a764e2f5d6e49d0d7",
+      "pinned_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/chat/instructions.md",
+      "bytes": 657,
+      "git_blob": "c2ea2caae8624f9e743e2548a51b83ac4923451e",
+      "pinned_sha256": "c1b3fb62c1e4cee156ba4def470321c0cb3ade4f048c310a0ab187fc5f00a24c"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/chat/persona-default.md",
+      "bytes": 494,
+      "git_blob": "a5b5088ef5e574423cfa891bea7f4124b6249939",
+      "pinned_sha256": "07a1fb7e45ad674c069ce99ae258ce7fb5140797050533401c8e85fc2ee1744c"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/cases.yaml",
+      "bytes": 2346,
+      "git_blob": "6587fd034e9c4073b2d0fe7e76fd1fe75438a24e",
+      "pinned_sha256": "e736875068c5bad937f78a66aa31836d3eda1b7fac95d0103ea9228e9ceefa9c"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/fixtures/bad-node.jsonl",
+      "bytes": 121,
+      "git_blob": "a27e1f205de5aa393c46708e8ae205bc95bb45fb",
+      "pinned_sha256": "5edfa9992f192eb371200317643baa1d553e656045891fb8b43ce991338b10c6"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/fixtures/bad-usecase.md",
+      "bytes": 167,
+      "git_blob": "f064e439b59672bac71da76579e1f96ef4514906",
+      "pinned_sha256": "d263b4156c519a9112bd4ec0b3a76b4af11566be4f0dfeed0f44972768f6c4d4"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/fixtures/extracted-intent.md",
+      "bytes": 153,
+      "git_blob": "992ef25c1a202b2eaea9b9d9ac56addf1accaf09",
+      "pinned_sha256": "8e95b61cc72b7f820894086548041b91d6855a13e9decaf6b29ff77ea1b5cf0b"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/fixtures/good-usecase.md",
+      "bytes": 372,
+      "git_blob": "e96980752784e84150fec098098a99715d4d7282",
+      "pinned_sha256": "3f731243a107ac649fa3dc75f726df256deb2f442ade16165650f737a480d588"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/fixtures/probe_lock.py",
+      "bytes": 646,
+      "git_blob": "404b787ae4a57d36e6b7f59f43e0b532f526894f",
+      "pinned_sha256": "4233a4193b333d312a5a6a98feb67ca2e240ba9c42e6f85e06e6500c8d907b76"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/fixtures/probe_seams.py",
+      "bytes": 401,
+      "git_blob": "4ab5d7c93fc7c728ca8ec168ad023f707d09bf66",
+      "pinned_sha256": "188e29fe51a1e06c785d7d79ba9165053ab742f1ec4624f3fcbc6ec966de23e9"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "knowledge/golden/fixtures/probe_seams_blocking.py",
+      "bytes": 2362,
+      "git_blob": "7a78d76b5f1ba05a80cc431a36ff81bbea30b1ee",
+      "pinned_sha256": "bc0285115c4870415e8675b76b5c0a406b438a351c4b903f6838b4b97e2786f5"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "sandbox/README.md",
+      "bytes": 1163,
+      "git_blob": "2843ffc3a6a2982dc82655fabd8037e50f1c69c4",
+      "pinned_sha256": "a6caa28f10d52b6a9181b23ee1dc261330883a4732aff7f6a4c38785a4b50bc8"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "state/README.md",
+      "bytes": 955,
+      "git_blob": "43b7c88488f3303f62231b2905db3e346e5f68ca",
+      "pinned_sha256": "c71706876b9d05009437c8d3f73a1221636c718148cb671d3c69664f9f64034c"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "tests/README.md",
+      "bytes": 3242,
+      "git_blob": "56a1925ca9fcdfc3c0e198db0b99ec2b16a05314",
+      "pinned_sha256": "7fa4e5c262b646d2783df0a3e58bd9b197122e54cd64be8376227ec1319ca103"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "tests/_isolate.py",
+      "bytes": 21666,
+      "git_blob": "ac21d23d01c3ee75c109cb1d462a5c2b03ba793b",
+      "pinned_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa"
+    },
+    {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "var/README.md",
+      "bytes": 1556,
+      "git_blob": "3d56c5394a322a03b7e95f8d2cd14fb7ea32c610",
+      "pinned_sha256": "91a4a4700f14ca0cc74607de120dd8fb01435955471c647ca344496ae5749331"
+    }
+  ],
+  "scope_sha256": "59205ce29296a2f9133ce2513c14fe992b97b35767c4841d3d15c90c457f9115"
+}

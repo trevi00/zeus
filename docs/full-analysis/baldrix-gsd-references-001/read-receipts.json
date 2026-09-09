@@ -1,0 +1,22 @@
+{
+  "kind": "Inert read output handles; no source execution receipts",
+  "instructions_head_partition": "b99fdf",
+  "prior_snapshot": "76854b",
+  "primary_full_read_chunks": {
+    "1": ["76854b"], "2": ["ca5f9f"], "3": ["ca5f9f", "f8b8d5"],
+    "4-8": ["f8b8d5"], "9-12": ["d05e55"], "13-20": ["6198ec"],
+    "21": ["054443"], "22-26": ["8a5aa5"], "27-32": ["b9725c"]
+  },
+  "read_recovery": [
+    "76854b printer cp949 UnicodeEncodeError at primary2 line5: first1-4 partial not counted; explicitly UTF8 printer then full2 reread ca5f9f.",
+    "ca5f9f outer tool output truncated checkpoints middle;280-340 fully reread f8b8d5 closed missing segment."
+  ],
+  "supporting_fresh_read_chunks": ["474fdc", "4c465f", "82db40", "92b762", "7dd083"],
+  "discovery_only_chunks": ["e9cb65", "528e96", "46ebbb"],
+  "supporting_specs": "support-specs.json records exact union of actually displayed/read ranges",
+  "prior_read_reuse": 0,
+  "source_executions": 0,
+  "upstream_tests_read": 0,
+  "upstream_tests_executed": 0,
+  "note": "No matching direct test connection found in bounded scopes; absent tests directory/config-schema path are discovery failures, not proof of global absence. No upstream source excerpts published."
+}

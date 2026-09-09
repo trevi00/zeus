@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "scope": "Owned metadata and recorder only; no source behavior execution.",
+  "checks": [
+    "17 primary raw byte lengths and SHA-256/Git blob match manifest and captured prior rows",
+    "33 unique supporting byte identities and explicitly read ranges valid",
+    "Prior 17 rows preserved as unreviewed, exact row indices and ledger hash retained",
+    "All JSON decodes, real review anchors resolve, no primary/support overlap",
+    "UTF-8 without BOM, LF-only, exactly one final LF, no trailing whitespace",
+    "ASCII README/review readback avoids codepage corruption",
+    "Ruff --no-cache recorder check passed"
+  ],
+  "commands": [
+    {
+      "command": "python -X utf8 docs/full-analysis/baldrix-gsd-workflows-001/build_index.py",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/baldrix-gsd-workflows-001/build_index.py",
+      "exit_code": 0
+    }
+  ],
+  "source_execution_count": 0,
+  "source_tests_collected": 0,
+  "source_tests_executed": 0,
+  "actual_claude_executions": 0,
+  "artifacts_sha256": {
+    "build_index.py": "eff9dfbc797ef5d8160e6bbe13c799f0b6ce158741a5accc134f00d3df55ca28",
+    "checkpoint.json": "607836b43009725a3b08850936ecd198cd0342d6fea40bf6a49f297ac9e603d4",
+    "files.json": "74b73a3c7965b440e694cd63f7346b2042cf8e7e2d58f312436809cdb0da56fd",
+    "inventory.json": "17049ae77510ee5966405170a583c8f4f40d22219d4be5325f7fc6f5646acc60",
+    "prior-ledger.json": "36ae806fc2e60686d3fc7df9037e244fd35993b3e574545181390941e29cfbd7",
+    "read-plan.json": "ed181a2130ab0b50d375641bb539fa60d88a9a711640db7bc42c1863d519e571",
+    "README.md": "7d0fd6cfb39233d88eb92f3169d07b37a5541ac46706bdcc59d88adf2a3e855e",
+    "remaining.json": "d7543bf4078679b5bbd55c128240c61d0fe0b32e89fa7ec6679bffc8c48dac87",
+    "review.md": "06fd875cc5d2bbd92d91e9e9f27343b442f2150a8be5063c1a7840b4bf2d13b1",
+    "supporting.json": "c9d1ccb89108ba1c653775155e9303697647dad8f1fedbb01510661e0c057a3a"
+  }
+}

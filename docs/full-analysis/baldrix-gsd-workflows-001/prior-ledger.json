@@ -1,0 +1,261 @@
+{
+  "ledger_path": "docs/full-analysis/path-ledger.json",
+  "ledger_sha256": "999c656c80394c20c084f9244e04c94639fb050f0c6a3516665fdfb2a4780fd7",
+  "rows": [
+    {
+      "row_index": 377,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/add-phase.md",
+        "git_blob": "bfb97f667153f30f6a699c1b56e023ae596aa4b1",
+        "mode": "100644",
+        "bytes": 2740,
+        "pinned_sha256": "40b9ad0f5d9b02c70297ca451e5c691484dfe1c5fa5175157cead5f84667a471",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 378,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/add-tests.md",
+        "git_blob": "7b76e865401ff46d6fff4029f5507b359467393d",
+        "mode": "100644",
+        "bytes": 12071,
+        "pinned_sha256": "f73b1f7b6024cc53aba81d89745146327938214ae7013b8429c3b852aa674db5",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 379,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/add-todo.md",
+        "git_blob": "905cb6e6e1d82b2f10097723afd476d92acd48c8",
+        "mode": "100644",
+        "bytes": 4171,
+        "pinned_sha256": "aa0216e112c36672b8aa8347e44278be562ebc94defd3ede05bbc0e7e0950abd",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 380,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/analyze-dependencies.md",
+        "git_blob": "098944e81678783d47ef548e0c7c71e5152cee8d",
+        "mode": "100644",
+        "bytes": 3907,
+        "pinned_sha256": "3ced53ab01e12a933cc846a475acdf9e4deb9eba6f517f8279a072afec11bd42",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 381,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/audit-fix.md",
+        "git_blob": "4842b4b97d01343b31d3a406bcb08b723e677ccd",
+        "mode": "100644",
+        "bytes": 5420,
+        "pinned_sha256": "df37688d0079bafc319238789f1aad718925823f97fff742a48770d7579b8d3e",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 382,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/audit-milestone.md",
+        "git_blob": "6375a2b157fb7739bc0969129ceb27e3947a50d8",
+        "mode": "100644",
+        "bytes": 12032,
+        "pinned_sha256": "d0841fd0301d5a76c262ab9b3d36ad51abde91c99802517715bed0605990b322",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 383,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/audit-uat.md",
+        "git_blob": "d0d028f656b74cf8c3a833c980684284c2d23a47",
+        "mode": "100644",
+        "bytes": 2992,
+        "pinned_sha256": "59afc40b8c51514d498e41d7d0d0ec9a8210d07bb232b5cde5af5dca987236eb",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 384,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/autonomous.md",
+        "git_blob": "bde65b53ee3b93f387dc70d13bc822a81848b8c4",
+        "mode": "100644",
+        "bytes": 40362,
+        "pinned_sha256": "4c15c97da7e92f89b6653f6e19c46442cb078fda9e11bee1fd66577aeb20f14a",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 385,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/check-todos.md",
+        "git_blob": "c3a8f166500e9a07c0506f9384072dd8f4e3555d",
+        "mode": "100644",
+        "bytes": 4609,
+        "pinned_sha256": "3651fe48fb661a6c00911b650f1145c498676364fa6c2b7814f55ca7ac6c9e2d",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 386,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/cleanup.md",
+        "git_blob": "ea9ee880f1eb6bcac6bbddee991cac63f220438e",
+        "mode": "100644",
+        "bytes": 3423,
+        "pinned_sha256": "32d2a17eb9e5906fbc4c47ae597da85df53a58ce4f0eadd1de68265a06d70d9f",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 387,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/code-review-fix.md",
+        "git_blob": "bcffcb442cb43504294e9ef12c50dba28cc04481",
+        "mode": "100644",
+        "bytes": 17935,
+        "pinned_sha256": "8f97b7c56fe6aebe60fa901383a514de0763ac4f1fdfb0d18bbac1a68792e08c",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 388,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/code-review.md",
+        "git_blob": "fb1b3a9ab15b3bd6f8fc6e9b9862b59f33ac86b1",
+        "mode": "100644",
+        "bytes": 17052,
+        "pinned_sha256": "3aa7e7a7f3ab409053af78fa6777f35556287b0d5d760c99e185f69a9e56c56c",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 389,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/complete-milestone.md",
+        "git_blob": "e9b4384a44cd19ba0df781d6a6c22ef45e005e7c",
+        "mode": "100644",
+        "bytes": 21199,
+        "pinned_sha256": "33c31c59e42d7a29c6b622c03a1328ac0f502826970dabf16c52b320f817fa37",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 390,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/diagnose-issues.md",
+        "git_blob": "aa1b0bdd650ce511c6897060bc809a765435478e",
+        "mode": "100644",
+        "bytes": 7567,
+        "pinned_sha256": "34c5c36f953ac9aeb2e047f40b307f901bf162e987bb92c37305371f378b02fe",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 391,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/discovery-phase.md",
+        "git_blob": "1467ae3189b52c5b156c36c66f64d58098c6bd90",
+        "mode": "100644",
+        "bytes": 8253,
+        "pinned_sha256": "b361b905df1fb68e260a58ddfbd202c911b508f3e70cfc7fd53100a45d0d177c",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 392,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/discuss-phase-assumptions.md",
+        "git_blob": "c4cde9d6b60f181f753464f395c5e72801e777f7",
+        "mode": "100644",
+        "bytes": 22081,
+        "pinned_sha256": "ce1e93bf5353bb85fb53225290dbb60e397266936544d9ac32c0046b28ddc377",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 393,
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "get-shit-done/workflows/discuss-phase-power.md",
+        "git_blob": "79298b6f89962345395a3060b467c29b23e10261",
+        "mode": "100644",
+        "bytes": 11273,
+        "pinned_sha256": "6e55bff0c4a02d0b580f50c3bcb39decae2af8632e837554a482b75d15fb1cff",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    }
+  ]
+}

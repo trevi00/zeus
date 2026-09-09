@@ -1,0 +1,1019 @@
+[
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/uat.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10071,
+    "git_blob": "7a63495e9f32d7c20dad9bcbe882bf9e47c5bfe1",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1007629426eaa9886e5ee8bc21b1169762eade2fc287388ef961deba173e4035",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        1,
+        85
+      ],
+      [
+        175,
+        279
+      ]
+    ],
+    "total_lines": 282,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s01",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/phase.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 35757,
+    "git_blob": "730e712dbf8057507e8119d82c09ce700909b004",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e71444af06a86925f53183edd71918a1083be8928a78cab38dd78054beed9961",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        313,
+        391
+      ],
+      [
+        652,
+        780
+      ],
+      [
+        885,
+        919
+      ]
+    ],
+    "total_lines": 931,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s02",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/commands.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 36090,
+    "git_blob": "c280a5a149a7a13b1743a57d28f5a6db5afa2413",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f27cd10c39511729f4b67d84993878284cfb7e667b2ef4fc8094ec36bb4ec77d",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        250,
+        346
+      ],
+      [
+        723,
+        748
+      ]
+    ],
+    "total_lines": 1013,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s03",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/roadmap.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 13282,
+    "git_blob": "f6b3d1c2867a9cebad422ff30128554f628102a0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f713917c6ba2b422f57c73bafa360e9a1d9b719b018b9ed416ae5853191ad10c",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        115,
+        248
+      ]
+    ],
+    "total_lines": 353,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s04",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/milestone.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10824,
+    "git_blob": "f406634c8018a04b7cad62b1b08aaaed2b43af84",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1724e218f409d86ec9c6810fb5e7985d0d88e8211dcd29d9799d2a57f3b85682",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        88,
+        245
+      ]
+    ],
+    "total_lines": 282,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s05",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/core.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 58568,
+    "git_blob": "e83c10629fa2e836675224e0554dae68584936c9",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e5a4d4ed9e0faf6f853c88892959d1fa5d4a537caa8c30d257b4e7e927afd32d",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        563,
+        628
+      ],
+      [
+        1303,
+        1334
+      ]
+    ],
+    "total_lines": 1536,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s06",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/init.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 56501,
+    "git_blob": "320122ad737c4923d2a543480709c3c1c2cb65e2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e8b97d8b7fbe0ba7b719c80ba497c7559cfa4f70928afc3543b3404440a9f4cf",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        699,
+        752
+      ],
+      [
+        968,
+        1005
+      ]
+    ],
+    "total_lines": 1522,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s07",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/workflows/discuss-phase.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 51827,
+    "git_blob": "98ad79317e772219aec4c65ea0873886817c781c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0eeee62db841ed6dbc32f8c3c93b9be0c4f8c2d72d05988158e0fb04ba8d7619",
+    "observed_sha256": null,
+    "manifest_sha256": "0eeee62db841ed6dbc32f8c3c93b9be0c4f8c2d72d05988158e0fb04ba8d7619",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        125,
+        166
+      ],
+      [
+        1165,
+        1184
+      ]
+    ],
+    "total_lines": 1201,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s08",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/workflows/verify-work.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 20429,
+    "git_blob": "9c29ad43abd8865d84b5577b94b184cab8c3e71a",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "20788d17102d493d8d15b2482b914f2081d20606be869c0ae5f447e9676a4491",
+    "observed_sha256": null,
+    "manifest_sha256": "20788d17102d493d8d15b2482b914f2081d20606be869c0ae5f447e9676a4491",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        440,
+        492
+      ]
+    ],
+    "total_lines": 700,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s09",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/gsd-tools.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 43392,
+    "git_blob": "4e71ff530996fa4da36ed3d15340841e3ef6d3e3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "3be4821917e8944f386bfde66ba67f76e4c79fc556704da78776763e625a8abb",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        654,
+        710
+      ],
+      [
+        720,
+        730
+      ],
+      [
+        792,
+        808
+      ],
+      [
+        833,
+        842
+      ]
+    ],
+    "total_lines": 1055,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s10",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-code-fixer.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 21562,
+    "git_blob": "880b8509b256fc03843d17538719e1fae8826bcc",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "64a353596fdc8615235e46d6f0a4847520a4f46962d4d26017c435422547be2d",
+    "observed_sha256": null,
+    "manifest_sha256": "64a353596fdc8615235e46d6f0a4847520a4f46962d4d26017c435422547be2d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        24,
+        54
+      ],
+      [
+        97,
+        188
+      ]
+    ],
+    "total_lines": 552,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s11",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-planner.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 46079,
+    "git_blob": "2580822b7b8188c939265d4c851b721b46401330",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "b28bfdbab979d26c8cb2a6ae7a7535d09702b481405f64abd1a3c014e6c1b7e0",
+    "observed_sha256": null,
+    "manifest_sha256": "b28bfdbab979d26c8cb2a6ae7a7535d09702b481405f64abd1a3c014e6c1b7e0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        173,
+        202
+      ],
+      [
+        950,
+        965
+      ],
+      [
+        1013,
+        1028
+      ]
+    ],
+    "total_lines": 1293,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s12",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/bin/lib/state.cjs",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 52685,
+    "git_blob": "be5252172036c44d15657e88bfb7606aa3b9cf59",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "faff07fb9fb350ee425521103e711170ba86e3dd306ea2e70b5605c1d1898365",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        546,
+        644
+      ]
+    ],
+    "total_lines": 1353,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s13",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/UAT.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6858,
+    "git_blob": "9d63d6d876de9c7324924ecdedc9fe4286e4ea7c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "91b5a925bce27d49ba075dffa62c0597d9355e31fea8ca7ec224986e6aee8cc8",
+    "observed_sha256": null,
+    "manifest_sha256": "91b5a925bce27d49ba075dffa62c0597d9355e31fea8ca7ec224986e6aee8cc8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        20,
+        44
+      ],
+      [
+        140,
+        156
+      ]
+    ],
+    "total_lines": 265,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s14",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/verification-report.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9641,
+    "git_blob": "8684fe2c47a6689bcf802e364720ffb5a993f40c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "df40f0c2f7dc0d35aec7b8023822541df4e072a368d2de99ba3382f93c0cd232",
+    "observed_sha256": null,
+    "manifest_sha256": "df40f0c2f7dc0d35aec7b8023822541df4e072a368d2de99ba3382f93c0cd232",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        75,
+        99
+      ]
+    ],
+    "total_lines": 322,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s15",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "get-shit-done/templates/config.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 1109,
+    "git_blob": "a3f699294398cb8086fc5a2c45a99aca3dcd08d0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "58353ea54a71cba02955e4c5d66e5969ee249ecc26ed46ac9b0585baf4afd550",
+    "observed_sha256": null,
+    "manifest_sha256": "58353ea54a71cba02955e4c5d66e5969ee249ecc26ed46ac9b0585baf4afd550",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        48
+      ]
+    ],
+    "total_lines": 48,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s16",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/kha-executor.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 22727,
+    "git_blob": "b887e5a3ac70e0757d18e4da86cc8d39bf40b582",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "622b1afade5722fd1b2cedb076ecce755d95c8dbadd622ab44f021c38f793889",
+    "observed_sha256": null,
+    "manifest_sha256": "622b1afade5722fd1b2cedb076ecce755d95c8dbadd622ab44f021c38f793889",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        54,
+        65
+      ],
+      [
+        256,
+        265
+      ]
+    ],
+    "total_lines": 548,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s17",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-milestone-manager/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3045,
+    "git_blob": "14be63378f7dee58a0b4d0b11151bc26d8bf9e62",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "42ba430ddc65a42a806e8ff1129561b1e276fa5c97058ef394abbbc4e1990ba8",
+    "observed_sha256": null,
+    "manifest_sha256": "42ba430ddc65a42a806e8ff1129561b1e276fa5c97058ef394abbbc4e1990ba8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        63
+      ]
+    ],
+    "total_lines": 63,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s18",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "package.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 20,
+    "git_blob": "729ac4d93b7f2d9be36b44525f02ff6555f9383a",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "dbf8353f77358bc12169b7bb7301e1978d5b503e002ee927229a8993672818fc",
+    "observed_sha256": null,
+    "manifest_sha256": "dbf8353f77358bc12169b7bb7301e1978d5b503e002ee927229a8993672818fc",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        1
+      ]
+    ],
+    "total_lines": 1,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s19",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-add-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2219,
+    "git_blob": "a3f9605cce675e3582b46274696a2e93acdc36bb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "913c617005936e67bc042742d1badf85dd704d000d9edd6b18eeee331d135332",
+    "observed_sha256": null,
+    "manifest_sha256": "913c617005936e67bc042742d1badf85dd704d000d9edd6b18eeee331d135332",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        67
+      ]
+    ],
+    "total_lines": 67,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s20",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-generate-tests/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2664,
+    "git_blob": "311aff5ae248c4d94d2227ee14e3076de4c343a3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a2958342c09271af36b5c59c37e5e78d67024698dd7fe7087679e59ecbf4a718",
+    "observed_sha256": null,
+    "manifest_sha256": "a2958342c09271af36b5c59c37e5e78d67024698dd7fe7087679e59ecbf4a718",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        65
+      ]
+    ],
+    "total_lines": 65,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s21",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-capture-todo/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2279,
+    "git_blob": "506346176ce0d1d5d6ad1d457651cd5480be90a6",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "cb3fd42122cc753ec27e314fa376e79efefed6ed29aec0fb5dc361462ac5b583",
+    "observed_sha256": null,
+    "manifest_sha256": "cb3fd42122cc753ec27e314fa376e79efefed6ed29aec0fb5dc361462ac5b583",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        67
+      ]
+    ],
+    "total_lines": 67,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s22",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-analyze-dependencies/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2090,
+    "git_blob": "cf77d4521a790b820b4b90c9d523c080e6433b43",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "caceede7c298a5ba4efff5d20d7c64d6b7835efa66c227a294177f77389d27b6",
+    "observed_sha256": null,
+    "manifest_sha256": "caceede7c298a5ba4efff5d20d7c64d6b7835efa66c227a294177f77389d27b6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        57
+      ]
+    ],
+    "total_lines": 57,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s23",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-remediate-audit-findings/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3473,
+    "git_blob": "9689ac139073c489fa75eba8227b1a3de0092485",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "869b8dbb07f6c7d9ce1031782a74e54c9d784a31828ba0b8b5d608da6c4d9b19",
+    "observed_sha256": null,
+    "manifest_sha256": "869b8dbb07f6c7d9ce1031782a74e54c9d784a31828ba0b8b5d608da6c4d9b19",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        88
+      ]
+    ],
+    "total_lines": 88,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s24",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-audit-milestone/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2217,
+    "git_blob": "b4177a1fc92b839228191439089dfb69854a0889",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "7adbe817bea8506aef3a316474f14272260a346c676bd5fb76e1949797649aa1",
+    "observed_sha256": null,
+    "manifest_sha256": "7adbe817bea8506aef3a316474f14272260a346c676bd5fb76e1949797649aa1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        59
+      ]
+    ],
+    "total_lines": 59,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s25",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-audit-uat-backlog/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 1397,
+    "git_blob": "12c678ecccc209cd3ee021a2af672d920b303512",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "98a72ecd84626e00e4fefd5e4234d67696e7e1bd050dc800e6efbe27d62c1185",
+    "observed_sha256": null,
+    "manifest_sha256": "98a72ecd84626e00e4fefd5e4234d67696e7e1bd050dc800e6efbe27d62c1185",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        47
+      ]
+    ],
+    "total_lines": 47,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s26",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-run-milestone/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5597,
+    "git_blob": "c78642e90740cfd8faaaa8ccacdacad104b523d7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "3d1cbed95712c27f26009c952422f383186cda875e47855d93b5ff490496ebf0",
+    "observed_sha256": null,
+    "manifest_sha256": "3d1cbed95712c27f26009c952422f383186cda875e47855d93b5ff490496ebf0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        103
+      ]
+    ],
+    "total_lines": 103,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s27",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-triage-todos/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2287,
+    "git_blob": "a0003c3b557288e021ea7e8e69f665a0d96aadf1",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ee36a946b75f476ad84ddd78388b6331b9020340d600491c8c7e299f5dc44c6d",
+    "observed_sha256": null,
+    "manifest_sha256": "ee36a946b75f476ad84ddd78388b6331b9020340d600491c8c7e299f5dc44c6d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        65
+      ]
+    ],
+    "total_lines": 65,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s28",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-archive-completed-phases/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 1583,
+    "git_blob": "daf3a3953cb90c08d98eae851640063a1f6f08ae",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "88678b6930d0404257f09ff042cb8866ce7c896c84fcb87e7a893dd53a598a99",
+    "observed_sha256": null,
+    "manifest_sha256": "88678b6930d0404257f09ff042cb8866ce7c896c84fcb87e7a893dd53a598a99",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        46
+      ]
+    ],
+    "total_lines": 46,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s29",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-remediate-code-review/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3234,
+    "git_blob": "3a553ad501598a1a3ec62ae30d4d6beae3873160",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9cdcc5a8847fd436711353de513175cee37d68de3d3df524a018b9ba61fc2a03",
+    "observed_sha256": null,
+    "manifest_sha256": "9cdcc5a8847fd436711353de513175cee37d68de3d3df524a018b9ba61fc2a03",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        75
+      ]
+    ],
+    "total_lines": 75,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s30",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-review-code/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3434,
+    "git_blob": "14cbe704607cb8139fbc5464719481c9b60aa3ac",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f65d81ae922ac6d39679d4e7ca04877f7be63d00004d95b69115179db82ee9c1",
+    "observed_sha256": null,
+    "manifest_sha256": "f65d81ae922ac6d39679d4e7ca04877f7be63d00004d95b69115179db82ee9c1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "total_lines": 78,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s31",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-complete-milestone/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8113,
+    "git_blob": "18df743edae09e8da17375f1fc285f4b4bb93dbd",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f8e9564b60e25744e4ba00963f832b75fc87776229d279a001e2b8131422ccba",
+    "observed_sha256": null,
+    "manifest_sha256": "f8e9564b60e25744e4ba00963f832b75fc87776229d279a001e2b8131422ccba",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        192
+      ]
+    ],
+    "total_lines": 192,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s32",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/kha-clarify-phase/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5747,
+    "git_blob": "b56b7f0f108adfa350dd5ec0eb2df32f7ae39398",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bbfcffc0028ff62235eef8da675cc2df58dda75052c92237262b2266c7e9e32e",
+    "observed_sha256": null,
+    "manifest_sha256": "bbfcffc0028ff62235eef8da675cc2df58dda75052c92237262b2266c7e9e32e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        105
+      ]
+    ],
+    "total_lines": 105,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "No original execution, import, collection, probe, network, or installation.",
+    "id": "s33",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-gsd-workflows-001/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending",
+    "reuse_basis": null
+  }
+]

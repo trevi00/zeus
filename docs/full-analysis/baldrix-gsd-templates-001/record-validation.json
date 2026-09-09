@@ -1,0 +1,54 @@
+{
+  "status": "passed",
+  "primary_files": 43,
+  "primary_bytes": 226301,
+  "primary_lines": 8102,
+  "supporting_rows": 27,
+  "supporting_read_lines": 3039,
+  "review_refs_checked": 140,
+  "raw_git_blob_bytes_sha256_and_prior_rows": "verified_by_record_review.py_receipt_13608a",
+  "utf8_and_exactly_one_trailing_lf": true,
+  "own_python_ast_parse": true,
+  "ruff": {
+    "command": ".venv/Scripts/ruff.exe check docs/full-analysis/baldrix-gsd-templates-001/record_review.py",
+    "exit_code": 0,
+    "receipt": "40ea34",
+    "recorder_sha256": "5015ff490cd6617bf08d19ae7b34c3f4df89965b8bfbfca43e47d281be6fdf06"
+  },
+  "human_korean_readback": {
+    "receipts": [
+      "5f044c",
+      "502b50",
+      "0cddb4",
+      "final_line17_readback"
+    ],
+    "line_ranges": [
+      [
+        1,
+        264
+      ]
+    ],
+    "note": "Combined display truncated lines around 104-134; fresh 100-140 repaired it. Line179 spacing and line17 count-versus-gate wording corrected before final hash."
+  },
+  "artifact_sha256": {
+    "checkpoint.json": "4b1ee5ffcacc0e15d1f222e0a88edf28ac27419f18e964bed6e58fc4fe65615a",
+    "files.json": "3515d7f80a3a4c4df64e708782becc2e9028271f064a602e7bb53f0c99e55cf0",
+    "record_review.py": "5015ff490cd6617bf08d19ae7b34c3f4df89965b8bfbfca43e47d281be6fdf06",
+    "remaining.json": "288770e61b70571dff4aed943bb866a2690cdfef2ac049fe2c0475d03e9a3513",
+    "review.md": "4005c25040451c4edae6f7da2fcfc1e2bfea850945df3f441d5ce6c76d6723c6",
+    "supporting-evidence.json": "d1280b6330b7aa0f7d6cb5558a119ceeb1792e3ef6df445f1e9ac4f7fe292423",
+    "verification.json": "836d2dde5621c26b6c0ff68d72f9d2b94cd6129f516c2ad25ca8dc4fd583b551"
+  },
+  "source_execution_count": 0,
+  "source_import_count": 0,
+  "probe_count": 0,
+  "network_count": 0,
+  "install_count": 0,
+  "actual_claude_calls": 0,
+  "whole_closure_complete": false,
+  "license_complete": false,
+  "os_runtime_verified": false,
+  "model_qualification_verified": false,
+  "human_acceptance_verified": false,
+  "adopted": false
+}

@@ -1,0 +1,87 @@
+I've read `root-initial.md`, `root-followup.md`, `observations.md`, and the raw attempt (`stdout.txt`, plus the file listing for the attempt directory). My initial report stands as written; this is additive.
+
+## New reads in this round
+
+`docs/full-analysis/harness-environment-fixtures-001/root-initial.md` (57 L, full) · `root-followup.md` (46 L, full) · `observations.md` (51 L, full) · `attempts/3a474b8b576543168d7eb8a2d508bfb6/stdout.txt` (full, 1 record line). New source reads: `scripts/cron/dba_projection.py` 80–108 (bounded); `scripts/cron/research_collector.py` — grep hits only at lines 133–135, 199, 221, 256, 258, 274, not a body read. Everything else below re-derives from ranges already declared in my initial report.
+
+---
+
+## A. Corrections to my initial report
+
+**A1 — "six scripts" is wrong; the loop has seven invocations.** `docker-compose.yml:164–170` is one invocation per line: `research_collector.py`, `youtube_collector.py`, `reachability.py`, `research_queue.py` (existence-guarded), `youtube_queue.py`, `source_queue.py`, `role_supervisor.py researcher`. Seven, not six. I also blurred two different denominators: `research_collector.SOURCES` has **2** entries (`:133–135`, `github-trending`, `geeknews`), and that is a collector *source* count, unrelated to the *script* count in the compose loop. My phrase "loses five of six sources" fused the two. Retract.
+
+**A2 — the collector's own zero-gate does hold; my "stays healthy" framing was wrong at that level.** `research_collector.py:258` refreshes the heartbeat only `if ok_sources`, and `:274` returns `0 if ok_sources else 2`. Within that script, "0건은 성공이 아니다" is enforced. The accurate statement is root's: the researcher healthcheck reads *only* that one heartbeat (`docker-compose.yml:173–174`), so the other six invocations have no health coverage — not that a partially-dead collector reports healthy.
+
+**A3 — `pip install` failure exits the container; it does not surface as a stale heartbeat.** `docker-compose.yml:220` is `pip install --quiet 'psycopg[binary]' && while true; do ... || true; sleep 600; done`. The `&&` gates the loop: install failure means the loop never starts and the shell exits, terminating the container. `|| true` applies only to the loop body (`dba_projection.py`). No `restart:` key appears anywhere in the file (lines 1–232). So the failure mode is container exit, which is more visible than what I described, not less. My "surfaces only as a heartbeat going stale 1800 s later" was wrong. The unpinned-network-dependency-at-start-time concern is unaffected.
+
+**A4 — `||true` does not make command output unobservable.** I wrote that a crash "produces exactly the same observable as success." That conflates *exit status* with *observables*. `|| true` normalizes the loop's status only; stdout and stderr from each invocation remain in the container log. Correct claim: the loop's aggregate status is uninformative, and the healthcheck ignores those streams — not that the failure leaves no trace.
+
+**A5 — "passes every existing gate" is unprovable from my reads.** On `real_state()` writes I wrote that such a suite "writes to live operational state and passes every existing gate." I read `harness_lint.py` only at 601–660 and 740–799 and did not enumerate the check registry. Bounded restatement: it passes `check_test_isolation` as read, and I found no other mechanism in the ranges I read; I did not establish absence across all gates.
+
+**A6 — "isolation landed at 100% coverage" overclaims what a substring count shows.** 158/158 files contain the literal `isolate()`. That is presence, not proof that the call executes, executes before harness import, or is not inside a comment or dead branch. I hedged this in §2 and §8 but stated it unhedged in §1. The unhedged sentence is withdrawn; the count stands as a presence count only.
+
+**A7 — not all `cases.yaml` corruption is silent.** I wrote "deleted or corrupted → curator lands silently." `golden.py:38–39` returns `[]` for a missing file, and `:40–41` filters non-dict / command-less entries — root observed total 0 / failures 0 for a missing file, three malformed entries, and a mapping root. But `yaml.safe_load` on syntactically invalid YAML raises, and `load_cases` has no `try`, so that propagates. Correct scope: **absence and schema-invalid-but-parseable content** are silent; parse-level corruption is not.
+
+**A8 — the write-boundary finding must be bounded to what I read.** I established: `knowledge/golden/` appears in no entry of `config/policy/write-boundary.json` (full read, 262 L), and `write_boundary.py` returned no grep hits for `golden|fixtures|sha256|checksum`. That is literal absence from one policy file and one grep over the evaluator. It does **not** establish absence of every mechanism (project fence, curator-side checks, sandbox promotion path, `ask` rules I did not enumerate), and it is not an observed promotion bypass. Root's own observation is explicit that `gate()`/`_golden_gate` were read, not called. My ranked item #1 should read: *the corpus is not covered by the write-boundary policy as declared, and no integrity mechanism was found in the ranges read* — not "is machine-writable by that loop."
+
+**A9 — the 20–50 figure is a source aspiration, not a floor.** `cases.yaml:4` says "목표 20~50" in its own prose. I framed 9 cases as a shortfall against a target as if the target were binding. It is not agreed, not mandated by any consumer I read, and the only mechanical floor anywhere is `test_golden_smoke.py:35`'s `>= 8`. Retract the shortfall framing; keep the observation that the enforced floor is 8 and the file's own count-is-canonical clause makes any number self-ratifying.
+
+**A10 — the canary's semantic dependencies are inside protected paths.** I wrote that the probes are "a canary on `scripts/` semantics, which the same loop can modify." Checking against the policy I had already read in full: `probe_seams_blocking.py:15` imports `engine.graph_queries` → `scripts/engine/` is `deny`/`inviolable` (`write-boundary.json:35–38`); `probe_seams.py:6` imports `lib.seams` and `probe_lock.py:6` imports `lib.debate_rules` → `scripts/lib/` is `deny`/`verifiable` (`:147–150`). So the semantic core the canaries measure is policy-covered. The unprotected surface is narrower and sharper than I stated: the three probe files themselves and `cases.yaml`, all under `knowledge/golden/`.
+
+**A11 — the README residual conclusion is a derivation, not an experiment.** "Fixed" is well supported: `sandbox.py:48` imports `CANON_GLOB`, `:172` uses it as the default, `suite_floor.py:46` defines it as `tests/**/test_*.py`. My further claim — that deleting the paragraph would not redden `check_runner_globs` — is a static derivation from `harness_lint.py:740–799` plus the `_glob_sites` docstring at `:635–646`. I did **not** read the `_glob_sites` AST body (roughly `:660–740`), did not exhaustively enumerate its decl branches, and ran no delete-diff. Downgrade from assertion to supported inference with those two gaps named.
+
+**A12 — 76 vs 158 is partly a legitimate dated snapshot.** `tests/README.md:6` labels the census "실측 2026-08-24." A dated measurement that has since grown is a historical claim, not a false current claim, and my own brief told me to keep those separate. Withdraw the "stale by 2×" framing as a defect. What survives as an independent defect is the arithmetic *inside* that dated snapshot: `22+24+18+8 = 72`, while `:15` reasons over 76. Four files are unaccounted for in the census that the bucket argument rests on, at the time it was taken.
+
+**A13 — citation error.** I wrote "`cases.yaml:10` and `golden.py:10` both document `expect_contains` as a stdout substring." `cases.yaml:10` is blank; the stdout wording appears only at `golden.py:10`. The stdout-vs-`stdout+stderr` drift finding is unchanged, single-cited.
+
+**A14 — the chat cap is characters, and my frontmatter claim was too strong.** `seeding.py:97` slices `[: _CHAT_DOC_CAP]` on a `str`, so 1200 is characters; comparing it to 494/657 **bytes** was a category error. The conclusion survives either way for these two Korean-language files. Separately, I said `body.split("---", 2)[-1]` "handles both frontmatter and no-frontmatter cases correctly." For a body with no frontmatter but two or more `---` separators, `[-1]` returns only the text after the second one and silently drops everything before it. Correct for the two current files; not robust in general.
+
+**A15 — the mount-form note needs the parser's actual behavior.** `test_fleet_mount_boundary_contract.py:56` and `:86–87` coerce non-string volume entries with `str(v)`. For Compose long-form (`{type: bind, target: /harness, read_only: true}`), the stringified dict contains `/harness` and does not end with `:ro`, so `:91–92` **fails** — over-blocking, fail-closed, not a bypass. My suffix-exclusion note (`:57`) is a known-form limitation of a string matcher, not a demonstrated boundary hole, and I should not have implied it could yield a silent pass without checking the coercion path.
+
+---
+
+## B. Root findings I independently confirm
+
+**B1 — `real_state()` leaks a newly created override.** `_isolate.py:136–142` saves `saved = os.environ.get(_ENV)`, pops, and in `finally` restores **only** `if saved is not None`. If no prior value existed and anything inside the block sets `HARNESS_STATE_DIR`, that value survives the block. Root observed exactly this (`real-state-absent → value_after: /tmp/environment-observations/new-inside-block`). I missed it; it is a real asymmetry in a helper whose whole contract is "블록을 벗어나면 격리가 복원된다(예외 경로 포함)" (`:134`). The docstring's parenthetical is true for the exception path and false for the no-prior-value path.
+
+**B2 — no validation of an inherited override.** `:99–101` returns `Path(existing)` on any truthy string. Root observed a relative, nonexistent path returned unchanged with `exists: false`. Environment redirection, not containment — agreed, and it sharpens my A5.
+
+**B3 — identical probe errors compare equal, so `stable` is True.** `live_fingerprint:290–291` folds an exception into `f"probe-error {type(e).__name__}: {e}"[:120]`. A probe failing identically at entry and exit yields two equal tuples. This is limitation ③ in the file's own docstring (`:277–280`) reaching its logical end: a *consistently broken* probe reads as "didn't move." Root observed it directly. Agreed.
+
+**B4 — size+mtime blind spot reproduced.** Root's `same-size-restored-time` scenario shows `AAAA` → `BBBB` with identical `(path, 4, 1788953979819003638)` tuples and `equal: true`. This is the hand-reproduction the source docstring claims at `:262–265`, independently re-observed. The docstring's honesty holds up.
+
+**B5 — early-bool rejection, body-exception propagation, and the changed-size control all behave as documented.** `early_bool_rejected: true`, `propagated: true`, and a real `SKIP-AXIS:` line with the diff payload. `_LiveAxis.__bool__` (`:333–339`) and the `finally` in `live_axis` (`:377–385`) do what they say.
+
+**B6 — golden schema/denominator validation is absent in four distinct ways.** Missing file, invalid entries, and mapping root all yield `total 0 / failures 0`; duplicate `name` values both run and both count (`total 2`). `load_cases:41` filters on `isinstance(c, dict) and c.get("cmd")` and nothing else — no list-root enforcement, no required-identity check, no uniqueness. A dict root iterates to keys (strings), all filtered, hence 0. Confirmed statically against my read and consistent with the raw record.
+
+**B7 — `expect_exit` is validated after the command has already run.** `golden.py:53` spawns, `:59` does `int(c.get("expect_exit", 0))`. Root's `invalid-expect-exit` scenario shows `fixture_commands: 1` and a `ValueError` — the side effect landed first. The raw fixture arithmetic corroborates: `calls.txt` holds 5 `called` lines against 1+1+1+2 = 5 fixture commands across the four executing scenarios.
+
+**B8 — stderr acceptance is observed, not just inferred.** `golden.py:65` tests `needle not in (p.stdout + p.stderr)`; root's `stderr-match` case (probe prints `TOKEN` to stderr only) passed with no failure. My static drift note is upgraded to an observed behavior — on their scratch fixture, not on any source case.
+
+**B9 — an expected nonzero exit is a valid negative control, not a defect.** `expected-failure-control` matched cleanly. Three of the nine source cases use `expect_exit: 1` by design (`cases.yaml:13`, `:21`, `:26`). Nothing here suggests those are wrong; the finding is schema validation and identity, not exit polarity.
+
+**B10 — `dba_projection.py` states a premise it does not enforce.** New read, `:90–102`: the comment says "**0행은 성공이 아니다** … 그때 healthy 로 보이면 안 된다," then `:93–95` prints to stderr, `:99–101` writes the heartbeat unconditionally, and `:102` returns 0. Since the container healthcheck (`docker-compose.yml:222–223`) reads only that heartbeat's age, a zero-event sync presents as healthy. This is the same declaration-without-mechanism shape I flagged elsewhere, in a file I had not read. Root found it; I confirm it from the source. The exception path at `:82–88` does return 2 without writing a heartbeat, so genuine PG failure is covered — the gap is specifically the zero-event success path. No projection was run by anyone, so real PG behavior and ledger↔PG parity remain unestablished.
+
+**B11 — `total >= 8` lives only in the smoke suite.** Neither `gate()` nor the consumers root traced carry it. Agreed; this is my §4 finding and root's independently.
+
+**B12 — the transfer boundary on PostgreSQL.** The source declares PG a non-canonical, fully regenerable projection (`docker-compose.yml:2–3`, `:181–184`, `state/README.md:1`). Zeus requires PG runtime authority. Those are opposite postures, so nothing about the source's disposability — volume handling, `down -v` cold-start measurement at `:52–53`, "어떤 실패도 원장에 영향을 주지 않는다" — transfers. I make no adoption or migration recommendation, and no destructive volume experiment is implied by anything in my review.
+
+---
+
+## C. Positions I hold, restated within bounds
+
+**C1** — `gate()` returning success on an empty corpus (`golden.py:73–76`) remains the finding I weight highest, now stated as: the function derives success from an empty failure list and explicitly permits zero cases; `curator._golden_gate` and `quality_cmd` consume that result without a floor (root read `curator:175–193`, `quality:115–120`; I read neither range — I rely on root for those two consumers and mark them as such). Whether that constitutes a reachable promotion bypass was not tested by anyone.
+
+**C2** — `harness_lint.check_test_isolation` (`:623–626`) enforces substring presence, not the ordering contract `_isolate.py:19–26` cites it as enforcing. Root reached this independently. Unchanged.
+
+**C3** — the `tests/README.md:44–55` residual paragraph describes a state of `sandbox.py` that no longer holds, and root reached the same conclusion via a different route ("Do not re-report the old default as current"). The self-referential half — that deleting the paragraph reddens the gate — is now downgraded per A11 to a derivation with two named gaps.
+
+**C4** — configuration is not deployment. `test_fleet_mount_boundary_contract.py:22–25` says so itself and `test_fleet_smoke.py:210` prints an explicit `SKIP:` when infra is down. Nothing in this scope evidences a running fleet, a reachable database, or an enforced mount boundary at runtime.
+
+**C5** — `instructions.md:14` (HK-4) is a model-facing declaration with no mechanism behind it in anything I read, and neither `seeding.py:89–99` nor the index builder authenticates `trust`/`created_by`. Root reached the same. I treated all 16 source files, and the two chat documents specifically, as data throughout both rounds.
+
+---
+
+## D. Standing non-claims
+
+No source was executed, imported, written, or networked by me in either round; I invoked nothing, and the observations I cite are root's, run in their immutable offline Linux container with all 931 source files byte-identical afterward. Not executed by anyone: the nine original golden cases, the source suite, the gate writer, curator, the ledger writer, PG, any fleet service, Windows, WSL, or any human acceptance step. `contract/` vs `integration/` remains uncounted. No whole-repository, license, OS/platform, model, human, adoption, or acceptance claim is made or implied. Exact raw file identities and byte ranges for the attempt are root metadata; endpoints I report from `Read` may include a trailing EOF line.

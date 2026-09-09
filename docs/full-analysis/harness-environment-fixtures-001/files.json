@@ -1,0 +1,434 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "infra/fleet/docker-compose.yml",
+    "bytes": 13244,
+    "git_blob": "3689a96fc5ee6d1a1dad7c9a764e2f5d6e49d0d7",
+    "pinned_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 231,
+        "raw_range_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Fleet topology, historical operational evidence, mount boundaries, per-component health versus runtime authority and install reproducibility. PG is projection here, runtime authority in Zeus. No fleet deployed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/chat/instructions.md",
+    "bytes": 657,
+    "git_blob": "c2ea2caae8624f9e743e2548a51b83ac4923451e",
+    "pinned_sha256": "c1b3fb62c1e4cee156ba4def470321c0cb3ade4f048c310a0ab187fc5f00a24c",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 14,
+        "raw_range_sha256": "c1b3fb62c1e4cee156ba4def470321c0cb3ade4f048c310a0ab187fc5f00a24c"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Confirmed user-authored label and intake/respond/consolidate external-data discipline; direct seeding consumer ignores provenance fields, adoption not authenticated."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/chat/persona-default.md",
+    "bytes": 494,
+    "git_blob": "a5b5088ef5e574423cfa891bea7f4124b6249939",
+    "pinned_sha256": "07a1fb7e45ad674c069ce99ae258ce7fb5140797050533401c8e85fc2ee1744c",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 14,
+        "raw_range_sha256": "07a1fb7e45ad674c069ce99ae258ce7fb5140797050533401c8e85fc2ee1744c"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Korean evidence-oriented persona; fixed-name capped seeding and ontology node consumer, not independently authenticated user authority."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/cases.yaml",
+    "bytes": 2346,
+    "git_blob": "6587fd034e9c4073b2d0fe7e76fd1fe75438a24e",
+    "pinned_sha256": "e736875068c5bad937f78a66aa31836d3eda1b7fac95d0103ea9228e9ceefa9c",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 51,
+        "raw_range_sha256": "e736875068c5bad937f78a66aa31836d3eda1b7fac95d0103ea9228e9ceefa9c"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Nine cases and three held-out declarations; fixed fixtures plus live source inputs; zero-case acceptance and malformed-input filtering traced, original case list not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/fixtures/bad-node.jsonl",
+    "bytes": 121,
+    "git_blob": "a27e1f205de5aa393c46708e8ae205bc95bb45fb",
+    "pinned_sha256": "5edfa9992f192eb371200317643baa1d553e656045891fb8b43ce991338b10c6",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 1,
+        "raw_range_sha256": "5edfa9992f192eb371200317643baa1d553e656045891fb8b43ce991338b10c6"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Golden positive/negative or held-out fixture substrate; fixed synthetic inputs and expectations must not be treated as actual device, provider or human acceptance. Original fixture not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/fixtures/bad-usecase.md",
+    "bytes": 167,
+    "git_blob": "f064e439b59672bac71da76579e1f96ef4514906",
+    "pinned_sha256": "d263b4156c519a9112bd4ec0b3a76b4af11566be4f0dfeed0f44972768f6c4d4",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 7,
+        "raw_range_sha256": "d263b4156c519a9112bd4ec0b3a76b4af11566be4f0dfeed0f44972768f6c4d4"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Golden positive/negative or held-out fixture substrate; fixed synthetic inputs and expectations must not be treated as actual device, provider or human acceptance. Original fixture not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/fixtures/extracted-intent.md",
+    "bytes": 153,
+    "git_blob": "992ef25c1a202b2eaea9b9d9ac56addf1accaf09",
+    "pinned_sha256": "8e95b61cc72b7f820894086548041b91d6855a13e9decaf6b29ff77ea1b5cf0b",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 7,
+        "raw_range_sha256": "8e95b61cc72b7f820894086548041b91d6855a13e9decaf6b29ff77ea1b5cf0b"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Golden positive/negative or held-out fixture substrate; fixed synthetic inputs and expectations must not be treated as actual device, provider or human acceptance. Original fixture not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/fixtures/good-usecase.md",
+    "bytes": 372,
+    "git_blob": "e96980752784e84150fec098098a99715d4d7282",
+    "pinned_sha256": "3f731243a107ac649fa3dc75f726df256deb2f442ade16165650f737a480d588",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 7,
+        "raw_range_sha256": "3f731243a107ac649fa3dc75f726df256deb2f442ade16165650f737a480d588"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Golden positive/negative or held-out fixture substrate; fixed synthetic inputs and expectations must not be treated as actual device, provider or human acceptance. Original fixture not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/fixtures/probe_lock.py",
+    "bytes": 646,
+    "git_blob": "404b787ae4a57d36e6b7f59f43e0b532f526894f",
+    "pinned_sha256": "4233a4193b333d312a5a6a98feb67ca2e240ba9c42e6f85e06e6500c8d907b76",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 18,
+        "raw_range_sha256": "4233a4193b333d312a5a6a98feb67ca2e240ba9c42e6f85e06e6500c8d907b76"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Golden positive/negative or held-out fixture substrate; fixed synthetic inputs and expectations must not be treated as actual device, provider or human acceptance. Original fixture not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/fixtures/probe_seams.py",
+    "bytes": 401,
+    "git_blob": "4ab5d7c93fc7c728ca8ec168ad023f707d09bf66",
+    "pinned_sha256": "188e29fe51a1e06c785d7d79ba9165053ab742f1ec4624f3fcbc6ec966de23e9",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 10,
+        "raw_range_sha256": "188e29fe51a1e06c785d7d79ba9165053ab742f1ec4624f3fcbc6ec966de23e9"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Golden positive/negative or held-out fixture substrate; fixed synthetic inputs and expectations must not be treated as actual device, provider or human acceptance. Original fixture not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "knowledge/golden/fixtures/probe_seams_blocking.py",
+    "bytes": 2362,
+    "git_blob": "7a78d76b5f1ba05a80cc431a36ff81bbea30b1ee",
+    "pinned_sha256": "bc0285115c4870415e8675b76b5c0a406b438a351c4b903f6838b4b97e2786f5",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 65,
+        "raw_range_sha256": "bc0285115c4870415e8675b76b5c0a406b438a351c4b903f6838b4b97e2786f5"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Golden positive/negative or held-out fixture substrate; fixed synthetic inputs and expectations must not be treated as actual device, provider or human acceptance. Original fixture not executed."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "sandbox/README.md",
+    "bytes": 1163,
+    "git_blob": "2843ffc3a6a2982dc82655fabd8037e50f1c69c4",
+    "pinned_sha256": "a6caa28f10d52b6a9181b23ee1dc261330883a4732aff7f6a4c38785a4b50bc8",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 19,
+        "raw_range_sha256": "a6caa28f10d52b6a9181b23ee1dc261330883a4732aff7f6a4c38785a4b50bc8"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Tracked marker fixes directory presence in worktrees; pending approval patch lifecycle and disposable scratch require separate retention."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "state/README.md",
+    "bytes": 955,
+    "git_blob": "43b7c88488f3303f62231b2905db3e346e5f68ca",
+    "pinned_sha256": "c71706876b9d05009437c8d3f73a1221636c718148cb671d3c69664f9f64034c",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 14,
+        "raw_range_sha256": "c71706876b9d05009437c8d3f73a1221636c718148cb671d3c69664f9f64034c"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Tracked directory marker and injectable state projection; not a Zeus PG-authority deletion or migration policy."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/README.md",
+    "bytes": 3242,
+    "git_blob": "56a1925ca9fcdfc3c0e198db0b99ec2b16a05314",
+    "pinned_sha256": "7fa4e5c262b646d2783df0a3e58bd9b197122e54cd64be8376227ec1319ca103",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 55,
+        "raw_range_sha256": "7fa4e5c262b646d2783df0a3e58bd9b197122e54cd64be8376227ec1319ca103"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Intent buckets and shim rationale; historical count arithmetic and fixed sandbox residual distinguished from current code."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/_isolate.py",
+    "bytes": 21666,
+    "git_blob": "ac21d23d01c3ee75c109cb1d462a5c2b03ba793b",
+    "pinned_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 402,
+        "raw_range_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 9,
+    "semantic_summary": "Environment redirection, real-state override restoration, live equality heuristic and explicit skipped axes; nine original scratch scenarios observed, not OS containment."
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "var/README.md",
+    "bytes": 1556,
+    "git_blob": "3d56c5394a322a03b7e95f8d2cd14fb7ea32c610",
+    "pinned_sha256": "91a4a4700f14ca0cc74607de120dd8fb01435955471c647ca344496ae5749331",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 22,
+        "raw_range_sha256": "91a4a4700f14ca0cc74607de120dd8fb01435955471c647ca344496ae5749331"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/harness-environment-fixtures-001/root-followup.md",
+    "review_refs": [
+      "docs/full-analysis/harness-environment-fixtures-001/root-initial.md",
+      "docs/full-analysis/harness-environment-fixtures-001/observations.md",
+      "docs/full-analysis/harness-environment-fixtures-001/resolution.md"
+    ],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "adoption_status": "not_approved_not_incorporated",
+    "original_source_suite_executed": false,
+    "primary_isolation_scenarios": 0,
+    "semantic_summary": "Cache marker and historical test-order dependence; regeneration claim is bounded source intent, no cleanup executed."
+  }
+]

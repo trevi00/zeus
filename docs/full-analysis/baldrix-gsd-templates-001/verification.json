@@ -1,0 +1,52 @@
+{
+  "primary_count": 43,
+  "primary_bytes": 226301,
+  "primary_lines": 8102,
+  "partition_counts": {
+    "baldrix:get-shit-done/templates:001": {
+      "files": 32,
+      "bytes": 165696
+    },
+    "baldrix:get-shit-done/templates:002": {
+      "files": 11,
+      "bytes": 60605
+    }
+  },
+  "supporting_rows": 27,
+  "supporting_read_lines": 3039,
+  "prior_reuse_rows": 0,
+  "review_refs_checked": 140,
+  "raw_blob_size_sha256_verified": true,
+  "range_bounds_verified": true,
+  "utf8_decoding_verified": true,
+  "korean_sentinel_verified": true,
+  "missing_manifest_snapshot_sha256_paths": [
+    "get-shit-done/bin/lib/template.cjs",
+    "get-shit-done/bin/lib/phase.cjs",
+    "get-shit-done/bin/lib/uat.cjs",
+    "get-shit-done/bin/lib/core.cjs",
+    "get-shit-done/bin/lib/commands.cjs",
+    "get-shit-done/bin/lib/state.cjs",
+    "get-shit-done/bin/lib/profile-output.cjs",
+    "get-shit-done/bin/lib/frontmatter.cjs",
+    "get-shit-done/bin/lib/verify.cjs",
+    "get-shit-done/bin/lib/config.cjs"
+  ],
+  "upstream_tests_run": false,
+  "external_claims_verified": 0,
+  "full_read_gap_repairs": {
+    "get-shit-done/templates/codebase/concerns.md": "Truncated 56c19b was supplemented with fresh lines 1-144 in 92d49f; displayed 142-310 completed the body.",
+    "get-shit-done/templates/phase-prompt.md": "Truncated 6f2e52 was supplemented with fresh lines 520-610 in 91118f; displayed 1-529 completed the body."
+  },
+  "search_only_not_body": [
+    "1f21fc",
+    "381ed0",
+    "398fe7",
+    "c8aadf",
+    "fdd299",
+    "c17857",
+    "551d83"
+  ],
+  "search_limits": "Windows literal glob error and truncated file listing are not negative evidence of total test absence. Direct bounded test identifier search had no target test matches. No test bodies executed.",
+  "config_final_read_receipt": "Fresh config.cjs numbered lines 330-405 displayed after 05e343; functions output returned only output text, so no chunk id was retained."
+}
