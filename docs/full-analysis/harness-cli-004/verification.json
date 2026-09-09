@@ -6,9 +6,11 @@
   "primary_bytes": 114624,
   "supporting_files": 27,
   "manifest_snapshot_sha256_missing": [],
-  "review_sha256": "120b2415faef7406b8b96c282825f64b964ace7d0476ca5854c97466a4134efb",
+  "review_sha256": "6d542f99ff494aae327ec0415f87e886067381d35495b7fd0aee9a78d56f614e",
   "upstream_tests_executed": [],
   "upstream_execution_count": 0,
   "runtime_claim": "not_verified",
-  "source_execution_or_adoption_proven": false
+  "source_execution_or_adoption_proven": false,
+  "prior_review_sha256": "120b2415faef7406b8b96c282825f64b964ace7d0476ca5854c97466a4134efb",
+  "root_amendment": "Citation corrected after pinned source reread; no upstream execution"
 }

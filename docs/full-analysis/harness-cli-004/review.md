@@ -57,7 +57,7 @@ judge 입력에는 비어 있지 않은 evidence와 statement 검사가 있으�
 
 발견 0건, 무단언(vacuous), 단언 수 감소, 실패 파일과 기준선의 drift를 검사하는 방어가 있다. `--allow-vacuous`를 줘도 발견 자체가 0건인 경우는 실패한다. 재확인에서 원래 red가 사라져도 red_unknown으로 남겨 0으로 세탁하지 않는다. 최신 실행 요약은 원자적으로 쓴다. 이 방어를 없는 것처럼 취급해서는 안 된다.
 
-그러나 `test_outcome.py:45–85,90–111,179–253,303–345`의 GREEN에는 pass와 skip이 있다. `suite_cmd.py:358–376`의 no_verdict는 GREEN과 CODE_RED를 제외한다. **모든 발견 파일이 SKIP이고 별도 drift 오류가 없는 경우** suite는 no_verdict=0, vacuous=0, 종료 0이 될 수 있다. `autoheart_cmd.py:438–480`의 `_g_suite`는 종료 코드·vacuous·no_verdict를 보므로 이 개별 게이트를 통과할 수 있다. unverified_axes가 요약에 있어도 이 소비자는 차단 조건으로 사용하지 않는다. 원본 실행 없는 정적 귀결이며 전체 autoheart/배포 게이트를 모두 통과한다는 뜻은 아니다.
+그러나 `test_outcome.py:45–85,90–111,179–253,303–345`의 GREEN에는 pass와 skip이 있다. `suite_cmd.py:358–376`의 no_verdict는 GREEN과 CODE_RED를 제외한다. **모든 발견 파일이 SKIP이고 별도 drift 오류가 없는 경우** suite는 no_verdict=0, vacuous=0, 종료 0이 될 수 있다. `autoheart_cmd.py:129–151`의 `_g_suite`는 종료 코드·vacuous·no_verdict를 보므로 이 개별 게이트를 통과할 수 있다. unverified_axes가 요약에 있어도 이 소비자는 차단 조건으로 사용하지 않는다. 원본 실행 없는 정적 귀결이며 전체 autoheart/배포 게이트를 모두 통과한다는 뜻은 아니다.
 
 기준선이 이전의 양수 단언 수를 알고 있으면 pass→skip 감소를 막는다. 기준선이 없거나 이전 값도 0이면 그 방어의 분모가 없다. `autoheart_cmd.py:678–725`의 evidence 수 방어와 pipeline의 known_good 대비 tests 삭제 검사(`harness-selfimprove.yaml:238–243`)도 별도로 존재한다. 이를 무시해 전체 승격 우회를 확정할 수 없다.
 
@@ -95,3 +95,5 @@ Windows/Linux/WSL에서는 subprocess 실행 방식, shell 인자, 경로·시�
 전문 6개 정적 검토만 완료했다. 지원 파일은 명시한 구간만 읽었으며 전체 caller/config/test closure, 실제 GitHub 실패 원인, 실행·동시성·인가 재현, 현재 보안 키/OS 권한, 배포 환경, 실제 Claude 교차 검토는 이 문서가 완료하지 않는다. 후속 실행 계획은 root가 검토한다. 차단된 gatewriter 프로브를 재시도하거나 우회하지 않았다.
 
 원본·runtime·공유 coverage·다른 리뷰어 파일은 변경하지 않았다. 생성한 자체 메타데이터 검사 결과는 `verification.json`에 분리하며 원본 테스트 PASS로 세지 않는다.
+
+2026-09-09 인용 정정: 후속 validator 독해에서 S05의 _g_suite/suite_verdict 위치를 438–480에서 129–151로 바로잡았다. 두 범위는 기존 지원 원장에 이미 기록되어 있었고 root가 pinned 원문 120–160 및 430–480을 직접 재확인했다. 438–480은 reference runner다. 정적 결론과 실행 0은 유지하며 이전 보고는 Git 8e1b557에 보존한다.

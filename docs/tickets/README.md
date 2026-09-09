@@ -19,3 +19,4 @@
 - [FA-014](https://github.com/trevi00/zeus/issues/15) · `ZEUS-f5a496e41ac2` · revision 1
 - [FA-015](https://github.com/trevi00/zeus/issues/16) · `ZEUS-39d3d0633060` · revision 1
 - [FA-016](https://github.com/trevi00/zeus/issues/17) · `ZEUS-e36daeb984c1` · revision 1
+- [FA-017](https://github.com/trevi00/zeus/issues/18) · `ZEUS-3875a025c20d` · revision 1

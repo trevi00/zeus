@@ -134,5 +134,13 @@
     "url": "https://github.com/trevi00/zeus/issues/17",
     "number": 17,
     "sync_status": "synced"
+  },
+  {
+    "topic": "FA-017",
+    "id": "ZEUS-3875a025c20d",
+    "revision": 1,
+    "url": "https://github.com/trevi00/zeus/issues/18",
+    "number": 18,
+    "sync_status": "synced"
   }
 ]
