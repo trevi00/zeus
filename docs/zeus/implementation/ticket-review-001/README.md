@@ -50,5 +50,15 @@ Windows 전체 테스트는 **723 passed, 139 skipped**였습니다. 이 실행 
 Ruff는 통과했습니다. 이 테스트의 GitHub 전송 fixture와 별도로 보존한 실제 GitHub 관측을 구분합니다.
 최종 소스 해시와 검사 범위는 `validation.json`, 세부 실행은 각 `*-tests.log`에 보존합니다.
 
+최종 구현 커밋 `1bd9497e84f93104f0d98b74a8a7dd4ff378cb01`을 별도 WSL Ubuntu checkout에서
+다시 설치하여 **729 passed, 133 skipped**를 확인했습니다. Ruff, 패키지 빌드, 검토 CLI 도움말,
+변경 없는 lockfile·작업 트리까지 통과했습니다. `wsl/receipt.json`에 정확한 커밋, 환경, 단계별 명령과
+출력 해시를 보존합니다. WSL에서는 일반 테스트를 실행했고 실제 PostgreSQL 검사는 위 Windows 실행입니다.
+
+같은 구현 커밋의 [원격 CI 34371488861](https://github.com/trevi00/zeus/actions/runs/34371488861)도
+Windows·Ubuntu의 Python 3.12/3.14 네 작업과 실제 서비스 통합 작업까지 **다섯 작업 모두 통과**했습니다.
+원시 결과는 `../../ci/34371488861.json`입니다. 뒤따르는 기록 커밋은 이 문서와 검증 증적만 추가하며,
+소스·테스트·의존성·CI 정의는 바꾸지 않습니다.
+
 추가 개선 이슈를 만들지 않았습니다. FA-029/#30은 운영 승인자 등록과 인증된 신뢰 정책 교체 등
 남은 인수 조건 때문에 열려 있습니다. 전체 하네스의 분석·흡수·운영 준비 완료를 주장하지 않습니다.

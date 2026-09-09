@@ -1,0 +1,9 @@
+usage: zeus ticket review-close [-h] --packet PACKET --output OUTPUT ticket_id
+
+positional arguments:
+  ticket_id
+
+options:
+  -h, --help       show this help message and exit
+  --packet PACKET
+  --output OUTPUT  Read-only HTML review; never grants approval

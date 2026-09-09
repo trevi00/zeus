@@ -1,0 +1,16 @@
+usage: zeus ticket reopen [-h] --revision REVISION --sequence SEQUENCE
+                          --reason REASON
+                          [--expected-state {closed,open,dispatched}]
+                          ticket_id
+
+positional arguments:
+  ticket_id
+
+options:
+  -h, --help            show this help message and exit
+  --revision REVISION
+  --sequence SEQUENCE
+  --reason REASON
+  --expected-state {closed,open,dispatched}
+                        Use open/dispatched explicitly to reconcile a new
+                        external close
