@@ -1,0 +1,68 @@
+import json
+import hashlib
+import os
+from pathlib import Path
+import subprocess
+import sys
+from uuid import uuid4
+import psycopg
+from psycopg import sql
+from psycopg.conninfo import make_conninfo
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.application.workflow import Workflow
+from codex_harness.bootstrap import database_url, organization
+from codex_harness.domain.model import ContractError, envelope
+
+root = Path(__file__).resolve().parents[1]
+out = root / 'docs/zeus/implementation/retry-state-001'
+lease_path = root / '.runtime/retry-verified-lease.json'
+if len(sys.argv) > 1:
+    workflow = Workflow(PostgresStore(database_url()), organization())
+    if sys.argv[1] == 'claim':
+        lease = workflow.claim('worker:implementation', 'isolated-process', max_attempts=None if sys.argv[2]=='default' else int(sys.argv[2]))
+        if lease:
+            lease_path.write_text(json.dumps(lease), encoding='utf-8')
+        print(json.dumps(lease))
+    else:
+        lease = json.loads(lease_path.read_text('utf-8'))
+        try:
+            result = workflow.fail(lease, 'Invalid JSON in isolated child result')
+        except ContractError as exc:
+            result = {'error_type': type(exc).__name__, 'error': str(exc)}
+        print(json.dumps(result))
+    raise SystemExit()
+assert not (out / 'verified.json').exists()
+schema = 'retry_live_' + uuid4().hex
+with psycopg.connect(database_url()) as conn:
+    conn.execute(sql.SQL('CREATE SCHEMA {}').format(sql.Identifier(schema)))
+dsn = make_conninfo(database_url(), options=f'-c search_path={schema},public')
+store = PostgresStore(dsn); store.migrate()
+workflow = Workflow(store, organization())
+message = envelope('task.assign', 'lead:improvement', 'worker:implementation', 'implement',
+                   {'objective': 'Isolated retry continuity observation'}, str(uuid4()))
+task = workflow.submit(message)
+with store.transaction() as tx:
+    row = tx.get('tasks', task['id'])
+    row.update(project_context={'id': 'isolated-project'}, retrospective={'observed': 3, 'target': 5, 'reference': 'isolated-source'})
+    tx.put('tasks', task['id'], row)
+env = dict(os.environ, ZEUS_DATABASE_URL=dsn, HARNESS_DATABASE_URL=dsn)
+results = []
+for args in [('claim', '1'), ('fail',), ('fail',), ('claim', '2'), ('claim', 'default'), ('fail',)]:
+    p = subprocess.run(['uv', 'run', 'python', str(Path(__file__)), *args], cwd=root, env=env, capture_output=True, check=True)
+    results.append({'args': args, 'result': json.loads(p.stdout), 'exit_code': p.returncode})
+assert results[1]['result'] == results[2]['result']
+assert results[3]['result'] is None and results[4]['result'] is None
+assert results[5]['result']['error_type'] == 'ContractError'
+with store.transaction() as tx:
+    records = tx.records()
+    current = tx.get('tasks', task['id'])
+assert current['attempt'] == 1 and current['status'] == 'failed'
+assert current['retry_budget']['max_attempts'] == 1
+assert current['retrospective']['observed'] == 3 and current['retrospective']['target'] == 5
+state = {'schema': schema, 'task_id': task['id']}
+(root / '.runtime/retry-verified-state.json').write_text(json.dumps(state), encoding='utf-8')
+record = {**state, 'base_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().strip(),
+          'mode': 'Actual PostgreSQL, six separate child processes using Workflow; no model execution', 'results': results, 'postgres': records, 'source_sha256': {p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in ['src/codex_harness/application/workflow.py','src/codex_harness/application/execution_budget.py','src/codex_harness/adapters/executor.py']}}
+(out / 'verified.json').write_text(json.dumps(record, indent=2)+'\n', encoding='utf-8', newline='\n')
+(out / 'verified-runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'replayed_failure_idempotent': True, 'budget_increase_rejected': True, 'exhaustion_preserved': True, 'child_processes': 6}))

@@ -1,0 +1,17 @@
+No writes or execution. Read: `root-design.md`, `execution_budget.py`, `workflow.py`, `executor.py`, `cli.py:196-199`, `tests/test_retry_state.py`.
+
+## Verified against design
+
+Both baseline defects are closed. `fail` (`workflow.py:197-221`) digests bucket/task/generation/attempt/original-owner/error/retryability/evidence, stores `failure_receipt` on the row, and on replay re-checks receipt equality **plus** current generation/attempt/status/error/evidence before returning read-only. Generation is monotone per claim, so a receipt can never re-match after a later claim — stale masquerade is structurally impossible, and `cancel` is covered (`test:111`). `nullcontext(transaction)` keeps the receipt and transition in the caller's transaction; the `OSError` rollback test (`:48`) proves both vanish together. `positive_integer` uses `type(value) is int`, excluding bool; `aware_time` rejects naive; overflow becomes `ContractError` before any mutation. Evidence clearing with `attempt_outcomes` retention is correct and tested. Decisions bind via `executor.py:479`. CLI `inspect execution_failures` is wired but untested.
+
+## Concrete defects
+
+1. **The pin binds at first *evaluation*, not first runnable claim.** `retry_limit` is called at `workflow.py:103`, *before* the deadline, terminal-dependency and unsatisfied-dependency branches (`:106-117`). A task whose dependencies are unmet hits `continue` at `:117` with a budget already persisted — so whichever process merely *looks* at a queued task first, with any explicit `max_attempts`, owns its budget forever. Move the call into the `else` branch, or bind only when `attempt` is about to increment.
+2. **`deadline_time` at `:106` re-wedges the queue.** `ticket_binding` failures are caught per task (`:92`), but a legacy row with a naive or malformed stored deadline raises out of the whole `for` loop, starving every other task of that agent — exactly the starvation class the design says it fixed for conflicts. Same for `positive_integer(budget["max_attempts"])` at `execution_budget.py:41` on a corrupt row. Both need per-task skip plus an event.
+3. **Doc/code mismatch on legacy rows.** root-design.md says legacy first observation "records the current limit"; the code records `requested` when supplied (`:34`), so a new process can still set a legacy in-flight row's budget to an arbitrary value once. That is the baseline 1→2 defect surviving for pre-upgrade rows. The partial scope is disclosed, but not this specific residue — `test_legacy_attempt_does_not_invent_its_original_budget` only exercises the implicit path.
+4. **Replay is read-only in PG, not overall.** `executor.py:443` calls `self.artifacts.put` unconditionally, after `fail_execution` has returned its no-write replay result. The diagnosis row is guarded by `:445`; the artifact write is not. Scope the claim to PG or move the put under the same guard.
+5. `budget["version"]` is never incremented anywhere, so the conflict-event dedup key is effectively fixed — fine today, but it silently forecloses the authorized budget-raise transition FA-017 AC 6 still needs.
+
+## Scope accuracy
+
+The closing paragraph is honest: clock discontinuity, authorized exhausted/deadline recovery, terminal notification reconciliation, malformed-output matrix and the Windows/Linux/WSL acceptance matrix remain open, and parser child processes are correctly disclaimed as not model execution. I did not run the tests, so "focused actual PG tests running" is your report, not something I verified.

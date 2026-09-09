@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--resume",
+    "0590e6f0-d990-44f2-99ba-e3e998e165c2",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Final retry-state kernel review, <=350words. Fixed your findings: pinning now only in runnable branch after deadline/dependency checks. Stored malformed deadline/budget ContractError blocks only that row with event; legacy attempted row with no pin is blocked UnverifiedLegacyRetryBudget rather than guessed from caller or current policy. Tasks/decisions share behavior. _fail_task diagnosis artifact creation moved under existing diagnosis absence guard. Tests added for waiting dependency not pinning, corrupted deadline/budget not starving valid task, explicit99 cannot set legacy budget, and executor failure replay forbids artifact put and asserts PG unchanged. Threshold exhaustion fixture now explicitly represents already-pinned budget. root-design.md updated: authorized recovery/migration is still required and not delivered here, versioned recovery remains next work. Inspect final changes for concrete blockers, no execution/writes/new scope."
+  ],
+  "returncode": 0,
+  "duration_seconds": 37.31301832199097,
+  "stdout_sha256": "12a0557c306b06272d2e7ac8de0602b26dc70c2c6e48df8785cd0749751478a0",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus outbox isolation design review; no execution",
+  "session_id": "0590e6f0-d990-44f2-99ba-e3e998e165c2",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 10,
+    "cache_creation_input_tokens": 11009,
+    "cache_read_input_tokens": 243644,
+    "output_tokens": 2228,
+    "output_tokens_details": {
+      "thinking_tokens": 424
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 11009,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 898,
+        "cache_read_input_tokens": 53855,
+        "cache_creation_input_tokens": 856,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 856
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.287662,
+  "model_usage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 10,
+      "outputTokens": 2228,
+      "cacheReadInputTokens": 243644,
+      "cacheCreationInputTokens": 11009,
+      "webSearchRequests": 0,
+      "costUSD": 0.287662,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 424,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

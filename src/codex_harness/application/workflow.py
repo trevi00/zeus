@@ -1,12 +1,21 @@
 from __future__ import annotations
 
+import json
 from contextlib import nullcontext
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from codex_harness.application.audit_gate import require_adoption
+from codex_harness.application.execution_budget import (
+    aware_time,
+    block_execution,
+    deadline_time,
+    positive_integer,
+    retry_limit,
+)
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.domain.model import (
+    ContractError,
     ExecutionFailure,
     canonical,
     digest,
@@ -28,6 +37,7 @@ class Workflow:
     def submit(self, message: dict) -> dict:
         self.org.authorize(message)
         require(message["type"] == "task.assign", "Expected task assignment")
+        deadline_time(message["when"]["deadline"])
         task_id = message["message_id"]
         with self.store.transaction() as tx:
             ticket_binding(tx, message["what"]["details"])
@@ -57,10 +67,17 @@ class Workflow:
                 {'attempt': task['attempt'], 'status': status, 'at': at, 'error': error})
 
     def claim(self, agent: str, owner: str, lease_seconds: int = POLICY.task_lease_seconds,
-              max_attempts: int = POLICY.max_attempts, now: datetime | None = None) -> dict | None:
+              max_attempts: int | None = None, now: datetime | None = None) -> dict | None:
         self.org.actor(agent)
-        require(lease_seconds > 0 and max_attempts > 0, "Invalid execution budget")
-        now = now or datetime.now(timezone.utc)
+        positive_integer(lease_seconds, "Lease duration")
+        if max_attempts is not None:
+            positive_integer(max_attempts, "Retry limit")
+        require(isinstance(owner, str) and bool(owner.strip()), "Execution owner required")
+        now = aware_time(now)
+        try:
+            lease_until = (now + timedelta(seconds=lease_seconds)).isoformat()
+        except OverflowError as exc:
+            raise ContractError("Lease duration out of timestamp range") from exc
         with self.store.transaction() as tx:
             running = [row for bucket in ("tasks", "decisions_pending") for row in tx.scan(bucket)
                        if row["status"] == "running" and datetime.fromisoformat(row["lease_until"]) > now]
@@ -71,7 +88,6 @@ class Workflow:
                     continue
                 if task["status"] == "running" and datetime.fromisoformat(task["lease_until"]) > now:
                     continue
-                from codex_harness.domain.model import ContractError
                 try:
                     ticket_binding(tx, task["message"]["what"]["details"])
                 except ContractError as exc:
@@ -79,29 +95,41 @@ class Workflow:
                     tx.put("tasks", task["id"], task)
                     continue
                 if task["message"]["what"]["action"] in {"plan", "implement"}:
-                    from codex_harness.domain.model import ContractError
                     try:
                         require_adoption(tx, task["message"]["what"]["details"])
                     except ContractError:
                         continue
                 if task["status"] == "running":
                     self._attempt_outcome(task, "lease_expired", now.isoformat())
-                deadline = task["message"]["when"]["deadline"]
+                try:
+                    deadline = deadline_time(task["message"]["when"]["deadline"])
+                except ContractError:
+                    block_execution(tx, task, "tasks", "InvalidExecutionDeadline", now)
+                    continue
                 dependencies = [tx.get("tasks", dep) for dep in task["message"]["when"]["after"]]
                 terminal_dependency = any(d["status"] in {"failed", "cancelled", "expired"}
                                           for d in dependencies)
-                if deadline and datetime.fromisoformat(deadline) <= now:
+                if deadline and deadline <= now:
                     task.update(status="expired", error="deadline exceeded")
                 elif terminal_dependency:
                     task.update(status="cancelled", error="dependency did not succeed")
-                elif task["attempt"] >= max_attempts:
-                    task.update(status="failed", error="attempt budget exhausted")
                 elif any(d["status"] != "succeeded" for d in dependencies):
                     continue
                 else:
+                    try:
+                        limit = retry_limit(tx, task, "tasks", max_attempts, now)
+                    except ContractError:
+                        block_execution(tx, task, "tasks", "InvalidRetryBudget", now)
+                        continue
+                    if limit is None:
+                        continue
+                    if task["attempt"] >= limit:
+                        task.update(status="failed", error="attempt budget exhausted")
+                        tx.put("tasks", task["id"], task)
+                        continue
                     task.update(status="running", attempt=task["attempt"] + 1,
                                 generation=task["generation"] + 1, lease_owner=owner,
-                                lease_until=(now + timedelta(seconds=lease_seconds)).isoformat())
+                                lease_until=lease_until)
                     tx.put("tasks", task["id"], task)
                     return task
                 tx.put("tasks", task["id"], task)
@@ -111,7 +139,7 @@ class Workflow:
         bucket = task.get("_bucket", "tasks")
         require(bucket in {"tasks", "decisions_pending"}, "Invalid execution aggregate")
         current = tx.get(bucket, task["id"])
-        now = now or datetime.now(timezone.utc)
+        now = aware_time(now)
         require(current is not None and current["status"] == "running"
                 and current["generation"] == task["generation"]
                 and current["lease_owner"] == task["lease_owner"]
@@ -120,10 +148,14 @@ class Workflow:
         return current
 
     def heartbeat(self, task: dict, seconds: int = POLICY.task_lease_seconds) -> None:
+        positive_integer(seconds, "Lease duration")
+        try:
+            lease_until = (datetime.now(timezone.utc) + timedelta(seconds=seconds)).isoformat()
+        except OverflowError as exc:
+            raise ContractError("Lease duration out of timestamp range") from exc
         with self.store.transaction() as tx:
             current = self._owned(tx, task)
-            current["lease_until"] = (datetime.now(timezone.utc)
-                                      + timedelta(seconds=seconds)).isoformat()
+            current["lease_until"] = lease_until
             tx.put(task.get("_bucket", "tasks"), task["id"], current)
 
     def complete(self, task: dict, result: dict, commands: list[dict] | None = None) -> dict:
@@ -165,15 +197,38 @@ class Workflow:
 
     def fail(self, task: dict, error: str, retryable: bool = True,
              failure: dict | None = None, *, transaction=None) -> dict:
+        require(isinstance(error, str) and bool(error), "Failure reason required")
+        require(type(retryable) is bool and (failure is None or isinstance(failure, dict)), "Invalid failure fields")
+        try:
+            json.dumps(failure, allow_nan=False)
+        except (TypeError, ValueError) as exc:
+            raise ContractError("Failure evidence must be finite JSON") from exc
+        bucket = task.get("_bucket", "tasks")
+        require(bucket in {"tasks", "decisions_pending"}, "Invalid execution aggregate")
+        request = {"bucket": bucket, "task_id": task["id"], "generation": task["generation"],
+                   "attempt": task["attempt"], "owner": task["lease_owner"],
+                   "error": error, "retryable": retryable, "failure": failure}
+        identity = digest(request)
         with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
+            receipt = tx.get("execution_failures", identity)
+            if receipt:
+                current = tx.get(bucket, task["id"])
+                require(receipt["request"] == request and current
+                        and current.get("failure_receipt") == identity
+                        and current["generation"] == task["generation"] and current["attempt"] == task["attempt"]
+                        and current["status"] == receipt["status"]
+                        and current["error"] == error and current.get("failure") == failure,
+                        "Stale failure retry after execution changed")
+                return current
             current = self._owned(tx, task)
             self._attempt_outcome(current, "failed", utcnow(), error)
             if failure is not None:
-                current["failure"] = failure
                 current["attempt_outcomes"][-1]["failure"] = failure
             current.update(status="retry" if retryable else "failed", error=error,
-                           lease_until=None, lease_owner=None)
-            tx.put(task.get("_bucket", "tasks"), task["id"], current)
+                           failure=failure, failure_receipt=identity, lease_until=None, lease_owner=None)
+            tx.put(bucket, task["id"], current)
+            tx.put("execution_failures", identity, {"id": identity, "request": request,
+                   "status": current["status"], "at": utcnow()})
             return current
 
     def cancel(self, task_id: str, actor: str, reason: str) -> None:

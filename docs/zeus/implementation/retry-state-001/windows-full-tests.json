@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "pytest"
+  ],
+  "exit_code": 0,
+  "seconds": 206.75509405136108
+}

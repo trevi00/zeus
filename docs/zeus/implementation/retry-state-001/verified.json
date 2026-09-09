@@ -1,0 +1,398 @@
+{
+  "schema": "retry_live_48c5611cfd0d4871947fe309bd581a71",
+  "task_id": "0018de25-522e-46ef-8b17-54e3ab619385",
+  "base_commit": "57d7d90523a012160c8933de049099fbb91c13ba",
+  "mode": "Actual PostgreSQL, six separate child processes using Workflow; no model execution",
+  "results": [
+    {
+      "args": [
+        "claim",
+        "1"
+      ],
+      "result": {
+        "id": "0018de25-522e-46ef-8b17-54e3ab619385",
+        "agent": "worker:implementation",
+        "error": null,
+        "result": null,
+        "status": "running",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:implementation",
+            "sender": "lead:improvement",
+            "recipient": "worker:implementation"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "implement",
+            "details": {
+              "objective": "Isolated retry continuity observation"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T16:36:32.317078+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "0018de25-522e-46ef-8b17-54e3ab619385",
+          "causation_id": null,
+          "correlation_id": "aa14aa35-6b13-45db-a90b-a240b0eabcb3",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-09T16:36:32.327765+00:00",
+        "generation": 1,
+        "input_hash": "84b3a841046add1d44f4a8547419ba3b66970d2a2abbf3d60a0bcd435fab6623",
+        "lease_owner": "isolated-process",
+        "lease_until": "2026-09-09T16:46:32.691551+00:00",
+        "retrospective": {
+          "target": 5,
+          "observed": 3,
+          "reference": "isolated-source"
+        },
+        "project_context": {
+          "id": "isolated-project"
+        },
+        "retry_budget": {
+          "max_attempts": 1,
+          "bound_at": "2026-09-09T16:36:32.691551+00:00",
+          "version": 1,
+          "origin": "first_claim"
+        }
+      },
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "fail"
+      ],
+      "result": {
+        "id": "0018de25-522e-46ef-8b17-54e3ab619385",
+        "agent": "worker:implementation",
+        "error": "Invalid JSON in isolated child result",
+        "result": null,
+        "status": "retry",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:implementation",
+            "sender": "lead:improvement",
+            "recipient": "worker:implementation"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "implement",
+            "details": {
+              "objective": "Isolated retry continuity observation"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T16:36:32.317078+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "0018de25-522e-46ef-8b17-54e3ab619385",
+          "causation_id": null,
+          "correlation_id": "aa14aa35-6b13-45db-a90b-a240b0eabcb3",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-09T16:36:32.327765+00:00",
+        "generation": 1,
+        "input_hash": "84b3a841046add1d44f4a8547419ba3b66970d2a2abbf3d60a0bcd435fab6623",
+        "lease_owner": null,
+        "lease_until": null,
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-09T16:36:32.691551+00:00",
+          "max_attempts": 1
+        },
+        "retrospective": {
+          "target": 5,
+          "observed": 3,
+          "reference": "isolated-source"
+        },
+        "project_context": {
+          "id": "isolated-project"
+        },
+        "attempt_outcomes": [
+          {
+            "attempt": 1,
+            "status": "failed",
+            "at": "2026-09-09T16:36:33.123597+00:00",
+            "error": "Invalid JSON in isolated child result"
+          }
+        ],
+        "failure": null,
+        "failure_receipt": "3aeb7124739b4afa10ce586a456b9ad49cd054ceade6477b71ebbfb35d6d5a3e"
+      },
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "fail"
+      ],
+      "result": {
+        "id": "0018de25-522e-46ef-8b17-54e3ab619385",
+        "agent": "worker:implementation",
+        "error": "Invalid JSON in isolated child result",
+        "result": null,
+        "status": "retry",
+        "attempt": 1,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:implementation",
+            "sender": "lead:improvement",
+            "recipient": "worker:implementation"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "implement",
+            "details": {
+              "objective": "Isolated retry continuity observation"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T16:36:32.317078+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "0018de25-522e-46ef-8b17-54e3ab619385",
+          "causation_id": null,
+          "correlation_id": "aa14aa35-6b13-45db-a90b-a240b0eabcb3",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-09T16:36:32.327765+00:00",
+        "generation": 1,
+        "input_hash": "84b3a841046add1d44f4a8547419ba3b66970d2a2abbf3d60a0bcd435fab6623",
+        "lease_owner": null,
+        "lease_until": null,
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-09T16:36:32.691551+00:00",
+          "max_attempts": 1
+        },
+        "retrospective": {
+          "target": 5,
+          "observed": 3,
+          "reference": "isolated-source"
+        },
+        "failure_receipt": "3aeb7124739b4afa10ce586a456b9ad49cd054ceade6477b71ebbfb35d6d5a3e",
+        "project_context": {
+          "id": "isolated-project"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-09T16:36:33.123597+00:00",
+            "error": "Invalid JSON in isolated child result",
+            "status": "failed",
+            "attempt": 1
+          }
+        ]
+      },
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "claim",
+        "2"
+      ],
+      "result": null,
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "claim",
+        "default"
+      ],
+      "result": null,
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "fail"
+      ],
+      "result": {
+        "error_type": "ContractError",
+        "error": "Stale failure retry after execution changed"
+      },
+      "exit_code": 0
+    }
+  ],
+  "postgres": [
+    {
+      "bucket": "events",
+      "id": "f387b4b14d8ac385c19988675fc669aebdc6eec6b262d159c1cd9c9cc07d9279",
+      "body": {
+        "at": "2026-09-09T16:36:33.937508+00:00",
+        "type": "execution.retry_budget_conflict",
+        "bucket": "tasks",
+        "pinned": 1,
+        "task_id": "0018de25-522e-46ef-8b17-54e3ab619385",
+        "requested": 2,
+        "budget_version": 1
+      }
+    },
+    {
+      "bucket": "execution_failures",
+      "id": "3aeb7124739b4afa10ce586a456b9ad49cd054ceade6477b71ebbfb35d6d5a3e",
+      "body": {
+        "at": "2026-09-09T16:36:33.124638+00:00",
+        "id": "3aeb7124739b4afa10ce586a456b9ad49cd054ceade6477b71ebbfb35d6d5a3e",
+        "status": "retry",
+        "request": {
+          "error": "Invalid JSON in isolated child result",
+          "owner": "isolated-process",
+          "bucket": "tasks",
+          "attempt": 1,
+          "failure": null,
+          "task_id": "0018de25-522e-46ef-8b17-54e3ab619385",
+          "retryable": true,
+          "generation": 1
+        }
+      }
+    },
+    {
+      "bucket": "tasks",
+      "id": "0018de25-522e-46ef-8b17-54e3ab619385",
+      "body": {
+        "id": "0018de25-522e-46ef-8b17-54e3ab619385",
+        "agent": "worker:implementation",
+        "error": "attempt budget exhausted",
+        "result": null,
+        "status": "failed",
+        "attempt": 1,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:implementation",
+            "sender": "lead:improvement",
+            "recipient": "worker:implementation"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "implement",
+            "details": {
+              "objective": "Isolated retry continuity observation"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-09T16:36:32.317078+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "0018de25-522e-46ef-8b17-54e3ab619385",
+          "causation_id": null,
+          "correlation_id": "aa14aa35-6b13-45db-a90b-a240b0eabcb3",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-09T16:36:32.327765+00:00",
+        "generation": 1,
+        "input_hash": "84b3a841046add1d44f4a8547419ba3b66970d2a2abbf3d60a0bcd435fab6623",
+        "lease_owner": null,
+        "lease_until": null,
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-09T16:36:32.691551+00:00",
+          "max_attempts": 1
+        },
+        "retrospective": {
+          "target": 5,
+          "observed": 3,
+          "reference": "isolated-source"
+        },
+        "failure_receipt": "3aeb7124739b4afa10ce586a456b9ad49cd054ceade6477b71ebbfb35d6d5a3e",
+        "project_context": {
+          "id": "isolated-project"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-09T16:36:33.123597+00:00",
+            "error": "Invalid JSON in isolated child result",
+            "status": "failed",
+            "attempt": 1
+          }
+        ]
+      }
+    }
+  ],
+  "source_sha256": {
+    "src/codex_harness/application/workflow.py": "0b77c1ebd6094557795f06ad4f4bacf5da87ec5faf6a3c1126a788c49dbbf94d",
+    "src/codex_harness/application/execution_budget.py": "4e44c623358a569067fa3a40afbfed0bf21b5a9359f08e9ce62b1de1f5aedd04",
+    "src/codex_harness/adapters/executor.py": "10625f93b535d19fe4971ae2a52141346b4dba40d3e34bc4495dfac1c504d783"
+  }
+}

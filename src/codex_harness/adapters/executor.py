@@ -440,9 +440,9 @@ class Executor:
                 actor = self.service.org.actor(agent)
                 if actor.parent:
                     observation_id = digest({"task": task["id"], "attempt": task["attempt"]})
-                    receipt = self.artifacts.put(canonical({"task_id": task["id"], "attempt": task["attempt"],
-                        "error": str(error), "agent": agent, "failure": current.get("failure")}), "execution-failure")
                     if tx.get("decisions_pending", observation_id) is None:
+                        receipt = self.artifacts.put(canonical({"task_id": task["id"], "attempt": task["attempt"],
+                            "error": str(error), "agent": agent, "failure": current.get("failure")}), "execution-failure")
                         tx.put("decisions_pending", observation_id, {"id": observation_id,
                                "actor": actor.parent, "phase": "diagnose", "message": task["message"],
                                "input": {"error": str(error), "occurrence_id": observation_id,
@@ -474,7 +474,16 @@ class Executor:
                     row.update(status="superseded", error=str(exc), completed_at=utcnow())
                     tx.put("decisions_pending", row["id"], row)
                     continue
-                if row["attempt"] >= POLICY.max_attempts:
+                from codex_harness.application.execution_budget import block_execution, retry_limit
+
+                try:
+                    limit = retry_limit(tx, row, "decisions_pending", None, now)
+                except ContractError:
+                    block_execution(tx, row, "decisions_pending", "InvalidRetryBudget", now)
+                    continue
+                if limit is None:
+                    continue
+                if row["attempt"] >= limit:
                     row["status"] = "failed"
                     tx.put("decisions_pending", row["id"], row)
                     if row['phase'] == 'threshold_review':

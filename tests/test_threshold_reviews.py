@@ -147,6 +147,8 @@ def test_attempt_exhaustion_is_visible_on_request(policy_repo, tmp_path):
     executor, reviews, request = setup_review(policy_repo, tmp_path)
     with executor.service.store.transaction() as tx:
         decision, = tx.scan('decisions_pending')
+        # Model an already-pinned budget; unknown legacy budgets require recovery.
+        decision['retry_budget'] = {'max_attempts': POLICY.max_attempts, 'version': 1}
         decision['attempt'] = POLICY.max_attempts
         tx.put('decisions_pending', decision['id'], decision)
     assert executor.decide_one('lead:improvement') is None
