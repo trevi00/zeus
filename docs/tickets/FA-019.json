@@ -74,19 +74,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:40:41.744887+00:00",
+      "id": "29a6d85f1be788cde09fd37ddc122cff2c521c0700d36078b1d9480a5a86b4e6",
+      "summary": "Fresh manager/new-project/node-repair trace: mtime is not live worker observation; model resolution can precede configuration edits; decomposition grants per-child budgets and can declare success without rerunning the original oracle. Model aliases/CLI existence are not qualified Astra/Sol/Terra transfer or measured provider use. Static only; actual Claude review has separate narrow eight-primary receipts.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/1bc034f0e67d65f762ce3fb31c9a1891e8ca415d/docs/full-analysis/baldrix-gsd-workflows-003/file-reviews.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:00:13.051521+00:00",
+      "at": "2026-09-09T12:40:43.688937+00:00",
       "id": "70762c25dbf581fc55f5e07958ce18e2aa50081b37121ae72322fe6b180499f9",
       "url": "https://github.com/trevi00/zeus/issues/20",
       "number": 20,
       "status": "synced",
-      "body_hash": "2e30636c2d3f372f58a5be76ff0094e24c194b66de3ec4d4cf097844cbaf1f1c",
+      "body_hash": "17c07c2dc8d16cebefb49e2c76b3a84bfb89937e904ea4233eb116ca8b054c15",
       "ticket_id": "ZEUS-15c0d970315a",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "29a6d85f1be788cde09fd37ddc122cff2c521c0700d36078b1d9480a5a86b4e6",
         "8b3f8b8d23903979d98a08a53fa88630fd83987925635f877cf53d166abd0d5b",
         "f086480570da2bb2cf5c246575cce408a84e541ab520c5cea6390010b6b90f86"
       ],

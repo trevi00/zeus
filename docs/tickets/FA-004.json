@@ -60,21 +60,37 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:40:31.168251+00:00",
+      "id": "4645989bd809b415e5438e7cc50fba5ee50f60021b387458094e8bb3ebbc5ccc",
+      "summary": "Fresh core/phase trace: wx creation is real, but timeout unlinks and calls callback without reacquiring; finally unlinks by pathname and callback EEXIST may be retried as contention. Phase removal/archive can leave partial mutations. Static findings only, no lock race/deletion execution or implemented correction.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/1bc034f0e67d65f762ce3fb31c9a1891e8ca415d/docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:20:05.971731+00:00",
+      "at": "2026-09-09T12:40:33.315647+00:00",
       "id": "0bf747cf0fb8e608613565ac45a06418988799f61768db10cd823b61cd786174",
       "url": "https://github.com/trevi00/zeus/issues/5",
       "number": 5,
       "status": "synced",
-      "body_hash": "70942297cdd6315853e98c4f2baf059946bec213052d76d12f615862f5856e41",
+      "body_hash": "19e9f9af2f5aca83e9524ac782e2b96f07536e051780bf4073ef4d6fb3710f02",
       "ticket_id": "ZEUS-6d62d42d9333",
       "repository": "trevi00/zeus",
       "review_ids": [
         "27cc968e8840103e72a9c492ec4a6fcf944d9a9f8fb12c1e7bd5811a3057c131",
-        "28af6f639a36436fe21a4c9c67844cb74875e8708a5376e0ef3d7b80876651e2"
+        "28af6f639a36436fe21a4c9c67844cb74875e8708a5376e0ef3d7b80876651e2",
+        "4645989bd809b415e5438e7cc50fba5ee50f60021b387458094e8bb3ebbc5ccc"
       ],
       "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
       "synced_revision": 1

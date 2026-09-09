@@ -84,22 +84,38 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:40:43.772543+00:00",
+      "id": "a029456fd0ac54a7bcfa21ba6ede99655c450d6b80cd0f905a89c2709f019f3d",
+      "summary": "Fresh direct config/router trace: loadConfig can migrate/write during init; top-level policy overrides nested edits; model setter accepts adaptive while health accepts inherit and resolver has additional fallback semantics. Intel uses root planning paths and process-relative file checks. No platform/runtime qualification or migration activation performed.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-9495da500988",
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/1bc034f0e67d65f762ce3fb31c9a1891e8ca415d/docs/full-analysis/baldrix-gsd-bin-002/root-followup.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:20:21.122627+00:00",
+      "at": "2026-09-09T12:40:45.721361+00:00",
       "id": "bd07e564483139323647f0798908cfeaf613b16ec8e822227597952a0fdf56f4",
       "url": "https://github.com/trevi00/zeus/issues/26",
       "number": 26,
       "status": "synced",
-      "body_hash": "9606b853daaa06308a12198189fcb2e925d27d3d8b91510c7d47494a101a96f2",
+      "body_hash": "60dae21e1271d00da8498ba734c5b9ac327be169270f0d2406006bf8c3a824d3",
       "ticket_id": "ZEUS-9495da500988",
       "repository": "trevi00/zeus",
       "review_ids": [
         "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924",
         "174935eceb5656851c567e5cbfbe116287b0d04d6371301a38854f25be1ee7d1",
-        "4aa0f40a708618af52fe0d0867dcbafa46dbc434cf55a2aee4c11cb89f06741b"
+        "4aa0f40a708618af52fe0d0867dcbafa46dbc434cf55a2aee4c11cb89f06741b",
+        "a029456fd0ac54a7bcfa21ba6ede99655c450d6b80cd0f905a89c2709f019f3d"
       ],
       "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
       "synced_revision": 1

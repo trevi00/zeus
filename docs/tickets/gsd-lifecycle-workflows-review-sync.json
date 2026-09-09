@@ -1,0 +1,69 @@
+{
+  "evidence_revision": "1bc034f0e67d65f762ce3fb31c9a1891e8ca415d",
+  "results": [
+    {
+      "topic": "FA-004",
+      "review_id": "4645989bd809b415e5438e7cc50fba5ee50f60021b387458094e8bb3ebbc5ccc",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/5",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-013",
+      "review_id": "8fa107c6a87e81b4934d5d800da1bedda5c2491becdf30c1ffc0100aa83c8b20",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/14",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-014",
+      "review_id": "586a9c29ba34b57273d31b0b394a1036b0e4c41c03cead36e9f76dcf95382c28",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/15",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-015",
+      "review_id": "66d808bbc4ae0fb7fdaf1a0dfc39766a71026136272fbd67f6a628c393679444",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/16",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-018",
+      "review_id": "f465d93323da7cc25a2950a43c6be4501b9a830a46076a57ac4707e7059e2918",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/19",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-019",
+      "review_id": "29a6d85f1be788cde09fd37ddc122cff2c521c0700d36078b1d9480a5a86b4e6",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/20",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-025",
+      "review_id": "a029456fd0ac54a7bcfa21ba6ede99655c450d6b80cd0f905a89c2709f019f3d",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/26",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-029",
+      "review_id": "f55540e0800f5099e55111d89c556b148a6a9b04c24e81c289324b3c9c768822",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/30",
+      "status": "synced"
+    },
+    {
+      "topic": "FA-032",
+      "review_id": "31b4531c12b05609573e779001544b6ec3fb1699a2831a6bbdb46de838c406cf",
+      "authority": "advisory_only",
+      "url": "https://github.com/trevi00/zeus/issues/33",
+      "status": "synced"
+    }
+  ],
+  "issue_close_or_reopen_operations": 0
+}

@@ -68,20 +68,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:40:37.694713+00:00",
+      "id": "66d808bbc4ae0fb7fdaf1a0dfc39766a71026136272fbd67f6a628c393679444",
+      "summary": "Actual Codex/Claude static joint review confirms inert expectedBase, all-noncurrent worktree selection, and cleanup after missing artifacts/reconcile failure. Separate base ancestry, ownership and current revision fencing: expectedBase==HEAD would break supported non-FF case. 13 real-Git test definitions read, zero run; no destructive probe or source adoption.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/1bc034f0e67d65f762ce3fb31c9a1891e8ca415d/docs/full-analysis/baldrix-gsd-bin-002/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:20:14.411880+00:00",
+      "at": "2026-09-09T12:40:39.487376+00:00",
       "id": "8946b5a9efa626e86ae1edaa9bdc1848a0557f1dad6059fefa750c8031007721",
       "url": "https://github.com/trevi00/zeus/issues/16",
       "number": 16,
       "status": "synced",
-      "body_hash": "871e4f00c5448b0bf86f0fd34b4e7ecb542099e959adc5df90e3abd942604fad",
+      "body_hash": "cf1f02035e6c12f3cddc18aba735770c9f326732466ac121b6ebe2c698b52cb2",
       "ticket_id": "ZEUS-39d3d0633060",
       "repository": "trevi00/zeus",
       "review_ids": [
         "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143",
+        "66d808bbc4ae0fb7fdaf1a0dfc39766a71026136272fbd67f6a628c393679444",
         "dcd2d763d2128eaa80791c1b4bcaac45adf30c61ec9d79856bfada7e03e59a54"
       ],
       "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",

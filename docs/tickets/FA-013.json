@@ -80,22 +80,38 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:40:33.396141+00:00",
+      "id": "8fa107c6a87e81b4934d5d800da1bedda5c2491becdf30c1ffc0100aa83c8b20",
+      "summary": "Fresh UI/UAT workflows: researcher CHECKPOINT has no shown handler in UI workflow; forced/skipped review can retain fixed pass banners; pending/blocked UAT can coexist with All tests passed. Preserve actual human scenario denominator and explicit approval, not summary/file or silence-based acceptance. No device/browser/human acceptance ran.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-fb2ab61807b4",
+      "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/1bc034f0e67d65f762ce3fb31c9a1891e8ca415d/docs/full-analysis/baldrix-gsd-workflows-005/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:20:08.895953+00:00",
+      "at": "2026-09-09T12:40:35.177017+00:00",
       "id": "7b8f10a7f600d24397da1c9fe6a72030b5d92db63284efa959f20260c3db2599",
       "url": "https://github.com/trevi00/zeus/issues/14",
       "number": 14,
       "status": "synced",
-      "body_hash": "6a9268f7b89ddbeb22394aa877c060841f7bb5655a069bf9bf78d060a59f3f06",
+      "body_hash": "1745f3ff4dc339b5d9af830c01013d4b0513b2dab0ae3b5d05048118e4f1f429",
       "ticket_id": "ZEUS-fb2ab61807b4",
       "repository": "trevi00/zeus",
       "review_ids": [
         "1e3f82240016bf865cb050f6e0f7ef3ffb11a0cb6129bb75367887134d4cc8cb",
         "39e5fb0cab1c069b666ea82c5c343250d6cbbe873931a0e2210ff96e2e5d581f",
-        "56e1368f114eb80ed8124a07c47113e20fcaa0986f436d1fa57b60b0d7ef525a"
+        "56e1368f114eb80ed8124a07c47113e20fcaa0986f436d1fa57b60b0d7ef525a",
+        "8fa107c6a87e81b4934d5d800da1bedda5c2491becdf30c1ffc0100aa83c8b20"
       ],
       "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
       "synced_revision": 1
