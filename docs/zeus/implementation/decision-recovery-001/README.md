@@ -49,3 +49,11 @@ Git·모델·배포를 가짜 성공으로 대체하여 운영 완료를 주장�
 `claude-acceptance.md`는 실제 Claude의 최종 소스 검수이며, 테스트 결과와 별개입니다.
 소스 입력 해시는 `source-hashes.json`에 보존합니다.
 최종 Windows 전체 검증은 **815 passed, 234 skipped**이며 Ruff도 통과했습니다.
+
+구현 커밋 `ba07bc0f7677e40b5bb279bf9a071939d9d5799e`의 별도 WSL 복제본에서
+전체 **821 passed, 228 skipped**, 실제 PG 재시도·복구 검증 **160 passed, 1 skipped**를 확인했습니다.
+11개 단계와 출력 해시는 `wsl/receipt.json`에 보존합니다. 임시 연결정보 삭제와 공개 증적 내
+실제 연결정보·비밀번호 부재를 확인했습니다.
+후속 [CI 34384284870](https://github.com/trevi00/zeus/actions/runs/34384284870)는 이 증적 작성 시점에
+Windows 및 통합 작업이 진행 중입니다. 전체 성공을 미리 주장하지 않습니다.
+기존 #18의 현재 원격 본문 해시가 로컬 PG 연동 접수증과 일치하며, 두 구현 검토가 반영된 것을 확인했습니다.

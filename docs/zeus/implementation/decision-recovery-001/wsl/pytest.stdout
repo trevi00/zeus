@@ -1,0 +1,153 @@
+........................................................................ [  6%]
+....ssssssssssss..ss....ssss.s.s..ss.s.s.s.s.s.ss.s.s....s.s......ssssss [ 13%]
+........ssssssss.s.s.s.s.ss.s...sss.s..ss....ssss....................... [ 20%]
+.........s.s.s.s.s..ss.s.s.s.s.s.s.s.s.s.s.s.s.s..ss.s.s.sssssssssssssss [ 27%]
+sssssssssss............................................................. [ 34%]
+........................................ssssss.s.s.s.s.s.s.s............ [ 41%]
+........................................................................ [ 48%]
+...................................s.s.s....s..s........................ [ 54%]
+...................................................s.s.s.........sssssss [ 61%]
+ss.....sssss.s.ss.s.s.s....ssss..ss.s................................... [ 68%]
+....ssssss.............................s..............................s. [ 75%]
+s.s.s.s......................................................s........ss [ 82%]
+ssssss.....sssss.s.s.s.s.s.s..ss.......sssssss.s.s.s.s.s.s.s.s.s.s.s.s.s [ 89%]
+.s.s.s.s.s.s.s.s.s.........................s...............ss........... [ 96%]
+.........................................                                [100%]
+=========================== short test summary info ============================
+SKIPPED [12] tests/test_decision_atomicity.py:14: Integration environment required
+SKIPPED [2] tests/test_decision_recovery.py:78: Integration environment required
+SKIPPED [4] tests/test_decision_recovery.py:94: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:116: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:133: Integration environment required
+SKIPPED [2] tests/test_decision_recovery.py:156: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:165: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:173: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:185: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:197: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:206: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:219: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:229: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:266: Integration environment required
+SKIPPED [1] tests/test_decision_recovery.py:279: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:46: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:72: Integration environment required
+SKIPPED [6] tests/test_execution_recovery.py:86: Integration environment required
+SKIPPED [8] tests/test_execution_recovery.py:100: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:113: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:127: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:142: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:155: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:185: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:222: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:250: Integration environment required
+SKIPPED [3] tests/test_execution_recovery.py:263: Integration environment required
+SKIPPED [1] tests/test_execution_recovery.py:279: Integration environment required
+SKIPPED [2] tests/test_execution_recovery.py:290: Integration environment required
+SKIPPED [4] tests/test_execution_recovery.py:309: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:55: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:69: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:82: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:97: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:110: Integration environment required
+SKIPPED [2] tests/test_github_tickets.py:120: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:138: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:159: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:171: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:184: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:201: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:219: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:234: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:250: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:264: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:287: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:297: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:310: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:334: Integration environment required
+SKIPPED [2] tests/test_github_tickets.py:349: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:376: Integration environment required
+SKIPPED [1] tests/test_github_tickets.py:389: Integration environment required
+SKIPPED [1] tests/test_integration.py:34: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [6] tests/test_integration.py:82: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [3] tests/test_integration.py:98: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:121: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:137: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [5] tests/test_integration.py:149: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:169: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:179: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:189: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:201: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:222: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:239: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:257: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:282: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:293: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [6] tests/test_outbox.py:48: Integration environment required
+SKIPPED [1] tests/test_outbox.py:67: Integration environment required
+SKIPPED [1] tests/test_outbox.py:87: Integration environment required
+SKIPPED [1] tests/test_outbox.py:103: Integration environment required
+SKIPPED [1] tests/test_outbox.py:128: Integration environment required
+SKIPPED [1] tests/test_outbox.py:148: Integration environment required
+SKIPPED [1] tests/test_outbox.py:157: Integration environment required
+SKIPPED [1] tests/test_outbox.py:172: Integration environment required
+SKIPPED [3] tests/test_release_recovery.py:63: Integration environment required
+SKIPPED [1] tests/test_release_recovery.py:150: Integration environment required
+SKIPPED [1] tests/test_release_recovery.py:192: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:27: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:52: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:65: Integration environment required
+SKIPPED [9] tests/test_retry_state.py:88: Integration environment required
+SKIPPED [5] tests/test_retry_state.py:102: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:112: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:121: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:130: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:172: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:185: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:197: Integration environment required
+SKIPPED [4] tests/test_retry_state.py:211: Integration environment required
+SKIPPED [2] tests/test_retry_state.py:233: Integration environment required
+SKIPPED [1] tests/test_retry_state.py:260: Integration environment required
+SKIPPED [1] tests/test_sdd.py:209: Integration environment required
+SKIPPED [1] tests/test_sdd.py:228: Integration environment required
+SKIPPED [1] tests/test_sdd.py:247: Integration environment required
+SKIPPED [1] tests/test_sdd.py:262: Integration environment required
+SKIPPED [1] tests/test_sdd.py:277: Integration environment required
+SKIPPED [1] tests/test_sdd.py:288: Integration environment required
+SKIPPED [1] tests/test_skill_history.py:110: Integration environment required
+SKIPPED [5] tests/test_task_failure_atomicity.py:14: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:68: Integration environment required
+SKIPPED [8] tests/test_ticket_lifecycle.py:110: Integration environment required
+SKIPPED [5] tests/test_ticket_lifecycle.py:138: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:159: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:175: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:191: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:211: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:222: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:249: Integration environment required
+SKIPPED [2] tests/test_ticket_lifecycle.py:265: Integration environment required
+SKIPPED [7] tests/test_ticket_lifecycle.py:295: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:324: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:339: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:351: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:367: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:378: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:390: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:407: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:424: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:436: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:451: Integration environment required
+SKIPPED [1] tests/test_ticket_lifecycle.py:465: Integration environment required
+SKIPPED [1] tests/test_ticket_review.py:18: Integration environment required
+SKIPPED [1] tests/test_ticket_review.py:45: Integration environment required
+SKIPPED [1] tests/test_ticket_review.py:68: Integration environment required
+SKIPPED [1] tests/test_ticket_review.py:87: Integration environment required
+SKIPPED [1] tests/test_ticket_review.py:100: Integration environment required
+SKIPPED [1] tests/test_ticket_review.py:111: Integration environment required
+SKIPPED [1] tests/test_ticket_review.py:132: Integration environment required
+SKIPPED [1] tests/test_tickets.py:26: Integration environment required
+SKIPPED [1] tests/test_tickets.py:44: Integration environment required
+SKIPPED [1] tests/test_tickets.py:65: Integration environment required
+SKIPPED [1] tests/test_tickets.py:91: Integration environment required
+SKIPPED [1] tests/test_usage_limit.py:179: Local PostgreSQL required
+SKIPPED [1] tests/test_verification.py:113: Explicit disposable Docker validation required
+SKIPPED [1] tests/test_windows_launchers.py:10: Native PowerShell launcher behavior
+821 passed, 228 skipped in 22.08s
