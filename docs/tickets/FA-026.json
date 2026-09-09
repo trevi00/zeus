@@ -58,20 +58,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:07:40.624739+00:00",
+      "id": "6ae04e2d455af203bb3ed5f13b2b1a9c8a8d42fbb27c6ae3385e751a799449db",
+      "summary": "Original suite initially cancelled at60s. Isolated diagnostic observed38 zombie Git descendants and sumThreads64 at PIDlimit64. Adding only Docker --init, retaining source/image/limits/deadline, yields13 original tests passed. Preserve failed attempts and process-reaping requirement for source runner; current Zeus source_execution adapter lacks --init. Linux execution evidence, not Windows/WSL/whole acceptance.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-430121f4256d",
+      "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4aac7f0e022d0316201a66ef9bf4c630f3214aa0/docs/full-analysis/baldrix-gsd-runtime-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:00:17.429744+00:00",
+      "at": "2026-09-09T13:07:42.602377+00:00",
       "id": "a45b769d327bca3028206c26e75364356553bd2fb56ce147f19bb75284d0c0f5",
       "url": "https://github.com/trevi00/zeus/issues/27",
       "number": 27,
       "status": "synced",
-      "body_hash": "6cb311863043b8984996b72cab486d9b391dcbe2463d1bfe20664193febd3e6f",
+      "body_hash": "ad77e5928ddb614a5578f14c831f7834da388b0fa39618b661a0353c3998baad",
       "ticket_id": "ZEUS-430121f4256d",
       "repository": "trevi00/zeus",
       "review_ids": [
-        "569f1ff9e7613535da9c467323f61fbe3c486769627f7d631c249901614433a1"
+        "569f1ff9e7613535da9c467323f61fbe3c486769627f7d631c249901614433a1",
+        "6ae04e2d455af203bb3ed5f13b2b1a9c8a8d42fbb27c6ae3385e751a799449db"
       ],
       "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
       "synced_revision": 1

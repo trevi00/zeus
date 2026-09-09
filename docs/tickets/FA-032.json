@@ -52,20 +52,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:07:42.714332+00:00",
+      "id": "b019ca4ae081fbda92e41e512f68f85097629f3444b8f8a9c215d90669e4508e",
+      "summary": "Original profile writer executed on synthetic password-pattern sentinel only: evidence control redacts/count1; evidence_quotes renders sentinel/count0. Actual alternate-field sanitizer bypass; no live secrets/session collection. Unified schema/redaction and privacy qualification remain unimplemented, not closed by source Git tests.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-1c4267ee50b8",
+      "content_hash": "1c4c06f643e79c3f914e9d007f62a4212de307974eea022d4836606fbea2bb28",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4aac7f0e022d0316201a66ef9bf4c630f3214aa0/docs/full-analysis/baldrix-gsd-runtime-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:40:49.639195+00:00",
+      "at": "2026-09-09T13:07:44.691428+00:00",
       "id": "6241b83215dd1a7a592eaa2e9db8f1fbc9fe685b73b459994bb9358761527529",
       "url": "https://github.com/trevi00/zeus/issues/33",
       "number": 33,
       "status": "synced",
-      "body_hash": "fd40432dc5ea9881e8eae9f9b94322c5e51fb5b1a75cd7145c693fa2592fe66b",
+      "body_hash": "e435405d2c7bf28198731b10c7e92a5c0cd932792f4a10b40499700c5ffa8dbc",
       "ticket_id": "ZEUS-1c4267ee50b8",
       "repository": "trevi00/zeus",
       "review_ids": [
-        "31b4531c12b05609573e779001544b6ec3fb1699a2831a6bbdb46de838c406cf"
+        "31b4531c12b05609573e779001544b6ec3fb1699a2831a6bbdb46de838c406cf",
+        "b019ca4ae081fbda92e41e512f68f85097629f3444b8f8a9c215d90669e4508e"
       ],
       "content_hash": "1c4c06f643e79c3f914e9d007f62a4212de307974eea022d4836606fbea2bb28",
       "synced_revision": 1

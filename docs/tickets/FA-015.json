@@ -83,21 +83,37 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:07:38.478063+00:00",
+      "id": "792abed2f50540269d9f355607e13cb2709a3a046b8598146333a023883ee5eb",
+      "summary": "Actual original CLI accepts invalid expected-base and merges/removes/deletes unrelated-owner worktree branch. Normal control also succeeds. Original13 real-Git tests pass after environment process-reaping correction, but do not cover these counterexamples. Base ancestry/ownership/current revision fencing remain required; no source fix/adoption/issue closure.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4aac7f0e022d0316201a66ef9bf4c630f3214aa0/docs/full-analysis/baldrix-gsd-runtime-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:40:39.487376+00:00",
+      "at": "2026-09-09T13:07:40.520228+00:00",
       "id": "8946b5a9efa626e86ae1edaa9bdc1848a0557f1dad6059fefa750c8031007721",
       "url": "https://github.com/trevi00/zeus/issues/16",
       "number": 16,
       "status": "synced",
-      "body_hash": "cf1f02035e6c12f3cddc18aba735770c9f326732466ac121b6ebe2c698b52cb2",
+      "body_hash": "740d68a7d82d43fae4b2f0db20ef0ada69a74a7d2b9801c47f2103bcdaecb5d9",
       "ticket_id": "ZEUS-39d3d0633060",
       "repository": "trevi00/zeus",
       "review_ids": [
         "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143",
         "66d808bbc4ae0fb7fdaf1a0dfc39766a71026136272fbd67f6a628c393679444",
+        "792abed2f50540269d9f355607e13cb2709a3a046b8598146333a023883ee5eb",
         "dcd2d763d2128eaa80791c1b4bcaac45adf30c61ec9d79856bfada7e03e59a54"
       ],
       "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",

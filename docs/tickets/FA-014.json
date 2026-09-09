@@ -112,20 +112,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:07:36.050521+00:00",
+      "id": "39f0c63f315c92a5bf51a608278d81ac3489d71ea95fdf79532fbb556f453a25",
+      "summary": "Original phase-remove executed in disposable Linux scratch: removing5 cascades both headings6/7 to5, while directory IDs become05-six/06-seven. Actual observed definition divergence, not mock acceptance. Stable IDs/order/schema adaptation remains unimplemented.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-f5a496e41ac2",
+      "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4aac7f0e022d0316201a66ef9bf4c630f3214aa0/docs/full-analysis/baldrix-gsd-runtime-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:40:37.585475+00:00",
+      "at": "2026-09-09T13:07:38.370163+00:00",
       "id": "d9c584db548ffe747d4fa6f74912b3f0cf03b3498ba5b58f7a16ce8f3d187385",
       "url": "https://github.com/trevi00/zeus/issues/15",
       "number": 15,
       "status": "synced",
-      "body_hash": "af69b21d328a8889f664ad1625bdd477d98803dd74b8e95926e06f7e3f613f8a",
+      "body_hash": "d4769e0c4c5b2a03383f39b59e205edd39d8f7459d041378806414a8c5cc292c",
       "ticket_id": "ZEUS-f5a496e41ac2",
       "repository": "trevi00/zeus",
       "review_ids": [
         "2dfa26bf131b0f4f776d7e130f9461536cee4c3224e218e4630b38f64a41bac7",
+        "39f0c63f315c92a5bf51a608278d81ac3489d71ea95fdf79532fbb556f453a25",
         "44e52dad9853e8a110c0a3ce5b4f45830626a28b640d18ef7ccc5c28918dc20a",
         "586a9c29ba34b57273d31b0b394a1036b0e4c41c03cead36e9f76dcf95382c28",
         "9a2191e51350988dcab160a0e1d9b2ef4f20569e708b1ca003281e86a4b8e3d4",
