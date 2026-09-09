@@ -142,20 +142,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:44:24.327558+00:00",
+      "id": "1425f54d23359fc7e9ab1b7d2daaa9dec5f00ea234f8f0cb155e981f35aeaad4",
+      "summary": "Native payment example loses the resultCode dimension: failure resultCode plus AnsCode 0000 can serialize responseCode 0000, which the Dart example consumes as success. Static cross-document condition only; unseen app and vendor facts remain unverified. Generated pending steps, ID roundtrips and stage picker output are not actual E2E acceptance.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-f5a496e41ac2",
+      "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4a700ccc95c9b3c55e3d49a4256637626f4a6656/docs/full-analysis/flutter-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T13:24:01.969690+00:00",
+      "at": "2026-09-09T13:44:27.176535+00:00",
       "id": "d9c584db548ffe747d4fa6f74912b3f0cf03b3498ba5b58f7a16ce8f3d187385",
       "url": "https://github.com/trevi00/zeus/issues/15",
       "number": 15,
       "status": "synced",
-      "body_hash": "27db72a518e901ec379cdb4614d0e88c991a18bc93ce4246149bd102dbf735c4",
+      "body_hash": "d0e79377d9aac567c7aa8568421d9c6f8fc1b5a440dd6f207a3b6948a8fca128",
       "ticket_id": "ZEUS-f5a496e41ac2",
       "repository": "trevi00/zeus",
       "review_ids": [
         "04addc025b5e5882f3f5e01958fc523dab2bed6b38bba4420ddf4f1297def5f1",
+        "1425f54d23359fc7e9ab1b7d2daaa9dec5f00ea234f8f0cb155e981f35aeaad4",
         "2dfa26bf131b0f4f776d7e130f9461536cee4c3224e218e4630b38f64a41bac7",
         "39f0c63f315c92a5bf51a608278d81ac3489d71ea95fdf79532fbb556f453a25",
         "44e52dad9853e8a110c0a3ce5b4f45830626a28b640d18ef7ccc5c28918dc20a",

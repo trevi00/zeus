@@ -61,19 +61,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:44:31.483843+00:00",
+      "id": "07d290348c6ebeb9079e51d4c9bef13fcd33135cc8bd69e9aa649edc6b192569",
+      "summary": "Joint discussion retracts stale card claims: cohesion has a400commit window, sandbox reconfirm exists, mounted roles are derived. Malformed graduation state becomes empty through actual loader; risk is conditional on relevant runtime state. Queue/cache/consumer gaps remain static and unclosed.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-916e0f1f4333",
+      "content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4a700ccc95c9b3c55e3d49a4256637626f4a6656/docs/full-analysis/atlas-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T13:24:11.424203+00:00",
+      "at": "2026-09-09T13:44:33.484246+00:00",
       "id": "ba3625b1b97a67b2800cc754bac91ef5b03e4f11f29203e957779aad61d26d43",
       "url": "https://github.com/trevi00/zeus/issues/22",
       "number": 22,
       "status": "synced",
-      "body_hash": "27505ec32b111fa2c7df2f91361a90bd71675be96fb9f4fc293abee9e2b3deb3",
+      "body_hash": "071b610d854de06c75eee26a2b351e4649f8acc7b454c01d341771ebf9817378",
       "ticket_id": "ZEUS-916e0f1f4333",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "07d290348c6ebeb9079e51d4c9bef13fcd33135cc8bd69e9aa649edc6b192569",
         "b4dcaa9ac772c26e70f698e4dd696623fb5056737a3c321802c1e9fde05b0e95"
       ],
       "content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",

@@ -47,18 +47,36 @@
   "content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T13:44:33.563265+00:00",
+      "id": "759f9e3c491a2151b6798d12c62b39df9a4dffdbe80ab231528f0d0af01cca1b",
+      "summary": "Validator filenames are not no-mock capability. Lexical/existence checks and missing-input PASS need explicit checked/skipped/unknown denominators. Root rejects Claude claim that all cited no-mock names are absent from builtin: code_blind_proceed, spec_bundle and spec_roundtrip are listed.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-5f46ad3a1d56",
+      "content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4a700ccc95c9b3c55e3d49a4256637626f4a6656/docs/full-analysis/atlas-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T08:25:42.765030+00:00",
+      "at": "2026-09-09T13:44:35.301213+00:00",
       "id": "a67cf245e665bc901322da1707bf8eca94cc00974ea5027a9c1788296a3a628c",
       "url": "https://github.com/trevi00/zeus/issues/24",
       "number": 24,
       "status": "synced",
-      "body_hash": "4380889c776f59291c6908cafabb72499ec1048fec28fcc3bfff151ae4605b2e",
+      "body_hash": "16112f528e0df228e91f417039d42e635ce0e3d208db7d7d2474f1c039f9af7e",
       "ticket_id": "ZEUS-5f46ad3a1d56",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "759f9e3c491a2151b6798d12c62b39df9a4dffdbe80ab231528f0d0af01cca1b"
+      ],
       "content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
       "synced_revision": 1
     }

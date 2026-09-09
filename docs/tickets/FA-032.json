@@ -67,19 +67,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:44:35.385589+00:00",
+      "id": "0451083ffff181b9d128f8713d3fff9cf336cb179bf20582de47a0622c78ad6e",
+      "summary": "Fixed key literals are documented but values were not copied into review reports. Presence does not prove shipped use, every-store DB possession or all-secret-gate absence. Client data and harness PG runtime records are different boundaries. No exploit or financial incident claimed.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-1c4267ee50b8",
+      "content_hash": "1c4c06f643e79c3f914e9d007f62a4212de307974eea022d4836606fbea2bb28",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4a700ccc95c9b3c55e3d49a4256637626f4a6656/docs/full-analysis/flutter-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T13:07:44.691428+00:00",
+      "at": "2026-09-09T13:44:37.373224+00:00",
       "id": "6241b83215dd1a7a592eaa2e9db8f1fbc9fe685b73b459994bb9358761527529",
       "url": "https://github.com/trevi00/zeus/issues/33",
       "number": 33,
       "status": "synced",
-      "body_hash": "e435405d2c7bf28198731b10c7e92a5c0cd932792f4a10b40499700c5ffa8dbc",
+      "body_hash": "10ec23043ea79fa358b09702d2b05c3d89cc91f9adc44451f678eff395f0e066",
       "ticket_id": "ZEUS-1c4267ee50b8",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "0451083ffff181b9d128f8713d3fff9cf336cb179bf20582de47a0622c78ad6e",
         "31b4531c12b05609573e779001544b6ec3fb1699a2831a6bbdb46de838c406cf",
         "b019ca4ae081fbda92e41e512f68f85097629f3444b8f8a9c215d90669e4508e"
       ],

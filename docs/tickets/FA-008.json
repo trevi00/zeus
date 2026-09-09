@@ -30,18 +30,36 @@
   "content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
   "claimed_author": "Codex: user-authorized Zeus repository bootstrap",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T13:44:22.106492+00:00",
+      "id": "e5f223fd7c192be7d213530e0ce6548a4264bf7203c3c0d2c877897167920736",
+      "summary": "Flutter activation example generates dart paths rather than flutter/3.x; inline comments remain path text and active tree scanning is nonrecursive. Frontmatter-free modules are not independently scored. Joint static review, not actual runtime activation or repaired routing.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-4e7e2e2b01a9",
+      "content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4a700ccc95c9b3c55e3d49a4256637626f4a6656/docs/full-analysis/flutter-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T03:07:39.221555+00:00",
+      "at": "2026-09-09T13:44:24.250210+00:00",
       "id": "3fd8c3f1d7d0a082928172ad96b0b6ab4d8f41c8a69ee9d1e4a593efc0844eaa",
       "url": "https://github.com/trevi00/zeus/issues/9",
       "number": 9,
       "status": "synced",
-      "body_hash": "e3fa34f8a5c6955065bd19a2e69774859a99a02af9ae12be721446e962ddd50f",
+      "body_hash": "c4d85c70215f06214ab8bab2274639ea5487d7a7df923b9648fe8029c34f57a9",
       "ticket_id": "ZEUS-4e7e2e2b01a9",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "e5f223fd7c192be7d213530e0ce6548a4264bf7203c3c0d2c877897167920736"
+      ],
       "content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
       "synced_revision": 1
     }

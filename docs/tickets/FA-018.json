@@ -133,16 +133,31 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T13:44:27.255591+00:00",
+      "id": "edf1ef47b236f3e2ac60f9faa6d0e9e91ff3907d50a503a9d11a031d77106931",
+      "summary": "Missing-target PASS, stdout-only examples and discarded main return values must not authorize acceptance. Different dispatchers remain distinct. Historical approved, completion paths and reviewer self-reports do not establish actor, artifact revision or original-oracle execution.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/4a700ccc95c9b3c55e3d49a4256637626f4a6656/docs/full-analysis/atlas-proposals-joint-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T13:24:06.561445+00:00",
+      "at": "2026-09-09T13:44:29.382596+00:00",
       "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
       "url": "https://github.com/trevi00/zeus/issues/19",
       "number": 19,
       "status": "synced",
-      "body_hash": "e6c2afadf33e2ffced27e8535d21136c210a043dbfac79b31c3099b2bab6886f",
+      "body_hash": "63911cbe4a125f07184e18f5e0d30be292294a237e717520ba80900ec2c50019",
       "ticket_id": "ZEUS-07f94a1a4390",
       "repository": "trevi00/zeus",
       "review_ids": [
@@ -151,6 +166,7 @@
         "49c0c68e13065a735e34664aea7e061394f53f7e5562a61a9d58244c0c19e890",
         "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f",
         "b926dc82cfd99fcb4b079ef86b37b643b159c3615ff4a382f2a00c5aeacfabb3",
+        "edf1ef47b236f3e2ac60f9faa6d0e9e91ff3907d50a503a9d11a031d77106931",
         "f465d93323da7cc25a2950a43c6be4501b9a830a46076a57ac4707e7059e2918"
       ],
       "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
