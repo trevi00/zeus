@@ -1,0 +1,13 @@
+﻿import subprocess,json,time,sys,os
+from pathlib import Path
+out=Path('docs/zeus/implementation/retry-recovery-001')
+mode=sys.argv[1]
+args=['uv','run','pytest','-q']
+if mode=='target':
+ args += ['tests/test_execution_recovery.py','tests/test_retry_state.py','tests/test_threshold_reviews.py','tests/test_workflow.py']
+env=dict(os.environ,PYTHONIOENCODING='utf-8')
+if mode=='target': env['HARNESS_INTEGRATION']='1'
+started=time.time(); r=subprocess.run(args,capture_output=True,env=env)
+(out/(mode+'-tests.log')).write_bytes(r.stdout+r.stderr)
+(out/(mode+'-tests.json')).write_text(json.dumps({'argv':args,'exit_code':r.returncode,'seconds':time.time()-started,'integration':mode=='target'}),encoding='utf-8')
+print((r.stdout+r.stderr).decode('utf-8')[-1500:]);sys.exit(r.returncode)

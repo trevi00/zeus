@@ -474,8 +474,21 @@ class Executor:
                     row.update(status="superseded", error=str(exc), completed_at=utcnow())
                     tx.put("decisions_pending", row["id"], row)
                     continue
-                from codex_harness.application.execution_budget import block_execution, retry_limit
+                from codex_harness.application.execution_budget import (
+                    block_execution,
+                    deadline_time,
+                    retry_limit,
+                )
 
+                try:
+                    deadline = deadline_time(row.get('execution_deadline'))
+                except ContractError:
+                    block_execution(tx, row, 'decisions_pending', 'InvalidExecutionDeadline', now)
+                    continue
+                if deadline is not None and deadline <= now:
+                    row.update(status='expired', error='deadline exceeded')
+                    tx.put('decisions_pending', row['id'], row)
+                    continue
                 try:
                     limit = retry_limit(tx, row, "decisions_pending", None, now)
                 except ContractError:
@@ -484,7 +497,7 @@ class Executor:
                 if limit is None:
                     continue
                 if row["attempt"] >= limit:
-                    row["status"] = "failed"
+                    row.update(status='failed', error='attempt budget exhausted')
                     tx.put("decisions_pending", row["id"], row)
                     if row['phase'] == 'threshold_review':
                         from codex_harness.application.threshold_reviews import ThresholdReviews

@@ -102,7 +102,7 @@ class Workflow:
                 if task["status"] == "running":
                     self._attempt_outcome(task, "lease_expired", now.isoformat())
                 try:
-                    deadline = deadline_time(task["message"]["when"]["deadline"])
+                    deadline = deadline_time(task.get("execution_deadline", task["message"]["when"]["deadline"]))
                 except ContractError:
                     block_execution(tx, task, "tasks", "InvalidExecutionDeadline", now)
                     continue

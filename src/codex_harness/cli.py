@@ -129,6 +129,20 @@ def parser() -> argparse.ArgumentParser:
     commands.add_parser("paths", help="Resolved local paths and persistent namespace; no service access")
     commands.add_parser("setup", help="Create local configuration without overwriting credentials")
     commands.add_parser("init-db")
+    recovery = commands.add_parser('execution-recovery', help='Explicit trusted local operator recovery; no human attestation')
+    actions = recovery.add_subparsers(dest='recovery_action', required=True)
+    prepare = actions.add_parser('prepare')
+    prepare.add_argument('task_id')
+    prepare.add_argument('--bucket', choices=['tasks', 'decisions_pending'], default='tasks')
+    prepare.add_argument('--operation', choices=['migrate', 'resume', 'repair'], required=True)
+    prepare.add_argument('--max-attempts', type=int, required=True, help='Total ceiling including attempts already spent')
+    prepare.add_argument('--deadline', help='Future aware ISO timestamp; existing deadline cannot be removed')
+    prepare.add_argument('--reason', required=True)
+    prepare.add_argument('--operator', required=True, help='Audit label, not authenticated identity')
+    prepare.add_argument('--evidence', action='append', required=True, help='Existing sha256 artifact reference')
+    prepare.add_argument('--output', type=Path, required=True)
+    apply = actions.add_parser('apply')
+    apply.add_argument('--packet', type=Path, required=True)
     seed = commands.add_parser("seed-research-backlog")
     seed.add_argument("--artifacts", required=True)
     doctor = commands.add_parser("doctor")
@@ -195,7 +209,7 @@ def parser() -> argparse.ArgumentParser:
     inspect = commands.add_parser("inspect")
     inspect.add_argument("bucket", choices=["incidents", "hooks", "sessions", "events", "deliveries", "outbox",
                                            "outbox_quarantine", "outbox_delivery", "outbox_attempts",
-                                           "execution_failures",
+                                           "execution_failures", "execution_recoveries",
                                            "tasks", "decisions_pending", "releases", "deployment", "release_queue"])
     rollback = commands.add_parser("rollback-hook")
     rollback.add_argument("hook_id")
@@ -363,6 +377,30 @@ def main() -> None:
         if args.command == "init-db":
             service.store.migrate()
             emit({"migrated": True})
+        elif args.command == 'execution-recovery':
+            from codex_harness.adapters.artifacts import FileArtifacts
+            from codex_harness.adapters.configuration import runtime_dir
+            from codex_harness.application.execution_recovery import ExecutionRecovery
+            from codex_harness.domain.model import canonical
+            recovery = ExecutionRecovery(service.store, service.org, FileArtifacts(runtime_dir() / 'artifacts'))
+            if args.recovery_action == 'prepare':
+                packet = recovery.prepare(args.bucket, args.task_id, operation=args.operation,
+                    max_attempts=args.max_attempts, deadline=args.deadline, reason=args.reason,
+                    evidence_refs=args.evidence, operator=args.operator)
+                try:
+                    with args.output.open('x', encoding='utf-8', newline='\n') as stream:
+                        stream.write(canonical(packet))
+                except OSError as exc:
+                    raise ContractError('Cannot create new recovery packet file') from exc
+                emit({'packet': str(args.output), 'authority': packet['authority'], 'applied': False})
+            else:
+                from codex_harness.adapters.sdd import parse_json
+                try:
+                    require(args.packet.stat().st_size <= 1024 * 1024, 'Recovery packet exceeds budget')
+                    packet = parse_json(args.packet.read_text(encoding='utf-8'))
+                except OSError as exc:
+                    raise ContractError('Recovery packet file unavailable') from exc
+                emit(recovery.apply(packet))
         elif args.command == "release-abandon":
             from codex_harness.adapters.configuration import codex_auth
             from codex_harness.adapters.deployment import ReleaseRunner

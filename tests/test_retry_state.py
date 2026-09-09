@@ -209,6 +209,9 @@ def test_corrupted_stored_deadline_or_budget_does_not_starve_another_task(workfl
     good = workflow.submit(assignment())
     with workflow.store.transaction() as tx:
         row = tx.get('tasks', bad['id'])
+        # Exercise the corrupt-row branch before the healthy claim, independently
+        # of Windows clock resolution and random message-ID ordering on ties.
+        row['created_at'] = '2000-01-01T00:00:00+00:00'
         if field == 'deadline':
             row['message']['when']['deadline'] = value
         else:
@@ -219,6 +222,33 @@ def test_corrupted_stored_deadline_or_budget_does_not_starve_another_task(workfl
     with workflow.store.transaction() as tx:
         assert tx.get('tasks', bad['id'])['status'] == 'blocked'
         assert any(e['type'] == 'execution.state_blocked' for e in tx.scan('events'))
+
+
+@pytest.mark.parametrize('corrupt_first', [True, False])
+def test_equal_creation_times_use_identity_and_eventually_isolate_corruption(workflow, corrupt_first):
+    messages = [assignment(), assignment()]
+    for i, message in enumerate(messages):
+        message['message_id'] = f'00000000-0000-4000-8000-{i + 1:012d}'
+        message['when']['created_at'] = '2026-01-01T00:00:00+00:00'
+    tasks = [workflow.submit(message) for message in messages]
+    bad, good = tasks if corrupt_first else tasks[::-1]
+    with workflow.store.transaction() as tx:
+        for task in tasks:
+            row = tx.get('tasks', task['id'])
+            row['created_at'] = '2026-01-01T00:00:00+00:00'
+            tx.put('tasks', task['id'], row)
+        row = tx.get('tasks', bad['id'])
+        row['message']['when']['deadline'] = 'invalid'
+        tx.put('tasks', bad['id'], row)
+    lease = workflow.claim('worker:implementation', 'owner')
+    assert lease['id'] == good['id']
+    with workflow.store.transaction() as tx:
+        assert tx.get('tasks', bad['id'])['status'] == ('blocked' if corrupt_first else 'queued')
+    workflow.fail(lease, 'Finished test work', retryable=False)
+    assert workflow.claim('worker:implementation', 'next-owner') is None
+    with workflow.store.transaction() as tx:
+        assert tx.get('tasks', bad['id'])['status'] == 'blocked'
+        assert len([e for e in tx.scan('events') if e['type'] == 'execution.state_blocked']) == 1
 
 
 def test_executor_failure_replay_does_not_rewrite_diagnosis_artifact(workflow, tmp_path, monkeypatch):

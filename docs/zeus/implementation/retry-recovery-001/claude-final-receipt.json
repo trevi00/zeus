@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Re-review actual current recovery implementation after your findings: execution_recovery.py now supports unpinned expired resume + explicit repair, validates finite JSON and targets, no preflight prepare race, fences result_related_hash, resets result, wraps missing evidence ContractError. _related now refuses unhandled decision phases (remaining work explicit) and uses full ThresholdReviews._row to validate artifacts/collection/binding and hashes request+record+run; restore request atomically. CLI supports all three operations. tests/test_execution_recovery.py includes real PG/four CLI processes, rollback injection, thresholds and deadline/repair. test_retry_state.py explicit corrupt-before-good and BOTH exact timestamp UUID order tests. Please independently read current files and identify remaining blockers for shipping this source (not deployment/full FA017 completion). Root knows other decision-phase recovery handlers and clock discontinuity/process-kill notification matrix remain and must not claim done. Do not execute/write/new issues. <=550 words."
+  ],
+  "returncode": 0,
+  "duration_seconds": 135.68428373336792,
+  "stdout_sha256": "ee378c0079b4e948c57121f1b6992d744ebdaa043ea5833aa81200c9812c9e89",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "c4953534-c174-4807-bd83-e904c5c95724",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 18,
+    "cache_creation_input_tokens": 38519,
+    "cache_read_input_tokens": 234217,
+    "output_tokens": 9380,
+    "output_tokens_details": {
+      "thinking_tokens": 6413
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 38519,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 3490,
+        "cache_read_input_tokens": 42824,
+        "cache_creation_input_tokens": 530,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 530
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.7380985,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1120,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.00121,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 18,
+      "outputTokens": 9380,
+      "cacheReadInputTokens": 234217,
+      "cacheCreationInputTokens": 38519,
+      "webSearchRequests": 0,
+      "costUSD": 0.7368885000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 6413,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

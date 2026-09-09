@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Final source review only, no writes/tools execution/new issues. Read current execution_recovery.py and relevant CLI/test changes. Previous final findings fixed: _row exact storage identity and task shape; _related wrapper fails ContractError on evidence/file/shape errors (does NOT claim valid replay when coupled evidence is missing); prepare/apply both finite JSON +1MiB size; CLI IO maps ContractError; tests now corrupt actual stored deadline/budget then real claim blocks, prepare repair/apply, actual claim succeeds, plus invalid shape/id/oversized snapshot. Existing fresh target and full tests are running; do not invent results. Confirm remaining shipping blockers for current scope tasks + threshold-review recovery, with unsupported phases explicitly failing (full issue and deployment remain incomplete). <=250 words."
+  ],
+  "returncode": 0,
+  "duration_seconds": 38.07054924964905,
+  "stdout_sha256": "6c02963ec65ade1b4847b9a922a32d27ee5c4f895fcee6a43daf6cefa10fffac",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "b3087e4e-ed3e-4774-a0b9-e63eb74dad64",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 16116,
+    "cache_read_input_tokens": 30262,
+    "output_tokens": 2473,
+    "output_tokens_details": {
+      "thinking_tokens": 1405
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 16116,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 2114,
+        "cache_read_input_tokens": 19104,
+        "cache_creation_input_tokens": 1847,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1847
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.23929200000000003,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1066,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001146,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 6,
+      "outputTokens": 2473,
+      "cacheReadInputTokens": 30262,
+      "cacheCreationInputTokens": 16116,
+      "webSearchRequests": 0,
+      "costUSD": 0.23814600000000002,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 1405,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}
