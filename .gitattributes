@@ -1,3 +1,5 @@
+* text=auto eol=lf
+*.ps1 text eol=crlf
 # Evidence includes captured byte hashes. Do not normalize its line endings in Git.
 docs/full-analysis/** -text
 docs/local-adoption/** -text
