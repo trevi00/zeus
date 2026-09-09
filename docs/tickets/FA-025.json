@@ -39,18 +39,36 @@
   "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:32:07.796508+00:00",
+      "id": "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924",
+      "summary": "Original entry observation: Windows set prefix on Linux retained inherited driver HARNESS_HOME despite different cwd. Three original sh launchers with absent source runtime pin returned hook0/HUD0/MCP1. Five declared command prefixes, not six. This is one measured configuration, not every deployment or actual Windows/WSL acceptance; discovery-zero guard cannot identify a nonempty wrong tree.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-9495da500988",
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/a6a4a47d8e5ceb65f16faafbbad113c3e08e8af8/docs/full-analysis/harness-entry-contracts-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T09:05:08.196961+00:00",
+      "at": "2026-09-09T11:32:09.657244+00:00",
       "id": "bd07e564483139323647f0798908cfeaf613b16ec8e822227597952a0fdf56f4",
       "url": "https://github.com/trevi00/zeus/issues/26",
       "number": 26,
       "status": "synced",
-      "body_hash": "822d025dae69e6d9688e7790309644f75c19b31905e3085ddc74f0e81d593dea",
+      "body_hash": "4e70161f7bc33846f8f07b7eeaf53619dfed308d3687f399e9b1b5db7688c5e8",
       "ticket_id": "ZEUS-9495da500988",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924"
+      ],
       "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
       "synced_revision": 1
     }

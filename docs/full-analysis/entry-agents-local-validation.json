@@ -2,10 +2,77 @@
   "kind": "local_validation_observations",
   "starting_head": "73f2c8848c0002df8dac3cc00f59566abfaa4134",
   "checks": [
-    {"argv": ["uv", "run", "ruff", "check", "."], "exit_code": 0, "result": "All checks passed!", "tool_chunk": "2ae367"},
-    {"argv": ["uv", "run", "pytest", "-q"], "session": 84942, "exit_code": 0, "passed": 660, "skipped": 68, "duration_seconds": 247.48, "terminal_tool_chunk": "dbd2ff"},
-    {"argv": ["python", "docs/full-analysis/harness-entry-contracts-001/verify_evidence.py"], "exit_code": 0, "tool_chunk": "ce4c96", "scope": "Original observation and actual Claude receipt integrity; no upstream reexecution"},
-    {"argv": ["python", ".runtime/absorption/entry001_checkpoint.py"], "exit_code": 0, "tool_chunk": "ce4c96", "primary_records": 67, "supporting_records": 78, "review_refs": 247}
+    {
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "result": "All checks passed!",
+      "tool_chunk": "2ae367"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "session": 84942,
+      "exit_code": 0,
+      "passed": 660,
+      "skipped": 68,
+      "duration_seconds": 247.48,
+      "terminal_tool_chunk": "dbd2ff"
+    },
+    {
+      "argv": [
+        "python",
+        "docs/full-analysis/harness-entry-contracts-001/verify_evidence.py"
+      ],
+      "exit_code": 0,
+      "tool_chunk": "ce4c96",
+      "scope": "Original observation and actual Claude receipt integrity; no upstream reexecution"
+    },
+    {
+      "argv": [
+        "python",
+        ".runtime/absorption/entry001_checkpoint.py"
+      ],
+      "exit_code": 0,
+      "tool_chunk": "ce4c96",
+      "primary_records": 67,
+      "supporting_records": 78,
+      "review_refs": 247
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "tool_chunk": "120e5b",
+      "scope": "Final recorder scripts including EOF normalization helper"
+    }
   ],
-  "limits": ["Skipped checks are not passed", "Existing Zeus tests and bounded receipt checks are not complete source acceptance, human acceptance, OS qualification or adoption"]
+  "limits": [
+    "Skipped checks are not passed",
+    "Existing Zeus tests and bounded receipt checks are not complete source acceptance, human acceptance, OS qualification or adoption"
+  ],
+  "publication_checks": {
+    "tool_chunk": "120e5b",
+    "staged_artifact_hashes_verified": 67,
+    "staged_files": 75,
+    "selected_secret_pattern_hits": 0,
+    "not_universal_secret_scan": true,
+    "whitespace": "Initial EOF blank-line failure 64d8de corrected; final standard cached diff check passed",
+    "normalization_receipt": "docs/full-analysis/baldrix-agents-001/eof-normalization-receipt.json",
+    "pytest_scope_note": "Pytest preceded the additive documentation EOF normalization helper; implementation and tests did not change afterward."
+  }
 }

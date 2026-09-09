@@ -1,0 +1,26 @@
+{
+  "kind": "advisory_review_publication",
+  "evidence_revision": "a6a4a47d8e5ceb65f16faafbbad113c3e08e8af8",
+  "topics": [
+    "FA-013",
+    "FA-014",
+    "FA-018",
+    "FA-019",
+    "FA-022",
+    "FA-025"
+  ],
+  "review_authority": "advisory_only",
+  "github_synced": true,
+  "remote_issues": 32,
+  "local_tickets": 32,
+  "title_body_marker_all_match": true,
+  "all_remote_open": true,
+  "local_all_unresolved": true,
+  "new_issues_created": 0,
+  "close_reopen_operations": 0,
+  "verification_tools": [
+    "2d7652",
+    "fec66c",
+    "e2255e"
+  ]
+}

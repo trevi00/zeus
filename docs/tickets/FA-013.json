@@ -35,18 +35,36 @@
   "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:31:57.716249+00:00",
+      "id": "1e3f82240016bf865cb050f6e0f7ef3ffb11a0cb6129bb75367887134d4cc8cb",
+      "summary": "Joint Codex/actual Claude entry review: residual CLI validates stage/mode/statement but writes constant operator actor; named human guard omits residual. Full writer/consumer transition and human bypass were not executed. Regex enumeration alone is not authenticated acceptance. Original review overclaims are explicitly withdrawn.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-fb2ab61807b4",
+      "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/a6a4a47d8e5ceb65f16faafbbad113c3e08e8af8/docs/full-analysis/harness-entry-contracts-001/resolution.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T05:14:43.513274+00:00",
+      "at": "2026-09-09T11:31:59.655369+00:00",
       "id": "7b8f10a7f600d24397da1c9fe6a72030b5d92db63284efa959f20260c3db2599",
       "url": "https://github.com/trevi00/zeus/issues/14",
       "number": 14,
       "status": "synced",
-      "body_hash": "9f7a8b05e83871b1cf8545e1bd6c1e80f69135ed8e3520f052fac83d2d2bc706",
+      "body_hash": "9aa4cc1af2dee9879f4e8fe0704d53ac870088da464a3e2c5a6a0b260518d68f",
       "ticket_id": "ZEUS-fb2ab61807b4",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "1e3f82240016bf865cb050f6e0f7ef3ffb11a0cb6129bb75367887134d4cc8cb"
+      ],
       "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
       "synced_revision": 1
     }

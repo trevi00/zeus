@@ -44,18 +44,36 @@
   "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:32:04.041766+00:00",
+      "id": "f086480570da2bb2cf5c246575cce408a84e541ab520c5cea6390010b6b90f86",
+      "summary": "Fresh static role review: generic Task can load a named role body while Agent-only auditing and free_text declarations do not establish tool enforcement; profile/frontmatter aliases differ. Role identity, actual model, actual tools and qualification must be separately bound. No real model invocation or Astra/Sol/Terra qualification in this partition.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/a6a4a47d8e5ceb65f16faafbbad113c3e08e8af8/docs/full-analysis/baldrix-agents-001/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T07:04:59.511659+00:00",
+      "at": "2026-09-09T11:32:05.764082+00:00",
       "id": "70762c25dbf581fc55f5e07958ce18e2aa50081b37121ae72322fe6b180499f9",
       "url": "https://github.com/trevi00/zeus/issues/20",
       "number": 20,
       "status": "synced",
-      "body_hash": "9c6ca3e902132c33dfb2df9bf698e580072ca9e1274f8ceef9a82c9c23b4d3a0",
+      "body_hash": "096cf3bf0337cad76fecd56a02edaa9040c302f5234bbed0d0e12a12999f0c5d",
       "ticket_id": "ZEUS-15c0d970315a",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "f086480570da2bb2cf5c246575cce408a84e541ab520c5cea6390010b6b90f86"
+      ],
       "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
       "synced_revision": 1
     }

@@ -58,20 +58,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T11:32:01.950164+00:00",
+      "id": "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f",
+      "summary": "Fresh static role/consumer review: auto mode can auto-approve human verification; selected completion paths consume SUMMARY/commit presence, malformed issue output can become zero issues, and VERIFY exclusions shrink the checked denominator. No original execution or demonstrated all-path bypass. Preserve skipped/unknown and exact-revision runner evidence.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/a6a4a47d8e5ceb65f16faafbbad113c3e08e8af8/docs/full-analysis/baldrix-agents-002/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:09:34.069945+00:00",
+      "at": "2026-09-09T11:32:03.936911+00:00",
       "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
       "url": "https://github.com/trevi00/zeus/issues/19",
       "number": 19,
       "status": "synced",
-      "body_hash": "4edb46af6ad841b9ac565c1d7e653b6cb8f1e488b92711eab3e29593caf3a118",
+      "body_hash": "3a7a3df14bab2049d563898c65758a346ead60445a60a15c5aa7826369227217",
       "ticket_id": "ZEUS-07f94a1a4390",
       "repository": "trevi00/zeus",
       "review_ids": [
-        "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2"
+        "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2",
+        "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f"
       ],
       "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
       "synced_revision": 1

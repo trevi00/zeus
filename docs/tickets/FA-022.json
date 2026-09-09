@@ -47,18 +47,36 @@
   "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:32:05.862222+00:00",
+      "id": "1d68df10d6ef94a229d2e042529968139e1c7b5b859747d45bc3b526510c070b",
+      "summary": "Original engine.checks.run in offline immutable Linux container: failed fixture process produced matching output, metric and trigger returned PASS while exit_code/db_query controls rejected. Nine check calls, eight real fixture child commands; no gatewriter/source suite/real DB/trigger/human acceptance. Preserve process failure independently of output matching.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/a6a4a47d8e5ceb65f16faafbbad113c3e08e8af8/docs/full-analysis/harness-entry-contracts-001/observations.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T08:07:53.862019+00:00",
+      "at": "2026-09-09T11:32:07.692630+00:00",
       "id": "762c7b28f0d163d919f17692ddf3524d72daa1e5c226a20798ac2b645f4ce4af",
       "url": "https://github.com/trevi00/zeus/issues/23",
       "number": 23,
       "status": "synced",
-      "body_hash": "816bca52205ee402ecf5fd10dc5ba0cb492d6d80e94122d1ec6a5dead3fa8d9e",
+      "body_hash": "c6a8498bbb31643b02fb1c5544b7b7d7dbfe6b021935602627f86d81dc280a5b",
       "ticket_id": "ZEUS-a9984f5b7caf",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "1d68df10d6ef94a229d2e042529968139e1c7b5b859747d45bc3b526510c070b"
+      ],
       "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
       "synced_revision": 1
     }
