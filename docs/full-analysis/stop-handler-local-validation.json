@@ -1,0 +1,20 @@
+{
+  "kind": "local_validation_tool_result_transcription",
+  "date": "2026-09-09",
+  "platform": "Windows PowerShell",
+  "base_revision": "053f56207d938936157320e671e635080ea85024",
+  "scope": "Stop001 joint review, validators002, CLI004 and handlers001 evidence checkpoint; runtime source and tests unchanged",
+  "checks": [
+    {"argv": ["python", "-X", "utf8", "docs/full-analysis/verify-stop-handler-checkpoint.py"], "returncode": 0, "primary": 56, "supporting": 82, "receipt_hashes": 5, "artifact_hashes": 54},
+    {"argv": ["uv", "run", "ruff", "check", "."], "returncode": 0, "result": "All checks passed!"},
+    {"argv": ["uv", "run", "pytest", "-q"], "session_id": 28957, "returncode": 0, "passed": 660, "skipped": 68, "duration_seconds": 173.11}
+  ],
+  "review_tool_corrections": [
+    "The new metadata verifier initially assumed Zeus support used zeus-working-tree/pinned_sha256; CLI004 used zeus/sha256. Inspected the three explicitly working-tree records and corrected the reader without rewriting evidence. This was not an upstream test failure.",
+    "Captured Claude discussion retains original trailing spaces. A single-path Git whitespace exception preserves response/receipt byte equality; prose and runtime checks remain enabled."
+  ],
+  "limits": "Transcribed terminal tool results, not raw stdout receipts. Skipped tests are not passes. Metadata hash checks do not certify semantic completeness; repository tests do not establish original hook host, physical-device, acceptance or deployed Zeus behavior.",
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "runtime_deployed": false
+}

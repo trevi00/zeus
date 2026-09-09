@@ -1,0 +1,1195 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/mock_doc_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3f764064d18696f9efb873a3619b693264842faf",
+    "pinned_sha256": "c2cdd9912ce31ec087fdb77c564f65ca6ccc40a32bbe9c4ac7fa916aee282aa3",
+    "manifest_bytes": 6635,
+    "pinned_bytes": 6635,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        153
+      ]
+    ],
+    "line_count": 153,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#mock_doc_drift.py",
+    "semantic_review": {
+      "analysis": "latest gate_attested row에stage_id/projectfilter없어다른gate/project가mockreview판정에섞인다. gitdiffsha..HEAD는ancestor검사아닌두commitdiff라nonancestor도성공. staged/worktree실패는무시,untracked미포함,-z없어quotedpath누락. 어느basename디자인문서하나가바뀌면전체reconciled단정,삭제/이름변경/무의미edit도clean;피드백변경불필요한정당review는warn. noevent clean/undetermined PASS,always0. eventgitroot외부host접근허용,sha형식/type미검증. 운영attestation/provenance서명/독립humanreview미확인.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "support_update": "pipeline_gate_runner 1–93: attested_by/docs_sha 무검증 저장, _written은 반환dict만. tests78–144 정적 독해.",
+      "tests_read_not_run": [
+        "scripts/tests/test_mock_doc_drift.py"
+      ],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/mock_review_skip.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "063613aace81768cc4bfa6599ab3915314e060fc",
+    "pinned_sha256": "c4320113b3e5d5b9864cc0516153c4f03dce3f6096e964da7943d481bb0e1092",
+    "manifest_bytes": 5047,
+    "pinned_bytes": 5047,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        134
+      ]
+    ],
+    "line_count": 134,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#mock_review_skip.py",
+    "semantic_review": {
+      "analysis": "src비어있지않음은코드진행증거아님(directory/readme만도true),anydesignexists는directory도true,정해진얕은경로만. 같은gitroot mock-review attestation하나라도과거있으면freshness/docsrevision에관계없이영구clean. 문자열path동등성Windowscase/slashalias미정규화. log오류false→warn이지만git오류undeterminedPASS,src읽기오류false→clean. noacceptanceattestation검증. stdoutreconfigureunguarded/hostenvGit.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "support_update": "tests1–126: 임시Git와 직접 JSON marker fixture, unavailableGit SKIP; 사람 인수 실행 아님.",
+      "tests_read_not_run": [
+        "scripts/tests/test_mock_review_skip.py"
+      ],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/mutation_safety.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "dd339d8f38478c437d572ac493736e7c9b85fec1",
+    "pinned_sha256": "b13b50d9aed0ab9bbd35442508a920151e78c18d0863a5e796086481003dae93",
+    "manifest_bytes": 6345,
+    "pinned_bytes": 6345,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        170
+      ]
+    ],
+    "line_count": 170,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#mutation_safety.py",
+    "semantic_review": {
+      "analysis": "skills 문서의 파괴 패턴 주변 ±10행에 example/migration/WHERE/confirm 등 토큰 하나면 안전 처리한다. 부정문이나 다른 코드 블록의 안전 단어도 실제 대상·승인·가드와 인과관계 없이 면제한다. 문서에 설명한 DELETE FROM 패턴은 실제 목록에서 빠졌고 TRUNCATE TABLE 이외 SQL, PowerShell Remove-Item, 분할 명령은 검출하지 않는다. _should_skip은 root 상대 첫 부분만 보므로 skills 아래 중첩 state/node_modules 배제 의도와 다르다. 파일 없음·읽기 실패 분모는 clean과 섞인다. 기본 WARN, --strict만 FAIL/return1이며 argparse는 현재 프로세스 argv를 읽는다. telemetry 쓰기가 있다. Zeus 권한 검증으로 채택하지 않고 문서 lint로만 변형한다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/openapi.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "63c933c4b3afd5d1de61979221cb4cd81568c9f1",
+    "pinned_sha256": "96210fe7686ca922f430639024bfda3b677220986cb675e4cb95762b0bf23054",
+    "manifest_bytes": 4352,
+    "pinned_bytes": 4352,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        114
+      ]
+    ],
+    "line_count": 114,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#openapi.py",
+    "semantic_review": {
+      "analysis": "YAMLparser/스키마검증없이paths키·indent2–4의slashline,MDHTTPkeyword만. MD는메소드단어만있고endpoint0여도pass. operation별count아닌pathcount이고여러중복문서합산,domainfilecount와비율만보고identity안봄. warning이라한domain부족은실FAIL. files없음PASS,filereaduncaught/mainNone→process0. 실제API/requestresponse/auth/SDD인수검사아님.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/prd.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "bcae0b7ba707d524cbc4444be186c59e1be36615",
+    "pinned_sha256": "5702824fe7abce4167679648aabdc4367dbe787839b5acff743bbea877e53bf6",
+    "manifest_bytes": 4154,
+    "pinned_bytes": 4154,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "line_count": 98,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#prd.py",
+    "semantic_review": {
+      "analysis": "index/domainfiles존재및regexlinkfile,escape/absolute/외부경로제한없고URL/fragment는localfile오탐. noindexlinks는coverage검사없음;index가모든domain등록했는지안봄. 첫600char anywhere status:SKELETON이면frontmatter아니어도스토리면제. ASI WANTSO THATregex문서전역횡단가능,내용/인수조건·IDsemantic검증없음. missingreqdirPASS. unguardedstream/IO/mainNone.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/private_content_leak.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "bc17b9bdcb95de06e30b8a6c70ac155b3510b89d",
+    "pinned_sha256": "a4694a716704e305da9c93c2fc69f2bb0e49b3ac4cd07a161ce47703baa95dbc",
+    "manifest_bytes": 5984,
+    "pinned_bytes": 5984,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        189
+      ]
+    ],
+    "line_count": 189,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#private_content_leak.py",
+    "semantic_review": {
+      "analysis": "닫힌 브랜드 토큰과 명시 버전의 shared 경로만 검색한다. 문서의 java/springboot-* 범위보다 실제 범위가 좁고 대소문자·신규 버전은 누락 가능하다. pointer-ok 부분 문자열 하나가 줄 전체를 면제해 같은 줄 다른 민감 정보도 빠진다. private subtree 부분 문자열 배제와 read 오류 빈 결과는 분모를 숨긴다. 의심 내용 120자 snippet을 출력하고 telemetry에도 기록하므로 유출 검사 자체가 2차 저장 경로다. 일반 비밀 탐지·정책 준수 증명은 아니며 FAIL stdout에도 main None이다. Zeus에는 허용 범위와 비밀 제거를 명시한 검사만 변형 가능하다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/producer_consumer_coherence.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "46b84e7fc6b6ab59b69509dd99d65fa03b50264c",
+    "pinned_sha256": "c5743632c53b6ba1e121834020a621ceb64d496debfba431d121ae451e354d0d",
+    "manifest_bytes": 18642,
+    "pinned_bytes": 18642,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        418
+      ]
+    ],
+    "line_count": 418,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#producer_consumer_coherence.py",
+    "semantic_review": {
+      "analysis": "docstring의 모든 dict read/dynamic writer/qualified graph와 실제 구현이 다르다. marker 검사 실제 범위는 marker_keys=tuple/list literal뿐이며 변수 전체를 주면 INFO조차 없이 빠진다. 전역 dict key/setdefault 문자열이 하나라도 있으면 다른 프로젝트/이벤트 producer도 충족시킨다. telemetry는 TELEMETRY_DIR / literal 경로 표현을 read라 간주하고 실제 읽기/쓰기·함수 바인딩은 확인하지 않으며 동명 log_telemetry/const shadowing·미도달 함수도 producer로 인정한다. cron은 reference net에는 있지만 consumer audited5layers에는 없다. caller graph는 qualified symbol이 아닌 전역 Name/Attribute 문자열 집합, public defs setdefault(name)는 동명 정의 중 첫 것만 남긴다. tests만 참조해도 연결되었다고 하고 Markdown은 name 부분문자열과 같은 줄 backtick/괄호만 요구한다. 실제 운영 호출 가능성이 아니라 전역 이름 존재 힌트다. 자기 코드 coherence-ok 이유 문자열만으로 HIGH를 면제하고 expiry/승인자는 없다. SyntaxError/OSError는 누락, Unicode는 예외, --all 없는 MED는 분모 밖. advisory 주장과 main 항상 [FAIL] 출력이 상충하지만 return None/process0. registry의 graduation_scan_drift 분기는 존재하나 TRACKED에는 없어 정상 졸업 미연결이다. tests 20–156은 synthetic 이름 비교와 live HIGH0 기대이며 운영 graph/실행 인수 증거가 아니다. Zeus 정본 graph에는 fully qualified identity·실제 계약/참조·누락 분모를 별도 보존해야 한다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [
+        "scripts/tests/test_producer_consumer_coherence.py"
+      ],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "권한/품질/신뢰 게이트로 원형 채택 제외; 제한된 발견 힌트로 재설계 검토.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/seam_parity_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2908ba5ec69fa52dcb05c9efea01e476f0c51097",
+    "pinned_sha256": "5168cd6a20bafff5f7def5be4a4624326dd9c211caaaa66ffc100c6c52451bfc",
+    "manifest_bytes": 4597,
+    "pinned_bytes": 4597,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        107
+      ]
+    ],
+    "line_count": 107,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#seam_parity_drift.py",
+    "semantic_review": {
+      "analysis": "seam별 마지막 JSONL 한 줄만 읽고 그 줄이 잘못되면 seam 전체를 제외한다. JSON scalar·잘못된 transform 형태는 예외가 가능하고 read OSError도 보호되지 않는다. status BLOCKED면 검사를 모두 생략한다. 같은 기록 안 집합·fidelity로 status를 재계산하므로 입력 집합까지 같이 바꾸면 자기 증명을 막지 못한다. fidelity 누락은 LOW가 아니라는 이유로 충분한 값처럼 취급되고 low-fidelity가 mismatch보다 먼저다. producer-only DRIFT만 potential break로 잡는다. drift_count 기본은 scripts/state/seams, main은 cwd/state/seams로 다르다. advisory 설명과 [FAIL] 출력이 상충하나 main None이다. 실제 producer/consumer 데이터·신선도·서명·운영 상태는 미확인이다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/self_model_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "433c85ffe41efc1b4d684bed96080a0f39b7725d",
+    "pinned_sha256": "32e7ba85404916a92df186b76a1b53f23962746cd118a5eec0fad7d78b1d03e4",
+    "manifest_bytes": 13749,
+    "pinned_bytes": 13749,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        315
+      ]
+    ],
+    "line_count": 315,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#self_model_drift.py",
+    "semantic_review": {
+      "analysis": "F-TOOLS는 harness-evaluator 하나의 tools 초과만 검사하며 필수 tool 삭제/빈 tools는 통과한다. parse_tools_field의 list 분기는 실제 minimal frontmatter parser가 list를 내놓지 않으므로 YAML list 보장 아님. F-SCRIPTREF는 backtick의 제한된 python -m/경로만 보고 exists여서 디렉터리·낡은 파일·../탈출 참조도 정상으로 판단 가능하다. 파일 읽기 실패는 누락되고 basename만 보고해 동명 파일 혼동 여지. F-MUTMIRROR의 실제 닫힌 token은6개지만 docstring은5개라 내부 drift 존재. 전체 문서 어느 곳이든 backtick token만 있으면 표의 권한 의미·주체·금지/허용·표 구조가 바뀌어도 clean이다. canonical path는 _HOME.parent/CLAUDE.md로 고정되어 pinned source 밖 parent 문서를 읽을 수 있다. unreadable canonical은 WARN이고 advisory에서는 전체PASS/0. 졸업 상태 오류면 advisory로 낮아지며 import시 registry와 이후state시점 차이도 남는다. selfcheck는 문자열 fixture이며 실행0. Zeus 자가개선 승인·모델 자격에는 exact revision과 명시 권한 계약이 필요하다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skeleton.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5ce2977912f1ffba09248ee0039c63ee5029ff5b",
+    "pinned_sha256": "3c769fe05edb8f5523af0ceb6628c7c40e1f34a7e9f0e42ed55b6986998c7879",
+    "manifest_bytes": 4419,
+    "pinned_bytes": 4419,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        120
+      ]
+    ],
+    "line_count": 120,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skeleton.py",
+    "semantic_review": {
+      "analysis": "Java/Spring가정,gradle는키워드spring/test강제하지만pom은존재만봐비대칭. build.gradle.kts만있어도build.gradle존재라출력. config파일존재≠유효성,conventioncom패키지중가장짧은문자길이하나만검사,org등미검사패키지skipPASS. nosrcPASS,nocodecompile/testsrun. IOstream/mainNone동일.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_frontmatter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "e3746dd3256577bc62f52252b8523993322ea7b4",
+    "pinned_sha256": "ad8049b9e6b261d8ae9f291c5ad3e4255560378d92b6da682c703292ba5026c2",
+    "manifest_bytes": 8222,
+    "pinned_bytes": 8222,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "line_count": 217,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_frontmatter.py",
+    "semantic_review": {
+      "analysis": "명세는 any nesting harness-* 금지지만 _check_naming 74–76은 최상위 디렉터리만 검사한다. SKILL.md 형제 문서는 실제로 참조되는지와 관계없이 content module로 면제된다. frontmatter 전체 부재는 모든 subtree FAIL, 개별 필드 없음은 mobile만 FAIL이고 나머지는 WARN 합계와 PASS이다. 검사 총파일 수에는 _pipeline·content module 면제가 포함되어 실제 completeness 분모가 아니다. lib.frontmatter 전문에서 모든 값은 원시 문자열: keywords: []나 description: ''도 nonempty로 통과하고 YAML nesting/list 해석은 없다. Path.as_posix는 실제 Windows Path에 적절하지만 POSIX에서 역슬래시가 든 문자열까지 separator로 바꾸지는 않는다. 파일 glob/stream 예외는 never-raises 계약과 다르다. Zeus 등록 schema/호출 가능성·권한 자격과 분리하여 필드 lint만 변형한다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_quality_axes.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "945ff93cf6d0942a8413ac430b0f8bbcc2ebf166",
+    "pinned_sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+    "manifest_bytes": 8848,
+    "pinned_bytes": 8848,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        269
+      ]
+    ],
+    "line_count": 269,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_quality_axes.py",
+    "semantic_review": {
+      "analysis": "ISO/IEC 25010 9축을 강제한다는 주장은 원문 표준 미확인이고 구현은 문서 형식이다. Source 이후 아무 dash 줄이면 인용, http://만 금지해 URL 자체가 없어도 통과한다. Gotchas 이후 Source 전까지의 모든 ###를 세므로 다른 섹션 소제목을 잘못 합산한다. G7은 축 라벨 문자열 존재만 본다. requires 공백 분할과 skill_index의 모든 md stem/원시 name으로 README·SKILL·자기참조도 대상 존재가 되어 실제 dependency acyclic/callable/호환성을 확인하지 않는다. parser가 YAML lists/quotes를 해석하지 않아 요구 목록과 tech-stack의 통상 YAML 표기는 오판 가능하다. enforce prefix는 문서의 data/infra/ml 외 systems도 포함한다. opt-in 없는 legacy·파싱 실패 legacy는 제외, inspected0에서도 9게이트 PASS이다. CRLF를 read_text가 정규화한 뒤 byte_count를 세어 실제 디스크 바이트 한도와 차이가 있다. no content-module 면제로 frontmatter 검사와 분모가 다르다. 품질/모델 평가·보안 증명으로 채택하지 않는다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "권한/품질/신뢰 게이트로 원형 채택 제외; 제한된 발견 힌트로 재설계 검토.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_source_liveness.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "a507b484f1717b89e869cb3826db38c3d1183a66",
+    "pinned_sha256": "8d176d5b53232c1d5b021dc92e9531740dee8d1d6beecae28ef999fb6937a8e9",
+    "manifest_bytes": 7194,
+    "pinned_bytes": 7194,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        196
+      ]
+    ],
+    "line_count": 196,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_source_liveness.py",
+    "semantic_review": {
+      "analysis": "opt-in advisory이고 cron 주1회는 권고일 뿐 이번 범위에서 실제 schedule/실행 영수증은 없다. HTTP HEAD 응답코드만 보고 401/403/405/406도 OK이며 인용 내용·원문·라이선스·진위는 검증하지 않는다. certificate 오류 때 SSL 검증을 끄는 fallback은 연결 응답을 얻어도 진위를 보장하지 않는다. Source 이후 URL 전부라 다른 섹션도 포함하고 http를 허용한다. 주소/redirect/프록시 경계를 제한하지 않아 원본 문서의 임의 내부 URL도 접속 가능하고 HEAD도 요청 메타데이터를 송신한다. timeout은 요청당10초일 뿐 전체 deadline/최대URL수/전역dedup 없다. read 오류는 main 밖 예외, missing Source/URL은 분모0, 모든 DEAD/NETWORK여도 PASS와0. 검증되지 않은 fallback은 Zeus 신뢰 증거로 제외하고 별도 제한 네트워크 liveness 힌트로만 설계 가능하다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "권한/품질/신뢰 게이트로 원형 채택 제외; 제한된 발견 힌트로 재설계 검토.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_staging_isolation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b36468e4afd03284501a4ee23db758fa4d0fc4eb",
+    "pinned_sha256": "4bc41f4d26fa52f1cdc5239f633ce18ad1205c08c02088dc1f1d9949b41663a2",
+    "manifest_bytes": 7270,
+    "pinned_bytes": 7270,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "line_count": 217,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_staging_isolation.py",
+    "semantic_review": {
+      "analysis": "_is_safe는 허용 ROOT 이름 바인딩의 실제 값은 확인하지 않고 Div 오른쪽을 무조건 허용해 절대경로·..를 놓친다. 모든 Attribute/메소드 호출도 같은 루트로 처리해 .parent 체인·with_name/relative_to 같은 이탈 표현까지 안전 판정한다. helper 본문의 return만 검토하며 helper 내부 부작용·nested return·fallthrough None·함수 재바인딩은 모델링하지 않는다. read-only open도 쓰기로 보고 keyword path는 no arg 위반이다. 정해진3파일만 보며 파일 없음/read OSError는 PASS, SyntaxError는 FAIL, Unicode는 예외. 지원 staging_guard 1–83은 resolve/relative_to 실제 경계 검사를 갖지만 자동 interception이 아니라 SHOULD call 계약이고 TOCTOU도 남는다. 실제 detector 194–209/540–623의 write sites는 assert_in_staging 호출 없이 helper 경로를 쓰며 607–610은 AST를 만족시키려고 변수 대신 helper를 전달했다고 명시한다. cid 전체 기원/정규화는 이번 지원 범위 밖이므로 경로 탈출의 실제 exploit 실행으로 주장하지 않는다. tests 48–171은 실패 시 print [FAIL]만 하므로 pytest가 예외로 실패하지 않으며 /tmp/evil 단순 fixture와 문서 false-negative 문자열을 검사할 뿐 위 탈출 경로를 보장하지 않는다. Zeus에는 런타임 파일 권한 경계·정본 승인·후보 비활성화가 필수다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [
+        "scripts/tests/test_skill_staging_isolation.py"
+      ],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "권한/품질/신뢰 게이트로 원형 채택 제외; 제한된 발견 힌트로 재설계 검토.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_structure_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "40fada52ed47c0dd5a06d6e320e71a94df66b069",
+    "pinned_sha256": "656506540771131a790cfc5f26a1bd4440b1933806b6fa97b96ddfe139b69a59",
+    "manifest_bytes": 3363,
+    "pinned_bytes": 3363,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        85
+      ]
+    ],
+    "line_count": 85,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_structure_depth.py",
+    "semantic_review": {
+      "analysis": "CLAUDE_HOME/skill-candidates단일얕은디렉토리,파일명marker substring이면정상cid도skip. IOOSError미검사[]PASS,UnicodeErroruncaught. 후보0/모두읽기실패/진짜depthclean구분없음. libstructuredepth위임,깊이숫자는semanticadequacy아님. builtin/advisory설명상충추적필요,mainWARNonly,no graduationflag,telemetry실쓰기.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "support_update": "lib 전문 1–97: 최소2 content줄/3 bullet. quality_axes는3 ###로 분모 차이; 실행 없음.",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/spec_bundle.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "008c22effb4afea9523450cf1927003148b76b7e",
+    "pinned_sha256": "da2b906f7b840f662f50c49e5bfcb12da4f14fd3dcbef1cd58e3d27d53767b6f",
+    "manifest_bytes": 4020,
+    "pinned_bytes": 4020,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        107
+      ]
+    ],
+    "line_count": 107,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#spec_bundle.py",
+    "semantic_review": {
+      "analysis": "기존cli004support전문과중복이나이번primary전문재독,공유coverage승격안함. _find_spec_dirs는CLAUDE_HOME/spec만,check_bundle_dir는specdir.parent.parent→userhomeloadbundle라일반projectcwd검사설명과미스매치. Nonebundle→[]clean,declaredempty면domain누락/추가검사전체생략,scenarios0이면id검사0. facets의id는lib위임,semanticcoverage/Then/oracle/기존IDmeaning/retire/nooverwrite정책없음. mainWARNonly인데builtin존재의미는blocking보장아님. 12개문제만출력전체count미보고. source본문의no spec today는현재상태증거아님.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "subsequent_correction": "load_bundle 175–205 직접 독해로 parent.parent 경로 산술 자체는 올바름을 확인. 초기 wrong-root 추정 정정: CLAUDE_HOME/spec 한 곳만 찾고 프로젝트 cwd를 발견하지 않는 범위 문제다. spec_roundtrip의 CLAUDE_HOME/.claude/spec 발견 방식과는 다르다. 원시 checkpoint는 그대로 보존.",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/spec_roundtrip.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "4bed9eee81b3091af5faad1dbccb8df211384f23",
+    "pinned_sha256": "00dbe20673e8b06c4c8ad8308a44c066081ee427b57c05c3364bc614b88f651c",
+    "manifest_bytes": 5208,
+    "pinned_bytes": 5208,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        135
+      ]
+    ],
+    "line_count": 135,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#spec_roundtrip.py",
+    "semantic_review": {
+      "analysis": "spec/test .feature의 ID 집합만 비교한다. step 정의 바인딩·assertion·컴파일·테스트 실행은 확인하지 않아 feature 복사본이나 TODO 본문도 100%가 된다. spec ID가 없으면 문제 없음이고 main은 전부 대응한다는 PASS를 출력할 수 있다. 고정 3개 flat glob은 중첩 feature를 놓치며 parse/read 실패는 누락된다. ID 중복을 집합으로 지워 중복 검증이 안 된다. spec/domain 바로 아래 파일만 자기 복사로 배제하고 바깥 복사본은 인정한다. 프로젝트 발견은 CLAUDE_HOME/.claude/spec를 보므로 spec_bundle의 CLAUDE_HOME/spec와 다르며 일반 cwd도 아니다. main WARN만, 출력 최대12. 지원 testgen 296–305는 정확히 ID 집합 산술이며 spec parser는 잘못된 줄을 skip한다. 지원 test_spec_roundtrip 14–64는 feature만 복사해 100%를 기대한다. Zeus에서는 연결 지표만 허용하고 요구 의미·기존 ID 재사용·retire·nooverwrite export·실제 인수는 별도다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [
+        "scripts/tests/test_spec_roundtrip.py"
+      ],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/stdout_utf8_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "6bd7f55f0a805abfd23dac84b85c6b69d7d0b13d",
+    "pinned_sha256": "67be97acd29e8b0278578fc77bca09a0a37ad0bd35a878b3f68444337a550e1e",
+    "manifest_bytes": 6075,
+    "pinned_bytes": 6075,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        143
+      ]
+    ],
+    "line_count": 143,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#stdout_utf8_guard.py",
+    "semantic_review": {
+      "analysis": "전체 소스에 reconfigure와 UTF8 encoding 문자열만 있으면 대응 완료로 처리해 주석·docstring·stderr만 변경·미도달 코드도 면제한다. direct print 인자 AST만 보므로 변수에 담긴 한국어·logging·write·alias·동적 fstring 값은 누락한다. .stdout라는 임의 객체 속성은 subprocess 출력으로 오인 가능하다. validators/lib/__init__는 제외되고 읽기·파싱 skip은 분모에 없다. 자기 stdout.reconfigure도 무조건 호출해 StringIO/pythonw(None) 환경에서 실패할 수 있다. cached registry와 실제 졸업 상태 차이를 별도 확인해야 한다. Win cp949와 Linux UTF8 쓰기 경계 탐지 힌트이며 OS 실행 검증은 0이다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/stub_faker_lint.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "4a99f52a290872ebda25648058166ee9019bb930",
+    "pinned_sha256": "25fbed9499e307915fb9290490d41161f014b320595885d5110d5b55c00e9069",
+    "manifest_bytes": 2957,
+    "pinned_bytes": 2957,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "line_count": 69,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#stub_faker_lint.py",
+    "semantic_review": {
+      "analysis": "frameworkNone를notgreenfieldPASS단정;indeterminateWARNneverclean이라하나stdoutcaller는WARN을성공으로볼수있음. hollow없고suspects있어도allThenassertPASS,Then분모0여부이wrapper안봄. graduated상태에따른FAIL/return1분기없음. scan이lib실검사를위임하고예외uncaught. liblint/detectframework전문미독. mockedassertpresence≠acceptance.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "support_update": "lib 194–294: pending Then exempt, 모든 read 실패 빈 report 가능. extract_step_defs/overlay 전이는 미독.",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/subagent_refs.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "10d5516d99d72bec226c11a40d5b62641822bbe3",
+    "pinned_sha256": "ec8ae2b903597c24448cb9fdbdb9df1b72610170be182bd21cee9b939b8b6c90",
+    "manifest_bytes": 5276,
+    "pinned_bytes": 5276,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        172
+      ]
+    ],
+    "line_count": 172,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#subagent_refs.py",
+    "semantic_review": {
+      "analysis": "참조 regex는 최소2글자 이름을 요구해 한 글자 agent를 놓치고 match는 소문자로 정규화하지만 agent stem은 그대로여서 대소문자 불일치가 있다. 파일 존재만으로 해석하며 tools/model 자격·런타임 등록을 확인하지 않는다. agents 없음·비어 있음은 PASS라 전체 참조를 미검사한다. built-in Claude agent 5개는 고정 목록이며 외부 현재 문서 확인은 하지 않았다. template 이름·끝 하이픈 등의 면제, nested skip 디렉터리 판정의 첫 부분 오류가 있다. 읽기 오류 빈 결과, telemetry는 앞50개만 남기며 main None이다. Zeus 모델 자격/위임 권한 승인이 아니라 이름 lint로 변형한다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/subprocess_decode_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "63bfa966a1f0eec051f36b9db83c3aeb06a46b55",
+    "pinned_sha256": "9a69470b3443aec9e07b36df079b9a6fe130f30523630285bcfb15b3ee018de9",
+    "manifest_bytes": 9408,
+    "pinned_bytes": 9408,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "line_count": 217,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#subprocess_decode_guard.py",
+    "semantic_review": {
+      "analysis": "부모 디코딩과 자식 stdout 인코딩을 구분하는 문제 정의는 타당하지만 본문 과거실측은 이번 실행 증거가 아니다. subprocess 명명 직접호출/Assign/동일 scope attribute만 보므로 import alias·AnnAssign·with Popen·return run(...).stdout·communicate·closure 바깥 변수 읽기·lambda/class body는 빠진다. 같은 scope 변수 재할당/다른 객체 stdout는 오탐한다. text=True literal만 감지하며 encoding=None이나 잘못된 encoding도 인자 존재만으로 면제한다. errors 인자만으로 텍스트 모드가 되는 경우는 안 본다. SyntaxError/OSError는 skip, Unicode 오류/unguarded reconfigure는 예외. 중요한 직접지원 모순: _blocking은 graduated_names와 VALIDATOR_NAMES 둘 다 요구하지만 lib.graduation.TRACKED는 doc_code_drift/self_model_drift 두 개뿐이고 graduate는 다른 이름을 거부한다. 따라서 pinned 정상 API로 이 검사는 졸업하지 못해 builtin 목록에 있어도 WARN/0이다. tests 38–108은 AST 문자열/트리 검사이며 cp949 실제 자식 프로세스를 실행하지 않는다. Zeus에는 bytes/raw stdout 보존·부모 디코딩 계약·누락 출력 실패 처리와 실제 Windows/Linux/WSL 검증을 함께 적용해야 한다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [
+        "scripts/tests/test_subprocess_decode_guard.py"
+      ],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/test.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "da1d9330d4632a76178b7de44192312c2f7469dd",
+    "pinned_sha256": "f7be56e0bcc03a03bfbd799eda841ecc3d077aea08f9c1969301be83cbc8595e",
+    "manifest_bytes": 5758,
+    "pinned_bytes": 5758,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        155
+      ]
+    ],
+    "line_count": 155,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#test.py",
+    "semantic_review": {
+      "analysis": "src/test가 없으면 PASS지만 존재하면서 *Test/Tests/Spec.java가 없으면 FAIL이다. Spec.java는 총 테스트 수에는 포함되지만 Service 대응은 Test/Tests만 인정한다. 패키지 없이 basename으로 연결해 동명이인 테스트가 다른 Service를 덮는다. gradle의 jacoco 문자열은 주석에도 있을 수 있고 build/reports/tests 디렉터리는 비었거나 과거 실행이어도 보고서 생성 PASS를 만든다. 실제 run/revision/테스트 결과·커버리지 숫자를 확인하지 않는다. 파일 IO 무시, Java만의 관례, main None/프로세스 0. 누락 Service는 WARN이다. Zeus 인수 증거 대신 프로젝트 구조 발견 힌트로만 변형한다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/test_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1be5c6da49f1d879d0bb9570a39c1b40b2112d47",
+    "pinned_sha256": "77c4078812548e6297698dc7a704ad1a3347e46e5c0dd3690427a1ada8546a07",
+    "manifest_bytes": 4318,
+    "pinned_bytes": 4318,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        105
+      ]
+    ],
+    "line_count": 105,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#test_depth.py",
+    "semantic_review": {
+      "analysis": "tests/test_*.py를 AST로 보되 FunctionDef만 대상으로 AsyncFunctionDef 테스트를 누락한다. 함수 안 중첩 assert/raise나 docstring의 [FAIL], check/expect/verify 부분 문자열 함수, require_/ensure_/raises/fail 이름을 깊이 증거로 인정한다. 호출 바인딩·도달성·실행 여부를 보지 않아 assert True나 실행하지 않는 내부 함수도 통과할 수 있다. SyntaxError/OSError는 skip한 채 문제 없음 PASS, Unicode 오류는 밖으로 나간다. builtin이어도 WARN만 출력하고 main None이다. 의미 있는 실패 오라클과 전체 테스트 분모를 별도 기록해야 한다.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/threshold_registry_locked.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ac65ad93afc8291361c16d80906a77c1302bf83d",
+    "pinned_sha256": "0993884cf40531609e3343931e3e8ee786b30087a79488c39479c3d46e2c8e01",
+    "manifest_bytes": 2200,
+    "pinned_bytes": 2200,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        59
+      ]
+    ],
+    "line_count": 59,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#threshold_registry_locked.py",
+    "semantic_review": {
+      "analysis": "regimportfail는FAIL좋으나qualified()실행/REGISTRYshape/LOCKED_DENY처리예외는밖. 닫힌deny집합과문자qualified동일성만검사해alias/간접튜닝/실값mutation/registry자체변조/승인보호는안봄. emptyreg는PASS. validator실실행은런타임인데compiletime표현. telemetrywrite, mainNone. runtimeassertguard/proposer/fullregistry지원미독.",
+      "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+      "tests_read_not_run": [],
+      "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+    },
+    "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+    "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+    "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+    "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/source_verification.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+    "tests_executed": [],
+    "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+    "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+    "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+    "remaining": [
+      "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+      "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+      "License/external claims, independent joint exact-revision review and adoption approval pending."
+    ]
+  }
+]

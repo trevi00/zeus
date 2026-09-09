@@ -1,0 +1,19 @@
+# validators002 중간 checkpoint
+
+고정 partition baldrix:scripts/validators:002,24개154041bytes,scope52b3115d99350cd64144a35b4b1dc0398ec925bbaf8d24555eba83b42d43743a,pinnedcbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2. 아직전체완료아님. 상류/테스트/프로브실행0. 새폴더외쓰기금지.
+
+전문읽은9개: mock_doc_drift153행,mock_review_skip134,openapi114,prd98,skeleton120,threshold_registry_locked59,stub_faker_lint69,spec_bundle107,skill_structure_depth85. supporting이번범위아직0.
+
+- mock_doc_drift: latest gate_attested row에stage_id/projectfilter없어다른gate/project가mockreview판정에섞인다. gitdiffsha..HEAD는ancestor검사아닌두commitdiff라nonancestor도성공. staged/worktree실패는무시,untracked미포함,-z없어quotedpath누락. 어느basename디자인문서하나가바뀌면전체reconciled단정,삭제/이름변경/무의미edit도clean;피드백변경불필요한정당review는warn. noevent clean/undetermined PASS,always0. eventgitroot외부host접근허용,sha형식/type미검증. 운영attestation/provenance서명/독립humanreview미확인.
+- mock_review_skip: src비어있지않음은코드진행증거아님(directory/readme만도true),anydesignexists는directory도true,정해진얕은경로만. 같은gitroot mock-review attestation하나라도과거있으면freshness/docsrevision에관계없이영구clean. 문자열path동등성Windowscase/slashalias미정규화. log오류false→warn이지만git오류undeterminedPASS,src읽기오류false→clean. noacceptanceattestation검증. stdoutreconfigureunguarded/hostenvGit.
+- openapi: YAMLparser/스키마검증없이paths키·indent2–4의slashline,MDHTTPkeyword만. MD는메소드단어만있고endpoint0여도pass. operation별count아닌pathcount이고여러중복문서합산,domainfilecount와비율만보고identity안봄. warning이라한domain부족은실FAIL. files없음PASS,filereaduncaught/mainNone→process0. 실제API/requestresponse/auth/SDD인수검사아님.
+- prd: index/domainfiles존재및regexlinkfile,escape/absolute/외부경로제한없고URL/fragment는localfile오탐. noindexlinks는coverage검사없음;index가모든domain등록했는지안봄. 첫600char anywhere status:SKELETON이면frontmatter아니어도스토리면제. ASI WANTSO THATregex문서전역횡단가능,내용/인수조건·IDsemantic검증없음. missingreqdirPASS. unguardedstream/IO/mainNone.
+- skeleton: Java/Spring가정,gradle는키워드spring/test강제하지만pom은존재만봐비대칭. build.gradle.kts만있어도build.gradle존재라출력. config파일존재≠유효성,conventioncom패키지중가장짧은문자길이하나만검사,org등미검사패키지skipPASS. nosrcPASS,nocodecompile/testsrun. IOstream/mainNone동일.
+- threshold_registry_locked: regimportfail는FAIL좋으나qualified()실행/REGISTRYshape/LOCKED_DENY처리예외는밖. 닫힌deny집합과문자qualified동일성만검사해alias/간접튜닝/실값mutation/registry자체변조/승인보호는안봄. emptyreg는PASS. validator실실행은런타임인데compiletime표현. telemetrywrite, mainNone. runtimeassertguard/proposer/fullregistry지원미독.
+- stub_faker_lint: frameworkNone를notgreenfieldPASS단정;indeterminateWARNneverclean이라하나stdoutcaller는WARN을성공으로볼수있음. hollow없고suspects있어도allThenassertPASS,Then분모0여부이wrapper안봄. graduated상태에따른FAIL/return1분기없음. scan이lib실검사를위임하고예외uncaught. liblint/detectframework전문미독. mockedassertpresence≠acceptance.
+- spec_bundle: 기존cli004support전문과중복이나이번primary전문재독,공유coverage승격안함. _find_spec_dirs는CLAUDE_HOME/spec만,check_bundle_dir는specdir.parent.parent→userhomeloadbundle라일반projectcwd검사설명과미스매치. Nonebundle→[]clean,declaredempty면domain누락/추가검사전체생략,scenarios0이면id검사0. facets의id는lib위임,semanticcoverage/Then/oracle/기존IDmeaning/retire/nooverwrite정책없음. mainWARNonly인데builtin존재의미는blocking보장아님. 12개문제만출력전체count미보고. source본문의no spec today는현재상태증거아님.
+- skill_structure_depth: CLAUDE_HOME/skill-candidates단일얕은디렉토리,파일명marker substring이면정상cid도skip. IOOSError미검사[]PASS,UnicodeErroruncaught. 후보0/모두읽기실패/진짜depthclean구분없음. libstructuredepth위임,깊이숫자는semanticadequacy아님. builtin/advisory설명상충추적필요,mainWARNonly,no graduationflag,telemetry실쓰기.
+
+남은15: mutation_safety.py, private_content_leak.py, producer_consumer_coherence.py, seam_parity_drift.py, self_model_drift.py, skill_frontmatter.py, skill_quality_axes.py, skill_source_liveness.py, skill_staging_isolation.py, spec_roundtrip.py, stdout_utf8_guard.py, subagent_refs.py, subprocess_decode_guard.py, test.py, test_depth.py.
+
+검색은구체symbol/path단위로만,광범위짧은OR raw노이즈금지. 지원은현재읽은구간만hash기록. blockedgatewriterprobe재시도금지. 전체24끝나면files.json/review/supporting/checkpoint/remaining/hashes후정지.

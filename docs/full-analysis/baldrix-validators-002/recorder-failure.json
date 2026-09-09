@@ -1,0 +1,7 @@
+{
+  "program": "record_review.py",
+  "sha256": "29296d97aae2dd2fdd37b1c78e3b5c8ab484a57ea0cedadd6dcf869273fd0739",
+  "exit_code": 1,
+  "error": "KeyError: 'stdout_utf8_guard.py'",
+  "cause": "Recorder note-name regex excluded digits; inert recorder error, not upstream execution. Original failed recorder preserved."
+}

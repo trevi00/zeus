@@ -1,0 +1,38 @@
+{
+  "source": "harness",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "partitions": [
+    "harness:scripts/handlers:001",
+    "harness:scripts/handlers/notification:001",
+    "harness:scripts/handlers/post_tool:001",
+    "harness:scripts/handlers/pre_tool:001",
+    "harness:scripts/handlers/prompt:001",
+    "harness:scripts/handlers/session:001",
+    "harness:scripts/handlers/stop:001"
+  ],
+  "primary_count": 20,
+  "primary_bytes": 154932,
+  "primary_body_read_count": 20,
+  "primary_status": "body_reviewed_call_test_trace_pending",
+  "supporting_count": 16,
+  "supporting_full_body_count": 9,
+  "supporting_partial_count": 7,
+  "primary_manifest_sha256_present": 20,
+  "supporting_manifest_sha256_absent": [
+    ".claude/settings.json",
+    ".mcp.json"
+  ],
+  "metadata_validation_correction": "An overstrict assertion that every supporting manifest row contained SHA256 failed once; two absent SHA256 fields were confirmed. Computed pinned SHA256 plus matching Git blob and byte length are retained without claiming manifest SHA equality.",
+  "primary_hashes_and_git_blobs_matched": true,
+  "metadata_only_validation": true,
+  "upstream_execution_count": 0,
+  "source_edits": 0,
+  "runtime_edits": 0,
+  "shared_coverage_edits": 0,
+  "commit_push_count": 0,
+  "blocked_probe_retried": false,
+  "bounded_static_review_checkpoint_saved": true,
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "stopped_at_bounded_scope": true
+}

@@ -1,0 +1,14 @@
+  [OK] build_rejects_str_today
+  [OK] missing_state_returns_none
+  [OK] empty_returns_none
+  [OK] zero_defect_returns_none
+  [OK] one_overdue_returns_block
+  [OK] block_reason_contains_gate_id
+  [OK] block_reason_contains_days_overdue
+  [OK] block_reason_contains_known_defects
+  [OK] many_overdue_returns_block
+  [OK] many_overdue_truncates
+  [OK] payload_json_serializable
+  [OK] env_override_state_root
+
+[OK] 12 self-check assertions passed

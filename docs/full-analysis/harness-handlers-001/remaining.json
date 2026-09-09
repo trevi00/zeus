@@ -1,0 +1,25 @@
+{
+  "primary_body_pending": [],
+  "supporting_unavailable": [
+    "config/runtime.yaml"
+  ],
+  "supporting_not_traced": [
+    "scripts/engine/tick.py",
+    "scripts/cli/hud.py",
+    "scripts/engine/rlm_kernel.py",
+    "guardian notification delivery consumer",
+    "Full paths/ledger/derive_state implementations and host event implementation"
+  ],
+  "unknowns": [
+    "Host timeout permissions and child-process cleanup",
+    "Windows/Linux/WSL pin parsing, cwd and process lifetime",
+    "Concurrent digest/expiry/heartbeat/watermark behavior",
+    "Authenticated actor/model qualification and human approval",
+    "End-to-end eight-stage SDD verdict and PG runtime SSOT equivalence"
+  ],
+  "tests_executed": [],
+  "upstream_execution_count": 0,
+  "blocked_probe_retried": false,
+  "whole_analysis_complete": false,
+  "adoption_approved": false
+}

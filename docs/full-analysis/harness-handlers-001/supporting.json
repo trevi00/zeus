@@ -1,0 +1,406 @@
+[
+  {
+    "source": "harness",
+    "path": ".claude/settings.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 2146,
+    "git_blob": "543919592f4bf4b9e0f0e9eb16299c1788b84409",
+    "pinned_sha256": "d7f9e4b551505c3fef8a3dc4470f50e024e21494cc6337c1d58e44355753da0a",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_from_pinned_bytes",
+    "read_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "total_lines": 98,
+    "body_read_complete": true,
+    "id": "S01",
+    "purpose": "Actual eight hook registrations, timeouts, HUD launcher",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/write-boundary.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 15667,
+    "git_blob": "eef950a68ce7dd8d338531946a9e74be9dda5efa",
+    "pinned_sha256": "207003bca7bde54744224e259fb4ee02c8eb49a43d3ea72bb8765b0714abc49b",
+    "observed_sha256": null,
+    "manifest_sha256": "207003bca7bde54744224e259fb4ee02c8eb49a43d3ea72bb8765b0714abc49b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        261
+      ]
+    ],
+    "total_lines": 261,
+    "body_read_complete": true,
+    "id": "S02",
+    "purpose": "Actual deny/ask entries and source-derived historical claims",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/hook_protocol.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6678,
+    "git_blob": "fb3d15d991e64a1c965b98ade949f86cf8fca2bb",
+    "pinned_sha256": "6a7e42b754a3db7eb191ab2801351654b9d7fecee9b11111f07a8b3e60caaca4",
+    "observed_sha256": null,
+    "manifest_sha256": "6a7e42b754a3db7eb191ab2801351654b9d7fecee9b11111f07a8b3e60caaca4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        167
+      ]
+    ],
+    "total_lines": 167,
+    "body_read_complete": true,
+    "id": "S03",
+    "purpose": "Input shape, output rendering, self-reported environment stamp",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/agent_depth.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 2099,
+    "git_blob": "613617d693716355d85af488f3253c64baf48ad2",
+    "pinned_sha256": "0b0bf01f682610494bd4cdec9268ddf596e017f382b1b65f8526758a7978d868",
+    "observed_sha256": null,
+    "manifest_sha256": "0b0bf01f682610494bd4cdec9268ddf596e017f382b1b65f8526758a7978d868",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        49
+      ]
+    ],
+    "total_lines": 49,
+    "body_read_complete": true,
+    "id": "S04",
+    "purpose": "Depth parsing and child environment; propagation not guaranteed",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/atomic_jsonl.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4048,
+    "git_blob": "990144faa806dd3a50303b277920939421ba7546",
+    "pinned_sha256": "4d0fc06aa212e9df5b7c12ac36708d07f1d17171d27ef3ed52a9cc60854ec9b8",
+    "observed_sha256": null,
+    "manifest_sha256": "4d0fc06aa212e9df5b7c12ac36708d07f1d17171d27ef3ed52a9cc60854ec9b8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        106
+      ]
+    ],
+    "total_lines": 106,
+    "body_read_complete": true,
+    "id": "S05",
+    "purpose": "Caller-owned append lock and fixed temporary paths",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/hook_journal.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 12167,
+    "git_blob": "e7a709c0f96899550edb4687e06d0e1f717c883e",
+    "pinned_sha256": "6bd3d2b1f204766350028ac97dbc970b913b93834990caa256a8cb95953b225a",
+    "observed_sha256": null,
+    "manifest_sha256": "6bd3d2b1f204766350028ac97dbc970b913b93834990caa256a8cb95953b225a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        62,
+        170
+      ],
+      [
+        232,
+        258
+      ]
+    ],
+    "total_lines": 258,
+    "body_read_complete": false,
+    "id": "S06",
+    "purpose": "Record/read, synthetic exclusion prefix and expiry; rest of summary not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/prompt_clusters.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4359,
+    "git_blob": "8a8489cb6c74e49bc4b0fd44b6c8656d7d4db454",
+    "pinned_sha256": "71d2206b8e648dc8586a06db42e3694d40b3a2030e019055644921874428373e",
+    "observed_sha256": null,
+    "manifest_sha256": "71d2206b8e648dc8586a06db42e3694d40b3a2030e019055644921874428373e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        52,
+        101
+      ]
+    ],
+    "total_lines": 101,
+    "body_read_complete": false,
+    "id": "S07",
+    "purpose": "Greedy clustering body; constants/import prefix not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/reflect.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3320,
+    "git_blob": "016c8ae0973cc0fbd4e4b3ce9cf0788ef8a8718d",
+    "pinned_sha256": "c1f4f56fb465133a5e3d57a249855d8c0c815e10351348a406a15bf2b2b31459",
+    "observed_sha256": null,
+    "manifest_sha256": "c1f4f56fb465133a5e3d57a249855d8c0c815e10351348a406a15bf2b2b31459",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        73
+      ]
+    ],
+    "total_lines": 73,
+    "body_read_complete": true,
+    "id": "S08",
+    "purpose": "Direct deterministic proposed-digest backend, no LLM call in this body",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_dispatch_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 18544,
+    "git_blob": "dad0a0fb871e2e6ef94a26aa9fea1b2ea0c6a977",
+    "pinned_sha256": "578e8fd77baa0c6d72852943f1880da855fb763e7edccf98c894f1adbdd7ad75",
+    "observed_sha256": null,
+    "manifest_sha256": "578e8fd77baa0c6d72852943f1880da855fb763e7edccf98c894f1adbdd7ad75",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        39,
+        145
+      ]
+    ],
+    "total_lines": 335,
+    "body_read_complete": false,
+    "id": "S09",
+    "purpose": "Fixture setup and selected dispatcher assertions; test body remainder not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_prompt_rollup_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9494,
+    "git_blob": "dea734c47629fff24e42153657adc387bbf554c0",
+    "pinned_sha256": "e41a5579b5d798a279aa2369cbbb5bcbec7372f69f10d1bbcac69dd73cbf3b0d",
+    "observed_sha256": null,
+    "manifest_sha256": "e41a5579b5d798a279aa2369cbbb5bcbec7372f69f10d1bbcac69dd73cbf3b0d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        79,
+        190
+      ]
+    ],
+    "total_lines": 198,
+    "body_read_complete": false,
+    "id": "S10",
+    "purpose": "Selected order/retention and success assertions; fixture and entry tail not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "tests/integration/test_heart_guard_smoke.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 39934,
+    "git_blob": "17a1a3673ea1c8214050f58fd834be13323a4bd2",
+    "pinned_sha256": "b9bcd39abff8aed1582251fa81564d0bea4bc110e1c9f069c51c85b768ce2935",
+    "observed_sha256": null,
+    "manifest_sha256": "b9bcd39abff8aed1582251fa81564d0bea4bc110e1c9f069c51c85b768ce2935",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        37,
+        125
+      ]
+    ],
+    "total_lines": 675,
+    "body_read_complete": false,
+    "id": "S11",
+    "purpose": "Selected exception notification and probe assertions; remainder not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": ".mcp.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 121,
+    "git_blob": "72b89be63f2dece75418b6450d25da2384b1e57f",
+    "pinned_sha256": "e20236c7dc0278493e64791c8945c0ccb04d7f8ecebc1e86d56c623741b99f9e",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_from_pinned_bytes",
+    "read_ranges": [
+      [
+        1,
+        8
+      ]
+    ],
+    "total_lines": 8,
+    "body_read_complete": true,
+    "id": "S12",
+    "purpose": "Actual bash RLM launcher registration",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/git_flow.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3975,
+    "git_blob": "70d70ccfa57c1dc7d79d9e493ad6c350054b70cc",
+    "pinned_sha256": "177d34c5cffe3d1dc4583b195b91682b95ca44a2f80928985190057a6d49346e",
+    "observed_sha256": null,
+    "manifest_sha256": "177d34c5cffe3d1dc4583b195b91682b95ca44a2f80928985190057a6d49346e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "total_lines": 87,
+    "body_read_complete": true,
+    "id": "S13",
+    "purpose": "Opt-in settings parser and closed push-gate names",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/decomposition.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9221,
+    "git_blob": "f5df7bdd1cc71db242d18f9f96704b77b19b99b8",
+    "pinned_sha256": "113f6d46c38e4fd7f5de1785de7a1ddcb42656bfb6871ed34185afa065fa8f8e",
+    "observed_sha256": null,
+    "manifest_sha256": "113f6d46c38e4fd7f5de1785de7a1ddcb42656bfb6871ed34185afa065fa8f8e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        153,
+        188
+      ]
+    ],
+    "total_lines": 188,
+    "body_read_complete": false,
+    "id": "S14",
+    "purpose": "Direct harvested consumer matches shard without stage",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/stuck.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5765,
+    "git_blob": "30edef1187159d59870ba7b9560773600ae4ef3e",
+    "pinned_sha256": "bc2abc6408166fbb34eacae7ea4f70b6361a21d1d1a8f78dab97ff4ad86d0d21",
+    "observed_sha256": null,
+    "manifest_sha256": "bc2abc6408166fbb34eacae7ea4f70b6361a21d1d1a8f78dab97ff4ad86d0d21",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        20,
+        60
+      ]
+    ],
+    "total_lines": 128,
+    "body_read_complete": false,
+    "id": "S15",
+    "purpose": "Subagent result listed as progress; downstream progress algorithm not read",
+    "counted_as_primary": false,
+    "disposition": "supporting_ranges_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  },
+  {
+    "source": "harness",
+    "path": ".claude/git-flow-overrides.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3545,
+    "git_blob": "ee2fc2b8cc017fb3d323b59695263e83301bc0af",
+    "pinned_sha256": "24bf40fd1fc925e91d4a5fe10297a376b40bd2bd8863985631a734661fa60132",
+    "observed_sha256": null,
+    "manifest_sha256": "24bf40fd1fc925e91d4a5fe10297a376b40bd2bd8863985631a734661fa60132",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        70
+      ]
+    ],
+    "total_lines": 70,
+    "body_read_complete": true,
+    "id": "S16",
+    "purpose": "Pinned lint opt-in and source historical branch/latency claims",
+    "counted_as_primary": false,
+    "disposition": "supporting_body_read",
+    "tests_executed": [],
+    "test_limits": "Static reading only; no imports, hooks, tests or probes executed."
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "partition": "baldrix:scripts/handlers/stop:001",
+  "scope_sha256": "a5c82a94afd575c556e9ab8c0add3747d4cb12611a52f59e739a85080d964332",
+  "primary_paths": 6,
+  "primary_bytes": 66844,
+  "primary_bodies_complete": true,
+  "supporting_paths": 19,
+  "supporting_full": 16,
+  "supporting_partial": 3,
+  "prior_reading_reused_explicitly": 7,
+  "source_hashes_verified": true,
+  "original_self_check_assertions": {
+    "calendar_lib": 24,
+    "calendar_emitter": 12,
+    "failed": 0
+  },
+  "original_Stop_CLI_subprocesses": 4,
+  "component_programs": 1,
+  "mocking_in_component_program": false,
+  "original_autopilot_unit_module_executed": false,
+  "actual_installed_hook_runtime_provider_worker_brain_autosave_executions": 0,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false,
+  "runtime_implemented": false,
+  "limits": "Explicit temporary files and JSON payloads in networkless read-only-source Linux container. Original CLI behavior is not installed Claude hook lifecycle, real user/device acceptance or Windows/WSL upstream verification. Supporting records never increase primary coverage."
+}

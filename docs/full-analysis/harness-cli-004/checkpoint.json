@@ -1,0 +1,41 @@
+{
+  "partition": "harness:scripts/cli:004",
+  "source": "harness",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "scope_sha256": "692447cf6d9292349ec60a99ce69a42f452db063a58e5b16d51c8afb7fe1696b",
+  "manifest_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+  "partitions_sha256": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8",
+  "primary_file_count": 6,
+  "primary_bytes": 114624,
+  "primary_full_body_read": true,
+  "support_harness_count": 24,
+  "support_zeus_count": 3,
+  "support_is_partial_not_primary_coverage": true,
+  "manifest_snapshot_sha256_missing": [],
+  "status": "static_review_complete_execution_and_independent_review_pending",
+  "upstream_execution_count": 0,
+  "tests_executed": [],
+  "model_invocation_count": 0,
+  "source_instructions_inherited": false,
+  "blocked_probe_retried_or_bypassed": false,
+  "source_modified": false,
+  "runtime_modified": false,
+  "shared_coverage_modified": false,
+  "commit_or_push_performed": false,
+  "full_analysis_complete": false,
+  "subsystem_complete": false,
+  "adoption_approved": false,
+  "acceptance_complete": false,
+  "claude_cross_review": "root_managed_pending",
+  "device_farm_and_samsung_execution": "deferred_not_implemented_or_verified",
+  "missing_path_observations": [
+    "config/policy/evidence-freshness.json"
+  ],
+  "remaining": [
+    "Full caller/config/test closure",
+    "Actual environment verification",
+    "Concurrent state and authorization reproduction",
+    "Human scenario and production evidence",
+    "Independent review/adoption"
+  ]
+}

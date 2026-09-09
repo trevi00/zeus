@@ -1,0 +1,497 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/staging_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "bf6921ecd370863495dea2f60dd5957e736396e9eafed0d2ff2f571dcccfbec9",
+    "git_blob": "de32bcaeeed01bee870dcfb00f17e742f20c474e",
+    "bytes": 2966,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 83,
+        "raw_range_sha256": "bf6921ecd370863495dea2f60dd5957e736396e9eafed0d2ff2f571dcccfbec9"
+      }
+    ],
+    "meaning": "Runtime resolve/relative_to guard is opt-in SHOULD-call, not automatic write interception.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/frontmatter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff",
+    "git_blob": "68393a2c08a6d5eb2b4696a0e4fc9959051c26a6",
+    "bytes": 2288,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 62,
+        "raw_range_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff"
+      }
+    ],
+    "meaning": "Minimal raw-string parser; YAML lists/quotes unsupported; BOM accepted. Reread, prior validators001 support.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/doc_drift_common.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "16794a7bb3f0b456d3f7daa8a6e236ae0c8db6b95cd634d403114016e2e71332",
+    "git_blob": "ec69a32fd4b0f8cdc1e6fb815a903a3fe018b3dd",
+    "bytes": 2085,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 57,
+        "raw_range_sha256": "16794a7bb3f0b456d3f7daa8a6e236ae0c8db6b95cd634d403114016e2e71332"
+      }
+    ],
+    "meaning": "Shared injectable reader; OSError -> None; Unicode remains exception. Reread prior support.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "bytes": 4480,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 123,
+        "raw_range_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a"
+      }
+    ],
+    "meaning": "Prior validators001 primary, reread as support only. Builtins and graduation hooks are not project routing.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_gate_runner.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "5a26079bebcd6f0b75090ec87c7907de60d5a69e3acdf50208ffc052dc970ddf",
+    "git_blob": "9a302a56d1e5fc88b73ec7599314f12c22ebd23b",
+    "bytes": 3701,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 93,
+        "raw_range_sha256": "5a26079bebcd6f0b75090ec87c7907de60d5a69e3acdf50208ffc052dc970ddf"
+      }
+    ],
+    "meaning": "Advisory caller-supplied marker emitter; no execution/probe. Earlier CLI primary overlap, not promoted.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/spec_bundle.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "c0de1d9fcf2e0b35365a2f727890d9c4762770d3fce67c91e904b87d343f804f",
+    "git_blob": "e768ebcbfa5477024e566e209bbf2a2682b850fc",
+    "bytes": 7413,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 85,
+        "end": 205,
+        "raw_range_sha256": "d4b905d5c481e90e06418673d6509d9b5769c54f6d733b83d9b2fcec5780007b"
+      }
+    ],
+    "meaning": "Fail-soft feature parser and project/.claude/spec loader; correction to initial root inference.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/testgen.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "be328dd5f87ab4cee0ae726129843b3bf115669c8b04c0514b77a684b1552ab2",
+    "git_blob": "9d87e59179936fd1e0fe828f45963a5f01b61b09",
+    "bytes": 13483,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 289,
+        "end": 305,
+        "raw_range_sha256": "4952a95424b37c5ace8721e34576bc4ccc9475371051bf80c349391e3b8e7089"
+      }
+    ],
+    "meaning": "ID-set arithmetic only; empty spec metric0, not execution coverage.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/stub_faker_lint.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d69ffc12eac7c55fd04d38a3d40e64120abc265556b44290de1ba5a4eda0c1f7",
+    "git_blob": "d4b348d5ffad888d90ce5521551b13fb82455914",
+    "bytes": 17692,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 194,
+        "end": 312,
+        "raw_range_sha256": "682677a710879f5c83a83183eb1393313abd5e86cf599cc89527266ec98cab69"
+      }
+    ],
+    "meaning": "Framework glob, pending exemption, string tokens, overlay fallback and read skips; extraction transitive body pending.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/validate_project.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1b4f6c5ea9c010ab50a835c24d6bd5610ffd7c811f9f5200a4dae14d310b1d3b",
+    "git_blob": "c75497d93b42ee5b95b9f047596ec8b3201a71f4",
+    "bytes": 9584,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 40,
+        "end": 175,
+        "raw_range_sha256": "6960be8f6e6f8c01baa12e9c78cfdc83eba4c67a6cc84ebe61e413fd743c68be"
+      }
+    ],
+    "meaning": "Prior CLI primary, reread support only. Four current-primary names in13 routing, stdoutFAIL consumer discards main return.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_skill_staging_isolation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ae7f574d9a27eb2c3740ed26d41b28b98604206fec2579a6dbbdaab39e4beab2",
+    "git_blob": "5848b9f588fd26857a6b3b70fbbe583a667f1091",
+    "bytes": 6480,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 173,
+        "raw_range_sha256": "7d484d9494d7f65e4e32ccd0b0c34fb3a0855b55138513088a62b949f0240a62"
+      }
+    ],
+    "meaning": "Failures print tokens without raising; named-root synthetic checks do not test traversal/parent/absolute-path guard.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_subprocess_decode_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "c85761d93273c7f79a4f316830c97185a4c8b845a52570980680315c842b463a",
+    "git_blob": "ef9d35173df50ba0b00334b4cf436eb694f1437d",
+    "bytes": 5094,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 112,
+        "raw_range_sha256": "9254b8521e5c97690408914432193e37b6c07d20a5ae508eb21d9882672f41b7"
+      }
+    ],
+    "meaning": "AST fixtures and live-tree scan assertions; no real cp949 child run in read cases. List after112/runner not read.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_mock_review_skip.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "9a0b850edd197f275e01a1372a3b482cd608337f6fb647c16094ef5816b7db9b",
+    "git_blob": "2318797fba6c316410d2d71d7540746c5effcad5",
+    "bytes": 5397,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 126,
+        "raw_range_sha256": "2fd265a5d007f9f682236d8a9b34b5ae6521794a31b73d34fa8bab5e46618b74"
+      }
+    ],
+    "meaning": "Temp Git fixture+synthetic attestation; unavailable Git skip; no identity/freshness/actual human acceptance.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_mock_doc_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "6285354a3fad37c55900cad0418c15d1d5ca83794b47ecc49732ff7ad3198476",
+    "git_blob": "8c6079fe7c6c326cbdad3b8c461ed971a72a93d5",
+    "bytes": 6358,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 78,
+        "end": 144,
+        "raw_range_sha256": "6418dd9c99672e3239fca917e755d99e9c7e1346f33af9886d4459f0043e1684"
+      }
+    ],
+    "meaning": "Changed PRD clears and no-marker clean tests. Fixture helpers1–77 and assertion continuation145+ not read.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_spec_roundtrip.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "9593c629ee77d976f9ef7acace460677a23880700eb57f873204d56028ef2b72",
+    "git_blob": "cd41dd36ae57e000de0214f1863a441c7982d494",
+    "bytes": 5584,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 114,
+        "raw_range_sha256": "080cab4f6a5416f6973b96bec6eada5e8133ebc70123a1caf518c0f390146ebe"
+      }
+    ],
+    "meaning": "Feature-only copy expected100%; no steps/assertion/execution proof. No-bundle/scaffold clean oracle explicit.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_producer_consumer_coherence.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ac44c7337477f9f387336d9fdfd4c211a3b81bc4c700bc7328f1c4fe9c651eeb",
+    "git_blob": "abb0ee4ee84b11e2541f694287b7f79ff84e15ef",
+    "bytes": 7618,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 156,
+        "raw_range_sha256": "cf9f1c27749946d1cfb093c202bab3e323447239df46ecee3cccca9262d09564"
+      }
+    ],
+    "meaning": "Synthetic roots and HIGH0 assertion, import globals changed; no production wiring execution. Runner remainder unread.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/graduation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "git_blob": "d374e761ae212a30b859fed6ab62967cf54a61a8",
+    "bytes": 19847,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 50,
+        "end": 76,
+        "raw_range_sha256": "0377909c7ac07636531c8cdabc841a632d282fc0d88c02b1b44a0401e08566ec"
+      },
+      {
+        "start": 199,
+        "end": 224,
+        "raw_range_sha256": "32cf6747cc6d47bf66014acf1f0eb5b6040493c3ce6c016821d96f63fd35d021"
+      },
+      {
+        "start": 408,
+        "end": 440,
+        "raw_range_sha256": "32edd77eaafa86b48b2c006d3e1b521f5051493f37c991bcc8695662f7d74199"
+      }
+    ],
+    "meaning": "Only two TRACKED names, graduate rejects others: subprocess_decode guard blocking unreachable via normal API.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_candidate_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1e6ed6610917d376436b232ac9786f294712a8c8dba7297b192b496eca2d9d3d",
+    "git_blob": "4f33f6add4ff2a0df56ba6504765a506e421c590",
+    "bytes": 24482,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 184,
+        "end": 211,
+        "raw_range_sha256": "4f34932edb66fc1e8b9ca265c319f6b66e92a6d5445d4856b9e886d7721cf5b8"
+      },
+      {
+        "start": 540,
+        "end": 623,
+        "raw_range_sha256": "6ac81c8b9c6ec68badb5823d35fd48e14745d5893633963ee11cd115910cfd13"
+      }
+    ],
+    "meaning": "Read write sites have no staging guard; session slug sanitizes but candidate cid origin closure unread. Partial support only.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/paths.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "bytes": 13699,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 21,
+        "raw_range_sha256": "587295056e9747b20909814aae253698d1134675928e1c2c1c815539b3a6f9f8"
+      },
+      {
+        "start": 61,
+        "end": 78,
+        "raw_range_sha256": "3dcca00d049f34552cf67348aaca23029a557cee37b4e77a11b23eed218734cd"
+      },
+      {
+        "start": 144,
+        "end": 158,
+        "raw_range_sha256": "98348a33dae9f25c389c6246954c15c196631b683f60604a666cc73c532decf1"
+      },
+      {
+        "start": 178,
+        "end": 201,
+        "raw_range_sha256": "e54bd4be0090b3290417c19df67f5e14d1cd857d7981dc0ce4f7dd8d885748ca"
+      },
+      {
+        "start": 231,
+        "end": 257,
+        "raw_range_sha256": "b7564dbe2b8808c8ba3bfb6744f9660b9dad52cb83c64e108dca620b00b5dad7"
+      }
+    ],
+    "meaning": "Asset/state/telemetry env split and import-time constants. Source comments are historical claims, not our receipts.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/telemetry_log.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "77f939b133c533c024faafdc277daea6f452890bc371f55d99a3951adc1cbb27",
+    "git_blob": "aa23d8924904d3e8db9f6770cd51eb1914deccbe",
+    "bytes": 4583,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 86,
+        "raw_range_sha256": "fc42f27f16225a4accdf413f023625f93f71242ea9aeb54a2a887c6184813f17"
+      }
+    ],
+    "meaning": "Append/rotate and stderr failure paths; no immutable PG authority. Decorator later body not read.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_structure_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "46aad44fb9f9548aaff2350098325d946e773027f24d4e1a86083591cdd059e1",
+    "git_blob": "5464369f0f6ca69d2f00814f0c3d86bfcf724a0e",
+    "bytes": 3901,
+    "matches_manifest_sha256": true,
+    "matches_manifest_git_blob": true,
+    "manifest_sha256_status": "matched",
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 97,
+        "raw_range_sha256": "46aad44fb9f9548aaff2350098325d946e773027f24d4e1a86083591cdd059e1"
+      }
+    ],
+    "meaning": "Minimumcontent2 and bullets3; shares constants but different Gotchas predicate from quality_axes.",
+    "tests_executed": [],
+    "coverage_promotion": false,
+    "remaining": "Unread body outside listed ranges and transitive imports/callers/config; no execution or adoption authority."
+  }
+]

@@ -1,0 +1,274 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/cli/spiral_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "ae2544523614c9c3ddcc64d3b5b78954397ff57420e7dee8926fb07165d03f97",
+    "git_blob": "0a05aad322125ff120a61b4261bc180630d5f825",
+    "bytes": 37440,
+    "lines": 679,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ae2544523614c9c3ddcc64d3b5b78954397ff57420e7dee8926fb07165d03f97",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        679
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-004/review.md",
+    "tests_executed": [],
+    "partition": "harness:scripts/cli:004",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Candidate ranking, proposal, signed approval and freshness surfaces.",
+    "finding_sections": [
+      "S04",
+      "Z01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/arming.py",
+      "scripts/lib/backlog.py",
+      "scripts/lib/approval_proof.py",
+      "scripts/lib/evidence_freshness.py",
+      "scripts/cron/l2_driver.py",
+      "config/policy/arming-rules.json",
+      "config/policy/backlog-weights.json"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_backlog_smoke.py"
+    ],
+    "test_limits": "Selected test bodies read only; no upstream execution.",
+    "remaining": [
+      "Full transitive closure",
+      "Runtime reproduction",
+      "Independent Claude review",
+      "Adoption decision"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/status_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "1628c00cd2b4517388ef02e2770eb8ddc4eabdfbdd67937c46759979fa371373",
+    "git_blob": "dfc25e32b23293676115351cb0b165ffe6df8410",
+    "bytes": 8601,
+    "lines": 163,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1628c00cd2b4517388ef02e2770eb8ddc4eabdfbdd67937c46759979fa371373",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        163
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-004/review.md",
+    "tests_executed": [],
+    "partition": "harness:scripts/cli:004",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Ledger state and unbound global operational status projection.",
+    "finding_sections": [
+      "S06",
+      "Z01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/select_ready.py",
+      "scripts/engine/tick.py",
+      "scripts/lib/decomposition.py"
+    ],
+    "tests_read_in_part": [],
+    "test_limits": "Selected test bodies read only; no upstream execution.",
+    "remaining": [
+      "Full transitive closure",
+      "Runtime reproduction",
+      "Independent Claude review",
+      "Adoption decision"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/step_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "274043786f6517abbe5012a69c4af65efee80f03f2ab7aabe93d480b91b06d7b",
+    "git_blob": "d0cd4cfdb8173077dbc869477b10764b209fa8af",
+    "bytes": 29241,
+    "lines": 511,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "274043786f6517abbe5012a69c4af65efee80f03f2ab7aabe93d480b91b06d7b",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        511
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-004/review.md",
+    "tests_executed": [],
+    "partition": "harness:scripts/cli:004",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Dispatch/delegation records, wave guidance and gate command contract.",
+    "finding_sections": [
+      "S03",
+      "Z01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/decomposition.py",
+      "scripts/engine/select_ready.py",
+      "scripts/engine/tick.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/handlers/stop/subagent_harvest.py",
+      "scripts/handlers/registry.py"
+    ],
+    "tests_read_in_part": [
+      "tests/integration/test_decomposition_smoke.py",
+      "tests/contract/test_domain_lead_delivery_contract.py"
+    ],
+    "test_limits": "Selected test bodies read only; no upstream execution.",
+    "remaining": [
+      "Full transitive closure",
+      "Runtime reproduction",
+      "Independent Claude review",
+      "Adoption decision"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/suite_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+    "bytes": 35632,
+    "lines": 624,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        624
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-004/review.md",
+    "tests_executed": [],
+    "partition": "harness:scripts/cli:004",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Script execution and textual verdict denominator/baseline/recheck.",
+    "finding_sections": [
+      "S05",
+      "Z01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/lib/test_outcome.py",
+      "scripts/cli/autoheart_cmd.py",
+      "pipelines/harness-selfimprove.yaml"
+    ],
+    "tests_read_in_part": [
+      "tests/contract/test_suite_runner_smoke.py",
+      "tests/integration/test_small_batch_smoke.py"
+    ],
+    "test_limits": "Selected test bodies read only; no upstream execution.",
+    "remaining": [
+      "Full transitive closure",
+      "Runtime reproduction",
+      "Independent Claude review",
+      "Adoption decision"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/testgen_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "fce2252b3eeccc5ae1aa9d0a0ef006193bb51d81e2e337f004a88351659f3f21",
+    "git_blob": "51de83c320f1957873f7aa897900071a378af6ec",
+    "bytes": 1711,
+    "lines": 49,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "fce2252b3eeccc5ae1aa9d0a0ef006193bb51d81e2e337f004a88351659f3f21",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        49
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-004/review.md",
+    "tests_executed": [],
+    "partition": "harness:scripts/cli:004",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "GWT extraction issues non-strict xfail skeletons, not acceptance.",
+    "finding_sections": [
+      "S01",
+      "Z01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/testgen.py",
+      "scripts/cli/suite_cmd.py"
+    ],
+    "tests_read_in_part": [],
+    "test_limits": "Selected test bodies read only; no upstream execution.",
+    "remaining": [
+      "Full transitive closure",
+      "Runtime reproduction",
+      "Independent Claude review",
+      "Adoption decision"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/workup_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "9618d73589c0086d339f6b05193ffc0ec032ea145a9086c140381898a5eb9be3",
+    "git_blob": "7447c1205b2abb34297165734eea013b2643319a",
+    "bytes": 1999,
+    "lines": 54,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "9618d73589c0086d339f6b05193ffc0ec032ea145a9086c140381898a5eb9be3",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        54
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-cli-004/review.md",
+    "tests_executed": [],
+    "partition": "harness:scripts/cli:004",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "Scaffold issuance and machine-block/document consistency check.",
+    "finding_sections": [
+      "S02",
+      "Z01"
+    ],
+    "caller_or_dependency_trace": [
+      "scripts/engine/workup.py"
+    ],
+    "tests_read_in_part": [
+      "tests/unit/test_workup_smoke.py"
+    ],
+    "test_limits": "Selected test bodies read only; no upstream execution.",
+    "remaining": [
+      "Full transitive closure",
+      "Runtime reproduction",
+      "Independent Claude review",
+      "Adoption decision"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

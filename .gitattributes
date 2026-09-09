@@ -13,3 +13,5 @@ docs/zeus/wsl-validation/*.stderr -whitespace
 docs/full-analysis/baldrix-skill-routing-runtime/claude-initial.md -whitespace
 # Preserve the exact pinned-source search receipt, including source trailing spaces.
 docs/full-analysis/baldrix-validators-001/caller-test-search.stdout -whitespace
+# Preserve the exact independent review discussion response and its receipt hash.
+docs/full-analysis/baldrix-stop-001/claude-discussion.md -whitespace

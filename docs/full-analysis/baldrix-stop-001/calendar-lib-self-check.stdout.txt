@@ -1,0 +1,26 @@
+  [OK] today_rejects_str
+  [OK] today_rejects_int
+  [OK] missing_state_root_empty
+  [OK] missing_residual_norm_empty
+  [OK] empty_residual_norm_empty
+  [OK] future_deadline_not_overdue
+  [OK] deadline_today_overdue_zero_days
+  [OK] today_gate_id
+  [OK] today_known_defects_echoed
+  [OK] deadline_overdue_30_days
+  [OK] zero_defects_skip_even_if_overdue
+  [OK] null_deadline_skipped
+  [OK] malformed_continues_scan
+  [OK] malformed_captured_in_on_error
+  [OK] malformed_silent_skip_no_crash
+  [OK] read_ledger_missing_gate_id
+  [OK] read_ledger_non_int_defects
+  [OK] read_ledger_negative_defects
+  [OK] read_ledger_malformed_deadline
+  [OK] read_ledger_rejects_bool_defects
+  [OK] multiple_overdue_sorted
+  [OK] scan_result_rejects_empty_gate_id
+  [OK] scan_result_rejects_negative_defects
+  [OK] scan_result_rejects_negative_overdue
+
+[OK] 24 self-check assertions passed

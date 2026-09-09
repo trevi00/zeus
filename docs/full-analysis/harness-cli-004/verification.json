@@ -1,0 +1,14 @@
+{
+  "metadata_generator": "pass",
+  "ruff": "pass",
+  "json_and_scope_integrity": "pass",
+  "primary_file_count": 6,
+  "primary_bytes": 114624,
+  "supporting_files": 27,
+  "manifest_snapshot_sha256_missing": [],
+  "review_sha256": "120b2415faef7406b8b96c282825f64b964ace7d0476ca5854c97466a4134efb",
+  "upstream_tests_executed": [],
+  "upstream_execution_count": 0,
+  "runtime_claim": "not_verified",
+  "source_execution_or_adoption_proven": false
+}

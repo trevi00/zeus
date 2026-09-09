@@ -1,0 +1,215 @@
+{
+  "kind": "actual_original_Stop_functions_and_CLI_observations",
+  "mocking": false,
+  "retry_cases": {
+    "tag_miss": {
+      "selected_before": [
+        "orch-review-tag_miss"
+      ],
+      "first": {
+        "argv": [
+          "/usr/local/bin/python",
+          "-B",
+          "/source/scripts/handlers/stop/autopilot_continue.py"
+        ],
+        "input": {
+          "hook_event_name": "Stop",
+          "stop_hook_active": false,
+          "last_assistant_message": "Plain response without the required autopilot tag.",
+          "session_id": "fixture-tag_miss",
+          "cwd": "/tmp/stop-review/tag_miss"
+        },
+        "input_sha256": "8bbee478f2f053989b8615df45cbcf13ce593e9203ad8216485428ec6e9ac068",
+        "returncode": 0,
+        "stdout": "{\"decision\": \"block\", \"reason\": \"<autopilot mode='execute' sid='orch-review-tag_miss' iter='1'>\\n이전 응답에 <autopilot mode='execute'> 태그가 없었습니다. tag_miss_count=1/2. 이번에는 반드시 태그를 emit하고 그 안에 JSON body를 포함하세요.\\nDIRECTIVE: 다음 iteration을 진행하세요.\\n  1. 상태 파일 읽기: ~/.claude/state/autopilot/orch-review-tag_miss.json\\n  2. Phase 1-4 실행 (구현 → 검증 → 필요 시 fix loop)\\n  3. 응답 끝에 다음 형식으로 결과 emit:\\n     <iteration-result>{\\\"validators_passed\\\":bool,\\\"tests_passed\\\":bool,\\\"blocking_question_count\\\":int,\\\"summary\\\":\\\"...\\\"}</iteration-result>\\n  4. 또는 goal 도달 시 <autopilot mode='execute'>{\\\"goal_reached\\\":true}</autopilot>\\n이 태그를 텍스트로 논의하지 말고 위 단계를 실행하세요.\\n</autopilot>\"}\n",
+        "stderr": "",
+        "stdout_sha256": "c28d8b0b494290f62fe57b7e5995cd2331198d5e910285285bdb778f9352e3bf",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "state_after_first": {
+        "sid": "orch-review-tag_miss",
+        "iter": 0,
+        "goal_hash": "ffd7d1b8190490e9c6f3605c3bc11060aa0ea4f2",
+        "status": "in_progress",
+        "started_ts": 1788934251.5282705,
+        "last_heartbeat_ts": 1788934251.5282705,
+        "tag_miss_count": 1,
+        "json_error_count": 0,
+        "cwd": null,
+        "pending_fp": null,
+        "reflection_seen_count": 0,
+        "reflection_req_count": 0,
+        "schema_version": 2
+      },
+      "selected_after_first": [],
+      "second": {
+        "argv": [
+          "/usr/local/bin/python",
+          "-B",
+          "/source/scripts/handlers/stop/autopilot_continue.py"
+        ],
+        "input": {
+          "hook_event_name": "Stop",
+          "stop_hook_active": false,
+          "last_assistant_message": "Plain response without the required autopilot tag.",
+          "session_id": "fixture-tag_miss",
+          "cwd": "/tmp/stop-review/tag_miss"
+        },
+        "input_sha256": "8bbee478f2f053989b8615df45cbcf13ce593e9203ad8216485428ec6e9ac068",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "state_after_second": {
+        "sid": "orch-review-tag_miss",
+        "iter": 0,
+        "goal_hash": "ffd7d1b8190490e9c6f3605c3bc11060aa0ea4f2",
+        "status": "in_progress",
+        "started_ts": 1788934251.5282705,
+        "last_heartbeat_ts": 1788934251.5282705,
+        "tag_miss_count": 1,
+        "json_error_count": 0,
+        "cwd": null,
+        "pending_fp": null,
+        "reflection_seen_count": 0,
+        "reflection_req_count": 0,
+        "schema_version": 2
+      }
+    },
+    "json_error": {
+      "selected_before": [
+        "orch-review-json_error"
+      ],
+      "first": {
+        "argv": [
+          "/usr/local/bin/python",
+          "-B",
+          "/source/scripts/handlers/stop/autopilot_continue.py"
+        ],
+        "input": {
+          "hook_event_name": "Stop",
+          "stop_hook_active": false,
+          "last_assistant_message": "<autopilot mode='execute'>{broken</autopilot>",
+          "session_id": "fixture-json_error",
+          "cwd": "/tmp/stop-review/json_error"
+        },
+        "input_sha256": "48646e08e3b7c77875309dace0d2acdf2115804ff5d3f1994910860956ad9ec3",
+        "returncode": 0,
+        "stdout": "{\"decision\": \"block\", \"reason\": \"<autopilot mode='execute' sid='orch-review-json_error' iter='1'>\\n<autopilot> 태그는 발견됐으나 안의 JSON이 malformed였습니다. json_error_count=1/2. 올바른 JSON으로 재발화하세요.\\nDIRECTIVE: 다음 iteration을 진행하세요.\\n  1. 상태 파일 읽기: ~/.claude/state/autopilot/orch-review-json_error.json\\n  2. Phase 1-4 실행 (구현 → 검증 → 필요 시 fix loop)\\n  3. 응답 끝에 다음 형식으로 결과 emit:\\n     <iteration-result>{\\\"validators_passed\\\":bool,\\\"tests_passed\\\":bool,\\\"blocking_question_count\\\":int,\\\"summary\\\":\\\"...\\\"}</iteration-result>\\n  4. 또는 goal 도달 시 <autopilot mode='execute'>{\\\"goal_reached\\\":true}</autopilot>\\n이 태그를 텍스트로 논의하지 말고 위 단계를 실행하세요.\\n</autopilot>\"}\n",
+        "stderr": "",
+        "stdout_sha256": "30fd77726e565fad2861f03923d2c38ed7d9de9a351dba2063a4034b3f94ee2e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "state_after_first": {
+        "sid": "orch-review-json_error",
+        "iter": 0,
+        "goal_hash": "ffd7d1b8190490e9c6f3605c3bc11060aa0ea4f2",
+        "status": "in_progress",
+        "started_ts": 1788934252.3585997,
+        "last_heartbeat_ts": 1788934252.3585997,
+        "tag_miss_count": 0,
+        "json_error_count": 1,
+        "cwd": null,
+        "pending_fp": null,
+        "reflection_seen_count": 0,
+        "reflection_req_count": 0,
+        "schema_version": 2
+      },
+      "selected_after_first": [],
+      "second": {
+        "argv": [
+          "/usr/local/bin/python",
+          "-B",
+          "/source/scripts/handlers/stop/autopilot_continue.py"
+        ],
+        "input": {
+          "hook_event_name": "Stop",
+          "stop_hook_active": false,
+          "last_assistant_message": "<autopilot mode='execute'>{broken</autopilot>",
+          "session_id": "fixture-json_error",
+          "cwd": "/tmp/stop-review/json_error"
+        },
+        "input_sha256": "48646e08e3b7c77875309dace0d2acdf2115804ff5d3f1994910860956ad9ec3",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "state_after_second": {
+        "sid": "orch-review-json_error",
+        "iter": 0,
+        "goal_hash": "ffd7d1b8190490e9c6f3605c3bc11060aa0ea4f2",
+        "status": "in_progress",
+        "started_ts": 1788934252.3585997,
+        "last_heartbeat_ts": 1788934252.3585997,
+        "tag_miss_count": 0,
+        "json_error_count": 1,
+        "cwd": null,
+        "pending_fp": null,
+        "reflection_seen_count": 0,
+        "reflection_req_count": 0,
+        "schema_version": 2
+      }
+    }
+  },
+  "parser": {
+    "execute": {
+      "kind": "ok",
+      "mode": "execute",
+      "body": {
+        "goal_reached": false
+      }
+    },
+    "emitted_attributes": null,
+    "advisory_with_result": {
+      "kind": "ok",
+      "mode": "advisory",
+      "body": {
+        "goal_reached": false
+      }
+    },
+    "mixed_mode": {
+      "kind": "ok",
+      "mode": "advisory",
+      "body": {
+        "goal_reached": true
+      }
+    },
+    "empty_first": {
+      "kind": "empty_body",
+      "mode": "execute"
+    }
+  },
+  "learner_single_event": {
+    "events": 1,
+    "candidates": [
+      [
+        "error error error",
+        3
+      ]
+    ],
+    "convergence_with_incomplete_payload": true
+  },
+  "learner_wrong_shape": {
+    "exception": "AttributeError",
+    "message": "'list' object has no attribute 'get'"
+  },
+  "calendar_all_corrupt": {
+    "overdue": 0,
+    "scanner_errors": 1,
+    "adapter_payload": null
+  },
+  "legitimate_phase_plan_analysis": [
+    [
+      [
+        "작업 지연",
+        "현재 범위에서 완료하세요. 작업을 미루지 마세요.",
+        "warn"
+      ]
+    ],
+    false
+  ]
+}

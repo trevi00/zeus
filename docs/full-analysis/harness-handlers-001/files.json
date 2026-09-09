@@ -1,0 +1,752 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/handlers/dispatch.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 15100,
+    "git_blob": "9632145bbdbadf27ffabc2d8140a9e510829c4bb",
+    "pinned_sha256": "e6a991db9cc472e64f580a022d78c275ef0ea47bb8e908d841b64fd86af44092",
+    "observed_sha256": null,
+    "manifest_sha256": "e6a991db9cc472e64f580a022d78c275ef0ea47bb8e908d841b64fd86af44092",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        311
+      ]
+    ],
+    "total_lines": 311,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers:001",
+    "partition_scope_sha256": "88b0d2f6f2ad7e2d7b0190a72bbc989aecea5c86d6ae8d2bd3919afb321e2f55",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 01: dispatch.py)",
+    "supporting_ids": [
+      "S01",
+      "S03",
+      "S05",
+      "S06",
+      "S09",
+      "S11"
+    ],
+    "primary_registry_caller": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/dispatch.sh",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1530,
+    "git_blob": "5f3d2ab5bcfc3969450c975fa16635d898a71733",
+    "pinned_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df",
+    "observed_sha256": null,
+    "manifest_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        25
+      ]
+    ],
+    "total_lines": 25,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers:001",
+    "partition_scope_sha256": "88b0d2f6f2ad7e2d7b0190a72bbc989aecea5c86d6ae8d2bd3919afb321e2f55",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 02: dispatch.sh)",
+    "supporting_ids": [
+      "S01",
+      "S03"
+    ],
+    "primary_registry_caller": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/guard_boot.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8558,
+    "git_blob": "a207720c1fcf062d46950ffcc3bfcdd5cec70c82",
+    "pinned_sha256": "2d5185bc84b7a3d4bf5838994e11670144269fe450709443358a3257be2eac20",
+    "observed_sha256": null,
+    "manifest_sha256": "2d5185bc84b7a3d4bf5838994e11670144269fe450709443358a3257be2eac20",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        188
+      ]
+    ],
+    "total_lines": 188,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers:001",
+    "partition_scope_sha256": "88b0d2f6f2ad7e2d7b0190a72bbc989aecea5c86d6ae8d2bd3919afb321e2f55",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 03: guard_boot.py)",
+    "supporting_ids": [
+      "S03",
+      "S11"
+    ],
+    "primary_registry_caller": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/hud_launcher.sh",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 544,
+    "git_blob": "91082faadfd0e0c9494cc49dc1088584c7f83bbf",
+    "pinned_sha256": "50e44dd6ddc00f9528b43a3ab7c0a431c5762a7642bf58e945bec46a49b236fc",
+    "observed_sha256": null,
+    "manifest_sha256": "50e44dd6ddc00f9528b43a3ab7c0a431c5762a7642bf58e945bec46a49b236fc",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        12
+      ]
+    ],
+    "total_lines": 12,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers:001",
+    "partition_scope_sha256": "88b0d2f6f2ad7e2d7b0190a72bbc989aecea5c86d6ae8d2bd3919afb321e2f55",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 04: hud_launcher.sh)",
+    "supporting_ids": [
+      "S01"
+    ],
+    "primary_registry_caller": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/registry.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5748,
+    "git_blob": "a7697308e6b79bc466276dd13c011bc1dbffc8bd",
+    "pinned_sha256": "fb1f148241c27cc78481c8f8e32747582cf5b492183754c4cce0a72cdca766a4",
+    "observed_sha256": null,
+    "manifest_sha256": "fb1f148241c27cc78481c8f8e32747582cf5b492183754c4cce0a72cdca766a4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        97
+      ]
+    ],
+    "total_lines": 97,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers:001",
+    "partition_scope_sha256": "88b0d2f6f2ad7e2d7b0190a72bbc989aecea5c86d6ae8d2bd3919afb321e2f55",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 05: registry.py)",
+    "supporting_ids": [
+      "S01",
+      "S03",
+      "S09"
+    ],
+    "primary_registry_caller": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/rlm_launcher.sh",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 687,
+    "git_blob": "e42d65f2991b52afc58304b537ec8780b16abe70",
+    "pinned_sha256": "28dccce2030fd14622e74e5c600797cf9d7c790a7ee6992c317a480ec2fa8cd3",
+    "observed_sha256": null,
+    "manifest_sha256": "28dccce2030fd14622e74e5c600797cf9d7c790a7ee6992c317a480ec2fa8cd3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        13
+      ]
+    ],
+    "total_lines": 13,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers:001",
+    "partition_scope_sha256": "88b0d2f6f2ad7e2d7b0190a72bbc989aecea5c86d6ae8d2bd3919afb321e2f55",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 06: rlm_launcher.sh)",
+    "supporting_ids": [
+      "S12"
+    ],
+    "primary_registry_caller": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/notification/relay.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1272,
+    "git_blob": "82fd4cdfcd6017bf3e56a72540a5b6a515c2e966",
+    "pinned_sha256": "10cc25a3311868633e3a788518336b32c0c09a37202ec133104987893c73bb9d",
+    "observed_sha256": null,
+    "manifest_sha256": "10cc25a3311868633e3a788518336b32c0c09a37202ec133104987893c73bb9d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        32
+      ]
+    ],
+    "total_lines": 32,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/notification:001",
+    "partition_scope_sha256": "ed1e8c42cbb55ef54eaf3695cffdd1d80697d10d1848d80a9befe43bd0cdfea6",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 07: notification/relay.py)",
+    "supporting_ids": [
+      "S03",
+      "S05"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/post_tool/heart_selfcheck.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10603,
+    "git_blob": "27a278c0baafbc45fbb9e1558767a1357c7fe5db",
+    "pinned_sha256": "f66755354e400a95f91c3fb8f1313ad426699636003aded7460a499d65db1901",
+    "observed_sha256": null,
+    "manifest_sha256": "f66755354e400a95f91c3fb8f1313ad426699636003aded7460a499d65db1901",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        192
+      ]
+    ],
+    "total_lines": 192,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/post_tool:001",
+    "partition_scope_sha256": "16fcc6adb52fb7742877ccebe9bc1dab6525e2cd3117c50d1b6ea1bc85673f57",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 08: post_tool/heart_selfcheck.py)",
+    "supporting_ids": [
+      "S01",
+      "S03",
+      "S06",
+      "S11"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/pre_tool/agent_depth_guard.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1580,
+    "git_blob": "96428c566469f8f0d8678b88a6534fa2013590a8",
+    "pinned_sha256": "172529c6c4cb42c625ae8a60305819c6b29b7945bae36a5aa4a4a47e96ebc29b",
+    "observed_sha256": null,
+    "manifest_sha256": "172529c6c4cb42c625ae8a60305819c6b29b7945bae36a5aa4a4a47e96ebc29b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        33
+      ]
+    ],
+    "total_lines": 33,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/pre_tool:001",
+    "partition_scope_sha256": "37b4d16f430032c7232ac1bee9bdccb4f30b8bc995ae656235b612283e3ab2b7",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 09: pre_tool/agent_depth_guard.py)",
+    "supporting_ids": [
+      "S03",
+      "S04"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/pre_tool/extracted_guard.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1546,
+    "git_blob": "68056fe0e752de337cee89c90743ffaf9e822e76",
+    "pinned_sha256": "3cb7e00fa216a0ce430bf835139f828fe3ed19ecd4492628ae2e5ea93e95f679",
+    "observed_sha256": null,
+    "manifest_sha256": "3cb7e00fa216a0ce430bf835139f828fe3ed19ecd4492628ae2e5ea93e95f679",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        38
+      ]
+    ],
+    "total_lines": 38,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/pre_tool:001",
+    "partition_scope_sha256": "37b4d16f430032c7232ac1bee9bdccb4f30b8bc995ae656235b612283e3ab2b7",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 10: pre_tool/extracted_guard.py)",
+    "supporting_ids": [
+      "S03"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/pre_tool/write_boundary.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 64015,
+    "git_blob": "41b30694d38d7ab90ff16e93ced578a66657d5f3",
+    "pinned_sha256": "418418a5ff2fe9c9886316c96d9cca0f84b6ff3b452df1bfe9dde94314a8f60b",
+    "observed_sha256": null,
+    "manifest_sha256": "418418a5ff2fe9c9886316c96d9cca0f84b6ff3b452df1bfe9dde94314a8f60b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        1102
+      ]
+    ],
+    "total_lines": 1102,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/pre_tool:001",
+    "partition_scope_sha256": "37b4d16f430032c7232ac1bee9bdccb4f30b8bc995ae656235b612283e3ab2b7",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 11: pre_tool/write_boundary.py)",
+    "supporting_ids": [
+      "S01",
+      "S02",
+      "S03",
+      "S09",
+      "S13",
+      "S16"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/prompt/promptlog.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5139,
+    "git_blob": "030f1d5fd387009efe6ce3523fe3908d55abb34b",
+    "pinned_sha256": "c572c726bf6972980c015edcc09fed981c83cfba9804924521fdab7efc6b1685",
+    "observed_sha256": null,
+    "manifest_sha256": "c572c726bf6972980c015edcc09fed981c83cfba9804924521fdab7efc6b1685",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        133
+      ]
+    ],
+    "total_lines": 133,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "b3dd090c44bbcf10bf7fbbd7c67d65b918b7cb4d591d7a47494d4fd995520ee6",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 12: prompt/promptlog.py)",
+    "supporting_ids": [
+      "S07",
+      "S10"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/prompt/seeding.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4576,
+    "git_blob": "0980a03a4820f6e87cb3ef35bd357a473bb5109e",
+    "pinned_sha256": "b66dd23a437bc9103d3179e8f4b6e917e0dd2cfa5507404dc5fb9f2181690e69",
+    "observed_sha256": null,
+    "manifest_sha256": "b66dd23a437bc9103d3179e8f4b6e917e0dd2cfa5507404dc5fb9f2181690e69",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        99
+      ]
+    ],
+    "total_lines": 99,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/prompt:001",
+    "partition_scope_sha256": "b3dd090c44bbcf10bf7fbbd7c67d65b918b7cb4d591d7a47494d4fd995520ee6",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 13: prompt/seeding.py)",
+    "supporting_ids": [
+      "S03"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/session/precompact_guidance.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1219,
+    "git_blob": "ea4f191f8f146e07569a02e436519729b76bacfc",
+    "pinned_sha256": "91f4007f650c3f8365c09fcc6baaa142aa81e5479b20c1a6db6b679e0a629f82",
+    "observed_sha256": null,
+    "manifest_sha256": "91f4007f650c3f8365c09fcc6baaa142aa81e5479b20c1a6db6b679e0a629f82",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        22
+      ]
+    ],
+    "total_lines": 22,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/session:001",
+    "partition_scope_sha256": "5cee4d7119454830d2029524532e1bb986ce0e121366297063a2ce9d880308ea",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 14: session/precompact_guidance.py)",
+    "supporting_ids": [
+      "S01",
+      "S03"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/session/projection_report.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3500,
+    "git_blob": "383143fd345ae9c0f1110d658aa54e1826c15152",
+    "pinned_sha256": "d6f19d4272371409a382e4631d0c03d54e48f81c45fe3c4682c26a41a00c440b",
+    "observed_sha256": null,
+    "manifest_sha256": "d6f19d4272371409a382e4631d0c03d54e48f81c45fe3c4682c26a41a00c440b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        83
+      ]
+    ],
+    "total_lines": 83,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/session:001",
+    "partition_scope_sha256": "5cee4d7119454830d2029524532e1bb986ce0e121366297063a2ce9d880308ea",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 15: session/projection_report.py)",
+    "supporting_ids": [
+      "S03",
+      "S05"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/stop/heartbeat.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1895,
+    "git_blob": "22f83b6c17430a9bc599ea20b7f9714a9824aa8f",
+    "pinned_sha256": "633e1054e7516f9b8baa885742dee29c24d56d9a611c794e8005dc6cb472bca5",
+    "observed_sha256": null,
+    "manifest_sha256": "633e1054e7516f9b8baa885742dee29c24d56d9a611c794e8005dc6cb472bca5",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        45
+      ]
+    ],
+    "total_lines": 45,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/stop:001",
+    "partition_scope_sha256": "3adc11f459d1c22b8daa00bf96dbfbeea6cb1eaf5cb54c93474dfc1f020422b1",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 16: stop/heartbeat.py)",
+    "supporting_ids": [
+      "S01",
+      "S05"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/stop/prompt_rollup.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9300,
+    "git_blob": "9548559ac24da07f85f80bdf38b5e7ae936650ee",
+    "pinned_sha256": "0f88f53a4e2f26a8f744265e0c24907da1d9f59f8998377d3b35c73908936f59",
+    "observed_sha256": null,
+    "manifest_sha256": "0f88f53a4e2f26a8f744265e0c24907da1d9f59f8998377d3b35c73908936f59",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        196
+      ]
+    ],
+    "total_lines": 196,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/stop:001",
+    "partition_scope_sha256": "3adc11f459d1c22b8daa00bf96dbfbeea6cb1eaf5cb54c93474dfc1f020422b1",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 17: stop/prompt_rollup.py)",
+    "supporting_ids": [
+      "S01",
+      "S06",
+      "S07",
+      "S10"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/stop/reenforce.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6389,
+    "git_blob": "c743f578451c142c67719f226e3ccfb6f1872247",
+    "pinned_sha256": "23286ed56d13aa3ce95952df5140199e40a0ebcbf6afcde84cc9f81659a1ccab",
+    "observed_sha256": null,
+    "manifest_sha256": "23286ed56d13aa3ce95952df5140199e40a0ebcbf6afcde84cc9f81659a1ccab",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        119
+      ]
+    ],
+    "total_lines": 119,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/stop:001",
+    "partition_scope_sha256": "3adc11f459d1c22b8daa00bf96dbfbeea6cb1eaf5cb54c93474dfc1f020422b1",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 18: stop/reenforce.py)",
+    "supporting_ids": [
+      "S01",
+      "S03"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/stop/reflector_fork.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4691,
+    "git_blob": "c83b968b1778788f52c460c366da80cc2f38e00b",
+    "pinned_sha256": "047566a33ad672f562395c0c6487a724b4b52edf74781990fa2e121dc7a4305a",
+    "observed_sha256": null,
+    "manifest_sha256": "047566a33ad672f562395c0c6487a724b4b52edf74781990fa2e121dc7a4305a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "total_lines": 98,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/stop:001",
+    "partition_scope_sha256": "3adc11f459d1c22b8daa00bf96dbfbeea6cb1eaf5cb54c93474dfc1f020422b1",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 19: stop/reflector_fork.py)",
+    "supporting_ids": [
+      "S05",
+      "S08"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/stop/subagent_harvest.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7040,
+    "git_blob": "f3c348fe1bf03fb08f37ad00d31264b236256f0e",
+    "pinned_sha256": "5628ae036cbd94dea8cfe33fdfc4f0506b20c9b4ec7a0126b8e6ce3800f2e45d",
+    "observed_sha256": null,
+    "manifest_sha256": "5628ae036cbd94dea8cfe33fdfc4f0506b20c9b4ec7a0126b8e6ce3800f2e45d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        154
+      ]
+    ],
+    "total_lines": 154,
+    "body_read_complete": true,
+    "partition": "harness:scripts/handlers/stop:001",
+    "partition_scope_sha256": "3adc11f459d1c22b8daa00bf96dbfbeea6cb1eaf5cb54c93474dfc1f020422b1",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-handlers-001/review.md (section 20: stop/subagent_harvest.py)",
+    "supporting_ids": [
+      "S03",
+      "S14",
+      "S15"
+    ],
+    "primary_registry_caller": "scripts/handlers/registry.py",
+    "tests_executed": [],
+    "test_limits": "Upstream execution 0. Supporting tests only read at listed ranges. Host behavior, concurrency, complete call graph and Zeus equivalence not validated.",
+    "remaining": [
+      "Full transitive caller/config/test validation pending",
+      "No current execution receipts",
+      "Zeus implementation/adoption not approved"
+    ],
+    "adoption_approved": false
+  }
+]
