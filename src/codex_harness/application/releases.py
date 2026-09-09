@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from contextlib import nullcontext
 from uuid import uuid4
 
+from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.domain.model import digest, require, utcnow
 
 
@@ -43,13 +45,14 @@ class Releases:
             tx.put('research_control', 'activation', control)
             return control
 
-    def propose(self, candidate: dict, policy: dict) -> dict:
+    def propose(self, candidate: dict, policy: dict, *, transaction=None) -> dict:
         require(all(candidate.get(key) for key in ("revision", "base", "tree", "author")),
                 "Candidate identity incomplete")
         self.org.actor(candidate["author"], "worker")
         require(bool(policy.get("checks")), "Incumbent checks required")
         identity = digest({"candidate": candidate, "policy": policy})
-        with self.store.transaction() as tx:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
+            ticket_binding(tx, candidate)
             old = tx.get("releases", identity)
             if old:
                 return old
@@ -60,12 +63,13 @@ class Releases:
             return record
 
     def review(self, release_id: str, actor: str, revision: str, accepted: bool,
-               evidence: str) -> dict:
+               evidence: str, *, transaction=None) -> dict:
         require(type(accepted) is bool and bool(evidence), "Review verdict and evidence required")
         reviewer = self.org.actor(actor)
-        with self.store.transaction() as tx:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             record = tx.get("releases", release_id)
             require(record is not None, "Release not found")
+            ticket_binding(tx, record["candidate"])
             require(record["candidate"]["revision"] == revision, "Stale release review")
             previous = next((r for r in record["reviews"] if r["actor"] == actor), None)
             if previous:
@@ -96,13 +100,18 @@ class Releases:
                         for c in checks.values()), "Checks require real execution evidence")
             record.update(checks=checks, status="verified" if all(c["passed"] for c in checks.values())
                           else "rejected")
+            try:
+                ticket_binding(tx, record["candidate"])
+            except TicketSuperseded as exc:
+                record.update(status="superseded_by_ticket_revision", reason=str(exc))
             tx.put("releases", release_id, record)
             return record
 
-    def promote(self, release_id: str, expected_active: str | None) -> dict:
-        with self.store.transaction() as tx:
+    def promote(self, release_id: str, expected_active: str | None, *, transaction=None) -> dict:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             record = tx.get("releases", release_id)
             require(record is not None and record["status"] == "verified", "Release not verified")
+            ticket_binding(tx, record["candidate"])
             active = tx.get("deployment", "active")
             require((active or {}).get("release_id") == expected_active, "Active deployment changed")
             require(record["policy_hash"] == digest(record["policy"]), "Evaluator changed")

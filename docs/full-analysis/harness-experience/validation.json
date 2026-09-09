@@ -1,0 +1,19 @@
+{
+  "assigned_pinned_paths": 93,
+  "observed_versions": 25,
+  "reviewed_versions": 118,
+  "unique_paths": 93,
+  "groups": {
+    "knowledge/lessons": 25,
+    "brain/reports": 25,
+    "brain/trials": 16,
+    "brain/archive": 22,
+    "root": 5
+  },
+  "all_raw_hashes_match_manifest": true,
+  "all_narrative_refs_resolve": true,
+  "source_tests_executed": [],
+  "zeus_tests_executed": [],
+  "review_validation": "inert hash/JSON/reference/count checks only",
+  "remaining": "Fresh tests, execution provenance gaps and operational effects are not closed by semantic review."
+}

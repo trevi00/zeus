@@ -1,0 +1,128 @@
+{
+  "_template.md": {
+    "purpose": "Template specifies metadata, decision trees and Gotchas; underscore prefix intentionally removes it from candidate collection.",
+    "decision": "exclude_runtime_keep_authoring_template",
+    "analysis": "The prose claims description/name and tech-stack drive matching; score_skill reads keywords/intent/paths/patterns/min_score only. tech-stack is not checked per skill and phase is informational. HIGH_DF intents score 1 rather than documented 2; template is stale. No generated-original equivalence claimed.",
+    "platform": "Portable text; replace Claude tool/home conventions. Validate schema with actual native parser, not prose."
+  },
+  "ai-llm.md": {
+    "purpose": "Provider abstraction, fallback chain, RAG model/index coupling, SSE errors and Korean context sizing.",
+    "decision": "adapt",
+    "analysis": "No executable LLM integration is contained. Fixed Korean token multipliers, memory minimums and seed determinism guidance need model-specific evidence. Reading .env values on 401 risks secret exposure; environment re-read does not itself refresh a running process environment. Static fallback must be labeled, never masquerade as successful model research.",
+    "platform": "Claude Read/Edit/Grep/Bash/run_in_background must map to available capabilities. Provider SDK, Ollama, curl and GPU support differ by OS."
+  },
+  "ai-slop-cleaner.md": {
+    "purpose": "Bounded behavior-preserving cleanup in separate writer and reviewer passes, regression protection, deletion-first passes.",
+    "decision": "adapt",
+    "analysis": "--review is a described mode, not parsed command implementation found. Deletion-first is subordinate to observable behavior and manual comments. Test-first can be unavailable and document permits recorded plan; no self-approval. Avoid treating unsupported flags as real CLI.",
+    "platform": "Claude /harness-debate and agents need native reviewer contracts; cleanup policy itself portable."
+  },
+  "autoresearch.md": {
+    "purpose": "Single-mission evaluator loop with JSON pass/optional score, append-only experiment decisions, explicit deadline and cancellation.",
+    "decision": "adapt",
+    "analysis": "No autoresearch state machine/evaluator consumer found in scripts; directory schema is a proposed workflow. Failing evaluations continue, but pass is not explicitly listed among stop conditions. Malformed evaluator JSON and atomicity/concurrent invocation need defined terminal handling. Local mutable log cannot become runtime SSOT.",
+    "platform": "Native cron conditional; launchd/systemd unavailable natively on Windows. Zeus scheduler/leases and PostgreSQL records should own runtime, artifact store evidence."
+  },
+  "context-docs.md": {
+    "purpose": "Plan/context/checklist split, <=200 lines each, <=10 top checklist items, absolute dates and restart-independent notes.",
+    "decision": "adapt",
+    "analysis": "Documents offer human context not authoritative concurrent execution state. Edit old_string conflicts require reread; no locking or generation fencing is implemented here. Preserve archival evidence before pruning completed notes.",
+    "platform": ".claude paths and Read/Edit/Bash replace with Git definitions and artifact-backed bounded projections; UTF-8 explicit on Windows."
+  },
+  "tech-stack-template.yaml": {
+    "purpose": "Example Java Spring Boot 3.2/MySQL5.7/MyBatis/Redis/Kafka/JWT project stack declaration.",
+    "decision": "adapt",
+    "analysis": "Full template has inline comments on language/framework/version values. _parse_yaml does not strip inline comments, so copy-as-is produces candidate names containing comment text; test_tech_stack tests clean values and misses this. Plain YAML is excluded by .md collector. Template is authored example, no generation/equivalence claimed.",
+    "platform": "Both OS parsers share flaw; .claude path changes to .harness; do not adopt obsolete example stack as Zeus dependency."
+  },
+  "external-context.md": {
+    "purpose": "Research decomposed into 2-5 facets, agent/doc fallback chains and citation-bearing synthesis.",
+    "decision": "adapt",
+    "analysis": "Declared explicit-invocation-only conflicts with populated keywords/intents and min_score=2: generic skill_match has no explicit-only guard. Agent output_schema is free_text while prose fallback demands citations[]/source_kind; no enforceable schema here. Context7 first/first web result fallback cannot establish source authority.",
+    "platform": "Claude Task/Agent and named specialist plus MCP tools must be capability checked; no network/account action authorized by source. Zeus external-context adapter is candidate mapping, not newly proven equivalent."
+  },
+  "skillify.md": {
+    "purpose": "Draft reusable successful workflow after repeated pattern, choose common/stack/project scope, validate frontmatter.",
+    "decision": "adapt",
+    "analysis": "parse_frontmatter only verifies crude fences/key extraction, not required fields or matcher usefulness. Delete-on-parse-failure can remove preexisting target without ownership proof; instead retain rejected draft artifact. Search-before-write and collision handling need verified registry. No standalone skillify runtime found.",
+    "platform": "~/.claude paths and /harness-skill command require mapping. Use approved Git skill definitions with provenance and promotion, not immediate global write."
+  },
+  "visual-verdict.md": {
+    "purpose": "Reference/screenshot JSON visual score 0-100, verdict/categories/differences/suggestions; pass >=90 and matching category.",
+    "decision": "adapt",
+    "analysis": "No scorer/schema validator/retry controller found. LLM visual judgment is not deterministic merely because JSON has a numeric threshold. fail vs revise boundaries unspecified, loop has no explicit cycle deadline. Store exact screenshot/reference identity and independent verdict receipt; keep pixel diff diagnostic.",
+    "platform": "Images require capability availability; /visual-verdict command not established by plain markdown. Font/render/viewport differences need Windows/Linux baselines."
+  },
+  "wiki.md": {
+    "purpose": "Project markdown knowledge pages, tags/categories/query/lint/cross-links, append log and autoCapture.",
+    "decision": "defer",
+    "analysis": "wiki_ingest/query/lint/add/read/delete are examples, no implementations found in scripts. .harness-config.json wiki.autoCapture default cannot be treated as effective code. Rename/index/append/delete concurrency and escaping are unspecified. Git-ignored mutable pages conflict with Git definition/PostgreSQL runtime authority.",
+    "platform": "Global Claude memory distinction is product-specific; portable markdown projection could map to Zeus artifacts/ontology. Do not import user's memory or live wiki."
+  },
+  "ultraqa.md": {
+    "purpose": "Tests/build/lint/typecheck/custom/interactive run-diagnose-fix loop, max5 cycles, same failure3 or environment stops.",
+    "decision": "adapt",
+    "analysis": "No ultraqa-state implementation/flag parser found in scripts. Custom output pattern alone can false-pass failed command; require exit status and attributable evidence. Active-state check plus later write is racy; deleting state destroys audit history. Diagnostic and fix parallelism requires bounded authority.",
+    "platform": "Claude agents/psmux and rm -f/gradlew commands need native executor and OS-aware argv; PostgreSQL state terminal records replace file deletion."
+  },
+  "figma-bridge.md": {
+    "purpose": "Routes Figma design-context/screenshot/variables and Code Connect to design-to-code, reverse export and token sync.",
+    "decision": "defer",
+    "analysis": "MCP names, skill identifiers, bidirectional methods and mandatory use_figma skill are source assertions; external provider schema not inspected. Lookup-only shared assets and interactive-auth restriction are useful. Raw-to-token mapping should preserve source color intent, not force unverified conversion. No Figma server implementation in reviewed core.",
+    "platform": "mcp__claude_ai_Figma/ToolSearch names not portable. Desktop authentication/session limitations apply both OS; use available connector schemas only."
+  },
+  "deepinit.md": {
+    "purpose": "Generate hierarchical AGENTS documentation parent-first, skip generated/empty dirs, preserve MANUAL sections and check references.",
+    "decision": "adapt",
+    "analysis": "No deepinit generator/merge implementation found. Exact template sentinel includes text after MANUAL: while workflow uses <!-- MANUAL --> shorthand; robust section ownership required. Hierarchy comments do not alone define Codex instruction precedence. Generating instructions based on code can create new authority, so reviewed draft only.",
+    "platform": "find/grep and named Claude agents/tools need rg/read/native authoring. Windows case-insensitive paths/junction cycles and Linux symlinks need bounded traversal."
+  },
+  "learner.md": {
+    "purpose": "Manual extraction of nontrivial context-specific learned principle, project-first placement; complement automatic Stop sensor.",
+    "decision": "adapt",
+    "analysis": "Manual 2-Strike shortcut is prose judgment, not promotion authority. Stop learner actually MIN_REPEATS=3 and scans 300 tail events after readlines of entire history; doc manual two-strike is distinct. It logs insight_index plus routine work_unit_digest (not merely errors), and returns no hook stdout. No assertion of generated equivalence.",
+    "platform": "Claude history.jsonl, Stop payload and named paths need native telemetry. _read_tail reads whole file on both OS; bounded source artifact reads and redaction required."
+  },
+  "verification-before-completion.md": {
+    "purpose": "Fresh identifiable command evidence, full output/exit code, claim-by-claim proof, independent agent verification and red-green regression.",
+    "decision": "adapt",
+    "analysis": "Claims original superpowers MIT/Jesse Vincent but original/license not inspected; no byte-equivalence. Existing fresh exact-revision receipts may remain valid without rerunning just because a new message begins; source absolute freshness wording is stricter than evidence-bound Zeus contract. Threatening honesty rhetoric not needed. verify.yml automatic loading claim not traced to implementation.",
+    "platform": "Claude validators/ralph/kha-verifier/memory references require mapping. Commands must be actual project/OS argv; immutable receipts represent execution, not prose."
+  },
+  "workflow-orchestration.md": {
+    "purpose": "Deterministic workflow/activity separation, engine decision matrix, LIFO saga, sticky workers, versioning and Continue-As-New.",
+    "decision": "adapt",
+    "analysis": "This is domain guidance, not Temporal integration code. 'manual rollback code 0' contradicts durable-execution's explicit compensation functions. Engine/version/date/default/API equivalence assertions are externally unverified. Need idempotent external effects and explicit compensation registration; no engine package adoption justified.",
+    "platform": "Framework API examples span languages and are not interchangeable. Zeus application/workflow.py (read fully) already implements durable tasks, lease ownership, generation fencing, deadlines and outbox. No domain/workflow.py exists; initial candidate name corrected. Engine if ever used belongs adapter."
+  },
+  "trace.md": {
+    "purpose": "Three deliberately different hypothesis lanes, ranked for/against evidence, rebuttal and discriminating probe synthesis.",
+    "decision": "adapt",
+    "analysis": "harness-tracer agent body matches method but is prose/free_text, not schema-enforced tracing engine. No independent evidence simply from three agents; convergence needs causal mechanism or independent evidence streams. Keep uncertainty and observations stable, no automatic fix permission.",
+    "platform": "Claude built-in teams and /harness-team require native six-W assignments; agent-specific opus setting not an adoption requirement. Tracing contract portable."
+  },
+  "durable-execution.md": {
+    "purpose": "Activity retry/deadline/heartbeat/checkpoint and compensation policy, worker queues and immutable activity inputs.",
+    "decision": "adapt",
+    "analysis": "Reject unqualified exactly-once/end-to-end-exactly-once guarantee: document simultaneously needs idempotency and retry. Timeout/retry alone does not prove deduplicated external side effects. Reported Netflix percentage not verified. 429 blanket nonretryable, CPU >= activities, API portability and >30min heartbeat generalizations require SDK/workload validation.",
+    "platform": "Java-style Activity API mixed with Python cancellation link; versioned adapter-specific implementation required. Zeus lease fencing/transaction receipt behavior should be tested instead of importing Temporal."
+  },
+  "service-resilience-patterns.md": {
+    "purpose": "Choose retry/circuit breaker/bulkhead/rate/time limiter; threshold and AOP ordering guidance, Hystrix migration.",
+    "decision": "adapt",
+    "analysis": "JVM-specific despite tech-stack:any/_common. Release/date/default/aspect-order factual claims unverified; outer retry can waste attempts but OPEN breaker prevents downstream calls, so network-storm claim needs qualification. Excluding exception from retryExceptions differs from explicit ignoreExceptions. Preserve failure taxonomy and bounded jittered retry rather than blindly copying numbers.",
+    "platform": "Spring AOP/CompletableFuture/Java tooling not native Python Zeus. Concept maps to executor retry/resource adapters; no resilience4j dependency warranted."
+  },
+  "distributed-cache-decisions.md": {
+    "purpose": "Store selection, partition distribution, Redis eviction/persistence, DynamoDB consistency, EVCache AZ behavior and stampede defenses.",
+    "decision": "adapt",
+    "analysis": "Reject using numeric defaults/prices/AP classifications as established evidence. allkeys-lru labeled Redis default needs verification; noeviction does not imply process OOM crash in every failure mode. RCU accounting lacks item-size units. Source external links not read. single-flight/negative caching may preserve useful behavior subject to stale-data contract.",
+    "platform": "Redis/Cassandra/EVCache/DynamoDB infrastructure examples are not runtime implementation. Zeus PostgreSQL SSOT remains; Redis is advisory/coordination only when contract allows. Linux/container deployment differs Windows clients."
+  },
+  "dlq-reprocessing-wal.md": {
+    "purpose": "Failure taxonomy, DLQ metadata/retention, idempotent filtered dry-run replay, producer WAL and schema evolution.",
+    "decision": "adapt",
+    "analysis": "local WAL send-success-delete has duplicate window requiring sink dedupe. Drop irrecoverable messages cannot silently discard audit artifacts. BACKWARD-only schema rule and blanket producer field-add breaks consumer are overly broad. Key preservation does not alone preserve ordering during interleaved replay. original_topic versus source_topic naming inconsistent.",
+    "platform": "kcat/Kafka/SQLite/RocksDB commands and local WAL paths require OS/container adapters. Use PostgreSQL outbox/immutable events and explicit replay authority in Zeus, not parallel unowned runtime files."
+  }
+}

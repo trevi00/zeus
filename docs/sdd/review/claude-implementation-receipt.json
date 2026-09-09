@@ -1,0 +1,58 @@
+{
+  "session_id": "389234a1-0d78-41d3-b732-befaf85537b7",
+  "is_error": false,
+  "num_turns": 8,
+  "duration_ms": 171652,
+  "total_cost_usd": 1.5578524999999999,
+  "usage": {
+    "input_tokens": 14,
+    "cache_creation_input_tokens": 32573,
+    "cache_read_input_tokens": 1907805,
+    "output_tokens": 11126,
+    "output_tokens_details": {
+      "thinking_tokens": 7980
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 32573,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 4738,
+        "cache_read_input_tokens": 287468,
+        "cache_creation_input_tokens": 917,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 917
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 14,
+      "outputTokens": 11126,
+      "cacheReadInputTokens": 1907805,
+      "cacheCreationInputTokens": 32573,
+      "webSearchRequests": 0,
+      "costUSD": 1.5578524999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 7980,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "mode": "Actual Claude CLI; read-only tools Read/Glob/Grep; not human or device acceptance"
+}

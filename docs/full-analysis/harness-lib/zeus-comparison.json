@@ -1,0 +1,46 @@
+{
+  "git_head": "0548efaf1bc8833c750c80b242de03b5a73d7799",
+  "kind": "working_tree_bytes_read_not_deployment_verification",
+  "files": [
+    {
+      "path": "src/codex_harness/domain/model.py",
+      "sha256": "7d14249e6a49ebd51cad397eae43a229dc38bc46b500a690c5c8427f66d71754",
+      "disposition": "full_body_read_for_mapping"
+    },
+    {
+      "path": "src/codex_harness/domain/policy.py",
+      "sha256": "5d1baef0201b9497653517fce7d2dcba9eaf95aab68e9ed542cb8b3a89c1df5d",
+      "disposition": "full_body_read_for_mapping"
+    },
+    {
+      "path": "src/codex_harness/domain/skill_admission.py",
+      "sha256": "ce55fe9a76394cb341307516b3d83eef06bd9a75a422e26e667e3aba1974d99b",
+      "disposition": "full_body_read_for_mapping"
+    },
+    {
+      "path": "src/codex_harness/application/audit_gate.py",
+      "sha256": "b39f9d8ab12caf3aa3ed37325094d953622d958946488541590bad842d300272",
+      "disposition": "full_body_read_for_mapping"
+    },
+    {
+      "path": "src/codex_harness/adapters/codex.py",
+      "sha256": "67404fbc08c985ce81af88f19ea83d9289583a84511bdc976f7d493477846ca2",
+      "disposition": "full_body_read_for_mapping"
+    },
+    {
+      "path": "src/codex_harness/adapters/store.py",
+      "sha256": "ef25756a59baa7fb9c9ac29ed8c81232674bc8732cb9d1f5bf0eced7246b4b2a",
+      "disposition": "full_body_read_for_mapping"
+    },
+    {
+      "path": "src/codex_harness/domain/measurements.py",
+      "sha256": "6d78c4fee16fcd4d52443288e539f931384ec112ee437868a64e716497b6414c",
+      "disposition": "full_body_read_for_mapping"
+    },
+    {
+      "path": "src/codex_harness/application/workflow.py",
+      "sha256": "5473d8d09464c1971fee2bfa6a28bf247749774c6f9dbd4ef45df66ec1abcab5",
+      "disposition": "full_body_read_for_mapping"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "recorded_at": "2026-09-09T01:00:14.053828+00:00",
+  "status": "bounded implementation validated; not deployed",
+  "tests": {
+    "windows-final.txt": {
+      "passed": 704,
+      "skipped": 8,
+      "duration": "197.08s (0:03:17)"
+    },
+    "linux-final.txt": {
+      "passed": 710,
+      "skipped": 2,
+      "duration": "54.24s"
+    },
+    "docker-final.txt": {
+      "passed": 10,
+      "skipped": 0,
+      "duration": "8.96s"
+    }
+  },
+  "ruff": "passed",
+  "wheel_entrypoints": [
+    {
+      "entrypoint": "python.exe",
+      "args": [
+        "-m",
+        "zeus",
+        "--version"
+      ],
+      "exit_code": 0
+    },
+    {
+      "entrypoint": "zeus.exe",
+      "args": [
+        "ticket",
+        "--help"
+      ],
+      "exit_code": 0
+    },
+    {
+      "entrypoint": "zeus-monitor.exe",
+      "args": [
+        "--help"
+      ],
+      "exit_code": 0
+    },
+    {
+      "entrypoint": "zeus-supervisor.exe",
+      "args": [
+        "--help"
+      ],
+      "exit_code": 0
+    },
+    {
+      "entrypoint": "harness.exe",
+      "args": [
+        "--version"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "wheel_source": {
+    "artifact": "zeus_harness-0.2.0-py3-none-any.whl",
+    "sha256": "1a0faef025354e7bd678580752a8d5e6cc252e82ba9f47b3c04846a4fcc944db",
+    "source_files_match": 108
+  },
+  "image": {
+    "image": "sha256:55b57981966bade3a386ecf91707b81367e327b45aea6e55f2cb189d0e8a175b",
+    "version": "0.2.0",
+    "source_files": 108,
+    "source_match": true
+  },
+  "cli": {
+    "status": "passed",
+    "backend": "disposable PostgreSQL schema",
+    "operations": [
+      "create",
+      "two fixture reviews",
+      "show",
+      "export",
+      "sync preview",
+      "idempotent dispatch"
+    ],
+    "github_network_calls": 0,
+    "model_calls": 0,
+    "schema_removed_on_exit": true
+  },
+  "github": {
+    "repository": "trevi00/codex-harness",
+    "read_access_verified": true,
+    "issues_enabled": true,
+    "push_access": true,
+    "issue_count_observed": 0,
+    "writes_performed": 0,
+    "write_failure_tests": "mock transport only"
+  },
+  "wsl": "Ubuntu bash -n passed for both shell launchers; no full WSL deployment test",
+  "review": "Actual Claude read-only review and discussion; blockers and optional missing-record guard addressed by Codex",
+  "validation_services": "dedicated validation postgres/redis stopped; disposable verifier resources removed",
+  "production_deployment": false,
+  "git_push_performed": false,
+  "full_local_harness_absorption": false,
+  "source_inventory_paths": 2592,
+  "candidate_manifest_sha256": "700f2dcc6dc775ca24123dfab57d416e0299194d8722ea83f23eb7c59f9ef338"
+}

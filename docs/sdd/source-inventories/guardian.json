@@ -1,0 +1,114 @@
+{
+  "repository": "https://github.com/trevi00/harness-guardian.git",
+  "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+  "tree": "aa3f68af50140879972fa4c88905afa87317c6de",
+  "tracked_paths": 13,
+  "paths": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "9b581c7983fb46e50e4401691b69fa5931ada07b",
+      "bytes": 526,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "a8c4881b7f9be1c74ff32bbb32724ce7836df592",
+      "bytes": 1466,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "console.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "2b289284a6c257d2ce8f9b5795b854bb77d53ae1",
+      "bytes": 25657,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "issue_token.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "7cf30bf0cf858074e31308d4b918b8bf8282e280",
+      "bytes": 7483,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "ledger_seal.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "8deb06a53051acbf15bf75e4c19b91ede35d9057",
+      "bytes": 4954,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "notifier.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "6e7883ca99338f630614f9bfeabe210dd940edf4",
+      "bytes": 1373,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "restorer.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "2ff30dc8b64b569c2c7820e14895ea8427d12ea8",
+      "bytes": 21610,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "tests/test_console_encoding_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "7ac1557261c54dcbd0b071d40239248cd3649e71",
+      "bytes": 11473,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "tests/test_notify_relay_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "aab60f5a300e79f784cd00d7726d9aa22e28e9a0",
+      "bytes": 2350,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "tests/test_recovery_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "001f84a6dc90556bf99e5963cd8ed9490971a394",
+      "bytes": 6306,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "tests/test_restorer_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "4091304b5e85733ef74ee30838663a1f0a2e04c6",
+      "bytes": 14996,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "tests/test_watchdog_smoke.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "ae0afadf71d264a471b6f80ce200a5cb50048843",
+      "bytes": 5374,
+      "disposition": "unreviewed"
+    },
+    {
+      "path": "watchdog.py",
+      "mode": "100644",
+      "type": "blob",
+      "object_id": "760489c1689c24ad54d73fcd8f0b6dbcf846725e",
+      "bytes": 19416,
+      "disposition": "unreviewed"
+    }
+  ],
+  "semantic_completion": false,
+  "upstream_tests_executed": false
+}

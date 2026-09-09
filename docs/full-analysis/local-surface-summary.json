@@ -1,0 +1,263 @@
+[
+  {
+    "source": "baldrix",
+    "metadata_only": true,
+    "entries": 8747,
+    "groups": [
+      {
+        "git_class": "ignored",
+        "root": ".credentials.json",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": ".last-cleanup",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": ".last-update-result.json",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "backups",
+        "count": 5
+      },
+      {
+        "git_class": "ignored",
+        "root": "cache",
+        "count": 2
+      },
+      {
+        "git_class": "ignored",
+        "root": "chrome",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "daemon",
+        "count": 5
+      },
+      {
+        "git_class": "ignored",
+        "root": "daemon.lock",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "daemon.log",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "daemon.status.json",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "file-history",
+        "count": 1994
+      },
+      {
+        "git_class": "ignored",
+        "root": "gh-pr-status-cache.json",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "history.jsonl",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "jobs",
+        "count": 971
+      },
+      {
+        "git_class": "ignored",
+        "root": "mcp-needs-auth-cache.json",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "memory",
+        "count": 2
+      },
+      {
+        "git_class": "ignored",
+        "root": "paste-cache",
+        "count": 4
+      },
+      {
+        "git_class": "ignored",
+        "root": "plugins",
+        "count": 623
+      },
+      {
+        "git_class": "ignored",
+        "root": "projects",
+        "count": 2616
+      },
+      {
+        "git_class": "ignored",
+        "root": "scripts",
+        "count": 1013
+      },
+      {
+        "git_class": "ignored",
+        "root": "sessions",
+        "count": 6
+      },
+      {
+        "git_class": "ignored",
+        "root": "shell-snapshots",
+        "count": 7
+      },
+      {
+        "git_class": "ignored",
+        "root": "skill-candidates",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "state",
+        "count": 1463
+      },
+      {
+        "git_class": "ignored",
+        "root": "tasks",
+        "count": 2
+      },
+      {
+        "git_class": "ignored",
+        "root": "telemetry",
+        "count": 20
+      },
+      {
+        "git_class": "untracked",
+        "root": ".debate_sid_tmp",
+        "count": 1
+      },
+      {
+        "git_class": "untracked",
+        "root": "scripts",
+        "count": 1
+      },
+      {
+        "git_class": "untracked",
+        "root": "state",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "source": "harness",
+    "metadata_only": true,
+    "entries": 656,
+    "groups": [
+      {
+        "git_class": "ignored",
+        "root": ".claude",
+        "count": 2
+      },
+      {
+        "git_class": "ignored",
+        "root": ".pytest_cache",
+        "count": 4
+      },
+      {
+        "git_class": "ignored",
+        "root": "brain",
+        "count": 6
+      },
+      {
+        "git_class": "ignored",
+        "root": "config",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "scripts",
+        "count": 169
+      },
+      {
+        "git_class": "ignored",
+        "root": "state",
+        "count": 174
+      },
+      {
+        "git_class": "ignored",
+        "root": "tests",
+        "count": 76
+      },
+      {
+        "git_class": "ignored",
+        "root": "var",
+        "count": 137
+      },
+      {
+        "git_class": "untracked",
+        "root": ".uptake-scratch",
+        "count": 25
+      },
+      {
+        "git_class": "untracked",
+        "root": "desc_tmp.txt",
+        "count": 1
+      },
+      {
+        "git_class": "untracked",
+        "root": "knowledge",
+        "count": 38
+      },
+      {
+        "git_class": "untracked",
+        "root": "ledger",
+        "count": 23
+      }
+    ]
+  },
+  {
+    "source": "guardian",
+    "metadata_only": true,
+    "entries": 17,
+    "groups": [
+      {
+        "git_class": "ignored",
+        "root": "__pycache__",
+        "count": 6
+      },
+      {
+        "git_class": "ignored",
+        "root": "alerts.log",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "approval_key",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "config.json",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "mutation_token.json",
+        "count": 1
+      },
+      {
+        "git_class": "ignored",
+        "root": "state",
+        "count": 5
+      },
+      {
+        "git_class": "ignored",
+        "root": "tests",
+        "count": 2
+      }
+    ]
+  }
+]

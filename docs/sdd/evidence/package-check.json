@@ -1,0 +1,15 @@
+{
+  "image_id": "sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a",
+  "image_source_match": true,
+  "wheel_source_match": true,
+  "source_files": 113,
+  "wheel_sha256": "77c914af8c1c672544024dfcdacab1ecd234d01876611afc4ad82236276de585",
+  "wheel_offline_review": {
+    "path": "C:\\Users\\rudtn\\codex-harness\\.runtime\\sdd\\wheel-review.html",
+    "bytes": 24963,
+    "content_hash": "6279858a9041f1805a55a828d6a968ffa3e6abde3ef9d94428aae3e9fcbc65ad",
+    "spec_hash": "ef95daa54207da4e58c2d99bb914fe8776435e3040a1c2bf48530c59ef861d80",
+    "acceptance_passed": false,
+    "status": "review_only"
+  }
+}

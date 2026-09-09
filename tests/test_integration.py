@@ -31,6 +31,28 @@ def pgstore():
         conn.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
 
 
+def test_concurrent_initialization_keeps_extension_outside_private_schemas():
+    dsn = database_url()
+    schema = "test_" + uuid4().hex
+    with psycopg.connect(dsn) as connection:
+        connection.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
+    try:
+        scoped = make_conninfo(dsn, options=f"-c search_path={schema},public")
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            list(pool.map(lambda _: PostgresStore(scoped).migrate(), range(8)))
+        with psycopg.connect(scoped) as connection:
+            assert connection.execute("SELECT count(*) FROM documents").fetchone()[0] == 0
+            extension_schema = connection.execute(
+                "SELECT n.nspname FROM pg_extension e JOIN pg_namespace n ON e.extnamespace=n.oid "
+                "WHERE e.extname='vector'").fetchone()[0]
+            assert extension_schema == "public"
+    finally:
+        with psycopg.connect(dsn) as connection:
+            connection.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
+    with psycopg.connect(dsn) as connection:
+        assert connection.execute("SELECT '[1,2]'::public.vector").fetchone()[0] == "[1,2]"
+
+
 @pytest.fixture
 def bus():
     transport = RedisBus(redis_url(), "test-" + uuid4().hex)

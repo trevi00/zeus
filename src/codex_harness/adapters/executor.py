@@ -14,6 +14,7 @@ from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.skill_history import prepare_history, project_identity, record_history
 from codex_harness.application.releases import Releases
+from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
 from codex_harness.domain.model import (
     ContextItem,
@@ -307,6 +308,8 @@ class Executor:
             message = task["message"]
             commands = []
             action, details = message["what"]["action"], message["what"]["details"]
+            with self.service.store.transaction() as tx:
+                bound_ticket = ticket_binding(tx, details)
             if action in {"plan", "implement"}:
                 from codex_harness.application.audit_gate import inspect_approval
                 with self.service.store.transaction() as tx:
@@ -396,6 +399,8 @@ class Executor:
                                    importance=details.get("plan", {}).get("origin", {}).get("importance"))
                 heartbeat()
                 result["candidate"] = self.git.capture(workspace)
+                if bound_ticket:
+                    result["candidate"]["zeus_ticket"] = bound_ticket
                 if hook:
                     result["candidate"]["hook_id"] = hook["id"]
                 if result["candidate"].get("hook_id"):
@@ -412,23 +417,43 @@ class Executor:
                 raise ValueError("Unsupported task action: " + action)
             return self.workflow.complete(task, result, commands)
         except Exception as exc:
-            current = self.workflow.fail_execution(task, exc)
-            actor = self.service.org.actor(agent)
-            if actor.parent:
-                observation_id = digest({"task": task["id"], "attempt": task["attempt"]})
-                receipt = self.artifacts.put(canonical({"task_id": task["id"], "attempt": task["attempt"],
-                                                       "error": str(exc), "agent": agent,
-                                                       "failure": current.get("failure")}), "execution-failure")
-                with self.service.store.transaction() as tx:
+            return self._fail_task(task, agent, exc)
+
+    def _lost_execution(self, lease, error):
+        # INV-SESSION-001: a stale executor cannot publish failure or diagnosis.
+        with self.service.store.transaction() as tx:
+            current = tx.get(lease.get("_bucket", "tasks"), lease["id"])
+        if current and current["status"] == "succeeded":
+            return current
+        if not current or (current["status"] != "running"
+                           or current["generation"] != lease["generation"]
+                           or current["lease_owner"] != lease["lease_owner"]
+                           or datetime.fromisoformat(current["lease_until"]) <= datetime.now(timezone.utc)):
+            return {"id": lease["id"], "status": "stale", "error": str(error)}
+        raise error
+
+    def _fail_task(self, task, agent, error):
+        try:
+            # INV-RECURRENCE-001: committing failure must also retain its diagnosis request.
+            with self.service.store.transaction() as tx:
+                current = self.workflow.fail_execution(task, error, transaction=tx)
+                actor = self.service.org.actor(agent)
+                if actor.parent:
+                    observation_id = digest({"task": task["id"], "attempt": task["attempt"]})
+                    receipt = self.artifacts.put(canonical({"task_id": task["id"], "attempt": task["attempt"],
+                        "error": str(error), "agent": agent, "failure": current.get("failure")}), "execution-failure")
                     if tx.get("decisions_pending", observation_id) is None:
                         tx.put("decisions_pending", observation_id, {"id": observation_id,
                                "actor": actor.parent, "phase": "diagnose", "message": task["message"],
-                               "input": {"error": str(exc), "occurrence_id": observation_id,
+                               "input": {"error": str(error), "occurrence_id": observation_id,
+                                         "source_task_id": task["id"],
                                          "source_actor": agent, "evidence_ref": receipt["ref"],
                                          "known_causes": [{"root_cause": h["root_cause"], "scope": h["scope"]}
-                                                          for h in tx.scan("hooks")]},
+                                                          for h in tx.scan("incidents")]},
                                "status": "pending", "attempt": 0})
-            return current
+                return current
+        except ContractError as exc:
+            return self._lost_execution(task, exc)
 
     def decide_one(self, agent: str) -> dict | None:
         owner, now = str(uuid4()), datetime.now(timezone.utc)
@@ -442,6 +467,12 @@ class Executor:
                 if row["actor"] != agent or row["status"] not in {"pending", "running", "retry"}:
                     continue
                 if row["status"] == "running" and datetime.fromisoformat(row["lease_until"]) > now:
+                    continue
+                try:
+                    ticket_binding(tx, row["input"])
+                except TicketSuperseded as exc:
+                    row.update(status="superseded", error=str(exc), completed_at=utcnow())
+                    tx.put("decisions_pending", row["id"], row)
                     continue
                 if row["attempt"] >= POLICY.max_attempts:
                     row["status"] = "failed"
@@ -504,6 +535,24 @@ class Executor:
                     current.update(status="blocked", result=result, completed_at=utcnow())
                     tx.put("decisions_pending", decision["id"], current)
                 return current
+            return self._commit_decision(decision, agent, phase, data, result, lease)
+        except Exception as exc:
+            try:
+                return self.workflow.fail_execution({**decision, "_bucket": "decisions_pending"}, exc)
+            except ContractError as failure:
+                return self._lost_execution({**decision, "_bucket": "decisions_pending"}, failure)
+
+    def _commit_decision(self, decision, agent, phase, data, result, lease):
+        # INV-SESSION-001 / INV-RELEASE-001: all effects commit under the same
+        # current lease. A failure cannot leave a review, hook or deploy request behind.
+        with self.service.store.transaction() as tx:
+            current = self.workflow._owned(tx, lease)
+            try:
+                ticket_binding(tx, data)
+            except TicketSuperseded as exc:
+                current.update(status="superseded", result=result, error=str(exc), completed_at=utcnow())
+                tx.put("decisions_pending", decision["id"], current)
+                return current
             message = decision["message"]
             next_message = None
             if phase == "diagnose" and result["confirmed"]:
@@ -511,7 +560,8 @@ class Executor:
                                     {"occurrence_id": data["occurrence_id"], "root_cause": result["root_cause"],
                                      "scope": result["scope"], "evidence_refs": [data["evidence_ref"], result["execution_ref"]]},
                                     message["correlation_id"], message["message_id"])
-                self.service.record_incident(incident)
+                self.service.record_incident(incident,
+                                             independent_occurrence=data.get("source_task_id"), transaction=tx)
             elif phase == "research_lead" and result["accepted"]:
                 require_dispatch({"proposal": data})
                 result["proposal"] = data
@@ -528,10 +578,10 @@ class Executor:
                           "revision": data["candidate"]["base"]}
                 if data["candidate"].get("hook_id"):
                     policy["checks"] += ["hook_reproduction", "hook_normal_case"]
-                release = self.releases.propose(data["candidate"], policy)
+                release = self.releases.propose(data["candidate"], policy, transaction=tx)
                 self.releases.review(release["id"], agent, data["candidate"]["revision"],
-                                     result["accepted"], result["execution_ref"])
-                self._review_hook(data["candidate"], agent, result)
+                                     result["accepted"], result["execution_ref"], transaction=tx)
+                self._review_hook(data["candidate"], agent, result, tx)
                 importance = (data.get("origin", {}).get("plan", {}).get("origin", {})
                               .get("importance"))
                 result.update(candidate=data["candidate"], release_id=release["id"],
@@ -543,75 +593,55 @@ class Executor:
                                             message["correlation_id"], message["message_id"])
             elif phase == "review_conductor":
                 self.releases.review(data["release_id"], agent, data["candidate"]["revision"],
-                                     result["accepted"], result["execution_ref"])
-                self._review_hook(data["candidate"], agent, result)
+                                     result["accepted"], result["execution_ref"], transaction=tx)
+                self._review_hook(data["candidate"], agent, result, tx)
                 if result["accepted"]:
-                    with self.service.store.transaction() as tx:
-                        tx.put("release_queue", data["release_id"],
-                               {"id": data["release_id"], "status": "queued", "at": utcnow()})
+                    tx.put("release_queue", data["release_id"],
+                           {"id": data["release_id"], "status": "queued", "at": utcnow()})
                     result["deployment"] = {"status": "queued", "release_id": data["release_id"]}
             if phase in {"review_lead", "review_conductor"} and not result["accepted"]:
-                with self.service.store.transaction() as tx:
-                    loop = tx.get("improvement_loops", message["correlation_id"]) or {
-                        "id": message["correlation_id"], "reworks": 0, "rejected_trees": []}
-                    tree = data["candidate"]["tree"]
-                    stagnated = tree in loop["rejected_trees"]
-                    if loop["reworks"] >= POLICY.max_reworks or stagnated:
-                        loop["status"] = "stagnated" if stagnated else "budget_exhausted"
-                    else:
-                        loop.update(status="reworking", reworks=loop["reworks"] + 1)
-                        loop["rejected_trees"].append(tree)
-                        recipient = "worker:implementation" if phase == "review_lead" else "lead:improvement"
-                        importance = (data.get("origin", {}).get("plan", {}).get("origin", {})
-                                      .get("importance"))
-                        rework_plan = {
-                            "objective": "Reimplement the rejected improvement and address every review finding",
-                            "acceptance_criteria": [result["reason"]],
-                            "previous_candidate": data["candidate"], "review_feedback": result,
-                        }
-                        if phase == "review_lead":
-                            rework_plan["origin"] = ({"importance": importance}
-                                                     if importance is not None else {})
-                        next_message = self.workflow._next(message, agent, recipient,
-                            "implement" if phase == "review_lead" else "plan",
-                            {"plan": rework_plan, "rework": loop["reworks"],
-                             **({"importance": importance} if phase == "review_conductor"
-                                and importance is not None else {})})
-                        if data["candidate"].get("hook_id"):
-                            hook = tx.get("hooks", data["candidate"]["hook_id"])
-                            next_message["what"]["details"]["plan"].setdefault("origin", {})["hook"] = hook
-                    tx.put("improvement_loops", loop["id"], loop)
-            with self.service.store.transaction() as tx:
-                current = tx.get("decisions_pending", decision["id"])
-                require(current["owner"] == owner and current["status"] == "running"
-                        and datetime.fromisoformat(current["lease_until"]) > datetime.now(timezone.utc),
-                        "Stale decision execution")
-                current.update(status="succeeded", result=result, completed_at=utcnow())
-                tx.put("decisions_pending", decision["id"], current)
-                if next_message:
-                    self.service.org.authorize(next_message)
-                    tx.put("outbox", next_message["message_id"], {"message": next_message, "sent": False})
+                loop = tx.get("improvement_loops", message["correlation_id"]) or {
+                    "id": message["correlation_id"], "reworks": 0, "rejected_trees": []}
+                tree = data["candidate"]["tree"]
+                stagnated = tree in loop["rejected_trees"]
+                if loop["reworks"] >= POLICY.max_reworks or stagnated:
+                    loop["status"] = "stagnated" if stagnated else "budget_exhausted"
+                else:
+                    loop.update(status="reworking", reworks=loop["reworks"] + 1)
+                    loop["rejected_trees"].append(tree)
+                    recipient = "worker:implementation" if phase == "review_lead" else "lead:improvement"
+                    importance = (data.get("origin", {}).get("plan", {}).get("origin", {})
+                                  .get("importance"))
+                    rework_plan = {
+                        "objective": "Reimplement the rejected improvement and address every review finding",
+                        "acceptance_criteria": [result["reason"]],
+                        "previous_candidate": data["candidate"], "review_feedback": result,
+                    }
+                    if phase == "review_lead":
+                        rework_plan["origin"] = ({"importance": importance}
+                                                 if importance is not None else {})
+                    next_message = self.workflow._next(message, agent, recipient,
+                        "implement" if phase == "review_lead" else "plan",
+                        {"plan": rework_plan, "rework": loop["reworks"],
+                         **({"importance": importance} if phase == "review_conductor"
+                            and importance is not None else {})})
+                    if data["candidate"].get("hook_id"):
+                        hook = tx.get("hooks", data["candidate"]["hook_id"])
+                        next_message["what"]["details"]["plan"].setdefault("origin", {})["hook"] = hook
+                tx.put("improvement_loops", loop["id"], loop)
+            current = self.workflow._owned(tx, lease)
+            current.update(status="succeeded", result=result, completed_at=utcnow())
+            tx.put("decisions_pending", decision["id"], current)
+            if next_message:
+                self.service.org.authorize(next_message)
+                tx.put("outbox", next_message["message_id"], {"message": next_message, "sent": False})
             return current
-        except Exception as exc:
-            try:
-                return self.workflow.fail_execution({**decision, "_bucket": "decisions_pending"}, exc)
-            except ContractError:
-                # INV-SESSION-001: failure handling cannot overwrite a committed
-                # assessment or a replacement lease after a lost acknowledgement.
-                with self.service.store.transaction() as tx:
-                    current = tx.get("decisions_pending", decision["id"])
-                if current and current["status"] == "succeeded":
-                    return current
-                if current and (current["status"] != "running"
-                                or current["generation"] != decision["generation"]
-                                or current["lease_owner"] != decision["lease_owner"]
-                                or datetime.fromisoformat(current["lease_until"]) <= datetime.now(timezone.utc)):
-                    return {"id": decision["id"], "status": "retry", "error": str(exc)}
-                raise
 
-    def _review_hook(self, candidate, agent, result):
+    def _review_hook(self, candidate, agent, result, transaction):
         if candidate.get("hook_id"):
-            hook = self.service.get_hook(candidate["hook_id"])
+            hook = transaction.get("hooks", candidate["hook_id"])
+            require(hook is not None, "Hook not found")
             if not any(r["actor"] == agent for r in hook["reviews"]):
                 self.service.review(hook["id"], agent, candidate["revision"], digest(hook["spec"]),
-                                    result["accepted"], result["execution_ref"])
+                                    result["accepted"], result["execution_ref"],
+                                    transaction=transaction)

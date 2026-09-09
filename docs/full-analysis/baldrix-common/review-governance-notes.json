@@ -1,0 +1,74 @@
+{
+  "requesting-code-review.md": {
+    "purpose": "Review handoff with explicit base/head SHA, requirement context, severity and production readiness assessment, with named-reviewer fallback.",
+    "decision": "adapt",
+    "analysis": "kha-code-reviewer read fully: default scope excludes performance, quick mode is grep-only, generated/lock files are filtered, while this skill expects performance/architecture/complete production readiness. Severity Critical/Important/Minor differs agent Critical/Warning/Info and output_schema free_text. Inline self-review fallback is not independent approval. HEAD~1/grep log heuristic can omit actual task history. Checklist auto-inclusion has no scripts hit. Original superpowers license/equivalence not verified.",
+    "platform": "Agent and .claude checklist names map to native fenced independent review, not generic fallback-as-approval. Bash command substitution/heredoc examples need structured argv/body files on Windows. Zeus Workflow.complete/handle already verifies result ownership but review content still requires actual independent receipts."
+  },
+  "receiving-code-review.md": {
+    "purpose": "Evaluate feedback against code/version/platform and prior requirements, acknowledge factually, resolve ambiguity then verify individual fixes.",
+    "decision": "adapt",
+    "analysis": "Body repeats major decision-tree material but no generated equivalence claimed. Blanket stop-all for one unclear item conflicts with progressing independent authorized work; preserve dependency-aware clarification. Grep absence does not prove no external/dynamic endpoint users. Prohibiting all gratitude or mandating private code phrase is user-specific style, exclude as global policy. GitHub replies are externally visible and need authorization; no posted comment. Same reviewer free_text limitation as requesting-code-review.",
+    "platform": "Claude memory/CLAUDE.md style authority and gh reply endpoint are source-specific. Zeus six-W review evidence and per-item tracking can represent accepted/rejected/unresolved findings; no comments sent."
+  },
+  "finishing-a-development-branch.md": {
+    "purpose": "Verify branch result then merge/PR/retain/discard workflows, worktree retention and destructive discard confirmation.",
+    "decision": "adapt",
+    "analysis": "Internal cleanup contradiction: decision tree/Step5 say options1,2,4 remove, Option2/quick reference/common mistakes say PR worktree remains. Resolve keep open-PR worktree unless explicitly authorized. merge-base existence does not identify branch ancestry unambiguously. git checkout base then grep current branch can target wrong worktree; deleting checked-out feature fails. Fixed four-choice/extra permission ritual should not override existing authorization. Tests before normal merge useful; draft PR can legitimately represent incomplete checks. Project finish-checklist auto-execution not found in scripts.",
+    "platform": "Claude skill/memory assumed, Bash syntax not PowerShell; worktree paths must be resolved and ownership checked. Zeus GitWorkspace/release candidate handles rather than shell cleanup prose; no branch operations executed. superpowers original/license not inspected."
+  },
+  "test-driven-development.md": {
+    "purpose": "One observable behavior red-green-refactor, confirm intended failure and preserved regression, document test evidence.",
+    "decision": "adapt",
+    "analysis": "Reject mandatory deletion of already-written work and no-exception per-function testing as wholesale policy; reversible low-impact edits follow native testing guidance. After-the-fact tests can be meaningful and independent red verification can be performed without discarding implementation. A failing error can be legitimate missing API behavior; warning-free output is not universally required. Retry example is pedagogical immediate3 attempts, not production retry policy. All claims of TDD preventing bias/bugs universally unproved. No per-project override loader found. superpowers MIT original/equivalence unverified.",
+    "platform": "Tests argv differ npm/gradlew/pytest/cargo and Windows wrappers. Native execution receipts must bind exact candidate revision; no source command executed. Zeus existing tests demonstrate bounded behavior, not inherited all-method ritual."
+  },
+  "testing-anti-patterns.md": {
+    "purpose": "Test observable behavior, understand dependency side effects, keep lifecycle cleanup at proper owner, use faithful test doubles.",
+    "decision": "adapt",
+    "analysis": "NEVER test mock behavior must allow contractually meaningful external-call assertions. All response fields always present contradict optional/missing-field negative cases and can conceal forward compatibility bugs. Real implementation first is unsafe if unknown external effects; inspect and isolate before execution. Test-only seams can be valid ports, not automatically production pollution. Strict TDD does not guarantee anti-pattern absence. Original/license and private avoid_mock memory unverified.",
+    "platform": "Vitest/TypeScript snippets are illustrative, not Zeus dependencies. Domain ports and sandboxed integration tests permit real behavior without connecting live providers. Native stdlib boundaries retained."
+  },
+  "test-governance.md": {
+    "purpose": "Owned risk lanes with contract positives/negatives/edges, bounded flake quarantine, hermetic E2E and SLO-derived load gates.",
+    "decision": "adapt",
+    "analysis": "Immediate quarantine and automatic deletion at expiry can remove critical safety coverage; require explicit replacement/risk acceptance. Generic70/20/10 mix,10% quarantine,5%flake and10min PR limits are heuristics, not local policy. Excluding warmup always hides cold-start SLO; profile-specific cold/warm gates needed. Contrast contract/integration simplified; validation cannot guarantee compatibility for unseen contracts. Source requires TDD and anti-pattern guidance conflicts resolved via local risk contract, not mechanical inheritance.",
+    "platform": "pact/k6/jmeter runners external; pinned adapters with read-only source and scratch DB fixtures required. Zeus release/verification gates and attempt_outcomes can store flake/quarantine evidence but no equivalent governance engine asserted."
+  },
+  "git-flow.md": {
+    "purpose": "Branch/commit/PR policy with local overrides, source guard and git-flow validator.",
+    "decision": "adapt",
+    "analysis": "Read validator+tests+override parser; only override:company switches company mode, arbitrary override name in template does not. Company prefixes remain hardcoded in shared Python despite prose says user-private separation. Validator prints FAIL but main returns None/process0; enforcement needs caller stdout policy. General regex permits protected branch subpaths and case-insensitive commit prefixes. Guard DENY main push has solo_override and parser requires mode solo plus direct_push_main allow, contrary absolute prose. Branch lint doesn't enforce review/merge rights. Text alerting other workers is not message authorization.",
+    "platform": "Windows subprocess uses explicit UTF8; override reads six parent levels and may reach home, BOM not handled like common parser. Claude PreToolUse Bash-only and global decisions file do not port as OS security. Zeus Git/adoption authority should use policy-aware native operations."
+  },
+  "repo-automation-safety.md": {
+    "purpose": "Side-effect-scoped bots and dry-run review, provenance-rich release manifest, required CI ownership and rollback rehearsal.",
+    "decision": "adapt",
+    "analysis": "Early N-minute wait-then-execute conflicts later explicit confirmation requirement; elapsed time must not grant authority. Dry-run last-commit-only split cannot model remote errors and precommit side effects absent isolation. Signed commit proves signer under key trust, not benign bot intent or content. Artifact digest without signature still detects integrity against trusted digest; signature alone doesn't guarantee provenance. Bulk close/revert recovery itself needs scoped authorization. Preserve caps/ownership/exact manifest, adapt to existing approval contract.",
+    "platform": "Claude Grep/Bash and gh protection live reads are suggestions not executed. Existing Zeus workflow/outbox and release revisions provide authority; GitHub/cloud API scope must be adapter-level, no blanket credential assumptions."
+  },
+  "github-actions-governance.md": {
+    "purpose": "Workflow triggers/least permissions/reuse/cache/matrix/concurrency and gated OIDC release policy.",
+    "decision": "adapt",
+    "analysis": "Actual ci.yml read fully: no permissions block, tag actions not full SHA, ubuntu-latest, network pip install, skill-only changes not path-triggered, brain snapshot changes likewise absent trigger. Prose reusable permissions not inherited/default claim requires correction to effective caller/callee restrictions via official docs. concurrency sample workflow-module omits branch/PR and can cancel unrelated work; workflow-level matrix availability requires scope check. GitHub concurrency not necessarily durable FIFO queue. gh workflow lint/dx:gha availability unverified. Limits/cache/defaults/version statements remotely unverified.",
+    "platform": "CI only Linux shown, so no Windows verification follows. Source has Python3.13/Node22 toolchain; not Zeus dependencies. Use pinned workflow definitions and verified actual CI receipts, not prose standards or declared test list."
+  },
+  "runtime-lifecycle.md": {
+    "purpose": "Explicit config precedence, liveness/readiness/startup boundaries, drain deadlines and worker shutdown ownership.",
+    "decision": "adapt",
+    "analysis": "Mostly guidance; no server implementation embedded. PID1 doesn't universally fail signal handling without tini; process tree/entrypoint matters. SIGTERM interruption does not inherently make transactional DB data inconsistent. Ack must follow successful work, not blindly ack to stop. Fixed30-60s drain,5-10s routing delay/startup1min need measured policy. Config source logging must exclude values. Probe authentication exceptions require exact network/controller capability, not global unauthenticated endpoints.",
+    "platform": "SIGTERM/SIGHUP and POSIX init are not native Windows service control. Zeus Workflow lease/heartbeat/cancel and Monitoring unknown states are confirmed overlap; graceful subprocess teardown and service lifecycle must be adapter-specific and tested separately."
+  },
+  "responsibility-recovery-protocol.md": {
+    "purpose": "Investigate individual failures, classify causal groups, baseline/causal scope checks and durable follow-up ownership rather than dismiss preexisting issues.",
+    "decision": "adapt",
+    "analysis": "Zero imports/calls plus identical failing set cannot prove zero causation: shared state/config/environment/dynamic calls matter. Same edited file does not alone authorize every adjacent fix. Initial choose-smallest/test-only-fix bias risks changing assertions to hide production defects; root cause and contract first. 100% Stop detection assertion not established. Private impl137-139/debate incidents not read. Mandatory /clear and same-session category cap not native lifecycle authority. Keep exact evidence, newly reachable relevance, fenced backlog and no false completion.",
+    "platform": "Claude Stop hook, HANDOFF, V19 and memory references require mapping. Zeus schedule_audits preserves remaining_paths/subsystems/questions and generation-bound followups; immutable context artifact better than mutable future-candidate lock."
+  },
+  "rollback-readiness.md": {
+    "purpose": "Prechange known-good artifact/config/schema checkpoint, restoration rehearsal, owner/blast radius and post-rollback observation.",
+    "decision": "adapt",
+    "analysis": "Reject universal atomic canary/bluegreen rollback and independently reversible expand-contract phases: state mutations and dropped columns remain irreversible without data recovery. Terraform state snapshot restoration is not infrastructure undo. Arbitrary30%/5% error thresholds and15min fix allowance not SLO proof; small data drift need not be acceptable. Feature flag toggle changes behavior but doesn't reverse completed effects. Retaining authenticated known-good immutable artifact and schema compatibility evidence fits Zeus release chain.",
+    "platform": "Terraform/Helm/Kubernetes/registry/flag service commands external adapter concerns; Linux container versus Windows host paths and tools differ. Existing Zeus release approval/rollback tests must verify actual version and storage, no simulation-as-production claim."
+  }
+}

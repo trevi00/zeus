@@ -1,0 +1,62 @@
+{
+  "design-audit.md": {
+    "purpose": "Module boundary/direction/abstraction/consistency/drift audit with dependency graph and baseline, separate code-level/domain audits.",
+    "decision": "adapt",
+    "analysis": "Read full architecture guide. Early all-cross-layer interfaces vs final second-implementation-only interface rule conflicts, and single implementation can still be proper port. P0 for any cycle/layer breach needs agreed architecture, not inferred directory convention. Quick-win immediate fixes violate read-only reviewer role. ADR registration alone cannot turn approved invariant violation PASS; independent policy approval needed. Gradle --scan may upload build metadata; not an inert graph extraction. Zeus AGENTS explicitly stdlib inner layer and ports supersede generic3-layer pattern.",
+    "platform": "pydeps/dependency-cruiser/Gradle optional external tools; Windows/Linux path/import graphs need language semantic support. Native graph contracts and tests/test_architecture.py candidate not yet read; graph visualization is evidence index, not semantic coverage."
+  },
+  "design-critic-gate.md": {
+    "purpose": "Trigger independent UI gate for new surfaces/states, screenshots,5 interaction and4 data states, contrast/focus/non-color/reduced-motion minimum.",
+    "decision": "adapt",
+    "analysis": "One-round wording qualified by iterate fix+rereview; cannot terminate with blocking just to meet one round. Inline role-play fallback does not replace independent approval. harness-design-critic permits code-only lower-confidence review whereas skill demands screenshots before PASS; mark missing visual evidence blocked. Requires harness-designer is agent name, not necessarily resolvable skill. Mechanical0 may mean no scanned files; actual validator changed-list empty gives empty findings, not fallback. Skip routine changes only when resulting state/a11y evidence remains valid.",
+    "platform": "Claude Agent and Playwright MCP names need available native browser/renderer capability. Fonts/DPI/mobile real-device checks not reproduced by Windows/Linux screenshot parity; bind exact view/state/source identity. Zeus reviewer evidence gate candidate only."
+  },
+  "design-review.md": {
+    "purpose": "Independent rendered UI review using7 pillars, functional questions before visual polish, scored approved/iterate/escalate output.",
+    "decision": "adapt",
+    "analysis": "Pillars0-100 have no numeric pass cutoff unlike visual-verdict90; schema and rubric require further precise contract. Generic Inter/system font penalties, all8pt spacing and narrow line-height ranges are aesthetic preferences, not accessibility proof. Mechanical advisory rule can flag legitimate styles. Critic output_schema free_text and mixed Markdown+JSON is not enforced JSON. Same-agent adversarial prompt is useful recheck, not independent reviewer. Missing real-device risk cannot be converted into perfect-UX claim.",
+    "platform": "Source Playwright MCP/browser access not assumed. Native render evidence plus structured schema-bound decisions must preserve screenshots, viewport and revision. No actual UI evaluated in this partition."
+  },
+  "ui-ux-principles.md": {
+    "purpose": "Framework-neutral action/status/feedback/forms/responsive/accessibility patterns, preserve established labels and visible all-state behavior.",
+    "decision": "adapt",
+    "analysis": "disabled reason via title/tooltip conflicts motion-interaction which correctly warns disabled control tooltip inaccessible; use persistent described helper or accessible wrapper. Mandatory red/green/fill/outline/skeleton rules need product context and do not define universal affordance. Destructive confirmation depends reversibility and established authorization; cannot introduce global approvals from source. Touch44px target stricter heuristic than referenced WCAG24px AA, separate recommendation from standard. Broad all4 data states may be irrelevant to static surfaces.",
+    "platform": "CSS/rem/safe-area concepts portable to web but not exact iOS pt/Android dp. UI app state must project Zeus runtime truth rather than locally invent success; accessibility manual device checks outstanding. Private wgs project evidence not inspected."
+  },
+  "motion-interaction.md": {
+    "purpose": "Purposeful bounded/interruptible animation, reduced motion, focus and pointer behavior, native CSS capability routing.",
+    "decision": "adapt",
+    "analysis": "Internal transform/opacity-only mandate conflicts height:auto interpolate-size example and color-transition recommendation. outline always ignores radius/outlawed is stale/overbroad; box-shadow may disappear in forced-colors, preserve accessible outline fallback. Mousedown-only dropdown handling can break keyboard/cancel behaviors; pointer modality semantics required. View-transition Baseline/browser version and compositor guarantees external unverified. Reduced-motion need not impose replacement fade on every user; support preference and preserve state.",
+    "platform": "Browser engine/version/OS forced-colors and input modalities differ; no library installed. Native UI renderer adapters should test keyboard/touch/reduced-motion rather than assume named Motion/Playwright capability."
+  },
+  "ux-writing.md": {
+    "purpose": "Context-sensitive product voice, specific action labels, recoverable errors, informative empty states and localized complete-string templates.",
+    "decision": "adapt",
+    "analysis": "Explicit user consequence/quantity and preserving input useful. Hide all error codes can obstruct technical support; expose safe diagnostic reference where useful. Banning confirm/submit/Done and all invalid language is context-specific; do not rename existing contract terminology without evidence. Claims Expedia12M/CTA192% are unverified anecdotes not expected lift. Error explanations should not leak account status/private detail. Global style preference cannot supersede user's product constraints.",
+    "platform": "Locale Intl/date/time and screen-reader naming differ OS/browser; preserve complete translation placeholders and source labels. Zeus monitoring reason/result prose is candidate application area; no copy changes made."
+  },
+  "app-mobile-design.md": {
+    "purpose": "Platform-aware navigation/touch/typography/safe-area/sheets/haptics/permissions/offline and state support.",
+    "decision": "adapt",
+    "analysis": "Broad iOS26Glass,ReactNative authentic/Flutter uniform,M3 physics and AppStore rejection numbers unverified. Bottom-sheet always visible X/never stack and nav3-5 are heuristics, not platform universal rules. Five-user85%,skeleton30%,ATT13.85% not general guarantees. Offline queued automatic retries require idempotency/expiry/authorization; never replay destructive effects blindly. Provisional notification benefit doesn't prove product fit. Architecture shouldn't make mobile styling a dependency of headless Zeus.",
+    "platform": "iOS build/device/haptics require Apple environment unavailable in Linux/Windows-only tests; Android dp vs iOS pt vs web px not interchangeable. Map future app output to native platform-specific skills, no current Zeus mobile feature asserted."
+  },
+  "design-foundations.md": {
+    "purpose": "Choose design discovery/prototype/iteration frameworks, principled critique, deliberate reference study and educational canon.",
+    "decision": "defer",
+    "analysis": "Authored educational prose, not generated asset or executable process. Shipped UI being declared usability-validated is unjustified; production presence doesn't prove usability for target users. Five-day sprint/five-user findings and broad school-history claims need original references. Useful principle is question-before-solution and functional critique; mandatory broad curriculum not needed for every Zeus task. Links are named dossiers/authors not fetched originals; no license clearance.",
+    "platform": "No direct OS code/tool dependence besides reference/research access. Candidate optional skill knowledge, not runtime module. Source named process frameworks must not auto-spawn teams or bind deadlines."
+  },
+  "design-systems-tokens.md": {
+    "purpose": "Role-based token layers/aliases, theme mapping, color governance, component system and design-code handoff.",
+    "decision": "adapt",
+    "analysis": "Mandatory3tiers contradicts final avoid3tier until second variant/theme. Primitive names explicitly visual in layer1, so blanket appearance-name prohibition needs layer scope. HEX fallback conflicts lint color-no-hex blanket ban. OKLCH L>=0.8 arbitrary chroma/hue not a verified WCAG contrast proof; must measure actual rendered color/gamut. Forced L+0.1 hover may wash out/lighten beyond gamut or reduce contrast. DTCG dates/support and stylelint plugin availability unverified. CSS block-comment */ parser issue concrete but no sample execution performed; preserve parser/build checks.",
+    "platform": "Figma auth and Style Dictionary version/tool support external. CSS outputs need browser/OS/font/color gamut verification. Zeus monitor web CSS candidate only, not mandatory infrastructure refactor; existing token systems first."
+  },
+  "ux-heuristics-research.md": {
+    "purpose": "Usability heuristics and research-method selection, IA/card/tree studies, form/error behavior and practical accessibility review.",
+    "decision": "adapt",
+    "analysis": "Behavior always more reliable than report is too broad; methods answer different questions. Five-users85% and automatic30-40% issue detection are unverified conditional estimates. WebAIM claimed top6 includes skipped headings and omits other categories; check original instead of copying statistical authority. WCAG3 timeline, legal cases/FTC amount are unverified source assertions, not this review's legal advice. WCAG24px target exceptions and focus/contrast scope need full standard. axe zero findings never full-a11y proof; source validator doesn't inspect contrast, keyboard or live DOM at all.",
+    "platform": "NVDA primarily Windows, VoiceOver Apple; Linux screenshot can't certify either. Map to explicit browser/device capability evidence; no legal/compliance certification or external user research executed."
+  }
+}

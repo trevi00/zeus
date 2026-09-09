@@ -1,0 +1,170 @@
+[
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/00-vision.md",
+    "git_blob": "bf765562f684d304bf8dea94c38639377dbec077",
+    "bytes": 18106,
+    "pinned_sha256": "7e5cb9814543b07218b0baf5071d9771514f4a8b49c577a7fd39712116278924",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/00-glossary.md",
+    "git_blob": "40515fbdfd93b8f0c3cded9f2745ac232c13458b",
+    "bytes": 5416,
+    "pinned_sha256": "ac92ea29fdd0270f230d2a219c6f04e3d050296aa962b43ce1d5a4c470d2b08b",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/HARNESS-SPEC.md",
+    "git_blob": "f32d35e48281fe3c193ed2d28edb83aa5c4c588c",
+    "bytes": 90331,
+    "pinned_sha256": "d55401ad311431abb6e69976e01d356d23abaeaf525242c08dd714cd2d193622",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-001-ssot-differentiated-canonicality.md",
+    "git_blob": "94a3372ed040728a7d678e99289a819cf7105916",
+    "bytes": 6596,
+    "pinned_sha256": "035544b418c0f0dcb34417616ce6835e9305b91c1e4972c3d29eeb384fc25019",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-002-runtime-cc-native.md",
+    "git_blob": "6ffdd7d7b9abf9a12ee8fda7ebb7687222b470e5",
+    "bytes": 1504,
+    "pinned_sha256": "48ffc8be2fc72fc96a633df02c8d4476d878a5c3326a558fef7bf89153554a51",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-003-context-decomposition-rule.md",
+    "git_blob": "8e7f6a3c31f28965c5adc595df1f0897ec080a3a",
+    "bytes": 2595,
+    "pinned_sha256": "1ae43c21b932be571cc61daad2fbf8be8acbf1233aff3927ca29a313a6574900",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--pids-limit\", \"64\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--user\", \"65534:65534\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=134217728,mode=1777\", \"-e\", \"HOME=/tmp\", \"-e\", \"PYTHONDONTWRITEBYTECODE=1\", \"-e\", \"PYTHONIOENCODING=utf-8\", \"-e\", \"GIT_CONFIG_COUNT=2\", \"-e\", \"GIT_CONFIG_KEY_0=safe.directory\", \"-e\", \"GIT_CONFIG_VALUE_0=/source\", \"-e\", \"GIT_CONFIG_KEY_1=core.hooksPath\", \"-e\", \"GIT_CONFIG_VALUE_1=/dev/null\", \"-v\", \"C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned:/source:ro\", \"-v\", \"C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\harness-history.git:/source/.git:ro\", \"-w\", \"/source\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"90\", \"/app/.venv/bin/python\", \"tests/integration/test_context_programming_smoke.py\"]"
+    ],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "ontology/glossary.md",
+    "git_blob": "b66fdaa72792418aea38beddcaaf4af2c39bc338",
+    "bytes": 529,
+    "pinned_sha256": "997d0f412566ee64e667c94630f758e102de7d90ee50ff73d91d3d92b412df38",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/cohesion.py",
+    "git_blob": "2400d2e3261b4885eda1283d6400e7c07026db03",
+    "bytes": 6482,
+    "pinned_sha256": "a6a782891e6da4677b5f538791269e4cf661e1dc7fff865658895c8dd47083fd",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--pids-limit\", \"64\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--user\", \"65534:65534\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=134217728,mode=1777\", \"-e\", \"HOME=/tmp\", \"-e\", \"PYTHONDONTWRITEBYTECODE=1\", \"-e\", \"PYTHONIOENCODING=utf-8\", \"-e\", \"GIT_CONFIG_COUNT=2\", \"-e\", \"GIT_CONFIG_KEY_0=safe.directory\", \"-e\", \"GIT_CONFIG_VALUE_0=/source\", \"-e\", \"GIT_CONFIG_KEY_1=core.hooksPath\", \"-e\", \"GIT_CONFIG_VALUE_1=/dev/null\", \"-v\", \"C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned:/source:ro\", \"-v\", \"C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\harness-history.git:/source/.git:ro\", \"-w\", \"/source\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"90\", \"/app/.venv/bin/python\", \"tests/integration/test_context_programming_smoke.py\"]"
+    ],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/integration/test_context_programming_smoke.py",
+    "git_blob": "7bb5e8e3c818677f8d56ab0785d6aa4893c12b49",
+    "bytes": 10359,
+    "pinned_sha256": "6367be67f69a8b9d495bd06c50b6d71e62affd5cde49d98590d5dc8dca4f2784",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/design-canon/review.md",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--pids-limit\", \"64\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--user\", \"65534:65534\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=134217728,mode=1777\", \"-e\", \"HOME=/tmp\", \"-e\", \"PYTHONDONTWRITEBYTECODE=1\", \"-e\", \"PYTHONIOENCODING=utf-8\", \"-e\", \"GIT_CONFIG_COUNT=2\", \"-e\", \"GIT_CONFIG_KEY_0=safe.directory\", \"-e\", \"GIT_CONFIG_VALUE_0=/source\", \"-e\", \"GIT_CONFIG_KEY_1=core.hooksPath\", \"-e\", \"GIT_CONFIG_VALUE_1=/dev/null\", \"-v\", \"C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned:/source:ro\", \"-v\", \"C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\harness-history.git:/source/.git:ro\", \"-w\", \"/source\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"90\", \"/app/.venv/bin/python\", \"tests/integration/test_context_programming_smoke.py\"]"
+    ],
+    "test_limits": "Context programming smoke actually passed using pinned files and a separate exact-HEAD bare history in network-none readonly Docker. Driver wiring assertions are textual; actual notification delivery/concurrency not verified. Other document declarations are not operational verification.",
+    "remaining": [
+      "independent review",
+      "notification/concurrency edge cases",
+      "external provenance/license verification before copying"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

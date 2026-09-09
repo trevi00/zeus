@@ -1,0 +1,140 @@
+[
+  {
+    "file": "claude-review.json",
+    "session_id": "389234a1-0d78-41d3-b732-befaf85537b7",
+    "model_usage": {
+      "claude-opus-5[1m]": {
+        "inputTokens": 6,
+        "outputTokens": 7496,
+        "cacheReadInputTokens": 463150,
+        "cacheCreationInputTokens": 5392,
+        "webSearchRequests": 0,
+        "costUSD": 0.47292500000000004,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 3751,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "is_error": false,
+    "duration_ms": 124105,
+    "scope": "actual Claude CLI read-only review; no execution certification"
+  },
+  {
+    "file": "claude-discussion.json",
+    "session_id": "389234a1-0d78-41d3-b732-befaf85537b7",
+    "model_usage": {
+      "claude-opus-5[1m]": {
+        "inputTokens": 4,
+        "outputTokens": 6137,
+        "cacheReadInputTokens": 324967,
+        "cacheCreationInputTokens": 11858,
+        "webSearchRequests": 0,
+        "costUSD": 0.43450849999999996,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 2992,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "is_error": false,
+    "duration_ms": 96045,
+    "scope": "actual Claude CLI read-only review; no execution certification"
+  },
+  {
+    "file": "claude-implementation.json",
+    "session_id": "389234a1-0d78-41d3-b732-befaf85537b7",
+    "model_usage": {
+      "claude-opus-5[1m]": {
+        "inputTokens": 10,
+        "outputTokens": 11591,
+        "cacheReadInputTokens": 908396,
+        "cacheCreationInputTokens": 27772,
+        "webSearchRequests": 0,
+        "costUSD": 1.021743,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 7671,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "is_error": false,
+    "duration_ms": 198008,
+    "scope": "actual Claude CLI read-only review; no execution certification"
+  },
+  {
+    "file": "claude-implementation-discussion.json",
+    "session_id": "389234a1-0d78-41d3-b732-befaf85537b7",
+    "model_usage": {
+      "claude-opus-5[1m]": {
+        "inputTokens": 2,
+        "outputTokens": 3827,
+        "cacheReadInputTokens": 197758,
+        "cacheCreationInputTokens": 8679,
+        "webSearchRequests": 0,
+        "costUSD": 0.281354,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 1911,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "is_error": false,
+    "duration_ms": 63265,
+    "scope": "actual Claude CLI read-only review; no execution certification"
+  },
+  {
+    "file": "claude-final.json",
+    "session_id": "389234a1-0d78-41d3-b732-befaf85537b7",
+    "model_usage": {
+      "claude-opus-5[1m]": {
+        "inputTokens": 10,
+        "outputTokens": 7096,
+        "cacheReadInputTokens": 1074138,
+        "cacheCreationInputTokens": 18551,
+        "webSearchRequests": 0,
+        "costUSD": 0.9000289999999999,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 4091,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "is_error": false,
+    "duration_ms": 111619,
+    "scope": "actual Claude CLI read-only review; no execution certification"
+  },
+  {
+    "file": "claude-closure.json",
+    "session_id": "389234a1-0d78-41d3-b732-befaf85537b7",
+    "model_usage": {
+      "claude-opus-5[1m]": {
+        "inputTokens": 6,
+        "outputTokens": 1665,
+        "cacheReadInputTokens": 684847,
+        "cacheCreationInputTokens": 6181,
+        "webSearchRequests": 0,
+        "costUSD": 0.4458885,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 205,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "is_error": false,
+    "duration_ms": 28503,
+    "scope": "actual Claude CLI read-only review; no execution certification"
+  }
+]

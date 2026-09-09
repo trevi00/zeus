@@ -1,0 +1,89 @@
+{
+  "variant": "observed",
+  "test": "test_restorer_smoke.py",
+  "at": "2026-09-09T02:19:41.592422+00:00",
+  "argv": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "100",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Users\\rudtn\\codex-harness\\.runtime\\absorption\\executions\\guardian\\observed,target=/guardian,readonly",
+    "--mount",
+    "type=bind,source=C:\\Users\\rudtn\\codex-harness\\.runtime\\absorption\\sources\\harness\\pinned,target=/harness,readonly",
+    "--workdir",
+    "/guardian",
+    "--env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "--env",
+    "PYTHONIOENCODING=utf-8",
+    "--entrypoint",
+    "timeout",
+    "sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a",
+    "180",
+    "python",
+    "tests/test_restorer_smoke.py"
+  ],
+  "exit_code": 0,
+  "stdout": "  ok   mark 선행 없이 restore → 거부\n  ok   스모크 PASS + clean → known-good 등록\n  ok   dirty tree → mark 거부\n  ok   스모크 FAIL → mark 거부 (검증 증명 실패)\n  ok   판정 경로가 줄면 mark 거부 (앵커 세탁 방지)\n  ok   거부돼도 앵커는 그대로\n  ok   대조군: 되돌리면 mark 통과 (항상 거부가 아니다)\n  ok   restore → known-good 자산 복원\n  ok   ledger/ 복원 제외 — 전진 보존 (INV-S)\n  ok   restore 이벤트 감사 append (INV-S)\n  ok   alerts.log 복원 증적\n  ok   [규칙 대조] 단언 규칙이 하네스 정본과 같다 ('^\\\\s+(ok|FAIL)\\\\s')\n\n[PASS] 0 failure(s)\n",
+  "stderr": "",
+  "synthetic_config": {
+    "harness_home": "/harness",
+    "python_exe": "/usr/local/bin/python"
+  },
+  "synthetic_config_sha256": "ec136e545ae848aa3275d52a007c05885c66245aff210fd0cb6fa537d0a8a6da",
+  "source_integrity": true,
+  "harness_manifest_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+  "dependencies": [
+    {
+      "path": "config/paths.yaml",
+      "sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e"
+    },
+    {
+      "path": "scripts/lib/judgment_paths.py",
+      "sha256": "a304eaa95c8039e7d387d808ffabfe6292fbe3ac1f27aa86d39fdf6991e9cfe7"
+    },
+    {
+      "path": "scripts/lib/hook_protocol.py",
+      "sha256": "6a7e42b754a3db7eb191ab2801351654b9d7fecee9b11111f07a8b3e60caaca4"
+    },
+    {
+      "path": "scripts/cli/append_restore.py",
+      "sha256": "57f59ef11e433008b1824ddda88fac5f8e8b77e6024679fb831ecb2b513ef9d3"
+    },
+    {
+      "path": "scripts/lib/test_outcome.py",
+      "sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9"
+    },
+    {
+      "path": "scripts/lib/ledger.py",
+      "sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411"
+    },
+    {
+      "path": "scripts/lib/paths.py",
+      "sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387"
+    },
+    {
+      "path": "scripts/lib/ids.py",
+      "sha256": "59037d09f01a4cab081b3bce4ef93b816d981a50be2e498f13b632a01608ce7c"
+    },
+    {
+      "path": "scripts/lib/atomic_jsonl.py",
+      "sha256": "4d0fc06aa212e9df5b7c12ac36708d07f1d17171d27ef3ed52a9cc60854ec9b8"
+    }
+  ]
+}

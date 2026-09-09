@@ -1,0 +1,1379 @@
+[
+  {
+    "source": "harness",
+    "path": "SELFIMP-PLAN.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "bb026897cc01419d74aa2f2ad0aa67f3c1d6298408332f40c4d94c35fd876d1a",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:4",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "SELFIMP-REPORT.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "b56180bbc6eb5fbada7b48b04eb4dc8cc480d91ddad917a146717dee61b9b6dc",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:13",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "SELFIMP-RESEARCH.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "4cfc02c1cfe4f27ad531e5dc5057c3e44a2fd0538e1eddd2973847918b9f5c2d",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:7",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "SELFIMP-VERIFY.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6ccc7ff144c647fe92a135a6329f5532516f63037dfa94a90b1ad25163432e20",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:10",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-batch-java-slice-absent.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "137a364dbe2271272517ebfbbfbb53b0bd423e0a28a59e6257ad3e11ff8e15d7",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:4",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-capture-surface.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "c15cd8d8cd12025d9833c09b5ed9b93069ece48ee76c677bcb45e4c4301eefa5",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:5",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-demotion-breaks-sets.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "929ecdc1de088562f854766e44278dfbb8830a4ca70e306522c1cec90e031fef",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:6",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-detect-stacks-blind.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "bf3e585284c6b7af010b1b3a75b9beb52085d54507e99358ecff87cb35c62f08",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:7",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-endpoint-error-contract-metric.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6d9cd32897fbce0061b6d0f7a6f6255766985b925d77fa8733d434f488e8b81e",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:8",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-ep080-recommendation-wiring.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "70509a05aedfe954ad7b28a20fb1e36ddfd7d0aff78ddcd00ff0578f910d724d",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:9",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-external-jury.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "c802623e920c7c2dd7779e66b727263bb16d1b9a1fb8bdd3217dcf020dd215af",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:10",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-kr6-mutation-gate-unlanded.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "e015b038be28f1f940abf1c22ab4357248e06167ea013ee6bf33ddc19dd33331",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:11",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-monorepo-stack-blind.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "ee49b32dd654f30568146a3bd5027509369e152050d12a6cb574cfb64a4b7ae1",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:12",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-mutation-baseline-false-score.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "864f798167c4aea4ea13791f8d6ac4674db9d1d60031d3b51854f7f8ae029836",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:13",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-no-hit-evidence-loop.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "31b234f24daac8641f4ed9be30ad7a5eea2cc41aede86d180d376c452391533c",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:14",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-pipeline-skill-names-dead.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "14c5d56a97c29d88e51184f55cda8736289f8437fa8f55f0a7c2e1f1bde94053",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:15",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-python-slice-thin.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "fa1b360476a92da3adcdc98c5bad800c1426971621b43fa63851c1d70a5e6b6f",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:16",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-repro-probe-counts-redo-as-repair.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "0dd13137cbb87df5fb72e8d7652de44896b9ef958271360609c2f262e5653c17",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:17",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-sandbox-gate-silent-death.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "3426dead49518b96db861bde84ac5c71514864abaa4b25d98174cf5fc7cc6a13",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:18",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-stack-gate-silent.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "c5f7c9c78ab60294dc300cacd002028b832d6b2cdd4407c288368632e2153529",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:19",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/backlog-stack-vocab-outside.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "8522f5259a8dffedf217aeaef59ff21e2401da6007667c0baa434068762c49b9",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:20",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/decomposition-CLAUDE-2026-08-24.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "d34bfffce0f0b7ace4d7c42eb76513881929fb93f9b49c297d0d4fbc06130040",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:22",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/decomposition-CLAUDE.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "af39737f9f8c096748c43bd8d5e9ec86fd46f574d4b30417676e88c1232e8287",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:21",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/reflection-orchestrator-266.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "0dbfd71da9187640d4110ca1e90bee255bb9c82f6654654eb3e455a934897b35",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:23",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/reflection-orchestrator-334.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "d876dbe5fb9f9996e33aca4fdd80e546baed1bf2fb716c0fe20b5e67c578c0ec",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:24",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/archive/reflection-orchestrator-424.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "aa37323f0f64a7fdb61854201ade5fc439a0b5ef31dd1658b66f152d17e546c8",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-archive.md:25",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/approval-bottleneck.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "f7ab820965a85b005e08c80c49987d00ffafecd5396514b50d68aa118bdf3cb0",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:4",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/backslash-transport-collapse.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "abc14466e11318b47d6b1cb841d8f3276059309fb56edde3f9884348be2c6b25",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:7",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/bus-flow-measurement.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "79d0854342a4698b9e25c695e28f559f598346dae3cb141935d9e525138488eb",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:10",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/bus-topics-vs-sa3.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "630ca224cbe56c2f8113d6ca9b64da1f92478ec4e86fcdaf25e564eabe1b0336",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:13",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/canon-glob-guard-census.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "4790022662a3b2f5dd267fb70157d135814d50f0413cd6dcefe3382ef5db204d",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:16",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/commit-scope-compliance.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "242dd610bfec7445c0974d089b0e7c24c3925daf80e80fa1f2df01b4f6f408cb",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:19",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/commit-scope-effect.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6facf14a413748fe810ae0d2a46004a19d1be0e437a4c74d02f4b91ca768baed",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:22",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/d8-value-draft.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "a6b2821f681c3e037d39b4b40777d455b8f2658d1c39f1b3e4c13e36d4b291af",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:25",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/debate-domain-lead-rc5-verdict.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "7755df1ee5bb4989b7e61a8aac7fd115dd0be1c6024ea7ff9e7bfb4da4acb5e3",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:28",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/first-nonproposal-uptake.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "2c5aa49a6522125970743a6cc021471ba175f4e0f68f716e37d60202340e0941",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:31",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/gate-vs-consumption.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "8a033d82a4d56142b443ddaa54e9d126f9139ab44bfa28b13f62e3c09c9cc3c5",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:34",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/handoff-close-order-decision.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "0dbd3af3a42021831ebfb8cef86a37216af4a1a886878c99b90b6129f250c483",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:37",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/handoff-format-decision.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6c6fbb44d990625c88eac5cd29d76531ae29eee0b5278cb5b3acca2f90f98394",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:40",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/idle-replace-thresholds.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "8c696afc06047aaa5c366e3344f0c79059c33994f23969ce7f880a4f57d4e3c0",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:43",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/knowledge-yield.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "dbed906bf8bc174f935fcb5b656282faac30605b5fa73c18a6e6bf5cf70f7901",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:46",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/known-issues-counterfactual.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "3517f7aa8de7afb08440bd06a150af53f4696836d758e4433fbf64d1f0e3392c",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:49",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/latency-consumer.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "a889447a7a33006aa0b8e511562469432cd01b42175aefa59561120fcc48a942",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:52",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/ontology-route-closed.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "9ae92364e4aa3eb9212b859de51081206984d69d95fb625b12b5d6f1ab6d05c4",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:55",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/pg-event-table-design.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "742d13b731918fe4570fa7d25aae286176b02a20d0b8e2124c444cfe60a4c2b8",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:58",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/pg-projection-diagnosis.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "88c1b0d2ec886090e0bcd40a46fdd32c4c7c39665cf43aeb40c3f55be1f0c982",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:61",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/reachability-census.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "e8296b66baf1194afe6af37fc3bc6d93e57393590d41e0b71793b1a94225fed5",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:64",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/role-request.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6a57fe976aa9f68a6ae69e31f0946843017587e1c5bc8308bf0603c23d416b97",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:67",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/session-token-curve.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "341c80e0bd1ec74506b35a26b46bfea4548f3954a17af0aa36c33acd9dad7f84",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:70",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/source-mix.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "563ce6a481a60b26f3c07df197c65091f553030be3bb34604355635c14571844",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:73",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/reports/topic-proliferation.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "83dc5cc2f95cff4161614cf0526359fd72985f6f609a740f96e31b234f7b2065",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:76",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/cf1-live-2026-08-26.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6c2bb190f41007fd25ebc6c0bd58bba0b0b818c029c88f77d6d0b9dc544cd84b",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:79",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/cf1-wiring-walk-2026-08-26.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "eb47901bdd0c1a560074c803547e5ec723fd722c551ec29847e429d6416ef7ad",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:82",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/cross-plane-join-2026-08-27.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "60a494893592193c9d4c38de720a4a7cb1ae789e6a24c7e8a0ce10b9c8b992a6",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:85",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/env-leak-promotion-gate-2026-08-27.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "eafa4e4fc7060e07f31d3b876d494765428d926949f9fc70d4f1f296c8f5b37d",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:88",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/evidence-closure-2026-08-31.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "5a9913fc3f8f5dfe7b72da2aee3cb69b4032faa7f3d87a3e6e287953ad354160",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:91",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/fence-config-b-sweep-2026-08-27.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "b2ba301887309bf8db4c427ebb368ea44be2fd80cac1ff99316ec3831df0bea3",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:94",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/hook-detached-spawn-cost-2026-08-28.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "97e27b280b6a96bb92bbbb55736e814056d55d177ae395eed61e37dbb934226e",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:97",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/judgment-path-grade-2026-09-01.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "9d7deda04e3dd753c8c00103dc978aa170fa3fb12e7d7cd0f2ad492eda3dda66",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:100",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/open1-teammate-brief-2026-09-03.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "9c983e51b787242ffc15599b6cc8eba3f3e4c1949bf2c03b6fc2014e27093c32",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:103",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/pipeline-rerun-blocked-2026-08-28.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "2bcf071b0bb773e174040a843230dc4311118c1a6bca62e774b0fd2f11a6e3ea",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:106",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/researcher-report-2026-09-03-memory-backend.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "7625c70451d64c82acf09b6f39c09cfbe23874da6c4740ecc63cc60ab3b32136",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:109",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/researcher-report-2026-09-03-resident-substrate.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "a47855e3d28b095e942a9be187598051b75c50f1c7f82ea4e8c1c59f99c02385",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:112",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/selfimprove-gate-canary-2026-08-27.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "ffc964bb2bc6fc723098f390124c68aa769ea027c451cc5a8d3fbd5a8a48a5e7",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:115",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/teammate-brief-draft-2026-09-03.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "d988a5f48f76f0db6a4d074a6147bf71778ee88828a63d5882da56068254ccd0",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:118",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/unattended-topdown-2026-08-26.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "aebcb1472577ded3a30ddd7cf7747f40b9e4b1258e058616f5256ab6c8e26537",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:121",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/trials/wall-removal-design-2026-09-03.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "3dee603d0f030a4f8524a106e1b6c27da8274abddce712938425addbc922a000",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-reports-trials.md:124",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-1-inv-t-ec00129b.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "1d70452f2ae3ec0264fd41261639e3a1f2d306693837a169a57de3932c2dec23",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:22",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "60dd05995dbff1e108ab71a784b50b74f4628802cee21213102448611e282304"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-10.-triage-3-2026-09-03-tier-7ff7b0f0.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "5450f171760bba83efec6925c986316a1c9adc944874cf2a4e21bd8365647635",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:23",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "c147ee74d10b12c37233f1b7c8eabe76a852e920ed1a45db7c49145fbfd9f316"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-11.-prop-arming-skips-freshness-22c8b9da.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "4e1351a29bcf987cf1eba0e9bd0004c980070a7ea99f4c10b124405ad0fc21e4",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:24",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "8091e3c411b439e13ba3ce92aba9d10bad013257c4aee3319a9e5f6b870be4b2"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-11.-triage-4-2026-09-03-13-18-7-5db016f6.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "84cb9ab0769f494da38a1ad1df74b8fda666b79bf3d434175ed42f09cb443b14",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:25",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "9eee75ff523e5a2e0691387116fe22984772461f3e5f407255acf7052d3e2111"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-12.-triage-5-2026-09-03-15-5x-kst-8-faaccff4.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "27432290559e503f79d85aa1774c8aab38612e085b47b674029934a5f8d86c9e",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:26",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "c2d1f61eff3afd516b34d549bf407d00e1e6fa8588a033e471da39d5d9abfb82"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-13.-triage-6-2026-09-03-17-2x-kst-9-37c9930f.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "7fdd24bb13d41002e310b1aa1524539522cf2910c6ce8848dc4fb288bdf10a6d",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:27",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "5b40e25b97fa660f232fceaa0176d37b031ba50309e0c5e1dcb24fe3c00cc150"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-14.-2026-09-03-18-5x-kst-9-repair-6e678d11.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "63a598302ff5d2b4066d13441bfff6d2200555115dadf862a162492931400749",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:28",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "16a3ce8456cd2b7d066bb359db3368b0d1fc0634358fafc865b43fa81145e3ac"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-15.-report-2026-09-03-19-3x-kst-9-report-e3170e7d.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "5d699b28073e6c9dc48399c7a86b557bdb65b699944724fd5c85a02150e86ddd",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:29",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "10c96292c91c592d5d9cbdfc8ab87eb7ad5519c9264d904b1d78b65d43971eb9"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-14-29-failures-uuid-column-bound-with-str-str-8dc6deb3.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "ebd52f35145b4eb9dcd5f434b35049b7d0fa6a1d2ef295e935adf5da1aa99f82",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:30",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "c963eec46a5ec6fe35d86bd94f99a7fe8e7b5a3264972c9bc01740c07c7e2a07"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-14-circular-dependencies-removed-execution-le-8f1de356.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "4914f7b8b6bc916ffdc80828e7ab8de28a32c60b26ad5f9e4d2d33afa6af86bb",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:31",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "7f7f987caf5fee9fb6b71e026891d6c8c9a5f05b9523fcdef8fa4a7252678bf1"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-14-e2e-front-iter-11-ex-28-tier-manual-test-4-88ae3faa.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "545eb536a607c5467e6dd2540acd72c8be06ec0cbad4799f66cbc2920de357c8",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:32",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "a1c0218ead42b0e0eda7c6b7cd71ea80e844de9cdcec7e6705539e70fcdd5506"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-14-frontend-e2e-auth.setup-41-41-41-db42d74d.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "923452b7a88ddba8cf5cebd7cada9b1e10a80b16bb3ce425f3c0466286b776fa",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:33",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "d46189873763241e92c43661e36cac08a1780e6357ce539443e1e59c05af2447"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-16-stage-19-red-18-5xx-f2ea2727.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "efc80e0233067e9cfc51de3a0478e1c75d17a987f61945a990f534cac83252cf",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:34",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "8e71a7f505c7add2b13fe8b86d445e8c56f0be878a6a1ea36af1f2686f1af52d"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-17-2-cycle-2-1-6-a-1-a-6-3-b-1-b-3-7bc5b317.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "8124e39e90c0f8b02562bd6eaf6f0ced1ceaf84a82bed6928ad8abc453a61394",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:35",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "a965ddba165ac317aa9a8fa448c7dd476df0c6fc79deb5d029dbc2d586d886a6"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-17-stage-16-e2e-test-2-redo-2-3e860d74.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "fe81256b68928869a05a9f9daa4f1ec1992f342690c47041cd369c826213b498",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:36",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "4bb5db75f61b7e6e5773b15637709f7302b6fa22a7b9e646d939524dc7d76eb8"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-17-stage-16-e2e-test-3-0-841ed5b8.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "a3ab3b6b2820e8a1e6dd09754698e03193c3b5476e6cf9be847b00f9e374a8c7",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:37",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "2635d69131ec6631e4dac0ed3ef4e60d577577c10b47da7b48188db7c260e2e2"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-17-stage-17-blackbox-test-2-redo-7f2c3efd.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "deb968b44ae8c7fe8dcca1db647b4db91816ff9e82df0ed1bf8d4604161933c8",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:38",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "dd9c38cebad0b529d193ccf161bb4fea046ee24a93415246417c73ea24ec16e1"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-17-stage-17-blackbox-test-3-redo-4-fa89a677.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "34d76a98b172c506fb0ce4359050be87ceb0deee4a0cf49a1c13396cbbe13597",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:39",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "7fdfd3bca369bbfa788cfa0d953cb4d4d9dcb97418a7d6eb151f913720b188fb"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-17-stage-19-reliability-test-2-cycle-2-redo-0-4d12cfb4.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "32aa8ca4946ac1110927e08b260d1a1aa3d0f5d92a447669e1c039d432ad399e",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:40",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "5f515e839856307dcd845ea64e8998add9bd438b571f64a8b91ce21b3a9819df"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-17-stage-wireframe-3-render-2-fail-951f406c.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "e501383c470919b45d7211d8d2e01ae572b1cc0ed08bed041b36d53f83dffffd",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:41",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "3ee291de3c884a8e4b27eea6dc981167aec706599718d2c2b2b6cb45fa4f98d1"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-2026-08-18-stage-17-blackbox-test-3-redo-2-2-01bc5601.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "1bbd252bc91f1bd73d5e2285c2027284506d70b2ff72a6fd26eb9595b81a88b8",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:42",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "94b2eda7246cd819ec5373c926c9f932a35e0bae44c3b6448a35898a2ea8604c"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-9-seam-shim-health-tamper-b402696f.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "19403c50ba7963bb8cc90ef56c75c58e726c0f15e22f909d61f21a64f3151124",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:43",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "4281b48843330135c9c4773bb01ee0f7fb129013d4f030520e79ac770da80a1d"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/repair-cp949-unicodeencodeerror-629cb3e3.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "7922a1912ce5c1de195139a38ee6bcba2b3fdd1ed4d560ff08d59dff67feb30f",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:44",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "f817d402f09acc96d03b03d6c2b54adc581c395260e877ca658e9c3e19a4172b"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/triage-3df28ee1.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "61847f5d48a8d11ee50b432659a055052d239573b5fc0a1f00a5b67988cab198",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:45",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "8bcb0d79a0ded83b967c047e0f8e7d8f57545bae7b1920cbc303f4d69e87146f"
+  },
+  {
+    "source": "harness",
+    "path": "knowledge/lessons/wireframe-ui-83a36ff0.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "10722ca2166c787e2bdbc24d370f7fb577f6db74cfc02f6e68bdf23e416511a6",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:46",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred.",
+      "Excerpt clipped at12lines; external original repair source unavailable unless harness rootnotes supply it.",
+      "Repeated ingestion count is not independent repaired incident count."
+    ],
+    "observed_sha256": "78410407e62e71000bcbea8f56b042aa255ca1da63041342c57de3e8a9246d42"
+  },
+  {
+    "source": "harness",
+    "path": "repair-notes.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "73cf1d98561f5065258a489f16894132acbe46bd5478d040e8ef2b5ae1c1eaec",
+    "disposition": "semantic-reviewed-execution-not-attested",
+    "review_ref": "docs/full-analysis/harness-experience/notes-root-lessons.md:16",
+    "tests_executed": [],
+    "test_limits": "No upstream or Zeus tests run. Inert read/hash/diff only; historical claims and limits in linked narrative/trace.md.",
+    "remaining": [
+      "Original tests not executed; historical reports/selected preserved ledger evidence are not fresh execution attestation.",
+      "Document-specific unresolved/measurement limits retained in review_ref; no adoption or deployment authority conferred."
+    ]
+  }
+]

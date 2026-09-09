@@ -152,7 +152,8 @@ def test_standalone_reader_uses_only_stdlib_and_rejects_missing_or_tampered_arti
         "--limit",
         "8000",
     ]
-    success = subprocess.run(command, env=environment, capture_output=True, text=True, check=False)
+    success = subprocess.run(command, env=environment, capture_output=True,
+                             text=True, encoding="utf-8", check=False)
     assert success.returncode == 0 and len(success.stdout) <= 8000
     assert json.loads(success.stdout)["content"]
 

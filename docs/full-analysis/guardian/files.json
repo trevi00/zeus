@@ -1,0 +1,244 @@
+[
+  {
+    "path": ".gitignore",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "9b581c7983fb46e50e4401691b69fa5931ada07b",
+    "bytes": 526,
+    "pinned_sha256": "f03e82b68023caa3e13eda7e3e2be2890f67b3c54dbbc00f7acfdb841aecc111",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F01 ? .gitignore",
+    "tests_executed": [],
+    "test_limits": "Git ignore semantics only; no live ACL/key access.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "README.md",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "a8c4881b7f9be1c74ff32bbb32724ce7836df592",
+    "bytes": 1466,
+    "pinned_sha256": "9286e27c95965839fd4c04e8ac22b66426cb412b23517e5cf8c3a7ec46ce4fa8",
+    "observed_sha256": "eaae5b2fd56a4a3109796659d36feaa8737bd3c4537f5aa44a1c81cf7bed19c5",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F02 ? README.md",
+    "tests_executed": [],
+    "test_limits": "Installation/scheduler instructions read, not executed; effective runtime config intentionally excluded.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "console.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "2b289284a6c257d2ce8f9b5795b854bb77d53ae1",
+    "bytes": 25657,
+    "pinned_sha256": "eeb357b7171c69d4ce341520c22d69ece9ecc5718a0f62c85a38c69717b1e41b",
+    "observed_sha256": "4f59e2f1e6710054b559f863373778e993cfd753e170af1b9d44f59d919f4a3e",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F03 ? console.py",
+    "tests_executed": [
+      "pinned-test_console_encoding_smoke.receipt.json",
+      "observed-test_console_encoding_smoke.receipt.json"
+    ],
+    "test_limits": "Encoding smoke does not start HTTP server or verify authentication, request schema, HTML handling.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "issue_token.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "7cf30bf0cf858074e31308d4b918b8bf8282e280",
+    "bytes": 7483,
+    "pinned_sha256": "649678b367adec1a4447aa29e7c9cf2861472142e52d2b0abb4946d34428d093",
+    "observed_sha256": "428a3fe4735a4a93f599dc163b28d41bc311fccff9c1878bb86bb857c8989ee7",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F04 ? issue_token.py",
+    "tests_executed": [
+      "pinned-test_console_encoding_smoke.receipt.json",
+      "observed-test_console_encoding_smoke.receipt.json"
+    ],
+    "test_limits": "Synthetic token fixtures only; no operational token/key. Duration validation probe executed.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "ledger_seal.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "8deb06a53051acbf15bf75e4c19b91ede35d9057",
+    "bytes": 4954,
+    "pinned_sha256": "17b8f014f0fd4c859ba6e1dc88a793f30289bb655b5c14dcbbe5d2e4c813f180",
+    "observed_sha256": "91a107818c3e8a3b099dfac6185e747fb2b388a7f5c7899dad2395e4712dc253",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F05 ? ledger_seal.py",
+    "tests_executed": [
+      "pinned-test_recovery_smoke.receipt.json",
+      "pinned-test_restorer_smoke.with-source-dependencies.receipt.json",
+      "observed-test_recovery_smoke.receipt.json",
+      "observed-test_restorer_smoke.with-source-dependencies.receipt.json"
+    ],
+    "test_limits": "Synthetic seal prefix/sidecar probes executed; new sidecar downgraded TAMPER to RESEAL_REQUIRED.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "notifier.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "6e7883ca99338f630614f9bfeabe210dd940edf4",
+    "bytes": 1373,
+    "pinned_sha256": "96b540e46504589044f7e97b7739c7366ab784a0af19ff52688b42b22bf2be85",
+    "observed_sha256": "2ec22be9511cb8305a0dbe5ada520a15f1b948c6067929a61176d11234a0383a",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F06 ? notifier.py",
+    "tests_executed": [
+      "pinned-test_notify_relay_smoke.receipt.json",
+      "pinned-test_recovery_smoke.receipt.json",
+      "pinned-test_restorer_smoke.with-source-dependencies.receipt.json",
+      "observed-test_notify_relay_smoke.receipt.json",
+      "observed-test_recovery_smoke.receipt.json",
+      "observed-test_restorer_smoke.with-source-dependencies.receipt.json"
+    ],
+    "test_limits": "Local fixture logs only. Network webhook not run; delivery failure and disk errors not tested.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "restorer.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "2ff30dc8b64b569c2c7820e14895ea8427d12ea8",
+    "bytes": 21610,
+    "pinned_sha256": "7ba3f721646241535fdf3d58ca73dcd47814bd7fc90ebc0f798bc4bfd45af496",
+    "observed_sha256": "a859c2b4c5f19ec654f0e1748603a62d0a6df8c550defa53547e2c6dd84ee790",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F07 ? restorer.py",
+    "tests_executed": [
+      "pinned-test_restorer_smoke.with-source-dependencies.receipt.json",
+      "pinned-test_recovery_smoke.receipt.json",
+      "pinned-test_console_encoding_smoke.receipt.json",
+      "observed-test_restorer_smoke.with-source-dependencies.receipt.json",
+      "observed-test_recovery_smoke.receipt.json",
+      "observed-test_console_encoding_smoke.receipt.json"
+    ],
+    "test_limits": "Source-dependency retry passed 12 assertions. No live restore/mark; no concurrency/TOCTOU test.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "tests/test_console_encoding_smoke.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "7ac1557261c54dcbd0b071d40239248cd3649e71",
+    "bytes": 11473,
+    "pinned_sha256": "789fa973a841f665438d80e28035f80287c6f488d9441acada770459bb3a0504",
+    "observed_sha256": "241dd8bf3b92b1b891b6f00dab303e853fdf54a03abb2a29544b93371814a2a5",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F08 ? tests/test_console_encoding_smoke.py",
+    "tests_executed": [
+      "pinned-test_console_encoding_smoke.receipt.json",
+      "observed-test_console_encoding_smoke.receipt.json"
+    ],
+    "test_limits": "Both variants main executed in isolated Linux fixtures; test limits detailed in path review section.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "tests/test_notify_relay_smoke.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "aab60f5a300e79f784cd00d7726d9aa22e28e9a0",
+    "bytes": 2350,
+    "pinned_sha256": "a5dc336917a15a00c748724f5d4ed35ed455e8baac0a29cd29c99de9de7bed73",
+    "observed_sha256": "96cb00e53f0bd81f3b26d660e846841bb88e26715f35d9498393009fb09809ae",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F09 ? tests/test_notify_relay_smoke.py",
+    "tests_executed": [
+      "pinned-test_notify_relay_smoke.receipt.json",
+      "observed-test_notify_relay_smoke.receipt.json"
+    ],
+    "test_limits": "Both variants main executed in isolated Linux fixtures; test limits detailed in path review section.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "tests/test_recovery_smoke.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "001f84a6dc90556bf99e5963cd8ed9490971a394",
+    "bytes": 6306,
+    "pinned_sha256": "5f284bd585a0135e87ec7866900c6fddbfba30fff8f3dc3af880f47c9a9e8ffc",
+    "observed_sha256": "819135ef94f8142f9cc187c188e47874084678c728473415540c393e20aee562",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F10 ? tests/test_recovery_smoke.py",
+    "tests_executed": [
+      "pinned-test_recovery_smoke.receipt.json",
+      "observed-test_recovery_smoke.receipt.json"
+    ],
+    "test_limits": "Both variants main executed in isolated Linux fixtures; test limits detailed in path review section.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "tests/test_restorer_smoke.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "4091304b5e85733ef74ee30838663a1f0a2e04c6",
+    "bytes": 14996,
+    "pinned_sha256": "a99a192914caf828ccf8105113b8d460419465337b6ce311f7f01214d014cb82",
+    "observed_sha256": "806478c532d4d6cd056c45703ea303aeaba180f1ee988492792a72eca6dcbec0",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F11 ? tests/test_restorer_smoke.py",
+    "tests_executed": [
+      "pinned-test_restorer_smoke.with-source-dependencies.receipt.json",
+      "observed-test_restorer_smoke.with-source-dependencies.receipt.json"
+    ],
+    "test_limits": "Both variants main executed in isolated Linux fixtures; test limits detailed in path review section.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "tests/test_watchdog_smoke.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "ae0afadf71d264a471b6f80ce200a5cb50048843",
+    "bytes": 5374,
+    "pinned_sha256": "c2bd0c6507cc04ad45ac0c2efac1223a69f6eb90bc379b50507e5357e9ed7898",
+    "observed_sha256": "5c0425bb63e20598472edcc2ccb93b89908b3105d72b9a66e29d5bf8bc3e3750",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F12 ? tests/test_watchdog_smoke.py",
+    "tests_executed": [
+      "pinned-test_watchdog_smoke.receipt.json",
+      "observed-test_watchdog_smoke.receipt.json"
+    ],
+    "test_limits": "Both variants main executed in isolated Linux fixtures; test limits detailed in path review section.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "path": "watchdog.py",
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "760489c1689c24ad54d73fcd8f0b6dbcf846725e",
+    "bytes": 19416,
+    "pinned_sha256": "cf892f6460dece10e0e2d424287a2ce7d500332bf961b0b629e076f56b83bfd6",
+    "observed_sha256": "cc5712e739824151c6b21f3d14092eab9fe047b54109d96ba9958cf978fd9d3d",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/guardian/review.md#F13 ? watchdog.py",
+    "tests_executed": [
+      "pinned-test_watchdog_smoke.receipt.json",
+      "pinned-test_notify_relay_smoke.receipt.json",
+      "pinned-test_recovery_smoke.receipt.json",
+      "observed-test_watchdog_smoke.receipt.json",
+      "observed-test_notify_relay_smoke.receipt.json",
+      "observed-test_recovery_smoke.receipt.json"
+    ],
+    "test_limits": "Linux tasklist missing invokes exception-to-alive fallback; actual Windows PID checks/scheduler not run.",
+    "remaining": [],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

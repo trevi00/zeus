@@ -80,6 +80,7 @@ def serve(service, agent: str, once: bool, execute: bool = False) -> None:
     last_activity = time.monotonic()
     workflow = Workflow(service.store, service.org)
     executor = build_executor(service) if execute else None
+    prefer_decisions = True
     emit({"status": "listening", "agent_id": agent, "autonomous": execute})
     while True:
         row = bus.receive(agent, consumer)
@@ -101,7 +102,11 @@ def serve(service, agent: str, once: bool, execute: bool = False) -> None:
                 bus.dead_letter(agent, entry_id, fields, str(exc))
                 emit({"rejected": entry_id, "reason": str(exc)})
         if executor:
-            result = executor.execute_one(agent) or executor.decide_one(agent)
+            # Give both durable queues turns, even under a continuous task backlog.
+            first, second = ((executor.decide_one, executor.execute_one) if prefer_decisions
+                             else (executor.execute_one, executor.decide_one))
+            result = first(agent) or second(agent)
+            prefer_decisions = not prefer_decisions
             if result:
                 emit({"execution": result})
                 service.flush_outbox(bus)
@@ -114,13 +119,25 @@ def serve(service, agent: str, once: bool, execute: bool = False) -> None:
 
 
 def parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Codex self-harness bootstrap")
+    p = argparse.ArgumentParser(prog="zeus", description="Zeus: evidence, independent review, and recoverable operations")
+    p.add_argument("--repository", type=Path, help="Harness checkout (independent of current directory)")
+    from importlib.metadata import version
+    p.add_argument("--version", action="version", version="Zeus " + version("zeus-harness"))
     commands = p.add_subparsers(dest="command", required=True)
+    from codex_harness.adapters.sdd_cli import add_parser
+    add_parser(commands)
+    commands.add_parser("paths", help="Resolved local paths and persistent namespace; no service access")
+    commands.add_parser("setup", help="Create local configuration without overwriting credentials")
     commands.add_parser("init-db")
     seed = commands.add_parser("seed-research-backlog")
     seed.add_argument("--artifacts", required=True)
-    commands.add_parser("doctor")
+    doctor = commands.add_parser("doctor")
+    doctor.add_argument("--offline", action="store_true", help="Check installation without a database")
     commands.add_parser("status")
+    for name in ("release-abandon", "release-retry"):
+        release = commands.add_parser(name)
+        release.add_argument("release_id")
+        release.add_argument("--reason", required=True)
     cleanup = commands.add_parser("cleanup")
     cleanup.add_argument("--apply", action="store_true")
     commands.add_parser("organization")
@@ -183,12 +200,107 @@ def parser() -> argparse.ArgumentParser:
     rollback.add_argument("--reason", required=True)
     canary = commands.add_parser("canary")
     canary.add_argument("--live", action="store_true", help="Execute a real Codex file task (uses account quota)")
+    ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
+    ticket_commands = ticket.add_subparsers(dest="ticket_command", required=True)
+    ticket_commands.add_parser("list")
+    create = ticket_commands.add_parser("create")
+    create.add_argument("--file", type=Path, required=True)
+    create.add_argument("--author", default="operator")
+    for name in ("show", "export", "update", "review", "dispatch", "sync", "pull"):
+        sub = ticket_commands.add_parser(name)
+        sub.add_argument("ticket_id")
+        if name == "show":
+            sub.add_argument("--revision", type=int)
+        if name in {"update", "review", "dispatch"}:
+            sub.add_argument("--revision", type=int, required=True)
+        if name == "update":
+            sub.add_argument("--file", type=Path, required=True)
+            sub.add_argument("--reason", required=True)
+            sub.add_argument("--author", default="operator")
+        if name == "review":
+            sub.add_argument("--reviewer", required=True)
+            sub.add_argument("--provider", required=True)
+            sub.add_argument("--verdict", choices=["support", "changes_requested", "question"], required=True)
+            sub.add_argument("--summary", required=True)
+            sub.add_argument("--evidence", action="append", required=True)
+        if name in {"sync", "pull"}:
+            sub.add_argument("--repo", required=True, help="GitHub owner/repository")
+        if name == "sync":
+            sub.add_argument("--preview", action="store_true", help="Print projection; no network or state changes")
     return p
 
 
+def ticket_command(service, args):
+    from codex_harness.application.tickets import Tickets, render_ticket
+    tickets = Tickets(service.store, service.org)
+    command = args.ticket_command
+    if command == "list":
+        emit(tickets.list())
+    elif command == "create":
+        emit(tickets.create(json.loads(args.file.read_text("utf-8")), args.author))
+    elif command == "update":
+        emit(tickets.update(args.ticket_id, args.revision, json.loads(args.file.read_text("utf-8")),
+                            args.reason, args.author))
+    elif command == "review":
+        emit(tickets.review(args.ticket_id, args.revision, args.reviewer, args.provider,
+                            args.verdict, args.summary, args.evidence))
+    elif command == "show":
+        emit(tickets.get(args.ticket_id, args.revision))
+    elif command == "export" or (command == "sync" and args.preview):
+        print(render_ticket(tickets.get(args.ticket_id)), end="")
+    elif command == "dispatch":
+        executor = build_executor(service)
+        emit(tickets.dispatch(args.ticket_id, args.revision, executor.git._git("rev-parse", "HEAD")))
+    else:
+        from codex_harness.adapters.artifacts import FileArtifacts
+        from codex_harness.adapters.configuration import runtime_dir
+        from codex_harness.adapters.github_tickets import GitHubTickets
+        github = GitHubTickets(tickets, FileArtifacts(runtime_dir() / "artifacts"))
+        emit(getattr(github, command)(args.ticket_id, args.repo))
+
+
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     args = parser().parse_args()
+    if args.repository:
+        from codex_harness.adapters.configuration import select_repository
+        select_repository(args.repository)
     try:
+        if args.command == "sdd":
+            from codex_harness.adapters.sdd_cli import execute
+            emit(execute(args))
+            return
+        if args.command == "paths":
+            from codex_harness.adapters.configuration import repository_root, runtime_dir, settings
+            config = settings()
+            emit({"repository": str(repository_root()), "runtime": str(runtime_dir()),
+                  "compose_project": config.get("COMPOSE_PROJECT_NAME", "codex-harness"),
+                  "redis_namespace": config.get("HARNESS_REDIS_NAMESPACE", "codex-harness")})
+            return
+        if args.command == "setup":
+            from codex_harness.adapters.configuration import initialize, runtime_dir
+            result = initialize()
+            runtime_dir().mkdir(parents=True, exist_ok=True)
+            emit(result)
+            return
+        if args.command == "doctor" and args.offline:
+            import shutil
+
+            from codex_harness.adapters.codex import resolve_codex
+            from codex_harness.adapters.configuration import (
+                codex_auth,
+                repository_root,
+                runtime_dir,
+            )
+            checks = {name: shutil.which(name) is not None for name in ("git", "uv", "docker")}
+            checks.update(codex=resolve_codex() is not None, codex_auth=codex_auth().is_file(),
+                          compose=(repository_root() / "compose.yaml").is_file())
+            emit({"checks": checks, "repository": str(repository_root()),
+                  "runtime": str(runtime_dir()), "services_checked": False})
+            if not all(checks.values()):
+                raise SystemExit(1)
+            return
         if args.command == "organization":
             emit({"agents": [asdict(a) for a in organization().agents.values()]})
             return
@@ -224,6 +336,15 @@ def main() -> None:
         if args.command == "init-db":
             service.store.migrate()
             emit({"migrated": True})
+        elif args.command == "release-abandon":
+            from codex_harness.adapters.configuration import codex_auth
+            from codex_harness.adapters.deployment import ReleaseRunner
+            executor = build_executor(service)
+            emit(ReleaseRunner(service, executor.git, executor.artifacts, str(codex_auth()))
+                 .abandon(args.release_id, args.reason))
+        elif args.command == "release-retry":
+            from codex_harness.application.release_queue import ReleaseQueue
+            emit(ReleaseQueue(service.store).retry(args.release_id, args.reason))
         elif args.command == "seed-research-backlog":
             from codex_harness.adapters.artifacts import FileArtifacts
             from codex_harness.application.research import ResearchAudits
@@ -257,6 +378,8 @@ def main() -> None:
 
             executor = build_executor(service)
             emit(ArtifactMaintenance(service.store, executor.artifacts).collect(apply=args.apply))
+        elif args.command == "ticket":
+            ticket_command(service, args)
         elif args.command == "demo":
             emit(demo(service, args.scope))
         elif args.command == "incident":

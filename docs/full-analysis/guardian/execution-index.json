@@ -1,0 +1,76 @@
+{
+  "upstream_latest_result": "all_5_suites_passed_in_both_variants",
+  "receipts": [
+    {
+      "path": "observed-review-probes.receipt.json",
+      "sha256": "d053c648b51cdc7f44fa247f9dee3c3f3c44c0bf42370d1d329483914bc1da55",
+      "exit_code": 0
+    },
+    {
+      "path": "observed-test_console_encoding_smoke.receipt.json",
+      "sha256": "35908874503c2b2cd50b76af0c432bc8dd0d70fc2deaca150cf891e7e1dc512d",
+      "exit_code": 0
+    },
+    {
+      "path": "observed-test_notify_relay_smoke.receipt.json",
+      "sha256": "b430a36b4ca0227056b6d2fb7ff7d5ab76b81d46a0a26322e0ec029c032d11cb",
+      "exit_code": 0
+    },
+    {
+      "path": "observed-test_recovery_smoke.receipt.json",
+      "sha256": "998b20e8d42285ef6eeff443595d60084cc3c3ff6861d8f02dff5339349c40da",
+      "exit_code": 0
+    },
+    {
+      "path": "observed-test_restorer_smoke.receipt.json",
+      "sha256": "c9e8a8d62c631b15c9dcef31277a6f173a8fc1005d508aea45fa1769e9337b93",
+      "exit_code": 1
+    },
+    {
+      "path": "observed-test_restorer_smoke.with-source-dependencies.receipt.json",
+      "sha256": "b29918d8683eaa10dfb8ee6e46195009e2e6d733a7070eab2bbe43d4f68cc48d",
+      "exit_code": 0
+    },
+    {
+      "path": "observed-test_watchdog_smoke.receipt.json",
+      "sha256": "804860f08a61ff9793654775522b6d75e7e2a91bd8a7c056e187aa691d29552a",
+      "exit_code": 0
+    },
+    {
+      "path": "pinned-review-probes.receipt.json",
+      "sha256": "1aabafd9649155f665365fc127581f8f3779878f03f514a3afcfba3047e98903",
+      "exit_code": 0
+    },
+    {
+      "path": "pinned-test_console_encoding_smoke.receipt.json",
+      "sha256": "77ea38df25a352f77a42f160e37c43aaae4985c4d13c3e4e4920d2562f13faf0",
+      "exit_code": 0
+    },
+    {
+      "path": "pinned-test_notify_relay_smoke.receipt.json",
+      "sha256": "fb9f4023db078cf6f63de78351246b6c4660b0907cb9968e67e3b7853064f987",
+      "exit_code": 0
+    },
+    {
+      "path": "pinned-test_recovery_smoke.receipt.json",
+      "sha256": "acc7dea5c20c94401ab6ce2ea4ae2d44a5fce7a3451e99ea2736a16c69e272ef",
+      "exit_code": 0
+    },
+    {
+      "path": "pinned-test_restorer_smoke.receipt.json",
+      "sha256": "5fc2aacfe081ffa2a667235a2b9baac9fe6d7df9d371ca96cfc35ab78ff12bba",
+      "exit_code": 1
+    },
+    {
+      "path": "pinned-test_restorer_smoke.with-source-dependencies.receipt.json",
+      "sha256": "a1f040749a725f7dafedfe487c09a1a82897a4608cfd96ca45d041552f1fd19b",
+      "exit_code": 0
+    },
+    {
+      "path": "pinned-test_watchdog_smoke.receipt.json",
+      "sha256": "92965d24541b394b1d065a44ba7675de94eda56c8e438a9dde4590564c828805",
+      "exit_code": 0
+    }
+  ],
+  "limits": "Initial restorer source-only failed dependency discovery. Source-dependency reruns passed. All receipts retained. Linux fixtures are not Windows operational validation."
+}

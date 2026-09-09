@@ -1,0 +1,34 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "tracked_paths": 1648,
+    "inventory_sha256": "bb80c5230c8a590909fc774fb2905baca8286327867bbd15a22251d1ca92d4f7",
+    "semantic_review_complete": false,
+    "upstream_tests_executed": false
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "tracked_paths": 931,
+    "inventory_sha256": "187563354ac469f5dd359f917f9a0c08ec40105b9c2b449ca6b6d40b599da7ae",
+    "semantic_review_complete": false,
+    "upstream_tests_executed": false
+  },
+  {
+    "source": "guardian",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "tracked_paths": 13,
+    "inventory_sha256": "93aeeb29035c5970b7798075d2a551e3e62fdde281c8ecaad90794405124cab7",
+    "semantic_review_complete": false,
+    "upstream_tests_executed": false
+  },
+  {
+    "source": "agent-device",
+    "revision": "6486788359a441a1fa343193f0a03087dc338eaf",
+    "tracked_paths": 4139,
+    "inventory_sha256": "fd445e9799964ea18916b5c3a31f00a2cd715cc70327721d6eccbbd4084bd71b",
+    "semantic_review_complete": false,
+    "upstream_tests_executed": false
+  }
+]

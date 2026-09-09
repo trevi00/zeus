@@ -1,7 +1,7 @@
 import json
-import os
 from importlib.resources import files
 
+from codex_harness.adapters.configuration import repository_root, runtime_dir, settings
 from codex_harness.adapters.store import PostgresStore
 from codex_harness.application.service import Harness
 from codex_harness.domain.model import Agent, Organization
@@ -15,15 +15,7 @@ def organization() -> Organization:
 
 
 def database_url() -> str:
-    value = os.environ.get("HARNESS_DATABASE_URL")
-    if not value:
-        from pathlib import Path
-
-        env_file = Path.cwd() / ".env"
-        if env_file.exists():
-            for line in env_file.read_text(encoding="utf-8").splitlines():
-                if line.startswith("HARNESS_DATABASE_URL="):
-                    value = line.partition("=")[2]
+    value = settings().get("HARNESS_DATABASE_URL")
     if not value:
         raise RuntimeError("Run scripts/setup.py or set HARNESS_DATABASE_URL")
     return value
@@ -34,12 +26,10 @@ def build() -> Harness:
 
 
 def redis_url() -> str:
-    return os.environ.get("HARNESS_REDIS_URL", "redis://127.0.0.1:56379/0")
+    return settings().get("HARNESS_REDIS_URL", "redis://127.0.0.1:56379/0")
 
 
 def build_executor(service=None):
-    from pathlib import Path
-
     from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.adapters.audit_runner import AuditRunner
     from codex_harness.adapters.executor import Executor
@@ -47,15 +37,10 @@ def build_executor(service=None):
     from codex_harness.adapters.knowledge import PostgresKnowledge
     from codex_harness.adapters.research import ResearchSources
 
-    repository = os.environ.get("HARNESS_REPOSITORY", str(Path.cwd()))
-    runtime = Path(os.environ.get("HARNESS_RUNTIME_DIR", str(Path(repository) / ".runtime")))
+    repository = str(repository_root())
+    runtime = runtime_dir()
     artifacts = FileArtifacts(str(runtime / "artifacts"))
-    remote = os.environ.get("HARNESS_GITHUB_REPO")
-    if not remote:
-        env_file = Path(repository) / ".env"
-        if env_file.exists():
-            remote = next((line.partition("=")[2] for line in env_file.read_text("utf-8").splitlines()
-                           if line.startswith("HARNESS_GITHUB_REPO=")), None)
+    remote = settings().get("HARNESS_GITHUB_REPO")
     git = GitWorkspace(repository, str(runtime / "workspaces"), remote)
     return Executor(service or build(), git, artifacts, PostgresKnowledge(database_url()),
                     ResearchSources(artifacts),

@@ -1,0 +1,1047 @@
+[
+  {
+    "source": "harness-pinned",
+    "path": "scripts/engine/curator.py",
+    "sha256": "ca374df01b09b231e82e1a36c6732dc4353076441aed58e869dabf687099b2f7",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "_p",
+        "line": 36,
+        "end_line": 38
+      },
+      {
+        "name": "_lessons_dir",
+        "line": 52,
+        "end_line": 53
+      },
+      {
+        "name": "_parse_front",
+        "line": 56,
+        "end_line": 62
+      },
+      {
+        "name": "_write_lesson",
+        "line": 65,
+        "end_line": 69
+      },
+      {
+        "name": "_lesson_filename",
+        "line": 72,
+        "end_line": 83
+      },
+      {
+        "name": "_crystallize",
+        "line": 86,
+        "end_line": 172
+      },
+      {
+        "name": "_golden_gate",
+        "line": 175,
+        "end_line": 186
+      },
+      {
+        "name": "ingest_proposed",
+        "line": 189,
+        "end_line": 235
+      },
+      {
+        "name": "harvest_repairs",
+        "line": 241,
+        "end_line": 287
+      },
+      {
+        "name": "lifecycle",
+        "line": 290,
+        "end_line": 312
+      },
+      {
+        "name": "main",
+        "line": 315,
+        "end_line": 325
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "scripts/lib/repair_tier.py",
+    "sha256": "c016dde07aae2d4024d527d94333dd813c830fab8a13dc782edd846f76a0b14f",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "family_counts",
+        "line": 34,
+        "end_line": 52
+      },
+      {
+        "name": "escalated",
+        "line": 55,
+        "end_line": 57
+      },
+      {
+        "name": "directive",
+        "line": 60,
+        "end_line": 82
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "scripts/lib/derive_state.py",
+    "sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "apply_retractions",
+        "line": 33,
+        "end_line": 51
+      },
+      {
+        "name": "derive_stage_states",
+        "line": 54,
+        "end_line": 145
+      },
+      {
+        "name": "fold_latest_verdicts",
+        "line": 148,
+        "end_line": 169
+      },
+      {
+        "name": "derive_completed",
+        "line": 172,
+        "end_line": 179
+      },
+      {
+        "name": "derive_binding",
+        "line": 182,
+        "end_line": 211
+      },
+      {
+        "name": "derive_cycle",
+        "line": 214,
+        "end_line": 228
+      },
+      {
+        "name": "derive_failure_ledger",
+        "line": 231,
+        "end_line": 266
+      },
+      {
+        "name": "derive_acceptance_coverage",
+        "line": 277,
+        "end_line": 400
+      },
+      {
+        "name": "acceptance_coverage_summary",
+        "line": 403,
+        "end_line": 417
+      },
+      {
+        "name": "derive_role_delivery",
+        "line": 427,
+        "end_line": 507
+      },
+      {
+        "name": "role_delivery_summary",
+        "line": 510,
+        "end_line": 539
+      },
+      {
+        "name": "derive_anomalies",
+        "line": 542,
+        "end_line": 547
+      },
+      {
+        "name": "st",
+        "line": 62,
+        "end_line": 66
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "scripts/engine/gate_runner.py",
+    "sha256": "b0781fd1e40d0d7970f426c20ad0d47febffeaf38ad19a1cec9b199589070e59",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "_external_verdict",
+        "line": 28,
+        "end_line": 49
+      },
+      {
+        "name": "run_stage_gate",
+        "line": 52,
+        "end_line": 85
+      },
+      {
+        "name": "_run_gates",
+        "line": 88,
+        "end_line": 179
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "scripts/engine/tick.py",
+    "sha256": "108a2f93e5a85a98d67cbb0dfeefde2b3f38f6f29e7a6a8e6e9620b2fc07506d",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "_banner",
+        "line": 48,
+        "end_line": 50
+      },
+      {
+        "name": "_parse_ts",
+        "line": 53,
+        "end_line": 57
+      },
+      {
+        "name": "drive",
+        "line": 60,
+        "end_line": 341
+      },
+      {
+        "name": "_pending_external",
+        "line": 344,
+        "end_line": 353
+      },
+      {
+        "name": "_continue",
+        "line": 356,
+        "end_line": 358
+      },
+      {
+        "name": "main",
+        "line": 361,
+        "end_line": 375
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "scripts/cron/l2_driver.py",
+    "sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "_lease_file",
+        "line": 96,
+        "end_line": 97
+      },
+      {
+        "name": "_meta_file",
+        "line": 100,
+        "end_line": 101
+      },
+      {
+        "name": "_load_meta",
+        "line": 104,
+        "end_line": 111
+      },
+      {
+        "name": "_notify_halt",
+        "line": 114,
+        "end_line": 134
+      },
+      {
+        "name": "_pid_alive",
+        "line": 137,
+        "end_line": 152
+      },
+      {
+        "name": "_heartbeat_age_s",
+        "line": 155,
+        "end_line": 166
+      },
+      {
+        "name": "_terminate",
+        "line": 169,
+        "end_line": 182
+      },
+      {
+        "name": "_log",
+        "line": 185,
+        "end_line": 194
+      },
+      {
+        "name": "_curator_pass",
+        "line": 197,
+        "end_line": 283
+      },
+      {
+        "name": "_latency_pass",
+        "line": 292,
+        "end_line": 334
+      },
+      {
+        "name": "_git_head",
+        "line": 346,
+        "end_line": 354
+      },
+      {
+        "name": "_ladder_pass",
+        "line": 357,
+        "end_line": 439
+      },
+      {
+        "name": "_topic_reaper_pass",
+        "line": 448,
+        "end_line": 509
+      },
+      {
+        "name": "_bus_pass",
+        "line": 512,
+        "end_line": 557
+      },
+      {
+        "name": "_note_archive_pass",
+        "line": 560,
+        "end_line": 595
+      },
+      {
+        "name": "_autoheart_pass",
+        "line": 598,
+        "end_line": 670
+      },
+      {
+        "name": "_auto_disarm",
+        "line": 673,
+        "end_line": 713
+      },
+      {
+        "name": "_reopen_for_new_candidate",
+        "line": 716,
+        "end_line": 778
+      },
+      {
+        "name": "_note_reopen_failure",
+        "line": 781,
+        "end_line": 829
+      },
+      {
+        "name": "_role_arm_attempts",
+        "line": 863,
+        "end_line": 890
+      },
+      {
+        "name": "_arm_role_request",
+        "line": 893,
+        "end_line": 1132
+      },
+      {
+        "name": "_try_arm",
+        "line": 1135,
+        "end_line": 1345
+      },
+      {
+        "name": "_read_run_marker",
+        "line": 1348,
+        "end_line": 1353
+      },
+      {
+        "name": "_write_run_marker",
+        "line": 1356,
+        "end_line": 1377
+      },
+      {
+        "name": "_mark_halt",
+        "line": 1380,
+        "end_line": 1417
+      },
+      {
+        "name": "cycle",
+        "line": 1420,
+        "end_line": 1454
+      },
+      {
+        "name": "_role_dirs",
+        "line": 1465,
+        "end_line": 1477
+      },
+      {
+        "name": "_pending_role_request",
+        "line": 1480,
+        "end_line": 1514
+      },
+      {
+        "name": "_request_kind",
+        "line": 1517,
+        "end_line": 1527
+      },
+      {
+        "name": "_request_payload",
+        "line": 1530,
+        "end_line": 1543
+      },
+      {
+        "name": "_note_gate_block",
+        "line": 1546,
+        "end_line": 1574
+      },
+      {
+        "name": "_consume_role_request",
+        "line": 1577,
+        "end_line": 1582
+      },
+      {
+        "name": "_role_request_note",
+        "line": 1585,
+        "end_line": 1602
+      },
+      {
+        "name": "_cycle_spawn",
+        "line": 1605,
+        "end_line": 1981
+      },
+      {
+        "name": "_hide_console",
+        "line": 1984,
+        "end_line": 2032
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "scripts/cron/latency_gate.py",
+    "sha256": "c593e0469d6319f134e0991031400c1a7354bdc7948be79a047e564ac925fbcb",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "over_budget",
+        "line": 82,
+        "end_line": 100
+      },
+      {
+        "name": "gate",
+        "line": 103,
+        "end_line": 179
+      },
+      {
+        "name": "main",
+        "line": 182,
+        "end_line": 194
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "scripts/engine/sandbox.py",
+    "sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "SandboxRefused",
+        "line": 70,
+        "end_line": 71
+      },
+      {
+        "name": "_git",
+        "line": 74,
+        "end_line": 81
+      },
+      {
+        "name": "_policy",
+        "line": 84,
+        "end_line": 86
+      },
+      {
+        "name": "classify",
+        "line": 89,
+        "end_line": 161
+      },
+      {
+        "name": "_patch_files",
+        "line": 164,
+        "end_line": 169
+      },
+      {
+        "name": "run_suites",
+        "line": 172,
+        "end_line": 250
+      },
+      {
+        "name": "apply_via_sandbox",
+        "line": 253,
+        "end_line": 396
+      },
+      {
+        "name": "promotion_verdict",
+        "line": 399,
+        "end_line": 415
+      },
+      {
+        "name": "list_pending",
+        "line": 418,
+        "end_line": 428
+      },
+      {
+        "name": "_status_paths",
+        "line": 447,
+        "end_line": 456
+      },
+      {
+        "name": "dirty_paths",
+        "line": 459,
+        "end_line": 494
+      },
+      {
+        "name": "promote",
+        "line": 497,
+        "end_line": 533
+      },
+      {
+        "name": "discard_pending",
+        "line": 536,
+        "end_line": 543
+      },
+      {
+        "name": "last_heart_change",
+        "line": 546,
+        "end_line": 551
+      },
+      {
+        "name": "_norm_pat",
+        "line": 114,
+        "end_line": 121
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "tests/integration/test_curator_smoke.py",
+    "sha256": "8a715cda530d19b5a229189fb167a1d63dcb9a9c9b25c5366f558abbcf16d06a",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "check",
+        "line": 27,
+        "end_line": 30
+      },
+      {
+        "name": "digest_file",
+        "line": 33,
+        "end_line": 43
+      },
+      {
+        "name": "main",
+        "line": 46,
+        "end_line": 339
+      },
+      {
+        "name": "_mk",
+        "line": 148,
+        "end_line": 156
+      },
+      {
+        "name": "_seed",
+        "line": 186,
+        "end_line": 201
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "tests/integration/test_repair_tier_smoke.py",
+    "sha256": "dc9fa190d35585d06d486c9df937b56fae593834bc61b1ae914ff9738b975075",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "check",
+        "line": 33,
+        "end_line": 36
+      },
+      {
+        "name": "main",
+        "line": 58,
+        "end_line": 147
+      },
+      {
+        "name": "run",
+        "line": 108,
+        "end_line": 111
+      },
+      {
+        "name": "feedbacks",
+        "line": 113,
+        "end_line": 115
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "tests/contract/test_entrance_reconfirm_contract.py",
+    "sha256": "4da91419a1a819264e9d902d0e6891e33f907e2ce1b510546b327a452c5ee21b",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "symbols": [
+      {
+        "name": "check",
+        "line": 69,
+        "end_line": 75
+      },
+      {
+        "name": "_main",
+        "line": 78,
+        "end_line": 187
+      },
+      {
+        "name": "verdict",
+        "line": 117,
+        "end_line": 121
+      }
+    ]
+  },
+  {
+    "source": "harness-pinned",
+    "path": "ledger/events.jsonl",
+    "sha256": "89a88a5d15826b9a89301a4f419f530904a2bfebf0e65c340f0ac4177e7c41de",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3"
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/application/research.py",
+    "sha256": "9458e6e164f0b21117785d08aa457aa243c142eb1cdce76cbc9fc11b5f672ac7",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "ResearchAudits",
+        "line": 22,
+        "end_line": 341
+      },
+      {
+        "name": "__init__",
+        "line": 23,
+        "end_line": 27
+      },
+      {
+        "name": "seed_backlog",
+        "line": 29,
+        "end_line": 57
+      },
+      {
+        "name": "import_audit",
+        "line": 59,
+        "end_line": 77
+      },
+      {
+        "name": "partition",
+        "line": 79,
+        "end_line": 102
+      },
+      {
+        "name": "checkpoint",
+        "line": 104,
+        "end_line": 204
+      },
+      {
+        "name": "_coverage",
+        "line": 207,
+        "end_line": 221
+      },
+      {
+        "name": "coverage",
+        "line": 223,
+        "end_line": 232
+      },
+      {
+        "name": "propose",
+        "line": 234,
+        "end_line": 256
+      },
+      {
+        "name": "execute",
+        "line": 259,
+        "end_line": 278
+      },
+      {
+        "name": "_queue_review",
+        "line": 281,
+        "end_line": 290
+      },
+      {
+        "name": "review",
+        "line": 292,
+        "end_line": 328
+      },
+      {
+        "name": "_eligible",
+        "line": 330,
+        "end_line": 341
+      }
+    ]
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/application/releases.py",
+    "sha256": "9d3d63e1d4889f01373cfa3c50a3f3cb2dffe328fa1eada24c1b07ddf6fef990",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "Releases",
+        "line": 10,
+        "end_line": 173
+      },
+      {
+        "name": "__init__",
+        "line": 13,
+        "end_line": 14
+      },
+      {
+        "name": "reconcile_audits",
+        "line": 16,
+        "end_line": 46
+      },
+      {
+        "name": "propose",
+        "line": 48,
+        "end_line": 63
+      },
+      {
+        "name": "review",
+        "line": 65,
+        "end_line": 90
+      },
+      {
+        "name": "verify",
+        "line": 92,
+        "end_line": 108
+      },
+      {
+        "name": "promote",
+        "line": 110,
+        "end_line": 144
+      },
+      {
+        "name": "rollback",
+        "line": 146,
+        "end_line": 173
+      }
+    ]
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/application/workflow.py",
+    "sha256": "5473d8d09464c1971fee2bfa6a28bf247749774c6f9dbd4ef45df66ec1abcab5",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "Workflow",
+        "line": 22,
+        "end_line": 296
+      },
+      {
+        "name": "__init__",
+        "line": 25,
+        "end_line": 26
+      },
+      {
+        "name": "submit",
+        "line": 28,
+        "end_line": 49
+      },
+      {
+        "name": "_attempt_outcome",
+        "line": 52,
+        "end_line": 57
+      },
+      {
+        "name": "claim",
+        "line": 59,
+        "end_line": 108
+      },
+      {
+        "name": "_owned",
+        "line": 110,
+        "end_line": 120
+      },
+      {
+        "name": "heartbeat",
+        "line": 122,
+        "end_line": 127
+      },
+      {
+        "name": "complete",
+        "line": 129,
+        "end_line": 155
+      },
+      {
+        "name": "fail_execution",
+        "line": 157,
+        "end_line": 164
+      },
+      {
+        "name": "fail",
+        "line": 166,
+        "end_line": 177
+      },
+      {
+        "name": "cancel",
+        "line": 179,
+        "end_line": 187
+      },
+      {
+        "name": "request_rebase",
+        "line": 189,
+        "end_line": 206
+      },
+      {
+        "name": "handle",
+        "line": 208,
+        "end_line": 278
+      },
+      {
+        "name": "_next",
+        "line": 281,
+        "end_line": 286
+      },
+      {
+        "name": "snapshot",
+        "line": 288,
+        "end_line": 290
+      },
+      {
+        "name": "context",
+        "line": 292,
+        "end_line": 296
+      }
+    ]
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/domain/policy.py",
+    "sha256": "5d1baef0201b9497653517fce7d2dcba9eaf95aab68e9ed542cb8b3a89c1df5d",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "RuntimePolicy",
+        "line": 5,
+        "end_line": 34
+      },
+      {
+        "name": "snapshot",
+        "line": 33,
+        "end_line": 34
+      }
+    ]
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/domain/skill_history.py",
+    "sha256": "a8869f4e83a014c52f1f1bd3de6c3cffccd05f73eb4744a9dec40fefdcde783a",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "is_candidate",
+        "line": 11,
+        "end_line": 12
+      },
+      {
+        "name": "valid_record",
+        "line": 15,
+        "end_line": 18
+      },
+      {
+        "name": "assess_history",
+        "line": 21,
+        "end_line": 43
+      }
+    ]
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/domain/measurements.py",
+    "sha256": "6d78c4fee16fcd4d52443288e539f931384ec112ee437868a64e716497b6414c",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "Definition",
+        "line": 10,
+        "end_line": 22
+      },
+      {
+        "name": "Evaluation",
+        "line": 38,
+        "end_line": 46
+      },
+      {
+        "name": "timestamp",
+        "line": 49,
+        "end_line": 53
+      },
+      {
+        "name": "evaluate",
+        "line": 56,
+        "end_line": 129
+      },
+      {
+        "name": "definition_documents",
+        "line": 132,
+        "end_line": 133
+      },
+      {
+        "name": "unknown",
+        "line": 57,
+        "end_line": 58
+      }
+    ]
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/application/measurements.py",
+    "sha256": "1ba9f4fd619c5d2c55344e07f6039753afc8db27ed560276eebb401399840af5",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "Measurements",
+        "line": 10,
+        "end_line": 38
+      },
+      {
+        "name": "__init__",
+        "line": 11,
+        "end_line": 12
+      },
+      {
+        "name": "collect",
+        "line": 14,
+        "end_line": 38
+      }
+    ]
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/adapters/store.py",
+    "sha256": "ef25756a59baa7fb9c9ac29ed8c81232674bc8732cb9d1f5bf0eced7246b4b2a",
+    "scope": "targeted symbols/callers/receipt checks; full-file inspection only if trace.md explicitly states",
+    "tests_executed": [],
+    "symbols": [
+      {
+        "name": "MemoryTransaction",
+        "line": 12,
+        "end_line": 27
+      },
+      {
+        "name": "MemoryStore",
+        "line": 30,
+        "end_line": 40
+      },
+      {
+        "name": "PostgresTransaction",
+        "line": 43,
+        "end_line": 62
+      },
+      {
+        "name": "PostgresStore",
+        "line": 65,
+        "end_line": 85
+      },
+      {
+        "name": "__init__",
+        "line": 13,
+        "end_line": 14
+      },
+      {
+        "name": "get",
+        "line": 16,
+        "end_line": 17
+      },
+      {
+        "name": "put",
+        "line": 19,
+        "end_line": 20
+      },
+      {
+        "name": "scan",
+        "line": 22,
+        "end_line": 23
+      },
+      {
+        "name": "records",
+        "line": 25,
+        "end_line": 27
+      },
+      {
+        "name": "__init__",
+        "line": 31,
+        "end_line": 33
+      },
+      {
+        "name": "transaction",
+        "line": 36,
+        "end_line": 40
+      },
+      {
+        "name": "__init__",
+        "line": 44,
+        "end_line": 45
+      },
+      {
+        "name": "get",
+        "line": 47,
+        "end_line": 50
+      },
+      {
+        "name": "put",
+        "line": 52,
+        "end_line": 54
+      },
+      {
+        "name": "scan",
+        "line": 56,
+        "end_line": 58
+      },
+      {
+        "name": "records",
+        "line": 60,
+        "end_line": 62
+      },
+      {
+        "name": "__init__",
+        "line": 66,
+        "end_line": 67
+      },
+      {
+        "name": "migrate",
+        "line": 69,
+        "end_line": 76
+      },
+      {
+        "name": "transaction",
+        "line": 79,
+        "end_line": 85
+      }
+    ]
+  }
+]

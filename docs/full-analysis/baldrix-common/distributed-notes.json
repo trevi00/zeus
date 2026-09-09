@@ -1,0 +1,38 @@
+{
+  "idempotency.md": {
+    "purpose": "HTTP response replay, consumer dedup, backfill ledger and isolated effects under stable key/window; adds atomic CAS pre-claim for externally effecting status transitions.",
+    "decision": "adapt",
+    "analysis": "Good outbox crash-window account explicitly needs consumer dedupe. Earlier process+dedup+ack-in-one-transaction wording cannot be generalized across independent DB/broker. Same-result effect is not necessarily identical HTTP response: DELETE 404 after initial success can remain idempotent; reject contrary definition. Upsert is only idempotent with deterministic assignments, not increments/timestamps. Redis TTL cannot become durable Zeus SSOT. CAS prevents simultaneous claim but needs fenced crash/recovery states before external retry. Stripe 409/255/no-collision assertions are external unverified provider specifics.",
+    "platform": "Claude Grep/Read replace with available readers; DB transaction guarantees must be exercised on both Windows/Linux adapters. Zeus application/workflow.py submit/handle hashes, generations and outbox are actual read counterpart; application/service.py flush_outbox explicitly accepts post-publish redelivery."
+  },
+  "load-shedding-prioritized.md": {
+    "purpose": "Tier-based overload admission, measured thresholds/hysteresis, 503 Retry-After and bounded retries, strip spoofed priority headers.",
+    "decision": "adapt",
+    "analysis": "Contradiction: Plan/Gotchas mandate exactly one shedding layer, while Service-level section and guide describe layered edge+service admission. A dropped edge request does not reach service, so described double-drop cascade is not established. Tier1 never-drop cannot hold under finite capacity. Fixed75/85/95/60 percentages lack workload-specific measurement; recovery tier order needs justification. Internal header stripping and endpoint classification useful. No actual gateway/shedding implementation in common markdown.",
+    "platform": "Envoy/Zuul configs are infrastructure adapter concerns. Zeus application/workflow.py max_active_executions and per-agent lease admission plus tests/test_dispatch_fairness.py (read, not run) are overlap, not HTTP service priority equivalence."
+  },
+  "webhook-delivery-and-signing.md": {
+    "purpose": "Raw-byte HMAC signature checking, timestamp/delivery dedup, per-endpoint secret rotation and at-least-once delivery.",
+    "decision": "adapt",
+    "analysis": "Document internally corrects its own universal timestamp claim: provider table says GitHub signs body only; Slack uses v0:t:body, unlike generic t.body algorithm. Must dispatch by verified provider scheme. Gotcha verify→process→dedup order leaves duplicate effect window; transaction/preclaim must precede side effect after authentication. Dedup only within 5min window conflicts with in-flight retry safety; retention tied to delivery replay horizon. Blanket no retry4xx misses policy-specific throttling. Reference draft is called active after listed expiration; all remote originals unverified.",
+    "platform": "Python hmac concept portable; raw bytes/UTF8 newline handling and secret injection vary adapters. No generic Claude tool dependency beyond matcher. Candidate boundary Zeus external event intake and workflow inbox, not proven webhook implementation."
+  },
+  "api-migration-replay-traffic.md": {
+    "purpose": "Capture/replay/typed compare gates, stable user canary cohorts, metric abort and reversible backend migration.",
+    "decision": "adapt",
+    "analysis": "Guidance has no capture/replay runner or promotion policy. Reject universal 0.1% diff/pass,24h dwell,7/30/90day durations as established invariants. Ignoring all extra fields can hide exposure/contract changes; explicit per-field policy required. Masking production input does not alone authorize copied-data execution, nor make write replay safe. Dual-write section is qualified by later single-writer recommendation; ensure no external effects in shadow environment. Stable hashes need privacy/scoping. Old-backend flag rollback cannot undo incompatible data writes.",
+    "platform": "Proxy/backend capture tooling and artifact paths need isolated adapters on both OS. Zeus existing revision-bound release/promotion system remains authority; no new shadow production action authorized. Remote source claims not verified."
+  },
+  "edge-gateway-routing.md": {
+    "purpose": "Gateway/mesh selection, JWT-before-routing filters, mTLS identities, retry budgets and sidecar startup diagnostics.",
+    "decision": "defer",
+    "analysis": "No actual Envoy/Istio/SCG configuration implementation is supplied. Reject universal industry-convergence and any-cloud-same-behavior assumptions. Sidecar-only mesh architecture cannot cover all modes; injection failure does not prove zero visibility. Release dates,minimum fill intervals,version constraints and annotation remedies require official exact-version verification. Local vs global rate-limit distinction useful; require effective config tests, not prose filter ordering. Zuul→Envoy filters explicitly not1:1.",
+    "platform": "Kubernetes/Envoy largely Linux/container runtime; Windows host is client context, not equivalent native daemon. Java17/Reactor are unrelated Zeus stdlib inner dependencies; route infrastructure via adapter if needed."
+  },
+  "experimentation-and-ab-testing.md": {
+    "purpose": "Preplanned metric/MDE/sample size, CUPED covariate variance, randomization unit, SRM/peeking/multiple-metric guards.",
+    "decision": "adapt",
+    "analysis": "Formula assumes equal-arm normal-approximation mean comparison with variance/effect units; binary/cluster/repeated measurements need different treatment. BH FDR does not generally control family-wise error as quality table asserts. SUTVA violation bias need not always underestimate. CUPED50%,peeking21%,SRM6% are external study claims,not universals. Hashing user identifiers is not sufficient PII protection. Sequential methods require their assumptions; no executable statistics/evaluation implementation supplied.",
+    "platform": "statsmodels calculator links/tools external and unverified; not introduce dependencies into Zeus domain. Candidate mapping to holdout/calibration evaluation contracts only; original papers, exact sample metrics and split leakage tests outstanding."
+  }
+}

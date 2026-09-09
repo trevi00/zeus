@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import nullcontext
 from dataclasses import asdict
 from uuid import uuid4
 
@@ -22,7 +23,8 @@ class Harness:
         self.store = store
         self.org = organization
 
-    def record_incident(self, message: dict) -> dict:
+    def record_incident(self, message: dict, *, independent_occurrence: str | None = None,
+                        transaction=None) -> dict:
         self.org.authorize(message)
         require(message["type"] == "incident.report", "Expected incident.report")
         details = message["what"]["details"]
@@ -34,20 +36,32 @@ class Harness:
         body = asdict(incident)
         body["evidence_refs"] = list(incident.evidence_refs)
         body["fingerprint"] = incident.fingerprint
-        with self.store.transaction() as tx:
+        if independent_occurrence is not None:
+            require(isinstance(independent_occurrence, str) and bool(independent_occurrence.strip()),
+                    "Independent occurrence must identify a task")
+            body["independent_occurrence"] = independent_occurrence
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             receipt = tx.get("inbox", message["message_id"])
             if receipt:
                 require(receipt["hash"] == digest(message), "Message ID reused with different content")
+                require(receipt.get("independent_occurrence") == independent_occurrence,
+                        "Message ID reused with different occurrence authority")
                 return receipt["result"]
             previous = tx.get("incidents", incident.occurrence_id)
             require(previous is None or previous == body, "Occurrence ID reused with different content")
             tx.put("incidents", incident.occurrence_id, body)
             occurrences = [r for r in tx.scan("incidents") if r["fingerprint"] == incident.fingerprint]
+            # INV-RECURRENCE-001: retries retain evidence but are not independent incidents.
+            independent = {r.get("independent_occurrence", r["occurrence_id"]) for r in occurrences}
+            new_independent = previous is None and not any(
+                r["occurrence_id"] != incident.occurrence_id
+                and r.get("independent_occurrence", r["occurrence_id"])
+                == body.get("independent_occurrence", incident.occurrence_id) for r in occurrences)
             hook_id = "hook-" + incident.fingerprint[:24]
             created = False
             existing = tx.get("hooks", hook_id)
-            update_required = existing and existing["status"] == "active" and previous is None
-            if len(occurrences) >= POLICY.recurrence_threshold and (existing is None or update_required):
+            update_required = existing and existing["status"] == "active" and new_independent
+            if len(independent) >= POLICY.recurrence_threshold and (existing is None or update_required):
                 hook = {"id": hook_id, "fingerprint": incident.fingerprint, "status": "required",
                         "scope": incident.scope, "root_cause": incident.root_cause,
                         "occurrences": sorted(r["occurrence_id"] for r in occurrences),
@@ -74,9 +88,10 @@ class Harness:
                 tx.put("events", str(uuid4()), {"type": "hook.required", "hook_id": hook_id,
                                                "at": utcnow()})
                 created = True
-            result = {"occurrences": len(occurrences), "duplicate_occurrence": previous is not None,
-                      "hook_id": hook_id if len(occurrences) >= POLICY.recurrence_threshold else None, "hook_created": created}
-            tx.put("inbox", message["message_id"], {"hash": digest(message), "result": result})
+            result = {"occurrences": len(independent), "duplicate_occurrence": previous is not None,
+                      "hook_id": hook_id if len(independent) >= POLICY.recurrence_threshold else None, "hook_created": created}
+            tx.put("inbox", message["message_id"], {"hash": digest(message), "result": result,
+                                                   "independent_occurrence": independent_occurrence})
             return result
 
     def get_hook(self, hook_id: str) -> dict:
@@ -101,11 +116,11 @@ class Harness:
             return hook
 
     def review(self, hook_id: str, actor: str, revision: str, spec_hash: str,
-               passed: bool, evidence_ref: str) -> dict:
+               passed: bool, evidence_ref: str, *, transaction=None) -> dict:
         reviewer = self.org.actor(actor)
         require(type(passed) is bool, "Review verdict must be boolean")
         require(reviewer.role in {"lead", "conductor"} and bool(evidence_ref), "Invalid reviewer/evidence")
-        with self.store.transaction() as tx:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             hook = tx.get("hooks", hook_id)
             require(hook is not None and hook["status"] in {"candidate", "reviewed"}, "Not reviewable")
             require(hook["revision"] == revision and digest(hook["spec"]) == spec_hash, "Stale review")
@@ -139,8 +154,8 @@ class Harness:
             tx.put("hooks", hook_id, hook)
             return hook
 
-    def activate(self, hook_id: str) -> dict:
-        with self.store.transaction() as tx:
+    def activate(self, hook_id: str, *, transaction=None) -> dict:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             hook = tx.get("hooks", hook_id)
             require(hook is not None and hook["status"] == "verified", "Candidate not verified")
             # @invariant INV-RELEASE-001: activation is bound to the reviewed artifact.

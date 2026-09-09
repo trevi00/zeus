@@ -1,0 +1,17 @@
+skills/_common/abstraction-first.md
+skills/_common/architect-lock-reproduction-discipline.md
+skills/_common/convention.md
+skills/_common/debugging.md
+skills/_common/design-craft.md
+skills/_common/design-dataviz.md
+skills/_common/design-korean-premium.md
+skills/_common/fullstack-debug.md
+skills/_common/investigation-discipline.md
+skills/_common/iso25010-scoring.md
+skills/_common/mock-prototype/SKILL.md
+skills/_common/pattern-auto-detector.md
+skills/_common/repeat-error-tracker.md
+skills/_common/security.md
+skills/_common/self-improve.md
+skills/_common/skill-distillation-pipeline.md
+skills/_common/skill-lint-workflow.md

@@ -1,0 +1,4194 @@
+[
+  {
+    "path": "scripts/lib/agent_depth.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "613617d693716355d85af488f3253c64baf48ad2",
+    "bytes": 2099,
+    "pinned_sha256": "0b0bf01f682610494bd4cdec9268ddf596e017f382b1b65f8526758a7978d868",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#agent-depth",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1947,
+        "import": "    from lib.agent_depth import MAX_AGENT_DEPTH"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/agent_depth_guard.py",
+        "line": 14,
+        "import": "from lib.agent_depth import MAX_AGENT_DEPTH, current_depth, would_exceed"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_khaness_remine2_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/approval_proof.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "dc7422ff096acc0b32763c302e8cffa7dea102b8",
+    "bytes": 6479,
+    "pinned_sha256": "f516df6534ce6af4fa7a9e169968016499a5540da5a8b90d113968397446c843",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#approval-proof",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 636,
+        "import": "            from lib import approval_proof"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_arming_grade_axis_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arm_silence_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/arming.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "cca667f7678154033dcd5ee7755ae2f4427eed42",
+    "bytes": 55065,
+    "pinned_sha256": "18fcbea068dfcfbc3895f75321770130071e81d05b8df709f30716fac2cfdbab",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#arming",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/arming_cmd.py",
+        "line": 33,
+        "import": "from lib import arming  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 724,
+        "import": "        from lib import arming"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1175,
+        "import": "        from lib import arming"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_arming_freshness_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_arming_grade_axis_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_resident_roles_ledger_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/atomic_jsonl.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "990144faa806dd3a50303b277920939421ba7546",
+    "bytes": 4048,
+    "pinned_sha256": "4d0fc06aa212e9df5b7c12ac36708d07f1d17171d27ef3ed52a9cc60854ec9b8",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#atomic-jsonl",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 41,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/hud.py",
+        "line": 404,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 23,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 216,
+        "import": "    from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 195,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cron/bus_tailer.py",
+        "line": 23,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/consume_gate.py",
+        "line": 114,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cron/dba_projection.py",
+        "line": 44,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 42,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 119,
+        "import": "    from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 245,
+        "import": "                from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/cron/note_archive.py",
+        "line": 47,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/reachability.py",
+        "line": 54,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 57,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_queue.py",
+        "line": 62,
+        "import": "from lib.atomic_jsonl import append_line, write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 82,
+        "import": "from lib.atomic_jsonl import append_line  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 83,
+        "import": "from lib.atomic_jsonl import write_json_atomic, write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/source_queue.py",
+        "line": 48,
+        "import": "from lib.atomic_jsonl import append_line  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 119,
+        "import": "    from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cron/youtube_collector.py",
+        "line": 45,
+        "import": "from lib.atomic_jsonl import append_line, write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/youtube_queue.py",
+        "line": 50,
+        "import": "from lib.atomic_jsonl import append_line  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/circuit.py",
+        "line": 44,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/engine/evolve.py",
+        "line": 30,
+        "import": "from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 67,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/engine/ontology_index.py",
+        "line": 273,
+        "import": "    from lib.atomic_jsonl import write_text_atomic"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 31,
+        "import": "from lib.atomic_jsonl import append_line, write_json_atomic"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 27,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 380,
+        "import": "            from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/engine/skill_router.py",
+        "line": 386,
+        "import": "        from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/handlers/notification/relay.py",
+        "line": 16,
+        "import": "from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 16,
+        "import": "from lib.atomic_jsonl import write_text_atomic"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 18,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/handlers/stop/heartbeat.py",
+        "line": 17,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 25,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/backlog.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6d2a2fdbb715d8f22b589bc3163e59eddabf7664",
+    "bytes": 12691,
+    "pinned_sha256": "39600fa9f0de271db99336f6b6c2ed6a31f7809329ed69fba76e5d02fd89fc07",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#backlog",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/capture_cmd.py",
+        "line": 41,
+        "import": "from lib import backlog, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 703,
+        "import": "        from lib import backlog"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 113,
+        "import": "    from lib import backlog"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 78,
+        "import": "        from lib import backlog"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 47,
+        "import": "from lib import backlog  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_spiral_candidate_cut_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_backlog_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_capture_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_proposal_retire_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/code_context.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "3e7c6f4b5261cefd10452ff85e0b0a03ad924758",
+    "bytes": 5885,
+    "pinned_sha256": "e692572c25efb346d9a3f491db78344a17d3cbeb23b092c3bffbb207cb403262",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#code-context",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_code_context_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_code_context_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 528,
+        "import": "    from lib import code_context as cc"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/codex_provider.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "855c45e1198f6150f4b33535d5811da9059824a4",
+    "bytes": 19393,
+    "pinned_sha256": "a9880e2791f71cb224cee96298d53633c6cfc1f9e2eb1328b33450c050ec24c5",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#codex-provider",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_jury_quorum_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/unit/test_codex_provider.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_jury_quorum_smoke.receipt.json",
+      "test_codex_provider.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 63,
+        "import": "from lib import codex_provider as cp          # noqa: E402"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/completion_line.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "de466f89378100fa6dbc4e0416610b26aa9a7980",
+    "bytes": 4568,
+    "pinned_sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#completion-line",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/completion_cmd.py",
+        "line": 25,
+        "import": "from lib import completion_line as cl  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 48,
+        "import": "from lib import completion_line as cl  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/debate_rules.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "8aa45dfa085c53f8563973cf49e103234ceb71fb",
+    "bytes": 15098,
+    "pinned_sha256": "790cbda256eabeb2a453332cb5b730367c24758a210e7a1c3dcb7ea8956e05ba",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#debate-rules",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/engine/debate.py",
+        "line": 35,
+        "import": "from lib import debate_rules as rules"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_debate_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/decomposition.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "f5df7bdd1cc71db242d18f9f96704b77b19b99b8",
+    "bytes": 9221,
+    "pinned_sha256": "113f6d46c38e4fd7f5de1785de7a1ddcb42656bfb6871ed34185afa065fa8f8e",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#decomposition",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 103,
+        "import": "    from lib import decomposition"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 96,
+        "import": "    from lib.decomposition import norm"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 114,
+        "import": "    from lib import decomposition as dc"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 138,
+        "import": "    from lib.decomposition import norm"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 289,
+        "import": "        from lib import decomposition"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 345,
+        "import": "        from lib import decomposition"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 405,
+        "import": "        from lib import decomposition"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_domain_lead_delivery_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/derive_state.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+    "bytes": 27995,
+    "pinned_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#derive-state",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 276,
+        "import": "        from lib.derive_state import derive_binding"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 217,
+        "import": "            from lib import derive_state"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 44,
+        "import": "    from lib import derive_state"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 745,
+        "import": "        from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/projection_pg.py",
+        "line": 13,
+        "import": "from lib import derive_state, ledger, profile"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 26,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/select_ready.py",
+        "line": 20,
+        "import": "from lib import derive_state"
+      },
+      {
+        "path": "scripts/engine/staleness.py",
+        "line": 15,
+        "import": "from lib import derive_state, preconditions"
+      },
+      {
+        "path": "scripts/engine/tick.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger, repair_tier  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 15,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 24,
+        "import": "from lib import derive_state, ledger"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_acceptance_coverage_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_disarm_says_what_happened_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_role_delivery_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_closedloop_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_pollution_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_spiral_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_compaction_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/evaluator.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "250e87d1668183b9ee53ae036dbe27facf190498",
+    "bytes": 28029,
+    "pinned_sha256": "5f45820a28d77800243ffbd9982d3a2d9ddf76815354bcef9e0ddf4609d13f0f",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#evaluator",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_jury_quorum_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/unit/test_evaluator_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_jury_quorum_smoke.receipt.json",
+      "test_evaluator_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 64,
+        "import": "from lib import evaluator as ev               # noqa: E402"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/evidence_freshness.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "dcfde4d4c3dda2ff3b070ad182694c5c0cec9da9",
+    "bytes": 11983,
+    "pinned_sha256": "8676283f0a19baeba07b1f213a6c3f1147c48f5b4b91a635db8c3a9a6b5ec9bb",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#evidence-freshness",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 33,
+        "import": "from lib import evidence_freshness as ef  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_arming_freshness_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_evidence_freshness_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/external_text.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "7e377c3f483030ea3f2094f780d59a7611ebc138",
+    "bytes": 1853,
+    "pinned_sha256": "fd4de5e4cd7375e83f05d7a911508bcff3463ebc682992b4660e25bda31ed8ac",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#external-text",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/recall_cmd.py",
+        "line": 40,
+        "import": "    from lib import external_text"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 56,
+        "import": "from lib import external_text  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/git_flow.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "70d70ccfa57c1dc7d79d9e493ad6c350054b70cc",
+    "bytes": 3975,
+    "pinned_sha256": "177d34c5cffe3d1dc4583b195b91682b95ca44a2f80928985190057a6d49346e",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#git-flow",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 110,
+        "import": "    from lib import git_flow"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 670,
+        "import": "    from lib import git_flow"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 1023,
+        "import": "            from lib import git_flow"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_boundary_corpus_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/guardian_contract.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "04e1685e19a38f14ad41280449cd7cbcf314177f",
+    "bytes": 7882,
+    "pinned_sha256": "1cd82ffe99e903d27e6689f0f58546a1712401a6ba90924ce4ee5d2cb44af40e",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#guardian-contract",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 22,
+        "import": "from lib import guardian_contract, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 39,
+        "import": "from lib import guardian_contract  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/ladder_probe.py",
+        "line": 191,
+        "import": "    from lib import guardian_contract as gc"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_guardian_contract_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/hollow_audit.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6ff3da459b10a29c31d44da5e57be985e5a2cf4f",
+    "bytes": 6999,
+    "pinned_sha256": "5e746af736118a003f6484d28c2120f262e0fbffef2b2f0d0723765c69d9e0d2",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#hollow-audit",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_hollow_audit.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_hollow_audit.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/hollow_cmd.py",
+        "line": 33,
+        "import": "from lib.hollow_audit import (  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_context_programming_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/hook_journal.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "e7a709c0f96899550edb4687e06d0e1f717c883e",
+    "bytes": 12167,
+    "pinned_sha256": "6bd3d2b1f204766350028ac97dbc970b913b93834990caa256a8cb95953b225a",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#hook-journal",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 591,
+        "import": "        from lib import hook_journal"
+      },
+      {
+        "path": "scripts/cli/safety_cmd.py",
+        "line": 48,
+        "import": "from lib import hook_journal as hj  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/dispatch.py",
+        "line": 218,
+        "import": "        from lib import hook_journal"
+      },
+      {
+        "path": "scripts/handlers/stop/prompt_rollup.py",
+        "line": 103,
+        "import": "        from lib import hook_journal"
+      },
+      {
+        "path": "scripts/handlers/stop/prompt_rollup.py",
+        "line": 116,
+        "import": "        from lib import hook_journal"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_hook_journal_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/hook_protocol.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "fb3d15d991e64a1c965b98ade949f86cf8fca2bb",
+    "bytes": 6678,
+    "pinned_sha256": "6a7e42b754a3db7eb191ab2801351654b9d7fecee9b11111f07a8b3e60caaca4",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#hook-protocol",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_code_context_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_hollow_audit.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_research_digest_contract.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_skill_contract.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_jury_quorum_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_lease_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_ownership_vitals_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_params_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_preconditions_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/unit/test_codex_provider.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/unit/test_evaluator_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_code_context_smoke.receipt.json",
+      "test_hollow_audit.receipt.json",
+      "test_research_digest_contract.receipt.json",
+      "test_skill_contract.receipt.json",
+      "test_jury_quorum_smoke.receipt.json",
+      "test_lease_smoke.receipt.json",
+      "test_ownership_vitals_smoke.receipt.json",
+      "test_params_smoke.receipt.json",
+      "test_preconditions_smoke.receipt.json",
+      "test_codex_provider.receipt.json",
+      "test_evaluator_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/agentsmd_cmd.py",
+        "line": 233,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/append_restore.py",
+        "line": 38,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/arming_cmd.py",
+        "line": 191,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 1442,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 39,
+        "import": "from lib.hook_protocol import Ctx  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import L2_SPAWN_ENV"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 267,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/capture_cmd.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/classify_cmd.py",
+        "line": 136,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/completion_cmd.py",
+        "line": 110,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/coverage_cmd.py",
+        "line": 205,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 116,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/delegate_cmd.py",
+        "line": 164,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/endpoint_cmd.py",
+        "line": 63,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/error_contract_cmd.py",
+        "line": 1073,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/evolve_cmd.py",
+        "line": 83,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/extractor_canary_cmd.py",
+        "line": 290,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/fleet_contracts_cmd.py",
+        "line": 155,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 193,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/gate_dump_cmd.py",
+        "line": 176,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 955,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/hollow_cmd.py",
+        "line": 142,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/hook_latency_probe.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 139,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/invariants_cmd.py",
+        "line": 524,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 409,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/ladder_cmd.py",
+        "line": 139,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/mirror_cmd.py",
+        "line": 61,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/ontology_cmd.py",
+        "line": 76,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/pollution_cmd.py",
+        "line": 67,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/probe_cmd.py",
+        "line": 112,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/prompts_cmd.py",
+        "line": 184,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 181,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/recall_cmd.py",
+        "line": 62,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/residual_cmd.py",
+        "line": 130,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/roster_cmd.py",
+        "line": 220,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 320,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/safety_cmd.py",
+        "line": 124,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 253,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 202,
+        "import": "        from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/cli/scaffold_cmd.py",
+        "line": 95,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/skills_cmd.py",
+        "line": 114,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 412,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 677,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 582,
+        "import": "        from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 161,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 509,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 622,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/testgen_cmd.py",
+        "line": 47,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/workup_cmd.py",
+        "line": 52,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/collab_ask_audit.py",
+        "line": 160,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/commit_scope.py",
+        "line": 143,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/consume_gate.py",
+        "line": 133,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/dba_projection.py",
+        "line": 106,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/known_issues.py",
+        "line": 189,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1936,
+        "import": "    from lib.hook_protocol import L2_SPAWN_ENV"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 2042,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/latency_gate.py",
+        "line": 198,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/lesson_spot.py",
+        "line": 284,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/note_archive.py",
+        "line": 191,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/reachability.py",
+        "line": 331,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 278,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/research_queue.py",
+        "line": 167,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 261,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/session_handoff.py",
+        "line": 190,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/source_queue.py",
+        "line": 159,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 271,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/uptake_routes.py",
+        "line": 183,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/youtube_collector.py",
+        "line": 211,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/youtube_queue.py",
+        "line": 209,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/handlers/dispatch.py",
+        "line": 43,
+        "import": "    from lib import hook_protocol"
+      },
+      {
+        "path": "scripts/handlers/dispatch.py",
+        "line": 44,
+        "import": "    from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/validators/candidate_binding.py",
+        "line": 133,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/ddl_dry_run.py",
+        "line": 55,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 2090,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/heredoc_guard.py",
+        "line": 136,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/intent_doc_floor.py",
+        "line": 96,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/isolation_deferred.py",
+        "line": 151,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 161,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/pattern_decisions.py",
+        "line": 59,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/red_flags_scan.py",
+        "line": 51,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/repair_evidence.py",
+        "line": 185,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/settings_wiring.py",
+        "line": 295,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/todo_scan.py",
+        "line": 76,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/tradeoff_lint.py",
+        "line": 242,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/usecase_lint.py",
+        "line": 82,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/handlers/notification/relay.py",
+        "line": 17,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/agent_depth_guard.py",
+        "line": 15,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/extracted_guard.py",
+        "line": 16,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 27,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 714,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/handlers/prompt/promptlog.py",
+        "line": 26,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 17,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 58,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/handlers/session/precompact_guidance.py",
+        "line": 12,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 19,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/heartbeat.py",
+        "line": 18,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 23,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 52,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 26,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 24,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 135,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_acceptance_coverage_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_arming_freshness_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_arming_grade_axis_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_board_publisher_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_boundary_corpus_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_bus_tailer_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_bus_topic_order_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_bus_watermark_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_commit_scope_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_consume_gate_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_contract_visibility_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_coverage_bootstrap.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_dba_projection_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_delegation_cap_attribution_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_disarm_says_what_happened_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_domain_lead_delivery_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_driver_caps_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_dropped_print_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_entrance_reconfirm_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_entrypoint_import.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_env_seal_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_evidence_freshness_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_extractor_canary_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_fleet_contracts_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_fleet_mount_boundary_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_gate_dump_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_gate_executable_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_guardian_contract_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_harness_lint.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_health_alerts_surface_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_heredoc_guard_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_hook_adversarial.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_inv_bite_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_isolation_deferred_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_judge_integrity_league.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_judgment_paths_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_known_issues_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_l2_driver_latency_gate.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_ladder_sweep_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_latency_consumer_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_lint_contracts_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_note_accumulation_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_ontology_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_ownership_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_promote_dirty_scope_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_queue_gating_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_reachability_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_repair_evidence_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_research_collector_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_research_queue_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_resident_roles_ledger_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_role_delivery_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_role_section_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_role_supervisor_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_run_marker_halt_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_sandbox_runner_env_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_session_handoff_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_skill_corpus_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_skill_eval.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_source_note_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_spiral_candidate_cut_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_suite_runner_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_tick_encoding_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_topic_reaper_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_tradeoff_lint_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_uptake_routes_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_verdict_reprobe_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_youtube_note_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_youtube_queue_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arm_silence_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arming_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_backlog_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_capture_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_chat_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_cli_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_cli_wrappers_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_closedloop_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_context_programming_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_curator_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_cycle_approval_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_debate_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_dispatch_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_endpoint_graph_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_engine_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_evolve_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_fleet_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_gate_active_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_gate_ratchet_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_health_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_heart_guard_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_hook_journal_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_hud_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_integrity_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_invariants_binding_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_khaness_remine2_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_ladder_probe_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_ladder_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_latency_budget_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_mirror_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_monitor_readonly_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_mutation_baseline_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_polish_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_pollution_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_probe_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_prompt_rollup_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_promptlog_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_proposal_retire_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_reanchor_binding_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_recall_retrieval_canary.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_repair_tier_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_rlm_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_role_attribution_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_roster_contract_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_scaffold_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_seams_ladder_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_seams_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_spiral_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_stuck_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_token_notify_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_unattended_fence_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_checks_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_circuit_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_compaction_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_error_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_golden_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_graph_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_recall_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_reverse_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_router_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_skill_bundle_signal_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_test_outcome.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_workup_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/idempotency.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "4168fc06a3fc9e9bb2166f32f9996fa81b31481f",
+    "bytes": 1734,
+    "pinned_sha256": "f5d8f173d156932d1de1cb203ad928529ac5e2c66c5ac30e16a693a205f5336b",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#idempotency",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_lease_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_lease_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 40,
+        "import": "from lib import idempotency  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/ids.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "818039b6b184caffb2029b2ebd424d0a36524855",
+    "bytes": 2596,
+    "pinned_sha256": "59037d09f01a4cab081b3bce4ef93b816d981a50be2e498f13b632a01608ce7c",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#ids",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/ontology_index.py",
+        "line": 29,
+        "import": "from lib import ids"
+      },
+      {
+        "path": "scripts/validators/ontology_validator.py",
+        "line": 28,
+        "import": "from lib import ids  # noqa: E402"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/judge_integrity.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "18810bab69c51d6e1797b176918a35aeda23e9ef",
+    "bytes": 7073,
+    "pinned_sha256": "8df5d919ae53c601f9d38ff7f13061f16c349cf5435335f4bec8dce1f1507e09",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#judge-integrity",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_judge_integrity_league.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/judgment_paths.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "ea20fa75faa0faa462041e7a33ff20038c60fb95",
+    "bytes": 8326,
+    "pinned_sha256": "a304eaa95c8039e7d387d808ffabfe6292fbe3ac1f27aa86d39fdf6991e9cfe7",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#judgment-paths",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 1484,
+        "import": "    from lib import judgment_paths"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_judgment_paths_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/lease.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "dcf661e9f709c5d81120b462503af0e0fcd9c69a",
+    "bytes": 5752,
+    "pinned_sha256": "c79fae38c34ece03a67a87d2072c3efea71a40a220dca1fc6d7303d1d6a86244",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#lease",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_lease_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_lease_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 41,
+        "import": "from lib import lease as lease_lib  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/evolve.py",
+        "line": 211,
+        "import": "    from lib import lease as _lease"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_guardian_contract_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/ledger.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "5e7534695489901c673ed95f65f7fd634390549d",
+    "bytes": 23573,
+    "pinned_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#ledger",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_lease_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_ownership_vitals_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_params_smoke.py\"]",
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_preconditions_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_lease_smoke.receipt.json",
+      "test_ownership_vitals_smoke.receipt.json",
+      "test_params_smoke.receipt.json",
+      "test_preconditions_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/append_restore.py",
+        "line": 17,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 86,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/capture_cmd.py",
+        "line": 41,
+        "import": "from lib import backlog, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/debate_cmd.py",
+        "line": 32,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 29,
+        "import": "from lib import ledger, ownership_events  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/ladder_cmd.py",
+        "line": 54,
+        "import": "        from lib import ledger, seams"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 66,
+        "import": "        from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cli/residual_cmd.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 22,
+        "import": "from lib import guardian_contract, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 26,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 272,
+        "import": "        from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 622,
+        "import": "        from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 745,
+        "import": "        from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 814,
+        "import": "        from lib import ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1561,
+        "import": "        from lib import ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1306,
+        "import": "            from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 49,
+        "import": "from lib import ledger  # noqa: E402  (자율 귀속 판정 — 위조 승인 배제)"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/debate.py",
+        "line": 36,
+        "import": "from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 23,
+        "import": "from lib import ledger, preconditions, repair_tier"
+      },
+      {
+        "path": "scripts/engine/pollution.py",
+        "line": 29,
+        "import": "from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 161,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 189,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/projection_pg.py",
+        "line": 13,
+        "import": "from lib import derive_state, ledger, profile"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 26,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 40,
+        "import": "from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/tick.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger, repair_tier  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 84,
+        "import": "    from lib.ledger import EVENT_TYPES"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 15,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 24,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 143,
+        "import": "        from lib import ledger"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_l2_driver_latency_gate.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_role_supervisor_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_backlog_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_capture_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_chat_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_cli_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_cli_wrappers_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_closedloop_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_curator_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_cycle_approval_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_debate_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_engine_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_fleet_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_gate_active_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_gate_ratchet_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_integrity_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_ladder_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_pollution_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_probe_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_proposal_retire_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_repair_tier_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_spiral_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_token_notify_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_compaction_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/overlap.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "95323a60913425501f1a0c05620b2878d3c92dee",
+    "bytes": 2734,
+    "pinned_sha256": "d919c72c2ec1a23d5028c16d6d4c6125422a7bc74147a41e314d15db74091157",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#overlap",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 140,
+        "import": "        from lib import overlap as _ov"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/ownership_events.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "f3493665a1204bc8ebcb9f32a049429296971b4d",
+    "bytes": 3810,
+    "pinned_sha256": "9f1c4bdbdc32bc79c4c059b6e5b6f6bcfe5e47a99d124bf8e8bca74ded32a23d",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#ownership-events",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_ownership_vitals_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_ownership_vitals_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 29,
+        "import": "from lib import ledger, ownership_events  # noqa: E402"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/ownership_vitals.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "9768da6ab216dd50861c23b434ddf0b6813b90f0",
+    "bytes": 3812,
+    "pinned_sha256": "83fdb55de5389b0d2913d96e4e5f88b4a0a0461d55422d8c493b51abbacf5b2c",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#ownership-vitals",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_ownership_vitals_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_ownership_vitals_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 655,
+        "import": "        from lib import ownership_vitals"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/params.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6ab94fcdb76fd4003d8bc6da77eb75fffc143d1b",
+    "bytes": 6147,
+    "pinned_sha256": "902305b0f5fc5a019bbc0d10bf2bc5d05b288d9b9463b4439f91b30ffae9d14b",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#params",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_params_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_params_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 118,
+        "import": "    from lib import params"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 369,
+        "import": "        from lib import params"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 37,
+        "import": "    from lib import params"
+      },
+      {
+        "path": "scripts/engine/pollution.py",
+        "line": 72,
+        "import": "    from lib import params"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 101,
+        "import": "            from lib import params"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/paths.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "c1a7284adf7c53a8fab9f074e0c23c5558d95d22",
+    "bytes": 5363,
+    "pinned_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#paths",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/agentsmd_cmd.py",
+        "line": 20,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/arming_cmd.py",
+        "line": 34,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 87,
+        "import": "from lib.paths import (harness_home, normalize_rel, python_exe,  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 40,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/completion_cmd.py",
+        "line": 26,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/coverage_cmd.py",
+        "line": 46,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 28,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/delegate_cmd.py",
+        "line": 31,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/extractor_canary_cmd.py",
+        "line": 67,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 42,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/gate_dump_cmd.py",
+        "line": 75,
+        "import": "from lib.paths import harness_home, normalize_rel, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 28,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 300,
+        "import": "        from lib.paths import python_exe"
+      },
+      {
+        "path": "scripts/cli/hollow_cmd.py",
+        "line": 36,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/hook_latency_probe.py",
+        "line": 39,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/hud.py",
+        "line": 29,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 30,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/invariants_cmd.py",
+        "line": 52,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 65,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/ontology_cmd.py",
+        "line": 20,
+        "import": "from lib.paths import harness_home, python_exe, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/probe_cmd.py",
+        "line": 24,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 25,
+        "import": "    from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 67,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cli/residual_cmd.py",
+        "line": 22,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/roster_cmd.py",
+        "line": 36,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 24,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 27,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/scaffold_cmd.py",
+        "line": 19,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/skills_cmd.py",
+        "line": 28,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 45,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 34,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 18,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 43,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 22,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 205,
+        "import": "        from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 56,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 172,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 217,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cron/bus_tailer.py",
+        "line": 24,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/collab_ask_audit.py",
+        "line": 64,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/commit_scope.py",
+        "line": 50,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/consume_gate.py",
+        "line": 54,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/dba_projection.py",
+        "line": 45,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/known_issues.py",
+        "line": 58,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 43,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1885,
+        "import": "        from lib.paths import python_exe"
+      },
+      {
+        "path": "scripts/cron/lesson_spot.py",
+        "line": 79,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/note_archive.py",
+        "line": 48,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/reachability.py",
+        "line": 55,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 58,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_queue.py",
+        "line": 63,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 50,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 84,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/session_handoff.py",
+        "line": 44,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/source_queue.py",
+        "line": 49,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 56,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/uptake_routes.py",
+        "line": 50,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/youtube_collector.py",
+        "line": 46,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/youtube_queue.py",
+        "line": 51,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/checks.py",
+        "line": 162,
+        "import": "        from lib.paths import python_exe"
+      },
+      {
+        "path": "scripts/engine/checks.py",
+        "line": 165,
+        "import": "        from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/engine/circuit.py",
+        "line": 45,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 30,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/debate.py",
+        "line": 37,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/evolve.py",
+        "line": 31,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 68,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/golden.py",
+        "line": 26,
+        "import": "from lib.paths import harness_home, python_exe, resolve"
+      },
+      {
+        "path": "scripts/engine/graph_queries.py",
+        "line": 25,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/ladder_probe.py",
+        "line": 33,
+        "import": "from lib.paths import harness_home, state_dir"
+      },
+      {
+        "path": "scripts/engine/mutation.py",
+        "line": 24,
+        "import": "from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/engine/ontology_index.py",
+        "line": 30,
+        "import": "from lib.paths import harness_home, resolve"
+      },
+      {
+        "path": "scripts/engine/pipeline_loader.py",
+        "line": 25,
+        "import": "from lib.paths import harness_home as harness_home_path, resolve"
+      },
+      {
+        "path": "scripts/engine/pollution.py",
+        "line": 30,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 32,
+        "import": "from lib.paths import harness_home, python_exe, resolve, state_dir"
+      },
+      {
+        "path": "scripts/engine/recall.py",
+        "line": 25,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/recall.py",
+        "line": 91,
+        "import": "    from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 28,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 41,
+        "import": "from lib.paths import harness_home, normalize_rel, python_exe"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 381,
+        "import": "            from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/skill_router.py",
+        "line": 24,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/skill_router.py",
+        "line": 387,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/validators/candidate_binding.py",
+        "line": 44,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 43,
+        "import": "from lib.paths import harness_home, normalize_rel  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 204,
+        "import": "    from lib.paths import resolve                      # SC-6"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 357,
+        "import": "    from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/validators/isolation_deferred.py",
+        "line": 56,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 148,
+        "import": "        from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/validators/ontology_validator.py",
+        "line": 29,
+        "import": "from lib.paths import ontology_schema_path  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/repair_evidence.py",
+        "line": 67,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/settings_wiring.py",
+        "line": 34,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/tradeoff_lint.py",
+        "line": 70,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/notification/relay.py",
+        "line": 18,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 28,
+        "import": "from lib.paths import harness_home, resolve"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 717,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 736,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 957,
+        "import": "    from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/handlers/prompt/promptlog.py",
+        "line": 27,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 18,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 90,
+        "import": "    from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 20,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 63,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/heartbeat.py",
+        "line": 19,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 24,
+        "import": "from lib.paths import harness_home, python_exe, resolve, state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 27,
+        "import": "from lib.paths import harness_home, python_exe, state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 25,
+        "import": "from lib.paths import state_dir"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/_isolate.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_bus_tailer_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_consume_gate_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_delegation_cap_attribution_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_env_seal_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_queue_gating_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_reachability_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_research_queue_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_run_marker_halt_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_sandbox_runner_env_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_session_handoff_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_tick_encoding_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_verdict_reprobe_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_youtube_queue_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arm_silence_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_arming_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_latency_budget_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/preconditions.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "0c916e8b5bf2fcb9f366179f469bcc1d12b5e4a3",
+    "bytes": 4310,
+    "pinned_sha256": "66a01b966155a29d9db7a710eb598801f199b545f9e54e04df3e7b8d0f38014b",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#preconditions",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/integration/test_preconditions_smoke.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_preconditions_smoke.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 23,
+        "import": "from lib import ledger, preconditions, repair_tier"
+      },
+      {
+        "path": "scripts/engine/staleness.py",
+        "line": 15,
+        "import": "from lib import derive_state, preconditions"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/profile.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "432e90aec93e1ae26a479053d0cbb9d2fd5fd858",
+    "bytes": 763,
+    "pinned_sha256": "2d390d1d06005ed906f2ed06eacbf93d19b71f06ba8792e5b5042f45b70984aa",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#profile",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cron/bus_tailer.py",
+        "line": 22,
+        "import": "from lib import profile  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 131,
+        "import": "        from lib import profile as prof"
+      },
+      {
+        "path": "scripts/engine/projection_pg.py",
+        "line": 13,
+        "import": "from lib import derive_state, ledger, profile"
+      },
+      {
+        "path": "scripts/validators/ddl_dry_run.py",
+        "line": 18,
+        "import": "from lib import profile  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_bus_tailer_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_bus_watermark_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_fleet_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/prompt_clusters.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "8a8489cb6c74e49bc4b0fd44b6c8656d7d4db454",
+    "bytes": 4359,
+    "pinned_sha256": "71d2206b8e648dc8586a06db42e3694d40b3a2030e019055644921874428373e",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#prompt-clusters",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/prompts_cmd.py",
+        "line": 40,
+        "import": "from lib import prompt_clusters as pcl  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/stop/prompt_rollup.py",
+        "line": 55,
+        "import": "from lib.prompt_clusters import REP_CHARS, cluster_rows  # noqa: E402"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/repair_tier.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "28a61f7109b42bc54a2f79378914239d7b078f29",
+    "bytes": 4371,
+    "pinned_sha256": "c016dde07aae2d4024d527d94333dd813c830fab8a13dc782edd846f76a0b14f",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#repair-tier",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 23,
+        "import": "from lib import ledger, preconditions, repair_tier"
+      },
+      {
+        "path": "scripts/engine/tick.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger, repair_tier  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_repair_tier_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/repro_probe.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "daed4e0a80a2dc2630ba8ebecd426797fdbcaaa5",
+    "bytes": 5127,
+    "pinned_sha256": "ea1d89aec61790db4ad64dbfc918ef72f4f8a0b7476fa42e74f2838e47e980db",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#repro-probe",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_khaness_remine2_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/research_digest.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "2c0d6c5dd20d46dfa2d2a64a142dab58a3683f6d",
+    "bytes": 7877,
+    "pinned_sha256": "d8c14973ce0f378727c3e907026c2d71440f601113d9e629d44674c9e857dc8a",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#research-digest",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_research_digest_contract.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_research_digest_contract.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 40,
+        "import": "from lib import research_digest as rd  # noqa: E402"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/roster.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "4b79549e415a0800dd71372421ff57568069a051",
+    "bytes": 1043,
+    "pinned_sha256": "450e5a5ce5227679d5b98e4ccdc4eca4e44950aab95f8daf18a49ca702c88756",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#roster",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 290,
+        "import": "        from lib import roster"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_role_attribution_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_roster_contract_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/seams.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "5ecc482e02aa98b30d9ad8d2ecd57ec935bcff8e",
+    "bytes": 16640,
+    "pinned_sha256": "424136000b6e8868bf852d9a6fe2a99cb2caf81d064e15a05a64d7d38ede692f",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#seams",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/ladder_cmd.py",
+        "line": 54,
+        "import": "        from lib import ledger, seams"
+      },
+      {
+        "path": "scripts/engine/endpoint_graph.py",
+        "line": 19,
+        "import": "from lib import seams"
+      },
+      {
+        "path": "scripts/engine/graph_queries.py",
+        "line": 666,
+        "import": "    from lib import seams"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_seams_ladder_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_seams_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/skill_contract.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "d10eeb8c5b3dd358645aaa325a4b887915bbfb79",
+    "bytes": 13255,
+    "pinned_sha256": "4a97f3b95890d9b83d1dbd4f4a9547717547f96dda790cd893bb494dc6119f93",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#skill-contract",
+    "tests_executed": [
+      "[\"docker\", \"run\", \"--rm\", \"--network\", \"none\", \"--read-only\", \"--cap-drop\", \"ALL\", \"--security-opt\", \"no-new-privileges\", \"--memory\", \"512m\", \"--cpus\", \"1\", \"--pids-limit\", \"100\", \"--tmpfs\", \"/tmp:rw,nosuid,nodev,size=128m\", \"--mount\", \"type=bind,source=C:\\\\Users\\\\rudtn\\\\codex-harness\\\\.runtime\\\\absorption\\\\sources\\\\harness\\\\pinned,target=/source,readonly\", \"--workdir\", \"/source\", \"--env\", \"HOME=/tmp/review-empty-home\", \"--env\", \"PYTHONDONTWRITEBYTECODE=1\", \"--env\", \"PYTHONIOENCODING=utf-8\", \"--env\", \"CODEX_LIVE=0\", \"--entrypoint\", \"timeout\", \"sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a\", \"180\", \"python\", \"tests/contract/test_skill_contract.py\"]"
+    ],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [
+      "test_skill_contract.receipt.json"
+    ],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/skills_cmd.py",
+        "line": 29,
+        "import": "from lib.skill_contract import (  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 49,
+        "import": "from lib.skill_contract import FM_RE  # noqa: E402"
+      }
+    ],
+    "tests_not_run": []
+  },
+  {
+    "path": "scripts/lib/skill_eval.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "61dda29c15fd4a92e256c027c87dcf53d128747d",
+    "bytes": 13980,
+    "pinned_sha256": "5e7ba733fcfc81c961a37c3ad6c52ea47ac20eb5e6b3bdb7ae0398329deae3d1",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#skill-eval",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 95,
+        "import": "        from lib.skill_eval import aggregate_no_hit"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 46,
+        "import": "from lib.skill_eval import (  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_skill_eval.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/stuck.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "30edef1187159d59870ba7b9560773600ae4ef3e",
+    "bytes": 5765,
+    "pinned_sha256": "bc2abc6408166fbb34eacae7ea4f70b6361a21d1d1a8f78dab97ff4ad86d0d21",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#stuck",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/engine/circuit.py",
+        "line": 43,
+        "import": "from lib import stuck"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/integration/test_stuck_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/suite_floor.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "0d9945c9e802fd8777f32e849ed241b738e8267d",
+    "bytes": 4401,
+    "pinned_sha256": "3ea3069ff0a9488d236490ac3310adac164f8c80f7b908ac40517bc731df6551",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#suite-floor",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 86,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 26,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 48,
+        "import": "from lib.suite_floor import CANON_GLOB"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_lint_contracts_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/contract/test_sandbox_runner_env_contract.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  },
+  {
+    "path": "scripts/lib/test_outcome.py",
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "d8f1c080bada2a498a1bc27799b65a21bb579c85",
+    "bytes": 18074,
+    "pinned_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "observed_sha256": null,
+    "observed_semantic_difference": null,
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "review.md#test-outcome",
+    "tests_executed": [],
+    "test_limits": [
+      "Full code body read; callers/test completion still pending",
+      "Synthetic review probes supplement, never establish real provider execution"
+    ],
+    "remaining": [
+      "complete caller/test/Zeus trace"
+    ],
+    "adoption_status": "not_approved_not_incorporated",
+    "test_receipts": [],
+    "callers_discovered": [
+      {
+        "path": "scripts/cli/classify_cmd.py",
+        "line": 46,
+        "import": "from lib.test_outcome import (  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 57,
+        "import": "from lib.test_outcome import (  # noqa: E402"
+      }
+    ],
+    "tests_not_run": [
+      {
+        "path": "tests/contract/test_suite_runner_smoke.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      },
+      {
+        "path": "tests/unit/test_test_outcome.py",
+        "reason": "not run: dependent code/fixture review pending; source-root migration pause requested"
+      }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "base_head": "0548efaf1bc8833c750c80b242de03b5a73d7799",
+  "files": [
+    {
+      "path": "src/codex_harness/supervisor.py",
+      "sha256": "e74cd548bda080a72aa4081a4cc1b6e100d2c35c33ac1952969b9641f2f34b2a",
+      "scope": "source read in full; tests mapped, not run by this reviewer"
+    },
+    {
+      "path": "src/codex_harness/adapters/deployment.py",
+      "sha256": "88c8885eda6ec8b3bfe25db4d31152f148eed5001539379ac215412b47ea273c",
+      "scope": "source read in full; tests mapped, not run by this reviewer"
+    },
+    {
+      "path": "src/codex_harness/application/releases.py",
+      "sha256": "9d3d63e1d4889f01373cfa3c50a3f3cb2dffe328fa1eada24c1b07ddf6fef990",
+      "scope": "source read in full; tests mapped, not run by this reviewer"
+    }
+  ]
+}

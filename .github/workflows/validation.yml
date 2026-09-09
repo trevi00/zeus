@@ -1,0 +1,47 @@
+name: Windows and Linux validation
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.12', '3.14']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install uv==0.12.2
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run pytest -q
+      - run: uv build
+      - run: uv run harness-supervisor --help
+      - run: uv run zeus --version
+      - run: uv run python -m zeus ticket --help
+      - run: uv run zeus-monitor --help
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install uv==0.12.2
+      - run: uv sync --frozen
+      - run: uv run harness setup
+      - run: docker compose -p harness-ci up -d --wait postgres redis
+      - run: uv run python scripts/check.py --integration
+      - run: uv run pytest -q tests/test_verification.py
+        env:
+          ZEUS_TEST_DOCKER: '1'
+      - if: always()
+        run: docker compose -p harness-ci down --volumes

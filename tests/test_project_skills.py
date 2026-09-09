@@ -123,7 +123,7 @@ def test_actual_executor_context_contains_only_eligible_pinned_skills(project, m
     assert 'JAVA_MUST_NOT_LOAD' not in text
     selection = prompts[0]['required']['project_skills']
     assert (selection['selected'], selection['included'], selection['omitted']) == (3, 2, 1)
-    manifest = json.loads(Path(selection['file']).read_text())
+    manifest = json.loads(Path(selection['file']).read_text(encoding='utf-8'))
     large_record = next(r for r in manifest['skills'] if r['path'].endswith('/big.md'))
     assert Path(large_record['file']).read_text().startswith('LARGE_SKILL_BODY')
     (root / '.harness/tech-stack.yaml').write_text('stack: {language: java}')

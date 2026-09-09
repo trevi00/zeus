@@ -1,0 +1,396 @@
+{
+  "source": "harness-pinned",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "ledger_sha256": "89a88a5d15826b9a89301a4f419f530904a2bfebf0e65c340f0ac4177e7c41de",
+  "status": "Preserved source records inspected; not new executions or cryptographically verified attestations",
+  "records": [
+    {
+      "line": 677,
+      "raw_line_sha256_utf8": "78a38c4d85f1f3edfddfd7fe383ac514c1d37daaab8f0b4c92f330fcc9f2b28e",
+      "record": {
+        "v": 1,
+        "id": "operator.59",
+        "ts": "2026-09-03T06:23:52.095+00:00",
+        "event": "heart_change",
+        "payload": {
+          "verdict": "promoted",
+          "files": [
+            "scripts/cron/l2_driver.py",
+            "scripts/cron/role_supervisor.py",
+            "tests/contract/test_role_supervisor_contract.py"
+          ],
+          "grades": {
+            "scripts/cron/l2_driver.py": "verifiable",
+            "scripts/cron/role_supervisor.py": "verifiable",
+            "tests/contract/test_role_supervisor_contract.py": "limb"
+          },
+          "bake_s": 86400.0,
+          "pending": "hc-1788413111"
+        }
+      }
+    },
+    {
+      "line": 739,
+      "raw_line_sha256_utf8": "936b3cfc1add20c86af616001a7eb103f3a85c3b875db59cbaf8061a58e762be",
+      "record": {
+        "v": 1,
+        "id": "human.55",
+        "ts": "2026-09-03T08:13:52.736+00:00",
+        "event": "spiral_approved",
+        "payload": {
+          "candidate": "prop:golden-signals-gaps",
+          "note": "",
+          "proof": "0dd94097a1b4cbeabcf0b4ba3c5da3404f4734e045eb0e4372be364717c22d0d"
+        }
+      }
+    },
+    {
+      "line": 754,
+      "raw_line_sha256_utf8": "c8c4f59b44ed4a4336d84ce4cb61810d6dfd9b331e7ced0591719cf573f23016",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.427",
+        "ts": "2026-09-03T08:37:29.070+00:00",
+        "event": "gate_check",
+        "payload": {
+          "stage": "triage",
+          "statement": "초록 트리에서 시작한다 + 약화 래칫 기준선 촬영",
+          "check_type": "exit_code",
+          "verdict": "PASS",
+          "evidence": {
+            "cmd": "set \"HARNESS_HOME=%CD%\" && \"C:\\Python314\\python.exe\" scripts/cli/suite_cmd.py --json > var/selfimp-baseline.json",
+            "exit": 0,
+            "tail": ""
+          },
+          "verdict_mode": "machine"
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 755,
+      "raw_line_sha256_utf8": "306e99c4c593a73c01ccfe6040a60bc308f7492413e44d65321cd65a22a685ef",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.428",
+        "ts": "2026-09-03T08:37:29.074+00:00",
+        "event": "gate_verdict",
+        "payload": {
+          "stage": "triage",
+          "verdict": "PASS",
+          "evidence_refs": [
+            "orchestrator.423",
+            "orchestrator.424",
+            "orchestrator.425",
+            "orchestrator.426",
+            "orchestrator.427"
+          ],
+          "preconditions": {},
+          "interpretation": null
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 776,
+      "raw_line_sha256_utf8": "dd6112a0b06e6c2e8bc757402339087708f92e0727afcb95a13b5816e4c253ce",
+      "record": {
+        "v": 1,
+        "id": "sandbox.42",
+        "ts": "2026-09-03T09:38:21.959+00:00",
+        "event": "heart_change",
+        "payload": {
+          "verdict": "rejected",
+          "files": [
+            "scripts/cron/l2_driver.py"
+          ],
+          "suites_failed": [
+            "test_l2_driver_latency_gate.py"
+          ]
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 781,
+      "raw_line_sha256_utf8": "d05047aa748e52b76df4b816a4f6e4cf2915aabe52831a5f475eedd3425982c3",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.450",
+        "ts": "2026-09-03T10:10:22.191+00:00",
+        "event": "gate_check",
+        "payload": {
+          "stage": "verify",
+          "statement": "약화 래칫 — 기준 대비 스위트 소실·회귀 0",
+          "check_type": "exit_code",
+          "verdict": "PASS",
+          "evidence": {
+            "cmd": "set \"HARNESS_HOME=%CD%\" && \"C:\\Python314\\python.exe\" scripts/cli/suite_cmd.py --baseline var/selfimp-baseline.json",
+            "exit": 0,
+            "tail": "nt_roles_ledger_contract.py (9단언, 0.19s)\n  ok   test_reverse_smoke.py (24단언, 0.68s)\n  ok   test_rlm_smoke.py (16단언, 0.27s)\n  ok   test_role_attribution_smoke.py (34단언, 2.58s)\n  ok   test_role_supervisor_contract.py (54단언, 29.56s)\n  ok   test_roster_contract_smoke.py (20단언, 0.8s)\n  ok   test_router_smoke.py (33단언, 1.82s)\n  ok   test_sandbox_runner_env_contract.py (14단언, 0.84s)\n  ok   test_sandbox_smoke.py (29단언, 3.35s)\n  ok   test_scaffold_smoke.py (21단언, 0.36s)\n  ok   test_seams_ladder_smoke.py (35단언, 0.31s)\n  ok   test_seams_smoke.py (12단언, 0.19s)\n  ok   test_self_qualification_contract.py (8단언, 0.14s)\n  ok   test_skill_bundle_signal_smoke.py (7단언, 0.23s)\n  ok   test_skill_contract.py (41단언, 0.34s)\n  ok   test_skill_corpus_smoke.py (6단언, 0.22s)\n  ok   test_skill_eval.py (78단언, 7.94s)\n  ok   test_small_batch_smoke.py (147단언, 4.8s)\n  ok   test_spiral_smoke.py (16단언, 0.66s)\n  ok   test_stuck_smoke.py (24단언, 0.58s)\n  ok   test_suite_runner_smoke.py (69단언, 53.48s)\n  ok   test_test_outcome.py (69단언, 0.23s)\n  ok   test_tick_encoding_contract.py (7단언, 0.27s)\n  ok   test_token_notify_smoke.py (11단언, 1.04s)\n  ok   test_tradeoff_lint_contract.py (24단언, 0.85s)\n  ok   test_unattended_fence_smoke.py (37단언, 0.9s)\n  ok   test_workup_smoke.py (6단언, 0.29s)\n\n스위트 128 · 단언 3660 · 벽시계 53.5s (병렬 8 · 합 406.9s)\n  {'pass': 127, 'skip': 1}\n  검증 안 된 축 3건 (전제 미충족) — 이 초록은 아래를 **뺀** 초록이다\n    · test_coverage_bootstrap.py: 스위트 전체 — coverage 미설치 — 부트스트랩 검증 미실행\n    · test_l2_driver_latency_gate.py: ⑤b-d 지연 축 위치 — 차단 축 미착지(S1 = NO-REPAIR · OPEN-1 grilling) — 토큰이 들어오는 순간 위치 단언 셋이 자동 실효된다\n    · test_recall_retrieval_canary.py: ③ pgvector 하이브리드 팔 미구현 — harness-pg 이미지가 vector 를 안 싣는다(실측 2026-09-03: postgres:16-alpine · pg_available_extensions = pg_trgm, plpgsql). CREATE EXTENSION 이 아니라 이미지 교체가 선행이다. 이 자는 ⓪①② 만 잰다\n\n[PASS] 진공 0 · 실패 0\n\n[비교] var/selfimp-baseline.json\n  기준 초록 → 지금 붉음: 0건\n  기준 붉음 → 지금 초록: 0건\n  상태가 움직임: 0건\n  기준에 없던 스위트: 1건 — test_l2_driver_latency_gate.py\n  기준에 있었으나 사라짐: 0건\n  단언이 줄어든 스위트: 0건\n"
+          },
+          "verdict_mode": "machine"
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 782,
+      "raw_line_sha256_utf8": "784e11c61463a57c764cf2f33e055901b194cf7dbc4629c9dffa0c416cca0555",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.451",
+        "ts": "2026-09-03T10:10:22.327+00:00",
+        "event": "gate_check",
+        "payload": {
+          "stage": "verify",
+          "statement": "앵커(known_good) 대비 스위트 파일 삭제 0 — 지워서 초록 만들기 차단",
+          "check_type": "exit_code",
+          "verdict": "PASS",
+          "evidence": {
+            "cmd": "\"C:\\Python314\\python.exe\" -c \"import sys;sys.path.insert(0,\\\"scripts\\\");import subprocess;from cli.autoheart_cmd import _known_good_sha as k;s=k();sys.exit(4 if not s else subprocess.run([\\\"git\\\",\\\"diff\\\",s,\\\"--diff-filter=D\\\",\\\"--quiet\\\",\\\"--\\\",\\\"tests/\\\"]).returncode)\"",
+            "exit": 0,
+            "tail": ""
+          },
+          "verdict_mode": "machine"
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 785,
+      "raw_line_sha256_utf8": "c7a38716240d3d5ad98e9c1b13a55b5e44b69104a7badf5af2c9062a70317b04",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.454",
+        "ts": "2026-09-03T10:10:22.339+00:00",
+        "event": "gate_verdict",
+        "payload": {
+          "stage": "verify",
+          "verdict": "PASS",
+          "evidence_refs": [
+            "orchestrator.450",
+            "orchestrator.451",
+            "orchestrator.452",
+            "orchestrator.453"
+          ],
+          "preconditions": {},
+          "interpretation": null
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 795,
+      "raw_line_sha256_utf8": "b451ecc31bfd7134f18788204b5823f0aba4f7d17129e8190e2cfcde131cea26",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.463",
+        "ts": "2026-09-03T10:32:51.418+00:00",
+        "event": "gate_check",
+        "payload": {
+          "stage": "report",
+          "statement": "최종 스위트 초록 (보고 시점의 트리가 실제로 초록이다)",
+          "check_type": "exit_code",
+          "verdict": "FAIL",
+          "evidence": {
+            "cmd": "set \"HARNESS_HOME=%CD%\" && \"C:\\Python314\\python.exe\" scripts/cli/suite_cmd.py",
+            "exit": 1,
+            "tail": "rlm_smoke.py (16단언, 0.36s)\n  ok   test_role_attribution_smoke.py (34단언, 2.24s)\n  ok   test_role_supervisor_contract.py (54단언, 49.87s)\n  ok   test_roster_contract_smoke.py (20단언, 0.75s)\n  ok   test_router_smoke.py (33단언, 1.43s)\n  ok   test_sandbox_runner_env_contract.py (14단언, 0.87s)\n  ok   test_sandbox_smoke.py (29단언, 3.73s)\n  ok   test_scaffold_smoke.py (21단언, 0.35s)\n  ok   test_seams_ladder_smoke.py (35단언, 0.53s)\n  ok   test_seams_smoke.py (12단언, 0.24s)\n  ok   test_self_qualification_contract.py (8단언, 0.2s)\n  ok   test_skill_bundle_signal_smoke.py (7단언, 0.24s)\n  ok   test_skill_contract.py (41단언, 0.32s)\n  ok   test_skill_corpus_smoke.py (6단언, 0.33s)\n  ok   test_skill_eval.py (78단언, 9.38s)\n  ok   test_small_batch_smoke.py (147단언, 5.27s)\n  ok   test_spiral_smoke.py (16단언, 0.74s)\n  ok   test_stuck_smoke.py (24단언, 0.5s)\n  ok   test_suite_runner_smoke.py (69단언, 61.73s)\n  ok   test_test_outcome.py (69단언, 0.08s)\n  ok   test_tick_encoding_contract.py (7단언, 0.34s)\n  ok   test_token_notify_smoke.py (11단언, 1.12s)\n  ok   test_tradeoff_lint_contract.py (24단언, 1.25s)\n  ok   test_unattended_fence_smoke.py (37단언, 1.09s)\n  ok   test_workup_smoke.py (6단언, 0.44s)\n\n스위트 128 · 단언 3660 · 벽시계 113.3s (병렬 8 · 합 522.6s)\n  {'pass': 126, 'red_unknown': 1, 'skip': 1}\n  검증 안 된 축 3건 (전제 미충족) — 이 초록은 아래를 **뺀** 초록이다\n    · test_coverage_bootstrap.py: 스위트 전체 — coverage 미설치 — 부트스트랩 검증 미실행\n    · test_l2_driver_latency_gate.py: ⑤b-d 지연 축 위치 — 차단 축 미착지(S1 = NO-REPAIR · OPEN-1 grilling) — 토큰이 들어오는 순간 위치 단언 셋이 자동 실효된다\n    · test_recall_retrieval_canary.py: ③ pgvector 하이브리드 팔 미구현 — harness-pg 이미지가 vector 를 안 싣는다(실측 2026-09-03: postgres:16-alpine · pg_available_extensions = pg_trgm, plpgsql). CREATE EXTENSION 이 아니라 이미지 교체가 선행이다. 이 자는 ⓪①② 만 잰다\n\n[비결정] 1건 — 한 번 붉고 직렬 재실행 3회가 모두 초록. **층을 단정하지 마라** — 코드의 비결정성일 수 있다(실측 선례: 승인 키 4.6%).\n       test_board_publisher_smoke.py\n       exit 는 여전히 1이다 — 붉은 것을 초록으로 만들지 않는다.\n\n[FAIL] red_unknown 1건 — 가를 수 없다 — 출력을 직접 봐라. 추측으로 코드를 고치지 마라.\n       test_board_publisher_smoke.py\n"
+          },
+          "verdict_mode": "machine"
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 796,
+      "raw_line_sha256_utf8": "d5b9695b96b2f957972f39fa9c030c4c623982254e871030e7f636ec994567e9",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.464",
+        "ts": "2026-09-03T10:32:51.421+00:00",
+        "event": "gate_verdict",
+        "payload": {
+          "stage": "report",
+          "verdict": "FAIL",
+          "failed_statements": [
+            "최종 스위트 초록 (보고 시점의 트리가 실제로 초록이다)"
+          ],
+          "evidence_refs": [
+            "orchestrator.459",
+            "orchestrator.460",
+            "orchestrator.461",
+            "orchestrator.462",
+            "orchestrator.463"
+          ],
+          "preconditions": {},
+          "interpretation": null
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 803,
+      "raw_line_sha256_utf8": "07df892138a1e19be8862b727d161606dda1a0b6ff19205d821bd30a7dc51d6d",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.471",
+        "ts": "2026-09-03T10:48:52.656+00:00",
+        "event": "gate_check",
+        "payload": {
+          "stage": "report",
+          "statement": "최종 스위트 초록 (보고 시점의 트리가 실제로 초록이다)",
+          "check_type": "exit_code",
+          "verdict": "PASS",
+          "evidence": {
+            "cmd": "set \"HARNESS_HOME=%CD%\" && \"C:\\Python314\\python.exe\" scripts/cli/suite_cmd.py",
+            "exit": 0,
+            "tail": "k   test_repair_tier_smoke.py (23단언, 0.32s)\n  ok   test_research_collector_contract.py (23단언, 0.39s)\n  ok   test_research_digest_contract.py (45단언, 0.11s)\n  ok   test_resident_roles_ledger_contract.py (9단언, 0.15s)\n  ok   test_reverse_smoke.py (24단언, 0.52s)\n  ok   test_rlm_smoke.py (16단언, 0.27s)\n  ok   test_role_attribution_smoke.py (34단언, 2.49s)\n  ok   test_role_supervisor_contract.py (54단언, 32.55s)\n  ok   test_roster_contract_smoke.py (20단언, 0.68s)\n  ok   test_router_smoke.py (33단언, 1.66s)\n  ok   test_sandbox_runner_env_contract.py (14단언, 0.5s)\n  ok   test_sandbox_smoke.py (29단언, 3.65s)\n  ok   test_scaffold_smoke.py (21단언, 0.28s)\n  ok   test_seams_ladder_smoke.py (35단언, 0.34s)\n  ok   test_seams_smoke.py (12단언, 0.21s)\n  ok   test_self_qualification_contract.py (8단언, 0.22s)\n  ok   test_skill_bundle_signal_smoke.py (7단언, 0.31s)\n  ok   test_skill_contract.py (41단언, 0.41s)\n  ok   test_skill_corpus_smoke.py (6단언, 0.3s)\n  ok   test_skill_eval.py (78단언, 8.16s)\n  ok   test_small_batch_smoke.py (147단언, 4.58s)\n  ok   test_spiral_smoke.py (16단언, 0.71s)\n  ok   test_stuck_smoke.py (24단언, 0.39s)\n  ok   test_suite_runner_smoke.py (69단언, 52.51s)\n  ok   test_test_outcome.py (69단언, 0.13s)\n  ok   test_tick_encoding_contract.py (7단언, 0.28s)\n  ok   test_token_notify_smoke.py (11단언, 0.98s)\n  ok   test_tradeoff_lint_contract.py (24단언, 1.19s)\n  ok   test_unattended_fence_smoke.py (37단언, 1.0s)\n  ok   test_workup_smoke.py (6단언, 0.31s)\n\n스위트 128 · 단언 3665 · 벽시계 52.5s (병렬 8 · 합 415.1s)\n  {'pass': 127, 'skip': 1}\n  검증 안 된 축 3건 (전제 미충족) — 이 초록은 아래를 **뺀** 초록이다\n    · test_coverage_bootstrap.py: 스위트 전체 — coverage 미설치 — 부트스트랩 검증 미실행\n    · test_l2_driver_latency_gate.py: ⑤b-d 지연 축 위치 — 차단 축 미착지(S1 = NO-REPAIR · OPEN-1 grilling) — 토큰이 들어오는 순간 위치 단언 셋이 자동 실효된다\n    · test_recall_retrieval_canary.py: ③ pgvector 하이브리드 팔 미구현 — harness-pg 이미지가 vector 를 안 싣는다(실측 2026-09-03: postgres:16-alpine · pg_available_extensions = pg_trgm, plpgsql). CREATE EXTENSION 이 아니라 이미지 교체가 선행이다. 이 자는 ⓪①② 만 잰다\n\n[PASS] 진공 0 · 실패 0\n"
+          },
+          "verdict_mode": "machine"
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 804,
+      "raw_line_sha256_utf8": "1696044cc95d16c11d7b3e2936799399b8d484a3d64d0badd08ce3486098f0ea",
+      "record": {
+        "v": 1,
+        "id": "orchestrator.472",
+        "ts": "2026-09-03T10:48:52.661+00:00",
+        "event": "gate_verdict",
+        "payload": {
+          "stage": "report",
+          "verdict": "PASS",
+          "evidence_refs": [
+            "orchestrator.467",
+            "orchestrator.468",
+            "orchestrator.469",
+            "orchestrator.470",
+            "orchestrator.471"
+          ],
+          "preconditions": {},
+          "interpretation": null
+        },
+        "by": "l2-session"
+      }
+    },
+    {
+      "line": 806,
+      "raw_line_sha256_utf8": "6f4df9ea5c3a40c6072c77d6bf415a40e1b47b95c4d7d37d2aad94c8511474ce",
+      "record": {
+        "v": 1,
+        "id": "l2-driver.42",
+        "ts": "2026-09-03T10:56:01.512+00:00",
+        "event": "pipeline_disarmed",
+        "payload": {
+          "project": "C:\\Users\\rudtn\\harness",
+          "pipeline": "C:\\Users\\rudtn\\harness\\pipelines\\harness-selfimprove.yaml",
+          "reason": "pipeline_done",
+          "note": "해제는 루프 비활성이지 종결 선언이 아니다 — 종결 판정은 완료선 게이트만(INV-P4)",
+          "stages_total": 5,
+          "stages_done": 5,
+          "last_stage": "report"
+        }
+      }
+    },
+    {
+      "line": 807,
+      "raw_line_sha256_utf8": "17ab3101c3dafb55914ed156191f898dae2723f6bdc46532710cf1855962c937",
+      "record": {
+        "v": 1,
+        "id": "sandbox.43",
+        "ts": "2026-09-03T17:20:05.770+00:00",
+        "event": "heart_change_proposed",
+        "payload": {
+          "pending": "hc-1788456005",
+          "files": [
+            "scripts/cron/l2_driver.py",
+            "tests/contract/test_l2_driver_latency_gate.py"
+          ],
+          "grades": {
+            "scripts/cron/l2_driver.py": "verifiable",
+            "tests/contract/test_l2_driver_latency_gate.py": "limb"
+          }
+        }
+      }
+    },
+    {
+      "line": 816,
+      "raw_line_sha256_utf8": "cf0bc2e341de5a533b596bd8209a47dcd2117fb4b88ea135373c3d81a653dab7",
+      "record": {
+        "v": 1,
+        "id": "operator.62",
+        "ts": "2026-09-03T22:11:49.989+00:00",
+        "event": "heart_change",
+        "payload": {
+          "verdict": "promoted",
+          "files": [
+            "scripts/cron/l2_driver.py",
+            "tests/contract/test_l2_driver_latency_gate.py"
+          ],
+          "grades": {
+            "scripts/cron/l2_driver.py": "verifiable",
+            "tests/contract/test_l2_driver_latency_gate.py": "limb"
+          },
+          "bake_s": 86400.0,
+          "pending": "hc-1788456005"
+        }
+      }
+    },
+    {
+      "line": 889,
+      "raw_line_sha256_utf8": "c6f64baa7985f211070b2e2fc89f0e5097f415eb426e9b17971576e332c6391f",
+      "record": {
+        "v": 1,
+        "id": "sandbox.54",
+        "ts": "2026-09-06T07:36:16.535+00:00",
+        "event": "heart_change_proposed",
+        "payload": {
+          "pending": "hc-1788680176",
+          "files": [
+            "AGENTS.md",
+            "scripts/cli/health_cmd.py",
+            "scripts/lib/derive_state.py",
+            "tests/contract/test_role_delivery_contract.py"
+          ],
+          "grades": {
+            "AGENTS.md": "limb",
+            "scripts/cli/health_cmd.py": "limb",
+            "scripts/lib/derive_state.py": "verifiable",
+            "tests/contract/test_role_delivery_contract.py": "limb"
+          }
+        }
+      }
+    },
+    {
+      "line": 896,
+      "raw_line_sha256_utf8": "1bfead15336f42f5794df85eacdf5eb9fd9eed0f8716f1b33e9bc1ec2538bd4e",
+      "record": {
+        "v": 1,
+        "id": "operator.69",
+        "ts": "2026-09-06T15:06:27.224+00:00",
+        "event": "heart_change",
+        "payload": {
+          "verdict": "promoted",
+          "files": [
+            "AGENTS.md",
+            "scripts/cli/health_cmd.py",
+            "scripts/lib/derive_state.py",
+            "tests/contract/test_role_delivery_contract.py"
+          ],
+          "grades": {
+            "AGENTS.md": "limb",
+            "scripts/cli/health_cmd.py": "limb",
+            "scripts/lib/derive_state.py": "verifiable",
+            "tests/contract/test_role_delivery_contract.py": "limb"
+          },
+          "bake_s": 86400.0,
+          "pending": "hc-1788680176"
+        }
+      }
+    }
+  ]
+}

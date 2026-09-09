@@ -1,0 +1,3785 @@
+{
+  "status": "discovery_index_not_semantic_evidence",
+  "callers": {
+    "agent_depth": [
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1947,
+        "import": "    from lib.agent_depth import MAX_AGENT_DEPTH"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/agent_depth_guard.py",
+        "line": 14,
+        "import": "from lib.agent_depth import MAX_AGENT_DEPTH, current_depth, would_exceed"
+      }
+    ],
+    "approval_proof": [
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 636,
+        "import": "            from lib import approval_proof"
+      }
+    ],
+    "arming": [
+      {
+        "path": "scripts/cli/arming_cmd.py",
+        "line": 33,
+        "import": "from lib import arming  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 724,
+        "import": "        from lib import arming"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1175,
+        "import": "        from lib import arming"
+      }
+    ],
+    "atomic_jsonl": [
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 41,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/hud.py",
+        "line": 404,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 23,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 216,
+        "import": "    from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 195,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cron/bus_tailer.py",
+        "line": 23,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/consume_gate.py",
+        "line": 114,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cron/dba_projection.py",
+        "line": 44,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 42,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 119,
+        "import": "    from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 245,
+        "import": "                from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/cron/note_archive.py",
+        "line": 47,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/reachability.py",
+        "line": 54,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 57,
+        "import": "from lib.atomic_jsonl import write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_queue.py",
+        "line": 62,
+        "import": "from lib.atomic_jsonl import append_line, write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 82,
+        "import": "from lib.atomic_jsonl import append_line  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 83,
+        "import": "from lib.atomic_jsonl import write_json_atomic, write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/source_queue.py",
+        "line": 48,
+        "import": "from lib.atomic_jsonl import append_line  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 119,
+        "import": "    from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/cron/youtube_collector.py",
+        "line": 45,
+        "import": "from lib.atomic_jsonl import append_line, write_text_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/youtube_queue.py",
+        "line": 50,
+        "import": "from lib.atomic_jsonl import append_line  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/circuit.py",
+        "line": 44,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/engine/evolve.py",
+        "line": 30,
+        "import": "from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 67,
+        "import": "        from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/engine/ontology_index.py",
+        "line": 273,
+        "import": "    from lib.atomic_jsonl import write_text_atomic"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 31,
+        "import": "from lib.atomic_jsonl import append_line, write_json_atomic"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 27,
+        "import": "from lib.atomic_jsonl import write_json_atomic  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 380,
+        "import": "            from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/engine/skill_router.py",
+        "line": 386,
+        "import": "        from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/handlers/notification/relay.py",
+        "line": 16,
+        "import": "from lib.atomic_jsonl import append_line"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 16,
+        "import": "from lib.atomic_jsonl import write_text_atomic"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 18,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/handlers/stop/heartbeat.py",
+        "line": 17,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 25,
+        "import": "from lib.atomic_jsonl import write_json_atomic"
+      }
+    ],
+    "backlog": [
+      {
+        "path": "scripts/cli/capture_cmd.py",
+        "line": 41,
+        "import": "from lib import backlog, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 703,
+        "import": "        from lib import backlog"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 113,
+        "import": "    from lib import backlog"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 78,
+        "import": "        from lib import backlog"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 47,
+        "import": "from lib import backlog  # noqa: E402"
+      }
+    ],
+    "codex_provider": [
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 63,
+        "import": "from lib import codex_provider as cp          # noqa: E402"
+      }
+    ],
+    "code_context": [
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 528,
+        "import": "    from lib import code_context as cc"
+      }
+    ],
+    "completion_line": [
+      {
+        "path": "scripts/cli/completion_cmd.py",
+        "line": 25,
+        "import": "from lib import completion_line as cl  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 48,
+        "import": "from lib import completion_line as cl  # noqa: E402"
+      }
+    ],
+    "debate_rules": [
+      {
+        "path": "scripts/engine/debate.py",
+        "line": 35,
+        "import": "from lib import debate_rules as rules"
+      }
+    ],
+    "decomposition": [
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 103,
+        "import": "    from lib import decomposition"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 96,
+        "import": "    from lib.decomposition import norm"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 114,
+        "import": "    from lib import decomposition as dc"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 138,
+        "import": "    from lib.decomposition import norm"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 289,
+        "import": "        from lib import decomposition"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 345,
+        "import": "        from lib import decomposition"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 405,
+        "import": "        from lib import decomposition"
+      }
+    ],
+    "derive_state": [
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 276,
+        "import": "        from lib.derive_state import derive_binding"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 217,
+        "import": "            from lib import derive_state"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 44,
+        "import": "    from lib import derive_state"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 745,
+        "import": "        from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/projection_pg.py",
+        "line": 13,
+        "import": "from lib import derive_state, ledger, profile"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 26,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/select_ready.py",
+        "line": 20,
+        "import": "from lib import derive_state"
+      },
+      {
+        "path": "scripts/engine/staleness.py",
+        "line": 15,
+        "import": "from lib import derive_state, preconditions"
+      },
+      {
+        "path": "scripts/engine/tick.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger, repair_tier  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 15,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 24,
+        "import": "from lib import derive_state, ledger"
+      }
+    ],
+    "evaluator": [
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 64,
+        "import": "from lib import evaluator as ev               # noqa: E402"
+      }
+    ],
+    "evidence_freshness": [
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 33,
+        "import": "from lib import evidence_freshness as ef  # noqa: E402"
+      }
+    ],
+    "external_text": [
+      {
+        "path": "scripts/cli/recall_cmd.py",
+        "line": 40,
+        "import": "    from lib import external_text"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 56,
+        "import": "from lib import external_text  # noqa: E402"
+      }
+    ],
+    "git_flow": [
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 110,
+        "import": "    from lib import git_flow"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 670,
+        "import": "    from lib import git_flow"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 1023,
+        "import": "            from lib import git_flow"
+      }
+    ],
+    "guardian_contract": [
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 22,
+        "import": "from lib import guardian_contract, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 39,
+        "import": "from lib import guardian_contract  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/ladder_probe.py",
+        "line": 191,
+        "import": "    from lib import guardian_contract as gc"
+      }
+    ],
+    "hollow_audit": [
+      {
+        "path": "scripts/cli/hollow_cmd.py",
+        "line": 33,
+        "import": "from lib.hollow_audit import (  # noqa: E402"
+      }
+    ],
+    "hook_journal": [
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 591,
+        "import": "        from lib import hook_journal"
+      },
+      {
+        "path": "scripts/cli/safety_cmd.py",
+        "line": 48,
+        "import": "from lib import hook_journal as hj  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/dispatch.py",
+        "line": 218,
+        "import": "        from lib import hook_journal"
+      },
+      {
+        "path": "scripts/handlers/stop/prompt_rollup.py",
+        "line": 103,
+        "import": "        from lib import hook_journal"
+      },
+      {
+        "path": "scripts/handlers/stop/prompt_rollup.py",
+        "line": 116,
+        "import": "        from lib import hook_journal"
+      }
+    ],
+    "hook_protocol": [
+      {
+        "path": "scripts/cli/agentsmd_cmd.py",
+        "line": 233,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/append_restore.py",
+        "line": 38,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/arming_cmd.py",
+        "line": 191,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 1442,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 39,
+        "import": "from lib.hook_protocol import Ctx  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import L2_SPAWN_ENV"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 267,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/capture_cmd.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/classify_cmd.py",
+        "line": 136,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/completion_cmd.py",
+        "line": 110,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/coverage_cmd.py",
+        "line": 205,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 116,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/delegate_cmd.py",
+        "line": 164,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/endpoint_cmd.py",
+        "line": 63,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/error_contract_cmd.py",
+        "line": 1073,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/evolve_cmd.py",
+        "line": 83,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/extractor_canary_cmd.py",
+        "line": 290,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/fleet_contracts_cmd.py",
+        "line": 155,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 193,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/gate_dump_cmd.py",
+        "line": 176,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 955,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/hollow_cmd.py",
+        "line": 142,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/hook_latency_probe.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 139,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/invariants_cmd.py",
+        "line": 524,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 409,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/ladder_cmd.py",
+        "line": 139,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/mirror_cmd.py",
+        "line": 61,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/ontology_cmd.py",
+        "line": 76,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/pollution_cmd.py",
+        "line": 67,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/probe_cmd.py",
+        "line": 112,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/prompts_cmd.py",
+        "line": 184,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 181,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/recall_cmd.py",
+        "line": 62,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/residual_cmd.py",
+        "line": 130,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/roster_cmd.py",
+        "line": 220,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 320,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/safety_cmd.py",
+        "line": 124,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 253,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 202,
+        "import": "        from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/cli/scaffold_cmd.py",
+        "line": 95,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/skills_cmd.py",
+        "line": 114,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 412,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 677,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 582,
+        "import": "        from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 161,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 509,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 622,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/testgen_cmd.py",
+        "line": 47,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cli/workup_cmd.py",
+        "line": 52,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/collab_ask_audit.py",
+        "line": 160,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/commit_scope.py",
+        "line": 143,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/consume_gate.py",
+        "line": 133,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/dba_projection.py",
+        "line": 106,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/known_issues.py",
+        "line": 189,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1936,
+        "import": "    from lib.hook_protocol import L2_SPAWN_ENV"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 2042,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/latency_gate.py",
+        "line": 198,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/lesson_spot.py",
+        "line": 284,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/note_archive.py",
+        "line": 191,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/reachability.py",
+        "line": 331,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 278,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/research_queue.py",
+        "line": 167,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 261,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/session_handoff.py",
+        "line": 190,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/source_queue.py",
+        "line": 159,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 271,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/uptake_routes.py",
+        "line": 183,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/youtube_collector.py",
+        "line": 211,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/cron/youtube_queue.py",
+        "line": 209,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/handlers/dispatch.py",
+        "line": 43,
+        "import": "    from lib import hook_protocol"
+      },
+      {
+        "path": "scripts/handlers/dispatch.py",
+        "line": 44,
+        "import": "    from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/validators/candidate_binding.py",
+        "line": 133,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/ddl_dry_run.py",
+        "line": 55,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 2090,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/heredoc_guard.py",
+        "line": 136,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/intent_doc_floor.py",
+        "line": 96,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/isolation_deferred.py",
+        "line": 151,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 161,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/pattern_decisions.py",
+        "line": 59,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/red_flags_scan.py",
+        "line": 51,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/repair_evidence.py",
+        "line": 185,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/settings_wiring.py",
+        "line": 295,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/todo_scan.py",
+        "line": 76,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/tradeoff_lint.py",
+        "line": 242,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/validators/usecase_lint.py",
+        "line": 82,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "scripts/handlers/notification/relay.py",
+        "line": 17,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/agent_depth_guard.py",
+        "line": 15,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/extracted_guard.py",
+        "line": 16,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 27,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 714,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/handlers/prompt/promptlog.py",
+        "line": 26,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 17,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 58,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/handlers/session/precompact_guidance.py",
+        "line": 12,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 19,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/heartbeat.py",
+        "line": 18,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 23,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 52,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 26,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 24,
+        "import": "from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 135,
+        "import": "    from lib.hook_protocol import is_driver_spawned"
+      }
+    ],
+    "idempotency": [
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 40,
+        "import": "from lib import idempotency  # noqa: E402"
+      }
+    ],
+    "ids": [
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/ontology_index.py",
+        "line": 29,
+        "import": "from lib import ids"
+      },
+      {
+        "path": "scripts/validators/ontology_validator.py",
+        "line": 28,
+        "import": "from lib import ids  # noqa: E402"
+      }
+    ],
+    "judge_integrity": [],
+    "judgment_paths": [
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 1484,
+        "import": "    from lib import judgment_paths"
+      }
+    ],
+    "lease": [
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 41,
+        "import": "from lib import lease as lease_lib  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/evolve.py",
+        "line": 211,
+        "import": "    from lib import lease as _lease"
+      }
+    ],
+    "ledger": [
+      {
+        "path": "scripts/cli/append_restore.py",
+        "line": 17,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 86,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/capture_cmd.py",
+        "line": 41,
+        "import": "from lib import backlog, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/debate_cmd.py",
+        "line": 32,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 27,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 29,
+        "import": "from lib import ledger, ownership_events  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/ladder_cmd.py",
+        "line": 54,
+        "import": "        from lib import ledger, seams"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 66,
+        "import": "        from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cli/residual_cmd.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 22,
+        "import": "from lib import guardian_contract, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 26,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 32,
+        "import": "from lib import arming, backlog, completion_line as cl, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 272,
+        "import": "        from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 622,
+        "import": "        from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 745,
+        "import": "        from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 814,
+        "import": "        from lib import ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1561,
+        "import": "        from lib import ledger"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1306,
+        "import": "            from lib import ledger as _ledger"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 49,
+        "import": "from lib import ledger  # noqa: E402  (자율 귀속 판정 — 위조 승인 배제)"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/debate.py",
+        "line": 36,
+        "import": "from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 23,
+        "import": "from lib import ledger, preconditions, repair_tier"
+      },
+      {
+        "path": "scripts/engine/pollution.py",
+        "line": 29,
+        "import": "from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 161,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 189,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/projection_pg.py",
+        "line": 13,
+        "import": "from lib import derive_state, ledger, profile"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 26,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 40,
+        "import": "from lib import ledger"
+      },
+      {
+        "path": "scripts/engine/tick.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger, repair_tier  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 84,
+        "import": "    from lib.ledger import EVENT_TYPES"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 15,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 17,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 24,
+        "import": "from lib import derive_state, ledger"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 143,
+        "import": "        from lib import ledger"
+      }
+    ],
+    "overlap": [
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 140,
+        "import": "        from lib import overlap as _ov"
+      }
+    ],
+    "ownership_events": [
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 29,
+        "import": "from lib import ledger, ownership_events  # noqa: E402"
+      }
+    ],
+    "ownership_vitals": [
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 655,
+        "import": "        from lib import ownership_vitals"
+      }
+    ],
+    "params": [
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 118,
+        "import": "    from lib import params"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 369,
+        "import": "        from lib import params"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 37,
+        "import": "    from lib import params"
+      },
+      {
+        "path": "scripts/engine/pollution.py",
+        "line": 72,
+        "import": "    from lib import params"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 101,
+        "import": "            from lib import params"
+      }
+    ],
+    "paths": [
+      {
+        "path": "scripts/cli/agentsmd_cmd.py",
+        "line": 20,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/arming_cmd.py",
+        "line": 34,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 87,
+        "import": "from lib.paths import (harness_home, normalize_rel, python_exe,  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/boundary_corpus_cmd.py",
+        "line": 40,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/completion_cmd.py",
+        "line": 26,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/coverage_cmd.py",
+        "line": 46,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/cycle_cmd.py",
+        "line": 28,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/delegate_cmd.py",
+        "line": 31,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/extractor_canary_cmd.py",
+        "line": 67,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 42,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/gate_dump_cmd.py",
+        "line": 75,
+        "import": "from lib.paths import harness_home, normalize_rel, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 28,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/health_cmd.py",
+        "line": 300,
+        "import": "        from lib.paths import python_exe"
+      },
+      {
+        "path": "scripts/cli/hollow_cmd.py",
+        "line": 36,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/hook_latency_probe.py",
+        "line": 39,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/hud.py",
+        "line": 29,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/incident_cmd.py",
+        "line": 30,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/invariants_cmd.py",
+        "line": 52,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/judge_cmd.py",
+        "line": 65,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/ontology_cmd.py",
+        "line": 20,
+        "import": "from lib.paths import harness_home, python_exe, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/probe_cmd.py",
+        "line": 24,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 25,
+        "import": "    from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 67,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cli/residual_cmd.py",
+        "line": 22,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/roster_cmd.py",
+        "line": 36,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/run_cmd.py",
+        "line": 24,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 27,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/scaffold_cmd.py",
+        "line": 19,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/skills_cmd.py",
+        "line": 28,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 45,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/spiral_cmd.py",
+        "line": 34,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 18,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/status_cmd.py",
+        "line": 43,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 22,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 205,
+        "import": "        from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 56,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 172,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 217,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/cron/bus_tailer.py",
+        "line": 24,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/collab_ask_audit.py",
+        "line": 64,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/commit_scope.py",
+        "line": 50,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/consume_gate.py",
+        "line": 54,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/dba_projection.py",
+        "line": 45,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/known_issues.py",
+        "line": 58,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 43,
+        "import": "from lib.paths import harness_home, resolve, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/l2_driver.py",
+        "line": 1885,
+        "import": "        from lib.paths import python_exe"
+      },
+      {
+        "path": "scripts/cron/lesson_spot.py",
+        "line": 79,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/note_archive.py",
+        "line": 48,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/reachability.py",
+        "line": 55,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_collector.py",
+        "line": 58,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/research_queue.py",
+        "line": 63,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/re_anchor.py",
+        "line": 50,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/role_supervisor.py",
+        "line": 84,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/session_handoff.py",
+        "line": 44,
+        "import": "from lib.paths import harness_home, state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/source_queue.py",
+        "line": 49,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 56,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/uptake_routes.py",
+        "line": 50,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/youtube_collector.py",
+        "line": 46,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/youtube_queue.py",
+        "line": 51,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/checks.py",
+        "line": 162,
+        "import": "        from lib.paths import python_exe"
+      },
+      {
+        "path": "scripts/engine/checks.py",
+        "line": 165,
+        "import": "        from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/engine/circuit.py",
+        "line": 45,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 30,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/debate.py",
+        "line": 37,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/evolve.py",
+        "line": 31,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 68,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/golden.py",
+        "line": 26,
+        "import": "from lib.paths import harness_home, python_exe, resolve"
+      },
+      {
+        "path": "scripts/engine/graph_queries.py",
+        "line": 25,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/ladder_probe.py",
+        "line": 33,
+        "import": "from lib.paths import harness_home, state_dir"
+      },
+      {
+        "path": "scripts/engine/mutation.py",
+        "line": 24,
+        "import": "from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/engine/ontology_index.py",
+        "line": 30,
+        "import": "from lib.paths import harness_home, resolve"
+      },
+      {
+        "path": "scripts/engine/pipeline_loader.py",
+        "line": 25,
+        "import": "from lib.paths import harness_home as harness_home_path, resolve"
+      },
+      {
+        "path": "scripts/engine/pollution.py",
+        "line": 30,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/pr4.py",
+        "line": 32,
+        "import": "from lib.paths import harness_home, python_exe, resolve, state_dir"
+      },
+      {
+        "path": "scripts/engine/recall.py",
+        "line": 25,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/recall.py",
+        "line": 91,
+        "import": "    from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/engine/reflect.py",
+        "line": 28,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 41,
+        "import": "from lib.paths import harness_home, normalize_rel, python_exe"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 381,
+        "import": "            from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/engine/skill_router.py",
+        "line": 24,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/engine/skill_router.py",
+        "line": 387,
+        "import": "        from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/validators/candidate_binding.py",
+        "line": 44,
+        "import": "from lib.paths import resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 43,
+        "import": "from lib.paths import harness_home, normalize_rel  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 204,
+        "import": "    from lib.paths import resolve                      # SC-6"
+      },
+      {
+        "path": "scripts/validators/harness_lint.py",
+        "line": 357,
+        "import": "    from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/validators/isolation_deferred.py",
+        "line": 56,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/ledger_semantics.py",
+        "line": 148,
+        "import": "        from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/validators/ontology_validator.py",
+        "line": 29,
+        "import": "from lib.paths import ontology_schema_path  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/repair_evidence.py",
+        "line": 67,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/settings_wiring.py",
+        "line": 34,
+        "import": "from lib.paths import harness_home  # noqa: E402"
+      },
+      {
+        "path": "scripts/validators/tradeoff_lint.py",
+        "line": 70,
+        "import": "from lib.paths import harness_home, resolve  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/notification/relay.py",
+        "line": 18,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 28,
+        "import": "from lib.paths import harness_home, resolve"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 717,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 736,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/write_boundary.py",
+        "line": 957,
+        "import": "    from lib.paths import harness_home"
+      },
+      {
+        "path": "scripts/handlers/prompt/promptlog.py",
+        "line": 27,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 18,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/prompt/seeding.py",
+        "line": 90,
+        "import": "    from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 20,
+        "import": "from lib.paths import resolve"
+      },
+      {
+        "path": "scripts/handlers/session/projection_report.py",
+        "line": 63,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/heartbeat.py",
+        "line": 19,
+        "import": "from lib.paths import state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/reenforce.py",
+        "line": 24,
+        "import": "from lib.paths import harness_home, python_exe, resolve, state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/reflector_fork.py",
+        "line": 27,
+        "import": "from lib.paths import harness_home, python_exe, state_dir"
+      },
+      {
+        "path": "scripts/handlers/stop/subagent_harvest.py",
+        "line": 25,
+        "import": "from lib.paths import state_dir"
+      }
+    ],
+    "preconditions": [
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 23,
+        "import": "from lib import ledger, preconditions, repair_tier"
+      },
+      {
+        "path": "scripts/engine/staleness.py",
+        "line": 15,
+        "import": "from lib import derive_state, preconditions"
+      }
+    ],
+    "profile": [
+      {
+        "path": "scripts/cron/bus_tailer.py",
+        "line": 22,
+        "import": "from lib import profile  # noqa: E402"
+      },
+      {
+        "path": "scripts/cron/topic_reaper.py",
+        "line": 131,
+        "import": "        from lib import profile as prof"
+      },
+      {
+        "path": "scripts/engine/projection_pg.py",
+        "line": 13,
+        "import": "from lib import derive_state, ledger, profile"
+      },
+      {
+        "path": "scripts/validators/ddl_dry_run.py",
+        "line": 18,
+        "import": "from lib import profile  # noqa: E402"
+      }
+    ],
+    "prompt_clusters": [
+      {
+        "path": "scripts/cli/prompts_cmd.py",
+        "line": 40,
+        "import": "from lib import prompt_clusters as pcl  # noqa: E402"
+      },
+      {
+        "path": "scripts/handlers/stop/prompt_rollup.py",
+        "line": 55,
+        "import": "from lib.prompt_clusters import REP_CHARS, cluster_rows  # noqa: E402"
+      }
+    ],
+    "repair_tier": [
+      {
+        "path": "scripts/engine/gate_runner.py",
+        "line": 23,
+        "import": "from lib import ledger, preconditions, repair_tier"
+      },
+      {
+        "path": "scripts/engine/tick.py",
+        "line": 28,
+        "import": "from lib import derive_state, ledger, repair_tier  # noqa: E402"
+      }
+    ],
+    "repro_probe": [
+      {
+        "path": "scripts/engine/curator.py",
+        "line": 29,
+        "import": "from lib import derive_state, ids, ledger, repro_probe  # noqa: E402"
+      }
+    ],
+    "research_digest": [
+      {
+        "path": "scripts/cli/fleet_status_cmd.py",
+        "line": 40,
+        "import": "from lib import research_digest as rd  # noqa: E402"
+      }
+    ],
+    "roster": [
+      {
+        "path": "scripts/cli/step_cmd.py",
+        "line": 290,
+        "import": "        from lib import roster"
+      }
+    ],
+    "seams": [
+      {
+        "path": "scripts/cli/ladder_cmd.py",
+        "line": 54,
+        "import": "        from lib import ledger, seams"
+      },
+      {
+        "path": "scripts/engine/endpoint_graph.py",
+        "line": 19,
+        "import": "from lib import seams"
+      },
+      {
+        "path": "scripts/engine/graph_queries.py",
+        "line": 666,
+        "import": "    from lib import seams"
+      }
+    ],
+    "skill_contract": [
+      {
+        "path": "scripts/cli/skills_cmd.py",
+        "line": 29,
+        "import": "from lib.skill_contract import (  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 49,
+        "import": "from lib.skill_contract import FM_RE  # noqa: E402"
+      }
+    ],
+    "skill_eval": [
+      {
+        "path": "scripts/cli/quality_cmd.py",
+        "line": 95,
+        "import": "        from lib.skill_eval import aggregate_no_hit"
+      },
+      {
+        "path": "scripts/cli/skill_eval_cmd.py",
+        "line": 46,
+        "import": "from lib.skill_eval import (  # noqa: E402"
+      }
+    ],
+    "stuck": [
+      {
+        "path": "scripts/engine/circuit.py",
+        "line": 43,
+        "import": "from lib import stuck"
+      }
+    ],
+    "suite_floor": [
+      {
+        "path": "scripts/cli/autoheart_cmd.py",
+        "line": 86,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/sandbox_cmd.py",
+        "line": 26,
+        "import": "from lib import ledger, suite_floor  # noqa: E402"
+      },
+      {
+        "path": "scripts/engine/sandbox.py",
+        "line": 48,
+        "import": "from lib.suite_floor import CANON_GLOB"
+      }
+    ],
+    "test_outcome": [
+      {
+        "path": "scripts/cli/classify_cmd.py",
+        "line": 46,
+        "import": "from lib.test_outcome import (  # noqa: E402"
+      },
+      {
+        "path": "scripts/cli/suite_cmd.py",
+        "line": 57,
+        "import": "from lib.test_outcome import (  # noqa: E402"
+      }
+    ]
+  },
+  "tests": {
+    "agent_depth": [
+      {
+        "path": "tests/integration/test_khaness_remine2_smoke.py",
+        "line": 37,
+        "import": "    from lib import agent_depth, repro_probe as rp"
+      },
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "line": 196,
+        "import": "            from lib.agent_depth import MAX_AGENT_DEPTH"
+      }
+    ],
+    "approval_proof": [
+      {
+        "path": "tests/contract/test_arming_grade_axis_contract.py",
+        "line": 186,
+        "import": "    from lib import approval_proof as _ap"
+      },
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "line": 49,
+        "import": "from lib import arming, backlog, approval_proof   # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "line": 36,
+        "import": "from lib import approval_proof, arming, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "line": 341,
+        "import": "    from lib import approval_proof"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "line": 359,
+        "import": "    from lib import approval_proof"
+      },
+      {
+        "path": "tests/integration/test_arm_silence_smoke.py",
+        "line": 159,
+        "import": "            from lib import approval_proof as _ap"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "line": 66,
+        "import": "    from lib import approval_proof"
+      }
+    ],
+    "arming": [
+      {
+        "path": "tests/contract/test_arming_freshness_contract.py",
+        "line": 70,
+        "import": "from lib import arming  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_arming_grade_axis_contract.py",
+        "line": 51,
+        "import": "from lib import arming  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_arming_grade_axis_contract.py",
+        "line": 537,
+        "import": "    from lib import arming as A"
+      },
+      {
+        "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+        "line": 45,
+        "import": "from lib import arming, derive_state  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "line": 54,
+        "import": "from lib import arming  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_resident_roles_ledger_contract.py",
+        "line": 40,
+        "import": "from lib import arming  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "line": 49,
+        "import": "from lib import arming, backlog, approval_proof   # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "line": 36,
+        "import": "from lib import approval_proof, arming, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "line": 370,
+        "import": "    from lib import arming"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "line": 43,
+        "import": "from lib import arming, backlog, ledger  # noqa: E402"
+      }
+    ],
+    "atomic_jsonl": [],
+    "backlog": [
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "line": 49,
+        "import": "from lib import arming, backlog, approval_proof   # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_spiral_candidate_cut_contract.py",
+        "line": 47,
+        "import": "from lib import backlog  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "line": 510,
+        "import": "    from lib import backlog as _bl"
+      },
+      {
+        "path": "tests/integration/test_backlog_smoke.py",
+        "line": 37,
+        "import": "    from lib import backlog"
+      },
+      {
+        "path": "tests/integration/test_capture_smoke.py",
+        "line": 51,
+        "import": "    from lib import backlog"
+      },
+      {
+        "path": "tests/integration/test_proposal_retire_smoke.py",
+        "line": 41,
+        "import": "from lib import backlog, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "line": 43,
+        "import": "from lib import arming, backlog, ledger  # noqa: E402"
+      }
+    ],
+    "codex_provider": [
+      {
+        "path": "tests/integration/test_jury_quorum_smoke.py",
+        "line": 128,
+        "import": "    from lib import codex_provider as cp"
+      }
+    ],
+    "code_context": [
+      {
+        "path": "tests/contract/test_code_context_smoke.py",
+        "line": 29,
+        "import": "    from lib import code_context as cc"
+      }
+    ],
+    "completion_line": [
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "line": 28,
+        "import": "    from lib import completion_line as cl, decomposition as dc, overlap as ov"
+      }
+    ],
+    "debate_rules": [
+      {
+        "path": "tests/integration/test_debate_smoke.py",
+        "line": 21,
+        "import": "from lib import debate_rules as rules  # noqa: E402"
+      }
+    ],
+    "decomposition": [
+      {
+        "path": "tests/contract/test_domain_lead_delivery_contract.py",
+        "line": 78,
+        "import": "    from lib import decomposition"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "line": 40,
+        "import": "    from lib import decomposition as dc"
+      },
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "line": 28,
+        "import": "    from lib import completion_line as cl, decomposition as dc, overlap as ov"
+      }
+    ],
+    "derive_state": [
+      {
+        "path": "tests/contract/test_acceptance_coverage_contract.py",
+        "line": 55,
+        "import": "from lib import derive_state as ds  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+        "line": 45,
+        "import": "from lib import arming, derive_state  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_disarm_says_what_happened_contract.py",
+        "line": 71,
+        "import": "    from lib import derive_state as ds"
+      },
+      {
+        "path": "tests/contract/test_role_delivery_contract.py",
+        "line": 42,
+        "import": "from lib import derive_state as ds  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "line": 245,
+        "import": "            from lib.derive_state import derive_binding  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_closedloop_smoke.py",
+        "line": 23,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_pollution_smoke.py",
+        "line": 22,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_spiral_smoke.py",
+        "line": 22,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/unit/test_compaction_smoke.py",
+        "line": 19,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/unit/test_compaction_smoke.py",
+        "line": 127,
+        "import": "    from lib import derive_state"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "line": 18,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      }
+    ],
+    "evaluator": [
+      {
+        "path": "tests/integration/test_jury_quorum_smoke.py",
+        "line": 129,
+        "import": "    from lib import evaluator as ev"
+      },
+      {
+        "path": "tests/unit/test_evaluator_smoke.py",
+        "line": 52,
+        "import": "    from lib.evaluator import ("
+      },
+      {
+        "path": "tests/unit/test_evaluator_smoke.py",
+        "line": 193,
+        "import": "    from lib.evaluator import ("
+      }
+    ],
+    "evidence_freshness": [
+      {
+        "path": "tests/contract/test_arming_freshness_contract.py",
+        "line": 71,
+        "import": "from lib import evidence_freshness as ef  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_evidence_freshness_contract.py",
+        "line": 57,
+        "import": "from lib import evidence_freshness as ef   # noqa: E402"
+      }
+    ],
+    "external_text": [
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 585,
+        "import": "        from lib import external_text"
+      }
+    ],
+    "git_flow": [
+      {
+        "path": "tests/contract/test_boundary_corpus_smoke.py",
+        "line": 119,
+        "import": "    from lib import git_flow"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 594,
+        "import": "        from lib import git_flow"
+      }
+    ],
+    "guardian_contract": [
+      {
+        "path": "tests/contract/test_guardian_contract_smoke.py",
+        "line": 37,
+        "import": "    from lib import guardian_contract as gc"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "line": 167,
+        "import": "        from lib import guardian_contract as gc"
+      }
+    ],
+    "hollow_audit": [
+      {
+        "path": "tests/contract/test_hollow_audit.py",
+        "line": 46,
+        "import": "    from lib.hollow_audit import ("
+      },
+      {
+        "path": "tests/integration/test_context_programming_smoke.py",
+        "line": 150,
+        "import": "    from lib.hollow_audit import code_only  # noqa: PLC0415 — 이 자리에서만 쓴다"
+      }
+    ],
+    "hook_journal": [
+      {
+        "path": "tests/integration/test_hook_journal_smoke.py",
+        "line": 39,
+        "import": "    from lib import hook_journal as hj"
+      },
+      {
+        "path": "tests/integration/test_hook_journal_smoke.py",
+        "line": 97,
+        "import": "        from lib import hook_journal as probe"
+      }
+    ],
+    "hook_protocol": [
+      {
+        "path": "tests/contract/test_acceptance_coverage_contract.py",
+        "line": 349,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_arming_freshness_contract.py",
+        "line": 473,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_arming_grade_axis_contract.py",
+        "line": 591,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+        "line": 280,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "line": 410,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_board_publisher_smoke.py",
+        "line": 483,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_boundary_corpus_smoke.py",
+        "line": 182,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_bus_tailer_contract.py",
+        "line": 240,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_bus_topic_order_contract.py",
+        "line": 319,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_bus_watermark_contract.py",
+        "line": 260,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_code_context_smoke.py",
+        "line": 102,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_commit_scope_contract.py",
+        "line": 125,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_consume_gate_contract.py",
+        "line": 193,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_contract_visibility_contract.py",
+        "line": 177,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_coverage_bootstrap.py",
+        "line": 93,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_dba_projection_contract.py",
+        "line": 143,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_delegation_cap_attribution_smoke.py",
+        "line": 142,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_disarm_says_what_happened_contract.py",
+        "line": 157,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_domain_lead_delivery_contract.py",
+        "line": 138,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_driver_caps_smoke.py",
+        "line": 96,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_dropped_print_contract.py",
+        "line": 480,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_entrance_reconfirm_contract.py",
+        "line": 194,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_entrypoint_import.py",
+        "line": 138,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_env_seal_smoke.py",
+        "line": 377,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_evidence_freshness_contract.py",
+        "line": 405,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_extractor_canary_contract.py",
+        "line": 278,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_fleet_contracts_smoke.py",
+        "line": 297,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_fleet_mount_boundary_contract.py",
+        "line": 119,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_gate_dump_contract.py",
+        "line": 217,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_gate_executable_contract.py",
+        "line": 206,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_guardian_contract_smoke.py",
+        "line": 268,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_harness_lint.py",
+        "line": 38,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_health_alerts_surface_contract.py",
+        "line": 154,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_heredoc_guard_contract.py",
+        "line": 166,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_hollow_audit.py",
+        "line": 160,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_hook_adversarial.py",
+        "line": 45,
+        "import": "from lib.hook_protocol import KNOWN_EVENTS  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_hook_adversarial.py",
+        "line": 207,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "line": 277,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_inv_bite_smoke.py",
+        "line": 115,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_isolation_deferred_contract.py",
+        "line": 105,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_judge_integrity_league.py",
+        "line": 235,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_judgment_paths_contract.py",
+        "line": 180,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_known_issues_contract.py",
+        "line": 252,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_l2_driver_latency_gate.py",
+        "line": 452,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_ladder_sweep_contract.py",
+        "line": 253,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_latency_consumer_contract.py",
+        "line": 350,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_lint_contracts_smoke.py",
+        "line": 844,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_note_accumulation_contract.py",
+        "line": 192,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_ontology_smoke.py",
+        "line": 386,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_ownership_smoke.py",
+        "line": 230,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_promote_dirty_scope_contract.py",
+        "line": 157,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_queue_gating_contract.py",
+        "line": 149,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_reachability_contract.py",
+        "line": 163,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_repair_evidence_contract.py",
+        "line": 167,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_research_collector_contract.py",
+        "line": 220,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_research_digest_contract.py",
+        "line": 245,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_research_queue_contract.py",
+        "line": 157,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_resident_roles_ledger_contract.py",
+        "line": 110,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_role_delivery_contract.py",
+        "line": 258,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_role_section_contract.py",
+        "line": 229,
+        "import": "        from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_role_supervisor_contract.py",
+        "line": 647,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_run_marker_halt_contract.py",
+        "line": 248,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_sandbox_runner_env_contract.py",
+        "line": 252,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "line": 149,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_session_handoff_contract.py",
+        "line": 203,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_skill_contract.py",
+        "line": 172,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_skill_corpus_smoke.py",
+        "line": 78,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_skill_eval.py",
+        "line": 258,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_source_note_contract.py",
+        "line": 212,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_spiral_candidate_cut_contract.py",
+        "line": 134,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_suite_runner_smoke.py",
+        "line": 466,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_tick_encoding_contract.py",
+        "line": 104,
+        "import": "    from lib import hook_protocol as hp"
+      },
+      {
+        "path": "tests/contract/test_tick_encoding_contract.py",
+        "line": 150,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_topic_reaper_contract.py",
+        "line": 223,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_tradeoff_lint_contract.py",
+        "line": 257,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_uptake_routes_contract.py",
+        "line": 283,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_verdict_reprobe_contract.py",
+        "line": 159,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_youtube_note_contract.py",
+        "line": 168,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/contract/test_youtube_queue_contract.py",
+        "line": 228,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "line": 147,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_arming_smoke.py",
+        "line": 32,
+        "import": "    from lib.hook_protocol import L2_SPAWN_ENV, Ctx"
+      },
+      {
+        "path": "tests/integration/test_arming_smoke.py",
+        "line": 167,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "line": 690,
+        "import": "    from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "tests/integration/test_arming_wiring_smoke.py",
+        "line": 777,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_arm_silence_smoke.py",
+        "line": 306,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "line": 299,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "line": 1119,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_backlog_smoke.py",
+        "line": 369,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_capture_smoke.py",
+        "line": 220,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_chat_smoke.py",
+        "line": 153,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_chat_smoke.py",
+        "line": 116,
+        "import": "            from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "tests/integration/test_cli_smoke.py",
+        "line": 167,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_cli_wrappers_smoke.py",
+        "line": 118,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_closedloop_smoke.py",
+        "line": 24,
+        "import": "from lib.hook_protocol import Ctx  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_closedloop_smoke.py",
+        "line": 152,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_context_programming_smoke.py",
+        "line": 180,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_curator_smoke.py",
+        "line": 348,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_cycle_approval_smoke.py",
+        "line": 110,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_debate_smoke.py",
+        "line": 240,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "line": 142,
+        "import": "    from lib.hook_protocol import Ctx as _Ctx, L2_SPAWN_ENV as _ST"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "line": 200,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_dispatch_smoke.py",
+        "line": 26,
+        "import": "from lib.hook_protocol import KNOWN_EVENTS, Ctx  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_dispatch_smoke.py",
+        "line": 333,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_endpoint_graph_smoke.py",
+        "line": 177,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_engine_smoke.py",
+        "line": 498,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_evolve_smoke.py",
+        "line": 165,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_fleet_smoke.py",
+        "line": 204,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_gate_active_smoke.py",
+        "line": 133,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_gate_ratchet_smoke.py",
+        "line": 151,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "line": 143,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_health_smoke.py",
+        "line": 310,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_heart_guard_smoke.py",
+        "line": 38,
+        "import": "    from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "tests/integration/test_heart_guard_smoke.py",
+        "line": 673,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_hook_journal_smoke.py",
+        "line": 40,
+        "import": "    from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "tests/integration/test_hook_journal_smoke.py",
+        "line": 255,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_hud_smoke.py",
+        "line": 200,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_integrity_smoke.py",
+        "line": 145,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_invariants_binding_smoke.py",
+        "line": 481,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_jury_quorum_smoke.py",
+        "line": 306,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_khaness_remine2_smoke.py",
+        "line": 94,
+        "import": "    from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "tests/integration/test_khaness_remine2_smoke.py",
+        "line": 132,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "line": 401,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_ladder_probe_smoke.py",
+        "line": 95,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_ladder_smoke.py",
+        "line": 199,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_latency_budget_smoke.py",
+        "line": 196,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_lease_smoke.py",
+        "line": 202,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_mirror_smoke.py",
+        "line": 122,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_monitor_readonly_smoke.py",
+        "line": 217,
+        "import": "        from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_mutation_baseline_smoke.py",
+        "line": 243,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_ownership_vitals_smoke.py",
+        "line": 192,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_params_smoke.py",
+        "line": 163,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_polish_smoke.py",
+        "line": 73,
+        "import": "    from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "tests/integration/test_polish_smoke.py",
+        "line": 192,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_pollution_smoke.py",
+        "line": 154,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_preconditions_smoke.py",
+        "line": 150,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_probe_smoke.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_promptlog_smoke.py",
+        "line": 26,
+        "import": "from lib.hook_protocol import Ctx  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_promptlog_smoke.py",
+        "line": 275,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_prompt_rollup_smoke.py",
+        "line": 196,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_proposal_retire_smoke.py",
+        "line": 42,
+        "import": "from lib.hook_protocol import Ctx, L2_SPAWN_ENV  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_proposal_retire_smoke.py",
+        "line": 314,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "line": 44,
+        "import": "from lib.hook_protocol import L2_SPAWN_ENV  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "line": 223,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "line": 173,
+        "import": "        import lib.hook_protocol as hp"
+      },
+      {
+        "path": "tests/integration/test_reanchor_binding_smoke.py",
+        "line": 214,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_recall_retrieval_canary.py",
+        "line": 301,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_repair_tier_smoke.py",
+        "line": 156,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_rlm_smoke.py",
+        "line": 129,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_role_attribution_smoke.py",
+        "line": 278,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_roster_contract_smoke.py",
+        "line": 118,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "line": 517,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_scaffold_smoke.py",
+        "line": 214,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_seams_ladder_smoke.py",
+        "line": 197,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_seams_smoke.py",
+        "line": 113,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 778,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 612,
+        "import": "        from lib.hook_protocol import Ctx"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 150,
+        "import": "                    from lib.hook_protocol import Ctx as _Ctx"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 237,
+        "import": "                    from lib.hook_protocol import Ctx as _Ctx"
+      },
+      {
+        "path": "tests/integration/test_spiral_smoke.py",
+        "line": 167,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_stuck_smoke.py",
+        "line": 189,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_token_notify_smoke.py",
+        "line": 248,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/integration/test_unattended_fence_smoke.py",
+        "line": 46,
+        "import": "from lib.hook_protocol import Ctx, L2_SPAWN_ENV  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_unattended_fence_smoke.py",
+        "line": 284,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_checks_smoke.py",
+        "line": 164,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_circuit_smoke.py",
+        "line": 166,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_codex_provider.py",
+        "line": 299,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_compaction_smoke.py",
+        "line": 204,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_error_contract.py",
+        "line": 341,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_evaluator_smoke.py",
+        "line": 349,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_golden_smoke.py",
+        "line": 130,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_graph_smoke.py",
+        "line": 513,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "line": 236,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_recall_smoke.py",
+        "line": 100,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_reverse_smoke.py",
+        "line": 225,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_router_smoke.py",
+        "line": 280,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_skill_bundle_signal_smoke.py",
+        "line": 93,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_test_outcome.py",
+        "line": 276,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      },
+      {
+        "path": "tests/unit/test_workup_smoke.py",
+        "line": 90,
+        "import": "    from lib.hook_protocol import utf8_streams"
+      }
+    ],
+    "idempotency": [
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "line": 239,
+        "import": "    from lib import idempotency as _idem"
+      },
+      {
+        "path": "tests/integration/test_lease_smoke.py",
+        "line": 20,
+        "import": "from lib import idempotency, ledger  # noqa: E402"
+      }
+    ],
+    "ids": [],
+    "judge_integrity": [
+      {
+        "path": "tests/contract/test_judge_integrity_league.py",
+        "line": 54,
+        "import": "from lib import judge_integrity as ji  # noqa: E402"
+      }
+    ],
+    "judgment_paths": [
+      {
+        "path": "tests/contract/test_judgment_paths_contract.py",
+        "line": 44,
+        "import": "from lib import judgment_paths as jp   # noqa: E402"
+      }
+    ],
+    "lease": [
+      {
+        "path": "tests/contract/test_guardian_contract_smoke.py",
+        "line": 68,
+        "import": "    from lib import lease as lease_lib"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "line": 157,
+        "import": "            from lib import lease as lease_lib  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_lease_smoke.py",
+        "line": 21,
+        "import": "from lib import lease as L  # noqa: E402"
+      }
+    ],
+    "ledger": [
+      {
+        "path": "tests/contract/test_l2_driver_latency_gate.py",
+        "line": 111,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_role_supervisor_contract.py",
+        "line": 94,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_approval_proof_smoke.py",
+        "line": 36,
+        "import": "from lib import approval_proof, arming, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_autodisarm_smoke.py",
+        "line": 57,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "line": 28,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_backlog_smoke.py",
+        "line": 279,
+        "import": "    from lib import ledger as lg"
+      },
+      {
+        "path": "tests/integration/test_capture_smoke.py",
+        "line": 199,
+        "import": "    from lib import ledger as lg"
+      },
+      {
+        "path": "tests/integration/test_chat_smoke.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_cli_smoke.py",
+        "line": 23,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_cli_wrappers_smoke.py",
+        "line": 59,
+        "import": "        from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_closedloop_smoke.py",
+        "line": 23,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_curator_smoke.py",
+        "line": 22,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_cycle_approval_smoke.py",
+        "line": 50,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_debate_smoke.py",
+        "line": 22,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "line": 105,
+        "import": "    from lib import ledger as _lg"
+      },
+      {
+        "path": "tests/integration/test_decomposition_smoke.py",
+        "line": 174,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_engine_smoke.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_fleet_smoke.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_gate_active_smoke.py",
+        "line": 56,
+        "import": "            from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_gate_ratchet_smoke.py",
+        "line": 70,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_integrity_smoke.py",
+        "line": 22,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_l2_driver_smoke.py",
+        "line": 20,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_ladder_smoke.py",
+        "line": 23,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_lease_smoke.py",
+        "line": 20,
+        "import": "from lib import idempotency, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_ownership_vitals_smoke.py",
+        "line": 149,
+        "import": "    from lib import ledger as lg"
+      },
+      {
+        "path": "tests/integration/test_params_smoke.py",
+        "line": 123,
+        "import": "        from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_params_smoke.py",
+        "line": 103,
+        "import": "            from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_pollution_smoke.py",
+        "line": 22,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_preconditions_smoke.py",
+        "line": 53,
+        "import": "    from lib import ledger, preconditions"
+      },
+      {
+        "path": "tests/integration/test_probe_smoke.py",
+        "line": 49,
+        "import": "    from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_proposal_retire_smoke.py",
+        "line": 41,
+        "import": "from lib import backlog, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_provenance_stamp_smoke.py",
+        "line": 43,
+        "import": "from lib import arming, backlog, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_repair_tier_smoke.py",
+        "line": 60,
+        "import": "    from lib import ledger, repair_tier"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "line": 21,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 696,
+        "import": "            from lib import ledger"
+      },
+      {
+        "path": "tests/integration/test_spiral_smoke.py",
+        "line": 22,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_token_notify_smoke.py",
+        "line": 55,
+        "import": "from lib import ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/unit/test_compaction_smoke.py",
+        "line": 19,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "line": 18,
+        "import": "from lib import derive_state, ledger  # noqa: E402"
+      }
+    ],
+    "overlap": [
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "line": 28,
+        "import": "    from lib import completion_line as cl, decomposition as dc, overlap as ov"
+      }
+    ],
+    "ownership_events": [
+      {
+        "path": "tests/integration/test_ownership_vitals_smoke.py",
+        "line": 32,
+        "import": "    from lib import ownership_events as oe"
+      }
+    ],
+    "ownership_vitals": [
+      {
+        "path": "tests/integration/test_ownership_vitals_smoke.py",
+        "line": 33,
+        "import": "    from lib import ownership_vitals as ov"
+      }
+    ],
+    "params": [
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "line": 258,
+        "import": "    from lib import params as _params"
+      },
+      {
+        "path": "tests/integration/test_params_smoke.py",
+        "line": 32,
+        "import": "    from lib import params"
+      }
+    ],
+    "paths": [
+      {
+        "path": "tests/_isolate.py",
+        "line": 167,
+        "import": "        from lib import paths"
+      },
+      {
+        "path": "tests/_isolate.py",
+        "line": 171,
+        "import": "        from lib import paths"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "line": 54,
+        "import": "    from lib.paths import ontology_schema_path"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "line": 232,
+        "import": "    from lib.paths import ontology_schema_path"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "line": 253,
+        "import": "    from lib.paths import resolve"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "line": 270,
+        "import": "    from lib.paths import ontology_schema_path"
+      },
+      {
+        "path": "tests/contract/test_artifact_type_registry_contract.py",
+        "line": 321,
+        "import": "    from lib.paths import resolve"
+      },
+      {
+        "path": "tests/contract/test_bus_tailer_contract.py",
+        "line": 40,
+        "import": "from lib.paths import state_dir    # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_consume_gate_contract.py",
+        "line": 37,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_delegation_cap_attribution_smoke.py",
+        "line": 59,
+        "import": "    from lib.paths import python_exe"
+      },
+      {
+        "path": "tests/contract/test_env_seal_smoke.py",
+        "line": 158,
+        "import": "    from lib.paths import harness_home"
+      },
+      {
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "line": 55,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_queue_gating_contract.py",
+        "line": 34,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_reachability_contract.py",
+        "line": 32,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_research_queue_contract.py",
+        "line": 46,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_run_marker_halt_contract.py",
+        "line": 102,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "tests/contract/test_sandbox_runner_env_contract.py",
+        "line": 157,
+        "import": "        from lib.paths import python_exe"
+      },
+      {
+        "path": "tests/contract/test_session_handoff_contract.py",
+        "line": 35,
+        "import": "from lib.paths import state_dir        # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_tick_encoding_contract.py",
+        "line": 114,
+        "import": "    from lib.paths import state_dir"
+      },
+      {
+        "path": "tests/contract/test_verdict_reprobe_contract.py",
+        "line": 38,
+        "import": "from lib.paths import state_dir  # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_youtube_queue_contract.py",
+        "line": 41,
+        "import": "from lib.paths import state_dir          # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_arming_smoke.py",
+        "line": 76,
+        "import": "        from lib.paths import resolve as _resolve"
+      },
+      {
+        "path": "tests/integration/test_arm_silence_smoke.py",
+        "line": 160,
+        "import": "            from lib import paths as _paths"
+      },
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "line": 29,
+        "import": "from lib.paths import state_dir  # noqa: E402  (흔적 파일 — isolate() 가 temp 로 돌린다)"
+      },
+      {
+        "path": "tests/integration/test_autoheart_smoke.py",
+        "line": 502,
+        "import": "    from lib.paths import harness_home as _hh"
+      },
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "line": 52,
+        "import": "    from lib.paths import resolve as _r"
+      },
+      {
+        "path": "tests/integration/test_latency_budget_smoke.py",
+        "line": 110,
+        "import": "    from lib.paths import resolve"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "line": 281,
+        "import": "        from lib import paths as _paths"
+      },
+      {
+        "path": "tests/integration/test_small_batch_smoke.py",
+        "line": 306,
+        "import": "        from lib.paths import harness_home as _hh"
+      },
+      {
+        "path": "tests/unit/test_ledger_smoke.py",
+        "line": 191,
+        "import": "        from lib.paths import normalize_rel"
+      }
+    ],
+    "preconditions": [
+      {
+        "path": "tests/integration/test_governance_mining_smoke.py",
+        "line": 29,
+        "import": "    from lib import preconditions as pc"
+      },
+      {
+        "path": "tests/integration/test_preconditions_smoke.py",
+        "line": 53,
+        "import": "    from lib import ledger, preconditions"
+      }
+    ],
+    "profile": [
+      {
+        "path": "tests/contract/test_bus_tailer_contract.py",
+        "line": 39,
+        "import": "from lib import profile            # noqa: E402"
+      },
+      {
+        "path": "tests/contract/test_bus_watermark_contract.py",
+        "line": 109,
+        "import": "    from lib import profile as _profile"
+      },
+      {
+        "path": "tests/integration/test_fleet_smoke.py",
+        "line": 76,
+        "import": "            from lib import profile as _profile"
+      },
+      {
+        "path": "tests/integration/test_fleet_smoke.py",
+        "line": 156,
+        "import": "            from lib import profile as prof"
+      }
+    ],
+    "prompt_clusters": [],
+    "repair_tier": [
+      {
+        "path": "tests/integration/test_repair_tier_smoke.py",
+        "line": 60,
+        "import": "    from lib import ledger, repair_tier"
+      }
+    ],
+    "repro_probe": [
+      {
+        "path": "tests/integration/test_khaness_remine2_smoke.py",
+        "line": 37,
+        "import": "    from lib import agent_depth, repro_probe as rp"
+      }
+    ],
+    "research_digest": [
+      {
+        "path": "tests/contract/test_research_digest_contract.py",
+        "line": 47,
+        "import": "from lib import research_digest as rd   # noqa: E402"
+      }
+    ],
+    "roster": [
+      {
+        "path": "tests/integration/test_role_attribution_smoke.py",
+        "line": 73,
+        "import": "    from lib import roster"
+      },
+      {
+        "path": "tests/integration/test_roster_contract_smoke.py",
+        "line": 22,
+        "import": "from lib import roster  # noqa: E402"
+      }
+    ],
+    "seams": [
+      {
+        "path": "tests/integration/test_seams_ladder_smoke.py",
+        "line": 36,
+        "import": "    from lib import seams"
+      },
+      {
+        "path": "tests/integration/test_seams_smoke.py",
+        "line": 17,
+        "import": "from lib import seams  # noqa: E402"
+      }
+    ],
+    "skill_contract": [
+      {
+        "path": "tests/contract/test_skill_contract.py",
+        "line": 36,
+        "import": "    from lib.skill_contract import ("
+      }
+    ],
+    "skill_eval": [
+      {
+        "path": "tests/contract/test_skill_eval.py",
+        "line": 36,
+        "import": "    from lib.skill_eval import prf, resolve_declarations, score_self_match"
+      },
+      {
+        "path": "tests/contract/test_skill_eval.py",
+        "line": 106,
+        "import": "    from lib.skill_eval import find_monolith_candidates, score_slice_targeting"
+      },
+      {
+        "path": "tests/contract/test_skill_eval.py",
+        "line": 134,
+        "import": "    from lib.skill_eval import masking_surface, score_axis_delivery"
+      },
+      {
+        "path": "tests/contract/test_skill_eval.py",
+        "line": 166,
+        "import": "    from lib.skill_eval import aggregate_no_hit"
+      }
+    ],
+    "stuck": [
+      {
+        "path": "tests/integration/test_stuck_smoke.py",
+        "line": 52,
+        "import": "    from lib import stuck"
+      }
+    ],
+    "suite_floor": [
+      {
+        "path": "tests/contract/test_lint_contracts_smoke.py",
+        "line": 608,
+        "import": "    from lib import suite_floor as _sf"
+      },
+      {
+        "path": "tests/contract/test_sandbox_runner_env_contract.py",
+        "line": 52,
+        "import": "from lib.suite_floor import CANON_GLOB  # noqa: E402"
+      },
+      {
+        "path": "tests/integration/test_sandbox_smoke.py",
+        "line": 316,
+        "import": "    from lib import suite_floor as sf"
+      }
+    ],
+    "test_outcome": [
+      {
+        "path": "tests/contract/test_suite_runner_smoke.py",
+        "line": 51,
+        "import": "    from lib.test_outcome import classify_suite"
+      },
+      {
+        "path": "tests/unit/test_test_outcome.py",
+        "line": 39,
+        "import": "    from lib.test_outcome import ("
+      },
+      {
+        "path": "tests/unit/test_test_outcome.py",
+        "line": 205,
+        "import": "    from lib.test_outcome import drift"
+      },
+      {
+        "path": "tests/unit/test_test_outcome.py",
+        "line": 235,
+        "import": "    from lib.test_outcome import (FAILED_NAMES_CAP, count_asserts,"
+      }
+    ]
+  }
+}

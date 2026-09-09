@@ -1,0 +1,20 @@
+{
+  "monitoring.md": {
+    "purpose": "Logs/metrics/traces, bounded labels, health states, alert rules and release observation with request correlation.",
+    "decision": "adapt",
+    "analysis": "HighErrorRate sample rate(5xx)>0.01 is events per second, not error fraction; lacks denominator and aggregation. Histogram quantile aggregation should match intended service labels. Fixed DB100ms/Redis50ms/p95 2s thresholds not transferable. Health detailed auth split useful but an absolute no-auth health mandate depends on probe/network contract. Restart as final troubleshooting step must not mutate monitoring without scope. Existing Zeus monitor preserves unknown/stale health and blocked review states, which source generic health states do not capture.",
+    "platform": "Claude Bash/Grep/Read/Edit and tail/curl examples need OS-aware bounded readers. Zeus application/monitoring.py and tests/test_monitoring.py read fully; latter asserts redaction, stale health, expired leases and read-only HTTP behavior but was not run."
+  },
+  "chaos-engineering.md": {
+    "purpose": "Hypothesis-driven fault injection, paired control/experiment, bounded blast radius, stop conditions and staged experiments.",
+    "decision": "adapt",
+    "analysis": "No FIS/Gremlin runner is included. Source production/continuous experiment commands are not authorization. Reject every attack instantly reversible, staging once sufficient and internal metrics forbidden as universal claims; internal measures can support safety while output metrics assess user impact. ±5% is illustrative and needs statistical/noise budget. Source references/Simian deprecation/FIS naming unverified. Zeus candidate is isolated lease-expiry/transaction failure/rollback testing with exact execution receipts, not production chaos adoption.",
+    "platform": "AWS/Azure/network/process fault tools have cloud/OS-specific permissions. Windows host processes/services must remain untouched; use disposable environment explicitly scoped by native runner."
+  },
+  "docker-compose-e2e.md": {
+    "purpose": "Compose dependency health gates, image-tool availability, exec argv, startup/host probe/log evidence and isolated CI cleanup.",
+    "decision": "adapt",
+    "analysis": "Internal contradiction: catalog says curl/wget/jstack all absent then recommends wget. Need exact image inspection. String-form healthcheck is declared inherently invalid without verifying Compose schema; list form improves explicit argv but prose claim not accepted. All services service_healthy cannot represent completion-only jobs; start_period3x and prod,e2e profiles are project-specific. CI down -v must be limited to owned ephemeral project/volumes, never live data. JWT catch advice depends on exact exception inheritance/library version. Source run25831362899/private dual-order evidence not verified.",
+    "platform": "Linux containers vs Windows hosts require LF scripts, executable metadata and quoted mounts; Compose plugin/version/tool availability explicit. mutation_safety.py and its test read fully: proximity tokens (even example/migration) suppress warnings, rm -f unflagged, WARN exit0 by default; this is a heuristic not authorization or data-safety proof."
+  }
+}

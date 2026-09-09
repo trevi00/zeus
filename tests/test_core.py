@@ -61,6 +61,22 @@ def test_same_symptom_different_scope_does_not_count(service):
     assert service.record_incident(incident(scope="repo-b"))["hook_id"] is None
 
 
+def test_retry_evidence_does_not_trigger_independent_recurrence(service):
+    first = incident("task-a-attempt-1")
+    assert service.record_incident(first, independent_occurrence="task-a")["occurrences"] == 1
+    for attempt in (2, 3):
+        result = service.record_incident(incident(f"task-a-attempt-{attempt}"),
+                                         independent_occurrence="task-a")
+        assert result["occurrences"] == 1 and result["hook_id"] is None
+    result = service.record_incident(incident("task-b-attempt-1"), independent_occurrence="task-b")
+    assert result["hook_created"] and result["occurrences"] == 2
+    with service.store.transaction() as tx:
+        assert len(tx.scan("incidents")) == 4
+        assert len(tx.scan("outbox")) == 1
+    with pytest.raises(ContractError, match="occurrence authority"):
+        service.record_incident(first, independent_occurrence="changed")
+
+
 def test_message_id_reuse_and_occurrence_conflicts_rejected(service):
     msg = incident("one")
     service.record_incident(msg)

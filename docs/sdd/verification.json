@@ -1,0 +1,62 @@
+{
+  "recorded_at": "2026-09-09T02:00:27.640556+00:00",
+  "scope": "SDD preparation contracts, journal, proposals, review document and unexecuted replay drafts",
+  "tests": {
+    "windows-verified.txt": {
+      "passed": 720,
+      "skipped": 8,
+      "duration": "190.45s (0:03:10)"
+    },
+    "linux-final.txt": {
+      "passed": 726,
+      "skipped": 2,
+      "duration": "55.10s"
+    }
+  },
+  "new_sdd_tests": {
+    "passed": 16,
+    "device_doubles": false,
+    "integration_backend": "actual PostgreSQL"
+  },
+  "ruff": "passed",
+  "package": {
+    "image_id": "sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a",
+    "image_source_match": true,
+    "wheel_source_match": true,
+    "source_files": 113,
+    "wheel_sha256": "77c914af8c1c672544024dfcdacab1ecd234d01876611afc4ad82236276de585",
+    "wheel_offline_review": {
+      "path": "C:\\Users\\rudtn\\codex-harness\\.runtime\\sdd\\wheel-review.html",
+      "bytes": 24963,
+      "content_hash": "6279858a9041f1805a55a828d6a968ffa3e6abde3ef9d94428aae3e9fcbc65ad",
+      "spec_hash": "ef95daa54207da4e58c2d99bb914fe8776435e3040a1c2bf48530c59ef861d80",
+      "acceptance_passed": false,
+      "status": "review_only"
+    }
+  },
+  "device": {
+    "adb_available": false,
+    "aws_cli_available": false,
+    "agent_device_available": false,
+    "devices": [],
+    "target": "Samsung Android phone and tablet",
+    "authority": "discovery_only",
+    "acceptance_passed": false,
+    "status": "blocked",
+    "reason": "Android platform-tools/adb and authorized Samsung devices required"
+  },
+  "visual_browser_verification": {
+    "status": "blocked",
+    "reason": "CUA returned No browser is available"
+  },
+  "skill_validation": "quick_validate passed; repository asset, not globally installed",
+  "claude_review": "Actual read-only Claude review, discussion, implementation review and closure; code changes by Codex",
+  "physical_device_run": false,
+  "human_acceptance": false,
+  "full_eight_stage_execution": false,
+  "github_issue_writes": 0,
+  "production_deployment": false,
+  "full_upstream_absorption": false,
+  "validation_services": "Dedicated validation postgres/redis stopped after tests; no production agents started",
+  "candidate_manifest_sha256": "4345b8e6e0dbe5668fbb06bf8ff079aef20abed66ffe3ae43c534dee6f5c8ff7"
+}

@@ -1,4 +1,4 @@
-CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public;
 CREATE TABLE IF NOT EXISTS documents (
     bucket text NOT NULL,
     id text NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS knowledge_nodes (
     source_ref text NOT NULL,
     revision text NOT NULL,
     properties jsonb NOT NULL DEFAULT '{}',
-    embedding vector
+    embedding public.vector
 );
 CREATE TABLE IF NOT EXISTS knowledge_edges (
     source text NOT NULL REFERENCES knowledge_nodes(id) ON DELETE CASCADE,

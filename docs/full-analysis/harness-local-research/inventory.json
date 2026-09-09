@@ -1,0 +1,556 @@
+{
+  "source": "harness",
+  "basis": "observed_local_bytes_not_commit",
+  "captured_at": "2026-09-09T02:33:46.259710+00:00",
+  "entries": [
+    {
+      "path": "knowledge/research/notes/open-uptake-JuliusBrussee-caveman-4764100a.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "6fe0bb1f08a5f0f9fbeddb105c436ac5c01bc98482f8710085d87b83bd4bde04",
+      "bytes": 25646,
+      "mtime_ns": 1788725767267236300,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-blader-humanizer-3a5a59d5.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "4113f5e1cc8ed6f3a6bf71b69e1032dd1c085c026de48b3b6d5ec40731e28b38",
+      "bytes": 22802,
+      "mtime_ns": 1788720667076659900,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-firecrawl-pdf-inspector-c86c1dc5.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "959da0470936d39c635b13d040dde03cdfbaef28fad6c00472663301565e449d",
+      "bytes": 33060,
+      "mtime_ns": 1788732666615642700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33135-50bb3869.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "651020bfaf196206c37884007d7b2d4daafc3ad3dd6fb6f505e8028353f76b0d",
+      "bytes": 32175,
+      "mtime_ns": 1788729366240517700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33138-0b59c66f.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "2f18c7010f63f488fd9a956b23e498bffc01a919955050d680d9e423ffb5b346",
+      "bytes": 6214,
+      "mtime_ns": 1788793873553806400,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33139-87192101.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "4f7415c14a0fca5ebf3b16db98163352361b67e8461c81cc9937bdd0c53c4792",
+      "bytes": 19599,
+      "mtime_ns": 1788821767182472000,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33140-0cd48639.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "b48f3a116bf9ab98c83e5de4867a48b1b17ff6a1cc0defb311c96d1d73f0e5b1",
+      "bytes": 26263,
+      "mtime_ns": 1788818466736285900,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33141-a74f12f5.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "3ab27260e1403607a3c03ba0fd242250517f1cb025336a9ff9041ad56bd74b68",
+      "bytes": 15163,
+      "mtime_ns": 1788814866766356200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33144-d3cdb74a.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "12b8d3948d261252d3c7b4b70542e474f56438c31edd4806ac3cac1a619c21eb",
+      "bytes": 17491,
+      "mtime_ns": 1788811866956526700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33145-8f6b377d.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "8c31118ac11980bb11ce931bc3b4a33d3da921f5aab252653f09ba913274894e",
+      "bytes": 9868,
+      "mtime_ns": 1788808568221472800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33147-f6111762.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "dcba04291dbc010b45177b8432222873f433e50d6aa621f976ac98d092961f0a",
+      "bytes": 6635,
+      "mtime_ns": 1788806167600473000,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33148-19b03c54.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "762edf9f9f80856692a38912c68751b062d5b790ed38d6100f865bd49cc4a4a6",
+      "bytes": 21808,
+      "mtime_ns": 1788804367261894500,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33149-87bff097.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "65d2beff8d0c6e99b9e7087c56eddf4d4e90061e376223d1e4c77a6e70982478",
+      "bytes": 16775,
+      "mtime_ns": 1788802267526708000,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33151-a9e78ab1.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "54bb2b3bb295cff34428d8fd617d4249a5eec455c2111a5e48fd9dee37c12f62",
+      "bytes": 11761,
+      "mtime_ns": 1788799809494680100,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33152-489fcd28.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "39ad7611ee9394269e90896b3fe5d89676513deff2c5dc0649d297cecab72857",
+      "bytes": 3921,
+      "mtime_ns": 1788797769460554100,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33154-60a5de8a.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "4f38e86ca2aaaeb7fafc678fe011c8c2af5b32e1e794e7f0aa4314577a472e18",
+      "bytes": 13047,
+      "mtime_ns": 1788796280019205700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-https---news-hada-io-topic-id-33158-8375ddca.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "2f652259d09cda4e8054b53fc8d9f11acf0ca4d1b4bab31b5e8bb11857f4726a",
+      "bytes": 18114,
+      "mtime_ns": 1788735370111936000,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-protocolbuffers-protobuf-2df6d5ee.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "d5f47d6948f8bda46d0a78d5a6faccf3c7f3349270633c3594d3d088a5d5300f",
+      "bytes": 38475,
+      "mtime_ns": 1788714966778351900,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/open-uptake-vercel-labs-portless-ab38b423.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "f507d2ccdf7af6269a531869d3b4bc18a3387cca2f7767233a3a1873d2cdcf17",
+      "bytes": 22685,
+      "mtime_ns": 1788717667195041300,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-JuliusBrussee-caveman-4764100a.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "4743251e21ee4646ea21c2ceebb5b1de9b9585de5a7bf309b56152c3d5fe7191",
+      "bytes": 49376,
+      "mtime_ns": 1788724268119595800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-blader-humanizer-3a5a59d5.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "38653d315965f3b48a52a9c74e02755342678fd2ec037277c4ad7e691c3082be",
+      "bytes": 38004,
+      "mtime_ns": 1788719467556431200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-firecrawl-pdf-inspector-c86c1dc5.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "23a8e4db026ca68d564026066b696dee3c187b9cf696ec2006350ce2ad1b3152",
+      "bytes": 46213,
+      "mtime_ns": 1788731466694360600,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33135-50bb3869.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "4deb9788e2912e91498be94f85640e35b4b95f89f76faffd2cb215b39947b15f",
+      "bytes": 44671,
+      "mtime_ns": 1788727570468307300,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33138-0b59c66f.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "3bfa9d295a72e364e6cec7bcfd26e5bf1099c51122b47f2015a3dcc6ef976d31",
+      "bytes": 8651,
+      "mtime_ns": 1788793873526282800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33139-87192101.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "f37fe5a6f6a3d238324d12a7577c00176c0f89d718d49f3c6aae11e176aee3fe",
+      "bytes": 33620,
+      "mtime_ns": 1788820266703797500,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33140-0cd48639.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "47bf3c65d90567cd1abd436796e5694350d10b59fcb134816ee5bb3161db89b4",
+      "bytes": 32243,
+      "mtime_ns": 1788816667323715500,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33141-a74f12f5.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "cbfc0a2916bbbb5c4dab2933d1118a832a565646fe0354cf6c7d794e942dea11",
+      "bytes": 24944,
+      "mtime_ns": 1788813967018543700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33144-d3cdb74a.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "529a3f9f989153b439b5257cc080829e51f36acea4e827201e873d677a51183e",
+      "bytes": 16959,
+      "mtime_ns": 1788810366753350800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33145-8f6b377d.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "774108766e5713a8cdea215ecdc5ea22b7560fd84f03990aea98c500ea7f14a4",
+      "bytes": 12588,
+      "mtime_ns": 1788807967920434200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33147-f6111762.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "22b91d961099415fabf830a4935a46754a7f7c5b63948788000011b72a2ab818",
+      "bytes": 16144,
+      "mtime_ns": 1788805867934073200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33148-19b03c54.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "2addc208332b1f5b0710d4c7c25d4e9c1d5eb0aab5490913528d162d0642e30f",
+      "bytes": 23496,
+      "mtime_ns": 1788803767567774100,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33149-87bff097.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "89dd3f042159f1d51e8152cc62eea8efd78bfd6cd72ee0f4bd3b46375f28d6d5",
+      "bytes": 18926,
+      "mtime_ns": 1788801667810163500,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33151-a9e78ab1.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "7e78bd72b2eb7561eaa8066e3c42b27709095ef28d0b25ce61eb623e3a9d0a01",
+      "bytes": 12861,
+      "mtime_ns": 1788799275007454200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33152-489fcd28.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "603c03ede94f5f5feb1a35a99d55e005773980b22735f796dd70e902a8e1e6bf",
+      "bytes": 9607,
+      "mtime_ns": 1788797472317924100,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33154-60a5de8a.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "6516526afd6b9303f55b8f8786ef018ec0a2dbbdb272d6ad62f453227d857b78",
+      "bytes": 12160,
+      "mtime_ns": 1788795972312161500,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-https---news-hada-io-topic-id-33158-8375ddca.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "705c48b45d1b7c08c187dea0757f4736d6c5cb8f3c878cf05a12e229caa66073",
+      "bytes": 20803,
+      "mtime_ns": 1788734473978238700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-protocolbuffers-protobuf-2df6d5ee.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "39d1cc3e53d957e7b13df3e49efdad6a64d9039132999daa78117834bbe14063",
+      "bytes": 24670,
+      "mtime_ns": 1788713770354088900,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "knowledge/research/notes/source-note-vercel-labs-portless-ab38b423.md",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "9b3f80598908a3717653c0db4f8d7da7c65324e7f7b034a7dea981effa248b38",
+      "bytes": 26407,
+      "mtime_ns": 1788716470562597800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/default-55.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "846ce218ceedf19a573044482d1d42993991b196a85b75ec32dad8fdcf24bbea",
+      "bytes": 3657,
+      "mtime_ns": 1788722762050978500,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-50.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "def4deadad9e22b83d1d6a6eac82e43086f5c39bbfade66f03856b2d97ea480a",
+      "bytes": 7947,
+      "mtime_ns": 1788710161706189300,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-52.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "672c57c461f90f053862764c8cbd187fb47db01e896f6f98495912256eb7227a",
+      "bytes": 6602,
+      "mtime_ns": 1788715261871293600,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-53.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "b544064b428864e7098b74f45e891c73fc7248ed454a92021bc20d6b77a7b19c",
+      "bytes": 6849,
+      "mtime_ns": 1788717961935820800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-54.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "d561b9db32bc19488845a768905e8437054eb78000dab2bb0d3dc17e27bcbab0",
+      "bytes": 6782,
+      "mtime_ns": 1788720962012931200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-56.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "ff679766c812aae5650f951bc63dfc1669d5bff16192acc92c38a01db996e964",
+      "bytes": 6853,
+      "mtime_ns": 1788726062154730300,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-57.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "b73abfde387eb3a86089324c609de397ff3e305b610216fb29c477eed7087119",
+      "bytes": 6691,
+      "mtime_ns": 1788729661276296100,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-58.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "bde6b8a07d428ab4f2052247e80bbe5d451156ae67c1a5ba668e9f41b6e2326c",
+      "bytes": 7120,
+      "mtime_ns": 1788732961397621700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-59.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "143a7a1072b97ee368ac28dbcd4b88d8fd0e230b2c62036a3f3ce35dcd74b941",
+      "bytes": 7124,
+      "mtime_ns": 1788735961457959800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-60.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "61c659fc778d88a90c658e0ce37188760d2c66d3f7b49066048e5f260ba138ee",
+      "bytes": 6929,
+      "mtime_ns": 1788738361644291200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-61.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "1ece23739132d38951cefa99046e3e4cd97a4ef9415ef461492daadb603b9689",
+      "bytes": 6841,
+      "mtime_ns": 1788794462392848300,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-62.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "566a648661e0b32bf58116b2ef530cca9bda93f53c241e3a0c66fef526590252",
+      "bytes": 6958,
+      "mtime_ns": 1788796562019040800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-63.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "12b090ba7d989e0a523e7d26a97fd47e5af2a171d2ebccdccbad8dc6c4523221",
+      "bytes": 6869,
+      "mtime_ns": 1788798061943018000,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-64.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "0faa1d296f932539dc15bf2e3c8fa3f3b0e7f24e2119859f617b5e4dc5225e42",
+      "bytes": 6615,
+      "mtime_ns": 1788800461994711600,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-65.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "b6e0b8a304c342e79207172a0fdf8f53fe5a68cd8e662ce0c9103c9b2de8cb28",
+      "bytes": 6893,
+      "mtime_ns": 1788802562053455900,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-66.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "efdc5c3f2d4057f63512782c6822e13100ae03fb46690048ef595639ad6be2c8",
+      "bytes": 6894,
+      "mtime_ns": 1788804662112186100,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-67.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "980ffdb38098d896a0c99ea9cab6d0ff65c6b45d44a391c0ebce9145edd88754",
+      "bytes": 6826,
+      "mtime_ns": 1788806762146173000,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-68.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "6dc2f3ff8fd5b8f40809d7f94980b136f0ed86341c82c578ab4fc0e385c168f0",
+      "bytes": 6969,
+      "mtime_ns": 1788808862222984600,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-69.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "9a9553687b0c105de5a4aef582189b141f7c4dd5b164331e6b2a116a00c6eeb0",
+      "bytes": 6804,
+      "mtime_ns": 1788812461333510700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-70.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "a6901aa1aa6ede83f865dc19a18186a7e6552418db97af4c8dfdb788be844fe0",
+      "bytes": 6572,
+      "mtime_ns": 1788815161384743200,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-71.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "63022b6b3d1aadefc55e59b9f5feeebfbb55b11e481cb65bfeb80d1895437dbe",
+      "bytes": 6775,
+      "mtime_ns": 1788818761494771700,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-72.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "1050c72f88fb4a7cf2cfaee35c1b17a51b9542b171652f056762627a43598d88",
+      "bytes": 6707,
+      "mtime_ns": 1788822061571893800,
+      "basis": "observed_local_bytes_not_commit"
+    },
+    {
+      "path": "ledger/role-runs/researcher/source_note-73.jsonl",
+      "git_class": "untracked",
+      "disposition": "unreviewed_observed_asset",
+      "sha256": "93befb7cdf99993c9bffcfdf81d6eeded85c8d76d24845556008ebe9311beffb",
+      "bytes": 272,
+      "mtime_ns": 1788822363335031100,
+      "basis": "observed_local_bytes_not_commit"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "platform": "win32",
+  "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+  "scope": "Actual native child process encoding only; no database connection, release, CLI canary or device acceptance executed.",
+  "source_hashes": {
+    "src/codex_harness/adapters/commands.py": "ffe87ad175292af2efdaa0dc15aa090fe10fada06e143d8ce8e335ae802e88cb",
+    "src/codex_harness/adapters/verification.py": "09da4f4ddf5ae86d98ba8438b591506614a5b7dac5a8d8d29a7ca1519f301523"
+  },
+  "cases": [
+    {
+      "case": "windows_native_default",
+      "argv": [
+        "C:\\Users\\rudtn\\codex-harness\\.venv\\Scripts\\python.exe",
+        "-c",
+        "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+      ],
+      "encoding_overrides": {},
+      "returncode": 1,
+      "stdout": "cp949\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys;print(sys.stdout.encoding,flush=True);print('���� \\u2014 �Ϸ�',flush=True)\n                                                     ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'cp949' codec can't encode character '\\u2014' in position 3: illegal multibyte sequence\n"
+    },
+    {
+      "case": "windows_locale_mode",
+      "argv": [
+        "C:\\Users\\rudtn\\codex-harness\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8=0",
+        "-c",
+        "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+      ],
+      "encoding_overrides": {},
+      "returncode": 1,
+      "stdout": "cp949\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys;print(sys.stdout.encoding,flush=True);print('���� \\u2014 �Ϸ�',flush=True)\n                                                     ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'cp949' codec can't encode character '\\u2014' in position 3: illegal multibyte sequence\n"
+    },
+    {
+      "case": "explicit_cp949_adversarial",
+      "argv": [
+        "C:\\Users\\rudtn\\codex-harness\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8=0",
+        "-c",
+        "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+      ],
+      "encoding_overrides": {
+        "PYTHONIOENCODING": "cp949"
+      },
+      "returncode": 1,
+      "stdout": "cp949\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys;print(sys.stdout.encoding,flush=True);print('���� \\u2014 �Ϸ�',flush=True)\n                                                     ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'cp949' codec can't encode character '\\u2014' in position 3: illegal multibyte sequence\n"
+    },
+    {
+      "case": "explicit_utf8_contract",
+      "argv": [
+        "C:\\Users\\rudtn\\codex-harness\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8=0",
+        "-c",
+        "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+      ],
+      "encoding_overrides": {
+        "PYTHONIOENCODING": "utf-8"
+      },
+      "returncode": 0,
+      "stdout": "utf-8\n검증 — 완료\n",
+      "stderr": ""
+    },
+    {
+      "case": "actual_verification_environment_locale_mode",
+      "argv": [
+        "C:\\Users\\rudtn\\codex-harness\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8=0",
+        "-c",
+        "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+      ],
+      "preserves_PYTHONIOENCODING": false,
+      "preserves_PYTHONUTF8": false,
+      "returncode": 1,
+      "stdout": "cp949\n",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys;print(sys.stdout.encoding,flush=True);print('���� \\u2014 �Ϸ�',flush=True)\n                                                     ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'cp949' codec can't encode character '\\u2014' in position 3: illegal multibyte sequence\n"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "source_manifest": "candidate-manifest.json",
+  "source_hashes_rechecked": true,
+  "tests": {
+    "windows": {
+      "passed": 658,
+      "skipped": 7,
+      "seconds": 208.24,
+      "log": ".runtime/joint-review/windows-verified.txt",
+      "sha256": "968ab8780afb0480405a04ce8ffad1199f77bf0f4da52ac9964ebb7a1f924e92"
+    },
+    "linux": {
+      "passed": 665,
+      "skipped": 0,
+      "seconds": 58.14,
+      "log": ".runtime/joint-review/linux-verified.txt",
+      "sha256": "4d1e910b8d0d5566a92fab8c0a63b811641939e8da2094ae17a5c0fc0fd1efd9"
+    }
+  },
+  "ruff": "passed",
+  "git_diff_check": "passed",
+  "wheel_and_sdist": "built",
+  "image": "sha256:326b5c02900bf9015b6e40b21e7101be6f894845a94d272953230ee24121027f",
+  "packaged_cli_help": "passed",
+  "actual_model_canary": "not repeated in this review cycle",
+  "production_startup": false,
+  "remote_publication": false
+}

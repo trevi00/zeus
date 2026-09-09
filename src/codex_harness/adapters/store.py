@@ -69,6 +69,10 @@ class PostgresStore:
     def migrate(self) -> None:
         sql = files("codex_harness.resources").joinpath("001.sql").read_text(encoding="utf-8")
         with psycopg.connect(self.dsn) as conn:
+            # INV-GRAPH-001: IF NOT EXISTS alone does not serialize concurrent DDL.
+            # Use the control-plane lock before creating extensions, tables or indexes.
+            conn.execute("SET LOCAL lock_timeout = '10s'")
+            conn.execute("SELECT pg_advisory_xact_lock(734219)")
             conn.execute(sql)
 
     @contextmanager

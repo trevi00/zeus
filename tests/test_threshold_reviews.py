@@ -110,7 +110,7 @@ def test_changed_basis_or_lease_during_execution_cannot_commit(policy_repo, tmp_
                     row['activation_blockers'].append('changed')
                     tx.put('threshold_proposals', row['id'], row)
     monkeypatch.setattr(executor, '_run', runtime(executor, [], intervene=intervene))
-    assert executor.decide_one('lead:improvement')['status'] == 'retry'
+    assert executor.decide_one('lead:improvement')['status'] == ('stale' if change == 'lease' else 'retry')
     with executor.service.store.transaction() as tx:
         assert tx.get('threshold_review_requests', request['id'])['reviews'] == []
         assert not any(row['actor'] == 'conductor' for row in tx.scan('decisions_pending'))
@@ -169,7 +169,7 @@ def test_receipt_from_previous_generation_is_not_reused(policy_repo, tmp_path, m
             cached.append(original(*args, **kwargs))
         return cached[0]
     monkeypatch.setattr(executor, '_run', run)
-    assert executor.decide_one('lead:improvement')['status'] == 'retry'
+    assert executor.decide_one('lead:improvement')['status'] == 'stale'
     assert executor.decide_one('lead:improvement')['status'] == 'retry'
     with executor.service.store.transaction() as tx:
         assert tx.get('threshold_review_requests', request['id'])['reviews'] == []

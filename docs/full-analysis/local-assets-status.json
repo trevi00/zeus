@@ -1,0 +1,42 @@
+[
+  {
+    "source": "baldrix",
+    "metadata_paths": 8747,
+    "states": {
+      "unreviewed_observed_asset": 3045,
+      "excluded_private_session_or_credential_surface": 4656,
+      "runtime_surface_classification_pending": 15,
+      "generated_cache_metadata_only": 1020,
+      "acquisition_pending": 10,
+      "requires_content_boundary_review": 1
+    },
+    "copied_bytes": 44850454,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "harness",
+    "metadata_paths": 656,
+    "states": {
+      "unreviewed_observed_asset": 385,
+      "generated_cache_metadata_only": 259,
+      "effective_config_requires_redacted_schema_review": 1,
+      "acquisition_pending": 10,
+      "large_asset_pending_streamed_review": 1
+    },
+    "copied_bytes": 6460008,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "guardian",
+    "metadata_paths": 17,
+    "states": {
+      "generated_cache_metadata_only": 8,
+      "runtime_surface_classification_pending": 1,
+      "excluded_private_session_or_credential_surface": 3,
+      "requires_content_boundary_review": 1,
+      "unreviewed_observed_asset": 4
+    },
+    "copied_bytes": 18598,
+    "whole_analysis_complete": false
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "tracked_paths": 2736,
+  "source_counts": {
+    "baldrix": {
+      "unreviewed": 1567,
+      "semantically_reviewed": 81
+    },
+    "harness": {
+      "unreviewed": 792,
+      "semantic-reviewed-execution-not-attested": 93,
+      "semantically_reviewed": 3,
+      "body_reviewed_call_test_trace_pending": 43
+    },
+    "guardian": {
+      "semantically_reviewed": 13
+    },
+    "harness-design": {
+      "unreviewed": 138,
+      "semantically_reviewed": 6
+    }
+  },
+  "whole_analysis_complete": false,
+  "inventory_is_semantic_review": false,
+  "runtime_observations_in_tracked_denominator": false,
+  "adoption_status": "not_approved_not_incorporated"
+}

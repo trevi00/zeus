@@ -1,0 +1,214 @@
+{
+  "schema": "zeus.sdd.v1",
+  "id": "zeus.frontend-lifecycle",
+  "title": "Zeus — 삼성 휴대폰·태블릿 SDD 검토 초안",
+  "intent": "사람이 의도한 핵심 경험을 스펙으로 검토하고, 실제 환경에서 얻은 증적과 연결한다. 이 문서는 하네스 요구사항 초안이며 대상 앱의 인수 기준은 아직 정해지지 않았다.",
+  "personas": [
+    "핵심 사용자 경험을 설명하는 제품 담당자",
+    "실기기에서 시나리오를 검수하는 QA 담당자",
+    "증적을 재현하고 수정하는 개발자"
+  ],
+  "target": {
+    "kind": "unconfigured",
+    "app_id": null,
+    "build_hash": null,
+    "alpha_url": null
+  },
+  "reset_contract": "대상 앱 선정 후 테스트 계정·데이터·백엔드 버전과 초기화 방법을 정의한다. 각 실행 전 초기화 결과와 영수증을 확인하며, 초기화되지 않은 실행은 인수 증적으로 사용할 수 없다.",
+  "design": {
+    "components": "대상 프론트엔드: shadcn/ui 기반 컴포넌트. 현재 독립 검토 HTML은 프레임워크 없는 문서 뷰어이다.",
+    "icons": "대상 앱: Lucide 아이콘 이름과 접근 가능한 레이블을 함께 관리한다.",
+    "tokens": "색상·타이포그래피·간격·반경을 의미 기반 CSS 변수로 관리한다. 화면별 임의 색상을 줄이고 밝은/어두운 테마와 대비를 검토한다.",
+    "required_stories": [
+      "기본·로딩·빈 결과·오류·재시도",
+      "긴 한국어·확대 글꼴·포커스·키보드",
+      "휴대폰 세로/가로·태블릿 멀티윈도우",
+      "중복 제출·처리 중·완료·취소·복귀"
+    ]
+  },
+  "devices": [
+    {
+      "id": "samsung.phone",
+      "manufacturer": "samsung",
+      "platform": "android",
+      "form_factor": "phone",
+      "physical_required": true,
+      "conditions": [
+        "정확한 Galaxy 모델·Android·One UI 버전 미확정",
+        "세로/가로 전환과 화면 복원",
+        "키보드 표시와 입력값 보존",
+        "네트워크 중단·복귀와 백그라운드 복귀",
+        "Chrome/WebView 버전과 로케일·시간대 기록"
+      ]
+    },
+    {
+      "id": "samsung.tablet",
+      "manufacturer": "samsung",
+      "platform": "android",
+      "form_factor": "tablet",
+      "physical_required": true,
+      "conditions": [
+        "정확한 Galaxy Tab 모델·Android·One UI 버전 미확정",
+        "세로/가로·멀티윈도우·창 크기 변경",
+        "화면 키보드와 외부 키보드 사용 여부 확인",
+        "백그라운드 복귀·네트워크 중단·상태 보존",
+        "Chrome/WebView 버전과 로케일·시간대 기록"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ.intent",
+      "statement": "사람이 의도한 핵심 경험을 GWT로 검토한 뒤 개발·인수에 사용한다.",
+      "risk": "critical",
+      "status": "active"
+    },
+    {
+      "id": "REQ.reproducibility",
+      "statement": "실기기·앱 빌드·백엔드·데이터·초기화·이벤트 공백을 추적해 같은 실행 조건을 재현한다.",
+      "risk": "critical",
+      "status": "active"
+    },
+    {
+      "id": "REQ.financial",
+      "statement": "금전 흐름은 중복·실패·재시도·취소·정산의 실제 서버 결과와 화면 상태가 일치해야 한다. 구체적 거래 의미는 대상 앱에서 정의한다.",
+      "risk": "financial",
+      "status": "active"
+    },
+    {
+      "id": "REQ.iteration",
+      "statement": "스펙부터 CS까지 8단계를 반복하고 관측된 장애를 새 스펙 검토와 회귀 자산으로 연결한다.",
+      "risk": "critical",
+      "status": "active"
+    },
+    {
+      "id": "REQ.transfer",
+      "statement": "Astra 수행을 Sol 가드레일로 재현한 후 Terra로 이전하며 버전별 증적 없이 라우팅을 낮추지 않는다.",
+      "risk": "critical",
+      "status": "active"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "SCN.intent-review",
+      "title": "사용자의 의도와 관측 결과를 구분해 검토한다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.intent"
+      ],
+      "given": [
+        "사용자가 핵심 목적과 성공 조건을 설명한다",
+        "대상 앱과 실제 사용자 여정은 아직 확정되지 않았다"
+      ],
+      "when": [
+        "spec 팀이 사전 조건·행동·기대 결과를 작성한다",
+        "사람이 시각적 검토 화면에서 의도와 빠진 경우를 확인한다"
+      ],
+      "then": [
+        "로그에서 본 동작이 자동으로 기대 결과가 되지 않는다",
+        "사람이 검토하지 않은 초안은 인수 승인으로 표시되지 않는다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.real-device-replay",
+      "title": "같은 실기기 조건에서 실행을 재현한다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.reproducibility"
+      ],
+      "given": [
+        "앱 빌드·백엔드·테스트 데이터와 초기화 영수증이 준비되어야 한다",
+        "휴대폰과 태블릿의 실제 기기 식별과 버전을 확인해야 한다"
+      ],
+      "when": [
+        "승인된 시나리오를 실제 기기에서 끝까지 수행한다",
+        "행동·관측·타임스탬프·화면 증적을 수집하고 재실행한다"
+      ],
+      "then": [
+        "누락이나 환경 차이가 있으면 인수 통과 대신 검토할 공백으로 남는다",
+        "실기기 실행하지 않은 코드 생성 결과는 미실행으로 표시된다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.financial-integrity",
+      "title": "금전 흐름의 UI와 서버 기록을 대조한다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.financial"
+      ],
+      "given": [
+        "대상 서비스의 거래 규칙·격리된 결제 환경·정산 조회 방법을 먼저 정한다"
+      ],
+      "when": [
+        "사람이 승인한 중복 제출·타임아웃·재시도·취소 시나리오를 실행한다"
+      ],
+      "then": [
+        "같은 업무 요청이 중복 거래를 만들지 않아야 한다",
+        "화면 성공 표시만으로 통과시키지 않고 거래·정산·잔액의 합의된 불변식을 확인한다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.cs-feedback",
+      "title": "CS 문제를 다음 반복의 회귀 자산으로 연결한다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.iteration"
+      ],
+      "given": [
+        "현재 스펙과 릴리스·실행 증적의 버전이 연결되어 있다"
+      ],
+      "when": [
+        "CS에서 발견한 문제를 로컬 티켓에 기록한다",
+        "관측 로그에서 시나리오 후보를 추출하고 사람이 의도를 검토한다"
+      ],
+      "then": [
+        "기존 증적을 덮어쓰지 않고 새 스펙 리비전에 연결한다",
+        "스펙 논의→디자인→개발→검증→알파→QA→라이브→CS 순환에서 필요한 승인과 증적을 확인한다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.model-transfer",
+      "title": "작업군별 재현 증적으로 모델 이전을 검토한다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.transfer"
+      ],
+      "given": [
+        "Astra 기준 실행과 계약·도구·가드레일 버전이 고정되어 있다"
+      ],
+      "when": [
+        "Sol이 같은 조건에서 수행한 결과를 비교한다",
+        "Sol 재현이 검증된 작업군에 한해 Terra 이전 증적을 수집한다"
+      ],
+      "then": [
+        "증적 등록만으로 모델 라우팅이 바뀌지 않는다",
+        "비용·재시도·성공률을 실제 측정하기 전에는 토큰 절감을 달성했다고 표시하지 않는다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    }
+  ]
+}

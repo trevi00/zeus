@@ -1,0 +1,21 @@
+{
+  "upstream_executed": 11,
+  "upstream_rc0": 11,
+  "custom_observations": 18,
+  "completed_partition": false,
+  "remaining": "checkpoint.json and files.json",
+  "receipts": [
+    "review-probes.receipt.json",
+    "test_code_context_smoke.receipt.json",
+    "test_codex_provider.receipt.json",
+    "test_evaluator_smoke.receipt.json",
+    "test_hollow_audit.receipt.json",
+    "test_jury_quorum_smoke.receipt.json",
+    "test_lease_smoke.receipt.json",
+    "test_ownership_vitals_smoke.receipt.json",
+    "test_params_smoke.receipt.json",
+    "test_preconditions_smoke.receipt.json",
+    "test_research_digest_contract.receipt.json",
+    "test_skill_contract.receipt.json"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "title": "배포 검증 서비스의 운영 환경 격리",
+  "problem": "검증 중 운영 PostgreSQL·Redis에 접속할 가능성을 제거해야 한다.",
+  "impact": "테스트와 운영 데이터 및 자원 경합 방지",
+  "scope": ["배포 검증 서비스 수명주기", "Windows·Linux 환경 설정"],
+  "evidence_refs": ["src/codex_harness/adapters/verification.py", "tests/test_verification.py"],
+  "acceptance_criteria": ["별도 DB·Redis와 임시 localhost 포트 사용", "성공·실패 종료 후 컨테이너와 볼륨 정리"],
+  "verification": ["격리 환경 실제 쓰기·읽기 및 종료 후 잔존 자원 검사", "Windows·Linux 회귀 테스트"],
+  "rollback": "운영 배포 전 이전 검증된 커밋과 이미지로 복구; 운영 DB 볼륨은 변경하지 않는다."
+}

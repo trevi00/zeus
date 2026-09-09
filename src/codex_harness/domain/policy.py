@@ -24,6 +24,11 @@ class RuntimePolicy:
     source_output_bytes: int = 65536
     source_read_bytes: int = 24000
     source_read_lines: int = 120
+    release_check_seconds: int = 900
+    release_retry_seconds: int = 30
+    release_max_attempts: int = 3
+    release_lease_seconds: int = 1200
+    health_failure_threshold: int = 3
 
     def snapshot(self) -> dict:
         return asdict(self)

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "backend": "disposable PostgreSQL schema",
+  "operations": [
+    "create",
+    "two fixture reviews",
+    "show",
+    "export",
+    "sync preview",
+    "idempotent dispatch"
+  ],
+  "github_network_calls": 0,
+  "model_calls": 0,
+  "schema_removed_on_exit": true
+}

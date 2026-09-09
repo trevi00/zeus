@@ -1,0 +1,11 @@
+{
+  "adb_available": false,
+  "aws_cli_available": false,
+  "agent_device_available": false,
+  "devices": [],
+  "target": "Samsung Android phone and tablet",
+  "authority": "discovery_only",
+  "acceptance_passed": false,
+  "status": "blocked",
+  "reason": "Android platform-tools/adb and authorized Samsung devices required"
+}

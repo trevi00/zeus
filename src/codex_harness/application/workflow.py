@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from contextlib import nullcontext
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from codex_harness.application.audit_gate import require_adoption
+from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.domain.model import (
     ExecutionFailure,
     canonical,
@@ -28,6 +30,7 @@ class Workflow:
         require(message["type"] == "task.assign", "Expected task assignment")
         task_id = message["message_id"]
         with self.store.transaction() as tx:
+            ticket_binding(tx, message["what"]["details"])
             if message["what"]["action"] in {"plan", "implement"}:
                 require_adoption(tx, message["what"]["details"])
             old = tx.get("tasks", task_id)
@@ -67,6 +70,13 @@ class Workflow:
                 if task["agent"] != agent or task["status"] not in {"queued", "running", "retry"}:
                     continue
                 if task["status"] == "running" and datetime.fromisoformat(task["lease_until"]) > now:
+                    continue
+                from codex_harness.domain.model import ContractError
+                try:
+                    ticket_binding(tx, task["message"]["what"]["details"])
+                except ContractError as exc:
+                    task.update(status="blocked", error=str(exc))
+                    tx.put("tasks", task["id"], task)
                     continue
                 if task["message"]["what"]["action"] in {"plan", "implement"}:
                     from codex_harness.domain.model import ContractError
@@ -120,6 +130,13 @@ class Workflow:
         require(isinstance(result, dict), "Task result must be an object")
         with self.store.transaction() as tx:
             current = self._owned(tx, task)
+            try:
+                ticket_binding(tx, task["message"]["what"]["details"])
+            except TicketSuperseded as exc:
+                self._attempt_outcome(current, "superseded", utcnow())
+                current.update(status="superseded", result=result, error=str(exc), completed_at=utcnow())
+                tx.put("tasks", task["id"], current)
+                return current
             self._attempt_outcome(current, "succeeded", utcnow())
             current.update(status="succeeded", result=result, completed_at=utcnow())
             tx.put("tasks", task["id"], current)
@@ -137,17 +154,18 @@ class Workflow:
                                            "generation": task["generation"], "at": utcnow()})
             return current
 
-    def fail_execution(self, task: dict, error: Exception) -> dict:
+    def fail_execution(self, task: dict, error: Exception, *, transaction=None) -> dict:
         # INV-RECURRENCE-001: containment applies to this execution, not an account.
         confirmed = (isinstance(error, ExecutionFailure)
                      and error.cause == "codex-provider-usage-limit-exceeded")
         return self.fail(task, type(error).__name__ + ": " + str(error),
                          retryable=not confirmed,
-                         failure=error.evidence if isinstance(error, ExecutionFailure) else None)
+                         failure=error.evidence if isinstance(error, ExecutionFailure) else None,
+                         transaction=transaction)
 
     def fail(self, task: dict, error: str, retryable: bool = True,
-             failure: dict | None = None) -> dict:
-        with self.store.transaction() as tx:
+             failure: dict | None = None, *, transaction=None) -> dict:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             current = self._owned(tx, task)
             self._attempt_outcome(current, "failed", utcnow(), error)
             if failure is not None:

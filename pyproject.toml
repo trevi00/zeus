@@ -1,7 +1,7 @@
 [project]
-name = "codex-self-harness"
-version = "0.1.0"
-description = "A script-driven, hexagonal foundation for a self-improving Codex organization"
+name = "zeus-harness"
+version = "0.2.0"
+description = "Zeus: evidence-driven work, independent review, and recoverable Codex operations"
 requires-python = ">=3.12"
 dependencies = [
   "fastembed>=0.8.0",
@@ -15,7 +15,11 @@ dependencies = [
 ]
 
 [project.scripts]
+zeus = "codex_harness.cli:main"
+zeus-supervisor = "codex_harness.supervisor:main"
+zeus-monitor = "codex_harness.monitor:main"
 harness = "codex_harness.cli:main"
+harness-supervisor = "codex_harness.supervisor:main"
 
 [dependency-groups]
 dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
@@ -25,7 +29,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/codex_harness"]
+packages = ["src/codex_harness", "src/zeus"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -37,3 +41,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# Preserve recorded reviewer probe bytes; these are evidence, not shipped runtime code.
+"docs/full-analysis/**/*.py" = ["E401", "E701", "E702", "F401", "I001"]

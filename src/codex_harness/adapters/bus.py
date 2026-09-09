@@ -60,9 +60,12 @@ end
 return redis.call('XTRIM', key, 'MINID', '=', boundary)
 """
 
-    def __init__(self, url: str, namespace: str = "codex-harness"):
+    def __init__(self, url: str, namespace: str | None = None):
+        from codex_harness.adapters.configuration import settings
+
         self.client = Redis.from_url(url, decode_responses=True, socket_timeout=10)
-        self.namespace = namespace
+        self.namespace = namespace if namespace is not None else settings().get(
+            "HARNESS_REDIS_NAMESPACE", "codex-harness")
 
     def stream(self, agent: str) -> str:
         return f"{self.namespace}:agent:{agent}"

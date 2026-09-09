@@ -1,0 +1,24 @@
+{
+  "source": "baldrix",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "denominator": 98,
+  "source_bytes": 979411,
+  "semantically_reviewed": 81,
+  "unreviewed": 17,
+  "tests_executed": 2,
+  "upstream_test_cases_passed": 17,
+  "partition_complete": false,
+  "adoption_ready": false,
+  "all_manifest_hashes_match": true,
+  "review_refs": [
+    "docs/full-analysis/baldrix-common/additional-notes.json",
+    "docs/full-analysis/baldrix-common/api-operations-notes.json",
+    "docs/full-analysis/baldrix-common/data-notes.json",
+    "docs/full-analysis/baldrix-common/design-notes.json",
+    "docs/full-analysis/baldrix-common/distributed-notes.json",
+    "docs/full-analysis/baldrix-common/operations-notes.json",
+    "docs/full-analysis/baldrix-common/review-governance-notes.json",
+    "docs/full-analysis/baldrix-common/semantic-notes.json",
+    "docs/full-analysis/baldrix-common/spec-release-notes.json"
+  ]
+}

@@ -120,3 +120,30 @@ Native comparison uses the live admission/budget function and immutable full rou
 inputs. Recorded full-body hashes, count and truncation must reproduce before any
 counterfactual is reported. Missing evidence is unavailable, never success. Selection
 and character pressure do not authorize activation or establish task success.
+
+## INV-TICKET-001
+
+The local PostgreSQL ledger is authoritative for ticket contents. Revisions retain immutable
+content hashes. Advisory findings bind one revision and record claimed reviewer/provider identity;
+they never impersonate authenticated model execution or authorize code adoption/deployment.
+Dispatch writes one planning outbox message per revision atomically. Ticket provenance survives
+planning, implementation, rejection and rebase. Stale ticket bindings cannot complete tasks,
+commit reviews or promote candidates.
+
+GitHub synchronization is explicit and outward. A preview never calls GitHub. Pending projection
+hashes and uncertain creation intents survive failures. Uncertain creation without a matching
+remote receipt cannot create another issue. External body changes block overwrites; comments
+and remote state are collected as observations, never imported as local authority.
+
+## INV-VERIFICATION-001
+
+Release pytest receives only disposable service endpoints, with inherited Zeus/Harness aliases
+removed. PostgreSQL and Redis use a unique Compose project, localhost-only random ports and
+dedicated storage, without production mounts. Teardown runs on success and failure; stale
+cleanup requires matching generated definitions. This isolates service state, not arbitrary
+candidate code from the host. Actual execution and infrastructure observation errors remain distinct.
+# SDD preparation contracts
+
+- INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions.
+- INV-ORACLE-001: Imported observations and structural coverage cannot populate approved expected outcomes, certify real-device execution, authenticate human QA, or authorize a release. Gaps remain visible. Eight-stage reports are preparation only until actual providers are implemented.
+- INV-SDD-002: SDD journals retain ordered, hash-linked events; duplicate imports/proposals are idempotent and transitions use compare-and-swap. Notifications are local records, not external messages. Model transfer candidates never change routing authority.

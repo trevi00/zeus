@@ -1,0 +1,40 @@
+[
+  {
+    "entrypoint": "python.exe",
+    "args": [
+      "-m",
+      "zeus",
+      "--version"
+    ],
+    "exit_code": 0
+  },
+  {
+    "entrypoint": "zeus.exe",
+    "args": [
+      "ticket",
+      "--help"
+    ],
+    "exit_code": 0
+  },
+  {
+    "entrypoint": "zeus-monitor.exe",
+    "args": [
+      "--help"
+    ],
+    "exit_code": 0
+  },
+  {
+    "entrypoint": "zeus-supervisor.exe",
+    "args": [
+      "--help"
+    ],
+    "exit_code": 0
+  },
+  {
+    "entrypoint": "harness.exe",
+    "args": [
+      "--version"
+    ],
+    "exit_code": 0
+  }
+]

@@ -9,7 +9,7 @@ from codex_harness.adapters.executor import Executor
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
-from codex_harness.domain.model import ContractError, envelope
+from codex_harness.domain.model import envelope
 
 URL = 'https://github.com/owner/repo'
 REV = 'a' * 40
@@ -87,8 +87,8 @@ def test_order_provenance_overflow_and_measurement(setup):
     for prefix in ('readme', 'source'):
         path = Path(provenance[prefix + '_file'])
         ref = provenance['readme_ref' if prefix == 'readme' else 'source_artifact']
-        assert path.read_text() == s.artifacts._body(ref)
-    evidence = json.loads(Path(final['external_context']['file']).read_text())
+        assert path.read_text(encoding="utf-8") == s.artifacts._body(ref)
+    evidence = json.loads(Path(final['external_context']['file']).read_text(encoding='utf-8'))
     assert evidence['readme_excerpt'].startswith('README한')
     assert len(evidence['readme_excerpt'].encode()) <= 10000
     for ref in (result['execution_ref'], result['shortlist_execution_ref']):
@@ -161,8 +161,10 @@ def test_stale_execution_cannot_record_progress_checkpoint_or_complete(setup, st
                 task['generation'] += 1
                 tx.put('tasks', task['id'], task)
     s.config['callback'] = revoke
-    with pytest.raises(ContractError, match='Stale'):
-        s.executor.execute_one('worker:github')
+    # Lease loss is a non-authoritative outcome; it must not terminate serve().
+    assert s.executor.execute_one('worker:github')['status'] == 'stale'
+    with s.service.store.transaction() as tx:
+        assert not tx.scan('decisions_pending')
     with s.service.store.transaction() as tx:
         assert not tx.scan('outbox')
         session = tx.get('sessions', 'worker:github')

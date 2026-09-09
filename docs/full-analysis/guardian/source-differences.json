@@ -1,0 +1,95 @@
+[
+  {
+    "path": ".gitignore",
+    "pinned_sha256": "f03e82b68023caa3e13eda7e3e2be2890f67b3c54dbbc00f7acfdb841aecc111",
+    "observed_sha256": null,
+    "observed_basis": "not_collected",
+    "normalized_equal": null
+  },
+  {
+    "path": "README.md",
+    "pinned_sha256": "9286e27c95965839fd4c04e8ac22b66426cb412b23517e5cf8c3a7ec46ce4fa8",
+    "observed_sha256": "eaae5b2fd56a4a3109796659d36feaa8737bd3c4537f5aa44a1c81cf7bed19c5",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "console.py",
+    "pinned_sha256": "eeb357b7171c69d4ce341520c22d69ece9ecc5718a0f62c85a38c69717b1e41b",
+    "observed_sha256": "4f59e2f1e6710054b559f863373778e993cfd753e170af1b9d44f59d919f4a3e",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": false,
+    "unified_diff": "--- pinned/console.py\n+++ observed/console.py\n@@ -161,9 +161,21 @@\n #: 증적 피드에 싣는 원장 이벤트 — **누가 무엇을 열었나**에 답하는 것만.\n #: 전부 실으면 단계 로그에 승인이 파묻힌다(원장 꼬리는 board 가 이미 낸다).\n AUDIT_EVENTS = (\"spiral_approved\", \"spiral_rejected\", \"capture_noted\",\n-                \"pipeline_started\", \"pipeline_disarmed\", \"pipeline_done\",\n-                \"external_action\", \"heart_promoted\", \"restore\")\n-AUDIT_TAIL = 40\n+                \"pipeline_started\", \"pipeline_disarmed\",\n+                \"external_action\", \"restore\",\n+                #: 심장 승인 채널 — 종전 목록의 `heart_promoted` 는 폐쇄 enum\n+                #: (`lib.ledger.EVENT_TYPES`)에 **없는 이름**이라 이 창이 심장\n+                #: 채널에 대해 구조적으로 항상 비어 있었다(실측: 실재 4종 중\n+                #: 실린 것 0건). `pipeline_done` 도 같은 죽은 이름이라 뺀다.\n+                \"heart_change_proposed\", \"heart_change_approved\",\n+                \"heart_change_rejected\", \"heart_change\")\n+#: 40 → 80. 심장 4종을 목록에 넣으면 그 채널만으로 31행이 들어와 비-심장\n+#: 행을 밀어낸다 — 실측: capture_noted 12건 **전부**와 spiral_approved 5건 중\n+#: 3건이 사라지고 감사 창이 1.5일 짧아졌다. spiral_approved 는 **다른 사람\n+#: 승인 채널**이라, 하나를 보이게 하려고 다른 하나를 가리는 교환이 된다.\n+#: 80 은 그 교환을 없애는 실측값이다 — 현행 창(2026-08-31 00:09:05)을 그대로\n+#: 덮으면서 heart 39 · capture 12 · spiral_approved 6(현행 5보다 많다)이 든다.\n+AUDIT_TAIL = 80\n \n \n def _ledger_path(cfg: dict) -> Path:\n@@ -185,6 +197,35 @@\n     return home / \"ledger\" / \"events.jsonl\"\n \n \n+def _ledger_paths(cfg: dict) -> list[Path]:\n+    \"\"\"바인딩 원장 **과** 정본 — 합집합.\n+\n+    `_ledger_path` 는 장전 중 바인딩(프로젝트) 원장을 우선 반환하는데,\n+    심장 승인 4종은 `ledger_file` 없이 **정본**에 적힌다(harness 의\n+    `cli/sandbox_cmd.py` 사람 채널 · `cli/autoheart_cmd.py` 무인 채널).\n+    대조군: `cli/spiral_cmd.py` 는 `ledger_file=lf` 로 바인딩에 적는다 —\n+    지금 보이는 이름들이 보였던 것은 우연이 아니라 파일이 같아서였다.\n+\n+    하나만 보면 **위조가 가능한 유일한 창**(무인 진행 중)에 판이 눈이 먼다.\n+    이 파일 위쪽이 스스로 적었다: \"감시가 엉뚱한 파일을 보는 것은 감시가\n+    없는 것보다 나쁘다(있다고 믿게 한다).\"\n+    \"\"\"\n+    home = Path(cfg[\"harness_home\"])\n+    out: list[Path] = []\n+    try:\n+        b = json.loads((home / \"state\" / \"active_run.json\")\n+                       .read_text(encoding=\"utf-8\"))\n+        p = Path(b.get(\"ledger\") or \"\")\n+        if p.is_file():\n+            out.append(p)\n+    except (OSError, ValueError):\n+        pass\n+    canon = home / \"ledger\" / \"events.jsonl\"\n+    if canon.is_file() and canon.resolve() not in {x.resolve() for x in out}:\n+        out.append(canon)\n+    return out\n+\n+\n def _audit_feed(cfg: dict) -> dict:\n     \"\"\"guardian 증적 + 원장의 '문을 연' 이벤트. 못 읽으면 못 읽었다고 말한다.\"\"\"\n     out: dict = {}\n@@ -195,34 +236,72 @@\n     except OSError as e:\n         out[\"alerts\"] = [f\"(alerts.log 못 읽음: {e})\"]\n \n-    lf = _ledger_path(cfg)\n-    out[\"ledger_file\"] = str(lf)\n+    paths = _ledger_paths(cfg)\n+    out[\"ledger_file\"] = \" + \".join(str(p) for p in paths) or \"(없음)\"\n     rows: list[dict] = []\n-    try:\n-        for ln in lf.read_text(encoding=\"utf-8\",\n-                               errors=\"replace\").splitlines():\n-            if not ln.strip():\n-                continue\n-            try:\n-                e = json.loads(ln)\n-            except ValueError:\n-                continue\n-            if e.get(\"event\") not in AUDIT_EVENTS:\n-                continue\n-            pl = e.get(\"payload\") or {}\n-            by = pl.get(\"armed_by\") or {}\n-            rows.append({\n-                \"ts\": (e.get(\"ts\") or \"\")[:19].replace(\"T\", \" \"),\n-                \"event\": e.get(\"event\"),\n-                \"sid\": e.get(\"session_id\") or e.get(\"id\") or \"\",\n-                \"detail\": (by.get(\"candidate\") or pl.get(\"candidate\")\n-                           or pl.get(\"slug\") or pl.get(\"pipeline\")\n-                           or pl.get(\"text\") or \"\")[:120],\n-                \"rule\": by.get(\"rule\") or \"\",\n-            })\n-    except OSError as e:\n-        out[\"ledger_error\"] = str(e)\n-    out[\"events\"] = rows[-AUDIT_TAIL:][::-1]\n+    for lf in paths:\n+        try:\n+            for ln in lf.read_text(encoding=\"utf-8\",\n+                                   errors=\"replace\").splitlines():\n+                if not ln.strip():\n+                    continue\n+                try:\n+                    e = json.loads(ln)\n+                except ValueError:\n+                    continue\n+                if not isinstance(e, dict):\n+                    continue\n+                if e.get(\"event\") not in AUDIT_EVENTS:\n+                    continue\n+                pl = e.get(\"payload\") if isinstance(e.get(\"payload\"), dict) else {}\n+                by = pl.get(\"armed_by\") if isinstance(pl.get(\"armed_by\"), dict) else {}\n+                rows.append({\n+                    \"ts\": (e.get(\"ts\") or \"\")[:19].replace(\"T\", \" \"),\n+                    \"event\": e.get(\"event\"),\n+                    \"sid\": e.get(\"session_id\") or e.get(\"id\") or \"\",\n+                    #: 자율 스탬프는 **값이 있을 때만** 찍는다. 부재는 \"사람이\n+                    #: 썼다\"가 아니라 \"모른다\"이고(lib/ledger.py), 매 행 상수\n+                    #: 열은 읽는 사람을 그 열에서 떼어낸다 — 실측상 심장 승인\n+                    #: 19건은 전부 부재, 원장 전체로는 277건에 찍혀 있다.\n+                    #: `sid=human.*` 인데 `[l2-session]` 이 함께 뜨면 그것이\n+                    #: 위조 지문이다.\n+                    \"by\": \"\" if e.get(\"by\") is None else f\"[{e.get('by')}]\",\n+                    #: `pending` 이 체인에 없으면 심장 행의 detail 이 공백이라\n+                    #: 어느 패치인지 알 수 없다(payload 는 pending·files 뿐).\n+                    \"detail\": (by.get(\"candidate\") or pl.get(\"candidate\")\n+                               or pl.get(\"slug\") or pl.get(\"pipeline\")\n+                               or pl.get(\"pending\") or pl.get(\"text\") or \"\")[:120],\n+                    \"rule\": by.get(\"rule\") or \"\",\n+                })\n+        except OSError as e:\n+            out[\"ledger_error\"] = str(e)\n+    rows.sort(key=lambda r: r[\"ts\"])   # 두 파일을 합쳤으므로 시각 정렬\n+    shown = rows[-AUDIT_TAIL:]\n+    #: **자른 사실을 말한다.** 어떤 상한을 골라도 보장하는 것이 없다 —\n+    #: 실측 2026-09-02: 감사 대상 137건/14일, 일 평균 9.8 · 최다일 46,\n+    #: heart 가 전체의 56%. TAIL=80 은 평시 8일·최번시 1.7일을 덮을 뿐이고\n+    #: **그래도 57건이 창 밖**이다(그중 heart 38). 조용히 자르면 사람은\n+    #: \"이게 전부\"로 읽는다. 그래서 N 을 고르는 대신 잘린 수를 인쇄한다 —\n+    #: 이 저장소가 이미 세운 규율이다(\"자른 사실을 말한다 · 조용히 자르면\n+    #: 지금 문제의 다른 판이다\").\n+    def _grp(e: dict) -> str:\n+        n = e.get(\"event\") or \"\"\n+        return (\"heart\" if n.startswith(\"heart\")\n+                else \"spiral\" if n.startswith(\"spiral\") else \"기타\")\n+    tot: dict = {}\n+    sh: dict = {}\n+    for e in rows:\n+        tot[_grp(e)] = tot.get(_grp(e), 0) + 1\n+    for e in shown:\n+        sh[_grp(e)] = sh.get(_grp(e), 0) + 1\n+    out[\"window\"] = {\n+        \"tail\": AUDIT_TAIL,\n+        \"shown\": len(shown),\n+        \"total\": len(rows),\n+        \"groups\": {k: [sh.get(k, 0), tot[k]] for k in sorted(tot)},\n+        \"dropped\": max(0, len(rows) - len(shown)),\n+    }\n+    out[\"events\"] = shown[::-1]\n     return out\n \n \n@@ -381,11 +460,23 @@\n async function audit(){\n   try {\n     const j = await (await fetch('/audit?t=' + Date.now())).json();\n-    document.getElementById('lf').textContent = j.ledger_file || '';\n+    const w = j.window || {};\n+    const g = Object.entries(w.groups || {})\n+      .map(([k, v]) => `${k} ${v[0]}/${v[1]}`).join(' · ');\n+    // 자른 사실을 말한다 — 조용히 자르면 사람은 \"이게 전부\"로 읽는다.\n+    document.getElementById('lf').textContent =\n+      (j.ledger_file || '')\n+      + (g ? `  |  ${g}` : '')\n+      + (w.dropped ? `  |  창 밖 ${w.dropped}건 (상한 ${w.tail})` : '');\n     // 승인은 눈에 띄어야 한다 — B 경로에서 이 줄이 유일한 실효 안전장치다.\n     document.getElementById('events').innerHTML = (j.events||[]).map(e =>\n       `<div class=\"ev${/approved|rejected/.test(e.event)?' appr':''}\">`\n       + `<span class=\"t\">${esc(e.ts)}</span> <span class=\"n\">${esc(e.event)}</span>`\n+      // sid 는 종전에 담기만 하고 화면에 한 번도 안 나왔다. by 는 값이 있을\n+      // 때만 — 부재는 \"사람이 했다\"가 아니라 \"모른다\"이고, 매 행 상수 열은\n+      // 읽는 사람을 그 열에서 떼어낸다.\n+      + (e.sid ? ` <span class=\"r\">${esc(e.sid)}</span>` : '')\n+      + (e.by ? ` <span class=\"r\">${esc(e.by)}</span>` : '')\n       + (e.rule ? ` <span class=\"r\">[${esc(e.rule)}]</span>` : '')\n       + (e.detail ? `<br><span class=\"d\">${esc(e.detail)}</span>` : '')\n       + `</div>`).join('') || '<div class=\"al\">(해당 이벤트 없음)</div>';\n"
+  },
+  {
+    "path": "issue_token.py",
+    "pinned_sha256": "649678b367adec1a4447aa29e7c9cf2861472142e52d2b0abb4946d34428d093",
+    "observed_sha256": "428a3fe4735a4a93f599dc163b28d41bc311fccff9c1878bb86bb857c8989ee7",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "ledger_seal.py",
+    "pinned_sha256": "17b8f014f0fd4c859ba6e1dc88a793f30289bb655b5c14dcbbe5d2e4c813f180",
+    "observed_sha256": "91a107818c3e8a3b099dfac6185e747fb2b388a7f5c7899dad2395e4712dc253",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "notifier.py",
+    "pinned_sha256": "96b540e46504589044f7e97b7739c7366ab784a0af19ff52688b42b22bf2be85",
+    "observed_sha256": "2ec22be9511cb8305a0dbe5ada520a15f1b948c6067929a61176d11234a0383a",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "restorer.py",
+    "pinned_sha256": "7ba3f721646241535fdf3d58ca73dcd47814bd7fc90ebc0f798bc4bfd45af496",
+    "observed_sha256": "a859c2b4c5f19ec654f0e1748603a62d0a6df8c550defa53547e2c6dd84ee790",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "tests/test_console_encoding_smoke.py",
+    "pinned_sha256": "789fa973a841f665438d80e28035f80287c6f488d9441acada770459bb3a0504",
+    "observed_sha256": "241dd8bf3b92b1b891b6f00dab303e853fdf54a03abb2a29544b93371814a2a5",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "tests/test_notify_relay_smoke.py",
+    "pinned_sha256": "a5dc336917a15a00c748724f5d4ed35ed455e8baac0a29cd29c99de9de7bed73",
+    "observed_sha256": "96cb00e53f0bd81f3b26d660e846841bb88e26715f35d9498393009fb09809ae",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "tests/test_recovery_smoke.py",
+    "pinned_sha256": "5f284bd585a0135e87ec7866900c6fddbfba30fff8f3dc3af880f47c9a9e8ffc",
+    "observed_sha256": "819135ef94f8142f9cc187c188e47874084678c728473415540c393e20aee562",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "tests/test_restorer_smoke.py",
+    "pinned_sha256": "a99a192914caf828ccf8105113b8d460419465337b6ce311f7f01214d014cb82",
+    "observed_sha256": "806478c532d4d6cd056c45703ea303aeaba180f1ee988492792a72eca6dcbec0",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "tests/test_watchdog_smoke.py",
+    "pinned_sha256": "c2bd0c6507cc04ad45ac0c2efac1223a69f6eb90bc379b50507e5357e9ed7898",
+    "observed_sha256": "5c0425bb63e20598472edcc2ccb93b89908b3105d72b9a66e29d5bf8bc3e3750",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": true
+  },
+  {
+    "path": "watchdog.py",
+    "pinned_sha256": "cf892f6460dece10e0e2d424287a2ce7d500332bf961b0b629e076f56b83bfd6",
+    "observed_sha256": "cc5712e739824151c6b21f3d14092eab9fe047b54109d96ba9958cf978fd9d3d",
+    "observed_basis": "local_bytes_not_commit",
+    "normalized_equal": false,
+    "unified_diff": "--- pinned/watchdog.py\n+++ observed/watchdog.py\n@@ -22,6 +22,7 @@\n \"\"\"\n from __future__ import annotations\n \n+import hashlib\n import json\n import os\n import subprocess\n@@ -346,7 +347,49 @@\n         return\n     wm_f = state_f.with_name(\"notify_watermark.json\")\n     wm = _load_json(wm_f, {\"relayed\": 0})\n-    new = lines[int(wm.get(\"relayed\", 0)):]\n+    relayed = int(wm.get(\"relayed\", 0))\n+    # ── 릴레이 구간의 무결성: **rolling hash chain** ────────────────────\n+    # 워터마크가 라인 수뿐이면 두 가지에 눈이 먼다: 축소(자르면 lines[N:] 가\n+    # 빈 목록이라 조용히 아무것도 안 나간다 — 실측 20→5 뒤 16줄 침묵)와\n+    # 교체(수가 같으면 전맹). 이 릴레이는 하네스가 못 쓰는 트리(alerts.log)\n+    # 로 가는 **유일한 경로**라, 자르거나 갈아 끼우기만 하면 감시가 눈이 먼다.\n+    #\n+    # 체인은 Schneier–Kelsey(USENIX Security 1998) / Bellare–Yee(1997) 의\n+    # 표준 구조다 — 각 항목이 이전 해시에 의존하므로 **중간 한 줄만 고쳐도\n+    # 그 뒤 전체가 깨진다.** Merkle 트리를 쓰지 않는 이유: 그 이득(O(log n)\n+    # 소속 증명)은 **여러 검증자가 비동기로 부분 검증**할 때 나오는데, 여기는\n+    # watchdog 하나가 순차로 전량을 읽는다 — 값을 못 산다.\n+    #\n+    # **정직한 한계**: watchdog 은 하네스와 **같은 OS 계정**(rudtn)으로 돈다\n+    # (실측 2026-09-02: 작업 harness-guardian · guardian/state 는 그 계정에\n+    # FullControl). 그래서 이 체인은 **경계가 아니라 방어심층**이다 — 작정한\n+    # 하네스는 체인도 함께 고칠 수 있다. 이것이 사는 것은 (a) 사고성 손상·\n+    # 잘림의 즉시 탐지 (b) 위조 비용 상승(원장과 감시자 상태를 **정합하게**\n+    # 고쳐야 한다)이다. 진짜 경계는 watchdog 을 **다른 계정**으로 돌리는 것\n+    # 이고, 그건 OS 수준 운영 결정이라 여기서 못 만든다.\n+    def _chain(seq) -> str:\n+        h = \"\"\n+        for x in seq:\n+            h = hashlib.sha1((h + x).encode(\"utf-8\")).hexdigest()\n+        return h\n+    stored = wm.get(\"chain\")          # additive — 구 상태 파일엔 없다(None)\n+    drift = \"\"\n+    if len(lines) < relayed:\n+        drift = f\"{relayed}줄 릴레이 뒤 {len(lines)}줄로 줄었다(잘림)\"\n+    elif stored and relayed:\n+        cur = _chain(lines[:relayed])\n+        if cur != stored:\n+            drift = (f\"릴레이 구간({relayed}줄)의 내용이 바뀌었다(교체·수정) — \"\n+                     f\"체인 {stored[:12]} ≠ 현재 {cur[:12]}\")\n+    if drift:\n+        # 조용한 복구는 이 결함의 다른 판이다. 경보하고 0 으로 되돌린다 —\n+        # 중복 릴레이가 조용한 유실보다 싸다(cap 이 있어 점진 배수된다).\n+        notifier.alert(GUARDIAN_HOME, cfg,\n+                       f\"[harness-notify] **통지 파일 변조 감지** — {drift}. \"\n+                       f\"워터마크를 0 으로 되돌려 재릴레이한다. \"\n+                       f\"정상 동작에서는 일어나지 않는다(writer 전수 append).\")\n+        relayed = 0\n+    new = lines[relayed:]\n     for ln in new[:cap]:\n         try:\n             rec = json.loads(ln)\n@@ -355,7 +398,16 @@\n         except json.JSONDecodeError:\n             notifier.alert(GUARDIAN_HOME, cfg, f\"[harness-notify] {ln[:300]}\")\n     if new:\n-        wm[\"relayed\"] = int(wm.get(\"relayed\", 0)) + len(new[:cap])\n+        wm[\"relayed\"] = relayed + len(new[:cap])\n+        # 체인도 함께 전진시킨다 — 안 옮기면 다음 tick 이 옛 구간과 대조해\n+        # 매번 교체로 오판하고 경보가 폭주한다.\n+        wm[\"chain\"] = _chain(lines[:wm[\"relayed\"]])\n+        _save(wm_f, wm)\n+    elif drift:\n+        # 변조를 감지했는데 보낼 줄이 0(파일이 비었다) — 되돌린 사실을\n+        # 저장해야 다음 tick 이 같은 경보를 반복하지 않는다.\n+        wm[\"relayed\"] = 0\n+        wm.pop(\"chain\", None)\n         _save(wm_f, wm)\n \n \n"
+  }
+]

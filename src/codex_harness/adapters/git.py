@@ -9,6 +9,10 @@ from codex_harness.adapters.commands import run_process
 from codex_harness.domain.model import require
 
 
+class GitCommandError(RuntimeError):
+    """Transport/tool failure, distinct from a violated candidate contract."""
+
+
 class GitWorkspace:
     def __init__(self, repository: str, workspaces: str, remote: str | None = None):
         self.repository = Path(repository).resolve()
@@ -18,7 +22,8 @@ class GitWorkspace:
 
     def _git(self, *args: str, cwd: str | None = None, strip: bool = True) -> str:
         result = run_process(["git", *args], cwd=cwd or str(self.repository), timeout=120)
-        require(result.returncode == 0, "Git operation failed (" + (args[0] if args else '')
+        if result.returncode:
+            raise GitCommandError("Git operation failed (" + (args[0] if args else '')
                 + ", cwd=" + str(cwd or self.repository) + "): " + result.stderr[-2000:])
         return result.stdout.strip() if strip else result.stdout
 
@@ -86,6 +91,8 @@ class GitWorkspace:
         result = self.capture(workspace)
         if candidate.get("hook_id"):
             result["hook_id"] = candidate["hook_id"]
+        if candidate.get("zeus_ticket"):
+            result["zeus_ticket"] = candidate["zeus_ticket"]
         return result
 
     def review_workspace(self, revision: str, review_id: str) -> str:
@@ -106,7 +113,8 @@ class GitWorkspace:
                   candidate["revision"] + ":refs/heads/" + branch)
         existing = run_process(["gh", "pr", "list", "--repo", self.remote, "--head", branch,
                                 "--state", "all", "--json", "number,url,headRefOid,state"], timeout=60)
-        require(existing.returncode == 0, "Cannot inspect GitHub PR")
+        if existing.returncode:
+            raise GitCommandError("Cannot inspect GitHub PR")
         rows = json.loads(existing.stdout)
         matching = [row for row in rows if row["headRefOid"] == candidate["revision"]
                     and row["state"] in {"OPEN", "MERGED"}]
@@ -118,8 +126,18 @@ class GitWorkspace:
             path.write_text(body, encoding="utf-8")
             result = run_process(["gh", "pr", "create", "--repo", self.remote, "--head", branch,
                                   "--base", "main", "--title", title, "--body-file", str(path)], timeout=60)
-            require(result.returncode == 0, "PR creation failed: " + result.stderr[-1000:])
+            if result.returncode:
+                raise GitCommandError("PR creation failed: " + result.stderr[-1000:])
             return {"url": result.stdout.strip(), "headRefOid": candidate["revision"]}
+
+    def is_ancestor(self, revision: str, descendant: str) -> bool:
+        revision = self._git("rev-parse", "--verify", revision + "^{commit}")
+        descendant = self._git("rev-parse", "--verify", descendant + "^{commit}")
+        result = run_process(["git", "merge-base", "--is-ancestor", revision, descendant],
+                             cwd=str(self.repository))
+        if result.returncode not in {0, 1}:
+            raise GitCommandError("Cannot establish candidate ancestry")
+        return result.returncode == 0
 
     def merge(self, candidate: dict) -> dict:
         require(self._git("rev-parse", candidate["revision"] + "^{tree}") == candidate["tree"],
@@ -127,7 +145,8 @@ class GitWorkspace:
         if self.remote:
             result = run_process(["gh", "pr", "merge", candidate["branch"], "--repo", self.remote,
                                   "--merge", "--match-head-commit", candidate["revision"]], timeout=120)
-            require(result.returncode == 0, "PR merge failed: " + result.stderr[-1000:])
+            if result.returncode:
+                raise GitCommandError("PR merge failed: " + result.stderr[-1000:])
             self._git("fetch", "https://github.com/" + self.remote + ".git", "main")
             merged_revision = self._git("rev-parse", "FETCH_HEAD")
             require(self._git("rev-parse", merged_revision + "^{tree}") == candidate["tree"],

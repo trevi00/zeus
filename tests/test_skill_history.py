@@ -1,5 +1,4 @@
 import copy
-import os
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 from uuid import uuid4
@@ -8,7 +7,7 @@ import pytest
 
 from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.skill_history import prepare_history, project_identity, record_history
-from codex_harness.adapters.store import MemoryStore, PostgresStore
+from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.skill_history import SkillHistory
 from codex_harness.domain.model import (
     ContextItem,
@@ -109,10 +108,8 @@ def test_atomic_body_advisory_uses_prior_samples_and_preserves_source(tmp_path):
 
 
 @pytest.mark.integration
-def test_postgres_concurrent_duplicate_delivery_has_one_sample():
-    if os.environ.get('HARNESS_INTEGRATION') != '1':
-        pytest.skip('Integration environment required')
-    store = PostgresStore(os.environ['HARNESS_DATABASE_URL'])
+def test_postgres_concurrent_duplicate_delivery_has_one_sample(isolated_pgstore):
+    store = isolated_pgstore
     history = SkillHistory(store)
     project = 'test-skill-history-' + uuid4().hex
     with ThreadPoolExecutor(max_workers=4) as pool:

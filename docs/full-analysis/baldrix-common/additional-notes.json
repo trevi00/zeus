@@ -1,0 +1,20 @@
+{
+  "handoff-clear-trigger.md": {
+    "purpose": "Session-end clear triggers, absolute HANDOFF identity, ranked next-entry prompts and source commit references.",
+    "decision": "adapt",
+    "analysis": "A single trigger requires /clear; 20 commits or 20-30 iteration quality thresholds rest on uninspected private impl-104/122/138 evidence. git log --since counts repository commits, not necessarily current agent iterations. HANDOFF is mutable and cannot alone lock next-session authority. No recovery-cost-zero claim accepted. Keep source revision, remaining work and bounded handoff artifact, use native session recovery instead of mandatory /clear.",
+    "platform": "Claude /clear, debate, Stop hooks and global .claude scope specific. Absolute Windows paths identify host files but are not portable into Linux containers; preserve logical artifact identity plus host mapping. wc absent in native PowerShell."
+  },
+  "korean-utf8.md": {
+    "purpose": "Trace encoding across MySQL server/table/client/JDBC/init SQL/HTTP/shell, with byte inspection and recovery examples.",
+    "decision": "adapt",
+    "analysis": "Highly MySQL/Spring-specific despite common placement. Reject absolute assertions that Git Bash defaults cp949 or frontend corruption is 100% backend. chcp alone does not set PowerShell file decoding; this review actually needed explicit Get-Content -Encoding UTF8. iconv -c discards bytes and is not inherently non-destructive repair. dump/reimport and down -v require authorized data handling; sample useSSL=false and root password in argv must not become defaults. ASCII-only tests hide Unicode regressions. Testcontainers URL concatenation needs existing-query handling. External driver/image behavior unverified.",
+    "platform": "Windows console/file/process encodings differ; Linux locale not proof of file bytes. Use explicit UTF-8 and BOM/CRLF round-trip fixtures in Zeus, not MySQL settings for PostgreSQL. Source commands were never executed."
+  },
+  "mcp-setup.md": {
+    "purpose": "Claude MCP install/list/debug/remove and desktop-config migration with Windows cmd.exe wrapper and Linux npx examples.",
+    "decision": "exclude_direct_adoption",
+    "analysis": "All configuration scope/CLI compatibility assertions require current vendor verification. jq read-modify-move does not prevent concurrent lost updates; fixed /tmp temp name collides and cross-volume move need not be atomic on Windows. npx -y suppresses prompts, does not reduce version compatibility problems, and unpinned package fetch is not reproducible. Do not copy credentials or install based on reference instructions. Reuse only inspect-first/capability/version/argv principles through Codex supported config interface.",
+    "platform": "Strong Claude-specific .claude.json, desktop path and mcp-installer dependency. cmd.exe .cmd launching differs from shell-free executable spawning; Linux/macOS/WSL are separate execution environments. No live MCP setup inspected or changed."
+  }
+}
