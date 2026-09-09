@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "python",
+    "-X",
+    "utf8",
+    "docs\\full-analysis\\baldrix-lib-001\\record_review.py"
+  ],
+  "exit_code": 1,
+  "error": "AssertionError: autopilot_phase1_merge.py at line120; recorder regex omitted digits; no upstream execution",
+  "program_sha256": "d76a780168ba91578c6d285a3e1db8f39b804782d3163590310f7d3aadab2dc7",
+  "output_artifacts_before_failure": [],
+  "executed_program_raw_ref": "docs/full-analysis/baldrix-lib-001/record_review.executed.txt",
+  "executed_program_sha256": "d76a780168ba91578c6d285a3e1db8f39b804782d3163590310f7d3aadab2dc7",
+  "current_py_status": "E741 variable-only formatting fix after execution; archived raw bytes define actual executed program"
+}

@@ -1,0 +1,469 @@
+[
+  {
+    "source": "baldrix",
+    "path": "commands/harness-interview.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ce498e0361da23bdf6478ed5c03aad79ad3b4980",
+    "pinned_sha256": "2eb1e1b4948db8a39da1f730838fe3cbce5bd5ac8b52ed45c838ca946762ed8d",
+    "manifest_bytes": 10165,
+    "pinned_bytes": 10165,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 177,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 113,
+        "raw_range_sha256": "1470f6295b5e2ce688c563e1e26f54cea27a476c89038151782662d7885fac20"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/ambiguity_score.py",
+      "scripts/lib/ambiguity_report.py",
+      "scripts/lib/agent_tool_audit.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-autopilot.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "a2bb8a065893a86a845d21d58868baa7fa076b35",
+    "pinned_sha256": "df9de5928b7244d7bbabc49a420b4002a7cc07218814c9ddfd37adb5734f9948",
+    "manifest_bytes": 35292,
+    "pinned_bytes": 35292,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 362,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 28,
+        "end": 96,
+        "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/autopilot_pane_events.py",
+      "scripts/lib/autopilot_phase1_merge.py",
+      "scripts/lib/autopilot_kha_bridge.py",
+      "scripts/lib/autopilot_worktree_probe.py",
+      "scripts/lib/autopilot_flip_policy.py",
+      "scripts/lib/ac_tree.py",
+      "scripts/lib/advisory_ack.py",
+      "scripts/lib/agent_tool_audit.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/run_brain_push.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ae164989344f1e45242cc83d4758a8a5b047357c",
+    "pinned_sha256": "afb1f06b5947b88b19d4b6b487ab8954e692f6b8b237c834248b8b8403af75a3",
+    "manifest_bytes": 4756,
+    "pinned_bytes": 4756,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 123,
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 123,
+        "raw_range_sha256": "afb1f06b5947b88b19d4b6b487ab8954e692f6b8b237c834248b8b8403af75a3"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/brain_autopush.py",
+      "scripts/lib/brain_store.py",
+      "scripts/lib/advisory_ack.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/check_brain_push.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3e7446428254158299cf7ccdd0844e09fc2e1442",
+    "pinned_sha256": "961f0cb6586343f5e78189d364a9af02d9c3cc981c036dc2229bfdc37040a3ca",
+    "manifest_bytes": 5301,
+    "pinned_bytes": 5301,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 128,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 65,
+        "end": 115,
+        "raw_range_sha256": "62d30c34177b9aeab740e6906529a2ea2320af9002680fafb6eea0b5cfb0be9a"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/brain_git_status.py",
+      "scripts/lib/brain_store.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/atlas_index.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "caa7298479029753d18ef9a367f58d7ee4410c9f",
+    "pinned_sha256": "96480f7d4989453fe73e48d9cb4066c6a5854eb5c913ab3d54e4867cb8a1e8de",
+    "manifest_bytes": 27311,
+    "pinned_bytes": 27311,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 694,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 325,
+        "end": 382,
+        "raw_range_sha256": "8050b8606b52d9f309b5a31cded911ace8e60c3239d73a7e3723082cf84c00ae"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/atlas_embeddings.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/webhook.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c80f4884521a1f94392e574e849628c11af9e544",
+    "pinned_sha256": "d9dd3cdf891514fbdb1b588d33e50f447d7501266ea9dcca9591a18cc83f5523",
+    "manifest_bytes": 2194,
+    "pinned_bytes": 2194,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 65,
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 65,
+        "raw_range_sha256": "d9dd3cdf891514fbdb1b588d33e50f447d7501266ea9dcca9591a18cc83f5523"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/alert.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": ".gitattributes",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "564c4e06044b8850072f62f732467aa547dc793b",
+    "pinned_sha256": "58b829117a4835b0c18853e10226a662dc80e8f7c18152f9974aa1230d1624a1",
+    "manifest_bytes": 743,
+    "pinned_bytes": 743,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": null,
+    "manifest_sha256_status": "absent; fresh SHA with raw Git blob/bytes matched",
+    "line_count": 11,
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 11,
+        "raw_range_sha256": "58b829117a4835b0c18853e10226a662dc80e8f7c18152f9974aa1230d1624a1"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/brain_store.py",
+      "scripts/lib/brain_autopush.py",
+      "scripts/lib/brain_git_status.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_brain_autopush.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "37028971e04c77e907d0b67e0e3114b950ca6fc4",
+    "pinned_sha256": "bcd5f1735ee196ba066337d8475480ff7a8dec54e92a1f6d88569fb2c20c200e",
+    "manifest_bytes": 6423,
+    "pinned_bytes": 6423,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 142,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 118,
+        "raw_range_sha256": "0ccdaac3cecb4b3b8131783d871b3b7f1f2d32bba82bc6458e9d8d7d557a95a9"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/brain_autopush.py",
+      "scripts/lib/brain_store.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_brain_git_status.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1e168583d98c7cc1080a2895a116ab6d287935c8",
+    "pinned_sha256": "b70dd78527d848c693e6c144133cf54252078174ae98b54b6572382409391c7b",
+    "manifest_bytes": 5269,
+    "pinned_bytes": 5269,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 140,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 115,
+        "raw_range_sha256": "9e36bacaaea8e65955c3bbc40ebb643b2189650596d75941274d066418b1d561"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/brain_git_status.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_atomic_json.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f889679aa42fea8ce10f3db36f3ea5857a174d28",
+    "pinned_sha256": "da0171daab1c67fe77a259637744ecddf9ee4409b26fd9337f4cb925354c981d",
+    "manifest_bytes": 8950,
+    "pinned_bytes": 8950,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 237,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 130,
+        "end": 210,
+        "raw_range_sha256": "220d8844116514108ce0451d798e3b6ae68b92f0b256bee405f7977c88c7f554"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/atomic_json.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/strike_dispatcher.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "90185248b5d150745654cb695b72894552516b1b",
+    "pinned_sha256": "6985e38d69dc3ff335f6ae9efb12404dc37097fa443b81e60b3abcec03bde607",
+    "manifest_bytes": 5723,
+    "pinned_bytes": 5723,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 124,
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 124,
+        "raw_range_sha256": "6985e38d69dc3ff335f6ae9efb12404dc37097fa443b81e60b3abcec03bde607"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/advisory_research_dispatch.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/quota_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "8480e91b8e5e15618605d270840dee7982ffb2a5",
+    "pinned_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "manifest_bytes": 7246,
+    "pinned_bytes": 7246,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 158,
+    "read_extent": "full",
+    "read_ranges": [
+      {
+        "start": 1,
+        "end": 158,
+        "raw_range_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/advisory_research_dispatch.py",
+      "scripts/lib/atomic_json.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/stop/autopilot_continue.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "08faccf26b2856223cfcb39ff8a21fdfbcb4a7e0",
+    "pinned_sha256": "d52f2b0923c48f855a4b01c4d54e1427d9f711a11ce09ea42210ca6857be52c0",
+    "manifest_bytes": 34072,
+    "pinned_bytes": 34072,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 757,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 227,
+        "end": 260,
+        "raw_range_sha256": "36b75c0362c9871991ae08a7bae0494d1cbd71f7e3195407931e5448629dcec2"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/autopilot_compaction.py",
+      "scripts/lib/autopilot_state.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/reviewer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2b0cc13fe7fb5d8418b8a16cb187d6b1b1ab62f7",
+    "pinned_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "manifest_bytes": 30305,
+    "pinned_bytes": 30305,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 712,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 469,
+        "end": 492,
+        "raw_range_sha256": "579951cf8da4244f3ef4f84b1705d1646a46153e03b85736e16086fece2db37b"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/bash_tool_routing.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-allsolution.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "7a96cf199e9ae35cd2475d1b320a86da1e56a1b8",
+    "pinned_sha256": "b94fb4f84ef328412432e791f5db09de42237727552fd57968e9cd3aa7a7298a",
+    "manifest_bytes": 9012,
+    "pinned_bytes": 9012,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 137,
+    "read_extent": "partial",
+    "read_ranges": [
+      {
+        "start": 60,
+        "end": 85,
+        "raw_range_sha256": "0ba792c61db309c942dcf8bcd33b9bbe64368d5670b67c98269a9ccf75424348"
+      }
+    ],
+    "supports_primary": [
+      "scripts/lib/allsolution_metrics.py"
+    ],
+    "meaning": "직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/notes-25.md",
+    "coverage_promotion": false,
+    "tests_executed": [],
+    "remaining": "Unlisted body ranges/transitive caller/config/tests and runtime behavior pending."
+  }
+]

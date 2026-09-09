@@ -1,0 +1,24 @@
+{
+  "kind": "local_validation_tool_result_transcription",
+  "source": "exec_command and write_stdin terminal results; this file is not raw process stdout",
+  "base_revision": "1bce57b3b4509a7070507213e7854f1b6abee786",
+  "worktree_scope": "provider/libraries/integration source-review artifacts and verification tooling; runtime src/tests/.github unchanged",
+  "pytest": {
+    "argv": ["uv", "run", "pytest", "-q"],
+    "exec_session": 14251,
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 177.69
+  },
+  "ruff": {
+    "argv": ["uv", "run", "ruff", "check", "."],
+    "initial_result": "E741 in lib001 record_review.py and record_review_v2.py, two each; fixed by artifact owner",
+    "final_returncode": 0,
+    "final_output": "All checks passed!"
+  },
+  "actual_upstream_model_invocations": 0,
+  "upstream_windows_wsl_acceptance": false,
+  "whole_analysis_complete": false,
+  "adoption_approved": false
+}

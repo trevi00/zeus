@@ -1,0 +1,53 @@
+{
+  "partition": "baldrix:scripts/lib/providers:001",
+  "scope_sha256": "f946d9363613d41347a188fa65135260ca9c2607b2d30865b7ad0430c481df0f",
+  "record_scope_sha256": "c690f2cb4d24b48b0d07fd3c01e820f5674499f0e25e72746f537a76fd857797",
+  "record_scope_hash_encoding": "Python json.dumps(scope, sort_keys=True), UTF-8",
+  "scope_items": [
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/providers/__init__.py",
+      "sha256": "693a6b81945ab829bca0fddffd8aae78cd13453e18ee941e5f8d6049c1fdbd52"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/providers/base.py",
+      "sha256": "d640d920b6fd53579517df82fd1c5bea28c1b19573beb922e141a27c68161f8f"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/providers/anthropic.py",
+      "sha256": "8b8e52e0fe780090586e0b491b98658a1a10a2376e515671bd783b20d9f7359d"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/providers/openai.py",
+      "sha256": "547449d6bbd59706070440613a84deb52467e2b0cc23c65c30a5f828989b4f04"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/providers/ollama.py",
+      "sha256": "d74eeff94c75aa0a483f724d15b59ba73fd64947b942c52d3c086891399531dc"
+    }
+  ],
+  "primary_count": 5,
+  "primary_bytes": 19724,
+  "primary_body_read_complete": true,
+  "root_supporting_count": 7,
+  "root_supporting_full": 4,
+  "root_supporting_partial": 3,
+  "claude_additional_support": "claude-initial.md declares Claude's separate bounded reads; not counted as root support",
+  "original_ollama_wrapper_assertions_passed": 8,
+  "original_negative_component_programs_completed": 1,
+  "actual_provider_model_invocations": 0,
+  "fake_cli_or_sdk": false,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false,
+  "limits": "Full five primary bodies, incomplete transitive callers/config/tests. CLI-absent immutable Alpine execution only; no real model, usage, Windows/WSL upstream or user/device acceptance evidence."
+}

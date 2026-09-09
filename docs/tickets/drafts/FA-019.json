@@ -1,0 +1,40 @@
+[
+  {
+    "topic": "FA-019",
+    "title": "[FA-019] 모델 호출 계약·실측 사용량·실행 예산과 자격 증거 결속",
+    "problem": "고정 Baldrix provider 5개 전문을 Codex와 실제 Claude가 독립 검토했다. CLI 경로가 공통 요청의 max_tokens/temperature를 사용하지 않고, 응답 모델 필드는 실제 응답에서 확인하지 않은 요청/default 이름일 수 있다. SDK와 CLI의 timeout·오류 분류·system 의미가 다르며 사용량과 전체 출력의 출처가 일관되지 않다. 실제 CLI가 없는 격리 이미지에서는 backend 없이도 registry가 인스턴스를 반환하고 잘못된 요청 값이 dataclass에 들어가는 것을 확인했다. 이 음성 경로 실행은 실제 모델 호출 성공을 증명하지 않는다.",
+    "impact": "토큰 제한이 지켜진다고 오인하거나 모델·작업별 성과의 분모가 틀릴 수 있다. Astra→Sol→Terra의 자격 이전, 다중 평가, 재시도 및 자동 개선에서 비용과 신뢰 수준을 잘못 판단할 위험이 있다.",
+    "scope": [
+      "표준 라이브러리 기반 내부 provider port와 외부 CLI/SDK adapter를 분리하되, 각 요청 필드의 지원·미지원·의미를 명시하고 조용히 버리지 않는다.",
+      "요청한 모델과 실제 확인된 모델, 실행 파일·버전·환경, stdout/stderr 원본 바이트, 종료 원인, 사용량 출처를 구분한다. 확인하지 못한 값은 unknown으로 남긴다.",
+      "호출 전 PG 예산 예약, task/attempt/generation·정책·guardrail·spec/artifact identity와 runner 영수증을 결속한다. 재시도·SDK 내부 재시도·실패·앙상블 비용을 명시한다.",
+      "FA-018 완료 판정 권위와 연결하되 이 토픽은 호출 의미·실측 회계·모델 자격에 집중한다. 원본 수정이나 실제 모델 전체 인수는 이번 분석 범위에 포함하지 않는다."
+    ],
+    "acceptance_criteria": [
+      "잘못된 요청 타입·값·알 수 없는 capability는 실행 전에 구조화 오류로 거절한다. 지원하지 않는 token/temperature/system/response-schema 옵션은 무시하지 않고 명시적으로 반환한다.",
+      "가용성은 실행 파일 발견, 인증/endpoint 확인, 요청 모델 준비, 실제 호출 결과를 구분한다. registry 조회 성공을 모델 가용성이나 자격으로 소비하지 않는다.",
+      "실행별 deadline과 남은 예산을 모든 경로에 전달하고 실제 자식 프로세스 종료·잔존 및 SDK 재시도까지 기록한다. 미사용 call_budget 같은 선언만으로 상한을 주장하지 않는다.",
+      "동시 호출 전 PG 예약과 실패 회계를 원자적으로 처리한다. timeout·취소·재시작·재시도에 중복 차감/누락이 없으며 미확인 사용량을 0으로 바꾸지 않는다.",
+      "인증/설정/입력/일시 장애/출력 decoding·schema 오류를 구분하고 재시도 정책을 결속한다. ValueError 계열이라는 이유만으로 provider 도달 성공을 기록하지 않는다.",
+      "rc0 빈 응답, 부분·절단·거절·tool-only·잘못된 JSON을 정상 수용 결과와 분리한다. 원본 스트림 해시와 전체 아티팩트를 보존하며 표시용 decoding과 증거 바이트를 구분한다.",
+      "실제 Windows/Linux/WSL의 설치 형태·Unicode·경로 공백·cmd/bat와 프로세스 종료를 확인한다. vendor 옵션·모델 ID는 현재 공식 규격과 실제 실행 영수증으로 검증한다.",
+      "Astra→Sol→Terra는 동일 사용자 시나리오·환경·guardrail revision의 독립 실측과 사람이 정한 수용 기준으로 자격을 이전한다. 이름/역할 카드/요청 모델 라벨이나 mock 응답을 실적 증거로 승계하지 않는다."
+    ],
+    "verification": [
+      "원본 Ollama wrapper의 8 assertions PASS는 provider CLI와 API key가 없는 immutable networkless/read-only/nonroot Alpine에서의 결과다. 실제 모델 호출 0, fake CLI/SDK 0이다.",
+      "원본 registry/AskRequest/unavailable 경로의 별도 관측 stdout·stderr·실행 프로그램·원본 파일 SHA를 보존했다. 1648개 source 파일은 전후 동일하다.",
+      "Windows shell/WSL 실행, SDK 기본 timeout, 현재 CLI stdout 토큰 footer 및 모든 간접 테스트의 부재는 이번 관측으로 입증하지 않았다. 정적 발견과 실행 결과의 범위를 공동 검토에서 정정한다."
+    ],
+    "rollback": "신규 provider 및 모델 자격 경로는 실제 자격 검증 전 운영 승격하지 않는다. 회계·실행 계약 위반 시 해당 경로의 신규 dispatch를 중단하고 PG 예약/실행·출력 영수증을 보존한다. 알 수 없는 비용이나 모델 신원을 성공/0으로 소급 변경하지 않는다.",
+    "evidence_paths": [
+      "docs/full-analysis/baldrix-providers-001/resolution.md",
+      "docs/full-analysis/baldrix-providers-001/codex-initial.md",
+      "docs/full-analysis/baldrix-providers-001/claude-discussion.md",
+      "docs/full-analysis/baldrix-providers-001/components.stdout.txt",
+      "docs/full-analysis/baldrix-providers-001/components.receipt.json",
+      "docs/full-analysis/baldrix-providers-001/ollama-unit.receipt.json",
+      "docs/full-analysis/baldrix-providers-001/component_observations.py",
+      "docs/full-analysis/provider-libraries-checkpoint-verification.json"
+    ]
+  }
+]

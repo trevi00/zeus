@@ -1,0 +1,83 @@
+[
+  {
+    "path": "scripts/lib/ac_tree.py",
+    "prior_ledger": "docs/full-analysis/baldrix-completion-authority-001/files.json",
+    "prior_ledger_sha256": "cccdb421513d025a903c4ce161de12aecde7e979bdfedb8c5ec8e5b4f0258a4e",
+    "prior_review": "docs/full-analysis/baldrix-completion-authority-001/codex-initial.md",
+    "prior_review_sha256": "a2d69b3627dfc3891a1f604cb11959386d325eb29ec8ba0c993306adf07f7d75",
+    "pinned_sha256": "7a9f977dde9f5647ebc93592445c58f6c1d5806c54273d34ae469b1c9699c9af",
+    "git_blob": "bfd36b2c139284d8a17462bd3b4a1d3393d84f6d",
+    "prior_read_ranges": [
+      [
+        1,
+        201
+      ]
+    ],
+    "prior_read_extent": "full_body",
+    "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+    "new_execution": false,
+    "global_coverage_increment": false,
+    "meaning": "Gate/Advisory 분리와 advisory strict1..5는 유용. Gate bool은 문자열false도참. empty/advisory-only 승인, predicate 제외 leafID, all leaf실행으로 예외/부작용 지속, emit 예외 무시로 durable evidence 없이 approved 가능. expectedAC/task/spec/attempt binding 필요."
+  },
+  {
+    "path": "scripts/lib/axis_scores_log.py",
+    "prior_ledger": "docs/full-analysis/baldrix-completion-authority-001/files.json",
+    "prior_ledger_sha256": "cccdb421513d025a903c4ce161de12aecde7e979bdfedb8c5ec8e5b4f0258a4e",
+    "prior_review": "docs/full-analysis/baldrix-completion-authority-001/codex-initial.md",
+    "prior_review_sha256": "a2d69b3627dfc3891a1f604cb11959386d325eb29ec8ba0c993306adf07f7d75",
+    "pinned_sha256": "59b7fb5233219e048a2d0d261913251405000cd5d9b19f85e6031e36ba548cb0",
+    "git_blob": "df0c8134b38a742d6f4fc679bdbe57237ccbd91a",
+    "prior_read_ranges": [
+      [
+        1,
+        262
+      ]
+    ],
+    "prior_read_extent": "full_body",
+    "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+    "new_execution": false,
+    "global_coverage_increment": false,
+    "meaning": "4096byte bound/O_APPEND/입력copy 방어가 있으나 schema_version 값을 강제하지 않고 caller ts/marker 및 unknown event 승인값을 수용. shortwrite/fsync실패, 전역GC/동적경로 불일치, nonce/attempt/actual reviewer receipt 없음. evaluator를 실제 호출하는 logger가 아니며 timestamp/NaN/중복 처리와 호출부 closure는 남음."
+  },
+  {
+    "path": "scripts/lib/autopilot_state.py",
+    "prior_ledger": "docs/full-analysis/baldrix-stop-001/supporting-evidence.json",
+    "prior_ledger_sha256": "0a41791944033815483f7139fcb00018738e5d88434762b9e6e71f5df35c53b6",
+    "prior_review": "docs/full-analysis/baldrix-stop-001/codex-initial.md",
+    "prior_review_sha256": "3ec61efb66dce915bdc39ab8fc2d4a981b95f832113dc3d06e831866fda3b4fc",
+    "pinned_sha256": "2f6fffebd7f08e39f1a22491c14cf14f4bda6c7abac1e8b94974536871046702",
+    "git_blob": "b9a69fe556c3f8b7b33fe97705cd57945177812e",
+    "prior_read_ranges": [
+      [
+        1,
+        343
+      ]
+    ],
+    "prior_read_extent": "full_body",
+    "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+    "new_execution": false,
+    "global_coverage_increment": false,
+    "meaning": "상태 serializing/read/write/advance/active selector. sid-file identity·containment, finite timestamp/strict numeric 검증 불충분. wallclock은 monotonic아님. write_state bool은 caller가 무시. Stop의 retry 재구성은 cwd/pending_fp/reflection fields를 잃어 다음 cwd-filter선택에서 사라질 수 있으나 advance_iter는 보존: 모든 state함수에 결함을 일반화하지 않음. PG generation/CAS/lease 전환 필요."
+  },
+  {
+    "path": "scripts/lib/agent_depth.py",
+    "prior_ledger": "docs/full-analysis/baldrix-pretool-001/supporting-evidence.json",
+    "prior_ledger_sha256": "6109354d961a60d151127c0b9d2b7a13a7fb5366469a3b92be952badd31c17d2",
+    "prior_review": "docs/full-analysis/baldrix-pretool-001/notes.md",
+    "prior_review_sha256": "a6d118b1b5afc5b53a69b8d60831ad27c1c7c876815fafc8214dcf1676645d79",
+    "pinned_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3",
+    "git_blob": "f8bf0d30c7f419c0d544ddf1ac27a57015d37f46",
+    "prior_read_ranges": [
+      {
+        "start": 1,
+        "end": 59,
+        "raw_range_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3"
+      }
+    ],
+    "prior_read_extent": "full",
+    "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+    "new_execution": false,
+    "global_coverage_increment": false,
+    "meaning": "CLAUDE_AGENT_DEPTH 환경을 읽는 helper, unset/invalid/negative를0으로 취급. caller가 증가·자식전파해야 하며 모듈은 spawn/실행신원검증하지 않는다. env override와 malformed 값이 top-level처럼 보일 수 있어 재귀권한 보장으로 채택 금지."
+  }
+]

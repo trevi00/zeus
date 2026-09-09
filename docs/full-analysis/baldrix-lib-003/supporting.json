@@ -1,0 +1,481 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_step.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 35973,
+    "git_blob": "70350b38cbbed7496ab848637274c2ba1ee3b2fe",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c27719a5c25e971325d0ff281104ef655175f33fabe5030f60caa4bdcd233f23",
+    "observed_sha256": null,
+    "manifest_sha256": "c27719a5c25e971325d0ff281104ef655175f33fabe5030f60caa4bdcd233f23",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        135,
+        230
+      ]
+    ],
+    "total_lines": 631,
+    "body_read_complete": false,
+    "id": "s01",
+    "purpose": "Direct single-evaluator caller; quota after successful invocation; checked axis log result.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/agent_outcome_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 19209,
+    "git_blob": "b8a953fdcf82c52180004b8d667c91aaba375dc3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "observed_sha256": null,
+    "manifest_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        88,
+        158
+      ]
+    ],
+    "total_lines": 471,
+    "body_read_complete": false,
+    "id": "s02",
+    "purpose": "Frontmatter schema skip and module-level event_store.append import mismatch.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/pre_tool/guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11705,
+    "git_blob": "0197f54ceb59c77857abf7cc2f68f5960d1a9b38",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ebd3fe1ba4e6bf532b0ba5eb12d2b21498ed6b389a9522e744e21d8d1845d076",
+    "observed_sha256": null,
+    "manifest_sha256": "ebd3fe1ba4e6bf532b0ba5eb12d2b21498ed6b389a9522e744e21d8d1845d076",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        195,
+        260
+      ]
+    ],
+    "total_lines": 297,
+    "body_read_complete": false,
+    "id": "s03",
+    "purpose": "Bash guard solo override decision only; full regex and error handler not reviewed.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/engine/cli.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2039,
+    "git_blob": "2726fc4ec5c63f99ebbf10c0c4bfbc4261f369eb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "d44f5bb9292ab1ae986a35e29feb2ef8be63275f8394b88dda4edb4f2e332cb5",
+    "observed_sha256": null,
+    "manifest_sha256": "d44f5bb9292ab1ae986a35e29feb2ef8be63275f8394b88dda4edb4f2e332cb5",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        72
+      ]
+    ],
+    "total_lines": 72,
+    "body_read_complete": true,
+    "id": "s04",
+    "purpose": "Full post-hoc reader CLI; does not prove production orchestration.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_event_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9401,
+    "git_blob": "938258fc40ec6931de813216f43505bcce68bffc",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "23b7542d4c428f34c9adfa9a950269f4fa97aba79f9d58c7ebd17d4162e9ee74",
+    "observed_sha256": null,
+    "manifest_sha256": "23b7542d4c428f34c9adfa9a950269f4fa97aba79f9d58c7ebd17d4162e9ee74",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        175,
+        225
+      ]
+    ],
+    "total_lines": 259,
+    "body_read_complete": false,
+    "id": "s05",
+    "purpose": "Corrupt middle and torn-tail replay test bodies; not executed.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/quota_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7246,
+    "git_blob": "8480e91b8e5e15618605d270840dee7982ffb2a5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "observed_sha256": null,
+    "manifest_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        158
+      ]
+    ],
+    "total_lines": 158,
+    "body_read_complete": true,
+    "id": "s06",
+    "purpose": "Full counter implementation; load/record separation and empty-on-read-error.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/telemetry_log.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4583,
+    "git_blob": "aa23d8924904d3e8db9f6770cd51eb1914deccbe",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "77f939b133c533c024faafdc277daea6f452890bc371f55d99a3951adc1cbb27",
+    "observed_sha256": null,
+    "manifest_sha256": "77f939b133c533c024faafdc277daea6f452890bc371f55d99a3951adc1cbb27",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        80
+      ]
+    ],
+    "total_lines": 124,
+    "body_read_complete": false,
+    "id": "s07",
+    "purpose": "Append writer and telemetry rotation section; no explicit append lock/fsync.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/reviewer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 30305,
+    "git_blob": "2b0cc13fe7fb5d8418b8a16cb187d6b1b1ab62f7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "observed_sha256": null,
+    "manifest_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        38,
+        51
+      ],
+      [
+        167,
+        205
+      ],
+      [
+        309,
+        359
+      ],
+      [
+        445,
+        457
+      ]
+    ],
+    "total_lines": 712,
+    "body_read_complete": false,
+    "id": "s08",
+    "purpose": "Imported matcher capture, DAG routing and later name redefinition.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 26592,
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "observed_sha256": null,
+    "manifest_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        367,
+        410
+      ]
+    ],
+    "total_lines": 618,
+    "body_read_complete": false,
+    "id": "s09",
+    "purpose": "Parsed metadata skip, pipeline boost and selection section only.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/signals.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3818,
+    "git_blob": "540bb7970d03826c9e10f399baae69450d1962c7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "468e093932598afc55f0f66a5a784059c52789877798abe2f569fd52e2f4645e",
+    "observed_sha256": null,
+    "manifest_sha256": "468e093932598afc55f0f66a5a784059c52789877798abe2f569fd52e2f4645e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        96
+      ]
+    ],
+    "total_lines": 96,
+    "body_read_complete": true,
+    "id": "s10",
+    "purpose": "Full signals CLI including probe flag and unknown/exit-code handling.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/resident_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 20148,
+    "git_blob": "075de80ba489b90c666cf499048092c75d97bf99",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "62b54ea95f1e40e0d3276e36901c04f3d63a9a39d7df3127b947674916b4f23d",
+    "observed_sha256": null,
+    "manifest_sha256": "62b54ea95f1e40e0d3276e36901c04f3d63a9a39d7df3127b947674916b4f23d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        15,
+        35
+      ],
+      [
+        110,
+        190
+      ]
+    ],
+    "total_lines": 457,
+    "body_read_complete": false,
+    "id": "s11",
+    "purpose": "Timeout constant and ledger/contract interpretation; parse_contract implementation not reviewed.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_frontmatter_norm.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5248,
+    "git_blob": "e9e912a0cfd2775d048b76fe765b0d172c6e0c07",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "56a34413a78fd49cb1e2d1525d3e8ef9b76473699d866ff6f3ebd1be8b582c52",
+    "observed_sha256": null,
+    "manifest_sha256": "56a34413a78fd49cb1e2d1525d3e8ef9b76473699d866ff6f3ebd1be8b582c52",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        120
+      ]
+    ],
+    "total_lines": 156,
+    "body_read_complete": false,
+    "id": "s12",
+    "purpose": "Tokenizer, section, first-field and BOM test bodies; final runner not read.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_evaluator_dispatcher.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 17778,
+    "git_blob": "81c8bcf0c49ae9154d64ca84c14b98c52cd1a58e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0a7cb243b17c4b3ced434f9f17a4e0c7f544286aee0da51452627265c28dc50d",
+    "observed_sha256": null,
+    "manifest_sha256": "0a7cb243b17c4b3ced434f9f17a4e0c7f544286aee0da51452627265c28dc50d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        328,
+        350
+      ]
+    ],
+    "total_lines": 448,
+    "body_read_complete": false,
+    "id": "s13",
+    "purpose": "Prompt rejection test bodies; neighboring next test signature only.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/harness_normalize.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10880,
+    "git_blob": "789c1dc0ef03f2b428fb3aaa22ef285c88cc2c34",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f0fd1db7ae607efa80b0945089157e4111c45099a5b803ed280de634c73db6c6",
+    "observed_sha256": null,
+    "manifest_sha256": "f0fd1db7ae607efa80b0945089157e4111c45099a5b803ed280de634c73db6c6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        70,
+        103
+      ]
+    ],
+    "total_lines": 268,
+    "body_read_complete": false,
+    "id": "s14",
+    "purpose": "Normalization caller uses HARNESS_COMMANDS values; definition table not reviewed.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_golden_signals.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 16240,
+    "git_blob": "0262d3b48bfac534715a9bb154642b70eb8bac88",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e22a7f07070ac27643020784f242d2da52af08a3279cd6cabc1fe2720a60e5ac",
+    "observed_sha256": null,
+    "manifest_sha256": "e22a7f07070ac27643020784f242d2da52af08a3279cd6cabc1fe2720a60e5ac",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        49,
+        109
+      ],
+      [
+        133,
+        147
+      ]
+    ],
+    "total_lines": 382,
+    "body_read_complete": false,
+    "id": "s15",
+    "purpose": "Unknown samples, denominator, rate, contract failure and saturation window tests.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_git_flow_override.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4069,
+    "git_blob": "bfedef47eff9d48982d65df44ef6c5c15e28bdc3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0e8ff8f5377ed181ff0e6f0b22e7200adb307ef47bc9e7a5b02ac9c595a2b8f6",
+    "observed_sha256": null,
+    "manifest_sha256": "0e8ff8f5377ed181ff0e6f0b22e7200adb307ef47bc9e7a5b02ac9c595a2b8f6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        28,
+        88
+      ]
+    ],
+    "total_lines": 122,
+    "body_read_complete": false,
+    "id": "s16",
+    "purpose": "Override missing/body/whitelist/AND conditions tests; not executed.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  },
+  {
+    "source": "baldrix",
+    "path": "settings.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10437,
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        306,
+        317
+      ]
+    ],
+    "total_lines": 386,
+    "body_read_complete": false,
+    "id": "s17",
+    "purpose": "SessionStart absolute Windows command and 5-second timeout only.",
+    "counted_as_primary": false,
+    "read_basis": "Independent source ranges read in this review; no prior semantic report reused.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static reading only. No source import or execution."
+  }
+]

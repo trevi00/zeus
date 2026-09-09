@@ -65,7 +65,12 @@
 - [Baldrix session hooks](baldrix-session-hooks-001/review.md): 13개 전문. 검사 없음의 success 기록, 반환코드 미검사, 후보·주입·세션 복원과 실제 완료를 구분했다. 원본 실행 0건이다.
 - [Harness validators](harness-validators-001/review.md): 15개 전문. 검사 분모와 skip, 실제 배선 여부, 산출 귀속 및 형식 검사와 인간 시나리오 인수의 차이를 추적했다. 원본 실행 0건이다.
 
-현재 고정 2,736개 중 809개에 검토 기록이 있으며 **1,927개는 아직 unreviewed**다. 이번 묶음 48개 중 이전 primary와 겹친 1개는 중복 집계하지 않았다. 809개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
+- [모델 호출 계약 공동 검토](baldrix-providers-001/resolution.md): 5개 전문·root 지원 7개, 실제 Claude 독립 판단·토론·정정. 원본 Ollama wrapper 8 assertions와 CLI 부재 registry/dataclass/unavailable 실측을 기록했다. 실제 모델 호출·토큰 측정·Windows/WSL upstream 인수는 없다.
+- [Baldrix lib 001](baldrix-lib-001/review.md): 25개 전문 범위(새 전문21·선행 동일바이트4)와 지원15개. 알림 전송/저장 성공, brain 원격 내용 보존, quota·pane·merge 응답과 실제 실행의 차이를 추적했다. 원본 실행0이다.
+- [Baldrix lib 003](baldrix-lib-003/review.md): 10개 전문·지원17개. 평가 성공과 객관 completeness, event emitter 연결, frontmatter·권한·지표의 unknown 상태를 대조했다. 원본 실행0이다.
+- [Harness 통합 테스트 001](harness-integration-tests-001/review.md): 10개 전문·지원27개. inherited guardian 경로, state 밖 ontology 쓰기, 상수/약한 오라클, 사람 승인·모델 인수와 fixture 결과를 구분했다. 원본 실행0이다.
+
+현재 고정 2,736개 중 857개에 검토 기록이 있으며 **1,879개는 아직 unreviewed**다. 이번 묶음 50개 중 이전 primary와 겹친 2개는 중복 집계하지 않았다. 857개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
 
 Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 

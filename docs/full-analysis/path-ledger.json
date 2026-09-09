@@ -7855,8 +7855,10 @@
     "mode": "100644",
     "bytes": 74,
     "pinned_sha256": "e9008df98b2d2237ac96f4d3277b45736d988aca041fa89a30ee2bc5b4e0ddca",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7867,9 +7869,10 @@
     "mode": "100644",
     "bytes": 7572,
     "pinned_sha256": "7a9f977dde9f5647ebc93592445c58f6c1d5806c54273d34ae469b1c9699c9af",
-    "disposition": "body_reviewed_call_test_trace_pending",
+    "disposition": "semantically_reviewed",
     "review_records": [
-      "docs/full-analysis/baldrix-completion-authority-001/files.json"
+      "docs/full-analysis/baldrix-completion-authority-001/files.json",
+      "docs/full-analysis/baldrix-lib-001/files.json"
     ],
     "adoption_status": "not_approved_not_incorporated"
   },
@@ -7881,8 +7884,10 @@
     "mode": "100644",
     "bytes": 13327,
     "pinned_sha256": "fc9b56d21c742fba3845416fdda3cb1b905d79430f9c0b55f7686aa934e5364a",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7893,8 +7898,10 @@
     "mode": "100644",
     "bytes": 4407,
     "pinned_sha256": "ac0defc28bc723e5e292d28bc1acbdc8488f17b5459af8c4f53be4ee322902d0",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7905,8 +7912,10 @@
     "mode": "100644",
     "bytes": 1737,
     "pinned_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7917,8 +7926,10 @@
     "mode": "100644",
     "bytes": 5893,
     "pinned_sha256": "9b4e6aa81ae47f622be4b55659532d94e4c1f5ccf0ec2668f803642182872915",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7929,8 +7940,10 @@
     "mode": "100644",
     "bytes": 9393,
     "pinned_sha256": "bb4cacf93a17a3c4e3828156b5723d247e695c4d5c2e063a0f73ae54486a8f1b",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7941,8 +7954,10 @@
     "mode": "100644",
     "bytes": 5336,
     "pinned_sha256": "d2e6a86b878b7f3e60e62383c96a828380f8176b8f2967ff01e375631f27b6d6",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7953,8 +7968,10 @@
     "mode": "100644",
     "bytes": 3722,
     "pinned_sha256": "4521f998df0b66a718802cd9d217dfc0c5513121ad75c04d9cdf6a1b6f668862",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7965,8 +7982,10 @@
     "mode": "100644",
     "bytes": 31396,
     "pinned_sha256": "eaddc2d0999653b47bf2c56f1e6e6945d3fe89efcac2e51c8e8f80e5131faf23",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7977,8 +7996,10 @@
     "mode": "100644",
     "bytes": 8527,
     "pinned_sha256": "716ce66a831594dfae31f41a3d06fa914a2809dd816bc500bffb56ac2c0c77d4",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -7989,8 +8010,10 @@
     "mode": "100644",
     "bytes": 5180,
     "pinned_sha256": "4332dfeeb76c1d8c815cf0dbfe8af721f3e52193c96b0e5b9480c00681651f0e",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8001,8 +8024,10 @@
     "mode": "100644",
     "bytes": 5260,
     "pinned_sha256": "a2a3d2030c3b755f4f289bffd660ab84772abd2aa74d3e7859d571b27fb2a36c",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8013,8 +8038,10 @@
     "mode": "100644",
     "bytes": 2301,
     "pinned_sha256": "820ebc7dded60e310f24e7f69b5ca4fe4f7659e2a4c2733c6a51a227e11e660d",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8025,8 +8052,10 @@
     "mode": "100644",
     "bytes": 10084,
     "pinned_sha256": "ccd1cdc4e7255b9a3853b10c0d49e90c3900de554ee86e35a40bc80f0a04dc60",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8037,8 +8066,10 @@
     "mode": "100644",
     "bytes": 2971,
     "pinned_sha256": "5add458ec3afdbb8af807839d770859690e59e196a23968e9c1004c216f4787a",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8049,8 +8080,10 @@
     "mode": "100644",
     "bytes": 5583,
     "pinned_sha256": "096e0f91753bf46004dc5571354e5500fc48b837101e28979b9a2f3bd6d07e12",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8061,8 +8094,10 @@
     "mode": "100644",
     "bytes": 8370,
     "pinned_sha256": "e49353b8dde3bc53893f9ff81eb9122c97ca2a59a723a5846b29e21bca6f7931",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8073,8 +8108,10 @@
     "mode": "100644",
     "bytes": 13766,
     "pinned_sha256": "2f6fffebd7f08e39f1a22491c14cf14f4bda6c7abac1e8b94974536871046702",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8085,8 +8122,10 @@
     "mode": "100644",
     "bytes": 3246,
     "pinned_sha256": "91f3875d0e56b991eee40d0250fdafc94e21ed2c1a986e88bb2593c98719acbf",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8097,9 +8136,10 @@
     "mode": "100644",
     "bytes": 10002,
     "pinned_sha256": "59b7fb5233219e048a2d0d261913251405000cd5d9b19f85e6031e36ba548cb0",
-    "disposition": "body_reviewed_call_test_trace_pending",
+    "disposition": "semantically_reviewed",
     "review_records": [
-      "docs/full-analysis/baldrix-completion-authority-001/files.json"
+      "docs/full-analysis/baldrix-completion-authority-001/files.json",
+      "docs/full-analysis/baldrix-lib-001/files.json"
     ],
     "adoption_status": "not_approved_not_incorporated"
   },
@@ -8111,8 +8151,10 @@
     "mode": "100644",
     "bytes": 6981,
     "pinned_sha256": "1bfb5ddaeeb20d2236577947bf7b131e1330bd96edf680ed2527fed459532b6b",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8123,8 +8165,10 @@
     "mode": "100644",
     "bytes": 9341,
     "pinned_sha256": "2fd77f3f2e4077b7f4a5a97eff9222826274b38f7bf83d297bf2541bbf00c159",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8135,8 +8179,10 @@
     "mode": "100644",
     "bytes": 6130,
     "pinned_sha256": "c91b53e65a443ca5c277cc2023ab812a7648f628dc37b9d443430d827409f6e0",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8147,8 +8193,10 @@
     "mode": "100644",
     "bytes": 15224,
     "pinned_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8547,8 +8595,10 @@
     "mode": "100644",
     "bytes": 37538,
     "pinned_sha256": "ea09df2fe95ae9656bf053f71fc9574ea557003e5fc43be5a55264b210f39ff3",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8559,8 +8609,10 @@
     "mode": "100644",
     "bytes": 11866,
     "pinned_sha256": "3b065bd2e87e7ba7b069d6312274fd57b9fa2d2035d52702ca66122699a8dea3",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8571,8 +8623,10 @@
     "mode": "100644",
     "bytes": 99934,
     "pinned_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8583,8 +8637,10 @@
     "mode": "100644",
     "bytes": 4402,
     "pinned_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8595,8 +8651,10 @@
     "mode": "100644",
     "bytes": 4476,
     "pinned_sha256": "4b10f3216de0f31c30e0547d813955d25145253cba483201c4d66a6bc20f4524",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8751,8 +8809,10 @@
     "mode": "100644",
     "bytes": 4024,
     "pinned_sha256": "e800c4ca794e1f7fc36beec07678f5e6ddf7dab4d47049e46a10a0da3dee745b",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8763,8 +8823,10 @@
     "mode": "100644",
     "bytes": 2288,
     "pinned_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8775,8 +8837,10 @@
     "mode": "100644",
     "bytes": 2308,
     "pinned_sha256": "a373661488713fcfb36734a3ec788544c011bc616f8876dcd6342bb37e61bb31",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8787,8 +8851,10 @@
     "mode": "100644",
     "bytes": 4157,
     "pinned_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -8799,8 +8865,10 @@
     "mode": "100644",
     "bytes": 17714,
     "pinned_sha256": "26d68f1e6768d9536e43674fd23d303294486313400c40c539064c3bb4e291aa",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-lib-003/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -9473,8 +9541,10 @@
     "mode": "100644",
     "bytes": 1865,
     "pinned_sha256": "693a6b81945ab829bca0fddffd8aae78cd13453e18ee941e5f8d6049c1fdbd52",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-providers-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -9485,8 +9555,10 @@
     "mode": "100644",
     "bytes": 4173,
     "pinned_sha256": "8b8e52e0fe780090586e0b491b98658a1a10a2376e515671bd783b20d9f7359d",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-providers-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -9497,8 +9569,10 @@
     "mode": "100644",
     "bytes": 1727,
     "pinned_sha256": "d640d920b6fd53579517df82fd1c5bea28c1b19573beb922e141a27c68161f8f",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-providers-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -9509,8 +9583,10 @@
     "mode": "100644",
     "bytes": 8318,
     "pinned_sha256": "d74eeff94c75aa0a483f724d15b59ba73fd64947b942c52d3c086891399531dc",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-providers-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -9521,8 +9597,10 @@
     "mode": "100644",
     "bytes": 3641,
     "pinned_sha256": "547449d6bbd59706070440613a84deb52467e2b0cc23c65c30a5f828989b4f04",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/baldrix-providers-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31427,8 +31505,10 @@
     "mode": "100644",
     "bytes": 922,
     "pinned_sha256": "7db7b9747ef8ad8728a7455480e41a70dcf81cc72579c4a5757188107d97a4e0",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31439,8 +31519,10 @@
     "mode": "100644",
     "bytes": 6876,
     "pinned_sha256": "877187b107dd10e0bd2c3bca468fb779a4441e597d90227e12ea66f153dfb8b3",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31451,8 +31533,10 @@
     "mode": "100644",
     "bytes": 16871,
     "pinned_sha256": "b3e4a0f549302ed24fde80f4e22d61226d1b11b94baee6c840413132e743a34b",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31463,8 +31547,10 @@
     "mode": "100644",
     "bytes": 8752,
     "pinned_sha256": "72ac9d87c58302bc3239ae1a2dd6e7867c38a1582bea7bc0edbbdcb7dbbe6cdf",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31475,8 +31561,10 @@
     "mode": "100644",
     "bytes": 40408,
     "pinned_sha256": "8a32de0a7ec9a430de13f90f64942b9c0bffd55cbb9f06dbab31e03755e42687",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31487,8 +31575,10 @@
     "mode": "100644",
     "bytes": 14744,
     "pinned_sha256": "aabe53c5df589a716549bacf9590e6a50b6fd8ff6ec5271877dcb33d3f9f365a",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31499,8 +31589,10 @@
     "mode": "100644",
     "bytes": 64871,
     "pinned_sha256": "40b960b472506f05270b9879034e4f56f023dedd4b0e41fe3bd56cf3912c3822",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31511,8 +31603,10 @@
     "mode": "100644",
     "bytes": 20382,
     "pinned_sha256": "937c8deb642797878aabc4d0d47b6bc4978ab1d11f35ad9a52b31ac8836c26b7",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31523,8 +31617,10 @@
     "mode": "100644",
     "bytes": 12168,
     "pinned_sha256": "776e754fa37fc54ab0f961397a19c22f7df341012e7f2c67fabf138e3cdcfdd0",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
@@ -31535,8 +31631,10 @@
     "mode": "100644",
     "bytes": 7754,
     "pinned_sha256": "c546e50883640e804c87af52119cf978e84150d2dc7a6991f2cd3e2883136cdb",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "semantically_reviewed",
+    "review_records": [
+      "docs/full-analysis/harness-integration-tests-001/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {

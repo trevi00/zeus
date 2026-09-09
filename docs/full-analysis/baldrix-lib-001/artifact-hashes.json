@@ -1,0 +1,19 @@
+{
+  "checkpoint-15.md": "a53b70b8be6d70e6026582b7eec6568d1c4845bb71f29fa0a4ab85b39bb42e74",
+  "checkpoint.json": "00233c0d298839929c3ac9484b3c32115d66ba3fb968d09d90e364d67308bcac",
+  "file-reviews.md": "d7ef334559ae0652c1a8936ad7001d6f754d9349b1209993bdf7641a4fcaef64",
+  "files.json": "cb92cc71ea54f5bc55ebd37a7ebc92a8d8f6269328f06e8b45583cee906d2cdf",
+  "notes-25.md": "c70f4dc943f995a21b06b61a662c31bd42277300bb7bd2de9be0c69d907843fa",
+  "record_review.executed.txt": "d76a780168ba91578c6d285a3e1db8f39b804782d3163590310f7d3aadab2dc7",
+  "record_review.py": "17a2a1e56b183856d2e18f57a3898c8980367d7f965604d7a9f048ce5bd991fd",
+  "record_review_v2.executed.txt": "8a76d4167919ad4007cc9df846611c789d328110dd7144160711846ab462e80f",
+  "record_review_v2.py": "8ce5c3b7b32f55c313b28f0a33f392e8af0a87ee929a33c64cf535e0460990ae",
+  "recorder-failure.json": "6da2706a01d962c62ec189072ead28dcb4c517b6ee80cc10f495f0c5a91ab385",
+  "recorder-success.json": "93017f60238e3cd950b02ef1504d0653e28421c1541a30fbf55c17b716240e8b",
+  "remaining.txt": "b87f406827b890f89ddbe15a6544c3cb0bee671615349bac4a99d822c6871c3d",
+  "reused-support.json": "bdbeb76a754cf70af37ce6643ab30d6404ba5eb6d6ed6440fca5259a4f717671",
+  "review.md": "1bfd7497fdabb22e4334aceb3a4451b5c35d7dff116a155a6d7f042952d29543",
+  "root-eol-normalization.json": "d693f255380695d69e384c5e576d0649a46abf22f4bb17da74e4e3a2b26fd169",
+  "ruff-receipt.json": "bf2bd29332059c733d061c80c045fb88b328f20dbf71ba67dfbe5b265a77c1cc",
+  "supporting-evidence.json": "bf58fa934bd2813404790d761d41f20d24ff581aeac7b21cf34368038ce729bd"
+}

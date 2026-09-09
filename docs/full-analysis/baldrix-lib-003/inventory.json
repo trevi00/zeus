@@ -1,0 +1,48 @@
+{
+  "partition": "baldrix:scripts/lib:003",
+  "scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+  "bytes": 188707,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/ensemble_evaluator.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/evaluator.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/evaluator_dispatcher.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/event_store.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/event_taxonomy.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/file_matchers.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/frontmatter.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/frontmatter_norm.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/git_flow_override.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/golden_signals.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

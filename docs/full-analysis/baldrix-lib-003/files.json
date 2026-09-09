@@ -1,0 +1,393 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ensemble_evaluator.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 37538,
+    "git_blob": "b5c38bd67a5579d40617d9080a70fc62ca157738",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ea09df2fe95ae9656bf053f71fc9574ea557003e5fc43be5a55264b210f39ff3",
+    "observed_sha256": null,
+    "manifest_sha256": "ea09df2fe95ae9656bf053f71fc9574ea557003e5fc43be5a55264b210f39ff3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        895
+      ]
+    ],
+    "total_lines": 895,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f01",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/evaluator.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11866,
+    "git_blob": "186850c61a005e5c2c256501fb55dbc41e122ca3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "3b065bd2e87e7ba7b069d6312274fd57b9fa2d2035d52702ca66122699a8dea3",
+    "observed_sha256": null,
+    "manifest_sha256": "3b065bd2e87e7ba7b069d6312274fd57b9fa2d2035d52702ca66122699a8dea3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        294
+      ]
+    ],
+    "total_lines": 294,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f02",
+    "supporting_ids": [
+      "s01",
+      "s13"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/evaluator_dispatcher.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 99934,
+    "git_blob": "00b149bba94765b6bca4c8a03f2bed36ee8d5849",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
+    "observed_sha256": null,
+    "manifest_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        2311
+      ]
+    ],
+    "total_lines": 2311,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f03",
+    "supporting_ids": [
+      "s01",
+      "s06",
+      "s13"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/event_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4402,
+    "git_blob": "b3417e72d5534b8e3c41a8bc6bbc9f06beb7a69e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd",
+    "observed_sha256": null,
+    "manifest_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        117
+      ]
+    ],
+    "total_lines": 117,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f04",
+    "supporting_ids": [
+      "s02",
+      "s04",
+      "s05",
+      "s07"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/event_taxonomy.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4476,
+    "git_blob": "89ac22db245f067ba86b143d9ee4e2b531e345c2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4b10f3216de0f31c30e0547d813955d25145253cba483201c4d66a6bc20f4524",
+    "observed_sha256": null,
+    "manifest_sha256": "4b10f3216de0f31c30e0547d813955d25145253cba483201c4d66a6bc20f4524",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        123
+      ]
+    ],
+    "total_lines": 123,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f05",
+    "supporting_ids": [
+      "s02"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/file_matchers.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4024,
+    "git_blob": "bc0623facd13efad37daeeff81f5a21b945870b3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e800c4ca794e1f7fc36beec07678f5e6ddf7dab4d47049e46a10a0da3dee745b",
+    "observed_sha256": null,
+    "manifest_sha256": "e800c4ca794e1f7fc36beec07678f5e6ddf7dab4d47049e46a10a0da3dee745b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        137
+      ]
+    ],
+    "total_lines": 137,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f06",
+    "supporting_ids": [
+      "s08"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/frontmatter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2288,
+    "git_blob": "68393a2c08a6d5eb2b4696a0e4fc9959051c26a6",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff",
+    "observed_sha256": null,
+    "manifest_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        62
+      ]
+    ],
+    "total_lines": 62,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f07",
+    "supporting_ids": [
+      "s02",
+      "s09",
+      "s12"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/frontmatter_norm.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2308,
+    "git_blob": "9e4c7b59cbd1e54ee1e1b6352082ce57ef1cba91",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a373661488713fcfb36734a3ec788544c011bc616f8876dcd6342bb37e61bb31",
+    "observed_sha256": null,
+    "manifest_sha256": "a373661488713fcfb36734a3ec788544c011bc616f8876dcd6342bb37e61bb31",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        60
+      ]
+    ],
+    "total_lines": 60,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f08",
+    "supporting_ids": [
+      "s12",
+      "s14"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/git_flow_override.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4157,
+    "git_blob": "271187243a55879e336a410c1e8cebe089664afe",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca",
+    "observed_sha256": null,
+    "manifest_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        103
+      ]
+    ],
+    "total_lines": 103,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f09",
+    "supporting_ids": [
+      "s03",
+      "s16"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/golden_signals.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 17714,
+    "git_blob": "0c1f885b4f5089aa5002390c8d68f4aa0374c25f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "26d68f1e6768d9536e43674fd23d303294486313400c40c539064c3bb4e291aa",
+    "observed_sha256": null,
+    "manifest_sha256": "26d68f1e6768d9536e43674fd23d303294486313400c40c539064c3bb4e291aa",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        375
+      ]
+    ],
+    "total_lines": 375,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:003",
+    "partition_scope_sha256": "64ad881e97f3c97d786cc7afac841cdc16b4334748b3a3afc58238287edd0682",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-003/review.md#f10",
+    "supporting_ids": [
+      "s10",
+      "s11",
+      "s15",
+      "s17"
+    ],
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/test 0. Metadata checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests and embedded self-checks remain unexecuted in this review."
+    ],
+    "remaining": [
+      "Full caller/config/test transition closure remains pending; see review section and remaining.md.",
+      "Actual host behavior, model qualification, licensing, joint Claude review and Zeus adoption unverified."
+    ],
+    "adoption_approved": false
+  }
+]

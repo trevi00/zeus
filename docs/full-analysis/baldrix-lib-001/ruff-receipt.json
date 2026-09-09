@@ -1,0 +1,11 @@
+{
+  "argv": [
+    ".venv/Scripts/ruff.exe",
+    "check",
+    "docs/full-analysis/baldrix-lib-001"
+  ],
+  "cwd": "C:/Users/rudtn/zeus",
+  "exit_code": 0,
+  "stdout": "All checks passed!\n",
+  "scope": "Review recorder code formatting only; no upstream execution or acceptance."
+}

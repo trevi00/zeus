@@ -1,0 +1,11 @@
+{
+  "kind": "root_review_tool_eol_normalization",
+  "path": "docs/full-analysis/baldrix-lib-001/record_review_v2.py",
+  "before_sha256": "0f176b20d08258fea87cdb3574ce4ecafe7c6b01f94cf7328d08fc1a1497d135",
+  "after_sha256": "8ce5c3b7b32f55c313b28f0a33f392e8af0a87ee929a33c64cf535e0460990ae",
+  "reason": "179 CRCRLF sequences in the post-execution reading/reproduction copy failed Git whitespace checks; normalized to LF.",
+  "executed_raw_preserved": true,
+  "raw_ref": "docs/full-analysis/baldrix-lib-001/record_review_v2.executed.txt",
+  "source_execution": false,
+  "historical_receipts_unchanged": true
+}

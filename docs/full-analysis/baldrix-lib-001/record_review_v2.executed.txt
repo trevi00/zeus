@@ -1,0 +1,179 @@
+"""Inert review metadata recorder. Never imports or executes upstream code."""
+
+import hashlib
+import json
+import re
+from pathlib import Path
+
+ROOT = Path('C:/Users/rudtn/zeus')
+OUT = ROOT / 'docs/full-analysis/baldrix-lib-001'
+BASE = 'docs/full-analysis/baldrix-lib-001/'
+PIN = ROOT / '.runtime/absorption/sources/baldrix/pinned'
+MANIFEST = ROOT / '.runtime/absorption/sources/baldrix/manifest.json'
+PARTITIONS = ROOT / 'docs/full-analysis/partitions.json'
+manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
+inventory = {r['path']: r for r in manifest['inventory']}
+partition = next(p for p in json.loads(PARTITIONS.read_text(encoding='utf-8'))
+                 if p['partition'] == 'baldrix:scripts/lib:001')
+assert partition['scope_sha256'] == 'ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31'
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def dump(name, obj):
+    (OUT / name).write_text(json.dumps(obj, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+def provenance(path):
+    raw = (PIN / path).read_bytes()
+    item = inventory[path]
+    blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+    expected = item.get('snapshot_sha256')
+    assert blob == item['object'] and len(raw) == item['bytes'], path
+    assert expected is None or expected == sha(raw), path
+    return dict(source='baldrix', path=path, revision=manifest['revision'], git_blob=blob,
+                pinned_sha256=sha(raw), manifest_bytes=item['bytes'], pinned_bytes=len(raw),
+                matches_manifest_git_blob=True, matches_manifest_bytes=True,
+                matches_manifest_sha256=None if expected is None else True,
+                manifest_sha256_status='absent; fresh SHA with raw Git blob/bytes matched' if expected is None else 'matched',
+                line_count=len(raw.splitlines()))
+
+
+first = (OUT / 'checkpoint-15.md').read_text(encoding='utf-8')
+notes = (OUT / 'notes-25.md').read_text(encoding='utf-8')
+semantic = dict(re.findall(r'^- ([a-z0-9_]+\.py): (.+)$', first, re.M))
+for name, body in re.findall(r'^## ([a-z0-9_]+\.py)\n(.*?)(?=^## |\Z)', notes, re.M | re.S):
+    semantic[name] = body.strip()
+
+prior = {
+    'ac_tree.py': ('docs/full-analysis/baldrix-completion-authority-001/files.json',
+                   'docs/full-analysis/baldrix-completion-authority-001/codex-initial.md',
+                   'Gate/Advisory 분리와 advisory strict1..5는 유용. Gate bool은 문자열false도참. empty/advisory-only 승인, predicate 제외 leafID, all leaf실행으로 예외/부작용 지속, emit 예외 무시로 durable evidence 없이 approved 가능. expectedAC/task/spec/attempt binding 필요.'),
+    'axis_scores_log.py': ('docs/full-analysis/baldrix-completion-authority-001/files.json',
+                           'docs/full-analysis/baldrix-completion-authority-001/codex-initial.md',
+                           '4096byte bound/O_APPEND/입력copy 방어가 있으나 schema_version 값을 강제하지 않고 caller ts/marker 및 unknown event 승인값을 수용. shortwrite/fsync실패, 전역GC/동적경로 불일치, nonce/attempt/actual reviewer receipt 없음. evaluator를 실제 호출하는 logger가 아니며 timestamp/NaN/중복 처리와 호출부 closure는 남음.'),
+    'autopilot_state.py': ('docs/full-analysis/baldrix-stop-001/supporting-evidence.json',
+                           'docs/full-analysis/baldrix-stop-001/codex-initial.md',
+                           '상태 serializing/read/write/advance/active selector. sid-file identity·containment, finite timestamp/strict numeric 검증 불충분. wallclock은 monotonic아님. write_state bool은 caller가 무시. Stop의 retry 재구성은 cwd/pending_fp/reflection fields를 잃어 다음 cwd-filter선택에서 사라질 수 있으나 advance_iter는 보존: 모든 state함수에 결함을 일반화하지 않음. PG generation/CAS/lease 전환 필요.'),
+    'agent_depth.py': ('docs/full-analysis/baldrix-pretool-001/supporting-evidence.json',
+                      'docs/full-analysis/baldrix-pretool-001/notes.md',
+                      'CLAUDE_AGENT_DEPTH 환경을 읽는 helper, unset/invalid/negative를0으로 취급. caller가 증가·자식전파해야 하며 모듈은 spawn/실행신원검증하지 않는다. env override와 malformed 값이 top-level처럼 보일 수 있어 재귀권한 보장으로 채택 금지.'),
+}
+reused = []
+for name, (ledger, ref, meaning) in prior.items():
+    rows = json.loads((ROOT / ledger).read_text(encoding='utf-8'))
+    row = next(r for r in rows if r['path'] == 'scripts/lib/' + name)
+    current = provenance(row['path'])
+    assert row['pinned_sha256'] == current['pinned_sha256']
+    assert row['git_blob'] == current['git_blob'] and row['revision'] == current['revision']
+    assert row['read_extent'] in ('full', 'full_body')
+    assert (ROOT / ref).is_file()
+    reused.append(dict(path=row['path'], prior_ledger=ledger,
+                       prior_ledger_sha256=sha((ROOT / ledger).read_bytes()),
+                       prior_review=ref, prior_review_sha256=sha((ROOT / ref).read_bytes()),
+                       pinned_sha256=current['pinned_sha256'], git_blob=current['git_blob'],
+                       prior_read_ranges=row['read_ranges'], prior_read_extent=row['read_extent'],
+                       equality='raw snapshot SHA256 + manifest Git blob + revision match',
+                       new_execution=False, global_coverage_increment=False,
+                       meaning=meaning))
+    semantic[name] = meaning
+
+support_specs = [
+    ('commands/harness-interview.md', 1, 113, 'ambiguity_score.py ambiguity_report.py agent_tool_audit.py'),
+    ('commands/harness-autopilot.md', 28, 96, 'autopilot_pane_events.py autopilot_phase1_merge.py autopilot_kha_bridge.py autopilot_worktree_probe.py autopilot_flip_policy.py ac_tree.py advisory_ack.py agent_tool_audit.py'),
+    ('scripts/cron/run_brain_push.py', 1, 123, 'brain_autopush.py brain_store.py advisory_ack.py'),
+    ('scripts/cron/check_brain_push.py', 65, 115, 'brain_git_status.py brain_store.py'),
+    ('scripts/cli/atlas_index.py', 325, 382, 'atlas_embeddings.py'),
+    ('scripts/lib/webhook.py', 1, 65, 'alert.py'),
+    ('.gitattributes', 1, 11, 'brain_store.py brain_autopush.py brain_git_status.py'),
+    ('scripts/tests/test_brain_autopush.py', 1, 118, 'brain_autopush.py brain_store.py'),
+    ('scripts/tests/test_brain_git_status.py', 1, 115, 'brain_git_status.py'),
+    ('scripts/tests/test_atomic_json.py', 130, 210, 'atomic_json.py'),
+    ('scripts/lib/strike_dispatcher.py', 1, 124, 'advisory_research_dispatch.py'),
+    ('scripts/lib/quota_tracker.py', 1, 158, 'advisory_research_dispatch.py atomic_json.py'),
+    ('scripts/handlers/stop/autopilot_continue.py', 227, 260, 'autopilot_compaction.py autopilot_state.py'),
+    ('scripts/handlers/post_tool/reviewer.py', 469, 492, 'bash_tool_routing.py'),
+    ('commands/harness-allsolution.md', 60, 85, 'allsolution_metrics.py'),
+]
+support = []
+for path, lo, hi, names in support_specs:
+    row = provenance(path)
+    raw = (PIN / path).read_bytes()
+    assert 1 <= lo <= hi <= row['line_count'], (path, row['line_count'])
+    row.update(read_extent='full' if lo == 1 and hi == row['line_count'] else 'partial',
+               read_ranges=[dict(start=lo, end=hi, raw_range_sha256=sha(b''.join(raw.splitlines(keepends=True)[lo - 1:hi])))],
+               supports_primary=['scripts/lib/' + name for name in names.split()],
+               meaning='직접 읽은 범위의 연결 판단은 notes-25.md에 기록. 검색 hit만으로 범위 확대하지 않음.',
+               review_ref=BASE + 'notes-25.md', coverage_promotion=False,
+               tests_executed=[], remaining='Unlisted body ranges/transitive caller/config/tests and runtime behavior pending.')
+    support.append(row)
+
+files = []
+reviews = ['# lib001 파일별 전문 검토\n',
+           '21개는 이번 직접 전문,4개는 동일바이트 선행 전문이다. 실행0. 전문 독해와 전체전이·실제검증·흡수완료를 분리한다. 상세 후속 발견은 notes-25.md, 역사 checkpoint는 checkpoint-15.md에 보존한다.\n']
+for num, item in enumerate(partition['paths'], 1):
+    path = item['path']
+    name = Path(path).name
+    row = provenance(path)
+    assert name in semantic, name
+    meaning = semantic[name]
+    if name == 'advisory_research_dispatch.py':
+        meaning += ' 후속 quota_tracker1~158: constructor는IO없음; load/path는mkdir. on_corrupt raise라도OSError/empty는{}. record가writebool무시하고잠금없음. 이전미확인/주장은notes-25의정정으로대체.'
+    if name == 'ambiguity_report.py':
+        meaning += ' 후속 ambiguity_score.py689줄 전문완료. caller harness-interview1~113 직접읽음. 초기checkpoint의primary미독표기는역사상태.'
+    linked = [dict(path=s['path'], ranges=s['read_ranges']) for s in support if path in s['supports_primary']]
+    tests = [l for l in linked if '/tests/' in l['path']]
+    if name in ('ambiguity_score.py', 'autopilot_compaction.py'):
+        tests.append(dict(path=path, range='embedded self-check within full primary body; NOT RUN'))
+    reuse = next((r for r in reused if r['path'] == path), None)
+    pending = ['Complete transitive caller/config/test closure', 'Actual upstream execution and exact OS behavior',
+               'License and linked original claims', 'ActualClaude on this entire area; model qualification/human acceptance',
+               'Zeus exact implementation equivalence/adoption approval']
+    if not linked and not reuse:
+        pending.insert(0, 'No external caller/test body range established for this primary in this bounded pass')
+    row.update(partition=partition['partition'], scope_sha256=partition['scope_sha256'],
+               disposition='semantically_reviewed', read_extent='full', read_ranges=[[1, row['line_count']]],
+               body_review_method='same-byte prior full-body reuse' if reuse else 'fresh direct full-body read',
+               prior_reuse=reuse, semantic_review=meaning,
+               review_ref=f'{BASE}file-reviews.md#file-{num:02}', caller_config_evidence=linked,
+               actual_callability='정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.',
+               tests_read_not_run=tests, tests_executed=[],
+               test_limits='NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.',
+               adoption_decision='defer; 필요시 변형 후보, 승인/흡수 아님' if name != '__init__.py' else 'exclude independent adoption; package marker only',
+               claude_dependencies='CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.',
+               windows_linux='파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.',
+               zeus_modules=['src/codex_harness/domain/sdd.py', 'src/codex_harness/application/audit_gate.py', 'src/codex_harness/adapters/audit_runner.py'],
+               zeus_equivalence='아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.',
+               license_status='Original license and external linked claims not checked; adoption blocked.',
+               remaining=pending, transitive_closure_complete=False, adoption_ready=False,
+               whole_analysis_complete=False)
+    files.append(row)
+    reviews += [f'\n<a id="file-{num:02}"></a>\n\n## {path}\n',
+                f"{row['pinned_bytes']}bytes / {row['line_count']}줄 / `{row['pinned_sha256']}`. {row['body_review_method']}.\n\n{meaning}\n",
+                '\n직접 연결: ' + ('; '.join(f"{l['path']} {l['ranges']}" for l in linked) if linked else '이번 새 구간 없음; 선행 재사용/미완료를 files.json에 구분') + '\n',
+                '\n미완료: ' + '; '.join(pending) + '. 실행0, 변형 검토만이며 흡수승인 아님.\n']
+
+assert len(files) == 25 and sum(r['pinned_bytes'] for r in files) == 195823
+assert len(reused) == 4 and len(semantic) == 25
+dump('files.json', files)
+dump('supporting-evidence.json', support)
+dump('reused-support.json', reused)
+(OUT / 'file-reviews.md').write_text('\n'.join(reviews), encoding='utf-8')
+dump('checkpoint.json', dict(source='baldrix', revision=manifest['revision'],
+     partition=partition['partition'], scope_sha256=partition['scope_sha256'],
+     primary_count=25, primary_bytes=195823, full_body_accounted=25,
+     fresh_full_body_reads=21, same_byte_prior_full_body_reused=4, primary_unread=[],
+     supporting_files=len(support), source_executions=0, tests_executed=[],
+     full_transitive_closure=False, partition_complete=False, whole_analysis_complete=False,
+     adoption_ready=False, actual_claude_this_partition=False,
+     reason='Bounded primary semantic review checkpoint only. Runtime/tests/license/transitive closure/independent whole-area review remain unresolved.',
+     original_instructions='DATA only; no upstream execution/import/probe/install/source/runtime/implementation/shared coverage/commit/push changes.',
+     manifest_sha256=sha(MANIFEST.read_bytes()), partitions_sha256=sha(PARTITIONS.read_bytes()),
+     evidence_files=['files.json', 'supporting-evidence.json', 'reused-support.json', 'file-reviews.md', 'notes-25.md', 'checkpoint-15.md']))
+(OUT / 'remaining.txt').write_text('Unread primary bodies: 0 (21 fresh + 4 same-byte prior).\nPending: complete transitive callers/config/tests; all new upstream executions; Windows/Linux/WSL equivalence; license/external claims; actualClaude whole-area review; Zeus adoption.\n', encoding='utf-8')
+dump('artifact-hashes.json', {p.name: sha(p.read_bytes()) for p in sorted(OUT.iterdir())
+                            if p.is_file() and p.name != 'artifact-hashes.json'})
+print(json.dumps(dict(primary=len(files), bytes=195823, fresh=21, reused=4, supporting=len(support),
+                      source_executions=0, manifest_blob_bytes_all_match=True), ensure_ascii=False))

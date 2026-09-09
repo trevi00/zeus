@@ -1,0 +1,10 @@
+  [OK] provider_name_ollama
+  [OK] provider_default_model_set
+  [OK] provider_capabilities_text
+  [OK] is_available_returns_bool
+  [OK] ask_request_constructed
+  [OK] PROVIDER_export_class
+  [OK] registry_round_trip
+  [OK] ask_raises_when_unavailable
+
+[OK] 8 self-check assertions passed

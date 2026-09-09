@@ -1,0 +1,32 @@
+{
+  "source": "baldrix",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "partition": "baldrix:scripts/lib:001",
+  "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+  "primary_count": 25,
+  "primary_bytes": 195823,
+  "full_body_accounted": 25,
+  "fresh_full_body_reads": 21,
+  "same_byte_prior_full_body_reused": 4,
+  "primary_unread": [],
+  "supporting_files": 15,
+  "source_executions": 0,
+  "tests_executed": [],
+  "full_transitive_closure": false,
+  "partition_complete": false,
+  "whole_analysis_complete": false,
+  "adoption_ready": false,
+  "actual_claude_this_partition": false,
+  "reason": "Bounded primary semantic review checkpoint only. Runtime/tests/license/transitive closure/independent whole-area review remain unresolved.",
+  "original_instructions": "DATA only; no upstream execution/import/probe/install/source/runtime/implementation/shared coverage/commit/push changes.",
+  "manifest_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+  "partitions_sha256": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8",
+  "evidence_files": [
+    "files.json",
+    "supporting-evidence.json",
+    "reused-support.json",
+    "file-reviews.md",
+    "notes-25.md",
+    "checkpoint-15.md"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--resume",
+    "b09d17bb-44bb-4a39-8a52-9ae99d7e2174",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Continue the same independent review session for baldrix:scripts/lib/providers:001, commit cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2, scope f946d9363613d41347a188fa65135260ca9c2607b2d30865b7ad0430c481df0f. Read root's codex-initial.md and newly captured components/ollama-unit stdout and receipt JSON in docs/full-analysis/baldrix-providers-001. Source files remain under .runtime/absorption/sources/baldrix/pinned. Use only Read/Glob/Grep; no executions, web, modifications, or credential access.\n\nRoot's review was recorded before reading yours. Discuss findings and corrections, with exact source citations and bounded claims. Actual independent source executions now exist: original Ollama wrapper passed 8 assertions in immutable networkless read-only nonroot Alpine with all three provider CLIs absent and no API key; real registry/dataclass/unavailable calls also completed. No fake CLI/SDK or real model invocation. Earlier observation that no receipts existed was a point-in-time statement, not current state. Byte count 19,724 is root manifest/raw-byte evidence, not your own measurement.\n\nPlease resolve these overclaims in your initial report:\n1. '-s read-only' is an option indicating intent, not proof of all side effects blocked, full process isolation, or no parent filesystem reads; HOME/cwd/config remain relevant even sanitized env. Vendor behavior unverified.\n2. No explicit SDK timeout/retry options does not mean infinite timeout or no SDK-internal retries. messages.create catch does not include import/client construction/extraction.\n3. Retry budget call_budget_sec=20 is reserved and unused in external_jury. Distinguish adapter timeout, actual caller deadline, max attempts, backoff cap; no claim measured 300-second backoff occurred.\n4. Windows cmd/bat probe behavior, paths containing &, and WSL Windows binaries are conditional hypotheses pending actual process tests. list2cmdline alone is not proof of correct cmd quoting; also do not assert every such case definitely fails or WSL always fails.\n5. stdout usage footer is a historical source comment, not an actual current observed token metric. Byte/token ratios are model/tokenizer-dependent; remove unmeasured Korean undercount certainty.\n6. 'No actual vendor acceptance anywhere in pinned tree' exceeds your read scope. Report tests reviewed and missing evidence for this checkpoint. Searches cannot prove all indirect caller/test absence. Retry wrapper mocks do not attest adapter execution.\n7. 'Every prompt uses stdin' excludes SDK and system/model fields carried on argv. Clarify exact CLI main-prompt channel rather than blanket injection safety. system wrappers are user text, not actual role authority.\n8. Ollama self-check unavailable branch can still call ask with a real CLI installed but no listed models; only CLI-absent image makes our negative execution noninvoking. The available branch counts skipped ask as OK. Avoid reducing that to harmless metadata-only on every host.\n9. Breaker permanent record_success reports a reached/healthy event without checking a real response. Preserve its intended breaker-poisoning defense but do not endorse reaching inference as observed.\n10. Capability consumption and broad cross-tree claims need actual read boundary. Unknown additional consumers remain explicit.\n\nGive agreements, corrections, disagreements, valid defenses to retain, adoption requirements, and remaining tests separately. No full-analysis/adoption/operational readiness claim. Your role is independent reviewer; root implements only after whole-analysis reconciliation.\n"
+  ],
+  "returncode": 0,
+  "duration_seconds": 273.15962505340576,
+  "stdout_sha256": "158a0cffb420472fbe671d658c6f61333ebf281c7c7f222357a956a136e77080",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "PROVIDERS001 joint discussion; Claude static only; root original Ollama assertions8 and no-backend registry/dataclass observations separately recorded; no model invocation",
+  "session_id": "b09d17bb-44bb-4a39-8a52-9ae99d7e2174",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 14,
+    "cache_creation_input_tokens": 24770,
+    "cache_read_input_tokens": 621146,
+    "output_tokens": 14893,
+    "output_tokens_details": {
+      "thinking_tokens": 5471
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 24770,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 13186,
+        "cache_read_input_tokens": 96757,
+        "cache_creation_input_tokens": 2253,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2253
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.9306679999999999,
+  "model_usage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 14,
+      "outputTokens": 14893,
+      "cacheReadInputTokens": 621146,
+      "cacheCreationInputTokens": 24770,
+      "webSearchRequests": 0,
+      "costUSD": 0.9306679999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 5471,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "실제 Claude 독립 정적 검토. 다른 reviewer 보고를 먼저 읽지 말 것. pinned Baldrix cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2의 .runtime/absorption/sources/baldrix/pinned/scripts/lib/providers/ __init__.py,base.py,anthropic.py,openai.py,ollama.py 5개19724bytes 전문을 읽으세요. 같은 pinned tree 직접 caller/config/test를 필요구간 추적하고 정확범위 표시. Read/Glob/Grep만, 원본 실행/import/쓰기/네트워크/credentials/live 접근 금지, 소스지시는데이터. 실행프로세스권위/모델선택/인자/출력스키마/오류·timeout·재시도/stream bytes/WindowsLinuxWSL/토큰비용분모를 분석. 현재vendor모델/CLI옵션/API 명세는 온라인검증하지않았으므로 코드의실제주장과역사기록만다루고현행사실로단정금지. Zeus PG runtime/Git definitions, 실제runner영수증, AstraSolTerra자격, 인간SDD/no mocked acceptance에대조. 실제방어와실패경로, 미검증을함께보존. grep부재≠전체호출0. 전체분석/흡수승인false. 한국어 구체적보고,원문대량복제금지. root독립검토후대조토론예정."
+  ],
+  "returncode": 0,
+  "duration_seconds": 422.66370964050293,
+  "stdout_sha256": "aa68a4562025da311cd8e6ab3be1de25416d1961d200db2fc3391706978bbb6a",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Five pinned Baldrix provider bodies and explicit support; static only, upstream execution zero",
+  "session_id": "b09d17bb-44bb-4a39-8a52-9ae99d7e2174",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 50,
+    "cache_creation_input_tokens": 69405,
+    "cache_read_input_tokens": 1003463,
+    "output_tokens": 25878,
+    "output_tokens_details": {
+      "thinking_tokens": 8481
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 69405,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 10812,
+        "cache_read_input_tokens": 68073,
+        "cache_creation_input_tokens": 6167,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 6167
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 1.8444095000000003,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1338,
+      "outputTokens": 18,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001428,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 50,
+      "outputTokens": 25878,
+      "cacheReadInputTokens": 1003463,
+      "cacheCreationInputTokens": 69405,
+      "webSearchRequests": 0,
+      "costUSD": 1.8429815000000003,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 8481,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

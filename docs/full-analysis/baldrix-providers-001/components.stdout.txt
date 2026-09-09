@@ -1,0 +1,61 @@
+{
+  "kind": "original_provider_unavailable_observations",
+  "mocking": false,
+  "installed_cli": {
+    "claude": null,
+    "codex": null,
+    "ollama": null
+  },
+  "aliases": [
+    "anthropic",
+    "claude",
+    "codex",
+    "ollama",
+    "openai"
+  ],
+  "providers": {
+    "anthropic": {
+      "instance_returned_without_backend": true,
+      "is_available": false,
+      "ask": {
+        "exception": "ProviderUnavailableError",
+        "message": "Neither anthropic SDK (with ANTHROPIC_API_KEY) nor `claude` CLI is available."
+      }
+    },
+    "openai": {
+      "instance_returned_without_backend": true,
+      "is_available": false,
+      "ask": {
+        "exception": "ProviderUnavailableError",
+        "message": "codex CLI not found on PATH"
+      }
+    },
+    "ollama": {
+      "instance_returned_without_backend": true,
+      "is_available": false,
+      "ask": {
+        "exception": "ProviderUnavailableError",
+        "message": "ollama CLI not found on PATH"
+      }
+    }
+  },
+  "aliases_canonical": {
+    "CLAUDE": "anthropic",
+    "CODEX": "openai"
+  },
+  "whitespace_alias": {
+    "exception": "KeyError",
+    "message": "\"Unknown provider ' codex '. Known: ['anthropic', 'claude', 'codex', 'ollama', 'openai']\""
+  },
+  "nonstring_alias": {
+    "exception": "AttributeError",
+    "message": "'NoneType' object has no attribute 'lower'"
+  },
+  "invalid_request_constructs": {
+    "prompt": null,
+    "model": 123,
+    "max_tokens": -1,
+    "temperature": "invalid",
+    "system": []
+  }
+}

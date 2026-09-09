@@ -1,0 +1,39 @@
+# Codex independent provider review
+
+Before reading Claude's response, all five primary bodies in baldrix:scripts/lib/providers:001 were read at cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2 (19,724 bytes). Primary scope includes registry, base, Anthropic, OpenAI and Ollama adapters. Source execution at this checkpoint: zero. Vendor model names, CLI flags and historical notes are source data, not verified current product documentation.
+
+## Shared contract and registry
+
+Frozen request/response dataclasses and a small ABC provide useful dependency inversion. Lookup lowercases known aliases and imports only the selected module. However get_provider promises unavailable errors without checking availability, class/interface conformance or capabilities. A valid alias returns an instance even without a backend. Empty/whitespace or non-string names are not normalized into a consistent error. Extension requires editing the registry despite the broad open-closed wording. Concrete imports in evaluator_dispatcher and Ollama test mean 'consumers never import concrete classes' is not universal.
+
+AskRequest has no runtime validation, deadline/cancellation/attempt/idempotency key, allowed capability, response schema or budget reservation. max_tokens/temperature/system have different actual meanings per backend. AskResponse says resolved concrete model but OpenAI may return codex-default, and other adapters repeat the requested name without attesting actual response model. CLI token counts are None and raw output is stripped; stderr is clipped without a whole-stream reference. No source/task/spec/artifact/runner identity is bound here. This is an adapter abstraction, not Astra→Sol→Terra qualification evidence.
+
+## Anthropic
+
+SDK readiness checks key presence and successful import, not authenticated availability. SDK has precedence; failure after selection does not fall back to CLI. messages.create exceptions become ProviderUnavailableError but import/client construction and response extraction are outside that catch. Auth/config/quota/transient faults collapse into one type. The adapter sets no explicit SDK timeout/retry policy. SDK's own current defaults are unverified, so do not call it necessarily unlimited. max_tokens=0 becomes4096, negative/truthy invalid values are forwarded. Returned content filters text blocks, ignores stop/truncation/tool/refusal distinctions and trusts usage types; raw retains only id.
+
+CLI uses bare claude instead of the resolved executable path, 180-second timeout and UTF-8 decoding; catches OSError/TimeoutExpired but not UnicodeDecodeError. max_tokens/temperature are ignored. system is appended to CLI defaults unlike SDK system content. No adapter-level env/cwd/tool/MCP/config isolation or capability restriction is present. Current CLI's actual permissions/effects are not tested; absence of restrictions in this adapter is not proof every invocation writes or reads particular private files. Nonzero rc is rejected, but empty rc0 output becomes an ordinary response.
+
+## OpenAI
+
+The adapter resolves executable path, sends prompt via stdin, avoids an ordinary shell except Windows cmd/bat branch, specifies read-only intent and rejects nonzero rc. Availability still checks only executable presence, not auth/model/endpoint health. Timeout is caught; OSError, argument/type and decoding errors escape the advertised unified backend error. Child process-tree cancellation and receipt preservation are not implemented here. list2cmdline serializes Windows argv but does not establish safety for every cmd shell metacharacter in caller model/path; exact Windows behavior needs controlled real process testing, not an assumed exploit.
+
+request.system is literal user text in XML-like wrappers, without escaping or actual role authority. max_tokens/temperature are ignored. env/cwd and CLI config are inherited; '-s read-only' alone does not certify text-only or host-data isolation. Response is stdout.strip with codex-default fallback label and no usage/model attestation/structured schema/termination metadata. The doc's 'no side effects' claim is wider than this code proves. Current CLI features/options are outside this static review.
+
+## Ollama
+
+is_available requires PATH plus rc0 list output with at least2 nonblank lines, not the requested/default model, parseable table or actual generation. ask only requires the executable, so availability false because no models does not guarantee no model invocation. Header-only CLI present can enter ask from the self-check's unavailable branch; its comment says avoid spawn but that is only assured when CLI truly absent. The available branch records a skipped ask as OK and hides its detail on success. The test wrapper only executes that self-check; it is not model acceptance.
+
+ask honors request.model then OLLAMA_DEFAULT_MODEL then hardcoded default; ignores max_tokens/temperature; system is user text. is_available's bare executable path lacks ask's Windows shim treatment. The adapter inherits env and has no endpoint/locality constraint, so the 'local-only' doc claim is not enforced by this code. No statement about actual current Ollama cloud behavior is made. OSError/timeout/nonzero are handled but decode errors escape. The 300-second call captures unbounded output and accepts empty rc0 responses with no generation status or token receipt.
+
+## Direct consumers and limits
+
+external_jury's legacy path checks is_available before asking; its breaker path intentionally skips that check and classifies ProviderUnavailableError/unknown faults transient. ValueError (including UnicodeDecodeError) is permanent and marks breaker success/reached even if no provider response was observed. All wrappers collapsed to unavailable may therefore retry auth/config failures too. 'call_budget_sec=20' is reserved/unused: attempts×180/300-second CLI calls are not a20-second budget, and SDK timing is separately unverified. Empty/nonJSON responses enter responses and can end single mode; consensus counts only valid verdicts without full panel quorum/distinct model or alias identity. Conservative tie-break is useful but provider diversity does not prove independent correct judgment. This consumer had prior full engine review; same bytes are being explicitly traced again.
+
+evaluator_dispatcher.py:347–386,473–589 imports the concrete OpenAI adapter to check availability but duplicates subprocess launch to provide sanitized env and errors='replace'. It does not call OpenAIProvider.ask. Keeping HOME/cwd and selecting read-only does not by itself prove the stronger comment 'cannot Read/Grep/Bash parent filesystem'. Replacement decoding avoids an exception but can lose raw evidence; all streams still need exact bytes and task binding. Current actual host sandbox behavior is unverified.
+
+endpoint_query's complete body preserves a deterministic narration fallback and labels model unavailability, but catches any provider exception and returns the graph-resolution status, so rc0 is not LLM success. model_router's read body uses keywords/length and source-pinned model IDs, not measured qualification or cost. Additional narration/extractor/ensemble consumers and tests remain unreviewed or partial. No real provider/network/SDK call, Windows/WSL runtime, license or full adoption is established.
+
+## Zeus adaptation requirements
+
+Retain an inner typed provider port and explicit adapters, but make capabilities supported/unsupported, execution policy, raw stdout/stderr, resolved executable/version/model, termination cause, request/artifact identity, elapsed deadline and usage provenance explicit. Keep unavailable/not-run/failure/empty/truncated/valid evidence separate. Classify retry by normalized cause and a durable budget, and qualify models from actual comparable scenario receipts and guardrail versions. Local source adapters cannot be silently treated as production-ready Zeus implementations.

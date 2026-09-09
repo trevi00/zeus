@@ -1,0 +1,1801 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "85106bc22dd3418fc204115db95ad92489ab592f",
+    "pinned_sha256": "e9008df98b2d2237ac96f4d3277b45736d988aca041fa89a30ee2bc5b4e0ddca",
+    "manifest_bytes": 74,
+    "pinned_bytes": 74,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 1,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        1
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "한 줄 shared utilities package 설명. 실행/reexport/등록 기능 없음. 원형 채택할 동작 없음; 추출 생성자/동등성은 주장하지 않음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-01",
+    "caller_config_evidence": [],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "exclude independent adoption; package marker only",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "No external caller/test body range established for this primary in this bounded pass",
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ac_tree.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "bfd36b2c139284d8a17462bd3b4a1d3393d84f6d",
+    "pinned_sha256": "7a9f977dde9f5647ebc93592445c58f6c1d5806c54273d34ae469b1c9699c9af",
+    "manifest_bytes": 7572,
+    "pinned_bytes": 7572,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 201,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        201
+      ]
+    ],
+    "body_review_method": "same-byte prior full-body reuse",
+    "prior_reuse": {
+      "path": "scripts/lib/ac_tree.py",
+      "prior_ledger": "docs/full-analysis/baldrix-completion-authority-001/files.json",
+      "prior_ledger_sha256": "cccdb421513d025a903c4ce161de12aecde7e979bdfedb8c5ec8e5b4f0258a4e",
+      "prior_review": "docs/full-analysis/baldrix-completion-authority-001/codex-initial.md",
+      "prior_review_sha256": "a2d69b3627dfc3891a1f604cb11959386d325eb29ec8ba0c993306adf07f7d75",
+      "pinned_sha256": "7a9f977dde9f5647ebc93592445c58f6c1d5806c54273d34ae469b1c9699c9af",
+      "git_blob": "bfd36b2c139284d8a17462bd3b4a1d3393d84f6d",
+      "prior_read_ranges": [
+        [
+          1,
+          201
+        ]
+      ],
+      "prior_read_extent": "full_body",
+      "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+      "new_execution": false,
+      "global_coverage_increment": false,
+      "meaning": "Gate/Advisory 분리와 advisory strict1..5는 유용. Gate bool은 문자열false도참. empty/advisory-only 승인, predicate 제외 leafID, all leaf실행으로 예외/부작용 지속, emit 예외 무시로 durable evidence 없이 approved 가능. expectedAC/task/spec/attempt binding 필요."
+    },
+    "semantic_review": "Gate/Advisory 분리와 advisory strict1..5는 유용. Gate bool은 문자열false도참. empty/advisory-only 승인, predicate 제외 leafID, all leaf실행으로 예외/부작용 지속, emit 예외 무시로 durable evidence 없이 approved 가능. expectedAC/task/spec/attempt binding 필요.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-02",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/advisory_ack.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b23d895f38889c7f991adbdf009284184b4021d6",
+    "pinned_sha256": "fc9b56d21c742fba3845416fdda3cb1b905d79430f9c0b55f7686aa934e5364a",
+    "manifest_bytes": 13327,
+    "pinned_bytes": 13327,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 282,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        282
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "282줄 전문. plaintext ack registry이며 doc만 nonempty로 검사한다. key_field/type/tz 설명의 의미는 강제하지 않는다. 문서의 등록2개와 실제10개가 다르다. bounded plaintext라는 설명과 달리 key 길이/파일크기/보존기간 제한이 없다. key 개행은 load 시 여러 ack가 되고, whitespace key는 load.strip과 append의 불일치로 재기록될 수 있다. ack_many는 기존 set과 비교하지만 같은 batch 내부 중복을 제거하지 않는다. load+append는 잠금이나 CAS가 없어 exactly-once가 아니다. load의 일부 OSError는 빈 set으로 바뀌며 Unicode 오류와 write 실패는 별도다. import 때 STATE_DIR 경로가 고정된다. completed라는 ack 이름은 완료 증거가 아니다. actor/task/generation/artifact/승인 신원이 없다. legacy shim 동일성은 직접 검증하지 않았다. Zeus에서는 승인과 분리된 PG 알림 확인 레코드로 변형 후보.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-03",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      },
+      {
+        "path": "scripts/cron/run_brain_push.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 123,
+            "raw_range_sha256": "afb1f06b5947b88b19d4b6b487ab8954e692f6b8b237c834248b8b8403af75a3"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/advisory_research_dispatch.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1d7b4c6112f40b1e406c872a845bdb49204b3585",
+    "pinned_sha256": "ac0defc28bc723e5e292d28bc1acbdc8488f17b5459af8c4f53be4ee322902d0",
+    "manifest_bytes": 4407,
+    "pinned_bytes": 4407,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 88,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        88
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "HIGH를 이미 확인된 결함이라 선언하지만 upstream validator002의 휴리스틱 HIGH는 실제 결함 증거가 아니다. 이름:key lowercase/공백정규화 SHA1 12자리 global fingerprint는 프로젝트/revision/findingidentity없어 서로다른 사례가 blocklist를 공유한다. _BLOCKLIST import생성 sideeffect는 QuotaCounter전문미독. on_corrupt empty이면 재연구 허용; 매번손상/다른세션반복에도 최대1추가라는 주장은 코드로증명안됨. should_dispatch와 record_dispatch분리라 동시중복예약보장없음. blocklistclose는 caller결과무검증,TTL/revision변경재검토없음. 실제spawn은없는결정helper. strike_dispatcher/quota/consumer남음. Zeus PG세대dedup·실제연구결과/출처·자가개선자격과분리. 후속 quota_tracker1~158: constructor는IO없음; load/path는mkdir. on_corrupt raise라도OSError/empty는{}. record가writebool무시하고잠금없음. 이전미확인/주장은notes-25의정정으로대체.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-04",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/strike_dispatcher.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 124,
+            "raw_range_sha256": "6985e38d69dc3ff335f6ae9efb12404dc37097fa443b81e60b3abcec03bde607"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/quota_tracker.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 158,
+            "raw_range_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/agent_depth.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f8bf0d30c7f419c0d544ddf1ac27a57015d37f46",
+    "pinned_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3",
+    "manifest_bytes": 1737,
+    "pinned_bytes": 1737,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 59,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        59
+      ]
+    ],
+    "body_review_method": "same-byte prior full-body reuse",
+    "prior_reuse": {
+      "path": "scripts/lib/agent_depth.py",
+      "prior_ledger": "docs/full-analysis/baldrix-pretool-001/supporting-evidence.json",
+      "prior_ledger_sha256": "6109354d961a60d151127c0b9d2b7a13a7fb5366469a3b92be952badd31c17d2",
+      "prior_review": "docs/full-analysis/baldrix-pretool-001/notes.md",
+      "prior_review_sha256": "a6d118b1b5afc5b53a69b8d60831ad27c1c7c876815fafc8214dcf1676645d79",
+      "pinned_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3",
+      "git_blob": "f8bf0d30c7f419c0d544ddf1ac27a57015d37f46",
+      "prior_read_ranges": [
+        {
+          "start": 1,
+          "end": 59,
+          "raw_range_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3"
+        }
+      ],
+      "prior_read_extent": "full",
+      "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+      "new_execution": false,
+      "global_coverage_increment": false,
+      "meaning": "CLAUDE_AGENT_DEPTH 환경을 읽는 helper, unset/invalid/negative를0으로 취급. caller가 증가·자식전파해야 하며 모듈은 spawn/실행신원검증하지 않는다. env override와 malformed 값이 top-level처럼 보일 수 있어 재귀권한 보장으로 채택 금지."
+    },
+    "semantic_review": "CLAUDE_AGENT_DEPTH 환경을 읽는 helper, unset/invalid/negative를0으로 취급. caller가 증가·자식전파해야 하며 모듈은 spawn/실행신원검증하지 않는다. env override와 malformed 값이 top-level처럼 보일 수 있어 재귀권한 보장으로 채택 금지.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-05",
+    "caller_config_evidence": [],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/agent_tool_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "122be5042be36a3fdf0708244e965eadfb6c86bd",
+    "pinned_sha256": "9b4e6aa81ae47f622be4b55659532d94e4c1f5ccf0ec2668f803642182872915",
+    "manifest_bytes": 5893,
+    "pinned_bytes": 5893,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 153,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        153
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "agents소스고정frontmatter의tools와자기보고집합을비교. 파일없음/parse없음/toolsempty모두 mismatch[]/clean이라불명과정상혼합. frontmatter선언≠실제tool가용성/실행권한/원문검증영수증. list/set annotation강제없어문자열입력은한글자씩,nonstring항목strip예외. agentname slash/..방어는있지만Windows colon/reserved이름완전검사아님. classify_severity는citations truthiness와mismatch유무로invalidate선언할뿐실제architect결과강제는caller책임. render기본advisory는새invalidate정책을caller가안쓰면옛의미유지;overclaim사용시문구claimed_missing부정확. lib.frontmatter기존지원재사용가능. Zeus모델자격/실제toolreceipt필수.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-06",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-interview.md",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 113,
+            "raw_range_sha256": "1470f6295b5e2ce688c563e1e26f54cea27a476c89038151782662d7885fac20"
+          }
+        ]
+      },
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/alert.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "18f376f36a5abd45e9e4d27f21f18b84a1e80155",
+    "pinned_sha256": "bb4cacf93a17a3c4e3828156b5723d247e695c4d5c2e063a0f73ae54486a8f1b",
+    "manifest_bytes": 9393,
+    "pinned_bytes": 9393,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 271,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        271
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "271줄 전문. source+title SHA1 12자리 fingerprint는 프로젝트/task/detail을 포함하지 않아 다른 사건을 같이 suppress할 수 있다. append 후500행 tail 전체 재쓰기 및 repeat 갱신 전체 재쓰기에 잠금/원자 교체가 없어 손실 가능. _bump_repeat는 전체 재쓰기 하지 않는다는 설명과 반대다. 만료 뒤 새 alert는 repeats0으로 생성되고 _post는 누적 repeats를 보내지 않아 누적 요약 보장도 없다. _post는 webhook.post_json의 (ok,status,err)를 무시하고 예외가 없으면 ok라고 한다. raise_alert의 sent=True도 원격 수신 증거가 아니다. _bump_repeat는 쓰기 실패를 삼킨 뒤 증가 횟수를 반환한다. ack된 레코드 재발과 여러 writer 경합에 주의. title/source 길이 제한, actor별 ack, task identity가 없으며 detail은 local2000/webhook1000으로만 자른다. scalar JSON/Unicode 오류와 timestamp 변환 등 일부 예외는 never-raises 설명 밖으로 나온다. env webhook URL에 외부 POST 가능; 실제 송신0. Zeus outbox+수신결과/실패 상태 분리 필요.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-07",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/webhook.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 65,
+            "raw_range_sha256": "d9dd3cdf891514fbdb1b588d33e50f447d7501266ea9dcca9591a18cc83f5523"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/allsolution_metrics.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "0916e78d8a699304a29e4bf2bcd18957d93154f3",
+    "pinned_sha256": "d2e6a86b878b7f3e60e62383c96a828380f8176b8f2967ff01e375631f27b6d6",
+    "manifest_bytes": 5336,
+    "pinned_bytes": 5336,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 134,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        134
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "record_phase whitelist및writebool,caller ts를int,detail300clip. sid sanitizer충돌/Windowsreservednames/Unicode path경계남음. run_phases는JSONscalar도append하고summary는.get로crash가능. break_summary reached는문서상도달한run수지만실제기록행수여서재시도/중복append분모증가;skipped도reached에포함. 손상파일/미계측run은분모제외·0률이unknown과혼합. phase순서/단한종료/세션별최종값/원인/실행자검증없음. broad글로벌state읽기,JSONL잠금/fsync/멱등성없음. 원형성과/모델자격지표채택금지,관측adapter변형.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-08",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-allsolution.md",
+        "ranges": [
+          {
+            "start": 60,
+            "end": 85,
+            "raw_range_sha256": "0ba792c61db309c942dcf8bcd33b9bbe64368d5670b67c98269a9ccf75424348"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ambiguity_report.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "af044bb4282d20390bee7e7b53b5f4ec1c0f5b6c",
+    "pinned_sha256": "4521f998df0b66a718802cd9d217dfc0c5513121ad75c04d9cdf6a1b6f668862",
+    "manifest_bytes": 3722,
+    "pinned_bytes": 3722,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 79,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        79
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "pure ducktypedformatter지만 bool(score.passes_gate)는문자열false도True,weights길이/type/finite/aggregate-consistency미검사. contributions를먼저4자리round해dominant선택,동률firstcoverage이며weights변경한두round의delta도동일기준인것처럼보일수있음. 작은개선은round뒤없어짐. 음수delta를개선이라표시하는것은점수지표정의지실제사용자명확성/SDD인수아님. sourceambiguityscore전문남음. 후속 ambiguity_score.py689줄 전문완료. caller harness-interview1~113 직접읽음. 초기checkpoint의primary미독표기는역사상태.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-09",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-interview.md",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 113,
+            "raw_range_sha256": "1470f6295b5e2ce688c563e1e26f54cea27a476c89038151782662d7885fac20"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ambiguity_score.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c3359e1c0a990d7a4c7583b33ce8ac1b3fbb9f9e",
+    "pinned_sha256": "eaddc2d0999653b47bf2c56f1e6e6945d3fe89efcac2e51c8e8f80e5131faf23",
+    "manifest_bytes": 31396,
+    "pinned_bytes": 31396,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 689,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        689
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "689줄 전문 및 내부 _self_check455~689 정적 읽음, 실행0. 6W substring keyword 출현률85%, 토큰entropy5%, unknown density10%의 점수다. 질문은 coverage에서 빼지만 entropy/marker에는 넣으므로 질문표현에 따라 종료점수가 달라진다. 'who what when where why how'만으로 coverage0이 되는 코드·내장 테스트는 구체 요구사항/정확한 답변/인수 시나리오를 증명하지 않는다. showing→how/reasonable→reason 오염을 의도적으로 허용한다. 'or so'는 단일 token으로 나오지 않아 EN exact marker에서 잡히지 않는다. TBD는 EN+KO 중복 가능, 추후/추후 결정/약 substring도 density를 중복/오탐시킨다. 코드·URL 제외는 실제 중요한 제약도 제거하고 bilingual 범위 밖 문자는 누락한다. gap0이면 나머지 축 최대 합0.15라 기본0.2에서 marker가 최대여도 PASS한다. bool threshold/weight는 numeric으로 허용; dataclass 직접 생성은 범위 일관성 강제 없음. NaN weight는 w>=0에서 거부되고 NaN threshold도 range에서 거부하므로 NaN 모두 통과라고 주장하지 않는다. 임의 weight/threshold 선택은 인증된 정책 변경이 아니다. 문서의 consumer wiring 별도cycle과 live consumer 주장은 충돌; 직접 harness-interview1~113에서 실제 Python 호출 지시가 있음을 확인했으나 실행 영수증은 없다. 역사8/8/15/15·LOCK·운영자 승인·외부원문 미검증. 내장 self-check는 자체 공식과 keyword fixture의 일관성이지 사람 인수/false-positive corpus 전반 검증이 아니다. Zeus 명확화 보조 신호로만 변형하며 SDD 완료권위로 채택하지 않는다.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-10",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-interview.md",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 113,
+            "raw_range_sha256": "1470f6295b5e2ce688c563e1e26f54cea27a476c89038151782662d7885fac20"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/lib/ambiguity_score.py",
+        "range": "embedded self-check within full primary body; NOT RUN"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/atlas_embeddings.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "cebd39cc683a3a56b1df74895606bc0e747efcec",
+    "pinned_sha256": "716ce66a831594dfae31f41a3d06fa914a2809dd816bc500bffb56ac2c0c77d4",
+    "manifest_bytes": 8527,
+    "pinned_bytes": 8527,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 257,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        257
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "257줄 전문. char_wb 2~5 TF-IDF 검색이며 의미 이해·정답·인수 증거가 아니다. 설명의 BaseSearchIndex/subclass, _fit_vectors/_score_query, SearchIndex.invalidate, .npz와 실제 SearchIndex/module invalidate/.pkl이 다르다. pickle.load는 변경 가능한 cache 바이트를 코드 실행 표면으로 읽는다. 무결성/버전/schema binding이 없고 pkl+metadata가 별도 비원자 쓰기라 matrix 행과 note identity 불일치 가능. vault를 모두 읽어16자리 normalized content SHA로 stale을 판정하며 mtime만 보는 fast path가 아니다. 중복 note id, UTF8 BOM frontmatter, read/stat/Unicode 실패, model 설정 변경은 별도 방어 부족. min_df1/max_df0.95는 문서1개에서 빈 vocabulary/상충 가능. top_k 타입/음수 검증 없다. snippet은 scoring 후 현재 파일을 다시 읽어 점수의 contenthash와 다를 수 있다. 공개 SearchIndex에 임의 metadata path 전달 방어 미확인. activation/권한 필터 없으며100~1000개 품질 주장은 실측 미검증. Zeus 파생 검색 adapter로만 검토; pickle과 권한/버전 결합 수정 전 채택 보류.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-11",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/cli/atlas_index.py",
+        "ranges": [
+          {
+            "start": 325,
+            "end": 382,
+            "raw_range_sha256": "8050b8606b52d9f309b5a31cded911ace8e60c3239d73a7e3723082cf84c00ae"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/atomic_json.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "8f7335f4146f3b7d3eefb12960a4397ac8aa1f27",
+    "pinned_sha256": "4332dfeeb76c1d8c815cf0dbfe8af721f3e52193c96b0e5b9480c00681651f0e",
+    "manifest_bytes": 5180,
+    "pinned_bytes": 5180,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 127,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        127
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "같은디렉토리randomtmp+flush/fsync+replace는부분쓰기독자노출줄이나read-modify-write경합/lastwriterwins/ACL유지/parentdirfsync/lock은없음. fsync오류를삼켜crashdurable보장제한. tmpopen w라확률충돌/symlinkO_EXCL아님;mkdir안함;os.fspath/urandom은try밖이라anyfailureFalse계약예외. replace_with_retry tries<=0이면max1loop인데i==tries-1불일치로실패뒤raise없이끝나writeTrue가능. 모든OSError재시도,negativewait예외;OS실측본문은이번실행아님. read_json default타입검사는dict/list만이라는doc보다모든nonNone형에적용,isinstance Trueint허용;schema/NaN미검사. Zeus PG CAS/transaction및명시writeack대응.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-12",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/tests/test_atomic_json.py",
+        "ranges": [
+          {
+            "start": 130,
+            "end": 210,
+            "raw_range_sha256": "220d8844116514108ce0451d798e3b6ae68b92f0b256bee405f7977c88c7f554"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/quota_tracker.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 158,
+            "raw_range_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_atomic_json.py",
+        "ranges": [
+          {
+            "start": 130,
+            "end": 210,
+            "raw_range_sha256": "220d8844116514108ce0451d798e3b6ae68b92f0b256bee405f7977c88c7f554"
+          }
+        ]
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_compaction.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "eabf82edcee9fca35f57527e0efadd16b3b0dc92",
+    "pinned_sha256": "a2a3d2030c3b755f4f289bffd660ab84772abd2aa74d3e7859d571b27fb2a36c",
+    "manifest_bytes": 5260,
+    "pinned_bytes": 5260,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 101,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        101
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "modulo주기결정+문구생성뿐실제compact/export/checkpoint영속성검증없음. int에bool포함,every형검사없고float/NaN/String는비정상/예외가능. sid문구/path에무검증삽입,hardcoded~/.claude/state와실효stateenv차이. 종료조건아니라는문구는runtimecap유지증명이아님;상태파일에요약쓰기지시가schema/counter를보존하도록강제안함. selfcheck본문읽었으나실행0,off일때None만으로caller전체byteequivalence단정안함. Zeusimmutablecontextartifact/checkpointfence와원상태분리.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-13",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/handlers/stop/autopilot_continue.py",
+        "ranges": [
+          {
+            "start": 227,
+            "end": 260,
+            "raw_range_sha256": "36b75c0362c9871991ae08a7bae0494d1cbd71f7e3195407931e5448629dcec2"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/lib/autopilot_compaction.py",
+        "range": "embedded self-check within full primary body; NOT RUN"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_flip_policy.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5cf1dc79b9b05fda3359c127649d394bd16f456c",
+    "pinned_sha256": "820ebc7dded60e310f24e7f69b5ca4fe4f7659e2a4c2733c6a51a227e11e660d",
+    "manifest_bytes": 2301,
+    "pinned_bytes": 2301,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 67,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        67
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "current_default0자체는다른승인/논쟁없어수정못하게하는runtimeguard없음. env해석은caller문서책임;통계→default자동flip없다는분리는유익. log_parallel_run_outcome는sid/statusnonempty만,countsnegative/bool/형변환허용,extra로sid/status/count도덮어쓰기;실제worker종료/merge충돌증거없음. telemetry문서state/telemetry와기존lib.paths실경로CLAUDE_HOME/telemetry차이. 실패telemetry의성공bool없고행수는성과/자격아님. caller/환경우선순위전이남음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-14",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_kha_bridge.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "283d41636779f10bb480a90412e76614787c8171",
+    "pinned_sha256": "ccd1cdc4e7255b9a3853b10c0d49e90c3900de554ee86e35a40bc80f0a04dc60",
+    "manifest_bytes": 10084,
+    "pinned_bytes": 10084,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 295,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        295
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "295줄 전문. dispatch canonical EventStore와 phase projection을 이중 기록한다. phase append bool을 소비하지 않아 반환 레코드가 projection 성공을 증명하지 않는다. event id에 gen/attempt 결합 부족하며 outbox 원자성이 없다. git log --all과 subject의 phase/plan 표기는 현재 HEAD ancestry/작업자/실제 테스트나 산출물 증거가 아니다. timeout 없는 git, ambient env/config, short SHA/phase regex 한계가 있다. 다른 branch/stale commit도 완료 task로 표시될 수 있다. markdown table의 description pipe escaping 없다. SUMMARY glob은 내용/hash/is_file 검증 없이 존재 여부로 orphan을 판단한다. phase/plan glob/path 특수문자 검증은 부족하다. ack와 escalated projection도 비원자이며 bool 무시 가능. 실제 dispatch는 caller의 Agent 지시이며 이 helper 자체 spawn이 아니다. Zeus PG event+outbox, exact attempt/work receipt 필요.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-15",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_pane_events.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "089c599d3bffc6b36b6cce054324e5f978f5c552",
+    "pinned_sha256": "5add458ec3afdbb8af807839d770859690e59e196a23968e9c1004c216f4787a",
+    "manifest_bytes": 2971,
+    "pinned_bytes": 2971,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 91,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        91
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "pane별shard는서로다른paneappend경합을줄이나같은pane에복수writer/재사용sid/did는막지못함. fields로type/pane_id/status/exit_code/ts덮어쓰기허용하여파일name과recordidentity불일치가능. paneid slash/backslash/..차단하지만Windowscolon/reserved·sid_dir신뢰·symlink경계남음. JSONsyntax만skip해scalar/잘못된schema리턴,readIO/Unicode예외;누락shard와empty동일. aggregation/중복수집/watermark/workerlease는caller범위미독. 문서python-m호출권고와달리__main__없어python-m실행은import만(이벤트발행CLI없음). Zeusworkerreceipt PGidentity와serialcollection별도.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-16",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_pane_spawn.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "a52ce46d97b8878fc8b5466633bf8bb2f1776efb",
+    "pinned_sha256": "096e0f91753bf46004dc5571354e5500fc48b837101e28979b9a2f3bd6d07e12",
+    "manifest_bytes": 5583,
+    "pinned_bytes": 5583,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 153,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        153
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "visibility-onlytail-f이며worker/LLMspawn/workertermination기능없음. psmux세션존재시log_path/worktree/pidowner일치없이기존이름재사용;sid는nonempty만이고decisionid일부검증이라이름충돌/메타문자adapter전이남음. teardown은가시성panekill일뿐workerkill증거아님. wait시간monotonic이나NaN/inf허용,내부psmuxcalltimeout/최종호출/interval로전체deadline초과가능. capturemarker는예전scrollback재사용/출력자기보고로실제새실행미확인. tailcoreutils+psmuxWindows/Linux/WSL환경미검증. doc--tailCLI예시와달리__main__없어명령인자소비없음. caller수명/실결과collect미독.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-17",
+    "caller_config_evidence": [],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "No external caller/test body range established for this primary in this bounded pass",
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_phase1_merge.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5171fe1881277a00ad7ee68fabb1b12517a32f87",
+    "pinned_sha256": "e49353b8dde3bc53893f9ff81eb9122c97ca2a59a723a5846b29e21bca6f7931",
+    "manifest_bytes": 8370,
+    "pinned_bytes": 8370,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 227,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        227
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "227줄 전문. payload/prompt 생성과 JSON 형식 판정이며 실제 Git merge가 아니다. worker_branches가 string이면 문자 iterable을 허용할 수 있고 중복/자기 branch/base identity 검증 없다. 임의 branch 문자열이 prompt에 들어간다. ours/theirs 금지와 worker untouched는 문자열 지시다. 마지막 fenced block 추출은 뒤의 무관한 code block을 고를 수 있다. branch/head는 nonempty string일 뿐 SHA/존재/expected branch 검증 없다. merged_workers empty/중복/미요청 항목도 허용하며 요청 집합과 대조하지 않는다. is_clean_merge({})는 get(None) 판정으로 True가 될 수 있어 parser 없이 쓰면 schema 검증이 없다. parsed clean이라도 실제 worker 종료, merge commit/parents/diff, 테스트, 사람 인수는 없다. Zeus typed dispatch와 runner receipt를 분리해 변형.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-18",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_state.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b9a69fe556c3f8b7b33fe97705cd57945177812e",
+    "pinned_sha256": "2f6fffebd7f08e39f1a22491c14cf14f4bda6c7abac1e8b94974536871046702",
+    "manifest_bytes": 13766,
+    "pinned_bytes": 13766,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 343,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        343
+      ]
+    ],
+    "body_review_method": "same-byte prior full-body reuse",
+    "prior_reuse": {
+      "path": "scripts/lib/autopilot_state.py",
+      "prior_ledger": "docs/full-analysis/baldrix-stop-001/supporting-evidence.json",
+      "prior_ledger_sha256": "0a41791944033815483f7139fcb00018738e5d88434762b9e6e71f5df35c53b6",
+      "prior_review": "docs/full-analysis/baldrix-stop-001/codex-initial.md",
+      "prior_review_sha256": "3ec61efb66dce915bdc39ab8fc2d4a981b95f832113dc3d06e831866fda3b4fc",
+      "pinned_sha256": "2f6fffebd7f08e39f1a22491c14cf14f4bda6c7abac1e8b94974536871046702",
+      "git_blob": "b9a69fe556c3f8b7b33fe97705cd57945177812e",
+      "prior_read_ranges": [
+        [
+          1,
+          343
+        ]
+      ],
+      "prior_read_extent": "full_body",
+      "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+      "new_execution": false,
+      "global_coverage_increment": false,
+      "meaning": "상태 serializing/read/write/advance/active selector. sid-file identity·containment, finite timestamp/strict numeric 검증 불충분. wallclock은 monotonic아님. write_state bool은 caller가 무시. Stop의 retry 재구성은 cwd/pending_fp/reflection fields를 잃어 다음 cwd-filter선택에서 사라질 수 있으나 advance_iter는 보존: 모든 state함수에 결함을 일반화하지 않음. PG generation/CAS/lease 전환 필요."
+    },
+    "semantic_review": "상태 serializing/read/write/advance/active selector. sid-file identity·containment, finite timestamp/strict numeric 검증 불충분. wallclock은 monotonic아님. write_state bool은 caller가 무시. Stop의 retry 재구성은 cwd/pending_fp/reflection fields를 잃어 다음 cwd-filter선택에서 사라질 수 있으나 advance_iter는 보존: 모든 state함수에 결함을 일반화하지 않음. PG generation/CAS/lease 전환 필요.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-19",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/handlers/stop/autopilot_continue.py",
+        "ranges": [
+          {
+            "start": 227,
+            "end": 260,
+            "raw_range_sha256": "36b75c0362c9871991ae08a7bae0494d1cbd71f7e3195407931e5448629dcec2"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_worktree_probe.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2fe67df93ee995f060dab3c7930be48141f2bee6",
+    "pinned_sha256": "91f3875d0e56b991eee40d0250fdafc94e21ed2c1a986e88bb2593c98719acbf",
+    "manifest_bytes": 3246,
+    "pinned_bytes": 3246,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 81,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        81
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "함수이름is_onedrive지만첫bool은detected가아니라safe라는반대계약주의. envskip=1/unsetnonWindows는safe반환,WSL마운트WindowsOneDrive도Linux라skip. startswithonedrive일반디렉토리오탐/다른cloudfolder놓침. resolve실패fallback이고envrootinvalidskip,실제filecloud/reparse/동기화건강상태검사없음. env설정이안전성승인으로바뀌면안됨. 외부MSLearn/실제OneDrive/permissionprobe실행0. callerhalt/rollback조건전이남음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-20",
+    "caller_config_evidence": [
+      {
+        "path": "commands/harness-autopilot.md",
+        "ranges": [
+          {
+            "start": 28,
+            "end": 96,
+            "raw_range_sha256": "cc2256866ce762bcf30a17f7105c7c4c4ee2daef4a9d5509202a09e17f4e7bed"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/axis_scores_log.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "df0c8134b38a742d6f4fc679bdbe57237ccbd91a",
+    "pinned_sha256": "59b7fb5233219e048a2d0d261913251405000cd5d9b19f85e6031e36ba548cb0",
+    "manifest_bytes": 10002,
+    "pinned_bytes": 10002,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 262,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        262
+      ]
+    ],
+    "body_review_method": "same-byte prior full-body reuse",
+    "prior_reuse": {
+      "path": "scripts/lib/axis_scores_log.py",
+      "prior_ledger": "docs/full-analysis/baldrix-completion-authority-001/files.json",
+      "prior_ledger_sha256": "cccdb421513d025a903c4ce161de12aecde7e979bdfedb8c5ec8e5b4f0258a4e",
+      "prior_review": "docs/full-analysis/baldrix-completion-authority-001/codex-initial.md",
+      "prior_review_sha256": "a2d69b3627dfc3891a1f604cb11959386d325eb29ec8ba0c993306adf07f7d75",
+      "pinned_sha256": "59b7fb5233219e048a2d0d261913251405000cd5d9b19f85e6031e36ba548cb0",
+      "git_blob": "df0c8134b38a742d6f4fc679bdbe57237ccbd91a",
+      "prior_read_ranges": [
+        [
+          1,
+          262
+        ]
+      ],
+      "prior_read_extent": "full_body",
+      "equality": "raw snapshot SHA256 + manifest Git blob + revision match",
+      "new_execution": false,
+      "global_coverage_increment": false,
+      "meaning": "4096byte bound/O_APPEND/입력copy 방어가 있으나 schema_version 값을 강제하지 않고 caller ts/marker 및 unknown event 승인값을 수용. shortwrite/fsync실패, 전역GC/동적경로 불일치, nonce/attempt/actual reviewer receipt 없음. evaluator를 실제 호출하는 logger가 아니며 timestamp/NaN/중복 처리와 호출부 closure는 남음."
+    },
+    "semantic_review": "4096byte bound/O_APPEND/입력copy 방어가 있으나 schema_version 값을 강제하지 않고 caller ts/marker 및 unknown event 승인값을 수용. shortwrite/fsync실패, 전역GC/동적경로 불일치, nonce/attempt/actual reviewer receipt 없음. evaluator를 실제 호출하는 logger가 아니며 timestamp/NaN/중복 처리와 호출부 closure는 남음.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-21",
+    "caller_config_evidence": [],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/bash_tool_routing.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "e5fd38f291c695cef29fdf633ad3ecee510007c7",
+    "pinned_sha256": "1bfb5ddaeeb20d2236577947bf7b131e1330bd96edf680ed2527fed459532b6b",
+    "manifest_bytes": 6981,
+    "pinned_bytes": 6981,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 162,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        162
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "162줄 전문. 우선순위 regex가 첫 피드백만 반환하는 advisory다. Bash 파서가 아니며 double quotes/일부 heredoc 안 command substitution도 실행될 수 있는데 body stripping으로 가려진다. heredoc 종료 regex의 prefix 오인, -m/--message 계열 문자열을 git 명령에 한정하지 않은 제거, echo의 단일 > 의도가 >> 두번째 문자에 매칭될 가능성이 있다. 먼저 걸린 Read 조언이 Write redirection을 가릴 수 있다. PowerShell/alias/case/tool availability/권한은 입증하지 못한다. rg→Grep 조언은 Zeus 개발자의 rg 우선 규칙과 충돌하며 source 지시를 상속하지 않는다. 기존 reviewer에서 추출했다는 역사/이전본 동등성은 미검증.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-22",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/handlers/post_tool/reviewer.py",
+        "ranges": [
+          {
+            "start": 469,
+            "end": 492,
+            "raw_range_sha256": "579951cf8da4244f3ef4f84b1705d1646a46153e03b85736e16086fece2db37b"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/brain_autopush.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "483f3b333ccee7bf9ccde4f1ea482f8e3d9ca757",
+    "pinned_sha256": "2fd77f3f2e4077b7f4a5a97eff9222826274b38f7bf83d297bf2541bbf00c159",
+    "manifest_bytes": 9341,
+    "pinned_bytes": 9341,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 185,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        185
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "185줄 전문. 외부 git fetch/worktree/orphan commit/push/강제 cleanup을 수행하는 effectful adapter다. 함수 자체 token 검사가 없고 caller authorization에 의존한다. env 전체를 상속하고 interactive만 끄므로 hooks/globalconfig/credentials/remote origin 영향을 받는다. 같은 home의 고정 temp worktree 이름에 lock/lease가 없어 동시 실행 cleanup이 다른 실행을 제거할 수 있다. finally cleanup의 subprocess timeout은 never-raises 보장 밖이다. remote branch 조회 실패를 없음으로 취급하며 -B는 공유 local branch ref를 바꾼다. orphan git rm --cached 및 git add 결과 무시로 code-only exclusion이나 최신 snapshot 보장이 깨질 수 있다. diff quiet0은 실제 push 없이 pushed=True; add 실패가 no-change로 보일 가능성도 남는다. FF-only/no force 방어는 유용하지만 거절 문자열 분류는 넓다. union은 동일id 다른 payload를 검증하지 않고 local overlay가 이긴다. 여러 layer/gradation snapshot은 하나의 atomic bundle이 아니다. 원본 실행/실제 push0. 자동 학습파일 유출/운영권한은 별도 승인 없이 Zeus에 흡수 불가.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-23",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/cron/run_brain_push.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 123,
+            "raw_range_sha256": "afb1f06b5947b88b19d4b6b487ab8954e692f6b8b237c834248b8b8403af75a3"
+          }
+        ]
+      },
+      {
+        "path": ".gitattributes",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 11,
+            "raw_range_sha256": "58b829117a4835b0c18853e10226a662dc80e8f7c18152f9974aa1230d1624a1"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/test_brain_autopush.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 118,
+            "raw_range_sha256": "0ccdaac3cecb4b3b8131783d871b3b7f1f2d32bba82bc6458e9d8d7d557a95a9"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_brain_autopush.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 118,
+            "raw_range_sha256": "0ccdaac3cecb4b3b8131783d871b3b7f1f2d32bba82bc6458e9d8d7d557a95a9"
+          }
+        ]
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/brain_git_status.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b6bcdc5b00088887bc283e4a1bd302467c776c21",
+    "pinned_sha256": "c91b53e65a443ca5c277cc2023ab812a7648f628dc37b9d443430d827409f6e0",
+    "manifest_bytes": 6130,
+    "pinned_bytes": 6130,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 131,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        131
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "131줄 전문. branch mode는 content diff라는 표현과 달리5개 JSONL의 live ID 집합이 로컬 origin/brain-snapshots ID 집합의 부분집합인지 본다. 동일id payload 변경, 삭제, 비대상 파일/gradation 변경은 모른다. fetch하지 않아 실제 remote 삭제/변경을 확인하지 않는다. malformed JSON skip과 read failure의 clean 취급은 unknown을 숨길 수 있다. fallback status/log 오류가0이 되어 upstream 없는 committed 파일도 not-at-risk일 수 있다. branch gitshow 오류는 remote empty가 되어 live nonempty이면 at-risk이므로 모든 오류가 항상 false라는 일반화도 피한다. Zeus contenthash+원격 immutable receipt, unknown 별도 상태 필요.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-24",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/cron/check_brain_push.py",
+        "ranges": [
+          {
+            "start": 65,
+            "end": 115,
+            "raw_range_sha256": "62d30c34177b9aeab740e6906529a2ea2320af9002680fafb6eea0b5cfb0be9a"
+          }
+        ]
+      },
+      {
+        "path": ".gitattributes",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 11,
+            "raw_range_sha256": "58b829117a4835b0c18853e10226a662dc80e8f7c18152f9974aa1230d1624a1"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/test_brain_git_status.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 115,
+            "raw_range_sha256": "9e36bacaaea8e65955c3bbc40ebb643b2189650596d75941274d066418b1d561"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_brain_git_status.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 115,
+            "raw_range_sha256": "9e36bacaaea8e65955c3bbc40ebb643b2189650596d75941274d066418b1d561"
+          }
+        ]
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/brain_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3191221cbd7c31284d3b9bbcc25962c4f90e76c7",
+    "pinned_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439",
+    "manifest_bytes": 15224,
+    "pinned_bytes": 15224,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "line_count": 332,
+    "partition": "baldrix:scripts/lib:001",
+    "scope_sha256": "ba87eac33577c72c077359654419d3634747d503310ee8625b4689632ffd1f31",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        332
+      ]
+    ],
+    "body_review_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "semantic_review": "332줄 전문.5개JSONL와 graduation만 snapshot/restore. schema_version absent/None/문자열1 등 허용하며 record key/유형/hash는 검사하지 않는다. torn 마지막뿐 아니라 모든 잘못된 JSON line을 skip하고 read 오류는[]로 바뀐다. union stringify key는 int1/string1 충돌, 동일id 다른 내용은 overlay 우선. fixed .tmp는 동시 writer collision 가능, fsync/다중파일transaction 없음. timestamp 문자열 정렬은 시간순 보장이 아니다. evidence __line__ count는 dedup 수와 다르고 status divergence는0; 동일id 내용 변화도0이라 trigger가 놓칠 수 있다. 기존 snapshot union은 compacted insight를 되살릴 수 있고 retraction 소비 규칙은 transitive 미검토. graduation clean count와 epoch를 독립 max하면 과거 high count+새 epoch 조합으로 streak가 부풀 수 있다. 현재 live 존재 시 복구 안 함은 empty/corrupt에도 적용; retraction merge는 별도. seed의 _write_jsonl_sorted 자체는 key dedup하지 않는다. _save_graduation은 승인 flag를 직접 복제하지 않는 방어와 실제 자격승인 부재를 구분한다. Zeus PG immutable provenance/기록별 version·retraction·qualification 분리 필요.",
+    "review_ref": "docs/full-analysis/baldrix-lib-001/file-reviews.md#file-25",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/cron/run_brain_push.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 123,
+            "raw_range_sha256": "afb1f06b5947b88b19d4b6b487ab8954e692f6b8b237c834248b8b8403af75a3"
+          }
+        ]
+      },
+      {
+        "path": "scripts/cron/check_brain_push.py",
+        "ranges": [
+          {
+            "start": 65,
+            "end": 115,
+            "raw_range_sha256": "62d30c34177b9aeab740e6906529a2ea2320af9002680fafb6eea0b5cfb0be9a"
+          }
+        ]
+      },
+      {
+        "path": ".gitattributes",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 11,
+            "raw_range_sha256": "58b829117a4835b0c18853e10226a662dc80e8f7c18152f9974aa1230d1624a1"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/test_brain_autopush.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 118,
+            "raw_range_sha256": "0ccdaac3cecb4b3b8131783d871b3b7f1f2d32bba82bc6458e9d8d7d557a95a9"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "정적 함수/CLI·문서 호출 가능성은 파일별 의미와 연결 구간에 기록; 라이브 호출은 미관측.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_brain_autopush.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 118,
+            "raw_range_sha256": "0ccdaac3cecb4b3b8131783d871b3b7f1f2d32bba82bc6458e9d8d7d557a95a9"
+          }
+        ]
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: assigned static-only/no upstream import/probe/install. Historical PASS/mock/source tests are not new execution.",
+    "adoption_decision": "defer; 필요시 변형 후보, 승인/흡수 아님",
+    "claude_dependencies": "CLAUDE_HOME/state/env, Agent/Task prompt contracts and model declarations are DATA. No inherited authorization.",
+    "windows_linux": "파일별 의미에 pathname/encoding/git/psmux/tail/OneDrive/replace 차이 기록. Windows/Linux/WSL 실행0 및 실효 env/config 미검증.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "아키텍처 대응 제안만. 현재 Zeus 전문 새독해/구현동등성검증 아님. Git 정의/PG runtime, attempt/세대/원시영수증과 학습·자격·인수 분리.",
+    "license_status": "Original license and external linked claims not checked; adoption blocked.",
+    "remaining": [
+      "Complete transitive caller/config/test closure",
+      "Actual upstream execution and exact OS behavior",
+      "License and linked original claims",
+      "ActualClaude on this entire area; model qualification/human acceptance",
+      "Zeus exact implementation equivalence/adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  }
+]

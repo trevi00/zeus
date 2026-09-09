@@ -1,0 +1,21 @@
+{
+  "kind": "inert_artifact_metadata_verification",
+  "primary": 25,
+  "bytes": 195823,
+  "anchors_verified": 25,
+  "reuse_verified": 4,
+  "direct_support_files": 15,
+  "source_executions": 0,
+  "tests_executed": [],
+  "checks": "counts, review anchors, prior ledger/review SHA identities; not runtime tests",
+  "recorder_argv": [
+    "python",
+    "-X",
+    "utf8",
+    "docs/full-analysis/baldrix-lib-001/record_review_v2.py"
+  ],
+  "recorder_exit_code": 0,
+  "executed_program_raw_ref": "docs/full-analysis/baldrix-lib-001/record_review_v2.executed.txt",
+  "executed_program_sha256": "8a76d4167919ad4007cc9df846611c789d328110dd7144160711846ab462e80f",
+  "current_py_status": "E741 variable-only formatting fix after execution; archived raw bytes define actual executed program"
+}

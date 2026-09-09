@@ -1,0 +1,33 @@
+{
+  "partition": "baldrix:scripts/lib:003",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "primary_count": 10,
+  "primary_bytes": 188707,
+  "primary_bodies_read": 10,
+  "primary_body_pending": 0,
+  "supporting_unique_files": 17,
+  "supporting_full_bodies": 3,
+  "supporting_partial_bodies": 14,
+  "primary_hashes_matched": 10,
+  "primary_raw_git_blobs_matched": 10,
+  "supporting_manifest_sha_absent": [
+    "settings.json"
+  ],
+  "upstream_execution_count": 0,
+  "upstream_import_count": 0,
+  "upstream_test_count": 0,
+  "probe_count": 0,
+  "metadata_checks": [
+    "Raw byte sizes, SHA-256 where manifest available, Git blob hashes, scope denominator, ranges and review anchors"
+  ],
+  "full_transition_closure": false,
+  "actual_claude_joint_review": false,
+  "actual_host_validation": false,
+  "licensing_complete": false,
+  "adoption_approved": false,
+  "bounded_static_checkpoint_complete": true,
+  "shared_coverage_edited": false,
+  "source_or_runtime_edited": false,
+  "commit_or_push": false,
+  "remaining_ref": "docs/full-analysis/baldrix-lib-003/remaining.md"
+}
