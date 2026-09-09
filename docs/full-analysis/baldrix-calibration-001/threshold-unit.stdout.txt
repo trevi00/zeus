@@ -1,0 +1,18 @@
+  [OK] test_registry_disjoint_from_locked
+  [OK] test_assert_locked_disjoint_raises_on_overlap
+  [OK] test_is_locked
+  [OK] test_admit_precision_raise_improves_on_borderline_corpus
+  [OK] test_non_truncation_rate_nan_without_body_chars
+  [OK] test_split_by_holdout_half_open
+  [OK] test_gate_accepts_generalizing_raise
+  [OK] test_gate_fail_closed_corpus_too_small
+  [OK] test_gate_fail_closed_non_finite_guard
+  [OK] test_gate_fail_closed_replay_error
+  [OK] test_gate_unresolved_metric_fn
+  [OK] test_proposer_min_sample_skips
+  [OK] test_proposer_accepts_and_emits_ready_flag
+  [OK] test_policy_resolve_default_and_token_apply
+  [OK] test_policy_apply_locked_name_raises
+  [OK] test_policy_idempotent_noop
+
+[OK] 16 passed

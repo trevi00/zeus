@@ -1,0 +1,547 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/context_load.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12893,
+    "git_blob": "add9270463bed6b7db0731e23da7ec070e4fe257",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ec6f975319de72139a6d50c8ab9a756e98dc394dc3162da4a63aa6b5444e4088",
+    "observed_sha256": null,
+    "manifest_sha256": "ec6f975319de72139a6d50c8ab9a756e98dc394dc3162da4a63aa6b5444e4088",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        90,
+        125
+      ]
+    ],
+    "total_lines": 306,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s01",
+    "purpose": "pipeline summary caller",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 26592,
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "observed_sha256": null,
+    "manifest_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        306,
+        345
+      ]
+    ],
+    "total_lines": 618,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s02",
+    "purpose": "origin and phase caller",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/reviewer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 30305,
+    "git_blob": "2b0cc13fe7fb5d8418b8a16cb187d6b1b1ab62f7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "observed_sha256": null,
+    "manifest_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        235,
+        265
+      ],
+      [
+        485,
+        520
+      ]
+    ],
+    "total_lines": 712,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s03",
+    "purpose": "ratio and repeat caller",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/stop/autopilot_continue.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 34072,
+    "git_blob": "08faccf26b2856223cfcb39ff8a21fdfbcb4a7e0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "d52f2b0923c48f855a4b01c4d54e1427d9f711a11ce09ea42210ca6857be52c0",
+    "observed_sha256": null,
+    "manifest_sha256": "d52f2b0923c48f855a4b01c4d54e1427d9f711a11ce09ea42210ca6857be52c0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        177,
+        207
+      ],
+      [
+        270,
+        323
+      ]
+    ],
+    "total_lines": 757,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s04",
+    "purpose": "reflection caller",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/no_degradation_gate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7786,
+    "git_blob": "570cd21778ad3aae15ed462a72c60c77438b4939",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1c0b8353ce00598b7512f4eba872e8ef639cffcb02f05ed809777f6e2371a448",
+    "observed_sha256": null,
+    "manifest_sha256": "1c0b8353ce00598b7512f4eba872e8ef639cffcb02f05ed809777f6e2371a448",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        77
+      ]
+    ],
+    "total_lines": 164,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s05",
+    "purpose": "probe acceptance consumer",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_repro_probe.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2577,
+    "git_blob": "cf205c1a99cbe559284700de9c2a7693bd4f22d0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0e1d3038d36926acd276a25689d50549d3b8693d3cdc55ee2e8ce876b5873358",
+    "observed_sha256": null,
+    "manifest_sha256": "0e1d3038d36926acd276a25689d50549d3b8693d3cdc55ee2e8ce876b5873358",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        80
+      ]
+    ],
+    "total_lines": 80,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s06",
+    "purpose": "classification oracle only",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_pipeline/stages.yaml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 15519,
+    "git_blob": "47caa7a28edb3a667c6d8eae41c0f415048ff79d",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "observed_sha256": null,
+    "manifest_sha256": "fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        150
+      ]
+    ],
+    "total_lines": 386,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s07",
+    "purpose": "declared gate versus existence",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_pipeline_stage_picker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3836,
+    "git_blob": "d03fb6fec81020abbe3747117552082b60b692bb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "21292b90540d2ffc596d8f6ec5d522521f3fcf5321003b1c69a89ff88bc785c4",
+    "observed_sha256": null,
+    "manifest_sha256": "21292b90540d2ffc596d8f6ec5d522521f3fcf5321003b1c69a89ff88bc785c4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        90
+      ]
+    ],
+    "total_lines": 121,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s08",
+    "purpose": "existence oracle and fixture",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_quota_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8016,
+    "git_blob": "62d44fae8af9f852c9e3df7e22a707a2d935347f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2d420db3fa023ef0216fa251b821942707f5dadbeb1885cb41fd49db69011589",
+    "observed_sha256": null,
+    "manifest_sha256": "2d420db3fa023ef0216fa251b821942707f5dadbeb1885cb41fd49db69011589",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        62
+      ],
+      [
+        82,
+        147
+      ]
+    ],
+    "total_lines": 222,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s09",
+    "purpose": "sequential and corrupt oracle",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_psmux.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10812,
+    "git_blob": "87fbc294c502d2202d6b0e3f2ee4b6077664bb64",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "af79e92b3b22b3bc94afe49f45b03763389959cac702f7c09282c289f323e5f3",
+    "observed_sha256": null,
+    "manifest_sha256": "af79e92b3b22b3bc94afe49f45b03763389959cac702f7c09282c289f323e5f3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        60
+      ],
+      [
+        294,
+        337
+      ]
+    ],
+    "total_lines": 342,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s10",
+    "purpose": "host dependency and skip branch",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/strike_dispatcher.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5723,
+    "git_blob": "90185248b5d150745654cb695b72894552516b1b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6985e38d69dc3ff335f6ae9efb12404dc37097fa443b81e60b3abcec03bde607",
+    "observed_sha256": null,
+    "manifest_sha256": "6985e38d69dc3ff335f6ae9efb12404dc37097fa443b81e60b3abcec03bde607",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        50,
+        115
+      ]
+    ],
+    "total_lines": 124,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s11",
+    "purpose": "raise policy consumer",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/evaluator_dispatcher.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 99934,
+    "git_blob": "00b149bba94765b6bca4c8a03f2bed36ee8d5849",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
+    "observed_sha256": null,
+    "manifest_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        147,
+        188
+      ]
+    ],
+    "total_lines": 2311,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s12",
+    "purpose": "empty policy consumer",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/phase_graph.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3124,
+    "git_blob": "1165476e134578a7701441ffba882b4823bf8f1f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ec6e539734f419b7ab2b99b8cb8725e0a535d3c49446f7e261e1a479bb1f8788",
+    "observed_sha256": null,
+    "manifest_sha256": "ec6e539734f419b7ab2b99b8cb8725e0a535d3c49446f7e261e1a479bb1f8788",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        25,
+        86
+      ]
+    ],
+    "total_lines": 86,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s13",
+    "purpose": "graph build and strict query caller",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/agent_outcome_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 19209,
+    "git_blob": "b8a953fdcf82c52180004b8d667c91aaba375dc3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "observed_sha256": null,
+    "manifest_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        425,
+        471
+      ]
+    ],
+    "total_lines": 471,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s14",
+    "purpose": "ledger record producer",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/writeback_parser.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8112,
+    "git_blob": "b8cfebf26fabe3355db9a97b7dac62f854964eb5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "82570358724525f5709705ba1db4ca180c02f94bb903e674b7e9245c5c00980e",
+    "observed_sha256": null,
+    "manifest_sha256": "82570358724525f5709705ba1db4ca180c02f94bb903e674b7e9245c5c00980e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        170,
+        210
+      ]
+    ],
+    "total_lines": 241,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s15",
+    "purpose": "denylist proposal validation",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/writeback_apply.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11053,
+    "git_blob": "f4acd2af9bd040ab3d2201d5abd274ade3342b1f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "70277e46b23f3789d3c94fac0a812f9b06c9bf200b4d9497b4b38fd7d635ea3e",
+    "observed_sha256": null,
+    "manifest_sha256": "70277e46b23f3789d3c94fac0a812f9b06c9bf200b4d9497b4b38fd7d635ea3e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        160
+      ]
+    ],
+    "total_lines": 281,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s16",
+    "purpose": "operator context shape contract",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/autopilot_kha_bridge.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10084,
+    "git_blob": "283d41636779f10bb480a90412e76614787c8171",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ccd1cdc4e7255b9a3853b10c0d49e90c3900de554ee86e35a40bc80f0a04dc60",
+    "observed_sha256": null,
+    "manifest_sha256": "ccd1cdc4e7255b9a3853b10c0d49e90c3900de554ee86e35a40bc80f0a04dc60",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        85,
+        130
+      ],
+      [
+        274,
+        295
+      ]
+    ],
+    "total_lines": 295,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s17",
+    "purpose": "phase projection writer",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/team_runtime.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4021,
+    "git_blob": "bd06097c83b8f1a959fe0a363bb93c3963244bfb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e7d4f33b434b3d8d8a5b4342583fe6d8fbbecb6233d9b923db8fa696903f21e1",
+    "observed_sha256": null,
+    "manifest_sha256": "e7d4f33b434b3d8d8a5b4342583fe6d8fbbecb6233d9b923db8fa696903f21e1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        42,
+        86
+      ]
+    ],
+    "total_lines": 121,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s18",
+    "purpose": "psmux argv worker spawn",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/canary_apply.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5141,
+    "git_blob": "81255592d0ebb2a0e2db1336e89fd8fa04f515b2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "dd33f43313297cd464cfb6e7025e552e90edb1c42982d7f608ea895c0c7b174d",
+    "observed_sha256": null,
+    "manifest_sha256": "dd33f43313297cd464cfb6e7025e552e90edb1c42982d7f608ea895c0c7b174d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        30,
+        126
+      ]
+    ],
+    "total_lines": 126,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s19",
+    "purpose": "pending changes direct caller",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/check_ledger_compaction.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4725,
+    "git_blob": "85de884c2b8c0717fc2df79e8267f844669f5fad",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "de0131cc42bde3e6622f8b8981e22e5bb16866b19a764437b28779d3388b7e4a",
+    "observed_sha256": null,
+    "manifest_sha256": "de0131cc42bde3e6622f8b8981e22e5bb16866b19a764437b28779d3388b7e4a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        90,
+        120
+      ]
+    ],
+    "total_lines": 136,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s20",
+    "purpose": "compaction flag follow-up",
+    "counted_as_primary": false,
+    "prior_ref": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/atomic_json.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5180,
+    "git_blob": "8f7335f4146f3b7d3eefb12960a4397ac8aa1f27",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4332dfeeb76c1d8c815cf0dbfe8af721f3e52193c96b0e5b9480c00681651f0e",
+    "observed_sha256": null,
+    "manifest_sha256": "4332dfeeb76c1d8c815cf0dbfe8af721f3e52193c96b0e5b9480c00681651f0e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        127
+      ]
+    ],
+    "total_lines": 127,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "id": "s21",
+    "purpose": "counter write result and atomicity",
+    "counted_as_primary": false,
+    "prior_ref": null
+  }
+]

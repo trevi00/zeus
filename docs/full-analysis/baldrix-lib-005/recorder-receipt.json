@@ -1,0 +1,36 @@
+{
+  "recorder": {
+    "argv": [
+      "python",
+      "-X",
+      "utf8",
+      "docs/full-analysis/baldrix-lib-005/record_review.py"
+    ],
+    "cwd": "C:/Users/rudtn/zeus",
+    "sha256": "86080960494ff1553dcb6548f3964f9230a2f17d34893d4a24158adbf27235a9",
+    "exit_code": 0,
+    "stdout": "{\"primary\": 13, \"bytes\": 192008, \"fresh\": 13, \"reused\": 0, \"supporting\": 14, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\r\n",
+    "stderr": "",
+    "tool_chunk_id": "5e8f9f"
+  },
+  "ruff": {
+    "argv": [
+      ".venv/Scripts/ruff.exe",
+      "check",
+      "docs/full-analysis/baldrix-lib-005"
+    ],
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": "",
+    "tool_chunk_id": "67fb76"
+  },
+  "checks": {
+    "primary_count": 13,
+    "primary_bytes": 192008,
+    "anchors_exist": true,
+    "utf8_no_replacement_or_lost_question_sequences": true,
+    "python_lf": true,
+    "source_executions": 0
+  },
+  "notes": "Recorder adapted from lib002 for this scope; no upstream imports or execution. Raw recorder remains unchanged after execution. Static support ranges only; no coverage promotion."
+}

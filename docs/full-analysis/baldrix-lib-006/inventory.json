@@ -1,0 +1,104 @@
+{
+  "partition": "baldrix:scripts/lib:006",
+  "scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+  "bytes": 189781,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/operator_ledger.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/optimize_baseline.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/path_denylist.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/paths.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/pending_changes.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/phase_detector.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/phase_events.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/phase_graph_builder.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/phase_graph_query.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/phase_tree.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/pipeline_gate_runner.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/pipeline_overlay.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/pipeline_stage_picker.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/pipeline_status.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/pipeline_yaml.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/project_paths.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/prompt_origin.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/psmux.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/quota_tracker.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/ratio_tracker.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/reflection_recall.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/reflexion_loop.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/repeat_error_tracker.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/repro_probe.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

@@ -1,0 +1,21 @@
+{
+  "scope": "docs/full-analysis/baldrix-lib-006 only",
+  "metadata_recording": {
+    "command": "python -X utf8 docs/full-analysis/baldrix-lib-006/build_index.py",
+    "exit_code": 0,
+    "result": "passed",
+    "checks": ["24 primary / 189781 bytes", "21 supporting, no primary overlap", "exact partition row", "manifest revision", "raw Git blob", "raw byte size", "manifest SHA-256", "line ranges", "review anchors", "prior primary revision/SHA/blob", "UTF-8 LF", "JSON parse"]
+  },
+  "own_ruff": {
+    "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/baldrix-lib-006/build_index.py",
+    "exit_code": 0,
+    "result": "All checks passed!"
+  },
+  "upstream_execution": 0,
+  "upstream_import": 0,
+  "upstream_tests": 0,
+  "probes": 0,
+  "network": 0,
+  "install": 0,
+  "limits": "Only the local metadata recorder and its Ruff checks ran. No upstream behavior, host or model qualification was tested."
+}

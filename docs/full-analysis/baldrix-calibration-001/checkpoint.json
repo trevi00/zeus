@@ -1,0 +1,59 @@
+{
+  "partition": "baldrix:scripts/lib/calibration:001",
+  "scope_sha256": "6e068fc63c99a989ac5c2f321cc0f61777e09a62ae16eb994a7d04aa6d37309c",
+  "record_scope_sha256": "38bbd5c223d0d9406d92c35d91154c0710088bb1799f8ab1d778c8696d31f484",
+  "record_scope_hash_encoding": "Python json.dumps(scope, sort_keys=True), UTF-8",
+  "scope_items": [
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/calibration/__init__.py",
+      "sha256": "5e1e698aba23ea9d83b439748d06ce5c350e84f662a08fde47bbe83e0b3f375d"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/calibration/breaker_proposer.py",
+      "sha256": "007f92a2adb045d2c90cede58a7b319e64aefd8e8ba494be69e926644dbc101b"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/calibration/proposer.py",
+      "sha256": "f978d8d237a79d5bb07003cc757bad50d2849e037450bf48bcb4e2607c9d63fb"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/calibration/threshold_metrics.py",
+      "sha256": "59999f44662fe2743a9c81c74c249c37789333df2e258408ebda7670826f62d0"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/calibration/threshold_proposer.py",
+      "sha256": "61a07fa5bf12eaece5aedf1aec0d6c098d534ae84a8e803c1a52668b6ccfadb2"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/calibration/threshold_registry.py",
+      "sha256": "982e34649c97b80b8dad94cdc32645608acf28bb88a940ef62862d6a12a7ca34"
+    }
+  ],
+  "primary_count": 6,
+  "primary_bytes": 43851,
+  "primary_body_read_complete": true,
+  "root_supporting_count": 6,
+  "root_supporting_full": 4,
+  "root_supporting_partial": 2,
+  "original_unit_modules_executed": 1,
+  "original_unit_tests_passed": 16,
+  "original_component_programs_completed": 1,
+  "unit_fixture_limits": "Original unit injects registry/path and telemetry fixtures with real methods/temp files; not human/model/concurrency acceptance.",
+  "component_limits": "Original methods, real isolated JSON/YAML/ready flags, synthetic events and literal source policy tokens. No clock/method/provider patch; not actual user approval, consumer relevance or OS concurrency.",
+  "actual_provider_model_invocations": 0,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false
+}

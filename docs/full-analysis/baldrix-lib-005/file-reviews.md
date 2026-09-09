@@ -1,0 +1,159 @@
+# lib005 per-file full-body review
+
+13 fresh full bodies; source execution0; adoption false.
+
+<a id="file-01"></a>
+
+## scripts/lib/milestone_checklist.py
+
+32787bytes / 647줄 / fresh direct full-body read / `b9c19787764eaf78c762cc9b2d7f0777f11a18a8138579a177e9efd198877c67`
+
+647줄 전문, selfcheck498~647 미실행. 순수 선택/표현 분리, CAP 뒤 deferred의 blocking 유지와 blocking_item_ids444~450의 전건 포함은 보존할 방어다. make_item_id187~190는 source/ref/phase만 12자리 SHA1로 결속하고 본문·HEAD·세대를 제외한다. 구분자 모호성과 같은 ref의 의미 변경에도 ID가 같다. assemble394~441은 첫 중복 ID를 남기고 suffix 밖의 옛 pass를 이월하여 새 내용이 재검수 없이 빠질 수 있다. cap 음수 검증 없음. make_item은 명시 blocking=False로 blocker의 기본 규칙도 덮어쓸 수 있고 bool 문자열도 참이다. degraded 이유 문자열 자체는 비문자/무한 iterable에 안전하지 않으며 _flat의 깊이 제한은 iterable 폭·종료시간 제한이 아니다. 인용 5건·240자 절단은 원문 보존/검토가 아니고 deferred 렌더는 action/expect/인용을 빼지만 판정 의무는 남긴다. action과 Markdown은 검증·escaping 없이 표시하므로 데이터 문구를 실행 지시로 신뢰할 수 없다. AC/decision 기본 nonblocking은 Zeus 8단계 사람 인수와 별개의 무인 정책이다. Zeus는 요구 의미/세대/승인 hash와 명시 retire/reopen을 결속하고 원문 접근 가능한 전건 검수 UI로 변형해야 한다.
+
+연결 구간: [{"path": "scripts/cli/milestone_step.py", "read_ranges": [{"start": 409, "end": 487, "raw_range_sha256": "5070329d8fc6397708533f042540e11ef40d2ea63ff95f16db835f2f903103d6"}, {"start": 515, "end": 583, "raw_range_sha256": "1d962341bc614c14b9e4caad9085334dac2054a1e945f6b08ad957d3184a7d04"}]}, {"path": "scripts/cli/milestone_verdict.py", "read_ranges": [{"start": 160, "end": 233, "raw_range_sha256": "c2137179d4b9788498b084342d72cd043fa349e4a22b6b9ac21ce1af9cdc8ce0"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-02"></a>
+
+## scripts/lib/milestone_gate.py
+
+30391bytes / 602줄 / fresh direct full-body read / `0744485ff26e336c239942c23d7d8c29ae47628d56d961e5bbcf4fb79710c6c3`
+
+602줄 전문, selfcheck409~602 미실행. latest_phase_verdict193~225는 최신 ts의 verdict를 선택하지만 이벤트 종류·실제 평가자·attempt·본문 hash를 결속하지 않는다. bool을 숫자 timestamp로 받고 completeness도 bool 변환하여 문자열 false가 참이다. tier1_substance249~275는 출력 또는 0.2초 초과만으로 실질성을 인정하므로 sleep이나 임의 출력은 검증의 증거가 아니다. phase_degraded_codes278~318에서 tier2_completeness는 사용하지 않는다. decide321~363은 중복 phase 마지막 값을 채택하고 None 이외의 terminal_status를 완료처럼 취급하며 빈 planned는 깨끗한 handoff다. evaluate_closure366~406은 키 존재만 missing 검사하고 정확히 fail/blocked인 값만 막아서 {}, None, 알 수 없는 result가 들어 있는 사람 판정이나 빈 ids를 정상 closed로 인정할 수 있다. actor·실제 사람·내용·세대의 결속은 없다. retryable/structural 분리, 명시 Tier2 부재 강등, 유한 재시도 예산, deferred 전건 판정 계약은 보존 후보지만 degraded closure는 성공·배포·SDD 인수가 아니다. Zeus는 PG의 판정 enum/actor 권한/세대·내용 hash/CAS와 요구 전건의 실제 인수 영수증을 별도 강제해야 한다.
+
+연결 구간: [{"path": "scripts/cli/milestone_step.py", "read_ranges": [{"start": 409, "end": 487, "raw_range_sha256": "5070329d8fc6397708533f042540e11ef40d2ea63ff95f16db835f2f903103d6"}, {"start": 515, "end": 583, "raw_range_sha256": "1d962341bc614c14b9e4caad9085334dac2054a1e945f6b08ad957d3184a7d04"}]}, {"path": "scripts/cli/milestone_verdict.py", "read_ranges": [{"start": 160, "end": 233, "raw_range_sha256": "c2137179d4b9788498b084342d72cd043fa349e4a22b6b9ac21ce1af9cdc8ce0"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-03"></a>
+
+## scripts/lib/milestone_liveness.py
+
+10724bytes / 241줄 / fresh direct full-body read / `6f4cf86c9ecfa84248e7ea3650ad46b7875ee399ec8ec333caaed824459cbfa5`
+
+241줄 전문. waiting_machine/human/rewind/next_round의기대별deadline과unknown시간STALLED는유용. 그러나parse_ts bool/NaN/Infinity수용,timezone없는ISO는hostlocal해석,미래ts는silent0으로건강;max(0,NaN)도0될수있다. 숫자timestamp의단위검증없고mtimefallback은복사/수정흔적이지worker생존/정당append시간아니다. 최신anyevent가silence를reset하여진행과무관한기록도deadman회피가능. _last_closure전체gen닫힘truthy가현재재개round보다우선할수있고listcountslinked>gates는phase별matching/성공여부없다. 최신checklist와humanverdicts세대/checklisthash연결은spine검토필요;negativeverdict도presence라missinghuman아님. 오래침묵7일넘으면ABANDONED로경보낮추는정책이며해결/종결아님. thresholds/no finite/ordervalidation;read못하는milestone skip은분모누락,sortsilent만은tie/directoryorder영향. read-onlyscan이라하지만MilestoneSpine constructor부작용은primaryspine다음검토. ZeusPG task/lease/workerheartbeat+진행event구분,명시미관측/authorizeddeadline와실제취소·수거영수증필요.
+
+연결 구간: [{"path": "scripts/lib/event_store.py", "read_ranges": [{"start": 1, "end": 117, "raw_range_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd"}]}, {"path": "scripts/handlers/session/init.py", "read_ranges": [{"start": 392, "end": 410, "raw_range_sha256": "bbd55031d125fec6522e67bbf398402e4dbe9f4ae18932dfcfc28940d289cb3d"}, {"start": 700, "end": 739, "raw_range_sha256": "e9ea02ce65bc7045b84c210f636a0dbaefb9101036cc7e8256eaa105642626b3"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-04"></a>
+
+## scripts/lib/milestone_materials.py
+
+30515bytes / 605줄 / fresh direct full-body read / `6219eb10df7f66d17908356c3ce5acd3b2d274302b2816027a12a9cde7c1e600`
+
+605줄 전문, selfcheck537~605 미실행. git argv와 UTF-8 replacement/30초 timeout, 자료 결핍을 blocker로 올리는 방어는 유용하다. collect182~263의 어떤 입력에도 예외 없다는 약속은 Path 변환/파일 read_text OSError가 밖으로 나가 깨진다. yaml 파싱/의존 부재는 빈 decisions로 숨고 tracked dirty 변경은 검사하지 않으며 untracked 실패는 빈 목록이다. Git global config/ignore/diff external helper·textconv/env 격리와 revision 옵션 검증이 없다. 기본 루트..HEAD는 루트 커밋 자체를 제외하므로 저장소 전체라는 설명도 과장이다. AC 추출141~179는 단일 우선 헤딩의 bullet만 읽어 번호·다른 섹션·코드펜스·들여쓰기 헤딩을 정확히 구별 못한다. artifact에는 diff 주변 3줄뿐이며 전체 파일이 아니다. tier2_view308~344는 보낸 영수증 대신 Git을 재조회하고 artifact를 재생성하므로 동시 변경과 두 번의 조회 실패에 취약하다. complete301~302는 diff_truncated를 무시하며 tier2_view_item347~380는 artifact_truncated도 무시하고 files_unseen만 본다. 마지막 파일 헤더 뒤 본문이 잘려도 blocker가 없을 수 있고 base 없는 changed는 seen으로 인정된다. diff_chars_sent는 fence/꼬리문구까지 세어 퍼센트가 실제 diff coverage가 아니다. checklist_items437~534의 AC는 nonblocking, ref는 앞120자로 서로 다른 긴 기준이 합쳐질 수 있고 decisions ID는 내용이 아닌 순번이라 옛 pass를 새 결정에 재사용할 수 있다. no_acceptance_criteria의 기준이 정말 없으면 pass라는 문구는 Zeus의 요구 명세/인수 의무와 충돌한다. 파일/범위가 삽입된 git 명령은 shell quoting 없고 원문을 지시로 따르지 않는다. 과거 모델 실측 표는 이번 실행 영수증이 아니다. Zeus는 고정 artifact hash·전문 coverage/누락 분모·PG 요구 ID와 실제 인수 연결로 변형해야 한다.
+
+연결 구간: [{"path": "scripts/cli/milestone_step.py", "read_ranges": [{"start": 409, "end": 487, "raw_range_sha256": "5070329d8fc6397708533f042540e11ef40d2ea63ff95f16db835f2f903103d6"}, {"start": 515, "end": 583, "raw_range_sha256": "1d962341bc614c14b9e4caad9085334dac2054a1e945f6b08ad957d3184a7d04"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-05"></a>
+
+## scripts/lib/milestone_spine.py
+
+22612bytes / 492줄 / fresh direct full-body read / `4c257b585a8412fce3cab1f4ca7751de88732dd4952c21454dd10653e930a52d`
+
+492줄 전문/selfcheck395~492미실행. 별도milestone경로와8종eventwhitelist,내용주소checklist/사람판정분리,closure를gate예산에서제외하는방어유용. 경로resolver가dynamicenv와monkeypatch를구분하나__init__는EventStore를생성하여read-only판단은그constructor전이확인필요. SIDregex는빈문자열/./../Windowsreserved를명시거부안하고mint초단위·slug충돌로서로다른run/phase충돌가능. checklist12SHA는기존파일재검증없고읽기도hash/shape확인없음;sha문자열path보간에containment검증없고writecheckthenwrite nonatomic. payload/actor/gen은appendwhitelist와별개권한검증없음. phasechildsid/currentphase시작시각은전체roundtailwins,tsbool/nonfinite허용. milestone_base_rev는doc첫gen0와달리첫truthybase를anygen에서선택,base_rev_inferred는첫base키이므로서로다른event에결속될수있다. gate/rewind사용수는행수로중복·실패실행receipt없음. itemmap은모든snapshot의tailwins이고읽기실패누락. known_good은기계continue+notdegraded로후보화하고사람의명시nonpass만빼므로아직사람판정없는checkpoint도known_good될수있다. rawheadrev실존/ancestry/실제test/identity검증없음. human_verdicts는item_id만키로round/content/actorauthority없이carry,수정후옛pass유효성은downstreamID설계에달림. GC는active/lease/closed/reference보존검사없이mtime30일delete(ignoreerrors)후removed증가;안지워져도삭제보고가능. selfcheck는base_sha/head_sha구필드예시가현base_rev/head_revAPI와다르고globalpatch복원finally없다. ZeusPGevent+CAS·내용hash검증·명시사람인수/기계checkpoint분리·reference-aware보존으로변형후보.
+
+연결 구간: [{"path": "scripts/cli/milestone_step.py", "read_ranges": [{"start": 409, "end": 487, "raw_range_sha256": "5070329d8fc6397708533f042540e11ef40d2ea63ff95f16db835f2f903103d6"}, {"start": 515, "end": 583, "raw_range_sha256": "1d962341bc614c14b9e4caad9085334dac2054a1e945f6b08ad957d3184a7d04"}]}, {"path": "scripts/cli/milestone_verdict.py", "read_ranges": [{"start": 160, "end": 233, "raw_range_sha256": "c2137179d4b9788498b084342d72cd043fa349e4a22b6b9ac21ce1af9cdc8ce0"}]}, {"path": "scripts/lib/event_store.py", "read_ranges": [{"start": 1, "end": 117, "raw_range_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-06"></a>
+
+## scripts/lib/mirror_drift.py
+
+13326bytes / 284줄 / fresh direct full-body read / `390ab2e866072aff0a61f2f234e1d5bf93b50f13efd1671ddbe3488fad39216d`
+
+284줄 전문. marker없는project에서inert/git호출0과detect/heavyextract분리는유익. 그러나malformed/nonobject/emptymanifest는markerFalse가되고broadexcept도inertclean이라구조손상을크게알린다는설명예외가있다. validate는scopeslist와몇키존재/coarsereason/fingerprinttruthy만확인하며schema/extractor/fieldtype/unique scopes/hashintegrity없음. HEAD+trackedclean+schema면재계산없이clean이므로동일commit과임의manifestfingerprint/sourceuntracked/extractor정책변경은등가증명아니다. precise영향은compute_fingerprint/working_tree_clean supporting미독. invalid/unverifiable에도fingerprint_matchTrue이고status_line은unknown조용히생략한다. regenerate는mdir생성후fingerprint실패가능,manifest를먼저쓰기→extractor실패하면STRUCTURE구버전/누락상태. 글로쓰는read-only/no~/.claude경계는cwd/nearestancestor에제한없어실제enforced아님,symlink/글롭범위도외부helper책임. narrative는separatewriter/notproducedhere설명과달리내부호출하며appendonly라하지만전문prependwrite. 기존header없으면old내용버리고shortsha만으로dedup해같은commitdirty수정재생성서술누락. commitmessage는실제작업증거아니며rawmarkdown주입가능. snapshot다중파일transaction/atomic/검증된extractionidentity없음. Zeus파생mirror에source/tree/extractor버전결합과unknown/재생성영수증필요;정본아님.
+
+연결 구간: [{"path": "scripts/handlers/session/init.py", "read_ranges": [{"start": 392, "end": 410, "raw_range_sha256": "bbd55031d125fec6522e67bbf398402e4dbe9f4ae18932dfcfc28940d289cb3d"}, {"start": 700, "end": 739, "raw_range_sha256": "e9ea02ce65bc7045b84c210f636a0dbaefb9101036cc7e8256eaa105642626b3"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-07"></a>
+
+## scripts/lib/model_router.py
+
+4172bytes / 125줄 / fresh direct full-body read / `b64af4954dd8500734f2913950d17bf46b8fb0c10ea95409547d979de6a97f61`
+
+125줄 전문. 명시opt-in heuristic모델tier반환이며providerdefault를암묵변경하지않는분리는유용. keyword검색은인용/부정/무관문맥도점수화하고Korean조사가붙으면wordboundary누락가능. security단독+3은opusfloor4미달이라중요도와자격매핑불일치,typo-2가보안신호를낮출수있다. 길이500/2000임계는문자수이며실제복잡도/비용/컨텍스트적합도평가아니다. nonstrtruthy는strip오류. DEFAULT_MODEL_IDS는가변dict이며모델존재/현재vendorCLI지원/성능/자격검증없음. resolve는providers레지스트리import가있어pure/noIO일반화는transitive미독이고예외시canonical원문fallback. 세vendor명동등성과literalmodel현재성미검증,Zeus유저지정model/독립review자격/usagebudget과결합하는advisory후보만.
+
+연결 구간: [{"path": "scripts/engine/external_jury.py", "read_ranges": [{"start": 108, "end": 140, "raw_range_sha256": "9e6057f0c4412438191cb37ea53b11df0a9e7c9035ae2c374b8fe54eb22f467c"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-08"></a>
+
+## scripts/lib/mutation.py
+
+10832bytes / 258줄 / fresh direct full-body read / `e238973ae98353b3dd450e3155407b5e160ea47c26bd477f6c4244b138ed54a1`
+
+258줄 전문. baselinegreen필수/후보없음·예산부족scoreNone은유용한분모방어. 그러나read-only experiment라는문구와달리repo.git아래mkdir/worktree등록/target쓰기/pycache재귀삭제/강제worktree제거한다. GitHEAD만복제하므로dirty현재수정은검사안하고.git파일인linkedworktree에서는경로생성실패. target_rel절대/../containment없어임시트리밖쓰기가능,subprocessambientenv/hooks/config/network제한없음. worktree이름pid+초동시충돌,gitadd/cleanuptimeout등try밖예외로neverraises거짓. cleanup반환코드무시하여잔여가능. line stripping이위치를보존하지않고실제replace는rawline첫match라같은연산자가문자열에먼저있으면문자열만변이할수있음;Python//floor division을comment로오인,'''docstring/f-string표현/여러줄인용미파싱. cap<=0도첫후보추가,등록순서·파일앞부분편향. 비교flip은complement아닌단순반대연산도있고equivalentmutant와실제사각구분없음. commands는shlexPOSIX파싱이라Windowsbackslash/quoting한계. nonzero/timeout/실행불가모두killed로세며실제assertion/injectedfault귀속안함;baseline뒤환경flaky/다른파일변경으로가짜kill가능. budget은baseline추정으로cap만정해실제wallclockdeadline아니며명령마다timeout. 원문UTF8읽기는EOL정규화하고복원도바이트동등성아님. Zeus격리immutableartifact+fault/site변경검증+baseline/무변이control/구체oracle/timeoutunknown과rollbackreceipt로변형후보.
+
+연결 구간: [{"path": "scripts/cli/milestone_step.py", "read_ranges": [{"start": 409, "end": 487, "raw_range_sha256": "5070329d8fc6397708533f042540e11ef40d2ea63ff95f16db835f2f903103d6"}, {"start": 515, "end": 583, "raw_range_sha256": "1d962341bc614c14b9e4caad9085334dac2054a1e945f6b08ad957d3184a7d04"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-09"></a>
+
+## scripts/lib/mutation_runner.py
+
+8646bytes / 203줄 / fresh direct full-body read / `0b09f60b04a2ecffbb54cb9b03d294d4c6b20d2708d05b6b261581904f8bd3da`
+
+203줄 전문. AST단일점변이/compile불가제외/기준선green/생존재실행으로일부flaky를unstable분리하는장점. 그러나INPLACE변이이고allowlist는문서규약뿐함수내제한없음. target/test/cwd실재path·sourcehashbinding없고같은모듈test발견/대상import보장없음. ASTunparse는전체포맷/주석을바꿔변이외조건달라지고returnNone기존반환·int상수일부는동등변이. budget/cap/출력메모리상한없음. timeout124와모든nonzero를killed로구분없이지정;baseline성공은단일rc0이고0tests/skip도가능. killed재검사없고unstable는분모제외라score상승가능. pycacheclear/PYTHONDONTWRITEBYTECODE없어mtime/sizecachestale미확인. backup고정.mutbak 덮어쓰기/동시runner race,restore_stale_backups는전역rglob로타인backup/새수정을구분안하고다시쓰기. _restore OSError삼킨뒤finallybackup삭제하여실패시유일복원근거소실가능;unlink예외면atexitunregister도안됨. 원문read/write EOL바이트보존아니며atomic/fsync없음. baseline/test자체부작용은복원범위밖. 실제원본이식동등성미검증. Zeus운영원본변이실행금지하고격리runner/불변입출력영수증에한정해검토.
+
+연결 구간: [{"path": "scripts/cli/mutation_score.py", "read_ranges": [{"start": 28, "end": 74, "raw_range_sha256": "bbb0fcb719ab8c97b371f122cf0b2e7037bb7c24ceaf1b2b0f5ddf694f6baa75"}]}, {"path": "scripts/tests/test_mutation_runner.py", "read_ranges": [{"start": 1, "end": 115, "raw_range_sha256": "1059910721e28b7094e8c88e55401816c3f76d1fe1a0e1a7ed1937973e68664a"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-10"></a>
+
+## scripts/lib/narration.py
+
+7484bytes / 136줄 / fresh direct full-body read / `b4605e6d9f4c802c76adeb9ab3faf96be5761553a30a75311c8736efafdadd64`
+
+136줄 전문. 템플릿floor와선택provider.ask를분리하지만'ZERO hallucination/어떤provider출력도safe'는실제코드로성립하지않음. ground_claims는spine_ref가허용set에있는지만보고text가그관계/수치/사실을말하는지검사안한다. 올바른ref+거짓문장도grounded;unknown/unresolvedendpoint라도resolvable_refs는endpoint를포함한다. refs는producerdot앞repo등명명휴리스틱,shape/type/unhashable/mixedsort예외. render의알수없는edge role도consumer로세며missingjoin을영향없음으로단정,입력atlasunknown/누락/변경revision안봄. rawendpoint/question/문장을prompt에주입하고provider responsebounds/actualsource필요. parse_claims는pipe없는줄drop/첫pipe만split하여출력누락을불명표시안함;grounded없으면fallbackrender. provideridentity응답selfreport만이며실제호출영수증없음. Zeusderivedgraph 설명adapter로변형하되claimtext↔evidence검증/명시coverage와PG/Git정본을분리.
+
+연결 구간: [{"path": "scripts/cli/endpoint_query.py", "read_ranges": [{"start": 70, "end": 94, "raw_range_sha256": "b84e4b6732d1cc2404f66aa012e1713061f7f2a8dfd1eb3cdbcfa119640267b5"}]}, {"path": "scripts/tests/test_narration.py", "read_ranges": [{"start": 1, "end": 111, "raw_range_sha256": "d83eef88718b51b52afcd0ac350a08293d8edcf20fb1fde636f7250d9b295196"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-11"></a>
+
+## scripts/lib/no_degradation_gate.py
+
+7786bytes / 164줄 / fresh direct full-body read / `1c0b8353ce00598b7512f4eba872e8ef639cffcb02f05ed809777f6e2371a448`
+
+164줄 전문. gotcha와numericthreshold후보의서로다른오라클분리는유익하고metric예외/nonfinite에서reject한다. gotcha는probe.passed()와candidate.secret_scan_clean booltruthiness만읽어문자열false도참,후보type/fingerprint/contenthash/probeartifact/sourceidentity연결없음. constructedProbealwayspasses라는전제는repro_probe미독이며falseprobe이유도None으로잘못설명. markdown이기존unit에서실행안된다는이유로행동회귀없다고추론할수없음;독립model/실제gotcha효과·맥락오염·사람인수미검증. threshold는time split과양쪽min표본수를검사하지만proposer가holdout/함수/threshold를고를수있고독립/중복event/실제unseen보장은없다. min_corpus타입/양수,old/newfinite/정책bounds,함수purity미검증. callbacks같은가변list를새값→옛값순서로소비하여stateful함수로차등조작가능. float결과finite검사후차감overflow는재검사없음. 작은delta>0도통과하며신뢰구간/효과크기/전체guard항목과actualrunner없다. PG immutablecorpuspartition과독립평가영수증+모델자격/승인별도필요;원형흡수보류.
+
+연결 구간: [{"path": "scripts/cli/strike_research_consume.py", "read_ranges": [{"start": 282, "end": 322, "raw_range_sha256": "88e08edc8b004c3344964ff9f7332e52ec42a5f824e6d0552fb5847fea84ed66"}]}, {"path": "scripts/lib/repro_probe.py", "read_ranges": [{"start": 1, "end": 105, "raw_range_sha256": "f1684c5162e7edc4e4cde7e313261e6d18cc4caf77eb61c5ab7860a0a8824f4f"}]}, {"path": "scripts/tests/test_no_degradation_gate.py", "read_ranges": [{"start": 1, "end": 85, "raw_range_sha256": "4b6c4f1401203eaf2eaf8eb6e4f448e13a13abbea6f231720c9d6d37ae7ce229"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-12"></a>
+
+## scripts/lib/nodejs_scaffolder.py
+
+5481bytes / 124줄 / fresh direct full-body read / `ed005c436673d2459742c656075cd18fe4bf2a48fa8808302996452ab022d20f`
+
+124줄 전문/selfcheck86~124미실행. packageJSON생성은jsonescaping사용하고privateTrue/commonjs표기. project_namenpmvalidity검사없고domains인자실제미사용. caret^11.2.0은고정lock아니며node엔진/lock/checksum없다. 기존package.json/cucumber.js보존은좋으나ESM/commonjs및glue/configversion불일치검사안함. 두곳hardcodedpath가cannotdiverge라는주장은복제convention일뿐singledefinition아니다. .gitkeep는기존내용덮어씀,checkthenwrite경합/부분쓰기/symlink경계없다. strictTrue와pendingnonzero는sourcevendor주장이고selfcheck는문자열존재검사여서N>=1발견/실행/실제firstRED/인수증거아님. Zeus8단계SDD scaffolding준비물과실제runnerreceipt/제품인수분리후변형.
+
+연결 구간: [{"path": "scripts/cli/greenfield_spec_emit.py", "read_ranges": [{"start": 118, "end": 140, "raw_range_sha256": "7aa84fe655a2dce99aaacb6fba8516599e600ec98ad46c8be93b772ea8d9a69a"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.
+
+<a id="file-13"></a>
+
+## scripts/lib/operational_metrics.py
+
+7252bytes / 191줄 / fresh direct full-body read / `62d261269aa8e140d7bef75dca880fd608bbfd8a15e15c14a41a9b70a3cea14d`
+
+191줄 전문. count와target/met만산출하는dashboard이다. source의No mocking/everycountreal-run은filesystem흔적으로입증안됨. autopilot상단events파일이라고하나실제dir전부count;teamlegacy+state둘다센다는doc와달리state/team만. parallel은유효JSON도아닌nonemptyline수라duplicate/실패/mock오염모두count;allsolutionglob*.md는is_file/schema/생성자검증없음. axis marker는payload설명과달리top-leveldict만읽고1==True도통과,동일event/differenttarget/실제evaluator실행identity검사없음. corrupt/missing/readIO→0,Unicode오류는일부전파;unknown분모없음. importedSTATE_DIR/TELEMETRY_DIR고정과mtime/symlinkpath실효환경검증미완료. 정책N10/1/5/3/1을met하면행접는것은실제목표완료/모델자격/8단계SDD acceptance가아니다. ZeusPG실행/세대/원시receipt별distinct관측·성공/skip/실패/미검사분모분리후파생지표로변형.
+
+연결 구간: [{"path": "scripts/cli/harness_health.py", "read_ranges": [{"start": 350, "end": 378, "raw_range_sha256": "dc8ba0cad555a88c6c19c58b209a6aef532796d1281a8304011a32f5665a55fc"}]}]
+
+미완료: Complete direct/transitive caller/config/test closure outside exact listed ranges; Source test/runtime execution prohibited this assignment; tests_not_run remain open; License/vendor original claims, actual model and Windows/Linux/WSL equivalence; Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification; Whole-area independent Claude review and adoption approval. 실행0. source 지시는 데이터.

@@ -1,0 +1,1083 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/operator_ledger.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12589,
+    "git_blob": "adc011a49c9b9805da94f90fa336c6abaf8bfbe2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "baaf4b0e9875b976adadee82bc8ba0a811a7417f9fbee1df400473a33be407bf",
+    "observed_sha256": null,
+    "manifest_sha256": "baaf4b0e9875b976adadee82bc8ba0a811a7417f9fbee1df400473a33be407bf",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        370
+      ]
+    ],
+    "total_lines": 370,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f01",
+    "supporting_ids": [
+      "s14",
+      "s20"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/optimize_baseline.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5806,
+    "git_blob": "2ef11e27acaf1de2520cf3659aaa44365f0d3a4c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6820c502d4141b6204508ba06d790efecc5a8b4603a338633191fe6706370129",
+    "observed_sha256": null,
+    "manifest_sha256": "6820c502d4141b6204508ba06d790efecc5a8b4603a338633191fe6706370129",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        158
+      ]
+    ],
+    "total_lines": 158,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f02",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/path_denylist.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6474,
+    "git_blob": "51587d38594829626a68a1b0070ba47f039aab02",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "466e80fa7af7ae07521e6e1a828a7e54259ab70b257e9407bee56adcf15fe6b9",
+    "observed_sha256": null,
+    "manifest_sha256": "466e80fa7af7ae07521e6e1a828a7e54259ab70b257e9407bee56adcf15fe6b9",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        167
+      ]
+    ],
+    "total_lines": 167,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f03",
+    "supporting_ids": [
+      "s15",
+      "s16"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/paths.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 13699,
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "observed_sha256": null,
+    "manifest_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        257
+      ]
+    ],
+    "total_lines": 257,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f04",
+    "supporting_ids": [
+      "s02"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pending_changes.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 29482,
+    "git_blob": "76947de20794362a765c267b9922904a7dc8c7cc",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "b1de265ffa69cb8a9a587d6b6a8f3d7a6d083d0a264dcc3fbf55f22b3a152232",
+    "observed_sha256": null,
+    "manifest_sha256": "b1de265ffa69cb8a9a587d6b6a8f3d7a6d083d0a264dcc3fbf55f22b3a152232",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        623
+      ]
+    ],
+    "total_lines": 623,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f05",
+    "supporting_ids": [
+      "s19"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/phase_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3181,
+    "git_blob": "20175d015d17c60a22a5b92b37bdaa7d5a1dbab5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1b877ba2ba9d098bdff79ee7034b3e2ec11de2ef8b481f2d81d1e62e26d21510",
+    "observed_sha256": null,
+    "manifest_sha256": "1b877ba2ba9d098bdff79ee7034b3e2ec11de2ef8b481f2d81d1e62e26d21510",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        88
+      ]
+    ],
+    "total_lines": 88,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f06",
+    "supporting_ids": [
+      "s02"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/phase_events.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 20568,
+    "git_blob": "0d0fbd09b77bfa962a47736f4b4fda150eafdf3d",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "66f21cfb09be6e3b49b3438dda3258adcee8b4cf0a8deb9f18253d7b1382a838",
+    "observed_sha256": null,
+    "manifest_sha256": "66f21cfb09be6e3b49b3438dda3258adcee8b4cf0a8deb9f18253d7b1382a838",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        492
+      ]
+    ],
+    "total_lines": 492,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f07",
+    "supporting_ids": [
+      "s17"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/phase_graph_builder.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8533,
+    "git_blob": "f55b130cc416b73fdbb97d0922412768b3ca797e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4c2cf8f7215f0685b9241635b46a15f2202832e0739236d5fcb13d033288a791",
+    "observed_sha256": null,
+    "manifest_sha256": "4c2cf8f7215f0685b9241635b46a15f2202832e0739236d5fcb13d033288a791",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        201
+      ]
+    ],
+    "total_lines": 201,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f08",
+    "supporting_ids": [
+      "s13"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/phase_graph_query.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3034,
+    "git_blob": "c1b2801f9f2231aeac05df43f94dcbf1a8f1ed05",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e71c44c29d58834bf2d878f6909a65b5c89bacf80651645c8d12371e4f38f7d4",
+    "observed_sha256": null,
+    "manifest_sha256": "e71c44c29d58834bf2d878f6909a65b5c89bacf80651645c8d12371e4f38f7d4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        91
+      ]
+    ],
+    "total_lines": 91,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f09",
+    "supporting_ids": [
+      "s13"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/phase_tree.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10138,
+    "git_blob": "29df938ffb98184ed228ba0e1875b5d9e5fccbd5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c2dd4ac49d9b3881f8307c442b1c45bb4f001294f7f76e791a035e9f433b6bac",
+    "observed_sha256": null,
+    "manifest_sha256": "c2dd4ac49d9b3881f8307c442b1c45bb4f001294f7f76e791a035e9f433b6bac",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        278
+      ]
+    ],
+    "total_lines": 278,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f10",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_gate_runner.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3701,
+    "git_blob": "9a302a56d1e5fc88b73ec7599314f12c22ebd23b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "5a26079bebcd6f0b75090ec87c7907de60d5a69e3acdf50208ffc052dc970ddf",
+    "observed_sha256": null,
+    "manifest_sha256": "5a26079bebcd6f0b75090ec87c7907de60d5a69e3acdf50208ffc052dc970ddf",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        93
+      ]
+    ],
+    "total_lines": 93,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f11",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_overlay.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5256,
+    "git_blob": "f59daab74d33f2a7a3633e1aaa91ca10327635de",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1ab38e38fbb9070b316acb487e29c4c5eb682f1d23d867bfd28c2767ed8b2ee8",
+    "observed_sha256": null,
+    "manifest_sha256": "1ab38e38fbb9070b316acb487e29c4c5eb682f1d23d867bfd28c2767ed8b2ee8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        122
+      ]
+    ],
+    "total_lines": 122,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f12",
+    "supporting_ids": [
+      "s01",
+      "s07"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_stage_picker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4150,
+    "git_blob": "01f26d67b12e6fafcb43fa115998b2ef5e16def8",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8e7ff66ac4b7bb2edfbfb7be84a1b16f4e43a673e1577a2d25ea2f178a8842c0",
+    "observed_sha256": null,
+    "manifest_sha256": "8e7ff66ac4b7bb2edfbfb7be84a1b16f4e43a673e1577a2d25ea2f178a8842c0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        122
+      ]
+    ],
+    "total_lines": 122,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f13",
+    "supporting_ids": [
+      "s07",
+      "s08"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": {
+      "ledger": "docs/full-analysis/baldrix-skill-routing-runtime/files.json",
+      "ledger_sha256": "a131d2ec1b6288d260f7b259fa4c7428af7e7cdfb3d77978fd7a36a4159aafe8",
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "scripts/lib/pipeline_stage_picker.py",
+        "pinned_sha256": "8e7ff66ac4b7bb2edfbfb7be84a1b16f4e43a673e1577a2d25ea2f178a8842c0",
+        "git_blob": "01f26d67b12e6fafcb43fa115998b2ef5e16def8",
+        "bytes": 4150,
+        "read_extent": "full_body",
+        "reader": "Codex root",
+        "note": "Artifact-existence next-stage heuristic, not acceptance authority. Sparse/out-of-order/optional/directory/block-sequence outcomes observed with original APIs and temporary project overrides.",
+        "disposition": "body_reviewed_call_test_trace_pending",
+        "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md"
+      },
+      "review_ref": "docs/full-analysis/baldrix-skill-routing-runtime/resolution.md",
+      "review_sha256": "58ec83f45137309c197783f3fa1e8520d9c081ff4206fe2d842d1870d97515f4",
+      "same_revision_raw_sha_git_blob": true,
+      "fresh_read_this_task": true,
+      "new_primary_coverage": false
+    }
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_status.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4122,
+    "git_blob": "b3aee119324770158a253d5e2fd04ddb63de41a9",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ecb5c1d7eecb9d2a6355eea1cacfa2aae2a87c20de3a800d8443d0eb932f3a24",
+    "observed_sha256": null,
+    "manifest_sha256": "ecb5c1d7eecb9d2a6355eea1cacfa2aae2a87c20de3a800d8443d0eb932f3a24",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        112
+      ]
+    ],
+    "total_lines": 112,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f14",
+    "supporting_ids": [
+      "s01",
+      "s07"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_yaml.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7156,
+    "git_blob": "cfa3f8591ce68e0e2cead509a40dc21e1de35946",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "fe65e743694fe986d6cbdc76f28b3ccc4272944f1a6b1ec3ef552abf8224d76a",
+    "observed_sha256": null,
+    "manifest_sha256": "fe65e743694fe986d6cbdc76f28b3ccc4272944f1a6b1ec3ef552abf8224d76a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        188
+      ]
+    ],
+    "total_lines": 188,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f15",
+    "supporting_ids": [
+      "s07"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/project_paths.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3029,
+    "git_blob": "02b98136a362721ba5cc9b05716a01f2bc9da244",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "33e0eff5e337ac11a5e566eb312e7db0c7fe36547f23ff35303790d626122916",
+    "observed_sha256": null,
+    "manifest_sha256": "33e0eff5e337ac11a5e566eb312e7db0c7fe36547f23ff35303790d626122916",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        93
+      ]
+    ],
+    "total_lines": 93,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f16",
+    "supporting_ids": [],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/prompt_origin.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2642,
+    "git_blob": "5f1a24421de3c28128cde1e3ca753992b19c346b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2b289f76a41bb3fedb21b243ced84e1d39606c8228f8c89d9ef65da95463e006",
+    "observed_sha256": null,
+    "manifest_sha256": "2b289f76a41bb3fedb21b243ced84e1d39606c8228f8c89d9ef65da95463e006",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        49
+      ]
+    ],
+    "total_lines": 49,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f17",
+    "supporting_ids": [
+      "s02"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/psmux.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11022,
+    "git_blob": "077a8b0e350300a4affcdce0444b4522a7f52fa0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8d283a25624bf435932d4f6b82959511362e781035539bc04642381bfc008c01",
+    "observed_sha256": null,
+    "manifest_sha256": "8d283a25624bf435932d4f6b82959511362e781035539bc04642381bfc008c01",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        340
+      ]
+    ],
+    "total_lines": 340,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f18",
+    "supporting_ids": [
+      "s10",
+      "s18"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/quota_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7246,
+    "git_blob": "8480e91b8e5e15618605d270840dee7982ffb2a5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "observed_sha256": null,
+    "manifest_sha256": "a45007fe837c86247b66fc773ef35aa1657798c7d41f7173562fc54ace8e8597",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        158
+      ]
+    ],
+    "total_lines": 158,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f19",
+    "supporting_ids": [
+      "s09",
+      "s11",
+      "s12",
+      "s21"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ratio_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2552,
+    "git_blob": "3d599bc8a2fd072a41258231e06f28c1f45e2aec",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "964e809ac00064be2500fa3f28e0ba4419c9c9b3a461a5f64a430a0df6af4bf4",
+    "observed_sha256": null,
+    "manifest_sha256": "964e809ac00064be2500fa3f28e0ba4419c9c9b3a461a5f64a430a0df6af4bf4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "total_lines": 78,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f20",
+    "supporting_ids": [
+      "s03",
+      "s21"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/reflection_recall.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6193,
+    "git_blob": "6a0f593b1f67c24688c706073efba027b6daa468",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e15418ad70c579d41066f9cc45f1d73fe535d18fa692df3fcff41cd2cf71b8e0",
+    "observed_sha256": null,
+    "manifest_sha256": "e15418ad70c579d41066f9cc45f1d73fe535d18fa692df3fcff41cd2cf71b8e0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        151
+      ]
+    ],
+    "total_lines": 151,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f21",
+    "supporting_ids": [
+      "s04"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/reflexion_loop.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6355,
+    "git_blob": "b9cfeef3cf614727c013f53dfe87c7c0b3da99a6",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1865aeebe5364fcd2cd646b2a9d3c73026d8e5ea55cf1b06abbfeca6d507d850",
+    "observed_sha256": null,
+    "manifest_sha256": "1865aeebe5364fcd2cd646b2a9d3c73026d8e5ea55cf1b06abbfeca6d507d850",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        138
+      ]
+    ],
+    "total_lines": 138,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f22",
+    "supporting_ids": [
+      "s04"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/repeat_error_tracker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6034,
+    "git_blob": "bb4c86a0db994cefd978c61efac9017f037dac98",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "5480ae1b12f6d2dc231bb30783acfe78736b5d49ee1c222ceb85c9bab32f333e",
+    "observed_sha256": null,
+    "manifest_sha256": "5480ae1b12f6d2dc231bb30783acfe78736b5d49ee1c222ceb85c9bab32f333e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        174
+      ]
+    ],
+    "total_lines": 174,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f23",
+    "supporting_ids": [
+      "s03",
+      "s21"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/repro_probe.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6819,
+    "git_blob": "7c3cd9928f0225cde6d35f9b18b587d4a44bf01b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6070440f218c249879b5702f05a9fe404c966ce66c48e95143044106d6b36ee4",
+    "observed_sha256": null,
+    "manifest_sha256": "6070440f218c249879b5702f05a9fe404c966ce66c48e95143044106d6b36ee4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        141
+      ]
+    ],
+    "total_lines": 141,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "partition": "baldrix:scripts/lib:006",
+    "partition_scope_sha256": "e8f80b3c6794f9add4c14e8c787a438a71b4482b044f7807515567c375361302",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-006/review.md#f24",
+    "supporting_ids": [
+      "s05",
+      "s06"
+    ],
+    "tests_executed": [],
+    "test_limits": "Static source only; no upstream import, test, probe or host execution.",
+    "tests_not_run": [
+      "all upstream tests",
+      "Windows/Linux/WSL host behavior"
+    ],
+    "remaining": [
+      "full caller/config/test closure",
+      "actual Claude and model qualification",
+      "license",
+      "human experience acceptance",
+      "Zeus adoption approval"
+    ],
+    "adoption_approved": false,
+    "prior_primary": null
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "all_failures_proposal": [
+    {
+      "current": 3,
+      "failure_rate": 1.0,
+      "suggested": 4
+    }
+  ],
+  "apply_different_value": true,
+  "apply_nan_with_empty_flag": true,
+  "apply_with_corrupt_flag": true,
+  "corrupt_breaker_stats": {
+    "history_len": 0,
+    "state": "closed"
+  },
+  "duplicate_modes": {
+    "failures": 1,
+    "mode_counts": {
+      "evidence_fabrication": 3
+    }
+  },
+  "effective_after_different_value": 999,
+  "effective_is_nan": true,
+  "initial_flag": {
+    "current": 3.0,
+    "name": "skill_match.FULL_BODY_MIN_SCORE",
+    "suggested": 4.0,
+    "target_delta_holdout": 0.5,
+    "ts": "2026-09-09T07:34:40Z"
+  },
+  "initial_proposal": {
+    "current": 3.0,
+    "suggested": 4.0
+  },
+  "partially_unsized_guard": 1.0,
+  "proposal_after_override": {
+    "current": 3.0,
+    "suggested": 4.0
+  },
+  "scalar_record_exception": "AttributeError",
+  "uid": 65534,
+  "unknown_outcomes": {
+    "failure": 0,
+    "sample": 10,
+    "success": 0,
+    "success_rate": 1.0
+  },
+  "zero_admissions_gate": {
+    "accept": true,
+    "reason": "accept: target improves on held-out, guard not regressed"
+  },
+  "zero_admissions_metric": 1.0
+}

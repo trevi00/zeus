@@ -1,0 +1,16 @@
+{
+  "artifact_hashes_valid": true,
+  "explicit_review_anchors_valid": true,
+  "reference_count": 91,
+  "utf8_decode_valid": true,
+  "own_python_lf": true,
+  "own_ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/harness-integration-tests-003/record_review.py",
+    "exit_code": 0,
+    "result": "All checks passed!"
+  },
+  "original_execution": 0,
+  "source_imports": 0,
+  "upstream_pass_claimed": false,
+  "review_sha256": "b502300c6803f272f0845944d0a33da04c8bd26280d1d66d9fa83e5825e57242"
+}
