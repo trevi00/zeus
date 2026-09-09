@@ -1,0 +1,80 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/flutter/outpos/paygate-kovan.md",
+    "pinned_sha256": "e3167ce49d26fe7e0bea3d511b6e9a14abbfff704ec115a5341299619e713a9f",
+    "git_blob": "e1c4de41f489d3c5fca73a583d49423195135944",
+    "read_ranges": [
+      [
+        131,
+        156
+      ],
+      [
+        218,
+        245
+      ]
+    ],
+    "tool_output_chunk": "8ae882",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 131,
+        "end": 156,
+        "sha256": "a8bc01ce5c7af8155bd65bb5206ba25f8b28a9f9d9dd01c94e9b656b86ee80d3"
+      },
+      {
+        "start": 218,
+        "end": 245,
+        "sha256": "d71616903dc19d22a9469d92a366548985295ce0108bdbff5732432e935a53dd"
+      }
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/flutter/3.x/flutter-native.md",
+    "pinned_sha256": "73f84dba1c908f5fef339268e968d2a2cbf6d7f31d5784d634d3b507817e9ee1",
+    "git_blob": "f66bbcd5d9641217fd850cbac6cf543410c6ecbe",
+    "read_ranges": [
+      [
+        127,
+        154
+      ]
+    ],
+    "tool_output_chunk": "8ae882",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 127,
+        "end": 154,
+        "sha256": "476eb8ae707b5b0c474b0c1938e07dbfd1a4421bd2a9988a5e7f7965c1380c79"
+      }
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/flutter/outpos/paygate-kovan.md",
+    "pinned_sha256": "e3167ce49d26fe7e0bea3d511b6e9a14abbfff704ec115a5341299619e713a9f",
+    "git_blob": "e1c4de41f489d3c5fca73a583d49423195135944",
+    "read_ranges": [
+      [
+        84,
+        106
+      ]
+    ],
+    "tool_output_chunk": "9e684c",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 84,
+        "end": 106,
+        "sha256": "5cf06d5ba2d24f3f2fa428578261e0b9a8b23b9570a26d83f09ffac47c0aa9d2"
+      }
+    ]
+  }
+]

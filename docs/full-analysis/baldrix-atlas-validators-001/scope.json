@@ -1,0 +1,218 @@
+{
+  "partitions": [
+    {
+      "partition": "baldrix:atlas/validators:001",
+      "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+      "bytes": 55682,
+      "paths": [
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/README.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/atlas-frontmatter.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/atlas-structure.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/ci.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/codegen.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/collab.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/commit-layer-adjacency.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/contract.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/convention.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/ddl.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/er.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/flow.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/git-flow.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/handoff-drift.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/harness-bridge-state-block.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/hashline.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/insight-index-importer-whitelist.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/logical.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/mutation-safety.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/openapi.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/prd.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/private-content-leak.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/skeleton.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/skill-frontmatter.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/skill-quality-axes.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/skill-source-liveness.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/skill-staging-isolation.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/subagent-refs.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/artifacts/test.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/concepts/layer-a-ast-plus-layer-b-modulespec-runtime-whitelist.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/concepts/staging-guard-blocks-non-staged-mutation.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/concepts/stdout-pass-fail-warn-contract-required.md"
+        }
+      ],
+      "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+    },
+    {
+      "partition": "baldrix:atlas/validators:002",
+      "scope_sha256": "4a70925fef0e204941882f620210fc349e2235d4327c5b961b2dc4845270e7cd",
+      "bytes": 29312,
+      "paths": [
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/concepts/validator-enforcement-tiers-registered-vs-advisory.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/concepts/validator-registry-alphabetic-ordering-prevents-merge-conflict.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/decisions/debate-w13-d7-ast-plus-modulespec-enforcement.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/decisions/debate-w18-d3-staging-only-invariant.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/journal/2026-05-24-wave-13-14-l1-validator-modulespec-land.md"
+        },
+        {
+          "source": "baldrix",
+          "path": "atlas/validators/journal/2026-06-01-wave-18-d3-staging-only-invariant-land.md"
+        }
+      ],
+      "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+    }
+  ],
+  "paths": [
+    "atlas/validators/README.md",
+    "atlas/validators/artifacts/atlas-frontmatter.md",
+    "atlas/validators/artifacts/atlas-structure.md",
+    "atlas/validators/artifacts/ci.md",
+    "atlas/validators/artifacts/codegen.md",
+    "atlas/validators/artifacts/collab.md",
+    "atlas/validators/artifacts/commit-layer-adjacency.md",
+    "atlas/validators/artifacts/contract.md",
+    "atlas/validators/artifacts/convention.md",
+    "atlas/validators/artifacts/ddl.md",
+    "atlas/validators/artifacts/er.md",
+    "atlas/validators/artifacts/flow.md",
+    "atlas/validators/artifacts/git-flow.md",
+    "atlas/validators/artifacts/handoff-drift.md",
+    "atlas/validators/artifacts/harness-bridge-state-block.md",
+    "atlas/validators/artifacts/hashline.md",
+    "atlas/validators/artifacts/insight-index-importer-whitelist.md",
+    "atlas/validators/artifacts/logical.md",
+    "atlas/validators/artifacts/mutation-safety.md",
+    "atlas/validators/artifacts/openapi.md",
+    "atlas/validators/artifacts/prd.md",
+    "atlas/validators/artifacts/private-content-leak.md",
+    "atlas/validators/artifacts/skeleton.md",
+    "atlas/validators/artifacts/skill-frontmatter.md",
+    "atlas/validators/artifacts/skill-quality-axes.md",
+    "atlas/validators/artifacts/skill-source-liveness.md",
+    "atlas/validators/artifacts/skill-staging-isolation.md",
+    "atlas/validators/artifacts/subagent-refs.md",
+    "atlas/validators/artifacts/test.md",
+    "atlas/validators/concepts/layer-a-ast-plus-layer-b-modulespec-runtime-whitelist.md",
+    "atlas/validators/concepts/staging-guard-blocks-non-staged-mutation.md",
+    "atlas/validators/concepts/stdout-pass-fail-warn-contract-required.md",
+    "atlas/validators/concepts/validator-enforcement-tiers-registered-vs-advisory.md",
+    "atlas/validators/concepts/validator-registry-alphabetic-ordering-prevents-merge-conflict.md",
+    "atlas/validators/decisions/debate-w13-d7-ast-plus-modulespec-enforcement.md",
+    "atlas/validators/decisions/debate-w18-d3-staging-only-invariant.md",
+    "atlas/validators/journal/2026-05-24-wave-13-14-l1-validator-modulespec-land.md",
+    "atlas/validators/journal/2026-06-01-wave-18-d3-staging-only-invariant-land.md"
+  ],
+  "primary_count": 38,
+  "primary_bytes": 84994,
+  "ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+  "partitions_sha256": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8",
+  "manifest_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+  "starting_head": "7eaa42737d0cce4e675c9f309c215ce1e1d97ed4"
+}

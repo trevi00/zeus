@@ -1,0 +1,162 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/graduation.py",
+    "pinned_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "git_blob": "d374e761ae212a30b859fed6ab62967cf54a61a8",
+    "read_ranges": [
+      [
+        60,
+        66
+      ],
+      [
+        96,
+        125
+      ],
+      [
+        196,
+        221
+      ]
+    ],
+    "tool_output_chunk": "8ae882",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 60,
+        "end": 66,
+        "sha256": "a8d85c534e96c3e7a0e7c7e7ba89e741e1f0aca086cfd4420b2b07b7688b5ca0"
+      },
+      {
+        "start": 96,
+        "end": 125,
+        "sha256": "6b4b83fb00b2bc798ea0b03e9297178f2097147d6c98b1724a24cf3557076eaa"
+      },
+      {
+        "start": 196,
+        "end": 221,
+        "sha256": "bfe271096cd3dffa68c23ffcc4ed1583a1745ddb3da3f467648225a9824b6b3e"
+      }
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/__init__.py",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "read_ranges": [
+      [
+        108,
+        123
+      ]
+    ],
+    "tool_output_chunk": "8ae882",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 108,
+        "end": 123,
+        "sha256": "e3e5c7ba7cf22ed8281170fa9d94b17efce4d2732063603b2ad3bb0b659ef076"
+      }
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/lib/graduation.py",
+    "pinned_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "git_blob": "d374e761ae212a30b859fed6ab62967cf54a61a8",
+    "read_ranges": [
+      [
+        35,
+        59
+      ],
+      [
+        67,
+        84
+      ]
+    ],
+    "tool_output_chunk": "9e684c",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 35,
+        "end": 59,
+        "sha256": "28273d4b40d78106a8085982f946fc7a0da23e17cb061114029c9ae45957bf22"
+      },
+      {
+        "start": 67,
+        "end": 84,
+        "sha256": "2fc22e030a46ef6a0b2ba4c543d8c7634fde4a539b1c578c4a71a6908b222f8b"
+      }
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/__init__.py",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "read_ranges": [
+      [
+        18,
+        70
+      ]
+    ],
+    "tool_output_chunk": "9e684c",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 18,
+        "end": 70,
+        "sha256": "54fb10da0e898d7935141f1cf77388a3ccb9f64d94f19339df52f117e59acb7c"
+      }
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "state/graduation-state.json",
+    "pinned_sha256": "518a63f2bf3d01aa15c5a315fb4ff0bd45fe2ba7824b439171b63d0cb22dfd6d",
+    "git_blob": "4d28b96dc703f73734f795d85e498c8c0371338f",
+    "read_ranges": [
+      [
+        1,
+        14
+      ],
+      [
+        46,
+        85
+      ],
+      [
+        133,
+        147
+      ]
+    ],
+    "tool_output_chunk": "9e684c",
+    "read_extent": "partial",
+    "counted_as_primary": false,
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 14,
+        "sha256": "b7d5147627a473b2415675ced98d686bce0cab8283d239b0ae1bae9ca8abca29"
+      },
+      {
+        "start": 46,
+        "end": 85,
+        "sha256": "fecf18846b6f452d70ca1a2a6edce3c23fbeaa5c3c6426ed792913f87d759232"
+      },
+      {
+        "start": 133,
+        "end": 147,
+        "sha256": "2425fac822db8e54a2866f136ca452eda08736cf3e2ea298f14f5ba549286b5b"
+      }
+    ]
+  }
+]

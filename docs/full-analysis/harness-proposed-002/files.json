@@ -1,0 +1,751 @@
+[
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-chapter-count-off-by-one.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "f24082c6198a24b05d53f3bcfd05c4d6a389fa47",
+    "bytes": 25715,
+    "pinned_sha256": "da55492291d37e500d7cc080baee41e5ef8332ab9f04a6a4e0d921829ec67604",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "da55492291d37e500d7cc080baee41e5ef8332ab9f04a6a4e0d921829ec67604",
+    "manifest_sha256_status": "matched",
+    "line_count": 11,
+    "read_ranges": [
+      [
+        1,
+        11
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f01",
+    "semantic_rationale": "`backlog-chapter-count-off-by-one.json` diagnoses counting renderer-name strings rather than actual chapter objects. The evolving evidence distinguishes repeated caches from new requests and videos, but its positive denominator grows from three to four to nine and later returns to four-to-five. This is an unresolved population inconsistency, not ten verified independent cases. The source reports nine positive and eight negative cases; this review reproduces none. Reachability still counts the raw string at line 153, while chapter presence controls distillability. A false positive chapter therefore affects eligibility, not only display. Positive cache entries never expire under is_stale. Preserve explicit unknown responses and source provenance; bind parser versions and actual chapter identities to receipts. A constant subtraction is not justified. Unread page variants, actual downloaded bodies and independent human content acceptance remain pending.",
+    "supporting_ids": [
+      "s16"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1773,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-chapter-count-off-by-one.json",
+      "git_blob": "f24082c6198a24b05d53f3bcfd05c4d6a389fa47",
+      "mode": "100644",
+      "bytes": 25715,
+      "pinned_sha256": "da55492291d37e500d7cc080baee41e5ef8332ab9f04a6a4e0d921829ec67604",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "d18a6291586d81b749d3e7f6e4c80783aaee26e7901d0969207913d7c69fd722",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-cohesion-churn-no-recency.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "8a1d0e72b0b7da7bdcbe217c705dae17cb114371",
+    "bytes": 4557,
+    "pinned_sha256": "b29cec96d947f794c1c3ec3e533070ac54738fe91d8c2242a0d346dd63aaea14",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "b29cec96d947f794c1c3ec3e533070ac54738fe91d8c2242a0d346dd63aaea14",
+    "manifest_sha256_status": "matched",
+    "line_count": 36,
+    "read_ranges": [
+      [
+        1,
+        36
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f02",
+    "semantic_rationale": "`backlog-cohesion-churn-no-recency.json` reports unchanged structural measurements accumulating churn and repeated proposals. Its lifetime/permanent wording is too broad: collect_history already limits history to 400 commits. assess counts the supplied history without time decay; scan uses that bounded collector. This permits within-window stale churn, but does not establish unlimited lifetime accumulation. Git collection failure becomes an empty history, with scan reporting unknown; do not count unknown as clean. Clustering uses a greedy union and excludes empty companions, so fragmentation is also sensitive to population and ordering. A recent-change AND gate could hide quiet structural debt. Zeus should expose the window, age and structural evidence separately. Proposal dismissal consumers and threshold calibration are not closed here.",
+    "supporting_ids": [
+      "s01"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1774,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-cohesion-churn-no-recency.json",
+      "git_blob": "8a1d0e72b0b7da7bdcbe217c705dae17cb114371",
+      "mode": "100644",
+      "bytes": 4557,
+      "pinned_sha256": "b29cec96d947f794c1c3ec3e533070ac54738fe91d8c2242a0d346dd63aaea14",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "fd04fd44f6967346369289328182f13657059c340467be50dcad0696dde62715",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-completion-verdict-evaporates.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "10cd4dfb2b1d0621ba8d85ccd1d1db3b29c530a6",
+    "bytes": 14614,
+    "pinned_sha256": "d3730870f64fb22bec5bdfcbcd1392d7d6e6ee5dbb1e30a8e269ca66cc077426",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "d3730870f64fb22bec5bdfcbcd1392d7d6e6ee5dbb1e30a8e269ca66cc077426",
+    "manifest_sha256_status": "matched",
+    "line_count": 11,
+    "read_ranges": [
+      [
+        1,
+        11
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f03",
+    "semantic_rationale": "`backlog-completion-verdict-evaporates.json` retracts its original absence-of-completion-vocabulary diagnosis after finding proposal_resolved. Its historical counts of twelve approvals, thirteen resolutions and one overlap do not prove these are inherently independent lifecycles. backlog.resolved_proposals needs an injected autonomous predicate; a non-autonomous event is not positive human authentication. The reader is a set of resolved identifiers, without reopen folding or evidence validation in the inspected range. Completion CLI has no receipt append, but missing evidence exits nonzero only with --strict; default zero is not success of the substantive claim. completion_line assesses path/glob existence, explicitly not content. cycle_finished N deliberately closes the prior cycle before starting N+1; that name is not itself a false receipt. Appending closure before the circuit check can leave a closed prior cycle without the next start. Zeus needs separately typed assessment, implementation verification and human acceptance receipts in PG; Git stores the declared completion contract. Authentication and all resolution writers remain untraced.",
+    "supporting_ids": [
+      "s02",
+      "s03",
+      "s04",
+      "s06"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1775,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-completion-verdict-evaporates.json",
+      "git_blob": "10cd4dfb2b1d0621ba8d85ccd1d1db3b29c530a6",
+      "mode": "100644",
+      "bytes": 14614,
+      "pinned_sha256": "d3730870f64fb22bec5bdfcbcd1392d7d6e6ee5dbb1e30a8e269ca66cc077426",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "4e98e4a9a76b47175512b78c0cbb350e108f3810fe7c6a44ef8087f9bcf9182c",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-confirmed-without-predicate-measurement.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "be5f01b8b0c1c68755c81a131c5068fd2cbfa21a",
+    "bytes": 10577,
+    "pinned_sha256": "057dd8ad4eb912a1e8eab2195f4828f2b28d79efeca0efce4650a13eef80d3f3",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "057dd8ad4eb912a1e8eab2195f4828f2b28d79efeca0efce4650a13eef80d3f3",
+    "manifest_sha256_status": "matched",
+    "line_count": 53,
+    "read_ranges": [
+      [
+        1,
+        53
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f04",
+    "semantic_rationale": "`backlog-confirmed-without-predicate-measurement.json` accumulates three, five and eight historical incidents. It corrects an alleged four-file, twenty-one-line fatal failure to two files and four stdout lines; encoding repair, grep matches and attached commands do not prove the proposed predicate. Missing directory versus empty directory, truncated display versus full denominator, and confirmed status versus measured behavior must remain separate. Curator merges occurrences and evidence, then permits confirmed trust after elapsed bake time on the merge path; that is not independent behavioral replication. Pinned lessons are exempt from automatic lifecycle/trust changes, a defense worth retaining. The lifecycle still falls back to filesystem mtime if last_active_ts is absent, contrary to an overly categorical rejection of mtime in the historical discussion. Zeus must bind each promoted lesson to a reproducible oracle and provenance, with human experience acceptance separate. The proposal's eight incident claims and delivery failures are historical reports, not this review's executions.",
+    "supporting_ids": [
+      "s05"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1776,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-confirmed-without-predicate-measurement.json",
+      "git_blob": "be5f01b8b0c1c68755c81a131c5068fd2cbfa21a",
+      "mode": "100644",
+      "bytes": 10577,
+      "pinned_sha256": "057dd8ad4eb912a1e8eab2195f4828f2b28d79efeca0efce4650a13eef80d3f3",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "72e8990b195b5aaa0cf45a80a723b423903740eb20ef4ce2db0eca25d3e4bd73",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-console-audit-blind-to-heart.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "f41488f554a1a08302d50c7240206bd9e836125e",
+    "bytes": 17177,
+    "pinned_sha256": "94329ccf5d771628cb4d3e6771886d88ea4ca19004c521801d93c8002580dbba",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "94329ccf5d771628cb4d3e6771886d88ea4ca19004c521801d93c8002580dbba",
+    "manifest_sha256_status": "matched",
+    "line_count": 11,
+    "read_ranges": [
+      [
+        1,
+        11
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f05",
+    "semantic_rationale": "`backlog-console-audit-blind-to-heart.json` concerns Guardian, not Harness alone. The separately pinned Guardian console still filters pipeline_done and heart_promoted, uses a bound ledger before the canonical ledger, and tails forty matching rows. It skips malformed JSON lines silently; an unreadable ledger has an explicit error. The historical patch and simulated zero-to-thirty-one-to-thirty-nine event observations do not establish deployment in this pinned console. Increasing a tail from forty to eighty would not prove complete visibility or human reading. Exact event writer vocabulary and patch application are not fully closed here. Zeus should project typed PG events into a paginated audit view with omitted/malformed counts and authenticated actor identity; a session identifier is not approval authority. No Guardian live console or logs were accessed.",
+    "supporting_ids": [
+      "s07"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1777,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-console-audit-blind-to-heart.json",
+      "git_blob": "f41488f554a1a08302d50c7240206bd9e836125e",
+      "mode": "100644",
+      "bytes": 17177,
+      "pinned_sha256": "94329ccf5d771628cb4d3e6771886d88ea4ca19004c521801d93c8002580dbba",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "92de1169acc34ceb4bc01885a94bc156f5b2f878368cc5bb846364575efd0b18",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-container-bypasses-write-boundary.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "3d38798052e675a75a0a595595da739bd4764286",
+    "bytes": 5965,
+    "pinned_sha256": "69b0620224b0f77c203b4ec718c0523965bde9e226ac03782e96bf4df0bce416",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "69b0620224b0f77c203b4ec718c0523965bde9e226ac03782e96bf4df0bce416",
+    "manifest_sha256_status": "matched",
+    "line_count": 11,
+    "read_ranges": [
+      [
+        1,
+        11
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f06",
+    "semantic_rationale": "`backlog-container-bypasses-write-boundary.json` reports a historical writable-tree bypass and later read-only mounts. Pinned compose now mounts the tree read-only, but shares the whole state directory read-write between the inspected roles. The phrase own storage is narrower than this declaration. The mount contract is already repaired from a hardcoded two-role list to services derived from /harness mounts. Its declaration-only checks require :ro suffixes, one state mount and a healthcheck. They do not establish kernel enforcement, cross-role state isolation, alternative host mounts or long-form volume semantics. The inspected main contains three unconditional checks plus three per tree role and one per remaining service; actual service and execution denominators were not enumerated or run. Preserve zero-role rejection and derived coverage. Zeus requires process-level storage authority and PG roles in addition to editor hooks, with separate Windows/Linux/WSL container acceptance.",
+    "supporting_ids": [
+      "s08",
+      "s14"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1778,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-container-bypasses-write-boundary.json",
+      "git_blob": "3d38798052e675a75a0a595595da739bd4764286",
+      "mode": "100644",
+      "bytes": 5965,
+      "pinned_sha256": "69b0620224b0f77c203b4ec718c0523965bde9e226ac03782e96bf4df0bce416",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "9bf0f599d1817037122093b0337c6d67afc5bdc0ab0e577b9dc87eb6b3804944",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-contract-verifier-anchor-absent.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "ec39feb9e8712ba5635854e79d3883d440208e14",
+    "bytes": 7548,
+    "pinned_sha256": "5bfd480f4626c7a4c2c20e1cddd1aff9922f1fb1c79956b9e3b6bf188e784b5c",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "5bfd480f4626c7a4c2c20e1cddd1aff9922f1fb1c79956b9e3b6bf188e784b5c",
+    "manifest_sha256_status": "matched",
+    "line_count": 81,
+    "read_ranges": [
+      [
+        1,
+        81
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f07",
+    "semantic_rationale": "`backlog-contract-verifier-anchor-absent.json` retracts the self-ID textual anchor diagnosis: a real verifier can enforce a contract through callers without mentioning its ID. The historical nine-verifier audit distinguishes seven valid bindings and two wrong ones; C4 is reduced to partial rather than declared solved. Pinned lint now checks Python path, parseability and a top-level symbol, rejecting the old path-only form. Its own contract explicitly excludes semantic enforcement, so an unrelated existing symbol remains outside the protection. Another concrete connection matters: this primary has no standard evidence field, whereas backlog.candidates_from requires a nonempty evidence string. Its special historical evidence fields therefore do not enter that consumer. The kind value alone is not the filter. Zeus should preserve symbol freshness while requiring contract-to-oracle/caller mapping and recording dropped proposals. Ownership schema, all replacements and adversarial tests remain untraced; historical fourteen blocked substitutions are not current results.",
+    "supporting_ids": [
+      "s04",
+      "s11"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1779,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-contract-verifier-anchor-absent.json",
+      "git_blob": "ec39feb9e8712ba5635854e79d3883d440208e14",
+      "mode": "100644",
+      "bytes": 7548,
+      "pinned_sha256": "5bfd480f4626c7a4c2c20e1cddd1aff9922f1fb1c79956b9e3b6bf188e784b5c",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "03283594bf73d9ba86260286a46432720c00ed17fcd62d0540d4496ed885c172",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-contracts-invisible-to-evidence-accounting.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "7bdf7ae30c80608e4f71c9bee87671c50c74d4d4",
+    "bytes": 8559,
+    "pinned_sha256": "e4a9b0b967ebd5d7c90f8ac8ba0bcf2c1bc2309e42ef03fc55d0bc6ff32082d4",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "e4a9b0b967ebd5d7c90f8ac8ba0bcf2c1bc2309e42ef03fc55d0bc6ff32082d4",
+    "manifest_sha256_status": "matched",
+    "line_count": 18,
+    "read_ranges": [
+      [
+        1,
+        18
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f08",
+    "semantic_rationale": "`backlog-contracts-invisible-to-evidence-accounting.json` revises apparent test absence into output-accounting invisibility. Seventeen repaired suites, eighteen vacuous classifications and the reported assertion totals are historical populations. test_outcome counts recognized printed assertion lines; it detects rc=0 plus FAIL as silent_fail and rc=0 with neither assertions nor SKIP as vacuous. Timeout and infrastructure signatures are separate categories. These are useful defenses, but printed lines are not authenticated execution receipts, and aggregate totals cannot prove that an original oracle survived. The mount test's check helper makes the print-to-failure-list wiring concrete; the collector test uses the same style with mocked fetch. Zeus should retain explicit skip/unknown/empty distinctions while preserving original oracle identities and observed executions per case. Visibility-lint implementation and full runner closure were not read; no historical PASS was promoted.",
+    "supporting_ids": [
+      "s08",
+      "s09",
+      "s24"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1780,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-contracts-invisible-to-evidence-accounting.json",
+      "git_blob": "7bdf7ae30c80608e4f71c9bee87671c50c74d4d4",
+      "mode": "100644",
+      "bytes": 8559,
+      "pinned_sha256": "e4a9b0b967ebd5d7c90f8ac8ba0bcf2c1bc2309e42ef03fc55d0bc6ff32082d4",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "37bf3f74cdab2bf396b346dfec9cebb492cd08fd3827424b15c870b36df14347",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-core-gates-java-worded.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "d93707462edde326618f18585412e239333b8248",
+    "bytes": 10962,
+    "pinned_sha256": "8e6c40b0a07b6d885e163f4a1106383cb33981588168317f35e230eeacf86094",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "8e6c40b0a07b6d885e163f4a1106383cb33981588168317f35e230eeacf86094",
+    "manifest_sha256_status": "matched",
+    "line_count": 83,
+    "read_ranges": [
+      [
+        1,
+        83
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f09",
+    "semantic_rationale": "`backlog-core-gates-java-worded.json` moves from Java wording to missing executable arguments. Changing totals across the discussion cannot be combined into one denominator. Pinned check_gate_executable rejects missing authored arguments, dump failures and empty check/type populations, and checks catalog drift. It deliberately counts and prints derived deficits without returning them as errors. Consequently historical resolution of authoring lint does not implement the deferred derived gates. The inspected helper accepts numeric zero for value, a defense against truthiness mistakes. Runtime ERROR behavior is described in the source but its entire runner route was not independently closed here. Zeus should bind each user-defined SDD gate to its original oracle and platform-specific invocation, with deferred machine checks visibly unresolved. Java vocabulary alone neither proves a broken gate nor qualifies a substitute model or mock oracle.",
+    "supporting_ids": [
+      "s11"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1781,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-core-gates-java-worded.json",
+      "git_blob": "d93707462edde326618f18585412e239333b8248",
+      "mode": "100644",
+      "bytes": 10962,
+      "pinned_sha256": "8e6c40b0a07b6d885e163f4a1106383cb33981588168317f35e230eeacf86094",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "de0c827fe0895e2ff1bf0638398692f335d6bacadd2fd23f1d8981dedf8264a5",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-day-boundary-flaky-axes.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "1d2a0670d675c3a729831ae6ee50e52767ca9426",
+    "bytes": 6333,
+    "pinned_sha256": "6dec39df1ef0d6082a0556c05787307c1de5b92f64ab6287f3534a25c4805b2a",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "6dec39df1ef0d6082a0556c05787307c1de5b92f64ab6287f3534a25c4805b2a",
+    "manifest_sha256_status": "matched",
+    "line_count": 18,
+    "read_ranges": [
+      [
+        1,
+        18
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f10",
+    "semantic_rationale": "`backlog-day-boundary-flaky-axes.json` reports two failures near a day boundary, but only the board date-chip diagnosis is tied here to implementation. Pinned normalized_hash strips digits specifically in a pass freshness chip and Ready/Running in the scheduler value. It preserves different classes in those patterns, although the date pattern can match any identically shaped pass chip, not an independently identified freshness component. The source's four killed of five mutants with one equivalent case is not a full mutation PASS. Evidence-freshness cause remains unverified; unchanged source files do not hold all live inputs constant. Zeus should inject clocks and distinguish meaningful health transitions from display age. Clock fixtures, the second failure and actual OS scheduler behavior remain pending.",
+    "supporting_ids": [
+      "s12"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1782,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-day-boundary-flaky-axes.json",
+      "git_blob": "1d2a0670d675c3a729831ae6ee50e52767ca9426",
+      "mode": "100644",
+      "bytes": 6333,
+      "pinned_sha256": "6dec39df1ef0d6082a0556c05787307c1de5b92f64ab6287f3534a25c4805b2a",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "94f8590b3bd5398c506229bbf2e20c132033b3df7c667504a7d31e77df2285a7",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-debate-verdict-can-lose-its-lock-target.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "abf083b738429ebc7ef5111c9fab02dae933e979",
+    "bytes": 8144,
+    "pinned_sha256": "439ae45412438d0dc35c9092d01f0a362b63f7a3c618680498e98d84f85a8314",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "439ae45412438d0dc35c9092d01f0a362b63f7a3c618680498e98d84f85a8314",
+    "manifest_sha256_status": "matched",
+    "line_count": 18,
+    "read_ranges": [
+      [
+        1,
+        18
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f11",
+    "semantic_rationale": "`backlog-debate-verdict-can-lose-its-lock-target.json` describes Baldrix. Its eighty-five verdicts, fifty-five missing snapshots and thirty-four sessions are different historical denominators; missing snapshots are not fifty-five demonstrated failed debates. The actual conditional generation and a hypothetical approved generation must not be merged into a causal proof. Separately pinned Baldrix now detects terminal missing snapshots, preserves an explicit recoverable warning and rejects conflicting same-generation verdicts. Generation-one approval can converge without a snapshot, explicitly covered by an unexecuted test. The CLI records recoverable snapshot_missing but returns ERROR before appending convergence for terminal faults. Its existing-convergence replay returns error=None and skips reevaluation; later events and replay correctness need additional closure. Hash identity protects consistency, not quality, model qualification or human approval. Tests read here cover eight functions with injected events and temporary stores, not real independent debate or execution. Zeus should validate write-time required fields and permit only typed, authorized supersession rather than treating append-only storage as necessarily unrepairable.",
+    "supporting_ids": [
+      "s15",
+      "s22",
+      "s23"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1783,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-debate-verdict-can-lose-its-lock-target.json",
+      "git_blob": "abf083b738429ebc7ef5111c9fab02dae933e979",
+      "mode": "100644",
+      "bytes": 8144,
+      "pinned_sha256": "439ae45412438d0dc35c9092d01f0a362b63f7a3c618680498e98d84f85a8314",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "e6dd17e63097d8ed83f8f3bdb84d4cd5dac40e51904335347f131280cd4fc8d5",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-description-chars-counts-markup-not-content.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "8ce22cb4906de5fa81097aca0538b9fb8ceba545",
+    "bytes": 21987,
+    "pinned_sha256": "4c219c28835ae2790571a45839935f2e82354a7764b993324ea31ec973a54862",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "4c219c28835ae2790571a45839935f2e82354a7764b993324ea31ec973a54862",
+    "manifest_sha256_status": "matched",
+    "line_count": 11,
+    "read_ranges": [
+      [
+        1,
+        11
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f12",
+    "semantic_rationale": "`backlog-description-chars-counts-markup-not-content.json` distinguishes escaped raw length, decoded text and human-relevant content. Historical 3.5-fold inflation is not a stable conversion factor. Later chapter-line exclusion changes the definition of author prose relative to earlier examples, so those lengths cannot silently share one denominator. Pinned probe_youtube still returns raw matched description length; generic _text_len removes tags and folds whitespace but does not isolate substantive page content. Chapter labels and descriptions may share source content, but the inspected return does not numerically add chapter count to character count. The stronger finding is mixed semantics and duplicated evidence provenance, not proven numeric double addition. Positive cache entries never age out. Zeus needs explicit unit, parser version and source span; relevance and actual human comprehension cannot be inferred from length.",
+    "supporting_ids": [
+      "s16"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1784,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-description-chars-counts-markup-not-content.json",
+      "git_blob": "8ce22cb4906de5fa81097aca0538b9fb8ceba545",
+      "mode": "100644",
+      "bytes": 21987,
+      "pinned_sha256": "4c219c28835ae2790571a45839935f2e82354a7764b993324ea31ec973a54862",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "a75280a1d9fd58133bcea640dfc95dbbba9a53389dc15b87fcbaf21115048a4a",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-entrance-has-no-reconfirm.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "6f773701d6bdbd7e8205e06b0b56840f43373442",
+    "bytes": 15265,
+    "pinned_sha256": "95601fb6e3ea65ae246e694652490afe83ff579e1ef94050190f6523036fe8d0",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "95601fb6e3ea65ae246e694652490afe83ff579e1ef94050190f6523036fe8d0",
+    "manifest_sha256_status": "matched",
+    "line_count": 29,
+    "read_ranges": [
+      [
+        1,
+        29
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f13",
+    "semantic_rationale": "`backlog-entrance-has-no-reconfirm.json` reports an irreversible initial rejection and later places retries in apply_via_sandbox rather than the shared run_suites. Pinned implementation already has that repair; mutation still calls the shared function for baseline and mutant runs. A substantive mismatch remains: sandbox computes intersection across all retry failure sets, so one successful retry removes a suite from firm; its comment says any repeated failure remains firm. suite_cmd instead relabels only when all retries are green. Neither sandbox deferral nor a red_unknown label is promotion, so this mismatch is not demonstrated false acceptance. run_suites judges exit codes rather than test_outcome assertion counts; timeout exceptions propagate in the inspected function. Zero discovered suites fail closed, while a nonempty only filter with no matching files returns an empty result. Parking after green suites still requires later approval; notification failure is fail-open and reported. Zeus must retain immutable attempt receipts, stable suite identities, explicit retry aggregation and original-oracle preservation. No denied probe was repeated, and historical randomness/concurrency attribution was not reproduced.",
+    "supporting_ids": [
+      "s10",
+      "s20",
+      "s21"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1785,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-entrance-has-no-reconfirm.json",
+      "git_blob": "6f773701d6bdbd7e8205e06b0b56840f43373442",
+      "mode": "100644",
+      "bytes": 15265,
+      "pinned_sha256": "95601fb6e3ea65ae246e694652490afe83ff579e1ef94050190f6523036fe8d0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "c4d43dde7b4a47d07e9effa75e3c96a7a1fe7316bd09ff647d9ed93f10416b46",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-evaluator-card-read-only-owns-writing-stage.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "b4638639538d16bf0c9af0d783d68fb86579120d",
+    "bytes": 8521,
+    "pinned_sha256": "63df1a3380544843f65feb5803a6161e1d9964031abf61af34c6a2ba60b7d8f6",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "63df1a3380544843f65feb5803a6161e1d9964031abf61af34c6a2ba60b7d8f6",
+    "manifest_sha256_status": "matched",
+    "line_count": 11,
+    "read_ranges": [
+      [
+        1,
+        11
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f14",
+    "semantic_rationale": "`backlog-evaluator-card-read-only-owns-writing-stage.json` uses ledger material that includes an agent's own tool-capability report. Ledger location does not transform self-report into an actual spawn/tool receipt. The pinned evaluator declares Read, Bash and Grep, read-only risk, ownership of tests and gate event output. Bash can perform writes, so this card alone is not a process write boundary. A read-only evaluator can legitimately produce an assessment that a coordinator persists; an output path does not itself prove it needs Write. The historical three-of-twenty-five structured outputs may exclude other output shapes. Actual card-to-spawn binding and event writers remain untraced. Zeus should separate observation from authorized persistence and qualify the model for the concrete task; fable is a declaration, not qualification evidence.",
+    "supporting_ids": [
+      "s13"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1786,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-evaluator-card-read-only-owns-writing-stage.json",
+      "git_blob": "b4638639538d16bf0c9af0d783d68fb86579120d",
+      "mode": "100644",
+      "bytes": 8521,
+      "pinned_sha256": "63df1a3380544843f65feb5803a6161e1d9964031abf61af34c6a2ba60b7d8f6",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "d0ecba88266a2f99b84e1e9ae33741cf25fe45fa3bcbabf395d6b4032407c2dc",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  },
+  {
+    "source": "harness",
+    "path": "brain/proposed/backlog-feed-lang-window-have-no-consumer.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "2663395429437499bbab4d28c582ee363edced42",
+    "bytes": 24191,
+    "pinned_sha256": "b9e71eeb21a4e8642ad5fedce9abf88847c9bc742250f7d999684c2f7527d516",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "b9e71eeb21a4e8642ad5fedce9abf88847c9bc742250f7d999684c2f7527d516",
+    "manifest_sha256_status": "matched",
+    "line_count": 23,
+    "read_ranges": [
+      [
+        1,
+        23
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "partition": "harness:brain/proposed:002",
+    "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+    "status": "body_reviewed_call_test_trace_pending",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/harness-proposed-002/review.md#f15",
+    "semantic_rationale": "`backlog-feed-lang-window-have-no-consumer.json` mixes machine field use, human reading and external project claims. Pinned collector pairs independent repo/language lists only when counts match; this avoids truncation but does not prove association if order diverges. The mocked collector fixture tests two ordered languages and a missing-language case, not equal-length misalignment or current remote markup. research_queue windows use captured_at timestamps, distinct from the collector's trending window field. digest preserves entire recent/flagged rows and external trust, so lang/window can remain available to readers even without explicit keyed lookup. A zero machine-consumer claim is bounded to inspected code, not zero human impact. Queue append precedes watermark update, preventing one loss direction but leaving replay duplication after a crash between writes. Missing captured_at can be requeued indefinitely. Zeus should bind source identity and cursor receipts in PG, preserve external trust and distinguish language from stack, license and model capability. No external article, license body, API or package was freshly fetched; those source claims remain unverified.",
+    "supporting_ids": [
+      "s17",
+      "s18",
+      "s19",
+      "s24"
+    ],
+    "prior_ledger_path": "docs/full-analysis/path-ledger.json",
+    "prior_ledger_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_row_index": 1787,
+    "prior_row": {
+      "source": "harness",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "path": "brain/proposed/backlog-feed-lang-window-have-no-consumer.json",
+      "git_blob": "2663395429437499bbab4d28c582ee363edced42",
+      "mode": "100644",
+      "bytes": 24191,
+      "pinned_sha256": "b9e71eeb21a4e8642ad5fedce9abf88847c9bc742250f7d999684c2f7527d516",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_row_sha256": "12e949264b3d1f8895a62279709cb63769729aa51cb37ec517a7c8baac698d5b",
+    "remaining": "Transitive call/test closure and original execution pending; see review.",
+    "adoption_approved": false
+  }
+]

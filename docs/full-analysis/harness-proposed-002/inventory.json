@@ -1,0 +1,68 @@
+{
+  "partition": "harness:brain/proposed:002",
+  "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+  "bytes": 190115,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-chapter-count-off-by-one.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-cohesion-churn-no-recency.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-completion-verdict-evaporates.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-confirmed-without-predicate-measurement.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-console-audit-blind-to-heart.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-container-bypasses-write-boundary.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-contract-verifier-anchor-absent.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-contracts-invisible-to-evidence-accounting.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-core-gates-java-worded.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-day-boundary-flaky-axes.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-debate-verdict-can-lose-its-lock-target.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-description-chars-counts-markup-not-content.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-entrance-has-no-reconfirm.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-evaluator-card-read-only-owns-writing-stage.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-feed-lang-window-have-no-consumer.json"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

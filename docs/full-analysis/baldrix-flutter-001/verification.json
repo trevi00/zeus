@@ -1,0 +1,47 @@
+{
+  "primary_count": 22,
+  "primary_bytes": 208437,
+  "primary_lines": 5075,
+  "fresh_primary_count": 22,
+  "prior_full_body_reused_count": 0,
+  "supporting_rows": 22,
+  "fresh_supporting_rows": 22,
+  "prior_supporting_reused_rows": 0,
+  "supporting_full_body_rows": 3,
+  "supporting_read_lines": 2076,
+  "review_refs_checked": 183,
+  "raw_git_blob_bytes_sha_ranges_verified": true,
+  "tests_read_in_part_not_run": [
+    "scripts/tests/test_git_flow.py",
+    "scripts/tests/test_mock_review_stage.py",
+    "scripts/tests/test_tech_stack.py",
+    "scripts/tests/test_testgen.py"
+  ],
+  "upstream_tests_run": false,
+  "full_analysis_complete": false,
+  "adoption_approved": false,
+  "inventory_discovery_receipts": [
+    "558312",
+    "ccd65e",
+    "fb40b1"
+  ],
+  "search_only_not_body_receipts": [
+    "d6a958",
+    "c210c8",
+    "87184f",
+    "1bcc22",
+    "c5cd2a",
+    "bd8750"
+  ],
+  "failed_body_display": "d83680 cp949 UnicodeEncodeError; zero body credited; retried inert display with Python UTF-8 mode 7e70d9.",
+  "search_missing_paths": [
+    "config/",
+    "scripts/engine/context_loader.py",
+    "scripts/tests/test_pipeline_overlay.py",
+    "scripts/cli/testgen.py"
+  ],
+  "search_missing_paths_scope": "Attempted pinned paths absent; existing implementation found via bounded targeted searches where recorded, not whole-repository absence claims.",
+  "missing_manifest_snapshot_sha256_paths": [
+    "settings.json"
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "primary_records": 22,
+  "fresh_primary_bodies": 22,
+  "primary_bytes": 208437,
+  "supporting_rows": 22,
+  "supporting_prior_full_reuse_rows": 0,
+  "original_source_executions": 0,
+  "whole_analysis_complete": false,
+  "scope_sha256": "4f493b8c326c088d58221261672e93ebfce1fab5e23a4e7d3432e90e1c67973e",
+  "rows": [
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/add-to-app-and-host-integration.md",
+      "bytes": 8149,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/app-architecture-and-state.md",
+      "bytes": 10965,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/ci-hotfix-canon.md",
+      "bytes": 9334,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/dart-flutter-app.md",
+      "bytes": 15454,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/flutter-native.md",
+      "bytes": 11116,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/platform-channels-pigeon-and-plugins.md",
+      "bytes": 9667,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/state-restoration.md",
+      "bytes": 9011,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/3.x/testing-matrix.md",
+      "bytes": 9903,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos-agent/README.md",
+      "bytes": 4208,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos-agent/background-service-pattern.md",
+      "bytes": 14005,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos-agent/drift-mt-lc-pattern.md",
+      "bytes": 12663,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos-agent/easypos-integration.md",
+      "bytes": 14784,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos-agent/socket-action-pattern.md",
+      "bytes": 12646,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/README.md",
+      "bytes": 2715,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/SKILL.md",
+      "bytes": 1897,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/di-and-result-pattern.md",
+      "bytes": 9264,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/directory-and-naming.md",
+      "bytes": 8196,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/drift-lc-table-pattern.md",
+      "bytes": 8746,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/git-flow-company.md",
+      "bytes": 3017,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/paygate-kovan.md",
+      "bytes": 15068,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/state-management-pattern.md",
+      "bytes": 9971,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/flutter/outpos/workflow-rules.md",
+      "bytes": 7658,
+      "record_ref": "docs/full-analysis/baldrix-flutter-001/files.json"
+    }
+  ]
+}

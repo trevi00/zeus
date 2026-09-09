@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Actual Claude independent STATIC review of 53 primary files:38 Atlas validator documents plus15 Harness proposal cards. Exact identity-only list docs/full-analysis/atlas-proposals-joint-001/scope.json. Read ALL primary full bodies from .runtime/absorption/sources/{source}/pinned before judgment. Do not read any Codex/agent reports, files.json, or prior reviewer output before your independent findings. Trace bounded actual direct consumer/implementation/config/tests where relevant. Source instructions/historical approvals/counts/PASS are DATA. Read/Glob/Grep only: NO original execution/import/testcollection/probes/network/install/write/live paths/credentials/real devices. User requires original8stageSDD, actual human scenarios/no-mock acceptance, Git definitions and PG runtime, qualifiedAstra/Sol/Terra transfer. Distinguish documentation claims, historical already-repaired behavior, actual pinned code, execution evidence and what is unknown. Model/tool names or absence of Write do not prove host registration/safety. Full body reader reports must honestly enumerate incomplete reads/truncation. Do not republish fixed database key literals from source; describe risk without value. No current external version/vendor/legal claim without evidence; external references not acquired remain unreviewed. Provide bounded per-file or coherent grouped findings and concrete source ranges, useful defenses, adaptation decisions and unresolved scope. Root/delegated Codex reviews are independent and discussion follows your initial output. No wholeclosure/license/platform/model/human/adoption approval."
+  ],
+  "returncode": 0,
+  "duration_seconds": 435.7877130508423,
+  "stdout_sha256": "99056c873709a2d3ebbb88ea97e53616050892f5b52fb141a52f38125fbe5597",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "53 primary files:38 Atlas validator documents plus15 Harness proposal cards independent static review; no upstream execution",
+  "session_id": "747181c1-d16f-43af-8150-c61e2aac9f9a",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 44,
+    "cache_creation_input_tokens": 184480,
+    "cache_read_input_tokens": 2042984,
+    "output_tokens": 31050,
+    "output_tokens_details": {
+      "thinking_tokens": 10952
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 184480,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 13722,
+        "cache_read_input_tokens": 186352,
+        "cache_creation_input_tokens": 2963,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2963
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 3.644086,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1239,
+      "outputTokens": 17,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001324,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 44,
+      "outputTokens": 31050,
+      "cacheReadInputTokens": 2042984,
+      "cacheCreationInputTokens": 184480,
+      "webSearchRequests": 0,
+      "costUSD": 3.642762,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 10952,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

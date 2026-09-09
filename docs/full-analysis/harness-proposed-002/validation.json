@@ -1,0 +1,15 @@
+{
+  "metadata_validation": "pass",
+  "primary": 15,
+  "supporting": 24,
+  "primary_bytes": 190115,
+  "original_execution": 0,
+  "checks": [
+    "UTF-8 and readable ASCII prose",
+    "exactly one LF and no trailing spaces",
+    "raw SHA-256, Git blob, bytes, line ranges",
+    "prior row identities",
+    "real report anchors and checkpoint hashes"
+  ],
+  "limits": "Metadata checks do not execute upstream tests or prove behavioral closure."
+}

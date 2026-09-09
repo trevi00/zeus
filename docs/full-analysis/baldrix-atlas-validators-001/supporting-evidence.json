@@ -1,0 +1,457 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "pinned_bytes": 4480,
+    "manifest_bytes": 4480,
+    "line_count": 123,
+    "read_ranges": [
+      [
+        1,
+        123
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 123,
+        "raw_range_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "full",
+    "tool_output_chunk": "338d60",
+    "primary_indexes": [
+      1,
+      26,
+      32,
+      33,
+      34
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-01"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/staging_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "de32bcaeeed01bee870dcfb00f17e742f20c474e",
+    "pinned_sha256": "bf6921ecd370863495dea2f60dd5957e736396e9eafed0d2ff2f571dcccfbec9",
+    "pinned_bytes": 2966,
+    "manifest_bytes": 2966,
+    "line_count": 83,
+    "read_ranges": [
+      [
+        1,
+        83
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 83,
+        "raw_range_sha256": "bf6921ecd370863495dea2f60dd5957e736396e9eafed0d2ff2f571dcccfbec9"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "full",
+    "tool_output_chunk": "338d60",
+    "primary_indexes": [
+      27,
+      31,
+      36,
+      38
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-27"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/insight_index.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "787264423988ceb1aab29346170fec24dab5627f",
+    "pinned_sha256": "e95138a02fc2e008cb9cf668e8b8351fbf40b839b309f16574db1bdb76a83737",
+    "pinned_bytes": 18408,
+    "manifest_bytes": 18408,
+    "line_count": 436,
+    "read_ranges": [
+      [
+        88,
+        152
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 88,
+        "end": 152,
+        "raw_range_sha256": "11e49fe1280fa26b1196c64be9f6acba75d04444a7d8774a376e730d85bc9e5b"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "partial",
+    "tool_output_chunk": "338d60",
+    "primary_indexes": [
+      17,
+      30,
+      35,
+      37
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-17"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/run_all.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5847db0d9d93272a17411be61b016449dd19de5d",
+    "pinned_sha256": "a1d1a5e37a22758d1579ac439cad844c113208daf44ca73ca6998fc3f3dce9ee",
+    "pinned_bytes": 13346,
+    "manifest_bytes": 13346,
+    "line_count": 304,
+    "read_ranges": [
+      [
+        166,
+        279
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 166,
+        "end": 279,
+        "raw_range_sha256": "54887d8488424354be8ace88bc5ac5cb24bf319373303990cea0747d80cc1f4b"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "partial",
+    "tool_output_chunk": "338d60",
+    "primary_indexes": [
+      1,
+      32,
+      33,
+      34
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-01"
+  },
+  {
+    "source": "baldrix",
+    "path": ".github/workflows/ci.yml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "0328c959342c2411d3b04bc95e0bb7c8f4ac7dd1",
+    "pinned_sha256": "b6fa9579c707a4858812b5cc83f3e69a176e4cab4ead6aa5aca2256a32fd13dd",
+    "pinned_bytes": 2778,
+    "manifest_bytes": 2778,
+    "line_count": 88,
+    "read_ranges": [
+      [
+        1,
+        88
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 88,
+        "raw_range_sha256": "b6fa9579c707a4858812b5cc83f3e69a176e4cab4ead6aa5aca2256a32fd13dd"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "full",
+    "tool_output_chunk": "338d60",
+    "primary_indexes": [
+      1,
+      4,
+      33,
+      34
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-01"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/atlas_index.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "caa7298479029753d18ef9a367f58d7ee4410c9f",
+    "pinned_sha256": "96480f7d4989453fe73e48d9cb4066c6a5854eb5c913ab3d54e4867cb8a1e8de",
+    "pinned_bytes": 27311,
+    "manifest_bytes": 27311,
+    "line_count": 694,
+    "read_ranges": [
+      [
+        49,
+        94
+      ],
+      [
+        202,
+        231
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 49,
+        "end": 94,
+        "raw_range_sha256": "b0877be6988bfe5c97e8c57f518d6876061aa9d758715cb771f9a4c3ac817218"
+      },
+      {
+        "start": 202,
+        "end": 231,
+        "raw_range_sha256": "1e1dca2aeb155104fe6c6af1c290190226f18e1da5d92c9e6371ef58c53fdc79"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "partial",
+    "tool_output_chunk": "539dbc",
+    "primary_indexes": [
+      1,
+      2,
+      3
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-01"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/validate_project.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c75497d93b42ee5b95b9f047596ec8b3201a71f4",
+    "pinned_sha256": "1b4f6c5ea9c010ab50a835c24d6bd5610ffd7c811f9f5200a4dae14d310b1d3b",
+    "pinned_bytes": 9584,
+    "manifest_bytes": 9584,
+    "line_count": 279,
+    "read_ranges": [
+      [
+        43,
+        76
+      ],
+      [
+        142,
+        199
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 43,
+        "end": 76,
+        "raw_range_sha256": "f34122405b4a06b40e0fc6e49c375a381c8bd8cd2d65d6e8dd9f79dcb7bd094f"
+      },
+      {
+        "start": 142,
+        "end": 199,
+        "raw_range_sha256": "ac6528d1ed6705bd48ec759009c5325f5acb7fa384f445d922a29faa177f2a55"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "partial",
+    "tool_output_chunk": "539dbc",
+    "primary_indexes": [
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      11,
+      12,
+      18,
+      20,
+      21,
+      23,
+      29,
+      32,
+      33
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-04"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_atlas_frontmatter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "a15d2f091f972b0b6cb042fbf4c7c87c84649d51",
+    "pinned_sha256": "3b9d5996a4ab75b4d4d1bd394241305bdd8caf385ae76635ebc75956ea7c6b87",
+    "pinned_bytes": 3620,
+    "manifest_bytes": 3620,
+    "line_count": 115,
+    "read_ranges": [
+      [
+        1,
+        115
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 115,
+        "raw_range_sha256": "3b9d5996a4ab75b4d4d1bd394241305bdd8caf385ae76635ebc75956ea7c6b87"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "full",
+    "tool_output_chunk": "539dbc",
+    "primary_indexes": [
+      2
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-02"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_staging_guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "4fb56af049f180dea267180481f9343c78505135",
+    "pinned_sha256": "a86fff8116e0b11270bab93016ae1e662cf0321299b00953470b5c86ad5cc202",
+    "pinned_bytes": 4257,
+    "manifest_bytes": 4257,
+    "line_count": 128,
+    "read_ranges": [
+      [
+        1,
+        128
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 128,
+        "raw_range_sha256": "a86fff8116e0b11270bab93016ae1e662cf0321299b00953470b5c86ad5cc202"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "full",
+    "tool_output_chunk": "539dbc",
+    "primary_indexes": [
+      27,
+      31,
+      36,
+      38
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-27"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/paths.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "pinned_bytes": 13699,
+    "manifest_bytes": 13699,
+    "line_count": 257,
+    "read_ranges": [
+      [
+        190,
+        240
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 190,
+        "end": 240,
+        "raw_range_sha256": "2952c0bd4d625f81b00a73d301bf2130b0ef1f63fcee61d1f53bc47271576904"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "read_method": "fresh supporting ranges",
+    "read_extent": "partial",
+    "tool_output_chunk": "539dbc",
+    "primary_indexes": [
+      1,
+      2,
+      3
+    ],
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-01"
+  }
+]

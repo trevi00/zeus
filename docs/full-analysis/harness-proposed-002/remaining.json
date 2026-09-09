@@ -1,0 +1,19 @@
+{
+  "unread_primary": [],
+  "full_transitive_closure": false,
+  "original_executions": 0,
+  "actual_claude": false,
+  "license": false,
+  "os_validated": false,
+  "model_qualified": false,
+  "human_acceptance": false,
+  "adoption_approved": false,
+  "unknowns": [
+    "All resolution/authentication writers",
+    "Guardian deployment and event writers",
+    "Full verifier ownership and test closure",
+    "Evidence freshness failure cause",
+    "Card-to-spawn capabilities",
+    "All feed consumers and external source bodies"
+  ]
+}

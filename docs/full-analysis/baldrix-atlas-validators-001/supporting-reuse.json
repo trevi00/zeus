@@ -1,0 +1,3317 @@
+[
+  {
+    "path": "scripts/validators/__init__.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/__init__.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+      "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+      "pinned_bytes": 4480,
+      "manifest_bytes": 4480,
+      "line_count": 123,
+      "read_ranges": [
+        [
+          1,
+          123
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 123,
+          "raw_range_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/__init__.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+      "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+      "manifest_bytes": 4480,
+      "pinned_bytes": 4480,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 123,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#__init__.py",
+      "semantic_review": {
+        "analysis": "main()->None stdout PASS/FAIL, never-raises/cwd contract 문서. 실제 get_validator dynamic import+호출은 예외를 막지 않고 반환값을 run_validator에서 폐기한다. graduated import 오류는 빈 목록으로 fail-open하여 blocking validator가 사라질 수 있다. 본문 독해 후 정적 literal 집계로 builtin37개 확인; 실제 graduated 등록/운영 실행 수는 미확인. graduated scan 일부 HIGH만 계산하는 범위를 일반 전체 검증과 구분. 원본 verify port 1:1 주장 원본 동등성 미확인.",
+        "historical_review_ref": "checkpoint-notes.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: main()->None stdout PASS/FAIL, never-raises/cwd contract 문서. 실제 get_validator dynamic import+호출은 예외를 막지 않고 반환값을 run_validator에서 폐기한다. graduated import 오류는 빈 목록으로 fail-open하여 blocki",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "package registry functions",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "importlib",
+        "lib.graduation",
+        "typing",
+        "validators"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        123
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "__init__.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/atlas_frontmatter.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/atlas_frontmatter.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a54357d9e641e2966b3439c54ff5c2413ed92ebd",
+      "pinned_sha256": "bb991e8923e99d7c0326d1f26d650693ec69ebfbd4c17f859fe8f0d6a83349bf",
+      "pinned_bytes": 6595,
+      "manifest_bytes": 6595,
+      "line_count": 185,
+      "read_ranges": [
+        [
+          1,
+          185
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 185,
+          "raw_range_sha256": "bb991e8923e99d7c0326d1f26d650693ec69ebfbd4c17f859fe8f0d6a83349bf"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/atlas_frontmatter.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a54357d9e641e2966b3439c54ff5c2413ed92ebd",
+      "pinned_sha256": "bb991e8923e99d7c0326d1f26d650693ec69ebfbd4c17f859fe8f0d6a83349bf",
+      "manifest_bytes": 6595,
+      "pinned_bytes": 6595,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 185,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#atlas_frontmatter.py",
+      "semantic_review": {
+        "analysis": "ATLAS_DIR importedassetpath 고정, cwd계약과다름. doc enum에없는 procedure 허용. date regex는달력유효성/순서안봄WARN, id정규식underscore허용하며중복ID안봄. globs truthystring도통과하므로list계약미강제. supersedes는실target검사없이항상manualWARN, Consequences도WARN, deprecated superseded_by 존재/의미검사없음. meta타입을str가정 .strip예외, parser/IO오류uncaught. warnings있어도overallPASS. 지원 frontmatter 1–62 전문 확인 후 보충: 현재 parser는str값만반환하고읽기오류를None으로바꾸므로 일반실경로의non-str .strip예외는현재parser에서발생한다고확정하지않는다. 실결함은list계약과strparser불일치이며quoted YAMLvalue도정규화하지않는다.",
+        "historical_review_ref": "checkpoint-notes.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: ATLAS_DIR importedassetpath 고정, cwd계약과다름. doc enum에없는 procedure 허용. date regex는달력유효성/순서안봄WARN, id정규식underscore허용하며중복ID안봄. globs truthystring도통과하므로list계약미강제. supersedes는실target검사없이항",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.atlas_frontmatter and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "lib.frontmatter",
+        "lib.paths",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        185
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "atlas_frontmatter.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/atlas_structure.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/atlas_structure.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "ac2085b7b59689398f78cd3231f5dfd368519960",
+      "pinned_sha256": "033b1ef0ff65a5b55e38064590ac9c88c9b80b9316ccf28dc4c4d0de2094a9bd",
+      "pinned_bytes": 6161,
+      "manifest_bytes": 6161,
+      "line_count": 176,
+      "read_ranges": [
+        [
+          1,
+          176
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 176,
+          "raw_range_sha256": "033b1ef0ff65a5b55e38064590ac9c88c9b80b9316ccf28dc4c4d0de2094a9bd"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/atlas_structure.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "ac2085b7b59689398f78cd3231f5dfd368519960",
+      "pinned_sha256": "033b1ef0ff65a5b55e38064590ac9c88c9b80b9316ccf28dc4c4d0de2094a9bd",
+      "manifest_bytes": 6161,
+      "pinned_bytes": 6161,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 176,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#atlas_structure.py",
+      "semantic_review": {
+        "analysis": "registry없음/읽기실패/빈parse면도메인정합검사전체생략. depth code는dir component수로문서file포함깊이와달라예시domain/sub/type/file이3; depth4조건은registered첫segment만확인해type/subdir구조검사안함. DEPTH_BASELINE/MAX,base_depth인자미사용. md파일만capacity,시스템dirskip은domaincount만 depth/cap전체. arbitrarycommunity30/50근거외부원문미확인. filesystemerroruncaught/stdinreconfigure문제.",
+        "historical_review_ref": "checkpoint-notes.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: registry없음/읽기실패/빈parse면도메인정합검사전체생략. depth code는dir component수로문서file포함깊이와달라예시domain/sub/type/file이3; depth4조건은registered첫segment만확인해type/subdir구조검사안함. DEPTH_BASELINE/MAX,base_depth",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.atlas_structure and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "lib.paths",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        176
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "atlas_structure.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/ci.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/ci.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "6f133b0a0118001eb7c5adb0b3b3b47e9a60798c",
+      "pinned_sha256": "71d46ac6739bddbf36dc8f894680c4ad4b39b8ba1a86d9bb4d462fba6b300cd8",
+      "pinned_bytes": 7503,
+      "manifest_bytes": 7503,
+      "line_count": 197,
+      "read_ranges": [
+        [
+          1,
+          197
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 197,
+          "raw_range_sha256": "71d46ac6739bddbf36dc8f894680c4ad4b39b8ba1a86d9bb4d462fba6b300cd8"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/ci.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "6f133b0a0118001eb7c5adb0b3b3b47e9a60798c",
+      "pinned_sha256": "71d46ac6739bddbf36dc8f894680c4ad4b39b8ba1a86d9bb4d462fba6b300cd8",
+      "manifest_bytes": 7503,
+      "pinned_bytes": 7503,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 197,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#ci.py",
+      "semantic_review": {
+        "analysis": "YAMLparser없음, anywhere push/pull_request/test/tool단어(주석/이름포함)로실행확인문구. ci.yml fallback이면trigger없어도CI인식, definedtriggerregex미사용. missingworkflowsPASS; filesreaderrorsignore/Unicodebytesignore. uvonly validPythonworkflow는toolregex에서미인식가능. 각CIfile에모든projecttype요구하여분리job오탐. keywordcoverage≠realcoverage/pass, no run/permissions/pinnedactions/skip/pathfiltercheck. mainNone/processexit0.",
+        "historical_review_ref": "checkpoint-notes.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: YAMLparser없음, anywhere push/pull_request/test/tool단어(주석/이름포함)로실행확인문구. ci.yml fallback이면trigger없어도CI인식, definedtriggerregex미사용. missingworkflowsPASS; filesreaderrorsignore/Unicodeby",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.ci and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        197
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "ci.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/codegen.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/codegen.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "13b42471452a1a38d5be7f22f80f36beca77316c",
+      "pinned_sha256": "cac920d6267156ea169490cac2359d5d4706ad99165e62e084a0bda003deff4e",
+      "pinned_bytes": 8174,
+      "manifest_bytes": 8174,
+      "line_count": 217,
+      "read_ranges": [
+        [
+          1,
+          217
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 217,
+          "raw_range_sha256": "cac920d6267156ea169490cac2359d5d4706ad99165e62e084a0bda003deff4e"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/codegen.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "13b42471452a1a38d5be7f22f80f36beca77316c",
+      "pinned_sha256": "cac920d6267156ea169490cac2359d5d4706ad99165e62e084a0bda003deff4e",
+      "manifest_bytes": 8174,
+      "pinned_bytes": 8174,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 217,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#codegen.py",
+      "semantic_review": {
+        "analysis": "Java src없으면PASS. ControllerServiceRepository명관례강제; DI패턴못찾으면PASSinfo, comment/stringregex가능. simpleclassname충돌FQCNoverwrite, XMLregexnamespace뿐method/SQL/실행검증아님. Mybatis XML없음FAIL이annotationmapper를고려안함. API endpoint/Controllerannotation 개수비는서로다른분모(class RequestMapping포함,pathoperation별다름), warnings라설명한부족도실FAIL. only첫spec경로, noerrorscatch, allmainNone.",
+        "historical_review_ref": "checkpoint-notes.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: Java src없으면PASS. ControllerServiceRepository명관례강제; DI패턴못찾으면PASSinfo, comment/stringregex가능. simpleclassname충돌FQCNoverwrite, XMLregexnamespace뿐method/SQL/실행검증아님. Mybatis XML없음FAIL이a",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.codegen and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "codegen.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/collab.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/collab.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "90be5a782e57c98045f135751e9293bca5b5ad65",
+      "pinned_sha256": "9c35400edadcd0d80a87139a6cee6b7f2ee7b2516609676b8b72a7b01fc9d968",
+      "pinned_bytes": 2368,
+      "manifest_bytes": 2368,
+      "line_count": 68,
+      "read_ranges": [
+        [
+          1,
+          68
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 68,
+          "raw_range_sha256": "9c35400edadcd0d80a87139a6cee6b7f2ee7b2516609676b8b72a7b01fc9d968"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/collab.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "90be5a782e57c98045f135751e9293bca5b5ad65",
+      "pinned_sha256": "9c35400edadcd0d80a87139a6cee6b7f2ee7b2516609676b8b72a7b01fc9d968",
+      "manifest_bytes": 2368,
+      "pinned_bytes": 2368,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 68,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#collab.py",
+      "semantic_review": {
+        "analysis": ".github 없으면PASS, 있으면 workflow 파일 존재만FAIL/PASS. CODEOWNERS/PR template/CONTRIBUTING은 위치 하나만보고WARN. 파일존재는 실CI/branchprotection/코드오너인수가 아님. stdin/out reconfigure importtime무조건; subprocess/stdinNone/redirectStringIO에서오류가능.",
+        "historical_review_ref": "checkpoint-notes.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: .github 없으면PASS, 있으면 workflow 파일 존재만FAIL/PASS. CODEOWNERS/PR template/CONTRIBUTING은 위치 하나만보고WARN. 파일존재는 실CI/branchprotection/코드오너인수가 아님. stdin/out reconfigure importtime무조건; subpro",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.collab and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        68
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "collab.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/commit_layer_adjacency.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/commit_layer_adjacency.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "314de264867a5e9a5d0f59eaec6f5f0b5707e882",
+      "pinned_sha256": "2dfab623751dcf684091299646c4a9edddcc35a11d11276b5828981898730971",
+      "pinned_bytes": 6705,
+      "manifest_bytes": 6705,
+      "line_count": 200,
+      "read_ranges": [
+        [
+          1,
+          200
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 200,
+          "raw_range_sha256": "2dfab623751dcf684091299646c4a9edddcc35a11d11276b5828981898730971"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/commit_layer_adjacency.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "314de264867a5e9a5d0f59eaec6f5f0b5707e882",
+      "pinned_sha256": "2dfab623751dcf684091299646c4a9edddcc35a11d11276b5828981898730971",
+      "manifest_bytes": 6705,
+      "pinned_bytes": 6705,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 200,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#commit_layer_adjacency.py",
+      "semantic_review": {
+        "analysis": "AstImport가여러alias중첫internal만봐lib,cli조합에서뒤reverse누락. 모든relative를intralayer가정level2이상crosslayer누락;dynamicimport/subprocess안봄. staged목록을얻고indexblob대신workingfile읽어정확staged내용검증아님. no-staged는lastcommit변경만봐unstaged/untracked누락;rootcommitHEAD~1실패[]→PASS. fixedsourcescripts이며callerCWD프로젝트아님,gitquote된경로/-z없음비ascii filename누락. OSError/SyntaxError를clean으로처리. allscope제외cron/tests도모델밖. stdoutFAILonlymainNone.",
+        "historical_review_ref": "checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: AstImport가여러alias중첫internal만봐lib,cli조합에서뒤reverse누락. 모든relative를intralayer가정level2이상crosslayer누락;dynamicimport/subprocess안봄. staged목록을얻고indexblob대신workingfile읽어정확staged내용검증아님. no-st",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.commit_layer_adjacency and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        200
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "commit_layer_adjacency.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/contract.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/contract.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "e1080cef34a086d5a38efb3af9a8bf9a450ffd18",
+      "pinned_sha256": "dda6c2fef7e0fe8fcb527e855dc32c7b8aee6ce7d42507855a9be8ee90dbf16f",
+      "pinned_bytes": 8599,
+      "manifest_bytes": 8599,
+      "line_count": 244,
+      "read_ranges": [
+        [
+          1,
+          244
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 244,
+          "raw_range_sha256": "dda6c2fef7e0fe8fcb527e855dc32c7b8aee6ce7d42507855a9be8ee90dbf16f"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/contract.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "e1080cef34a086d5a38efb3af9a8bf9a450ffd18",
+      "pinned_sha256": "dda6c2fef7e0fe8fcb527e855dc32c7b8aee6ce7d42507855a9be8ee90dbf16f",
+      "manifest_bytes": 8599,
+      "pinned_bytes": 8599,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 244,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#contract.py",
+      "semantic_review": {
+        "analysis": "FE api.ts/*Api.ts/js의제한된/api문자열과JavaControllerannotation regex를비교한다. HTTPmethod/status/request-response schema/auth/errors검사없음. querystring·absoluteURL·다른파일배치·TStemplate표현식누락은API URL없음PASS로바뀐다. BE firstRequestMapping이method여도classprefix로간주하고classannotation도methodcollection에포함. prefix문자열startswith는경로segment검사가아니며/api2도/api접두사통과. 양방향wildcard는별도param제약검증아님. BEonlyconvention존재만PASS,본내용안읽음;FEonlyBE없는것도PASSskip. 오류ignore와emptyextraction을정합성성공으로승격금지. validate_project의13routing에포함되어mainNone/stdout계약으로소비됨.",
+        "historical_review_ref": "final full-body reading after checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: FE api.ts/*Api.ts/js의제한된/api문자열과JavaControllerannotation regex를비교한다. HTTPmethod/status/request-response schema/auth/errors검사없음. querystring·absoluteURL·다른파일배치·TStemplate표현식누락은API U",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.contract and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        244
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "contract.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/convention.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/convention.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "e127596db7c334f333ef07399bfeb00f332f31d8",
+      "pinned_sha256": "1316c87727d80a3f1a70e9ceba4509546585b10be0a1424fd14d2c0c8c2ce682",
+      "pinned_bytes": 4019,
+      "manifest_bytes": 4019,
+      "line_count": 97,
+      "read_ranges": [
+        [
+          1,
+          97
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 97,
+          "raw_range_sha256": "1316c87727d80a3f1a70e9ceba4509546585b10be0a1424fd14d2c0c8c2ce682"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/convention.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "e127596db7c334f333ef07399bfeb00f332f31d8",
+      "pinned_sha256": "1316c87727d80a3f1a70e9ceba4509546585b10be0a1424fd14d2c0c8c2ce682",
+      "manifest_bytes": 4019,
+      "pinned_bytes": 4019,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 97,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#convention.py",
+      "semantic_review": {
+        "analysis": "임의 pipe3행을패키지테이블,DTO/error키워드를규칙검증으로취급. package는경로전체가아닌segment집합, mismatch>10이면경고조차사라짐. convention없음PASS,Java없음PASSskip. 실제코드행위/컨벤션적용검증아님. IO예외/stdinreconfigure unguarded, mainNone.",
+        "historical_review_ref": "checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: 임의 pipe3행을패키지테이블,DTO/error키워드를규칙검증으로취급. package는경로전체가아닌segment집합, mismatch>10이면경고조차사라짐. convention없음PASS,Java없음PASSskip. 실제코드행위/컨벤션적용검증아님. IO예외/stdinreconfigure unguarded, mainNone",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.convention and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        97
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "convention.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/ddl.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/ddl.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "2042725be5d9071e89928865ea5c8168a8b8e189",
+      "pinned_sha256": "57f41cecf830f5f8bd7703a57a503aad2121a16c27787ec096ff2af67db87c12",
+      "pinned_bytes": 6633,
+      "manifest_bytes": 6633,
+      "line_count": 186,
+      "read_ranges": [
+        [
+          1,
+          186
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 186,
+          "raw_range_sha256": "57f41cecf830f5f8bd7703a57a503aad2121a16c27787ec096ff2af67db87c12"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/ddl.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "2042725be5d9071e89928865ea5c8168a8b8e189",
+      "pinned_sha256": "57f41cecf830f5f8bd7703a57a503aad2121a16c27787ec096ff2af67db87c12",
+      "manifest_bytes": 6633,
+      "pinned_bytes": 6633,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 186,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#ddl.py",
+      "semantic_review": {
+        "analysis": "비재귀정해진SQLglob→migration하위미포함. regex가schema-qualified/quoted PG테이블미지원,comment/stringCREATE도인식, 같은tablename최후blockoverwrite. CREATE는잡았는데tableblocks빈경우모든PK정의PASS. 전역ENGINE/CHARSET존재를강제FAIL→PG정본Zeus에그대로적용불가(문서권장인데실FAIL). logicalheadingset존재만비교,컬럼/타입/FK/index실검증없음. DB실행없음.",
+        "historical_review_ref": "checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: 비재귀정해진SQLglob→migration하위미포함. regex가schema-qualified/quoted PG테이블미지원,comment/stringCREATE도인식, 같은tablename최후blockoverwrite. CREATE는잡았는데tableblocks빈경우모든PK정의PASS. 전역ENGINE/CHARSET존재를강",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.ddl and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        186
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "ddl.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/er.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/er.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "3f88684d721cbf31c6ff1c31327902ae40bdf535",
+      "pinned_sha256": "4146183fbc6e9884fe0a3f5769e67e9827dda806fc34a0c29a15c178aecb38db",
+      "pinned_bytes": 4292,
+      "manifest_bytes": 4292,
+      "line_count": 122,
+      "read_ranges": [
+        [
+          1,
+          122
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 122,
+          "raw_range_sha256": "4146183fbc6e9884fe0a3f5769e67e9827dda806fc34a0c29a15c178aecb38db"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/er.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "3f88684d721cbf31c6ff1c31327902ae40bdf535",
+      "pinned_sha256": "4146183fbc6e9884fe0a3f5769e67e9827dda806fc34a0c29a15c178aecb38db",
+      "manifest_bytes": 4292,
+      "pinned_bytes": 4292,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 122,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#er.py",
+      "semantic_review": {
+        "analysis": "첫found파일만. 임의heading또는entity단어로정의존재PASS,관계단어한개로관계존재PASS;실엔티티/관계참조/cardinality검사없음. Mermaid제목만검사. snake_case문서단어가있어야warnings;메타heading특정목록외모두entity로오인. 설계및행동인수아님.",
+        "historical_review_ref": "checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: 첫found파일만. 임의heading또는entity단어로정의존재PASS,관계단어한개로관계존재PASS;실엔티티/관계참조/cardinality검사없음. Mermaid제목만검사. snake_case문서단어가있어야warnings;메타heading특정목록외모두entity로오인. 설계및행동인수아님.",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.er and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        122
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "er.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/flow.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/flow.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a592718d6756fcd07cb254a555eae16294aecc84",
+      "pinned_sha256": "347f1b1554f94a70c3409ee417dc57ec31cbd097594e3af6907a70827af1d21f",
+      "pinned_bytes": 4374,
+      "manifest_bytes": 4374,
+      "line_count": 112,
+      "read_ranges": [
+        [
+          1,
+          112
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 112,
+          "raw_range_sha256": "347f1b1554f94a70c3409ee417dc57ec31cbd097594e3af6907a70827af1d21f"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/flow.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a592718d6756fcd07cb254a555eae16294aecc84",
+      "pinned_sha256": "347f1b1554f94a70c3409ee417dc57ec31cbd097594e3af6907a70827af1d21f",
+      "manifest_bytes": 4374,
+      "pinned_bytes": 4374,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 112,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#flow.py",
+      "semantic_review": {
+        "analysis": "Mermaid열린fenceprefix만존재검사,문법/render검증아님;HTMLcomment검사는narrowlexical. USID는regexUS-숫자지만coverage는substring이어서US-1이US-10에도커버. 문서ID언급≠행동경로추적,missingidsWARN. directory없음PASS;filereaderrorsuncaught.",
+        "historical_review_ref": "checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: Mermaid열린fenceprefix만존재검사,문법/render검증아님;HTMLcomment검사는narrowlexical. USID는regexUS-숫자지만coverage는substring이어서US-1이US-10에도커버. 문서ID언급≠행동경로추적,missingidsWARN. directory없음PASS;filereaderr",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.flow and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        112
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "flow.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/git_flow.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/git_flow.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "1daeab9106e83378920b96201cf2d099df330e97",
+      "pinned_sha256": "e0c2f1f990cb7d652cfd9f5afdc47255d23a5a21d0f36acdedbc77020cd06d31",
+      "pinned_bytes": 6742,
+      "manifest_bytes": 6742,
+      "line_count": 177,
+      "read_ranges": [
+        [
+          1,
+          177
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 177,
+          "raw_range_sha256": "e0c2f1f990cb7d652cfd9f5afdc47255d23a5a21d0f36acdedbc77020cd06d31"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/git_flow.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "1daeab9106e83378920b96201cf2d099df330e97",
+      "pinned_sha256": "e0c2f1f990cb7d652cfd9f5afdc47255d23a5a21d0f36acdedbc77020cd06d31",
+      "manifest_bytes": 6742,
+      "pinned_bytes": 6742,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 177,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#git_flow.py",
+      "semantic_review": {
+        "analysis": "로컬 current branch와최근10commit subject를형식검사한다. _git 모든오류를rc1로합쳐git부재/권한/timeout도notrepoPASS가된다. detachedHEAD면WARN후commit검사생략;gitlog실패는빈목록이어서commit미검사표시없음. company prefix만있고본문없어도통과, Merge/Revert문자시작전체면제. generalbranch정규식은selfmod/를허용하지않아cron수술생성branch와상충한다. cwd가repo하위면override위치도바뀔수있다. log_telemetry 실제쓰기, UTF8replace원시손실·unguardedstreamreconfigure. Git정책준수·사람diff인수·실행승인과commitprefix는별개. lib/git_flow_override전체와진짜branchpolicy설정미독.",
+        "historical_review_ref": "final full-body reading after checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: 로컬 current branch와최근10commit subject를형식검사한다. _git 모든오류를rc1로합쳐git부재/권한/timeout도notrepoPASS가된다. detachedHEAD면WARN후commit검사생략;gitlog실패는빈목록이어서commit미검사표시없음. company prefix만있고본문없어도통과, M",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.git_flow and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "lib.git_flow_override",
+        "lib.telemetry_log",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        177
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "git_flow.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/handoff_drift.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/handoff_drift.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "fcde4ad7521ebc0a081f36967832069415dda422",
+      "pinned_sha256": "21d281d052a906fe63e2ead3bc1cf8ff0aa02cc1035bcf38582952f0666a8b9b",
+      "pinned_bytes": 4335,
+      "manifest_bytes": 4335,
+      "line_count": 105,
+      "read_ranges": [
+        [
+          1,
+          105
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 105,
+          "raw_range_sha256": "21d281d052a906fe63e2ead3bc1cf8ff0aa02cc1035bcf38582952f0666a8b9b"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/handoff_drift.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "fcde4ad7521ebc0a081f36967832069415dda422",
+      "pinned_sha256": "21d281d052a906fe63e2ead3bc1cf8ff0aa02cc1035bcf38582952f0666a8b9b",
+      "manifest_bytes": 4335,
+      "pinned_bytes": 4335,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 105,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#handoff_drift.py",
+      "semantic_review": {
+        "analysis": "missing/format없음/anchor없음PASSoptout. import/read/parsefailWARN;code_blind함께있어도dependencyfail는PASS/WARN으로미검사통과가능. render exception은CurrentPhaseBlock문자포함ValueError면skip으로분류. check_drift/is_anchor 예외uncaught; detectpromotable실패는[]로무시. 실제Currentphase외작업완결성모름.",
+        "historical_review_ref": "checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: missing/format없음/anchor없음PASSoptout. import/read/parsefailWARN;code_blind함께있어도dependencyfail는PASS/WARN으로미검사통과가능. render exception은CurrentPhaseBlock문자포함ValueError면skip으로분류. check_dr",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.handoff_drift and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "lib.handoff_drift",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        105
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "handoff_drift.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/harness_bridge_state_block.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/harness_bridge_state_block.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "bed4f669429ab412f0978649752a222e92b33251",
+      "pinned_sha256": "290998284d40b00f60114d67479791e20261bcb363301196d8a5473252f3d2ca",
+      "pinned_bytes": 10712,
+      "manifest_bytes": 10712,
+      "line_count": 328,
+      "read_ranges": [
+        [
+          1,
+          328
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 328,
+          "raw_range_sha256": "290998284d40b00f60114d67479791e20261bcb363301196d8a5473252f3d2ca"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/harness_bridge_state_block.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "bed4f669429ab412f0978649752a222e92b33251",
+      "pinned_sha256": "290998284d40b00f60114d67479791e20261bcb363301196d8a5473252f3d2ca",
+      "manifest_bytes": 10712,
+      "pinned_bytes": 10712,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 328,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#harness_bridge_state_block.py",
+      "semantic_review": {
+        "analysis": "cache는STATE_DIR한개로projectidentity없고순수검사아닌실쓰기다. section삭제/빈section은history확인전에PASS,빈경우HEAD를cache해과거이력삭제검증우회. since_sha==latest면current와cachedsnapshot도비교안해workingtreebullet삭제통과가능,이후delta에는cachecommit자체도제외. histgitshow실패는skip,gitlog실패는nohistoryPASS. bullets를setmembership로비교해동일timestamp재정렬등순서변경증명못함;날짜regex는달력유효성안봄datetimeimport미사용. 비bullet/indentedbullet는무시한다. subprocess에timeout없고Gitconfig/env상속,writecache예외uncaught. bootstrap echo문구는분석DATA이며실행하지않음. 지원test195–221은freshcache+두commits일부삭제이며warmcache/section전체삭제/다른project를검증하지않는다.",
+        "historical_review_ref": "final full-body reading after checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: cache는STATE_DIR한개로projectidentity없고순수검사아닌실쓰기다. section삭제/빈section은history확인전에PASS,빈경우HEAD를cache해과거이력삭제검증우회. since_sha==latest면current와cachedsnapshot도비교안해workingtreebullet삭제통과가능,이후d",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.harness_bridge_state_block and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "datetime",
+        "lib.paths",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        328
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "harness_bridge_state_block.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/hashline.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/hashline.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "c46afb001eb69e00433d226a4580a749bd4db3a6",
+      "pinned_sha256": "e9f1bc83d44066643218f84627fa4520b6df5145a33128ddb2f4b7ef1a8c2970",
+      "pinned_bytes": 5524,
+      "manifest_bytes": 5524,
+      "line_count": 177,
+      "read_ranges": [
+        [
+          1,
+          177
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 177,
+          "raw_range_sha256": "e9f1bc83d44066643218f84627fa4520b6df5145a33128ddb2f4b7ef1a8c2970"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/hashline.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "c46afb001eb69e00433d226a4580a749bd4db3a6",
+      "pinned_sha256": "e9f1bc83d44066643218f84627fa4520b6df5145a33128ddb2f4b7ef1a8c2970",
+      "manifest_bytes": 5524,
+      "pinned_bytes": 5524,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 177,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#hashline.py",
+      "semantic_review": {
+        "analysis": "anchor형식과고유성주장이지만regex에맞는정상anchor만모아중복검사한다. 잘못된ID/길이/description형식은매칭되지않아FAIL이아닌무시이며anchor하나도없어도전체파일PASS. ID변경전후/외부consumer참조존재는검사하지않는다. whitelist는절대path의어떤segment라도일치하면전체skip. cwd ~/.claude에서 .claude/skills glob은 ~/.claude/.claude/skills를찾아사용자skill감사설명과다르다. read오류WARN+overallPASS, 위반telemetrywrite. regex \\s는newline도소비하여roughline정확성한계. 실제selector caller/원본anchor시점동등성미독.",
+        "historical_review_ref": "final full-body reading after checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: anchor형식과고유성주장이지만regex에맞는정상anchor만모아중복검사한다. 잘못된ID/길이/description형식은매칭되지않아FAIL이아닌무시이며anchor하나도없어도전체파일PASS. ID변경전후/외부consumer참조존재는검사하지않는다. whitelist는절대path의어떤segment라도일치하면전체skip. cwd",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.hashline and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "lib.telemetry_log",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        177
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "hashline.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/insight_index_importer_whitelist.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/insight_index_importer_whitelist.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "7ac811b5d459dc55a0039297940434726889c264",
+      "pinned_sha256": "58c91fff27daad76a7d39a34ab3023eccddea906a6ffd7b57a35a130bb2f709d",
+      "pinned_bytes": 11999,
+      "manifest_bytes": 11999,
+      "line_count": 281,
+      "read_ranges": [
+        [
+          1,
+          281
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 281,
+          "raw_range_sha256": "58c91fff27daad76a7d39a34ab3023eccddea906a6ffd7b57a35a130bb2f709d"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/insight_index_importer_whitelist.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "7ac811b5d459dc55a0039297940434726889c264",
+      "pinned_sha256": "58c91fff27daad76a7d39a34ab3023eccddea906a6ffd7b57a35a130bb2f709d",
+      "manifest_bytes": 11999,
+      "pinned_bytes": 11999,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 281,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#insight_index_importer_whitelist.py",
+      "semantic_review": {
+        "analysis": "고정7subtree의정적import와boundattribute만검사한다. documented동적import우회및runtimefailsopen한계는이validator가막지않고runtimeguard전체는이번미독. __init__.py를package로매핑한뒤importer_pkg를부모로줄여package내relative해석이틀릴수있다. scope없는boundname집합은alias재할당/함수지역을구분하지않고fromimportfunction도attribute추적한다. 허용module는reader/writer구분없이모든사용허용,hardcodedallow는forbidden검사보다먼저다. syntax/IOskip도scanned분모증가후no violationsPASS;Unicode오류uncaught. modulepath symlink외부는제외. 문서의원래3writers3readers와증가한allow표·operator과거승인은현재모델권한자격이아니다.",
+        "historical_review_ref": "final full-body reading after checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: 고정7subtree의정적import와boundattribute만검사한다. documented동적import우회및runtimefailsopen한계는이validator가막지않고runtimeguard전체는이번미독. __init__.py를package로매핑한뒤importer_pkg를부모로줄여package내relative해석이틀릴",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.insight_index_importer_whitelist and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [
+        "__future__",
+        "pathlib"
+      ],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        281
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "insight_index_importer_whitelist.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/logical.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/logical.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "84a4d76245d3d0845df4331b0e954da8c1908d58",
+      "pinned_sha256": "33045ccba1a829c15c6d11a17c78dbdae539858dd30f7887f0607cada7bcca38",
+      "pinned_bytes": 5483,
+      "manifest_bytes": 5483,
+      "line_count": 143,
+      "read_ranges": [
+        [
+          1,
+          143
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 143,
+          "raw_range_sha256": "33045ccba1a829c15c6d11a17c78dbdae539858dd30f7887f0607cada7bcca38"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-001/files.json",
+    "ledger_sha256": "e490ff151428d41b564eff706d67873bf173cfdde367787ffd2c88e93e358c9e",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/logical.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "84a4d76245d3d0845df4331b0e954da8c1908d58",
+      "pinned_sha256": "33045ccba1a829c15c6d11a17c78dbdae539858dd30f7887f0607cada7bcca38",
+      "manifest_bytes": 5483,
+      "pinned_bytes": 5483,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "line_count": 143,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json#logical.py",
+      "semantic_review": {
+        "analysis": "pipe행/PK/FK/INDEX각키워드만전체문서존재검사. crosscheck는heading개수 ER<=logical이면M:N해소OK단정하지만대응ID/키/관계확인없음. 인식0은WARNskip,ER없음조용히생략. 요구비어있지않음/semanticcoverage와무관.",
+        "historical_review_ref": "checkpoint-17.md",
+        "purpose": "정적 validator 진입점 및 대상/판정 의미: pipe행/PK/FK/INDEX각키워드만전체문서존재검사. crosscheck는heading개수 ER<=logical이면M:N해소OK단정하지만대응ID/키/관계확인없음. 인식0은WARNskip,ER없음조용히생략. 요구비어있지않음/semanticcoverage와무관.",
+        "authority": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+        "platform": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+        "decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+        "tests": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+        "caller_trace": "Registry __init__ primary fully read. validate_project 13-entry routing+runner and post_tool reviewer/run_all specified supporting ranges read; effective complete production config and transitive chain remain pending."
+      },
+      "actual_callability": "python -m validators.logical and imported main; return/stdout differences noted",
+      "adoption_decision": "변형 검토 후보; 현재 구현 직접 채택/흡수 승인 보류. 구조/휴리스틱/미검사 상태와 행동 검증·사람 인수를 분리.",
+      "claude_dependencies": "원본 CLAUDE/AGENTS/SKILL, token 및 bootstrap 명령은 분석 DATA. 검사 출력은 승인 근거로 자동 승격하지 않는다.",
+      "windows_linux": "cwd project와고정source/ATLAS/STATE범위차이·UTF8/BOM/replace/streamreconfigure·Gitquotedpaths·상속env는파일별analysis참조. Windows/Linux/WSL실행0.",
+      "zeus_modules": [
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus implementation was not newly read here. No equivalence or behavior acceptance claim.",
+      "direct_imports": [],
+      "tests_executed": [],
+      "test_limits": "NOT RUN; primary self-check bodies read where present, supporting test ranges are static reading only.",
+      "license_status": "Original license, external WebAIM/Miller/AutoForge/source debates and source port provenance not verified.",
+      "duplicate_status": "Individual full-body review; no byte/generated equivalence claimed. Original verify-* ports not compared. Shared frontmatter/doc_drift_common inspected at recorded ranges.",
+      "remaining": [
+        "Complete effective caller/config and transitive implementation bodies pending; detailed gaps in analysis",
+        "Execution0: OS/cwd/env, malformed/skip denominator, empty/partial input, race and acceptance regressions not run",
+        "Original license/linked evidence, independent joint exact-revision review and Zeus adoption approval pending"
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        143
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-001/semantic-notes.json",
+    "review_selector": "logical.py",
+    "review_document_sha256": "e5cc5b265019093ffefc1c0d7c598fc9da6c671251fc83fb32afa1161ccd2616",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint.json",
+        "sha256": "377f48d17aa600b4b4a143b94f1d9040126689649adf8beca5e0eef2e537a814"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/checkpoint-notes.md",
+        "sha256": "1db80ad6f30e88cc8d534b3e3ba2b2d3cf4d2e7d530404247b07618c9e0d4cff"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-001/supporting-evidence.json",
+        "sha256": "553b07714358f9dfa02c6f9031a56c95afc2f5a5dce848ad58807d5fd26a1bbe"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/mutation_safety.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/mutation_safety.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "dd339d8f38478c437d572ac493736e7c9b85fec1",
+      "pinned_sha256": "b13b50d9aed0ab9bbd35442508a920151e78c18d0863a5e796086481003dae93",
+      "pinned_bytes": 6345,
+      "manifest_bytes": 6345,
+      "line_count": 170,
+      "read_ranges": [
+        [
+          1,
+          170
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 170,
+          "raw_range_sha256": "b13b50d9aed0ab9bbd35442508a920151e78c18d0863a5e796086481003dae93"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/mutation_safety.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "dd339d8f38478c437d572ac493736e7c9b85fec1",
+      "pinned_sha256": "b13b50d9aed0ab9bbd35442508a920151e78c18d0863a5e796086481003dae93",
+      "manifest_bytes": 6345,
+      "pinned_bytes": 6345,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          170
+        ]
+      ],
+      "line_count": 170,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#mutation_safety.py",
+      "semantic_review": {
+        "analysis": "skills 문서의 파괴 패턴 주변 ±10행에 example/migration/WHERE/confirm 등 토큰 하나면 안전 처리한다. 부정문이나 다른 코드 블록의 안전 단어도 실제 대상·승인·가드와 인과관계 없이 면제한다. 문서에 설명한 DELETE FROM 패턴은 실제 목록에서 빠졌고 TRUNCATE TABLE 이외 SQL, PowerShell Remove-Item, 분할 명령은 검출하지 않는다. _should_skip은 root 상대 첫 부분만 보므로 skills 아래 중첩 state/node_modules 배제 의도와 다르다. 파일 없음·읽기 실패 분모는 clean과 섞인다. 기본 WARN, --strict만 FAIL/return1이며 argparse는 현재 프로세스 argv를 읽는다. telemetry 쓰기가 있다. Zeus 권한 검증으로 채택하지 않고 문서 lint로만 변형한다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        170
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "mutation_safety.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/openapi.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/openapi.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "63c933c4b3afd5d1de61979221cb4cd81568c9f1",
+      "pinned_sha256": "96210fe7686ca922f430639024bfda3b677220986cb675e4cb95762b0bf23054",
+      "pinned_bytes": 4352,
+      "manifest_bytes": 4352,
+      "line_count": 114,
+      "read_ranges": [
+        [
+          1,
+          114
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 114,
+          "raw_range_sha256": "96210fe7686ca922f430639024bfda3b677220986cb675e4cb95762b0bf23054"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/openapi.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "63c933c4b3afd5d1de61979221cb4cd81568c9f1",
+      "pinned_sha256": "96210fe7686ca922f430639024bfda3b677220986cb675e4cb95762b0bf23054",
+      "manifest_bytes": 4352,
+      "pinned_bytes": 4352,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          114
+        ]
+      ],
+      "line_count": 114,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#openapi.py",
+      "semantic_review": {
+        "analysis": "YAMLparser/스키마검증없이paths키·indent2–4의slashline,MDHTTPkeyword만. MD는메소드단어만있고endpoint0여도pass. operation별count아닌pathcount이고여러중복문서합산,domainfilecount와비율만보고identity안봄. warning이라한domain부족은실FAIL. files없음PASS,filereaduncaught/mainNone→process0. 실제API/requestresponse/auth/SDD인수검사아님.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        114
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "openapi.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/prd.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/prd.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "bcae0b7ba707d524cbc4444be186c59e1be36615",
+      "pinned_sha256": "5702824fe7abce4167679648aabdc4367dbe787839b5acff743bbea877e53bf6",
+      "pinned_bytes": 4154,
+      "manifest_bytes": 4154,
+      "line_count": 98,
+      "read_ranges": [
+        [
+          1,
+          98
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 98,
+          "raw_range_sha256": "5702824fe7abce4167679648aabdc4367dbe787839b5acff743bbea877e53bf6"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/prd.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "bcae0b7ba707d524cbc4444be186c59e1be36615",
+      "pinned_sha256": "5702824fe7abce4167679648aabdc4367dbe787839b5acff743bbea877e53bf6",
+      "manifest_bytes": 4154,
+      "pinned_bytes": 4154,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          98
+        ]
+      ],
+      "line_count": 98,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#prd.py",
+      "semantic_review": {
+        "analysis": "index/domainfiles존재및regexlinkfile,escape/absolute/외부경로제한없고URL/fragment는localfile오탐. noindexlinks는coverage검사없음;index가모든domain등록했는지안봄. 첫600char anywhere status:SKELETON이면frontmatter아니어도스토리면제. ASI WANTSO THATregex문서전역횡단가능,내용/인수조건·IDsemantic검증없음. missingreqdirPASS. unguardedstream/IO/mainNone.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "prd.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/private_content_leak.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/private_content_leak.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "bc17b9bdcb95de06e30b8a6c70ac155b3510b89d",
+      "pinned_sha256": "a4694a716704e305da9c93c2fc69f2bb0e49b3ac4cd07a161ce47703baa95dbc",
+      "pinned_bytes": 5984,
+      "manifest_bytes": 5984,
+      "line_count": 189,
+      "read_ranges": [
+        [
+          1,
+          189
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 189,
+          "raw_range_sha256": "a4694a716704e305da9c93c2fc69f2bb0e49b3ac4cd07a161ce47703baa95dbc"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/private_content_leak.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "bc17b9bdcb95de06e30b8a6c70ac155b3510b89d",
+      "pinned_sha256": "a4694a716704e305da9c93c2fc69f2bb0e49b3ac4cd07a161ce47703baa95dbc",
+      "manifest_bytes": 5984,
+      "pinned_bytes": 5984,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          189
+        ]
+      ],
+      "line_count": 189,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#private_content_leak.py",
+      "semantic_review": {
+        "analysis": "닫힌 브랜드 토큰과 명시 버전의 shared 경로만 검색한다. 문서의 java/springboot-* 범위보다 실제 범위가 좁고 대소문자·신규 버전은 누락 가능하다. pointer-ok 부분 문자열 하나가 줄 전체를 면제해 같은 줄 다른 민감 정보도 빠진다. private subtree 부분 문자열 배제와 read 오류 빈 결과는 분모를 숨긴다. 의심 내용 120자 snippet을 출력하고 telemetry에도 기록하므로 유출 검사 자체가 2차 저장 경로다. 일반 비밀 탐지·정책 준수 증명은 아니며 FAIL stdout에도 main None이다. Zeus에는 허용 범위와 비밀 제거를 명시한 검사만 변형 가능하다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        189
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "private_content_leak.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/skeleton.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/skeleton.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "5ce2977912f1ffba09248ee0039c63ee5029ff5b",
+      "pinned_sha256": "3c769fe05edb8f5523af0ceb6628c7c40e1f34a7e9f0e42ed55b6986998c7879",
+      "pinned_bytes": 4419,
+      "manifest_bytes": 4419,
+      "line_count": 120,
+      "read_ranges": [
+        [
+          1,
+          120
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 120,
+          "raw_range_sha256": "3c769fe05edb8f5523af0ceb6628c7c40e1f34a7e9f0e42ed55b6986998c7879"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/skeleton.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "5ce2977912f1ffba09248ee0039c63ee5029ff5b",
+      "pinned_sha256": "3c769fe05edb8f5523af0ceb6628c7c40e1f34a7e9f0e42ed55b6986998c7879",
+      "manifest_bytes": 4419,
+      "pinned_bytes": 4419,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          120
+        ]
+      ],
+      "line_count": 120,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skeleton.py",
+      "semantic_review": {
+        "analysis": "Java/Spring가정,gradle는키워드spring/test강제하지만pom은존재만봐비대칭. build.gradle.kts만있어도build.gradle존재라출력. config파일존재≠유효성,conventioncom패키지중가장짧은문자길이하나만검사,org등미검사패키지skipPASS. nosrcPASS,nocodecompile/testsrun. IOstream/mainNone동일.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        120
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "skeleton.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/skill_frontmatter.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_frontmatter.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "e3746dd3256577bc62f52252b8523993322ea7b4",
+      "pinned_sha256": "ad8049b9e6b261d8ae9f291c5ad3e4255560378d92b6da682c703292ba5026c2",
+      "pinned_bytes": 8222,
+      "manifest_bytes": 8222,
+      "line_count": 217,
+      "read_ranges": [
+        [
+          1,
+          217
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 217,
+          "raw_range_sha256": "ad8049b9e6b261d8ae9f291c5ad3e4255560378d92b6da682c703292ba5026c2"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_frontmatter.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "e3746dd3256577bc62f52252b8523993322ea7b4",
+      "pinned_sha256": "ad8049b9e6b261d8ae9f291c5ad3e4255560378d92b6da682c703292ba5026c2",
+      "manifest_bytes": 8222,
+      "pinned_bytes": 8222,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          217
+        ]
+      ],
+      "line_count": 217,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_frontmatter.py",
+      "semantic_review": {
+        "analysis": "명세는 any nesting harness-* 금지지만 _check_naming 74–76은 최상위 디렉터리만 검사한다. SKILL.md 형제 문서는 실제로 참조되는지와 관계없이 content module로 면제된다. frontmatter 전체 부재는 모든 subtree FAIL, 개별 필드 없음은 mobile만 FAIL이고 나머지는 WARN 합계와 PASS이다. 검사 총파일 수에는 _pipeline·content module 면제가 포함되어 실제 completeness 분모가 아니다. lib.frontmatter 전문에서 모든 값은 원시 문자열: keywords: []나 description: ''도 nonempty로 통과하고 YAML nesting/list 해석은 없다. Path.as_posix는 실제 Windows Path에 적절하지만 POSIX에서 역슬래시가 든 문자열까지 separator로 바꾸지는 않는다. 파일 glob/stream 예외는 never-raises 계약과 다르다. Zeus 등록 schema/호출 가능성·권한 자격과 분리하여 필드 lint만 변형한다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "skill_frontmatter.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/skill_quality_axes.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_quality_axes.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "945ff93cf6d0942a8413ac430b0f8bbcc2ebf166",
+      "pinned_sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+      "pinned_bytes": 8848,
+      "manifest_bytes": 8848,
+      "line_count": 269,
+      "read_ranges": [
+        [
+          1,
+          269
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 269,
+          "raw_range_sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_quality_axes.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "945ff93cf6d0942a8413ac430b0f8bbcc2ebf166",
+      "pinned_sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+      "manifest_bytes": 8848,
+      "pinned_bytes": 8848,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          269
+        ]
+      ],
+      "line_count": 269,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_quality_axes.py",
+      "semantic_review": {
+        "analysis": "ISO/IEC 25010 9축을 강제한다는 주장은 원문 표준 미확인이고 구현은 문서 형식이다. Source 이후 아무 dash 줄이면 인용, http://만 금지해 URL 자체가 없어도 통과한다. Gotchas 이후 Source 전까지의 모든 ###를 세므로 다른 섹션 소제목을 잘못 합산한다. G7은 축 라벨 문자열 존재만 본다. requires 공백 분할과 skill_index의 모든 md stem/원시 name으로 README·SKILL·자기참조도 대상 존재가 되어 실제 dependency acyclic/callable/호환성을 확인하지 않는다. parser가 YAML lists/quotes를 해석하지 않아 요구 목록과 tech-stack의 통상 YAML 표기는 오판 가능하다. enforce prefix는 문서의 data/infra/ml 외 systems도 포함한다. opt-in 없는 legacy·파싱 실패 legacy는 제외, inspected0에서도 9게이트 PASS이다. CRLF를 read_text가 정규화한 뒤 byte_count를 세어 실제 디스크 바이트 한도와 차이가 있다. no content-module 면제로 frontmatter 검사와 분모가 다르다. 품질/모델 평가·보안 증명으로 채택하지 않는다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "권한/품질/신뢰 게이트로 원형 채택 제외; 제한된 발견 힌트로 재설계 검토.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        269
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "skill_quality_axes.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/skill_source_liveness.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_source_liveness.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a507b484f1717b89e869cb3826db38c3d1183a66",
+      "pinned_sha256": "8d176d5b53232c1d5b021dc92e9531740dee8d1d6beecae28ef999fb6937a8e9",
+      "pinned_bytes": 7194,
+      "manifest_bytes": 7194,
+      "line_count": 196,
+      "read_ranges": [
+        [
+          1,
+          196
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 196,
+          "raw_range_sha256": "8d176d5b53232c1d5b021dc92e9531740dee8d1d6beecae28ef999fb6937a8e9"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_source_liveness.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a507b484f1717b89e869cb3826db38c3d1183a66",
+      "pinned_sha256": "8d176d5b53232c1d5b021dc92e9531740dee8d1d6beecae28ef999fb6937a8e9",
+      "manifest_bytes": 7194,
+      "pinned_bytes": 7194,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          196
+        ]
+      ],
+      "line_count": 196,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_source_liveness.py",
+      "semantic_review": {
+        "analysis": "opt-in advisory이고 cron 주1회는 권고일 뿐 이번 범위에서 실제 schedule/실행 영수증은 없다. HTTP HEAD 응답코드만 보고 401/403/405/406도 OK이며 인용 내용·원문·라이선스·진위는 검증하지 않는다. certificate 오류 때 SSL 검증을 끄는 fallback은 연결 응답을 얻어도 진위를 보장하지 않는다. Source 이후 URL 전부라 다른 섹션도 포함하고 http를 허용한다. 주소/redirect/프록시 경계를 제한하지 않아 원본 문서의 임의 내부 URL도 접속 가능하고 HEAD도 요청 메타데이터를 송신한다. timeout은 요청당10초일 뿐 전체 deadline/최대URL수/전역dedup 없다. read 오류는 main 밖 예외, missing Source/URL은 분모0, 모든 DEAD/NETWORK여도 PASS와0. 검증되지 않은 fallback은 Zeus 신뢰 증거로 제외하고 별도 제한 네트워크 liveness 힌트로만 설계 가능하다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "권한/품질/신뢰 게이트로 원형 채택 제외; 제한된 발견 힌트로 재설계 검토.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        196
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "skill_source_liveness.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/skill_staging_isolation.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_staging_isolation.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "b36468e4afd03284501a4ee23db758fa4d0fc4eb",
+      "pinned_sha256": "4bc41f4d26fa52f1cdc5239f633ce18ad1205c08c02088dc1f1d9949b41663a2",
+      "pinned_bytes": 7270,
+      "manifest_bytes": 7270,
+      "line_count": 217,
+      "read_ranges": [
+        [
+          1,
+          217
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 217,
+          "raw_range_sha256": "4bc41f4d26fa52f1cdc5239f633ce18ad1205c08c02088dc1f1d9949b41663a2"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/skill_staging_isolation.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "b36468e4afd03284501a4ee23db758fa4d0fc4eb",
+      "pinned_sha256": "4bc41f4d26fa52f1cdc5239f633ce18ad1205c08c02088dc1f1d9949b41663a2",
+      "manifest_bytes": 7270,
+      "pinned_bytes": 7270,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          217
+        ]
+      ],
+      "line_count": 217,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#skill_staging_isolation.py",
+      "semantic_review": {
+        "analysis": "_is_safe는 허용 ROOT 이름 바인딩의 실제 값은 확인하지 않고 Div 오른쪽을 무조건 허용해 절대경로·..를 놓친다. 모든 Attribute/메소드 호출도 같은 루트로 처리해 .parent 체인·with_name/relative_to 같은 이탈 표현까지 안전 판정한다. helper 본문의 return만 검토하며 helper 내부 부작용·nested return·fallthrough None·함수 재바인딩은 모델링하지 않는다. read-only open도 쓰기로 보고 keyword path는 no arg 위반이다. 정해진3파일만 보며 파일 없음/read OSError는 PASS, SyntaxError는 FAIL, Unicode는 예외. 지원 staging_guard 1–83은 resolve/relative_to 실제 경계 검사를 갖지만 자동 interception이 아니라 SHOULD call 계약이고 TOCTOU도 남는다. 실제 detector 194–209/540–623의 write sites는 assert_in_staging 호출 없이 helper 경로를 쓰며 607–610은 AST를 만족시키려고 변수 대신 helper를 전달했다고 명시한다. cid 전체 기원/정규화는 이번 지원 범위 밖이므로 경로 탈출의 실제 exploit 실행으로 주장하지 않는다. tests 48–171은 실패 시 print [FAIL]만 하므로 pytest가 예외로 실패하지 않으며 /tmp/evil 단순 fixture와 문서 false-negative 문자열을 검사할 뿐 위 탈출 경로를 보장하지 않는다. Zeus에는 런타임 파일 권한 경계·정본 승인·후보 비활성화가 필수다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [
+          "scripts/tests/test_skill_staging_isolation.py"
+        ],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "권한/품질/신뢰 게이트로 원형 채택 제외; 제한된 발견 힌트로 재설계 검토.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "skill_staging_isolation.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/subagent_refs.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/subagent_refs.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "10d5516d99d72bec226c11a40d5b62641822bbe3",
+      "pinned_sha256": "ec8ae2b903597c24448cb9fdbdb9df1b72610170be182bd21cee9b939b8b6c90",
+      "pinned_bytes": 5276,
+      "manifest_bytes": 5276,
+      "line_count": 172,
+      "read_ranges": [
+        [
+          1,
+          172
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 172,
+          "raw_range_sha256": "ec8ae2b903597c24448cb9fdbdb9df1b72610170be182bd21cee9b939b8b6c90"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/subagent_refs.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "10d5516d99d72bec226c11a40d5b62641822bbe3",
+      "pinned_sha256": "ec8ae2b903597c24448cb9fdbdb9df1b72610170be182bd21cee9b939b8b6c90",
+      "manifest_bytes": 5276,
+      "pinned_bytes": 5276,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          172
+        ]
+      ],
+      "line_count": 172,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#subagent_refs.py",
+      "semantic_review": {
+        "analysis": "참조 regex는 최소2글자 이름을 요구해 한 글자 agent를 놓치고 match는 소문자로 정규화하지만 agent stem은 그대로여서 대소문자 불일치가 있다. 파일 존재만으로 해석하며 tools/model 자격·런타임 등록을 확인하지 않는다. agents 없음·비어 있음은 PASS라 전체 참조를 미검사한다. built-in Claude agent 5개는 고정 목록이며 외부 현재 문서 확인은 하지 않았다. template 이름·끝 하이픈 등의 면제, nested skip 디렉터리 판정의 첫 부분 오류가 있다. 읽기 오류 빈 결과, telemetry는 앞50개만 남기며 main None이다. Zeus 모델 자격/위임 권한 승인이 아니라 이름 lint로 변형한다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        172
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "subagent_refs.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  },
+  {
+    "path": "scripts/validators/test.py",
+    "identity": {
+      "source": "baldrix",
+      "path": "scripts/validators/test.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "da1d9330d4632a76178b7de44192312c2f7469dd",
+      "pinned_sha256": "f7be56e0bcc03a03bfbd799eda841ecc3d077aea08f9c1969301be83cbc8595e",
+      "pinned_bytes": 5758,
+      "manifest_bytes": 5758,
+      "line_count": 155,
+      "read_ranges": [
+        [
+          1,
+          155
+        ]
+      ],
+      "range_receipts": [
+        {
+          "start": 1,
+          "end": 155,
+          "raw_range_sha256": "f7be56e0bcc03a03bfbd799eda841ecc3d077aea08f9c1969301be83cbc8595e"
+        }
+      ],
+      "manifest_sha256_status": "matched",
+      "raw_git_blob_status": "matched",
+      "tests_executed": [],
+      "remaining": [
+        "Full caller/config/transitive implementation/test closure remains pending.",
+        "Original imports/execution/collection/probes/network/install/Claude0.",
+        "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+        "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+      ]
+    },
+    "ledger_ref": "docs/full-analysis/baldrix-validators-002/files.json",
+    "ledger_sha256": "82fe5fbc5c817529e80b7cab717968ea645453627687670b8a89f1008c7369a9",
+    "original_row": {
+      "source": "baldrix",
+      "path": "scripts/validators/test.py",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "da1d9330d4632a76178b7de44192312c2f7469dd",
+      "pinned_sha256": "f7be56e0bcc03a03bfbd799eda841ecc3d077aea08f9c1969301be83cbc8595e",
+      "manifest_bytes": 5758,
+      "pinned_bytes": 5758,
+      "matches_manifest_sha256": true,
+      "matches_manifest_bytes": true,
+      "matches_manifest_git_blob": true,
+      "manifest_sha256_status": "matched",
+      "read_extent": "full",
+      "read_ranges": [
+        [
+          1,
+          155
+        ]
+      ],
+      "line_count": 155,
+      "disposition": "semantically_reviewed",
+      "review_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json#test.py",
+      "semantic_review": {
+        "analysis": "src/test가 없으면 PASS지만 존재하면서 *Test/Tests/Spec.java가 없으면 FAIL이다. Spec.java는 총 테스트 수에는 포함되지만 Service 대응은 Test/Tests만 인정한다. 패키지 없이 basename으로 연결해 동명이인 테스트가 다른 Service를 덮는다. gradle의 jacoco 문자열은 주석에도 있을 수 있고 build/reports/tests 디렉터리는 비었거나 과거 실행이어도 보고서 생성 PASS를 만든다. 실제 run/revision/테스트 결과·커버리지 숫자를 확인하지 않는다. 파일 IO 무시, Java만의 관례, main None/프로세스 0. 누락 Service는 WARN이다. Zeus 인수 증거 대신 프로젝트 구조 발견 힌트로만 변형한다.",
+        "historical_review_ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "tests_read_not_run": [],
+        "direct_support": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json"
+      },
+      "actual_callability": "main entry present; registry and CLI support trace distinguish registration from actual routing. Effective live dispatch not verified.",
+      "adoption_decision": "변형 검토 후보: 휴리스틱 결과와 skipped/unverifiable/실제 인수 분리; 현재 승인 보류.",
+      "claude_dependencies": "Source instruction text is DATA. CLAUDE asset/state/telemetry paths, registry and mutation tokens are not Zeus authority. Specific dependencies and side effects in analysis.",
+      "windows_linux": "파일별 encoding/BOM/cwd/env/Git/path 비교 참조. Windows/Linux/WSL 실행0; source-relative, env-derived and Path.home roots require separate isolation.",
+      "zeus_modules": [
+        "src/codex_harness/domain/sdd.py",
+        "src/codex_harness/application/audit_gate.py",
+        "src/codex_harness/adapters/source_verification.py",
+        "src/codex_harness/adapters/audit_runner.py"
+      ],
+      "zeus_equivalence": "Architecture mapping only; current Zeus bodies not newly reviewed. Git definitions/PG runtime authority/immutable actual execution and no mocked acceptance required; no equivalence claim.",
+      "tests_executed": [],
+      "test_limits": "NOT RUN by assigned static-only scope. Six supporting test files read at exact ranges; all other test body/config trace pending. Past source PASS is not this review execution.",
+      "license_status": "Original license, attribution for ports, linked standards/URLs/debates not verified. No external fetch.",
+      "duplicate_status": "Every primary body individually read; no generated/byte-equivalent exemption. spec_bundle previously support-reviewed and reread here. Supporting prior primary rows not promoted.",
+      "remaining": [
+        "Unreviewed direct/transitive caller/config/test ranges remain explicit; supporting ledger is not full closure.",
+        "Execution0: malformed/empty/skip/encoding/platform/authority/acceptance cases not run.",
+        "License/external claims, independent joint exact-revision review and adoption approval pending."
+      ]
+    },
+    "read_ranges": [
+      [
+        1,
+        155
+      ]
+    ],
+    "review_document_ref": "docs/full-analysis/baldrix-validators-002/semantic-notes.json",
+    "review_selector": "test.py",
+    "review_document_sha256": "02d85804c1cbb50de89a17b1c40766bb2bf7f1f4febbc69e0655d2ab511ea820",
+    "original_receipt_refs": [
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint.json",
+        "sha256": "d9a42db7088eec3e91dee14a6ed4f8f656926d5b921b7a5a5f533a89345ef663"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/checkpoint-notes.md",
+        "sha256": "d5ecfc4c86bf7f629d713f36dfd5a7aa9703870f80e642508a865eab1396819d"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/final-body-notes.md",
+        "sha256": "c2603e9f397f883946f5dcb0cdc453daf53c01260dfea310f7e88f63c7ede69b"
+      },
+      {
+        "ref": "docs/full-analysis/baldrix-validators-002/supporting-evidence.json",
+        "sha256": "b15733e876492c13f00c8437c5ab7327801323a2ffcce78b65231648ff93912d"
+      }
+    ],
+    "prior_full_body_reused": true,
+    "fresh_read_claim": false,
+    "counted_as_primary": false
+  }
+]

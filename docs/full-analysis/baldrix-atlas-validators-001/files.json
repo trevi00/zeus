@@ -1,0 +1,2776 @@
+[
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/README.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1529d7a3023fa05ca71b40d2c10ff62d6bb74066",
+    "pinned_sha256": "a16963fd53aedf03d2dc78cd986e62839abcabe7f8780752d2548152b50f337d",
+    "pinned_bytes": 6033,
+    "manifest_bytes": 6033,
+    "line_count": 85,
+    "read_ranges": [
+      [
+        1,
+        85
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 85,
+        "raw_range_sha256": "a16963fd53aedf03d2dc78cd986e62839abcabe7f8780752d2548152b50f337d"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/README.md",
+      "git_blob": "1529d7a3023fa05ca71b40d2c10ff62d6bb74066",
+      "mode": "100644",
+      "bytes": 6033,
+      "pinned_sha256": "a16963fd53aedf03d2dc78cd986e62839abcabe7f8780752d2548152b50f337d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-01",
+    "semantic_rationale": "<a id=\"file-01\"></a>\n## 01 README.md\n\nMOC는 concept/decision/artifact/journal을 분류하고 28카드·27등록·1advisory, Layer-A25/Layer-B2/AB1이라는 역사 snapshot을 제시한다. 새 registry 전문 1–123행은 builtin37개와 graduated append를 보여 주며 알파벳 정렬도 유지되지 않는다. bridge-state와 source-liveness를 ModuleSpec runtime guard로 분류한 것은 각각 상태 기록 검사와 HTTP 확인이라는 실제 역할과 다르다. 문서 링크는 탐색에 유용하지만 목록 존재를 전수 실행이나 release gate로 승격할 수 없다. 현재 배포 등록·effective graduated 상태·원시 생성 근거는 미확인이다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/atlas-frontmatter.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "a7e2044a6b5d4b88ed3971cede98c1076f53e887",
+    "pinned_sha256": "d6f420a9f91c2fc11c969db82305169bd663b4ceca84b1d63d2d459fdaae0401",
+    "pinned_bytes": 1613,
+    "manifest_bytes": 1613,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "d6f420a9f91c2fc11c969db82305169bd663b4ceca84b1d63d2d459fdaae0401"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/atlas-frontmatter.md",
+      "git_blob": "a7e2044a6b5d4b88ed3971cede98c1076f53e887",
+      "mode": "100644",
+      "bytes": 1613,
+      "pinned_sha256": "d6f420a9f91c2fc11c969db82305169bd663b4ceca84b1d63d2d459fdaae0401",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-02",
+    "semantic_rationale": "<a id=\"file-02\"></a>\n## 02 artifacts/atlas-frontmatter.md\n\n8필수 키·enum·날짜·glob 조건을 설명하며 glob activation으로 Python 파일 변경에 관련 문서를 노출하려는 카드다. 이전 atlas_frontmatter 전문은 실제 고정 ATLAS_DIR, 문자열 parser, globs list 미강제, 날짜 regex/중복 ID 미검사를 확인했다. 이번 test_atlas_frontmatter 전문의 6개 함수는 합성 파일의 누락/enum/id/glob 규칙을 검사하며 실제 vault 전수·적절성은 아니다. 새 paths/atlas_index는 자산 루트와 parse 실패 제외를 보여 준다. Zeus에는 typed 정의 lint를 변형하되 unknown/읽기 실패와 실제 검사 분모를 분리해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/atlas-structure.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "edb9c8edc84f797e87441701a5697fa9b8924ac0",
+    "pinned_sha256": "422f137242333ac9cf1c133c40cffabfe66d5443514c0e61fa07fb582d8033ef",
+    "pinned_bytes": 1580,
+    "manifest_bytes": 1580,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "422f137242333ac9cf1c133c40cffabfe66d5443514c0e61fa07fb582d8033ef"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/atlas-structure.md",
+      "git_blob": "edb9c8edc84f797e87441701a5697fa9b8924ac0",
+      "mode": "100644",
+      "bytes": 1580,
+      "pinned_sha256": "422f137242333ac9cf1c133c40cffabfe66d5443514c0e61fa07fb582d8033ef",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-03",
+    "semantic_rationale": "<a id=\"file-03\"></a>\n## 03 artifacts/atlas-structure.md\n\n깊이·디렉터리 용량·도메인 registry를 설명한다. 이전 구현 전문에서 registry 없음/읽기 실패/빈 파싱은 정합 검사 생략이고 md파일만 용량 분모이며 directory component 깊이와 문서의 file 포함 예시가 다르다. 기본 depth 상수 일부도 미사용이다. capacity30/50 기준을 외부 표준이나 효과 측정으로 확인하지 않았다. Zeus topology 정의의 구조 lint 후보지만 구조 통과가 의미 연결·모델 자격·사용자 인수를 증명하지 않는다. 실제 vault/파일시스템 오류·OS별 경로 검증은 미실행이다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/ci.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "13e83c281c1eb107e089dc23a4414f3f50a3cc1c",
+    "pinned_sha256": "673b0a1f638b28062964bf8453065a0b8cd1dd02ac28cf58899c7ecfc6cff843",
+    "pinned_bytes": 1260,
+    "manifest_bytes": 1260,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "673b0a1f638b28062964bf8453065a0b8cd1dd02ac28cf58899c7ecfc6cff843"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/ci.md",
+      "git_blob": "13e83c281c1eb107e089dc23a4414f3f50a3cc1c",
+      "mode": "100644",
+      "bytes": 1260,
+      "pinned_sha256": "673b0a1f638b28062964bf8453065a0b8cd1dd02ac28cf58899c7ecfc6cff843",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-04",
+    "semantic_rationale": "<a id=\"file-04\"></a>\n## 04 artifacts/ci.md\n\n트리거·job dependency·환경변수 cross-check를 약속하지만 이전 ci.py 전문은 YAML parsing 없이 push/pull_request/test/tool 단어를 찾고 workflow 부재를 PASS로 처리한다. 주석 단어도 검증 문구를 만들 수 있고 uv-only 설정은 누락 가능하다. 이번 실제 .github/workflows/ci.yml은 path filter·ubuntu만·atlas skip 허용을 명시한다. 따라서 CI 카드의 설명은 실제 runner/권한/환경 동등성을 과장한다. Zeus에서는 Git workflow 정의와 PG 실제 CI run/exit/skip을 연결해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/codegen.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5c9380cbbd958242c3ad498a622550a087d77f51",
+    "pinned_sha256": "42b1c169f25d75a4e0e15c7a53f4ae71270963b922733bd99c0d4dab75995692",
+    "pinned_bytes": 1391,
+    "manifest_bytes": 1391,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "42b1c169f25d75a4e0e15c7a53f4ae71270963b922733bd99c0d4dab75995692"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/codegen.md",
+      "git_blob": "5c9380cbbd958242c3ad498a622550a087d77f51",
+      "mode": "100644",
+      "bytes": 1391,
+      "pinned_sha256": "42b1c169f25d75a4e0e15c7a53f4ae71270963b922733bd99c0d4dab75995692",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-05",
+    "semantic_rationale": "<a id=\"file-05\"></a>\n## 05 artifacts/codegen.md\n\n설계의 필드·시그니처·endpoint 위반을 검증한다는 카드다. 이전 codegen.py는 Java 이름 관례, DI/Mapper XML 정규식, endpoint 개수 비율을 비교하고 Java src 없음은 PASS다. FQCN 동명 충돌·annotation mapper와 endpoint 분모 차이가 남는다. 이번 validate_project ROUTING은 Java backend에만 codegen을 배치한다. 8–9 stage라는 원문 번호는 Zeus 8단계와 동등하지 않다. 실제 compile·행동·요구 coverage를 별도 영수증으로 요구해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/collab.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "96faefa7e1044df3a8eb60871abf393147f04edd",
+    "pinned_sha256": "b4826129007d83c0e6b15532184d75da50edb2d4b4aaeec5cc1a3600b46f6d3f",
+    "pinned_bytes": 1265,
+    "manifest_bytes": 1265,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "b4826129007d83c0e6b15532184d75da50edb2d4b4aaeec5cc1a3600b46f6d3f"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/collab.md",
+      "git_blob": "96faefa7e1044df3a8eb60871abf393147f04edd",
+      "mode": "100644",
+      "bytes": 1265,
+      "pinned_sha256": "b4826129007d83c0e6b15532184d75da50edb2d4b4aaeec5cc1a3600b46f6d3f",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-06",
+    "semantic_rationale": "<a id=\"file-06\"></a>\n## 06 artifacts/collab.md\n\nHANDOFF/SUMMARY 최소 존재·drift를 주장하지만 실제 이전 collab.py는 .github/workflow, CODEOWNERS, PR template, CONTRIBUTING의 위치/존재를 주로 본다. .github가 없으면 PASS이고 HANDOFF 계약과 다른 대상을 검사한다. import 시 stream reconfigure도 never-raises와 다를 수 있다. 협업 파일은 사람 검수나 branch protection 실행 증거가 아니다. Zeus는 역할·책임·승인자를 PG에 결속하고 template 존재를 부가 lint로만 취급해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/commit-layer-adjacency.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "aa26c1a9844bd9447c5740cbd5b96b4fff673007",
+    "pinned_sha256": "3bdc8ba8aa11df40d394a21ed54355a3a098c7837e55dbccf06f5df06e504c79",
+    "pinned_bytes": 1452,
+    "manifest_bytes": 1452,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "3bdc8ba8aa11df40d394a21ed54355a3a098c7837e55dbccf06f5df06e504c79"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/commit-layer-adjacency.md",
+      "git_blob": "aa26c1a9844bd9447c5740cbd5b96b4fff673007",
+      "mode": "100644",
+      "bytes": 1452,
+      "pinned_sha256": "3bdc8ba8aa11df40d394a21ed54355a3a098c7837e55dbccf06f5df06e504c79",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-07",
+    "semantic_rationale": "<a id=\"file-07\"></a>\n## 07 artifacts/commit-layer-adjacency.md\n\nlib→handlers→engine→validators 단방향 의존을 commit 단위로 강제한다는 설명이다. 이전 구현은 staged 경로를 얻고 index blob 대신 working file을 읽으며 no-staged에서는 마지막 commit 범위로 바뀐다. relative import·복수 alias·dynamic import·syntax/읽기 실패 누락도 있다. 따라서 정확한 commit의 전체 의존 그래프가 아니다. Zeus의 hexagonal 경계 후보에는 Git 대상 blob·삭제파일·미파싱 분모를 고정하고 PG 검사 receipt를 남겨야 한다. 실제 Git/비ASCII 경로 시험은 미실행이다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/contract.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ba8ff6b192471121eed8a15edfc0eb00b33e0ee9",
+    "pinned_sha256": "1bd06674fa745f8736b390cb9bd1e050e2be9622ce32baca80119fbbfcc459da",
+    "pinned_bytes": 1341,
+    "manifest_bytes": 1341,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "1bd06674fa745f8736b390cb9bd1e050e2be9622ce32baca80119fbbfcc459da"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/contract.md",
+      "git_blob": "ba8ff6b192471121eed8a15edfc0eb00b33e0ee9",
+      "mode": "100644",
+      "bytes": 1341,
+      "pinned_sha256": "1bd06674fa745f8736b390cb9bd1e050e2be9622ce32baca80119fbbfcc459da",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-08",
+    "semantic_rationale": "<a id=\"file-08\"></a>\n## 08 artifacts/contract.md\n\nOpenAPI↔FE type↔BE 시그니처 및 request/response schema를 설명한다. 이전 contract.py는 제한된 FE /api 문자열과 Java Controller annotation 정규식을 비교하며 HTTP method/status/schema/auth를 검사하지 않는다. 없거나 파싱되지 않은 API를 skip/PASS로 바꾸고 문자열 prefix는 경로 segment 경계가 아니다. 이번 validate_project는 root와 Java backend에 중복 배치할 수 있다. Zeus 계약 검사는 versioned schema와 실제 요청·응답·오류 시나리오로 이어져야 하며 이 카드는 인수 게이트로 채택하지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/convention.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "57837a1cfb4992560e37549d583369c087ddb153",
+    "pinned_sha256": "eb27f1acee1f8547ebd6ca600fa1a05f2cd27dfd6f6ecef443963c79a43f13ad",
+    "pinned_bytes": 1309,
+    "manifest_bytes": 1309,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "eb27f1acee1f8547ebd6ca600fa1a05f2cd27dfd6f6ecef443963c79a43f13ad"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/convention.md",
+      "git_blob": "57837a1cfb4992560e37549d583369c087ddb153",
+      "mode": "100644",
+      "bytes": 1309,
+      "pinned_sha256": "eb27f1acee1f8547ebd6ca600fa1a05f2cd27dfd6f6ecef443963c79a43f13ad",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-09",
+    "semantic_rationale": "<a id=\"file-09\"></a>\n## 09 artifacts/convention.md\n\n.claude/conventions.md 기반 naming/directory/import 정책이라는 설명과 달리 이전 구현은 특정 convention 문서의 pipe행·package segment·DTO/error 단어를 휴리스틱으로 읽는다. 없는 문서/Java는 PASS이고 많은 package mismatch는 경고 제한 때문에 숨겨질 수 있다. 규칙의 문자열 존재와 실제 적용은 다르다. Zeus는 Git의 typed 정책과 PG 검사 대상 revision을 결속해야 한다. 일반 Python/TS 프로젝트 동등성, 실제 정책·모델 승인 검사는 미완료다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/ddl.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "603043288d972756c1284abafd01394a54294dc5",
+    "pinned_sha256": "db765eae531c2ba26397550af916aea2c9ffe4e35a10c13ed775baa3ce3f2636",
+    "pinned_bytes": 1312,
+    "manifest_bytes": 1312,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "db765eae531c2ba26397550af916aea2c9ffe4e35a10c13ed775baa3ce3f2636"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/ddl.md",
+      "git_blob": "603043288d972756c1284abafd01394a54294dc5",
+      "mode": "100644",
+      "bytes": 1312,
+      "pinned_sha256": "db765eae531c2ba26397550af916aea2c9ffe4e35a10c13ed775baa3ce3f2636",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-10",
+    "semantic_rationale": "<a id=\"file-10\"></a>\n## 10 artifacts/ddl.md\n\nSQL과 논리 설계의 테이블/컬럼/FK/index 정합을 약속한다. 이전 ddl.py는 제한된 SQL glob·CREATE 정규식·PK/ENGINE/CHARSET 토큰과 heading 집합을 본다. PostgreSQL quoted/schema-qualified 이름·migration 하위·컬럼 타입/FK 의미를 충분히 검사하지 않으며 MySQL ENGINE/CHARSET 강제는 Zeus PG 정본에 맞지 않는다. 파일 존재나 SQL 텍스트는 DB 적용 receipt가 아니다. dialect별 정의 검증과 실제 격리 migration/rollback 관측을 별도 설계해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/er.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5654e2889754bbedb0754bc8288547b083a0ad46",
+    "pinned_sha256": "c8eab7830cbd6303f243b36e98931a1c3272e09c935f3bd3aa53eee6ac37e0fc",
+    "pinned_bytes": 1266,
+    "manifest_bytes": 1266,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "c8eab7830cbd6303f243b36e98931a1c3272e09c935f3bd3aa53eee6ac37e0fc"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/er.md",
+      "git_blob": "5654e2889754bbedb0754bc8288547b083a0ad46",
+      "mode": "100644",
+      "bytes": 1266,
+      "pinned_sha256": "c8eab7830cbd6303f243b36e98931a1c3272e09c935f3bd3aa53eee6ac37e0fc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-11",
+    "semantic_rationale": "<a id=\"file-11\"></a>\n## 11 artifacts/er.md\n\nMermaid 문법·orphan entity·cardinality 검증이라고 설명한다. 이전 er.py는 첫 문서의 heading/entity/관계 단어·Mermaid 제목 유무를 검사해 실제 parser/render/참조 해석과 다르다. 임의 heading이 entity 분모가 될 수 있다. Zeus에서는 entity/relationship ID를 Git 정의로 파싱하고 PG 결과를 기록해야 한다. 의미·사용자 도메인 적합성·렌더링은 미검증이며 그림 문법 발견을 모델 평가로 쓰지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/flow.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b484bdbcf8cf84faa68305aacd48e254db8a6e0f",
+    "pinned_sha256": "475ebf5493dbbfb6456afd173228676d069e8ac247dd1af6b7c49d4fc87c48f7",
+    "pinned_bytes": 1251,
+    "manifest_bytes": 1251,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "475ebf5493dbbfb6456afd173228676d069e8ac247dd1af6b7c49d4fc87c48f7"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "c34a69",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/flow.md",
+      "git_blob": "b484bdbcf8cf84faa68305aacd48e254db8a6e0f",
+      "mode": "100644",
+      "bytes": 1251,
+      "pinned_sha256": "475ebf5493dbbfb6456afd173228676d069e8ac247dd1af6b7c49d4fc87c48f7",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-12",
+    "semantic_rationale": "<a id=\"file-12\"></a>\n## 12 artifacts/flow.md\n\nflow가 PRD US/AC를 빠짐없이 담는지 FAIL로 검증한다고 주장한다. 이전 flow.py는 Mermaid fence prefix와 US 문자열 포함을 보며 US-1이 US-10에 부분 일치하고 누락은 WARN이다. 디렉터리 부재는 PASS이며 문법/render나 실제 상태 전이가 아니다. Zeus는 요구 ID와 경로·실행 시나리오를 명시 매핑하고 사용자 인수 결과를 PG에 유지해야 한다. 원문 flowchart 의도는 후보 설계이며 현재 실행 검증으로 승격하지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/git-flow.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "6cfd4250e69509a560f0239769b922a8e4e9f994",
+    "pinned_sha256": "b2db5c670ae6aede9edee92ae5c0e818511535ac9459595e7220b870f4afcfc2",
+    "pinned_bytes": 1316,
+    "manifest_bytes": 1316,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "b2db5c670ae6aede9edee92ae5c0e818511535ac9459595e7220b870f4afcfc2"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/git-flow.md",
+      "git_blob": "6cfd4250e69509a560f0239769b922a8e4e9f994",
+      "mode": "100644",
+      "bytes": 1316,
+      "pinned_sha256": "b2db5c670ae6aede9edee92ae5c0e818511535ac9459595e7220b870f4afcfc2",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-13",
+    "semantic_rationale": "<a id=\"file-13\"></a>\n## 13 artifacts/git-flow.md\n\nbranch pattern/Conventional Commit lint 카드다. 이전 git_flow.py는 현재 branch와 최근10 subject만 보고 Git 오류를 not-repo PASS로 합칠 수 있으며 detached HEAD는 이후 검사도 생략한다. Merge/Revert 면제와 source selfmod branch 생성 규칙의 상충을 보존한다. telemetry 쓰기가 있어 순수 AST 검사도 아니다. Zeus에서는 정확한 Git 정의 revision·검사 분모·실패 원인을 기록하되 prefix가 diff 검수·실행 승인·사람 인수를 대신하지 않도록 해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/handoff-drift.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ebf4d03602130197bb4fd85cf677a8db410540f4",
+    "pinned_sha256": "d4fa9e85f6f49b0926ba0652a2ea2bc068f5b449cd98bd204c14afdeb477d1b2",
+    "pinned_bytes": 1482,
+    "manifest_bytes": 1482,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "d4fa9e85f6f49b0926ba0652a2ea2bc068f5b449cd98bd204c14afdeb477d1b2"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/handoff-drift.md",
+      "git_blob": "ebf4d03602130197bb4fd85cf677a8db410540f4",
+      "mode": "100644",
+      "bytes": 1482,
+      "pinned_sha256": "d4fa9e85f6f49b0926ba0652a2ea2bc068f5b449cd98bd204c14afdeb477d1b2",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-14",
+    "semantic_rationale": "<a id=\"file-14\"></a>\n## 14 artifacts/handoff-drift.md\n\nHANDOFF phase block과 phase-tree의 byte-equivalent 감시를 설명한다. 이전 handoff_drift 전문은 anchor/format/파일 부재 PASS opt-out, import/render 실패 WARN·skip과 CurrentPhaseBlock 외 범위 미검사를 확인했다. 일부 helper 실패가 빈 결과로 사라진다. 카드는 byte 동등성과 stale 실패를 넓게 주장하지만 실제 적용 범위·정규화/renderer 관계가 남는다. Zeus는 PG runtime의 immutable handoff handle와 Git definition revision을 연결하고 미검사를 깨끗함으로 읽지 않아야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/harness-bridge-state-block.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "18c95240c0b2cf4ced83fb8cdae34257479e3927",
+    "pinned_sha256": "38b253190655f63bfbd0d3ee76f814ff4f93e9c418824a812e3104bde7aca372",
+    "pinned_bytes": 1533,
+    "manifest_bytes": 1533,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "38b253190655f63bfbd0d3ee76f814ff4f93e9c418824a812e3104bde7aca372"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/harness-bridge-state-block.md",
+      "git_blob": "18c95240c0b2cf4ced83fb8cdae34257479e3927",
+      "mode": "100644",
+      "bytes": 1533,
+      "pinned_sha256": "38b253190655f63bfbd0d3ee76f814ff4f93e9c418824a812e3104bde7aca372",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-15",
+    "semantic_rationale": "<a id=\"file-15\"></a>\n## 15 artifacts/harness-bridge-state-block.md\n\nexecutor ownership row를 ModuleSpec Layer-B로 검증한다는 설명은 이전 실제 STATE section bullet 이력·cache 검사와 맞지 않는다. 구현은 전역 cache를 쓰며 빈/삭제 section이 history보다 먼저 PASS, 동일HEAD warm cache에 working 변경 미비교, gitshow 실패 skip을 가진다. ownership 역할 문서가 작업 lease/실제 caller identity는 아니다. Zeus는 PG project/run/owner별 상태와 정확한 Git base를 사용해야 한다. cache 오염·프로세스 종료·인수 효과는 정적 위험만 기록했다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/hashline.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3ec4fb432b9b4beff35b23977330791eda4ce9df",
+    "pinned_sha256": "fa9eea6d906d5b434619d2c6521ffa07c55c9788dddfaf4168079debe2626fca",
+    "pinned_bytes": 1345,
+    "manifest_bytes": 1345,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "fa9eea6d906d5b434619d2c6521ffa07c55c9788dddfaf4168079debe2626fca"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/hashline.md",
+      "git_blob": "3ec4fb432b9b4beff35b23977330791eda4ce9df",
+      "mode": "100644",
+      "bytes": 1345,
+      "pinned_sha256": "fa9eea6d906d5b434619d2c6521ffa07c55c9788dddfaf4168079debe2626fca",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-16",
+    "semantic_rationale": "<a id=\"file-16\"></a>\n## 16 artifacts/hashline.md\n\nSkill/CLAUDE의 외부 anchor target·행 drift를 찾는다는 카드지만 이전 hashline.py는 형식에 맞는 anchor ID만 수집해 중복을 본다. 불량 형식·anchor0은 누락 가능하고 대상 헤더/이전 revision 비교는 없다. cwd와 .claude/skills 조합도 실제 범위를 바꾼다. Zeus에서는 target blob·명시 range/digest와 reader를 결속하고 경로 오류/파싱 실패를 분리해야 한다. 이 분석의 해시 영수증은 원본 hashline 동작 검증이 아니다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/insight-index-importer-whitelist.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5a9b5d7b8623b87e154bfea26795b1275bac45e3",
+    "pinned_sha256": "4c156932a1cedc99d26be5031262abe4b7d592c4e42e6c431f820261a10f2860",
+    "pinned_bytes": 1799,
+    "manifest_bytes": 1799,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "4c156932a1cedc99d26be5031262abe4b7d592c4e42e6c431f820261a10f2860"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/insight-index-importer-whitelist.md",
+      "git_blob": "5a9b5d7b8623b87e154bfea26795b1275bac45e3",
+      "mode": "100644",
+      "bytes": 1799,
+      "pinned_sha256": "4c156932a1cedc99d26be5031262abe4b7d592c4e42e6c431f820261a10f2860",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-17",
+    "semantic_rationale": "<a id=\"file-17\"></a>\n## 17 artifacts/insight-index-importer-whitelist.md\n\n카드는 static validator와 runtime assert를 단일 Layer-AB 구현으로 서술한다. 이전 static 전문은 정해진 subtree·import/attribute 해석에 한정되며 syntax/IO 누락·허용 목록 우선·dynamic 제외가 있다. 새 insight_index 88–152행은 별도 runtime 함수가 forbidden prefix만 차단하고 caller/module/spec/name을 못 얻으면 허용함을 보여 준다. whitelist 전체 강제나 reflective import backstop이라는 포괄 주장과 다르다. Zeus 생성자/심사자 격리는 실행 권한·자격·입력 provenance로 강제해야 하며 ModuleSpec 불변성 및 전체 우회 안전성은 입증되지 않았다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/logical.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2c8a6aaf26c4d506905b83fa9e5f2e49de8a13cf",
+    "pinned_sha256": "98bb4c7f2f6ef10de4d2260236ca86e887441e12de1a3602d8219c05ff63bcdc",
+    "pinned_bytes": 1347,
+    "manifest_bytes": 1347,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "98bb4c7f2f6ef10de4d2260236ca86e887441e12de1a3602d8219c05ff63bcdc"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/logical.md",
+      "git_blob": "2c8a6aaf26c4d506905b83fa9e5f2e49de8a13cf",
+      "mode": "100644",
+      "bytes": 1347,
+      "pinned_sha256": "98bb4c7f2f6ef10de4d2260236ca86e887441e12de1a3602d8219c05ff63bcdc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-18",
+    "semantic_rationale": "<a id=\"file-18\"></a>\n## 18 artifacts/logical.md\n\n논리 DB 정규화와 ERD 동등성 FAIL을 약속한다. 이전 logical.py는 pipe행·PK/FK/INDEX 단어와 heading 수를 비교하고 entity 수 이상이면 M:N 해소를 추정한다. 관계 ID·키·정규화 의미를 검증하지 않으며 ER 부재는 생략이다. Zeus PG schema 정의에는 정규화 판단 근거와 실제 constraint 검사를 별도로 결속해야 한다. 문서 개수·키워드 통과를 데이터 무결성 또는 사람 인수로 채택하지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/mutation-safety.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3eb6e54b3f377e7eef14f5ef947e49fa957bcd88",
+    "pinned_sha256": "273cb98db1721b10189b8f9b9ec6d4390c87da84a5a0b826eb8403af92c406a5",
+    "pinned_bytes": 1499,
+    "manifest_bytes": 1499,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "273cb98db1721b10189b8f9b9ec6d4390c87da84a5a0b826eb8403af92c406a5"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/mutation-safety.md",
+      "git_blob": "3eb6e54b3f377e7eef14f5ef947e49fa957bcd88",
+      "mode": "100644",
+      "bytes": 1499,
+      "pinned_sha256": "273cb98db1721b10189b8f9b9ec6d4390c87da84a5a0b826eb8403af92c406a5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-19",
+    "semantic_rationale": "<a id=\"file-19\"></a>\n## 19 artifacts/mutation-safety.md\n\ndestructive 명령 주변 confirm/dry-run이 없으면 FAIL한다는 카드다. 이전 구현은 ±10행의 example/WHERE/confirm 같은 단어로 면제하고 기본 WARN, --strict만 FAIL/return1이다. SQL 일부·PowerShell Remove-Item·분할 명령이 누락된다. 허용 단어는 실제 실행 대상·승인자·사전 조건과 결속되지 않으며 registry가 return을 버린다. Zeus에서는 문서 lint 후보로만 두고 실제 권한·경로·rollback 검증을 실행층에서 수행해야 한다. 원본 명령은 실행하지 않았다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/openapi.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3f990f5e87775014dc7efd2878a016e75eb9a8f8",
+    "pinned_sha256": "4fcfc6c19f30c514265dac7f4ee594c625af41d0bc5f0bddd075ced44181c587",
+    "pinned_bytes": 1276,
+    "manifest_bytes": 1276,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "4fcfc6c19f30c514265dac7f4ee594c625af41d0bc5f0bddd075ced44181c587"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/openapi.md",
+      "git_blob": "3f990f5e87775014dc7efd2878a016e75eb9a8f8",
+      "mode": "100644",
+      "bytes": 1276,
+      "pinned_sha256": "4fcfc6c19f30c514265dac7f4ee594c625af41d0bc5f0bddd075ced44181c587",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-20",
+    "semantic_rationale": "<a id=\"file-20\"></a>\n## 20 artifacts/openapi.md\n\npath/method/parameter/response schema/ref 유효성이라는 설명보다 실제 이전 openapi.py는 paths 키·indent slash·HTTP 단어·domain 개수 비율을 검사한다. YAML schema parser가 없고 endpoint0/명세 부재도 PASS 가능하다. 따라서 dangling ref나 요청응답 의미 검증 주장은 닫히지 않는다. Zeus는 Git OpenAPI 계약과 PG 실제 HTTP 시나리오 receipt를 연결하고 원본 도구를 discovery lint 이상으로 승격하지 않아야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/prd.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f266501c9bb7c576ab04a270dfa05fe9db3e4cc2",
+    "pinned_sha256": "1217e62d8c692ed9f00a92226088b525c5bba62ed6be1a716b12eca9b3f5c2c0",
+    "pinned_bytes": 1346,
+    "manifest_bytes": 1346,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "1217e62d8c692ed9f00a92226088b525c5bba62ed6be1a716b12eca9b3f5c2c0"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/prd.md",
+      "git_blob": "f266501c9bb7c576ab04a270dfa05fe9db3e4cc2",
+      "mode": "100644",
+      "bytes": 1346,
+      "pinned_sha256": "1217e62d8c692ed9f00a92226088b525c5bba62ed6be1a716b12eca9b3f5c2c0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-21",
+    "semantic_rationale": "<a id=\"file-21\"></a>\n## 21 artifacts/prd.md\n\npersona/glossary/US/AC 정합 설명과 달리 이전 prd.py는 index/domain 파일·링크 존재·AS/I WANT/SO THAT 패턴을 검사한다. 임의 앞600자 SKELETON은 스토리 검사를 면제하고 index의 전체 도메인 누락을 검증하지 않는다. 요구 디렉터리 없음은 PASS다. Zeus Git 요구의 안정적 ID·미해결·승인 actor와 PG 추적 상태를 사용해야 한다. 문서 문구는 핵심 사용자 시나리오의 실제 승인 증거가 아니다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/private-content-leak.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "783308fa3dfcd3a8a74cc9886ddc7e7caaae471b",
+    "pinned_sha256": "4e1a146509389a7cfb27e3e510311da053bacbc0667404b7245fdd4b7060ec10",
+    "pinned_bytes": 1447,
+    "manifest_bytes": 1447,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "4e1a146509389a7cfb27e3e510311da053bacbc0667404b7245fdd4b7060ec10"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/private-content-leak.md",
+      "git_blob": "783308fa3dfcd3a8a74cc9886ddc7e7caaae471b",
+      "mode": "100644",
+      "bytes": 1447,
+      "pinned_sha256": "4e1a146509389a7cfb27e3e510311da053bacbc0667404b7245fdd4b7060ec10",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-22",
+    "semantic_rationale": "<a id=\"file-22\"></a>\n## 22 artifacts/private-content-leak.md\n\n개인 path/API key/개인정보 일반 검출을 주장하지만 이전 private_content_leak.py는 제한된 브랜드 토큰·버전·shared 경로만 검색한다. pointer-ok 한 토큰으로 줄 전체가 면제되고 읽기 실패는 빈 결과가 된다. 의심 snippet 출력/telemetry는 2차 정보 저장 위험이다. 이 보고서에는 원문 민감 내용이나 긴 재현물을 복제하지 않는다. Zeus는 public 산출물의 명확한 대상과 redaction 정책·실패/미검사 receipt가 필요하며 일반 secret scanner로 채택하지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/skeleton.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3db35da1ffe1290c181e9708c3ae81b8278f8c8e",
+    "pinned_sha256": "228af7a2acc4802023a3e7c0d453952744af6ce8c2b130cbdf51fdf9e0d9e42e",
+    "pinned_bytes": 1381,
+    "manifest_bytes": 1381,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "228af7a2acc4802023a3e7c0d453952744af6ce8c2b130cbdf51fdf9e0d9e42e"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/skeleton.md",
+      "git_blob": "3db35da1ffe1290c181e9708c3ae81b8278f8c8e",
+      "mode": "100644",
+      "bytes": 1381,
+      "pinned_sha256": "228af7a2acc4802023a3e7c0d453952744af6ce8c2b130cbdf51fdf9e0d9e42e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-23",
+    "semantic_rationale": "<a id=\"file-23\"></a>\n## 23 artifacts/skeleton.md\n\narchitecture module/crate 대응이라는 설명과 달리 이전 구현은 Java/Spring/Gradle/POM/config/package 관례다. Maven은 존재만, Gradle은 keyword를 보며 src 없음은 PASS다. file 존재는 compile·설정 유효성·설계 동등성 증거가 아니다. 이번 validate_project도 java-be만 배치한다. Zeus hexagonal Python 구조에는 그대로 적용할 수 없고 typed scaffold 정의 및 실제 build/행동 검증이 별도로 필요하다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/skill-frontmatter.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "6e5d585562785bbcfca194177ead7ff2bd73db69",
+    "pinned_sha256": "a839b064ea777f2f1f32f5c72da60ec68eed83cf7965d31affd5f634c928b606",
+    "pinned_bytes": 1549,
+    "manifest_bytes": 1549,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "a839b064ea777f2f1f32f5c72da60ec68eed83cf7965d31affd5f634c928b606"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/skill-frontmatter.md",
+      "git_blob": "6e5d585562785bbcfca194177ead7ff2bd73db69",
+      "mode": "100644",
+      "bytes": 1549,
+      "pinned_sha256": "a839b064ea777f2f1f32f5c72da60ec68eed83cf7965d31affd5f634c928b606",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-24",
+    "semantic_rationale": "<a id=\"file-24\"></a>\n## 24 artifacts/skill-frontmatter.md\n\nname/description/keywords 필수와 harness-* 금지를 모든 skill에 강제한다는 카드다. 이전 구현은 최상위 namespace만 검사하고 SKILL 형제 문서를 면제하며 일부 필드 누락은 mobile만 FAIL·다른 것은 WARN/PASS다. 문자열 parser의 빈 YAML 표현도 truthy일 수 있다. 원본 Wave21 LOCK은 현 모델 자격·실제 activation 증거가 아니다. Zeus는 typed 등록 정의와 caller 가용성/권한/qualification을 별도 검사하고 exemption 분모를 유지해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/skill-quality-axes.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1e0079a5ec645dcb3f987cb859a72440301910b9",
+    "pinned_sha256": "f0358c4c431b5a1906f0e5675ad8942074a4d8225ccedb626f25f61c1f5def63",
+    "pinned_bytes": 1475,
+    "manifest_bytes": 1475,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "f0358c4c431b5a1906f0e5675ad8942074a4d8225ccedb626f25f61c1f5def63"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/skill-quality-axes.md",
+      "git_blob": "1e0079a5ec645dcb3f987cb859a72440301910b9",
+      "mode": "100644",
+      "bytes": 1475,
+      "pinned_sha256": "f0358c4c431b5a1906f0e5675ad8942074a4d8225ccedb626f25f61c1f5def63",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-25",
+    "semantic_rationale": "<a id=\"file-25\"></a>\n## 25 artifacts/skill-quality-axes.md\n\nISO/IEC25010의 9축 minimum threshold 검증이라는 설명은 실제 이전 skill_quality_axes의 9문서 형식 gate와 다르다. Source/dash/header/라벨 존재와 opt-in prefix를 검사하며 inspected0도 PASS다. 내용 품질·보안·실제 모델 성능 점수를 측정하지 않는다. 원문 표준·과거 등급·외부 품질 주장은 미검증이다. Zeus에서는 형식 lint와 독립 심사·실제 실패 시나리오·사람 인수를 구분하고 해당 카드를 품질 인증으로 채택하지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/skill-source-liveness.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f1dcc3a4ff82cdd9709c35c7de21f1b1d8f6ddb4",
+    "pinned_sha256": "f68d075b116d75dbfc8c5d3cf228fa6f83ac3b000815ac9243a63e2ae159bfc5",
+    "pinned_bytes": 1523,
+    "manifest_bytes": 1523,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "f68d075b116d75dbfc8c5d3cf228fa6f83ac3b000815ac9243a63e2ae159bfc5"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/skill-source-liveness.md",
+      "git_blob": "f1dcc3a4ff82cdd9709c35c7de21f1b1d8f6ddb4",
+      "mode": "100644",
+      "bytes": 1523,
+      "pinned_sha256": "f68d075b116d75dbfc8c5d3cf228fa6f83ac3b000815ac9243a63e2ae159bfc5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-26",
+    "semantic_rationale": "<a id=\"file-26\"></a>\n## 26 artifacts/skill-source-liveness.md\n\nsource URL HEAD advisory를 ModuleSpec runtime guard로 분류하고 registry 호출 예시도 제시한다. 그러나 unregistered 이름은 새 get_validator에서 KeyError이므로 제시한 registry 예시는 미등록 상태에서 성립하지 않는다. 이전 전문은 401/403/405/406도 OK, SSL검증 해제 fallback, missing URL 분모0와 모든 DEAD에도 PASS/0를 확인했다. cron 주기는 권고이지 이번에 확인한 등록·실행이 아니다. Zeus 제한된 네트워크 liveness 힌트 후보이며 인용 진실·라이선스·신뢰 근거로 쓰지 않는다. 실제 HTTP 요청0이다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/skill-staging-isolation.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2828a1dba14c95cc03081cb6cdd930da0354989d",
+    "pinned_sha256": "d0504c6522c34ec04caf78a48cc7155fcdf18c02128716952b939292d0dc6515",
+    "pinned_bytes": 1511,
+    "manifest_bytes": 1511,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "d0504c6522c34ec04caf78a48cc7155fcdf18c02128716952b939292d0dc6515"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/skill-staging-isolation.md",
+      "git_blob": "2828a1dba14c95cc03081cb6cdd930da0354989d",
+      "mode": "100644",
+      "bytes": 1511,
+      "pinned_sha256": "d0504c6522c34ec04caf78a48cc7155fcdf18c02128716952b939292d0dc6515",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-27",
+    "semantic_rationale": "<a id=\"file-27\"></a>\n## 27 artifacts/skill-staging-isolation.md\n\nproduction 직접 mutation FAIL와 marker 없음 WARN이라는 카드는 이전 static validator의 정해진3파일 AST write-expression 검사와 다르다. ROOT 이름의 실제 바인딩·Div 오른쪽·parent/메소드의 경로 이동을 추적하지 못한다. missing/read 오류도 clean으로 처리할 수 있다. 새 staging_guard 전문은 resolve/relative_to 검사지만 자동 write interception이 아니고 caller SHOULD 계약이다. Zeus는 후보 비활성화·실제 파일 권한·PG 승인·출력 소유권을 강제해야 한다. 정적 이름 검사는 runtime 안전 보증이 아니다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/subagent-refs.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "441ad7c5c41467ce812df955979516ce21e040f4",
+    "pinned_sha256": "edabf27f7a7495df62dfd64808daed09a218af73f0553b9936237244e49c1fc4",
+    "pinned_bytes": 1361,
+    "manifest_bytes": 1361,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "edabf27f7a7495df62dfd64808daed09a218af73f0553b9936237244e49c1fc4"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/subagent-refs.md",
+      "git_blob": "441ad7c5c41467ce812df955979516ce21e040f4",
+      "mode": "100644",
+      "bytes": 1361,
+      "pinned_sha256": "edabf27f7a7495df62dfd64808daed09a218af73f0553b9936237244e49c1fc4",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-28",
+    "semantic_rationale": "<a id=\"file-28\"></a>\n## 28 artifacts/subagent-refs.md\n\nagent 파일 존재와 frontmatter 유효성·description 품질을 검사한다는 설명보다 실제 구현은 참조 regex·파일 stem·고정 builtin allowlist다. agents 부재/empty는 전체 미검사 PASS, 일부 이름·템플릿은 제외되고 model/tools 자격은 확인하지 않는다. Zeus는 runtime 등록과 역할·허용도구·검증된 모델 자격·lease를 PG에 결속해야 한다. 외부 Claude builtin 명칭과 플랫폼 동등성은 미확인이다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/artifacts/test.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "fd487ddfe178efce332046977e77fde922480107",
+    "pinned_sha256": "cddcb060d5c83d2067947fc3a61c6327e02696c247fcd922a8cb00b3e9bb7545",
+    "pinned_bytes": 1303,
+    "manifest_bytes": 1303,
+    "line_count": 56,
+    "read_ranges": [
+      [
+        1,
+        56
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 56,
+        "raw_range_sha256": "cddcb060d5c83d2067947fc3a61c6327e02696c247fcd922a8cb00b3e9bb7545"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "92af01",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/artifacts/test.md",
+      "git_blob": "fd487ddfe178efce332046977e77fde922480107",
+      "mode": "100644",
+      "bytes": 1303,
+      "pinned_sha256": "cddcb060d5c83d2067947fc3a61c6327e02696c247fcd922a8cb00b3e9bb7545",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-29",
+    "semantic_rationale": "<a id=\"file-29\"></a>\n## 29 artifacts/test.md\n\nsrc 모듈 coverage와 run_units 최소 case/약한 assertion을 검증한다는 카드는 실제 Java test basename·Service 대응·Gradle jacoco 단어·보고서 디렉터리 존재와 다르다. 기존 디렉터리가 빈/오래된 상태여도 실제 실행처럼 보일 수 있다. src/test 부재 PASS와 일부 Service 미대응 WARN도 실패 조건 선언과 다르다. Zeus는 실제 실행 revision·argv·exit·case 분모·오라클 민감도·사람 인수를 기록해야 한다. 파일 수나 보고서 경로로 테스트 완료를 승인하지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/concepts/layer-a-ast-plus-layer-b-modulespec-runtime-whitelist.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d0b1a838ff8eaa7e9c3ef38127ac3f11b1fba363",
+    "pinned_sha256": "686f78ba9d60d555ab00a88f6667139ad245ed09f8b0093112ad73c53d9393c8",
+    "pinned_bytes": 2668,
+    "manifest_bytes": 2668,
+    "line_count": 54,
+    "read_ranges": [
+      [
+        1,
+        54
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 54,
+        "raw_range_sha256": "686f78ba9d60d555ab00a88f6667139ad245ed09f8b0093112ad73c53d9393c8"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "1c0e43",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/concepts/layer-a-ast-plus-layer-b-modulespec-runtime-whitelist.md",
+      "git_blob": "d0b1a838ff8eaa7e9c3ef38127ac3f11b1fba363",
+      "mode": "100644",
+      "bytes": 2668,
+      "pinned_sha256": "686f78ba9d60d555ab00a88f6667139ad245ed09f8b0093112ad73c53d9393c8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-30",
+    "semantic_rationale": "<a id=\"file-30\"></a>\n## 30 concepts/layer-a-ast-plus-layer-b-modulespec-runtime-whitelist.md\n\n두 layer 모두 통과해야 mutation이 진행되며 ModuleSpec가 dynamic/reflection 우회를 막는다고 주장한다. 같은 문서 D7 인용은 dynamic-import out-of-scope이고 새 runtime 코드도 policy advisory·unknown caller fail-open을 명시한다. 실제 AST 검사와 mutation 호출은 동일 transaction으로 묶이지 않는다. ModuleSpec의 불변성은 본문 선언일 뿐 검증하지 않았다. 개념을 보존하려면 Zeus 실행층의 독립된 권한/격리 경계가 필요하며 단순 introspection을 보안 신원으로 채택하지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/concepts/staging-guard-blocks-non-staged-mutation.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "582b9b74c2ebd9d7d03ba9475f217bc9dc503700",
+    "pinned_sha256": "bdb81db30439bd59f0ece88b4c360d03ebfbbc5ae37f6470910800c682a79d19",
+    "pinned_bytes": 3582,
+    "manifest_bytes": 3582,
+    "line_count": 53,
+    "read_ranges": [
+      [
+        1,
+        53
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 53,
+        "raw_range_sha256": "bdb81db30439bd59f0ece88b4c360d03ebfbbc5ae37f6470910800c682a79d19"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "1c0e43",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/concepts/staging-guard-blocks-non-staged-mutation.md",
+      "git_blob": "582b9b74c2ebd9d7d03ba9475f217bc9dc503700",
+      "mode": "100644",
+      "bytes": 3582,
+      "pinned_sha256": "bdb81db30439bd59f0ece88b4c360d03ebfbbc5ae37f6470910800c682a79d19",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-31",
+    "semantic_rationale": "<a id=\"file-31\"></a>\n## 31 concepts/staging-guard-blocks-non-staged-mutation.md\n\nstaging Layer-B도 ModuleSpec whitelist라 설명하지만 새 staging_guard는 caller 신원 대신 path containment 검사다. SHOULD 호출과 별도 debate에 맡긴 writer wiring 때문에 모든 실제 mutation을 막는다는 결론은 과장이다. marker WARN 예시도 실제 static 검사 계약과 다르다. 두 layer를 병행한다는 설계 의도와 자동 강제를 구분하고 Zeus에서는 target path·candidate ID·승인 revision·실행 권한을 결속해야 한다. 실제 writer 전체 전이는 미완료다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/concepts/stdout-pass-fail-warn-contract-required.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "98c2466846870d1b674b28186939a3d4813984ea",
+    "pinned_sha256": "2aed36ef4c4f30ca76cffd7d3637a1fd1c85989b51abc0132b7fbb2a360e75d7",
+    "pinned_bytes": 3866,
+    "manifest_bytes": 3866,
+    "line_count": 95,
+    "read_ranges": [
+      [
+        1,
+        95
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 95,
+        "raw_range_sha256": "2aed36ef4c4f30ca76cffd7d3637a1fd1c85989b51abc0132b7fbb2a360e75d7"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:001",
+    "scope_sha256": "f56f88ea1a14cf89218198da0197682a1026a1c9808d7319f0405460faddcf80",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "1c0e43",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/concepts/stdout-pass-fail-warn-contract-required.md",
+      "git_blob": "98c2466846870d1b674b28186939a3d4813984ea",
+      "mode": "100644",
+      "bytes": 3866,
+      "pinned_sha256": "2aed36ef4c4f30ca76cffd7d3637a1fd1c85989b51abc0132b7fbb2a360e75d7",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-32",
+    "semantic_rationale": "<a id=\"file-32\"></a>\n## 32 concepts/stdout-pass-fail-warn-contract-required.md\n\n예외 없음·exit 무관·stdout가 감사 정본이라는 계약과 예제 aggregator가 있다. 예제는 returncode/stderr를 무시해 출력 없는 실패를 PASS로 만들 수 있다. 새 registry는 KeyError/import/실제 main 예외를 막지 않고, validate_project는 예외를 FAIL로 처리하나 main return값을 무시한다. run_all은 테스트 main의 return/예외와 failure token도 확인한다. 세 소비자는 동일 계약이 아니다. Windows reconfigure는 없는 stream에서 실패할 수 있고 실제 플랫폼 실행0이다. Zeus는 stdout를 로그로 보존하되 구조화된 runner receipt를 판정 정본으로 사용해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/concepts/validator-enforcement-tiers-registered-vs-advisory.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d35f4397d3843308c3a30e755383efa3714c8e38",
+    "pinned_sha256": "0a1aee93af384d7f03fea92999ea72e2402b5d61c0ac9ec6acb429275600478c",
+    "pinned_bytes": 3579,
+    "manifest_bytes": 3579,
+    "line_count": 53,
+    "read_ranges": [
+      [
+        1,
+        53
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 53,
+        "raw_range_sha256": "0a1aee93af384d7f03fea92999ea72e2402b5d61c0ac9ec6acb429275600478c"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:002",
+    "scope_sha256": "4a70925fef0e204941882f620210fc349e2235d4327c5b961b2dc4845270e7cd",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "1c0e43",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/concepts/validator-enforcement-tiers-registered-vs-advisory.md",
+      "git_blob": "d35f4397d3843308c3a30e755383efa3714c8e38",
+      "mode": "100644",
+      "bytes": 3579,
+      "pinned_sha256": "0a1aee93af384d7f03fea92999ea72e2402b5d61c0ac9ec6acb429275600478c",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-33",
+    "semantic_rationale": "<a id=\"file-33\"></a>\n## 33 concepts/validator-enforcement-tiers-registered-vs-advisory.md\n\n등록만으로 매 cycle 모든 validator가 hard gate라는 주장은 actual registry/CI/test dispatch와 다르다. builtin37+graduated는 import-time 상태이며 graduation 오류는 빈 목록이고 CI path-filter는 Atlas/skills-only 변경을 포함하지 않는다. run_all은 대응 테스트가 없으면 SKIP하고 실패0이면0이며 validator 실제 프로젝트 행동 전체를 실행하는 루프가 아니다. advisory 이름의 직접 registry 호출도 불가할 수 있다. Zeus는 등록/스케줄/실행/판정/승인을 각각 PG receipt로 분리해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/concepts/validator-registry-alphabetic-ordering-prevents-merge-conflict.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1b4de128b2036008fa68ad89dec0edfaedfc5efe",
+    "pinned_sha256": "4bbe30ab324e592351ec032a0061e90cacdaa2e38abff1c12f92b05f2e6c040a",
+    "pinned_bytes": 3966,
+    "manifest_bytes": 3966,
+    "line_count": 113,
+    "read_ranges": [
+      [
+        1,
+        113
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 113,
+        "raw_range_sha256": "4bbe30ab324e592351ec032a0061e90cacdaa2e38abff1c12f92b05f2e6c040a"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:002",
+    "scope_sha256": "4a70925fef0e204941882f620210fc349e2235d4327c5b961b2dc4845270e7cd",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "1c0e43",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/concepts/validator-registry-alphabetic-ordering-prevents-merge-conflict.md",
+      "git_blob": "1b4de128b2036008fa68ad89dec0edfaedfc5efe",
+      "mode": "100644",
+      "bytes": 3966,
+      "pinned_sha256": "4bbe30ab324e592351ec032a0061e90cacdaa2e38abff1c12f92b05f2e6c040a",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-34",
+    "semantic_rationale": "<a id=\"file-34\"></a>\n## 34 concepts/validator-registry-alphabetic-ordering-prevents-merge-conflict.md\n\n27개 정렬 tuple snapshot과 추가 시 자동 CI pickup을 안내한다. 새 builtin은 context_coupling·subprocess_decode_guard 위치에서 정렬이 깨져 있고 graduated는 append이므로 전체 정렬 불변식도 아니다. tuple 중복이 membership의 false positive를 만든다는 설명은 중복 실행 위험과 membership 의미를 혼동한다. 정렬은 변경 충돌 감소 관례일 뿐 충돌 방지 보증이 아니다. Zeus는 Git 등록 schema의 유일성·존재·자격과 PG 실제 실행 분모를 검사해야 한다. 동시 PR/merge 효과는 시험하지 않았다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/decisions/debate-w13-d7-ast-plus-modulespec-enforcement.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b63994b33cf6643370cc0e993b9cdf36fdf98d2d",
+    "pinned_sha256": "ca087250adf2e1e46d7d83220fe7c8683dd914e915937278abe5cf0e9e0e7bfc",
+    "pinned_bytes": 5786,
+    "manifest_bytes": 5786,
+    "line_count": 76,
+    "read_ranges": [
+      [
+        1,
+        76
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 76,
+        "raw_range_sha256": "ca087250adf2e1e46d7d83220fe7c8683dd914e915937278abe5cf0e9e0e7bfc"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:002",
+    "scope_sha256": "4a70925fef0e204941882f620210fc349e2235d4327c5b961b2dc4845270e7cd",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "1c0e43",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/decisions/debate-w13-d7-ast-plus-modulespec-enforcement.md",
+      "git_blob": "b63994b33cf6643370cc0e993b9cdf36fdf98d2d",
+      "mode": "100644",
+      "bytes": 5786,
+      "pinned_sha256": "ca087250adf2e1e46d7d83220fe7c8683dd914e915937278abe5cf0e9e0e7bfc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-35",
+    "semantic_rationale": "<a id=\"file-35\"></a>\n## 35 decisions/debate-w13-d7-ast-plus-modulespec-enforcement.md\n\n17-field master LOCK 중 D7/D6의 domain view이고 4세대 verdict/hash를 인용한다. master와 이벤트 원문을 이번에 확인하지 않았으므로 approved·byte-identical·0blocker는 역사 주장이다. snapshot 동일성은 설계가 옳거나 현재 caller 격리를 구현한다는 증명이 아니다. 단일 산출물321LOC와 별도 runtime 경로 설명은 artifact268LOC와도 다르다. 새 runtime의 negative set/unknown fail-open이 포괄 whitelist 주장과 상충한다. Zeus는 원본 증거·정의 revision·독립 심사·실제 동작 검증을 새로 결속해야 한다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/decisions/debate-w18-d3-staging-only-invariant.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c2431a64c77626066ceff25e875b58b24006b4e0",
+    "pinned_sha256": "096f544cf1082830cc8661fe7a18b8748fe7df0a9c79db6b04e4732594e82ad1",
+    "pinned_bytes": 6898,
+    "manifest_bytes": 6898,
+    "line_count": 78,
+    "read_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 78,
+        "raw_range_sha256": "096f544cf1082830cc8661fe7a18b8748fe7df0a9c79db6b04e4732594e82ad1"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:002",
+    "scope_sha256": "4a70925fef0e204941882f620210fc349e2235d4327c5b961b2dc4845270e7cd",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "305f21",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/decisions/debate-w18-d3-staging-only-invariant.md",
+      "git_blob": "c2431a64c77626066ceff25e875b58b24006b4e0",
+      "mode": "100644",
+      "bytes": 6898,
+      "pinned_sha256": "096f544cf1082830cc8661fe7a18b8748fe7df0a9c79db6b04e4732594e82ad1",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-36",
+    "semantic_rationale": "<a id=\"file-36\"></a>\n## 36 decisions/debate-w18-d3-staging-only-invariant.md\n\nD3만 채택하고 D1/D2와 audit chokepoint를 거부했다고 명시해 제외 범위를 드러낸다. 14field LOCK은 제한된 AST 함수/허용 root·runtime API·telemetry를 구체화하지만 새 guard SHOULD 계약과 writer 연결 미완료 때문에 모든 draft write confinement는 입증되지 않는다. ModuleSpec frame-globals 회귀라는 invalidation은 path guard 실제 코드와 맞지 않는다. 원시 events/sha canonicalization·당시 모델 신원은 미확인이다. Zeus는 후보 정의·activation 승인·실제 write lease를 분리하고 과거 converged를 현재 채택 권위로 쓰지 않는다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/journal/2026-05-24-wave-13-14-l1-validator-modulespec-land.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "8453a1826618b13e2ded9592f3deca5809612512",
+    "pinned_sha256": "8a97613893af59fc28b755a38d6f8fef286e145f32a260ced10afa61e03c01fa",
+    "pinned_bytes": 5089,
+    "manifest_bytes": 5089,
+    "line_count": 66,
+    "read_ranges": [
+      [
+        1,
+        66
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 66,
+        "raw_range_sha256": "8a97613893af59fc28b755a38d6f8fef286e145f32a260ced10afa61e03c01fa"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:002",
+    "scope_sha256": "4a70925fef0e204941882f620210fc349e2235d4327c5b961b2dc4845270e7cd",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "305f21",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/journal/2026-05-24-wave-13-14-l1-validator-modulespec-land.md",
+      "git_blob": "8453a1826618b13e2ded9592f3deca5809612512",
+      "mode": "100644",
+      "bytes": 5089,
+      "pinned_sha256": "8a97613893af59fc28b755a38d6f8fef286e145f32a260ced10afa61e03c01fa",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-37",
+    "semantic_rationale": "<a id=\"file-37\"></a>\n## 37 journal/2026-05-24-wave-13-14-l1-validator-modulespec-land.md\n\n4세대 토론·fabrication 정정·7commit/LOC·0위반·p99<50ms 3연속 성공을 인용하는 journal이다. LOC321/268 충돌을 숨기지 않는 점은 좋으나 원시 diff·runner·환경·측정 분모가 없어 이번 실행 receipt로 계상하지 않는다. immutable ModuleSpec과 runtime backstop 서술은 새 코드의 advisory 한계와 다르다. Zeus는 journal을 설명/탐색 자료로 두고 Git 실제 변경 및 PG 관측 원문을 별도로 요구해야 한다. 실제 성능·승인·원 저자 판단 동등성은 미검증이다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  },
+  {
+    "source": "baldrix",
+    "path": "atlas/validators/journal/2026-06-01-wave-18-d3-staging-only-invariant-land.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "6dc6ca991d768b267a60da0725d04f6d370c887d",
+    "pinned_sha256": "307acc445adf618230c407d458b096a51ef3b57102329f9805adab2e1fbe5fab",
+    "pinned_bytes": 3994,
+    "manifest_bytes": 3994,
+    "line_count": 53,
+    "read_ranges": [
+      [
+        1,
+        53
+      ]
+    ],
+    "range_receipts": [
+      {
+        "start": 1,
+        "end": 53,
+        "raw_range_sha256": "307acc445adf618230c407d458b096a51ef3b57102329f9805adab2e1fbe5fab"
+      }
+    ],
+    "manifest_sha256_status": "matched",
+    "raw_git_blob_status": "matched",
+    "tests_executed": [],
+    "remaining": [
+      "Full caller/config/transitive implementation/test closure remains pending.",
+      "Original imports/execution/collection/probes/network/install/Claude0.",
+      "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+      "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+    ],
+    "partition": "baldrix:atlas/validators:002",
+    "scope_sha256": "4a70925fef0e204941882f620210fc349e2235d4327c5b961b2dc4845270e7cd",
+    "disposition": "semantically_reviewed",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "read_extent": "full",
+    "read_method": "fresh_full_body_read",
+    "prior_full_body_reused": false,
+    "tool_output_chunk": "305f21",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "atlas/validators/journal/2026-06-01-wave-18-d3-staging-only-invariant-land.md",
+      "git_blob": "6dc6ca991d768b267a60da0725d04f6d370c887d",
+      "mode": "100644",
+      "bytes": 3994,
+      "pinned_sha256": "307acc445adf618230c407d458b096a51ef3b57102329f9805adab2e1fbe5fab",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_path_ledger_snapshot_sha256": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "prior_snapshot_ref": "docs/full-analysis/baldrix-atlas-validators-001/prior-path-ledger.json",
+    "review_ref": "docs/full-analysis/baldrix-atlas-validators-001/file-reviews.md#file-38",
+    "semantic_rationale": "<a id=\"file-38\"></a>\n## 38 journal/2026-06-01-wave-18-d3-staging-only-invariant-land.md\n\nD3의 2세대 승인·동일sha·D1/D2거부를 decision에서 다시 인용한다. wave 라벨이 events 자체가 아니라 문서 계승임을 명시한 provenance 구분은 보존 후보다. 다만 재사용이 확인됐고 runtime이 모든 false negative를 막는다는 설명은 guard API 존재를 writer 전수 연결로 승격한다. 새 direct test_staging_guard 전문은 일부 실패를 print만 하고 main은 예외만 세므로 함수/pytest/수동 runner 판정도 다르다. Zeus PG 실제 시도/분모/결과와 Git 승인된 정의를 결속하기 전 이 역사 journal은 인수 증거가 아니다.",
+    "supporting_refs": [
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-evidence.json",
+      "docs/full-analysis/baldrix-atlas-validators-001/supporting-reuse.json"
+    ],
+    "generated_duplicate_status": "Templated authored documentation; generator and original history not proven. Individually read, no duplicate exemption.",
+    "test_limits": "No original execution. Freshly read 6 frontmatter and 7 staging-guard test functions; historical PASS is data only.",
+    "source_executed": false,
+    "adoption_decision": "defer; behavior-specific adaptation candidates only",
+    "whole_analysis_complete": false,
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "actual_claude_review_complete": false,
+    "license_complete": false,
+    "platform_validation_complete": false,
+    "model_qualification_complete": false,
+    "human_acceptance_complete": false,
+    "zeus_mapping": "Git eight-stage definitions and PG runtime receipt/denominator/qualification/human acceptance; no current implementation equivalence claim."
+  }
+]

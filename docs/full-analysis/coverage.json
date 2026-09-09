@@ -2,15 +2,15 @@
   "tracked_paths": 2736,
   "source_counts": {
     "baldrix": {
-      "semantically_reviewed": 840,
-      "unreviewed": 452,
+      "semantically_reviewed": 900,
+      "unreviewed": 392,
       "body_reviewed_call_test_trace_pending": 356
     },
     "harness": {
-      "body_reviewed_call_test_trace_pending": 233,
+      "body_reviewed_call_test_trace_pending": 248,
       "semantic-reviewed-execution-not-attested": 93,
       "semantically_reviewed_static_only": 61,
-      "unreviewed": 280,
+      "unreviewed": 265,
       "semantically_reviewed": 264
     },
     "guardian": {

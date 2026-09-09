@@ -1,0 +1,32 @@
+{
+  "status": "independent_own_metadata_checks_passed",
+  "primary_count": 22,
+  "primary_bytes": 208437,
+  "primary_lines": 5075,
+  "fresh_primary_full_bodies": 22,
+  "reused_primary_full_bodies": 0,
+  "supporting_rows": 22,
+  "supporting_lines": 2076,
+  "raw_blob_sha256_bytes_ranges_refs_prior_row_binding_verified": true,
+  "utf8_no_bom_no_cr_exactly_one_trailing_lf_no_trailing_whitespace": true,
+  "korean_body_readback_receipts": [
+    "ca5e92",
+    "b554e3"
+  ],
+  "final_body_typo_edit": "i20: approval phrase clarified; no substantive finding changed.",
+  "source_execution_count": 0,
+  "source_test_count": 0,
+  "full_analysis_complete": false,
+  "adoption_approved": false,
+  "artifact_sha256": {
+    "checkpoint.json": "9ec8c10a8e530c388a9ae62e67a9df56217d0c5a821f113900b57095f173e5d3",
+    "files.json": "18d6b082bae81b8491439741f8c4e9d8fb542cb4aebc4c85c0cd9cb847a2482e",
+    "record_review.py": "47f431e3723479531a35156466fd915bc89b5d6b37114aa44b140a54ad26c037",
+    "remaining.json": "6fa9d976b87769ced504d2f7607aa18b351242902eb542b9e36e5c130f030acf",
+    "review.md": "dd66bfb4ecb382d5252d1a89a87bd7404c5da4a1645d2ee634eb4bbd51611c10",
+    "supporting-evidence.json": "8b4bffe9c749ed7bc279ad3f76d7fec5c63c97bf27a0971c91b590706991a2ac",
+    "validate_records.py": "eea6f3ae68f20a1a5d1f3c8e6fdbd3919eedbc1bcb887e608273ffac580fe9f1",
+    "verification.json": "df87b1c3d0fd1738d551f707ed6269e1c8b3c4148fd2f1882d2b69d9c5e17159"
+  },
+  "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#scope"
+}

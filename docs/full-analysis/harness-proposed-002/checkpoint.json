@@ -1,0 +1,23 @@
+{
+  "partition": "harness:brain/proposed:002",
+  "scope_sha256": "aa663a7cb48c19fd623845b665c1b51b4e4e06d4f0ea3ed3673b85670047adcf",
+  "primary_full_fresh": 15,
+  "primary_bytes": 190115,
+  "prior_unreviewed": 15,
+  "supporting_unique_files": 24,
+  "supporting_full": 4,
+  "supporting_test_files": 3,
+  "source_executions": 0,
+  "full_closure": false,
+  "actual_claude": false,
+  "adoption_approved": false,
+  "hashes": {
+    "files.json": "96331466895dc36e82ea19b2b0e3200f99f941e05d75e8a779a7f4601c30b6ed",
+    "supporting.json": "97b73dc52d0fcf4720da504072fc3556961b34fd82ecf37ee0a173d11922ae3f",
+    "review.md": "8fd832bccf5e7f5e04999c9dabcd12852449716d2ef727cf45c95da3612fa550",
+    "prior-ledger.json": "b519fb00df63a4e2c2234507d6a035736f0f9898921d0773955777d8aa55ae2d",
+    "inventory.json": "2102fa4f848a64faa29da3d1f6b8ca607e7645faf00a5e879dc6751a50b5665d",
+    "remaining.json": "19c8fecee689faed4cf7529f7a23ac870cdaa97f494e643d2ea7a19d108007c6",
+    "build_index.py": "1e9cae615c28b76c2f462f6c316626f53e687e90186ad1880a13c99b34850701"
+  }
+}

@@ -1,0 +1,1572 @@
+[
+  {
+    "source": "baldrix",
+    "path": "skills/_pipeline/overlays/flutter.overlay.yaml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "9eef39352aec92c8754edc0cf8b802169cec77cf",
+    "pinned_sha256": "4e3f2929015f6ad8c6d172a09853384137b06e283d218e77298f3727d503d67b",
+    "bytes": 4436,
+    "lines": 152,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "4e3f2929015f6ad8c6d172a09853384137b06e283d218e77298f3727d503d67b",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1364,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/_pipeline/overlays/flutter.overlay.yaml",
+      "git_blob": "9eef39352aec92c8754edc0cf8b802169cec77cf",
+      "mode": "100644",
+      "bytes": 4436,
+      "pinned_sha256": "4e3f2929015f6ad8c6d172a09853384137b06e283d218e77298f3727d503d67b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "be97ee4dec5626277069fa8c0a5da966627675dcbb93d46995f5d3231590135e",
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S01",
+    "disposition": "supporting_read_only",
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        1,
+        152
+      ]
+    ],
+    "read_receipt": "f4a3c7",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i03",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 152,
+        "sha256": "4e3f2929015f6ad8c6d172a09853384137b06e283d218e77298f3727d503d67b"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_pipeline/stages-flutter.yaml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d715109298206c05d2184578195affd9256948ad",
+    "pinned_sha256": "1fb62b159f05f46412c0ed4a2527359a52aae1f8a0f679f8e82e0d8c8da170c6",
+    "bytes": 7892,
+    "lines": 205,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1fb62b159f05f46412c0ed4a2527359a52aae1f8a0f679f8e82e0d8c8da170c6",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1368,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/_pipeline/stages-flutter.yaml",
+      "git_blob": "d715109298206c05d2184578195affd9256948ad",
+      "mode": "100644",
+      "bytes": 7892,
+      "pinned_sha256": "1fb62b159f05f46412c0ed4a2527359a52aae1f8a0f679f8e82e0d8c8da170c6",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "60100715c9260eb9516e2fc55e5c13c4be9d869ef7195b4372d973f987b5c9c5",
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S02",
+    "disposition": "supporting_read_only",
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        1,
+        205
+      ]
+    ],
+    "read_receipt": "f4a3c7",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i03",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 205,
+        "sha256": "1fb62b159f05f46412c0ed4a2527359a52aae1f8a0f679f8e82e0d8c8da170c6"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/frontmatter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "68393a2c08a6d5eb2b4696a0e4fc9959051c26a6",
+    "pinned_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff",
+    "bytes": 2288,
+    "lines": 62,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 704,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/frontmatter.py",
+      "git_blob": "68393a2c08a6d5eb2b4696a0e4fc9959051c26a6",
+      "mode": "100644",
+      "bytes": 2288,
+      "pinned_sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "49380000748861dd575cfffbd9e3c73b91c73293b7f37499080212d0c8475e3d",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S03",
+    "disposition": "supporting_read_only",
+    "read_extent": "full_body_supporting",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        1,
+        62
+      ]
+    ],
+    "read_receipt": "f4a3c7",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i07",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 62,
+        "sha256": "6b4b0701af5b87f11d13ac87f6787cec686d0aea2c5b2125edc97ff8d76b97ff"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/skill_match.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+    "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "bytes": 26592,
+    "lines": 618,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 616,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/handlers/prompt/skill_match.py",
+      "git_blob": "55b911a94a00bd89b3c2375cab0e3cc71cbd5909",
+      "mode": "100644",
+      "bytes": 26592,
+      "pinned_sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-session-hooks-001/files.json",
+        "docs/full-analysis/baldrix-skill-routing-runtime/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "eab1179e18f91570cb6dd403195b0ca66ad7f7bc306d97521e5822aa6f06a0ad",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S04",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        225,
+        307
+      ],
+      [
+        340,
+        421
+      ]
+    ],
+    "read_receipt": "f8f9a2",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i05",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 225,
+        "end": 307,
+        "sha256": "a58d9eb4082a880c31e82dbd2b715e49b48a636590f6c09dfc321831e0ab6018"
+      },
+      {
+        "start": 340,
+        "end": 421,
+        "sha256": "051bc37387c5a7989b816172aebaa3921f8c4d62e9734debe9a59c6a8a0f6dca"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/git_flow.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1daeab9106e83378920b96201cf2d099df330e97",
+    "pinned_sha256": "e0c2f1f990cb7d652cfd9f5afdc47255d23a5a21d0f36acdedbc77020cd06d31",
+    "bytes": 6742,
+    "lines": 177,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e0c2f1f990cb7d652cfd9f5afdc47255d23a5a21d0f36acdedbc77020cd06d31",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1219,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/validators/git_flow.py",
+      "git_blob": "1daeab9106e83378920b96201cf2d099df330e97",
+      "mode": "100644",
+      "bytes": 6742,
+      "pinned_sha256": "e0c2f1f990cb7d652cfd9f5afdc47255d23a5a21d0f36acdedbc77020cd06d31",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-validators-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "d3f325a15a0ba0bac1c5525c0f1c80b4a6ad66a338f22f278b50062782b0e24b",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S05",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        38,
+        111
+      ],
+      [
+        113,
+        177
+      ]
+    ],
+    "read_receipt": "f8f9a2",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i19",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i22"
+    ],
+    "range_sha256": [
+      {
+        "start": 38,
+        "end": 111,
+        "sha256": "9cced5967bb42b38695a9dec4a98b840d95e1b77d3ef265c49d6e118a48c81e3"
+      },
+      {
+        "start": 113,
+        "end": 177,
+        "sha256": "fd310bcc11b3c5fd445e7a14078253d6773669efb8d5dd041eebf4a44c301d53"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/git_flow_override.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "271187243a55879e336a410c1e8cebe089664afe",
+    "pinned_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca",
+    "bytes": 4157,
+    "lines": 103,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 706,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/git_flow_override.py",
+      "git_blob": "271187243a55879e336a410c1e8cebe089664afe",
+      "mode": "100644",
+      "bytes": 4157,
+      "pinned_sha256": "668f6377a99c4e6588eb9ccd47f0b2983c9197bc47392411f8d62df1d2aa17ca",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-003/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "db3b5c195396f8d888d3a1ae634bb60fc37b7266d41c98b55f7f96a1d964c11e",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S06",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        33,
+        103
+      ]
+    ],
+    "read_receipt": "f8f9a2",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i19",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i22"
+    ],
+    "range_sha256": [
+      {
+        "start": 33,
+        "end": 103,
+        "sha256": "5dabf80e27fddeabba46c021aa126e5dac0674589eacf1f1009cd52a30e765c2"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/tech_stack.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "186bea7bd23a7d5270ad67051c174082e8c0d028",
+    "pinned_sha256": "c990d4309891ad56d41d3c4b44b3eca0909a0d38a38dd63737e40d7b4a9d3c7f",
+    "bytes": 6309,
+    "lines": 195,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "c990d4309891ad56d41d3c4b44b3eca0909a0d38a38dd63737e40d7b4a9d3c7f",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 819,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/tech_stack.py",
+      "git_blob": "186bea7bd23a7d5270ad67051c174082e8c0d028",
+      "mode": "100644",
+      "bytes": 6309,
+      "pinned_sha256": "c990d4309891ad56d41d3c4b44b3eca0909a0d38a38dd63737e40d7b4a9d3c7f",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-008/files.json",
+        "docs/full-analysis/baldrix-skill-routing-runtime/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "840b6fc1efdf4260c7591d2fc1edc5cfa8ca29896351ef2e283c0f57d843e70a",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S07",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        45,
+        172
+      ],
+      [
+        175,
+        195
+      ]
+    ],
+    "read_receipt": [
+      "eac558",
+      "6b859e"
+    ],
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 45,
+        "end": 172,
+        "sha256": "228f186f7563a6f8f41d91fde445ee11d498b8e46fdd2982950c6daf4ce57278"
+      },
+      {
+        "start": 175,
+        "end": 195,
+        "sha256": "2e1cbc21d22e52e5f11c580ddcc8f1f4de69a713c2f650e64cc5cb818407ddbf"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_stage_picker.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "01f26d67b12e6fafcb43fa115998b2ef5e16def8",
+    "pinned_sha256": "8e7ff66ac4b7bb2edfbfb7be84a1b16f4e43a673e1577a2d25ea2f178a8842c0",
+    "bytes": 4150,
+    "lines": 122,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8e7ff66ac4b7bb2edfbfb7be84a1b16f4e43a673e1577a2d25ea2f178a8842c0",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 758,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/pipeline_stage_picker.py",
+      "git_blob": "01f26d67b12e6fafcb43fa115998b2ef5e16def8",
+      "mode": "100644",
+      "bytes": 4150,
+      "pinned_sha256": "8e7ff66ac4b7bb2edfbfb7be84a1b16f4e43a673e1577a2d25ea2f178a8842c0",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-006/files.json",
+        "docs/full-analysis/baldrix-skill-routing-runtime/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "a2c7adb5ee27dc1c22cae5b7907239cd49eeca8c76a213db80fe0f0a2f6119d9",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S08",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        46,
+        122
+      ]
+    ],
+    "read_receipt": "eac558",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i03",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 46,
+        "end": 122,
+        "sha256": "381a068128dffc2b20fee81c942eaaae0f00c939a32b2f42f024f3b700eb5859"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/pre_tool/guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "0197f54ceb59c77857abf7cc2f68f5960d1a9b38",
+    "pinned_sha256": "ebd3fe1ba4e6bf532b0ba5eb12d2b21498ed6b389a9522e744e21d8d1845d076",
+    "bytes": 11705,
+    "lines": 297,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ebd3fe1ba4e6bf532b0ba5eb12d2b21498ed6b389a9522e744e21d8d1845d076",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 606,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/handlers/pre_tool/guard.py",
+      "git_blob": "0197f54ceb59c77857abf7cc2f68f5960d1a9b38",
+      "mode": "100644",
+      "bytes": 11705,
+      "pinned_sha256": "ebd3fe1ba4e6bf532b0ba5eb12d2b21498ed6b389a9522e744e21d8d1845d076",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-pretool-001/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "499001b2afb3fbedb7cfe8dc5f0fdc8e8c09276f749e9c222ba4efaea152462e",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S09",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        184,
+        252
+      ]
+    ],
+    "read_receipt": "eac558",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i19",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i22"
+    ],
+    "range_sha256": [
+      {
+        "start": 184,
+        "end": 252,
+        "sha256": "16abd94bbf7fd42a03effa919719415f74a3a1d27499f8253eb5e201d03d6184"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "settings.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "bytes": 10437,
+    "lines": 386,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1249,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "settings.json",
+      "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+      "mode": "100644",
+      "bytes": 10437,
+      "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "0f51f29931cae8addc70978404483b6ed3625c794d1f92ef0116025d28b02f1e",
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S10",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        99,
+        116
+      ]
+    ],
+    "read_receipt": "eac558",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i19"
+    ],
+    "range_sha256": [
+      {
+        "start": 99,
+        "end": 116,
+        "sha256": "4bd374f12c44ad6cdfef866353977dd3f216b828f6aa7592f74e0c2c33c1fa50"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_git_flow.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "a296ee6f3624f44cdde71171f201cc6ba8219e30",
+    "pinned_sha256": "12eabd006d2b4fb9fcc2948ce3ef33cf5d47e9a14b60b65b8f2c3ad2ff353205",
+    "bytes": 6012,
+    "lines": 201,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "12eabd006d2b4fb9fcc2948ce3ef33cf5d47e9a14b60b65b8f2c3ad2ff353205",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 996,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_git_flow.py",
+      "git_blob": "a296ee6f3624f44cdde71171f201cc6ba8219e30",
+      "mode": "100644",
+      "bytes": 6012,
+      "pinned_sha256": "12eabd006d2b4fb9fcc2948ce3ef33cf5d47e9a14b60b65b8f2c3ad2ff353205",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-tests-005/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "8f6e55ca74f07a09ec39feb17eb3d005ee75207915ae26d80a82da641d56832e",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S11",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        53,
+        77
+      ],
+      [
+        98,
+        138
+      ]
+    ],
+    "read_receipt": "eac558",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i19",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i22"
+    ],
+    "range_sha256": [
+      {
+        "start": 53,
+        "end": 77,
+        "sha256": "138a920fa94328c4d0270e5858624d595f99c599b99874b5393bc45c24964257"
+      },
+      {
+        "start": 98,
+        "end": 138,
+        "sha256": "dca0cc49b720b4db812c6b418df54cbbc6e28959b957961a820fc813c50c3f82"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_common/idempotency.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ac960a2a83f733b5deed135b787c0fd6b0ba0923",
+    "pinned_sha256": "65a886f03a673edd1bf3141a4e41e4247bb0968899f7ad8b75e9b20c59c4e9bf",
+    "bytes": 10188,
+    "lines": 169,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "65a886f03a673edd1bf3141a4e41e4247bb0968899f7ad8b75e9b20c59c4e9bf",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1299,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/_common/idempotency.md",
+      "git_blob": "ac960a2a83f733b5deed135b787c0fd6b0ba0923",
+      "mode": "100644",
+      "bytes": 10188,
+      "pinned_sha256": "65a886f03a673edd1bf3141a4e41e4247bb0968899f7ad8b75e9b20c59c4e9bf",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-common/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "a646ad2ea9dc3a893247dc6ba0553c9d8a9a906492567dfdb6e887fdee11fc09",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S12",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        18,
+        52
+      ],
+      [
+        86,
+        126
+      ]
+    ],
+    "read_receipt": "df9df4",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i02",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i10",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i12",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i13",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i20",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i21"
+    ],
+    "range_sha256": [
+      {
+        "start": 18,
+        "end": 52,
+        "sha256": "bd9685482e947df78bff2a400eff59b9cfe56b8542262ed97dd5792a8e44939f"
+      },
+      {
+        "start": 86,
+        "end": 126,
+        "sha256": "68d5752df97430807d01ef23908adfb2b8b613d0ca58b99d15ce2397f8e4e826"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_common/test-driven-development.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3a55e948b3fb2bf5c1882678d6b052fe73fcf809",
+    "pinned_sha256": "bc8783afc0b411fbc095c250b7b9dd8a66f830d0576954077a6a8cf14f979540",
+    "bytes": 9154,
+    "lines": 236,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "bc8783afc0b411fbc095c250b7b9dd8a66f830d0576954077a6a8cf14f979540",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1333,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/_common/test-driven-development.md",
+      "git_blob": "3a55e948b3fb2bf5c1882678d6b052fe73fcf809",
+      "mode": "100644",
+      "bytes": 9154,
+      "pinned_sha256": "bc8783afc0b411fbc095c250b7b9dd8a66f830d0576954077a6a8cf14f979540",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-common/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "940193d397fd7db108c35eb09c08440c36105f3c70e8b588a852f79883f68012",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S13",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        14,
+        33
+      ],
+      [
+        53,
+        66
+      ],
+      [
+        90,
+        114
+      ],
+      [
+        191,
+        203
+      ]
+    ],
+    "read_receipt": "df9df4",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08"
+    ],
+    "range_sha256": [
+      {
+        "start": 14,
+        "end": 33,
+        "sha256": "7d33e5ca7d802eedee71a18c3cb3e0446b3fc2a9c5333bbefb7d173775cc2541"
+      },
+      {
+        "start": 53,
+        "end": 66,
+        "sha256": "ec861532516c3d8bf2a3cf015389c8fdd1cbfb83369d404ea237e9f8a528b03e"
+      },
+      {
+        "start": 90,
+        "end": 114,
+        "sha256": "7bb945fc74e85274f350372f6ccc11cc2b381abe7bdf23959a6b23fb7369e496"
+      },
+      {
+        "start": 191,
+        "end": 203,
+        "sha256": "53c4c770a144fc934d3674edceb1eeb114d5589288ecf19de8673bf535962519"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_common/git-flow.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1fbec2e47e96d71fe089b4ac3a14f336e25ea5da",
+    "pinned_sha256": "8fc5fd08ce3f6b7803c274acf8eb9c5b6aefdc301a26e70597237be4cb9e94c4",
+    "bytes": 6146,
+    "lines": 131,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8fc5fd08ce3f6b7803c274acf8eb9c5b6aefdc301a26e70597237be4cb9e94c4",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1295,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/_common/git-flow.md",
+      "git_blob": "1fbec2e47e96d71fe089b4ac3a14f336e25ea5da",
+      "mode": "100644",
+      "bytes": 6146,
+      "pinned_sha256": "8fc5fd08ce3f6b7803c274acf8eb9c5b6aefdc301a26e70597237be4cb9e94c4",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-common/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "303c409dcac629131e22a14d1fa89bdd8559171ac696b7271d15fd1733385e8b",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S14",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        37,
+        47
+      ],
+      [
+        74,
+        95
+      ]
+    ],
+    "read_receipt": "df9df4",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i19",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i22"
+    ],
+    "range_sha256": [
+      {
+        "start": 37,
+        "end": 47,
+        "sha256": "b99a462da06de1ffbd98c77fe9d988394225a39394a0ec3f2db7abe9fb58476f"
+      },
+      {
+        "start": 74,
+        "end": 95,
+        "sha256": "2cff14fe2b1d65f65221ceb4afba206821d66658908e20d81509b243501c11cf"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_outpos/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "019118fa090a9dfdaa370d5ff1133f9b69480eb8",
+    "pinned_sha256": "06b8d304d3c11e1f8198e9bef4501fda6a086e8f64701ef2cbf25d9d7e573c27",
+    "bytes": 11941,
+    "lines": 120,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "06b8d304d3c11e1f8198e9bef4501fda6a086e8f64701ef2cbf25d9d7e573c27",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1349,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "skills/_outpos/SKILL.md",
+      "git_blob": "019118fa090a9dfdaa370d5ff1133f9b69480eb8",
+      "mode": "100644",
+      "bytes": 11941,
+      "pinned_sha256": "06b8d304d3c11e1f8198e9bef4501fda6a086e8f64701ef2cbf25d9d7e573c27",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "0b142add5ce277c7ac157284c4d81e29324261fd2b328150538fac74152d827c",
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S15",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        1,
+        78
+      ]
+    ],
+    "read_receipt": "df9df4",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i04",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i16",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i17",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i18",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i21",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i22"
+    ],
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 78,
+        "sha256": "63ed4b858b59547c73861be36d4545f2f1768d2c76f3444979e6653810468f76"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_match_render.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f12750478c90193a9c583365a390cfd5e5f81c5b",
+    "pinned_sha256": "2123360eea20f84d97e4bb6f0c62aef1c7baeeed4d3d9be242b98e0a225895fc",
+    "bytes": 6029,
+    "lines": 138,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2123360eea20f84d97e4bb6f0c62aef1c7baeeed4d3d9be242b98e0a225895fc",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 802,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/skill_match_render.py",
+      "git_blob": "f12750478c90193a9c583365a390cfd5e5f81c5b",
+      "mode": "100644",
+      "bytes": 6029,
+      "pinned_sha256": "2123360eea20f84d97e4bb6f0c62aef1c7baeeed4d3d9be242b98e0a225895fc",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-007/files.json",
+        "docs/full-analysis/baldrix-skill-routing-runtime/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "2824f2ff4a7dda731b0bd4694944b5865da63e113093ac32a88b79ce0a325bf8",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S16",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        72,
+        96
+      ]
+    ],
+    "read_receipt": "df9df4",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i05",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i06",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i20"
+    ],
+    "range_sha256": [
+      {
+        "start": 72,
+        "end": 96,
+        "sha256": "fc3cef7000889b49f6f3c5056b4bb8e8df13cd052443aa2585714bf1cc545c65"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/skill_score.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d908ed7de5a2d3179486a53104536c5d5aed31f3",
+    "pinned_sha256": "54b750cd2a2409999145ff484dc0ac33266720661a0f1cb2974ab985c03c7564",
+    "bytes": 12596,
+    "lines": 270,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "54b750cd2a2409999145ff484dc0ac33266720661a0f1cb2974ab985c03c7564",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 803,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/skill_score.py",
+      "git_blob": "d908ed7de5a2d3179486a53104536c5d5aed31f3",
+      "mode": "100644",
+      "bytes": 12596,
+      "pinned_sha256": "54b750cd2a2409999145ff484dc0ac33266720661a0f1cb2974ab985c03c7564",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-007/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "29af642ca574f7be819f313ac7a76b2bfeeb07bd9b95b61946bb5a8246a5ae79",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S17",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        126,
+        270
+      ]
+    ],
+    "read_receipt": [
+      "df9df4",
+      "6b859e"
+    ],
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 126,
+        "end": 270,
+        "sha256": "6cbcefa1d8f1e7a05ace934f9238d42382d75d34f46c8ded1fa8d902d39ed0a1"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_mock_review_stage.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "bd9e104ef6acc6b7ab12dd4ed72b7a85855f8bee",
+    "pinned_sha256": "0743e6eb6690fa088bf021b327f9480367c8ad29b73317eb9878a618c455f569",
+    "bytes": 7327,
+    "lines": 179,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "0743e6eb6690fa088bf021b327f9480367c8ad29b73317eb9878a618c455f569",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1053,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_mock_review_stage.py",
+      "git_blob": "bd9e104ef6acc6b7ab12dd4ed72b7a85855f8bee",
+      "mode": "100644",
+      "bytes": 7327,
+      "pinned_sha256": "0743e6eb6690fa088bf021b327f9480367c8ad29b73317eb9878a618c455f569",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-tests-008/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "f46b361c4ee9a435e9562ee125bc9ed673fada9ea42596894537ae099a78ac18",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S18",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        78,
+        94
+      ],
+      [
+        105,
+        130
+      ]
+    ],
+    "read_receipt": "df9df4",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 78,
+        "end": 94,
+        "sha256": "1bcab7e4fba583f4a4121c9d62ae171706d3307249cb8ae425f84aea0208c211"
+      },
+      {
+        "start": 105,
+        "end": 130,
+        "sha256": "372accf10add54c8a45480ec0c1dcde436c4b8845b21ad6d1608e097a942d67b"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/pipeline_overlay.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f59daab74d33f2a7a3633e1aaa91ca10327635de",
+    "pinned_sha256": "1ab38e38fbb9070b316acb487e29c4c5eb682f1d23d867bfd28c2767ed8b2ee8",
+    "bytes": 5256,
+    "lines": 122,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1ab38e38fbb9070b316acb487e29c4c5eb682f1d23d867bfd28c2767ed8b2ee8",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 757,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/pipeline_overlay.py",
+      "git_blob": "f59daab74d33f2a7a3633e1aaa91ca10327635de",
+      "mode": "100644",
+      "bytes": 5256,
+      "pinned_sha256": "1ab38e38fbb9070b316acb487e29c4c5eb682f1d23d867bfd28c2767ed8b2ee8",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-006/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "8cf2185d9b469ea4890183f463dc04f06ddaea3997d611eb7a5ecffbad4e35a6",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S19",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        32,
+        122
+      ]
+    ],
+    "read_receipt": [
+      "6b859e",
+      "c07135"
+    ],
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i03",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 32,
+        "end": 122,
+        "sha256": "564963a196641f166017f71777ea6c91abf1e12eda0a24d649f05a7fed9dadab"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/testgen.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "9d87e59179936fd1e0fe828f45963a5f01b61b09",
+    "pinned_sha256": "be328dd5f87ab4cee0ae726129843b3bf115669c8b04c0514b77a684b1552ab2",
+    "bytes": 13483,
+    "lines": 305,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "be328dd5f87ab4cee0ae726129843b3bf115669c8b04c0514b77a684b1552ab2",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 823,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/testgen.py",
+      "git_blob": "9d87e59179936fd1e0fe828f45963a5f01b61b09",
+      "mode": "100644",
+      "bytes": 13483,
+      "pinned_sha256": "be328dd5f87ab4cee0ae726129843b3bf115669c8b04c0514b77a684b1552ab2",
+      "disposition": "body_reviewed_call_test_trace_pending",
+      "review_records": [
+        "docs/full-analysis/baldrix-lib-008/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "3b426248296d40cf2ba20c3a5a5b3e705d14e7c8815bc3156d88820e93540975",
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S20",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        107,
+        153
+      ],
+      [
+        240,
+        282
+      ]
+    ],
+    "read_receipt": "6b859e",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08"
+    ],
+    "range_sha256": [
+      {
+        "start": 107,
+        "end": 153,
+        "sha256": "411b8be00536a3f291fcc510c17817c023ba2a6beb866612ff51072f45f503b7"
+      },
+      {
+        "start": 240,
+        "end": 282,
+        "sha256": "cb644b42bc226a61d59eca961d50d8789f6780a0652f7d37b628fef019f6a6f9"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_tech_stack.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b9219801dd2185b86b732dc2631b8f0eecac8562",
+    "pinned_sha256": "fd5a1b0ad7fdb068806b1a5c5446107b6ed9554be39c1c26fb2c757e8ca64577",
+    "bytes": 8180,
+    "lines": 248,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "fd5a1b0ad7fdb068806b1a5c5446107b6ed9554be39c1c26fb2c757e8ca64577",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1168,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_tech_stack.py",
+      "git_blob": "b9219801dd2185b86b732dc2631b8f0eecac8562",
+      "mode": "100644",
+      "bytes": 8180,
+      "pinned_sha256": "fd5a1b0ad7fdb068806b1a5c5446107b6ed9554be39c1c26fb2c757e8ca64577",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-tests-012/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "f2901b00e14f88fbdb9aac0c45c1231cbd07f940f9022d261bb70988227b13b0",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S21",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        1,
+        160
+      ]
+    ],
+    "read_receipt": "6b859e",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i14",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i15"
+    ],
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 160,
+        "sha256": "bd0c187b8a16168ef0dd6a61f78f42730e0720f894610cbc9a6cb264bf2fcb01"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_testgen.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3598c674ab99018801b243dbbb178302c7ae5f20",
+    "pinned_sha256": "8c5280f0024c9eb1b8d5a916e44819d8317a4679b3c878984c5c5f8802b206f4",
+    "bytes": 6888,
+    "lines": 179,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8c5280f0024c9eb1b8d5a916e44819d8317a4679b3c878984c5c5f8802b206f4",
+    "hash_verification": "raw_git_blob_and_bytes_vs_manifest; independent_sha256_vs_path_ledger_and_manifest_if_present",
+    "path_ledger_row_index": 1174,
+    "path_ledger_row_at_recording": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_testgen.py",
+      "git_blob": "3598c674ab99018801b243dbbb178302c7ae5f20",
+      "mode": "100644",
+      "bytes": 6888,
+      "pinned_sha256": "8c5280f0024c9eb1b8d5a916e44819d8317a4679b3c878984c5c5f8802b206f4",
+      "disposition": "semantically_reviewed",
+      "review_records": [
+        "docs/full-analysis/baldrix-tests-012/files.json"
+      ],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "path_ledger_row_sha256": "82a9154a8c81499fddecb784e2b40fd753e6caadaab444ea84db7ff49915a471",
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "execution_verified": false,
+    "transitive_closure_complete": false,
+    "actual_claude_review_complete": false,
+    "license_review_complete": false,
+    "os_runtime_verified": false,
+    "model_qualification_verified": false,
+    "human_acceptance_verified": false,
+    "adoption_status": "not_approved_not_incorporated",
+    "support_id": "S22",
+    "disposition": "supporting_read_only",
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "fresh_displayed_supporting_intervals_current_review",
+    "line_ranges": [
+      [
+        1,
+        37
+      ],
+      [
+        65,
+        83
+      ],
+      [
+        137,
+        170
+      ]
+    ],
+    "read_receipt": "c07135",
+    "counted_as_primary_body": false,
+    "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-flutter-001/review.md#trace",
+      "docs/full-analysis/baldrix-flutter-001/review.md#i08"
+    ],
+    "range_sha256": [
+      {
+        "start": 1,
+        "end": 37,
+        "sha256": "3e9202a77ed855394aec76033e601538d054c0d4956fe7a38fffacd7fa1d29eb"
+      },
+      {
+        "start": 65,
+        "end": 83,
+        "sha256": "eef3c2056209abf8513f7dd93a3152246a1405e4c1504ac9c9db9bab8d850c82"
+      },
+      {
+        "start": 137,
+        "end": 170,
+        "sha256": "1830797e5c474ac9ee3cdd7a962284bb3765f62c44e7d162e1c10f1709ba8db3"
+      }
+    ],
+    "purpose": "Direct matching, config, workflow, rendering or unit-oracle contract; static only."
+  }
+]

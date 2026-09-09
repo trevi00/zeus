@@ -1,0 +1,38 @@
+{
+  "primary_full_read_chunks": [
+    "c34a69",
+    "92af01",
+    "1c0e43",
+    "305f21"
+  ],
+  "fresh_support_chunks": [
+    "338d60",
+    "539dbc"
+  ],
+  "prior_semantic_evidence_read_chunks": [
+    "bf6b79",
+    "59854b"
+  ],
+  "scope_and_rules_chunks": [
+    "df7195",
+    "459691",
+    "3b51cc"
+  ],
+  "owned_korean_readback_chunk": "4754b3: review and38per-file sections, untruncated; final wording narrows unregistered registry call only",
+  "search_limits": [
+    {
+      "chunk": "8faba4",
+      "result": "scripts/validate_project.py absent; corrected path scripts/cli/validate_project.py discovered in2b74c1, fresh ranges539dbc."
+    },
+    {
+      "chunk": "2b74c1",
+      "result": "No artifact-validators- literal in pinned scripts py/sh. This bounded search did not establish a generator; no duplicate exemption."
+    },
+    {
+      "chunk": "8faba4",
+      "result": "No atlas/validators or Cycle A literal in atlas_index.py. Collector/index consumer ranges read539dbc; no automatic activation enforcement claimed."
+    }
+  ],
+  "source_execution_import_collection_probe_network_install_count": 0,
+  "actual_claude_count": 0
+}

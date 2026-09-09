@@ -1,0 +1,156 @@
+[
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/add-to-app-and-host-integration.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5160151989559764bd9892400e3e80721da8032d",
+    "pinned_sha256": "a1e6bb9021300c13bbb22c59d83b3e6cd60fa133e1630bd091b85d96c490da7b"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/app-architecture-and-state.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1b4c3c4bb49d71daa765250af506564fc159472e",
+    "pinned_sha256": "c08567bbc5e61a0a2780260c3c231f6c55063d89dc6f96f528fed30de7d93375"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/ci-hotfix-canon.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b66b3196efc2598d2d4381dcbf535d9a8c15e6a1",
+    "pinned_sha256": "f210902a1a7a5fd943dc26f08989bc4e0461ce251030831e8d93ed3413423b95"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/dart-flutter-app.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2560fcafa3224960a653ae46d05f70aa354614e9",
+    "pinned_sha256": "f0c627321ca6506adea49b4b50a025f9421771954352bdadf2a862a031eb4956"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/flutter-native.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f66bbcd5d9641217fd850cbac6cf543410c6ecbe",
+    "pinned_sha256": "73f84dba1c908f5fef339268e968d2a2cbf6d7f31d5784d634d3b507817e9ee1"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/platform-channels-pigeon-and-plugins.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "15e079df97d02e939d31e7adcb3076f64797c965",
+    "pinned_sha256": "7837b404cd5e644441bea81d2a4579bd2dd3c7ffbc18fd6fe06c44c2eac0f7e9"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/state-restoration.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "efafed2b4012d0751daf095469282531e520fdba",
+    "pinned_sha256": "a9ee5e776dc60ce40ab8d44eb0cd18803e9f3fdfa98c6a4a86708521885d8b0e"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/3.x/testing-matrix.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "8f4190ebac4551b679a59e8357e08faa02ec334e",
+    "pinned_sha256": "b43078039e3914f55485014b37f52374861bca3aefda382fdd631ca29d09171d"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos-agent/README.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "9d3b8458514092268c98a75ad5f799c8ecb91314",
+    "pinned_sha256": "3483f7c663181353a4dab0eba067c72c4cfcdd1797b29fa009b48002f03d99ab"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos-agent/background-service-pattern.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b7c0919e461d7efee054b06c9ea85fe15fca0c69",
+    "pinned_sha256": "3d942388f4d14b2e56365e15cf7d0bdec9fd1b38db97321f476867700ceea2b5"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos-agent/drift-mt-lc-pattern.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "6561728b6771cb570ba23428a135e86924dddb8d",
+    "pinned_sha256": "5fc1e34741ba00f9c71133ec952d88ac89d2963eeaf4fc4e8d80be872b63de2f"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos-agent/easypos-integration.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "75fbda70f09af5c27246ae3470d7c0721ff87602",
+    "pinned_sha256": "6fe3321fd65c11ac5e9b0bc1936e54b936d8f6040ebad8131d7c18db04ca58d0"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos-agent/socket-action-pattern.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "baede38a9a193e19709c3a2b64ecf5415dca1113",
+    "pinned_sha256": "bab6aa81481fff7ade08906c2ece4af5bf7b91095d10c7f535b526e5bef6bd18"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/README.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "35ce12542c920d661585f6bd9b16e78ed47ce7ee",
+    "pinned_sha256": "d8e22262bf09ef1fc2022ec9450713231e2c65888431a55dc43171aac99a6f8f"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/SKILL.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f5ac701060b416181a9bb7da9ec7ebc759abec42",
+    "pinned_sha256": "4bb1ca9080de365da9c96cf860612b7776e00cc871a3920a6fe1262296309e3b"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/di-and-result-pattern.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "658433edfdf97f9c1930e38e82b9f212e7db0c8d",
+    "pinned_sha256": "0191eae0fc3eae78164bda36c3dc38cc1de6a8123e91d5510918a838350a1418"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/directory-and-naming.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ed94464f6248c13a5ec90d792dc8f7e5505c441c",
+    "pinned_sha256": "f1ee0f666a6d895bb1618d01069f5c559b156a760bd685ee6b4f1a3f5b51c0a0"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/drift-lc-table-pattern.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "6a2c14ca0ce812ec511fd537b5d77c843eb213d3",
+    "pinned_sha256": "81fd6edf532a01c3f77ff23a57937ef279f39ee19dd86e67bb8bde87980e3885"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/git-flow-company.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "9fbf8c5d3f14010bffe7ecf0c92915015af28431",
+    "pinned_sha256": "a48d5675cfa7df1ba6ea12f46b1d345846ad95c92988174cdc0ab27ea5c40312"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/paygate-kovan.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "e1c4de41f489d3c5fca73a583d49423195135944",
+    "pinned_sha256": "e3167ce49d26fe7e0bea3d511b6e9a14abbfff704ec115a5341299619e713a9f"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/state-management-pattern.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "bd2439d346246bf6a0a7a7e014f75cbfe90cb4ba",
+    "pinned_sha256": "b3b96eb40132cd2c1c20989e0326ca4c5629c4dd2dd4576fbf26b140d55179ca"
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/flutter/outpos/workflow-rules.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "44901727ee794ae6481bb5ffec2afcacde3889ba",
+    "pinned_sha256": "0e0579d912efed56dd70041dcdef8aebfcf7540bc4baf3c6575531303c7b4156"
+  }
+]

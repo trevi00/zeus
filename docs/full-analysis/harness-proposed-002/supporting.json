@@ -1,0 +1,727 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/engine/cohesion.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "2400d2e3261b4885eda1283d6400e7c07026db03",
+    "bytes": 6482,
+    "pinned_sha256": "a6a782891e6da4677b5f538791269e4cf661e1dc7fff865658895c8dd47083fd",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "a6a782891e6da4677b5f538791269e4cf661e1dc7fff865658895c8dd47083fd",
+    "manifest_sha256_status": "matched",
+    "line_count": 138,
+    "read_ranges": [
+      [
+        29,
+        125
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s01",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f02"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/cycle_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "0bedd50eb9d06eba8e32dd0ddda0069c9da1a7bc",
+    "bytes": 5744,
+    "pinned_sha256": "946726a2da0408b8cfe3de566407a9f17871f347006990ef8ea333f56c1b0e3e",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "946726a2da0408b8cfe3de566407a9f17871f347006990ef8ea333f56c1b0e3e",
+    "manifest_sha256_status": "matched",
+    "line_count": 118,
+    "read_ranges": [
+      [
+        1,
+        84
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s02",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f03"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/completion_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "cfefa86368733a6522e62c52031f96125a914073",
+    "bytes": 4447,
+    "pinned_sha256": "27615a64724e24fc84f69fc05de582093879487116cd004e3d221d52e54336e9",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "27615a64724e24fc84f69fc05de582093879487116cd004e3d221d52e54336e9",
+    "manifest_sha256_status": "matched",
+    "line_count": 112,
+    "read_ranges": [
+      [
+        1,
+        112
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s03",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f03"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/backlog.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "6d2a2fdbb715d8f22b589bc3163e59eddabf7664",
+    "bytes": 12691,
+    "pinned_sha256": "39600fa9f0de271db99336f6b6c2ed6a31f7809329ed69fba76e5d02fd89fc07",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "39600fa9f0de271db99336f6b6c2ed6a31f7809329ed69fba76e5d02fd89fc07",
+    "manifest_sha256_status": "matched",
+    "line_count": 238,
+    "read_ranges": [
+      [
+        46,
+        80
+      ],
+      [
+        106,
+        159
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s04",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f03",
+      "docs/full-analysis/harness-proposed-002/review.md#f07"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/curator.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "94e2cdaebb1559290fbd5c1623969b0781e4b2bc",
+    "bytes": 16968,
+    "pinned_sha256": "ca374df01b09b231e82e1a36c6732dc4353076441aed58e869dabf687099b2f7",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "ca374df01b09b231e82e1a36c6732dc4353076441aed58e869dabf687099b2f7",
+    "manifest_sha256_status": "matched",
+    "line_count": 329,
+    "read_ranges": [
+      [
+        90,
+        165
+      ],
+      [
+        285,
+        319
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s05",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f04"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/completion_line.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "de466f89378100fa6dbc4e0416610b26aa9a7980",
+    "bytes": 4568,
+    "pinned_sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "manifest_sha256_status": "matched",
+    "line_count": 87,
+    "read_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s06",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f03"
+    ]
+  },
+  {
+    "source": "guardian",
+    "path": "console.py",
+    "revision": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "git_blob": "2b289284a6c257d2ce8f9b5795b854bb77d53ae1",
+    "bytes": 25657,
+    "pinned_sha256": "eeb357b7171c69d4ce341520c22d69ece9ecc5718a0f62c85a38c69717b1e41b",
+    "observed_sha256": null,
+    "manifest_file_sha256": "d29b685dd2a414cbe977116c22ff9fc872da46248fe8142cb8f8736f3aca9556",
+    "manifest_snapshot_sha256": "eeb357b7171c69d4ce341520c22d69ece9ecc5718a0f62c85a38c69717b1e41b",
+    "manifest_sha256_status": "matched",
+    "line_count": 558,
+    "read_ranges": [
+      [
+        160,
+        228
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s07",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f05"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_fleet_mount_boundary_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "ed8bebea4aa81469b9cd1ec97a4858338acdcf2e",
+    "bytes": 5482,
+    "pinned_sha256": "53114a93c0459709167932e86a9cedf20f9b8c113448e95ca108e7a73a08ef9d",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "53114a93c0459709167932e86a9cedf20f9b8c113448e95ca108e7a73a08ef9d",
+    "manifest_sha256_status": "matched",
+    "line_count": 121,
+    "read_ranges": [
+      [
+        1,
+        121
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s08",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f06",
+      "docs/full-analysis/harness-proposed-002/review.md#f08"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/test_outcome.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "d8f1c080bada2a498a1bc27799b65a21bb579c85",
+    "bytes": 18074,
+    "pinned_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "manifest_sha256_status": "matched",
+    "line_count": 345,
+    "read_ranges": [
+      [
+        189,
+        253
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s09",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f08"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/sandbox.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "bytes": 32037,
+    "pinned_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "manifest_sha256_status": "matched",
+    "line_count": 551,
+    "read_ranges": [
+      [
+        172,
+        397
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s10",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f13"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/harness_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "bytes": 107200,
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "manifest_sha256_status": "matched",
+    "line_count": 2092,
+    "read_ranges": [
+      [
+        375,
+        436
+      ],
+      [
+        1661,
+        1794
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s11",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f07",
+      "docs/full-analysis/harness-proposed-002/review.md#f09"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "brain/spikes/board_publisher.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "94e9accb48ea90826ccac7cb1b82e4cfc0c8abf5",
+    "bytes": 13760,
+    "pinned_sha256": "14d3b69d9debdfa7cea1f2a4b7e73cb2919b8497155bba24cf273d32d67b6089",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "14d3b69d9debdfa7cea1f2a4b7e73cb2919b8497155bba24cf273d32d67b6089",
+    "manifest_sha256_status": "matched",
+    "line_count": 280,
+    "read_ranges": [
+      [
+        84,
+        141
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s12",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f10"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "agents/evaluator.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "3915e148890c305c2744696890affc1c0949b5bf",
+    "bytes": 864,
+    "pinned_sha256": "952767873857d8ad09a7ab4425bb1f2bb9b385aef10569c0b8f4a62f49713aee",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "952767873857d8ad09a7ab4425bb1f2bb9b385aef10569c0b8f4a62f49713aee",
+    "manifest_sha256_status": "matched",
+    "line_count": 21,
+    "read_ranges": [
+      [
+        1,
+        21
+      ]
+    ],
+    "read_kind": "fresh_full",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s13",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f14"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "infra/fleet/docker-compose.yml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "3689a96fc5ee6d1a1dad7c9a764e2f5d6e49d0d7",
+    "bytes": 13244,
+    "pinned_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "8c5279a041ef7569c00b6852b0b80e5d0b9c1a44d76199b31bfec964d640afe6",
+    "manifest_sha256_status": "matched",
+    "line_count": 231,
+    "read_ranges": [
+      [
+        105,
+        119
+      ],
+      [
+        202,
+        217
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s14",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f06"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/debate_convergence.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1a263a451eb1fda4263c66de7ed1842ba72afa04",
+    "bytes": 11894,
+    "pinned_sha256": "71ad5209899dd540e7a26a96bc7397145c2979af686865cf87affc05bf6c0704",
+    "observed_sha256": null,
+    "manifest_file_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+    "manifest_snapshot_sha256": "71ad5209899dd540e7a26a96bc7397145c2979af686865cf87affc05bf6c0704",
+    "manifest_sha256_status": "matched",
+    "line_count": 222,
+    "read_ranges": [
+      [
+        34,
+        222
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s15",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f11"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/reachability.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "838e3ab5fc6cc969a2de74a4b0dabf76fe792a78",
+    "bytes": 14657,
+    "pinned_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "manifest_sha256_status": "matched",
+    "line_count": 333,
+    "read_ranges": [
+      [
+        105,
+        187
+      ],
+      [
+        216,
+        258
+      ],
+      [
+        274,
+        313
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s16",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f01",
+      "docs/full-analysis/harness-proposed-002/review.md#f12"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/research_collector.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "ffb9e29ffa8f14410c1c0b21d34a6a684102a24c",
+    "bytes": 11860,
+    "pinned_sha256": "86bf12b452bc21cc2f406690869a83a8b364400492d89e58353ce25884240fa7",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "86bf12b452bc21cc2f406690869a83a8b364400492d89e58353ce25884240fa7",
+    "manifest_sha256_status": "matched",
+    "line_count": 280,
+    "read_ranges": [
+      [
+        78,
+        130
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s17",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f15"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/research_queue.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "1fb3b66c5fd2b61b01cb5e3b9a7f6d6c6fd67643",
+    "bytes": 7491,
+    "pinned_sha256": "fab86c2547e989d01bccf36fe0383572775fdd6431afc93d6894b518348b9d6f",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "fab86c2547e989d01bccf36fe0383572775fdd6431afc93d6894b518348b9d6f",
+    "manifest_sha256_status": "matched",
+    "line_count": 169,
+    "read_ranges": [
+      [
+        98,
+        148
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s18",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f15"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/research_digest.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "2c0d6c5dd20d46dfa2d2a64a142dab58a3683f6d",
+    "bytes": 7877,
+    "pinned_sha256": "d8c14973ce0f378727c3e907026c2d71440f601113d9e629d44674c9e857dc8a",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "d8c14973ce0f378727c3e907026c2d71440f601113d9e629d44674c9e857dc8a",
+    "manifest_sha256_status": "matched",
+    "line_count": 179,
+    "read_ranges": [
+      [
+        1,
+        150
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s19",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f15"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/mutation.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "130af60f5d43e8dd931cffcc62e7e74c83b129a5",
+    "bytes": 7307,
+    "pinned_sha256": "d5b5effb92572d112860c44f5f646092e67c32af50d9faa43251098b50cbd5f5",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "d5b5effb92572d112860c44f5f646092e67c32af50d9faa43251098b50cbd5f5",
+    "manifest_sha256_status": "matched",
+    "line_count": 153,
+    "read_ranges": [
+      [
+        106,
+        149
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s20",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f13"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/suite_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+    "bytes": 35632,
+    "pinned_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "manifest_sha256_status": "matched",
+    "line_count": 624,
+    "read_ranges": [
+      [
+        277,
+        341
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s21",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f13"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/debate_converge_check.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5ac4bbbe39a3686dc9dde084135124023cf9b57a",
+    "bytes": 5822,
+    "pinned_sha256": "7e4c5b6ef5a6ccc3c17d015bc9a547ef5c878837c15e711aeab97108c904b84b",
+    "observed_sha256": null,
+    "manifest_file_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+    "manifest_snapshot_sha256": "7e4c5b6ef5a6ccc3c17d015bc9a547ef5c878837c15e711aeab97108c904b84b",
+    "manifest_sha256_status": "matched",
+    "line_count": 126,
+    "read_ranges": [
+      [
+        62,
+        113
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s22",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f11"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_debate_convergence.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ea98637b51c24af90840be172d81b9669189e131",
+    "bytes": 13776,
+    "pinned_sha256": "aed65be346e32f480936db3e2296735c5575362b7866f6453830a9d5100237ad",
+    "observed_sha256": null,
+    "manifest_file_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+    "manifest_snapshot_sha256": "aed65be346e32f480936db3e2296735c5575362b7866f6453830a9d5100237ad",
+    "manifest_sha256_status": "matched",
+    "line_count": 305,
+    "read_ranges": [
+      [
+        164,
+        270
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s23",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f11"
+    ]
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_research_collector_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "git_blob": "9714c958b94b723d5879a483fc4cb74c3bbdecac",
+    "bytes": 10663,
+    "pinned_sha256": "a63265911a2add60a355570a708a4c4b9f2637ca62f55e5e8fadad0c15943ebb",
+    "observed_sha256": null,
+    "manifest_file_sha256": "9568fb435fc58a7297525ae25729f55ab7a98f7133ce600472e58d3ed6066e60",
+    "manifest_snapshot_sha256": "a63265911a2add60a355570a708a4c4b9f2637ca62f55e5e8fadad0c15943ebb",
+    "manifest_sha256_status": "matched",
+    "line_count": 222,
+    "read_ranges": [
+      [
+        42,
+        99
+      ]
+    ],
+    "read_kind": "fresh_partial",
+    "tests_executed": [],
+    "test_limits": "Original execution/import/collection/probe/network/install/Claude/live access: zero.",
+    "support_id": "s24",
+    "role": "supporting_not_primary",
+    "prior_reuse": false,
+    "global_coverage_increment_claimed": false,
+    "review_refs": [
+      "docs/full-analysis/harness-proposed-002/review.md#f08",
+      "docs/full-analysis/harness-proposed-002/review.md#f15"
+    ]
+  }
+]

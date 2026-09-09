@@ -1,0 +1,41 @@
+{
+  "partitions": [
+    "baldrix:atlas/validators:001",
+    "baldrix:atlas/validators:002"
+  ],
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "starting_head": "7eaa42737d0cce4e675c9f309c215ce1e1d97ed4",
+  "primary_paths": 38,
+  "primary_bytes": 84994,
+  "primary_fresh_full_body_read": 38,
+  "primary_full_body_reused": 0,
+  "prior_primary_unreviewed": 38,
+  "primary_body_unread": [],
+  "supporting_prior_full_body_reuse": 29,
+  "supporting_fresh_paths": 10,
+  "supporting_reuse_fresh_overlap": [
+    "scripts/validators/__init__.py"
+  ],
+  "supporting_fresh_full": 5,
+  "supporting_fresh_partial": 5,
+  "source_tests_fresh_body_read": 2,
+  "source_test_functions_fresh_read": 13,
+  "tests_executed": 0,
+  "source_execution_import_collection_probe_network_install_count": 0,
+  "actual_claude_review_complete": false,
+  "whole_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adoption_ready": false,
+  "license_complete": false,
+  "platform_validation_complete": false,
+  "model_qualification_complete": false,
+  "human_acceptance_complete": false,
+  "remaining": [
+    "Full caller/config/transitive implementation/test closure remains pending.",
+    "Original imports/execution/collection/probes/network/install/Claude0.",
+    "Original event logs, historical benchmark receipts, generation provenance and license unverified.",
+    "Windows/Linux/WSL, qualified models, real human acceptance and Zeus adoption/equivalence pending."
+  ],
+  "files_sha256": "46013d11e60087317d13d446dac3415377ec17a69436eb70729f757c49bd463f",
+  "review_sha256": "2391b1c085a3476411509ee055fca44694ebb5c46d91c84d0def58db8dae0c7b"
+}

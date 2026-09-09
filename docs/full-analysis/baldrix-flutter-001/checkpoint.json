@@ -1,0 +1,51 @@
+{
+  "partitions": [
+    "baldrix:skills/flutter:001",
+    "baldrix:skills/flutter:002"
+  ],
+  "partition_scopes": {
+    "baldrix:skills/flutter:001": "eb181c79a3bc26353ec11eb1ad03d3bca4cf028bc17eb5e070b39c1d7cb81b05",
+    "baldrix:skills/flutter:002": "533bdc65efb4a83ea0e88cc2b85156536e409450b582cc1a1ae2d8a85698e892"
+  },
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "zeus_head_at_start": "7eaa42737d0cce4e675c9f309c215ce1e1d97ed4",
+  "status": "bounded_static_review_complete",
+  "primary_files": 22,
+  "primary_bytes": 208437,
+  "fresh_primary_files": 22,
+  "prior_full_body_reused_files": 0,
+  "supporting_rows": 22,
+  "input_sha256_at_recording": {
+    ".runtime/absorption/sources/baldrix/manifest.json": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+    "docs/full-analysis/path-ledger.json": "777e406a31f87644e17668f729cd77cad14da9ecbccacb2f6271da1c9e004dc1",
+    "docs/full-analysis/partitions.json": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8"
+  },
+  "artifact_sha256": {
+    "review.md": "dd66bfb4ecb382d5252d1a89a87bd7404c5da4a1645d2ee634eb4bbd51611c10",
+    "record_review.py": "47f431e3723479531a35156466fd915bc89b5d6b37114aa44b140a54ad26c037",
+    "files.json": "18d6b082bae81b8491439741f8c4e9d8fb542cb4aebc4c85c0cd9cb847a2482e",
+    "supporting-evidence.json": "8b4bffe9c749ed7bc279ad3f76d7fec5c63c97bf27a0971c91b590706991a2ac",
+    "remaining.json": "6fa9d976b87769ced504d2f7607aa18b351242902eb542b9e36e5c130f030acf",
+    "verification.json": "df87b1c3d0fd1738d551f707ed6269e1c8b3c4148fd2f1882d2b69d9c5e17159"
+  },
+  "scope_complete": true,
+  "subsystem_complete": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "actual_claude_review_complete": false,
+  "license_review_complete": false,
+  "model_qualification_verified": false,
+  "os_runtime_verified": false,
+  "human_acceptance_verified": false,
+  "adoption_approved": false,
+  "source_execution_count": 0,
+  "source_import_count": 0,
+  "source_collection_count": 0,
+  "probe_count": 0,
+  "network_count": 0,
+  "model_count": 0,
+  "install_count": 0,
+  "source_runtime_shared_coverage_modified": false,
+  "commit_or_push_performed": false,
+  "review_ref": "docs/full-analysis/baldrix-flutter-001/review.md#scope"
+}

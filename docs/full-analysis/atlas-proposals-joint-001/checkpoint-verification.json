@@ -1,0 +1,330 @@
+{
+  "primary_records": 53,
+  "fresh_primary_bodies": 53,
+  "primary_bytes": 275109,
+  "supporting_rows": 34,
+  "supporting_prior_full_reuse_rows": 29,
+  "original_source_executions": 0,
+  "whole_analysis_complete": false,
+  "scope_sha256": "9152335615ac3ec86d8c8912c777c93a05babd97ee430aba7a6b4b2352d35d47",
+  "rows": [
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/README.md",
+      "bytes": 6033,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/atlas-frontmatter.md",
+      "bytes": 1613,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/atlas-structure.md",
+      "bytes": 1580,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/ci.md",
+      "bytes": 1260,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/codegen.md",
+      "bytes": 1391,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/collab.md",
+      "bytes": 1265,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/commit-layer-adjacency.md",
+      "bytes": 1452,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/contract.md",
+      "bytes": 1341,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/convention.md",
+      "bytes": 1309,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/ddl.md",
+      "bytes": 1312,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/er.md",
+      "bytes": 1266,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/flow.md",
+      "bytes": 1251,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/git-flow.md",
+      "bytes": 1316,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/handoff-drift.md",
+      "bytes": 1482,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/harness-bridge-state-block.md",
+      "bytes": 1533,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/hashline.md",
+      "bytes": 1345,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/insight-index-importer-whitelist.md",
+      "bytes": 1799,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/logical.md",
+      "bytes": 1347,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/mutation-safety.md",
+      "bytes": 1499,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/openapi.md",
+      "bytes": 1276,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/prd.md",
+      "bytes": 1346,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/private-content-leak.md",
+      "bytes": 1447,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/skeleton.md",
+      "bytes": 1381,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/skill-frontmatter.md",
+      "bytes": 1549,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/skill-quality-axes.md",
+      "bytes": 1475,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/skill-source-liveness.md",
+      "bytes": 1523,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/skill-staging-isolation.md",
+      "bytes": 1511,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/subagent-refs.md",
+      "bytes": 1361,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/artifacts/test.md",
+      "bytes": 1303,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/concepts/layer-a-ast-plus-layer-b-modulespec-runtime-whitelist.md",
+      "bytes": 2668,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/concepts/staging-guard-blocks-non-staged-mutation.md",
+      "bytes": 3582,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/concepts/stdout-pass-fail-warn-contract-required.md",
+      "bytes": 3866,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/concepts/validator-enforcement-tiers-registered-vs-advisory.md",
+      "bytes": 3579,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/concepts/validator-registry-alphabetic-ordering-prevents-merge-conflict.md",
+      "bytes": 3966,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/decisions/debate-w13-d7-ast-plus-modulespec-enforcement.md",
+      "bytes": 5786,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/decisions/debate-w18-d3-staging-only-invariant.md",
+      "bytes": 6898,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/journal/2026-05-24-wave-13-14-l1-validator-modulespec-land.md",
+      "bytes": 5089,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "baldrix",
+      "path": "atlas/validators/journal/2026-06-01-wave-18-d3-staging-only-invariant-land.md",
+      "bytes": 3994,
+      "record_ref": "docs/full-analysis/baldrix-atlas-validators-001/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-chapter-count-off-by-one.json",
+      "bytes": 25715,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-cohesion-churn-no-recency.json",
+      "bytes": 4557,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-completion-verdict-evaporates.json",
+      "bytes": 14614,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-confirmed-without-predicate-measurement.json",
+      "bytes": 10577,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-console-audit-blind-to-heart.json",
+      "bytes": 17177,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-container-bypasses-write-boundary.json",
+      "bytes": 5965,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-contract-verifier-anchor-absent.json",
+      "bytes": 7548,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-contracts-invisible-to-evidence-accounting.json",
+      "bytes": 8559,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-core-gates-java-worded.json",
+      "bytes": 10962,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-day-boundary-flaky-axes.json",
+      "bytes": 6333,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-debate-verdict-can-lose-its-lock-target.json",
+      "bytes": 8144,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-description-chars-counts-markup-not-content.json",
+      "bytes": 21987,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-entrance-has-no-reconfirm.json",
+      "bytes": 15265,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-evaluator-card-read-only-owns-writing-stage.json",
+      "bytes": 8521,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    },
+    {
+      "source": "harness",
+      "path": "brain/proposed/backlog-feed-lang-window-have-no-consumer.json",
+      "bytes": 24191,
+      "record_ref": "docs/full-analysis/harness-proposed-002/files.json"
+    }
+  ]
+}

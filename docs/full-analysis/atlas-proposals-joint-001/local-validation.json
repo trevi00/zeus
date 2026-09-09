@@ -1,0 +1,32 @@
+{
+  "scope": "Local Zeus checks for the75 primary joint-review publication; not original source executions or platform/human acceptance",
+  "base_revision": "cae208468cf47defe6a6b7b091720c4cbcb9acc2",
+  "checks": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "tool_output_chunk": "2ebd2e"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "tool_session_id": 60700,
+      "terminal_output_chunk": "8fbf83",
+      "passed": 660,
+      "skipped": 68,
+      "duration_seconds": 255.85
+    }
+  ],
+  "untracked_next_batches_not_accepted": true
+}

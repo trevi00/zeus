@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "scope": "Owned static review metadata, not original behavior",
+  "primary_fresh_full": 38,
+  "primary_bytes": 84994,
+  "prior_support_full_reuse": 29,
+  "checks": [
+    "fixed partition scopes/prior unreviewed rows",
+    "raw bytes/Git blob/SHA/ranges",
+    "exact prior rows/review JSON selectors/receipt hashes",
+    "38 unique ordered anchors",
+    "UTF8/LF/one final LF/trailing whitespace",
+    "git diff --no-index --check",
+    "Ruff owned scripts"
+  ],
+  "ruff_stdout": "All checks passed!\n",
+  "ruff_stderr": "",
+  "source_execution_count": 0
+}
