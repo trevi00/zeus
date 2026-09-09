@@ -1,0 +1,59 @@
+{
+  "kind": "original_composite_breaker_file_observations",
+  "mocking": false,
+  "corrupt": {
+    "admitted": true,
+    "snapshot": "closed",
+    "raw": "{"
+  },
+  "half_open_without_reservation": {
+    "first": true,
+    "second": true,
+    "persisted_probe_in_flight": false
+  },
+  "late_result_after_reclaim": {
+    "new_admitted": true,
+    "old_result_returned": "closed",
+    "current_state": "closed"
+  },
+  "nan-cooloff": {
+    "value": true
+  },
+  "nan-reservation": {
+    "value": false
+  },
+  "history-null": {
+    "exception": "TypeError",
+    "message": "'NoneType' object is not iterable"
+  },
+  "trip-infinity": {
+    "exception": "OverflowError",
+    "message": "cannot convert float infinity to integer"
+  },
+  "save_failure": {
+    "first_admitted": true,
+    "second_admitted": true,
+    "persisted_state": "open"
+  },
+  "identity_paths": {
+    "slash_alias_same_path": true,
+    "delimiter_alias_same_path": true,
+    "absolute_project_escapes_breakers_subdir": true,
+    "no_write_for_escape_case": true
+  },
+  "cross_mode_distinct": "closed",
+  "cross_mode_duplicate": "open",
+  "secondary_order_good-last": "closed",
+  "secondary_order_bad-last": "open",
+  "bool_override": {
+    "returned": true,
+    "raw_yaml": "version: 1\noverrides:\n  trip_per_mode: True\n",
+    "effective_trip_per_mode": 3
+  },
+  "unchecked_file_policy": {
+    "trip_per_mode": -1,
+    "trip_window": 0
+  },
+  "zero_window_history_length": 13,
+  "uid": 65534
+}

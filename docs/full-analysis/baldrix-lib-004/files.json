@@ -1,0 +1,755 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/graduation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 19847,
+    "git_blob": "d374e761ae212a30b859fed6ab62967cf54a61a8",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "observed_sha256": null,
+    "manifest_sha256": "faec90b0a25277002b073c89248ca9ae58e414e8a19afadfabacadcb7c1aa827",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        486
+      ]
+    ],
+    "total_lines": 486,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f01",
+    "supporting_ids": [
+      "s01",
+      "s02",
+      "s03",
+      "s04",
+      "s08",
+      "s14"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/graduation_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5240,
+    "git_blob": "86c0fa72b6ce4f4984238032c56963a068cd61fe",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2b2e0b9864666b391025f37c689289962f649212ae22c4e472bbfc4b1da370d1",
+    "observed_sha256": null,
+    "manifest_sha256": "2b2e0b9864666b391025f37c689289962f649212ae22c4e472bbfc4b1da370d1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        130
+      ]
+    ],
+    "total_lines": 130,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f02",
+    "supporting_ids": [
+      "s01"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ground_or_drop.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4427,
+    "git_blob": "ca4e8af867e0e3595d7b49d58043c87fd9fc8aac",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "37bc4466c73fe9b203d4441183ff385b7c3c3736a9427afe8981bcb77d40dab7",
+    "observed_sha256": null,
+    "manifest_sha256": "37bc4466c73fe9b203d4441183ff385b7c3c3736a9427afe8981bcb77d40dab7",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "total_lines": 87,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f03",
+    "supporting_ids": [
+      "s05"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/guard_patterns.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 16042,
+    "git_blob": "0b71692d89eaa0ffb1b64837849d536918812891",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c8a0efc7fe2e0dd5d274625f0c2df8537116d842396bfb8856369f062b4ab244",
+    "observed_sha256": null,
+    "manifest_sha256": "c8a0efc7fe2e0dd5d274625f0c2df8537116d842396bfb8856369f062b4ab244",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        307
+      ]
+    ],
+    "total_lines": 307,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f04",
+    "supporting_ids": [
+      "s15",
+      "s23"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/handoff_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 18225,
+    "git_blob": "bed08d706ec96dffb088b4eaf4a9e9859c8f43eb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bb1cd194421eabdeaaafa0a7e64f2f918b041df41ff0275630db4eab54d133ca",
+    "observed_sha256": null,
+    "manifest_sha256": "bb1cd194421eabdeaaafa0a7e64f2f918b041df41ff0275630db4eab54d133ca",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        442
+      ]
+    ],
+    "total_lines": 442,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f05",
+    "supporting_ids": [
+      "s17"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/handoff_surface.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2565,
+    "git_blob": "5f8bdbcbc8219dae8ddcedd3c4e73fb8ab15ef0c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "583fdafaeb64fd2e0a4d856602a828fbb28aec90e8bfbbe30435b47799caff19",
+    "observed_sha256": null,
+    "manifest_sha256": "583fdafaeb64fd2e0a4d856602a828fbb28aec90e8bfbbe30435b47799caff19",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        61
+      ]
+    ],
+    "total_lines": 61,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f06",
+    "supporting_ids": [
+      "s14",
+      "s26"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/harness_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4460,
+    "git_blob": "c983c464810aa3dc679e20ca3034b1b0c1078601",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ed1e23c9858468ee4d737faed390da97f513d4d39af376a390c2866556713ddb",
+    "observed_sha256": null,
+    "manifest_sha256": "ed1e23c9858468ee4d737faed390da97f513d4d39af376a390c2866556713ddb",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        125
+      ]
+    ],
+    "total_lines": 125,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f07",
+    "supporting_ids": [
+      "s18"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/heartbeat.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5292,
+    "git_blob": "e3aa445f1ed2d4f777259dd29ae0a797a887b21f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "92c4bf8102db00a4b9e0202e1d11d547b6f8df62a6a3906b4890ce76a7d0d3f4",
+    "observed_sha256": null,
+    "manifest_sha256": "92c4bf8102db00a4b9e0202e1d11d547b6f8df62a6a3906b4890ce76a7d0d3f4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        176
+      ]
+    ],
+    "total_lines": 176,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f08",
+    "supporting_ids": [
+      "s16",
+      "s24"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/hook_io.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3938,
+    "git_blob": "458e2336a6fbc150dc6b785b3b39c4f3a0781cef",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6efe29f6907d641abe7e8f65eb9c183ae44edb40092a64ad5fac5ff15bd2dc1d",
+    "observed_sha256": null,
+    "manifest_sha256": "6efe29f6907d641abe7e8f65eb9c183ae44edb40092a64ad5fac5ff15bd2dc1d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        138
+      ]
+    ],
+    "total_lines": 138,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f09",
+    "supporting_ids": [
+      "s22"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/hook_latency.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6426,
+    "git_blob": "7d235dda8ac939ae9d9034feb8693239c6b96971",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4251df80d9617e0ead5186472e4cd879617cb2a7d25e3da3499ae8393455cace",
+    "observed_sha256": null,
+    "manifest_sha256": "4251df80d9617e0ead5186472e4cd879617cb2a7d25e3da3499ae8393455cace",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        167
+      ]
+    ],
+    "total_lines": 167,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f10",
+    "supporting_ids": [
+      "s10",
+      "s21",
+      "s26"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/import_graph.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 15081,
+    "git_blob": "dd7beafe54e0884ec352bd2e339dc1a9fe62d548",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a97ace56a1d96a2b08651d06db533793c5348ce3472813e04e5dca2eb29c2f50",
+    "observed_sha256": null,
+    "manifest_sha256": "a97ace56a1d96a2b08651d06db533793c5348ce3472813e04e5dca2eb29c2f50",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        327
+      ]
+    ],
+    "total_lines": 327,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f11",
+    "supporting_ids": [
+      "s19"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/insight_index.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 18408,
+    "git_blob": "787264423988ceb1aab29346170fec24dab5627f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e95138a02fc2e008cb9cf668e8b8351fbf40b839b309f16574db1bdb76a83737",
+    "observed_sha256": null,
+    "manifest_sha256": "e95138a02fc2e008cb9cf668e8b8351fbf40b839b309f16574db1bdb76a83737",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        436
+      ]
+    ],
+    "total_lines": 436,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f12",
+    "supporting_ids": [
+      "s13"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/insight_index_pollution_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9639,
+    "git_blob": "a126ddd447ffb7a9e7cdd7188b200ae3ffab997f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9ccfdda11b6ffd464891b06af51901f87f8ce7c4f389427e5f0432f53f73e68c",
+    "observed_sha256": null,
+    "manifest_sha256": "9ccfdda11b6ffd464891b06af51901f87f8ce7c4f389427e5f0432f53f73e68c",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        257
+      ]
+    ],
+    "total_lines": 257,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f13",
+    "supporting_ids": [
+      "s12"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/intent_doc_floor.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3011,
+    "git_blob": "5fc64b58d9b0e54106627788390732d54129dd63",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "82b12834fe7dc5366f887b13570fa020a05b6729f2817100b9af0f1d8147cd77",
+    "observed_sha256": null,
+    "manifest_sha256": "82b12834fe7dc5366f887b13570fa020a05b6729f2817100b9af0f1d8147cd77",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "total_lines": 69,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f14",
+    "supporting_ids": [
+      "s07"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/jsonl_cache.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2499,
+    "git_blob": "141954085c6321a0ed151a9867c0f16a5fe57f8c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c1a625f1a2c5a81a0bbb48115e5e9b1cc62616370c6288cfec876da640035839",
+    "observed_sha256": null,
+    "manifest_sha256": "c1a625f1a2c5a81a0bbb48115e5e9b1cc62616370c6288cfec876da640035839",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        65
+      ]
+    ],
+    "total_lines": 65,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f15",
+    "supporting_ids": [
+      "s20"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/l2_facts.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 23269,
+    "git_blob": "dd1c7a9b53c7bddaddb209864cc2006431484525",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "957b56df49b5d94243ddd5179a711d6909338ca2a0dd16c2d4fb9d653c53d84e",
+    "observed_sha256": null,
+    "manifest_sha256": "957b56df49b5d94243ddd5179a711d6909338ca2a0dd16c2d4fb9d653c53d84e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        575
+      ]
+    ],
+    "total_lines": 575,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f16",
+    "supporting_ids": [
+      "s09",
+      "s11"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/l2_promoter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 18294,
+    "git_blob": "931e5bc040fd5b8bbec5dc9641a8040cb8b4231f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "60a6ca31027a167970bb7898fd16a5346236c1ef99feb253b2f137bdd2249336",
+    "observed_sha256": null,
+    "manifest_sha256": "60a6ca31027a167970bb7898fd16a5346236c1ef99feb253b2f137bdd2249336",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        364
+      ]
+    ],
+    "total_lines": 364,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f17",
+    "supporting_ids": [
+      "s09",
+      "s11"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ledger_compaction.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3349,
+    "git_blob": "3d5e00df902d7e7d7ded580aa1d6268e8e2dc043",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "60a1c94b3cdc15c99f77b6550a54ebe40c242bd9bf1d19af91653a98efe09f6b",
+    "observed_sha256": null,
+    "manifest_sha256": "60a1c94b3cdc15c99f77b6550a54ebe40c242bd9bf1d19af91653a98efe09f6b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        80
+      ]
+    ],
+    "total_lines": 80,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f18",
+    "supporting_ids": [
+      "s06"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/meta_rules.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 17409,
+    "git_blob": "0cb593d064e620f1a0adb0b9342828fb14be6977",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "418a9efbfb73448675fc82478ef2539c3a5f856603c0149b6ef1c1365245fdce",
+    "observed_sha256": null,
+    "manifest_sha256": "418a9efbfb73448675fc82478ef2539c3a5f856603c0149b6ef1c1365245fdce",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        373
+      ]
+    ],
+    "total_lines": 373,
+    "body_read_complete": true,
+    "partition": "baldrix:scripts/lib:004",
+    "partition_scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-004/review.md#f19",
+    "supporting_ids": [
+      "s25"
+    ],
+    "read_basis": "Fresh full primary body read; no prior full-body reuse.",
+    "tests_executed": [],
+    "test_limits": "No upstream execution/import/probe/network/install. Own metadata and lint checks are not source test receipts.",
+    "tests_not_run": [
+      "All upstream tests, embedded self-checks and probes unexecuted."
+    ],
+    "remaining": [
+      "See per-file review for untraced callers/config/tests and static inference limits.",
+      "Full closure, actual human acceptance, model qualification, current vendor behavior, actual Claude joint review, licensing, platform validation and adoption remain pending."
+    ],
+    "adoption_approved": false
+  }
+]

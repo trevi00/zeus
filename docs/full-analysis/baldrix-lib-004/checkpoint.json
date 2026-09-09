@@ -1,0 +1,39 @@
+{
+  "partition": "baldrix:scripts/lib:004",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "primary_count": 19,
+  "primary_bytes": 197421,
+  "primary_bodies_read": 19,
+  "primary_body_pending": 0,
+  "primary_hashes_matched": 19,
+  "primary_raw_git_blobs_matched": 19,
+  "supporting_unique_files": 26,
+  "supporting_full_bodies": 1,
+  "supporting_partial_bodies": 25,
+  "supporting_manifest_sha_absent": [
+    "settings.json"
+  ],
+  "upstream_execution_count": 0,
+  "upstream_import_count": 0,
+  "upstream_test_count": 0,
+  "probe_count": 0,
+  "network_count": 0,
+  "installation_count": 0,
+  "metadata_checks": [
+    "Exact partition equality",
+    "Raw bytes/SHA-256/Git blob",
+    "Unique paths and ranges",
+    "UTF-8 JSON and review anchors"
+  ],
+  "own_ruff": "See validation.json; applies only to this metadata recorder.",
+  "full_transition_closure": false,
+  "actual_claude_joint_review": false,
+  "actual_host_validation": false,
+  "licensing_complete": false,
+  "adoption_approved": false,
+  "bounded_static_checkpoint_complete": true,
+  "shared_coverage_edited": false,
+  "source_or_runtime_edited": false,
+  "commit_or_push": false,
+  "remaining_ref": "docs/full-analysis/baldrix-lib-004/remaining.md"
+}

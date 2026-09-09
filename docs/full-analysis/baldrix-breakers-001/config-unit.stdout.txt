@@ -1,0 +1,18 @@
+  [OK] test_default_values_match_module_constants
+  [OK] test_resolve_no_yaml_returns_default
+  [OK] test_resolve_merges_yaml_override
+  [OK] test_yaml_tolerates_comments_and_blanks
+  [OK] test_yaml_drops_bogus_keys_and_nonint_values
+  [OK] test_increase_requires_strong_token
+  [OK] test_decrease_requires_safe_token
+  [OK] test_decrease_with_strong_token_also_raises
+  [OK] test_window_key_uses_safe_token_both_directions
+  [OK] test_apply_idempotent
+  [OK] test_unknown_key_and_invalid_value_raise
+  [OK] test_composite_uses_yaml_override_for_trip_per_mode
+  [OK] test_composite_default_behavior_when_no_yaml
+  [OK] test_cli_happy_path
+  [OK] test_cli_wrong_token_returns_3
+  [OK] test_cli_unknown_key_returns_2_from_argparse
+
+[OK] 16 tests passed

@@ -1,0 +1,26 @@
+{
+  "kind": "inert_review_recorder_and_metadata_check",
+  "argv": [
+    "python",
+    "-X",
+    "utf8",
+    "docs/full-analysis/baldrix-lib-002/record_review.py"
+  ],
+  "cwd": "C:/Users/rudtn/zeus",
+  "program_sha256": "1b5f590675bc743af38e16da00c1f89ed20107c0ce397cf14cfa01fdf61faa48",
+  "exit_code": 0,
+  "stdout": "{\"primary\": 23, \"bytes\": 197001, \"fresh\": 20, \"reused\": 3, \"supporting\": 13, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\n",
+  "stderr": "",
+  "ruff_argv": [
+    ".venv/Scripts/ruff.exe",
+    "check",
+    "docs/full-analysis/baldrix-lib-002"
+  ],
+  "ruff_exit_code": 0,
+  "ruff_stdout": "All checks passed!\n",
+  "verified_primary_anchors": 23,
+  "verified_prior_full_body_identities": 3,
+  "upstream_executions": 0,
+  "utf8_replacement_scan": "no suspicious replacement text",
+  "python_line_endings": "LF"
+}

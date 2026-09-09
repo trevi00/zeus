@@ -1,0 +1,21 @@
+{
+  "partition": "harness:tests/integration:002",
+  "primary_body_remaining": [],
+  "remaining": [
+    "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+    "Full transitive callers, fixtures, policies, tests and deployment closure.",
+    "Authenticated human acceptance and real product/device evidence.",
+    "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+    "Actual independent Claude review managed by root.",
+    "License and redistribution review; adoption approval and Zeus implementation."
+  ],
+  "specific_partial_traces": [
+    "Dispatch write_boundary and complete handler registry, actual shell commands and OS matrix.",
+    "Curator provenance, reflection and asset gate full closure; independent repair receipts.",
+    "Lease concurrency, debate actor authentication, compaction byte equivalence.",
+    "Fleet endpoint identity, external cleanup, no network execution in this review.",
+    "Loader/lex/catalog/seams, ontology validator, health safety sections and all fixture configuration bodies.",
+    "Authenticated multi-statement approval binding, model qualification and GitHub issue synchronization."
+  ],
+  "review_ref": "docs/full-analysis/harness-integration-tests-002/review.md#unknowns"
+}

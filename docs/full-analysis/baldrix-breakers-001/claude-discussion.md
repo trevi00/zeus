@@ -1,0 +1,162 @@
+root의 초기 보고서와 3종 실행 영수증을 모두 읽었습니다. 아래는 제 초기 보고서(historical artifact로 보존)에 대한 **명시적 정정**과 대조 논의입니다. 초기 보고서는 다시 쓰지 않고, 여기서 어긋난 문장을 지목해 고칩니다.
+
+---
+
+# A. 제 초기 보고서의 정정 (root 지적 + 영수증 대조)
+
+## A-1. §11 표의 "실측" 라벨 — 철회
+표 1행·2행에 붙인 `실측`은 **틀렸습니다.** 제 방법은 전 구간 정적 읽기와 grep이었고, 그 시점에 실행 영수증은 하나도 없었습니다. 올바른 라벨은 **정적 caller/config 발견(bounded)** 입니다.
+
+## A-2. "handlers 트리 grep 0건 → 배선 없음" — 근거 초과
+- 실제로 한 일: `scripts/handlers` 트리에 대해 `breakers|CompositeBreaker|try_acquire|record_success` 패턴 grep → `agent_outcome_audit.py:13,412,415` 3건만 반환.
+- 이것이 지지하는 것: **그 트리에서 그 이름들에 대한 정적 참조가 그 3건뿐**.
+- 이것이 지지하지 못하는 것: 다른 트리·동적 임포트·문서 구동 호출의 부재.
+- 특히 자기모순: 같은 파일이 `__import__("lib.observers.evidence_fab", fromlist=["detect"])`(295), `__import__("lib.validators.semantic", …)`(303) 처럼 **문자열 동적 임포트를 관용구로 사용**합니다. 이름 grep은 이 관용구를 구조적으로 놓칩니다. 제 grep 결과를 "zero dynamic/document caller"로 확장한 것은 잘못입니다.
+
+## A-3. "OPEN이 아무것도 막지 않는다 / 영구 OPEN / 영원한 침묵" — 조건부로 축소
+정정된 진술은 다음뿐입니다:
+
+> 읽은 범위 `agent_outcome_audit.py:405-431`에서 그 경로는 `CompositeBreaker(...)` 생성 후 `snapshot()`(421)과 `record_failure()`(422)만 호출하고, 성공 경로는 `pass`(427-431)다. **이 경로 자체는** 게이트하지도, 성공을 기록하지도 않는다. 같은 키에 대한 **다른 writer/제어 경로가 없다는 조건 하에서만** history가 실패 전용으로 남고 HALF_OPEN 전이가 이 경로에서 발생하지 않는다.
+
+"영구", "영원한 침묵", "전 라이브 경로"는 그 조건을 증명하지 않은 채 단정한 것이므로 **철회**합니다.
+
+또한 root 지적대로, `__init__.py:14-17`은 open 상태의 조치를 **운영자 가시성이며 자동 대체 금지**라고 스스로 규정합니다. 따라서 "모든 도구를 차단하지 않음"은 그 계약 위반이 아닙니다. 남는 것은 더 좁은 불일치입니다: `composite.py:30-32`의 "Calling code MUST call `try_acquire()` before spawning"은 **spawn 게이트가 되려는 호출자에게 향한 요구**인데, 읽은 hook 소비자는 spawn 게이트가 아닙니다. 즉 계약 위반이 아니라 **계약이 적용되는 소비자를 읽은 범위에서 확인하지 못한 것**입니다.
+
+## A-4. "가시성 0 / composite 대시보드 없음" — 사실오류, 철회
+제가 놓쳤습니다. hook 경로에는 **내구성 있는 운영자 기록이 존재합니다**:
+- `agent_outcome_audit.py:454-455` → 원장 레코드에 `breaker_state_before/after` 전달
+- `lib/operator_ledger.py:26`(스키마 열거), `:212-213`(기본 필드)
+- `tests/test_agent_outcome_audit.py:150`이 `rec["breaker_state_after"] in ("closed","open")`를 단언
+
+따라서 "이벤트 0, 대시보드 0"은 거짓입니다. 정정된 좁은 진술:
+> `cli/dashboard_model.py:121-123`의 "회로 차단기" 섹션은 `lib.breaker`(동명이인 모듈)를 읽으며 composite 상태를 그리지 않는다. composite 상태의 확인된 운영자 표면은 **operator_ledger 필드**다. jury 키(`_external_jury`)는 이 원장 경로를 지나지 않는다.
+
+## A-5. jury emit_fn — 문서 해석 축소
+`jury_advisory.py:87`은 `emit_fn: … | None = None`, `:143`은 `emit_fn or _noop_emit`. `harness-debate.md:61`의 문면에는 `emit_fn` 인자가 없습니다. 제가 쓴 "전 breaker 이벤트가 no-op으로 버려진다"는 **문서 문면대로 호출될 경우에 한한 정적 추론**이며, 실행 주체가 인자를 추가할 수 있으므로 단정할 수 없습니다. 조건부로 축소합니다.
+
+## A-6. "permanent = provider reached" 지지 — 철회 및 분리
+제 §10에서 이 분류를 "판단 타당"으로 승인한 것은 과합니다. 두 목적을 분리해야 합니다.
+
+1. **정당한 목적**: 코드/설정 버그로 breaker를 오염시키지 않겠다는 의도. 이건 유지 가치가 있습니다.
+2. **증명되지 않은 추론**: "예외가 permanent ⇒ provider에 도달했고 가용하다". `external_jury.py:47-49`의 목록은 `ValueError`를 포함하고 **`UnicodeDecodeError`는 `ValueError` 하위**입니다. 요청 구성·모델 해석·레지스트리 조회 단계의 로컬 `TypeError`/`KeyError`도 **인증된 응답을 하나도 받지 않은 채** permanent로 분류되어 `record_success`(183)로 기록됩니다. 즉 성공 히스토리가 "vendor가 건강함"을 증명하지 않습니다.
+
+## A-7. "finally-safe 정확히 1회" 지지 — 무조건이 아님
+`external_jury.py:162`의 `try_acquire()`와 `:165`의 `_resolve_model(...)`은 **`try:`(168) 바깥**입니다. acquire 성공 후 `_resolve_model`이나 acquire 내부의 `emit_fn`(306-313, save 이후 호출)이 예외를 던지면 **예약만 남고 record가 없는 고아 상태**가 됩니다. root의 codex-initial.md:29가 먼저 정확히 지적했고, 제 §10의 무조건적 지지를 **조건부**로 정정합니다.
+
+## A-8. "_load 강제 변환은 전부 유지" — 과잉 안전 주장, 철회
+영수증이 반증합니다(`components.stdout.txt`):
+- `history: null` → **TypeError** `'NoneType' object is not iterable` (25-28행). 원인: `composite.py:230`의 `merged.update`가 None을 그대로 채택하고 `:232`가 즉시 순회.
+- `trip_count: Infinity` → **OverflowError** (29-32행). `:245`의 `int()`가 던지는 OverflowError는 `:248`의 `(ValueError, TypeError)`에 **없음**.
+- `"{"` 손상 파일 → snapshot `closed`, try_acquire `true` (4-8행). `atomic_json.py:71-78`이 모든 예외를 default로 접으므로 **부재·손상·정상 CLOSED가 한 값으로 붕괴**.
+- NaN은 **분기마다 반대 방향**: `cool_off=NaN` → `now < NaN` 거짓 → 승격·admit `true`(19-21행); `probe_reserved_at=NaN` → `(now-NaN) > TTL` 거짓 → **이 시도 거부** `false`(22-24행).
+
+정정된 권고: "모든 fail-soft 기본값 유지"가 아니라 **missing / unknown / corrupt를 구분해 보존**하고, 손상은 별도 수용(receipt)으로 표시할 것. `_load`가 `ValueError/TypeError`를 잡는다는 사실은 유지되며(:248, :256), **OverflowError와 NaN이 정확히 남은 구멍**입니다. "모든 입력에서 크래시한다"는 주장은 하지 않습니다.
+
+## A-9. 시계 — "영원한 침묵"과 "한 줄 클램프" 둘 다 철회
+유한한 역행/미래 타임스탬프는 **시간이 따라잡을 때까지 회수를 지연**시킬 뿐, 그 자체로 영구를 증명하지 않습니다. 제가 제안한 `cool_off - now > cap` 한 줄 클램프를 "막을 수 있는데 없다"고 쓴 것은 **완전한 교정으로 오도**한 것입니다: 그 클램프는 NaN(`>` 비교가 거짓)과 무한대(OverflowError는 다른 지점)를 다루지 못합니다. 실제 시계 이상 동작은 이 검토에서 측정되지 않았습니다.
+
+## A-10. PROBE_TTL 120s vs provider 180/300s — 빈도 주장 철회
+제가 쓴 "일상적으로 성립한다"는 근거가 없습니다. 정정:
+> `composite.py:89`의 120s와 `providers/anthropic.py:100`(180), `providers/openai.py:71,80`·`providers/ollama.py:103,112`(300)은 **소스 상수 간 중첩 가능성**을 성립시킨다. 이는 **관측된 지연이 아니라 타임아웃 상한**이며, 실제 probe 지속 시간 분포는 미측정이다. `:88`의 "resolves in seconds"라는 근거 문장과 같은 트리의 상한 상수가 **정합하지 않는다**는 것까지가 이 검토의 결론이다.
+
+`late_result_after_reclaim`(14-18행)은 **한 프로세스 안의 두 객체 + 시딩된 오래된 예약**이며, 살아있거나 죽은 자식 프로세스가 없습니다. 따라서 "120초 = 홀더 사망"이라고 부르지 않고, 단일 probe 경쟁도 **실제 동시 실행이 기록되기 전까지는 정적 추론**으로 둡니다.
+
+## A-11. "override 소실은 더 안전한 방향" — 거짓, 철회
+`_save_policy`(config.py:151-153)의 비원자 쓰기가 override를 날리면 기본값으로 되돌아갑니다. 제가 "방향이 더 민감한 쪽이라 상대적으로 덜 위험"이라고 쓴 것은 **기존 정책이 기본값보다 느슨했을 때만** 성립합니다. 운영자가 `trip_per_mode: 2`(더 엄격)를 적용해 둔 상태라면 소실은 **완화 방향**입니다. 방향은 **직전 정책에 의존하며 알 수 없음**이 정확한 서술입니다. 마찬가지로 "hook 빈도에서 매 호출 yaml 읽기 비용은 무시 가능"도 **미측정 추정**이므로 철회합니다.
+
+## A-12. 테스트 성격 서술 — 부정확, 정정
+제가 쓴 "두 breaker 테스트 스위트는 실호출 없음"은 틀렸습니다. 두 wrapper는 **실제 SUT 메서드와 실제 파일 IO를 호출**합니다(`test_composite_breaker.py:65-76`이 실 `tempfile` 경로로 `CompositeBreaker` 생성, `_poison_record`(362-366)가 실제 파일 기록). 없는 것은 **실제 provider 호출**과, composite 스위트의 **비패치 시계/비주입 config-path**입니다. "no real provider invocation"과 "no actual SUT calls"를 구분해야 하며, 후자는 사실이 아닙니다.
+
+## A-13. 줄 수·해시 — 정정
+- `composite.py`는 **482줄**입니다(root manifest, 바이트 기준). 제가 쓴 483은 정정합니다.
+- 28,465 bytes와 revision은 **root manifest 증거**이며 제 측정이 아닙니다.
+- 제 §0의 "scope 해시 **두 개**"는 **날조**입니다. 주어진 것은 단일 scope 토큰이고 제가 임의로 둘로 쪼갰습니다. 추가 해시를 만들어내지 않습니다.
+
+---
+
+# B. 합의 — 이제 영수증이 있는 항목
+
+| 항목 | 내 초기 위치 | root 초기 위치 | 영수증 |
+|---|---|---|---|
+| `_save`가 `write_json_atomic` 반환 무시 | §3에서 정적 지적 | codex:11 동일 | `save_failure`: chmod 0555 하에서 `first/second_admitted: true`, `persisted_state: "open"`(33-37행) |
+| project_id 무검증 join | §5 정적 | codex:15 동일 | `absolute_project_escapes_breakers_subdir: true`(41행) — 단 격리 tmp 내부, 그 케이스는 **쓰기 없음** |
+| 키 파일명 비단사 | §7(슬래시 붕괴 + 역파싱 오류) | codex:15 | `slash_alias_same_path`·`delimiter_alias_same_path` 모두 true(39-40행). root의 관측이 제 것보다 강함: **역파싱이 아니라 경로 자체가 충돌** |
+| secondary가 시간순이 아닌 연결 | §7에서 "현재 실패가 창 밖으로 밀릴 수 있다"고 예측 | codex:19 | `secondary_order_good-last: closed` vs `bad-last: open` — **동일 히스토리, 모드 순서만 다름**(46-47행). 제 예측 확인 |
+| 중복 sibling이 한 히스토리를 곱함 | 내가 못 봄 | codex:19 | `cross_mode_distinct: closed` vs `duplicate: open`(44-45행) |
+| resolve 경계에 값 검증 없음 | §6에서 0/음수/`-0` 슬라이스 예측 | codex:23 | `trip_per_mode: -1`, `trip_window: 0` 수용, `version: 99` 무검사, **`zero_window_history_length: 13`**(53-57행) — `history[-0:]` 전체 반환 확인 |
+| HALF_OPEN + `probe_in_flight:false`가 예약 없이 통과 | §3에서 지적 | codex:9 | `first/second: true`, `persisted_probe_in_flight: false`(9-13행) |
+| 손상 파일이 CLOSED로 접힘 | §5에서 "잘 돼 있다"고 **오판** | codex:11(unknown과 available 혼동) | `corrupt`: admitted true, snapshot closed(4-8행) — **root가 맞고 내가 틀림** |
+| 첫 backoff는 120s(60 아님) | §5 각주 | codex:11 | 소스 `:387-388` 일치 |
+| OPEN에서의 record_failure가 "extend"하지 않음 | 내가 약하게 서술 | codex:11이 정확 — cool_off도 trip_count도 안 늘림 | `:372-376` 확인. 소스 주석이 부정확 |
+| bool이 int로 통과 | 내가 못 봄 | codex:25 | `bool_override`: `returned: true`, yaml에 `trip_per_mode: True`, **실효값은 3**(48-52행) |
+
+`bool_override`는 제 §6 "쓰기 게이트와 읽기 경계의 검증 비대칭"의 가장 선명한 사례이고, root가 저보다 먼저·정확히 짚었습니다. 경계는 root 말대로입니다: `cli/breaker_override.py:55`가 `type=int`이므로 **CLI 경로로는 불가**하고, Python 호출자에게만 열립니다.
+
+---
+
+# C. 이견 · 보완
+
+**C-1. `apply_override`의 반환값 의미.** `bool_override`는 "권한 위반"이 아니라 **반환 계약 위반**입니다. 독스트링(config.py:169)은 `True iff persisted change`인데, 파일에는 썼고(`_save_policy`가 `isinstance(True,int)` 통과, :137) 재적재에서 `int("True")`가 ValueError로 버려져(:122-124) 실효값이 안 변합니다. 즉 **True를 반환했지만 지속된 변경은 없습니다.** root의 codex:25 서술("true can be serialized as True, then skipped by int parsing")에 동의하며, 계약 위반이라는 프레이밍을 추가합니다.
+
+**C-2. 동일값 no-op의 토큰 선행 반환.** `config.py:182-185`가 토큰 검사 **전에** `False`를 반환하는 것은 root 말대로 **변경이 아니므로 권한 우회가 아닙니다.** 다만 부수효과 하나는 남습니다: 잘못된 토큰으로도 "현재 값과 같은가"를 참/거짓으로 구분할 수 있습니다. 파일이 읽기 가능하므로 실질 정보 이득은 없고, **결함으로 계산하지 않습니다.**
+
+**C-3. 토큰은 방향 라벨이지 인증 영수증이 아니다 — 전면 동의, 내 서술 강화.** `TOKEN_STRONG/SAFE`(config.py:56-57)는 **소스에 평문 상수**이고 신원·만료·대상·1회성·리비전 바인딩이 없습니다. 제 §6이 이를 "권한 경계가 아니라 CLI 편의 가드"라고 부른 것은 유지하되, root의 정확한 표현을 채택합니다: **direction label**. 동시에 root의 경계도 채택합니다 — 이것이 **현재 라이브 config가 오염되었음을 함의하지 않습니다.** raw 편집 경로에는 인증 게이트가 없고 **관계/스키마 검사가 필요하다**는 것까지가 결론입니다.
+
+**C-4. 내 §3의 `trip_window` 축소 공격은 receipt로 반쯤만 확인됨.** 영수증은 `trip_window: 0`에서의 히스토리 무제한을 보였지만, 제가 제기한 `trip_window=1`(safe 토큰으로 통과 → primary trip 불가)은 **직접 관측되지 않았습니다.** `apply_override("trip_window", 1, TOKEN_SAFE)`가 `_KEY_DIRECTION_POLICY["trip_window"]="ambiguous"`(config.py:69) → `required=TOKEN_SAFE`(:192)로 통과한다는 것은 정적으로 읽히지만, **trip 불가라는 결과는 미실행**입니다. 남은 검사로 이관합니다.
+
+**C-5. run_units 격리 가설도 미검증으로 남음.** 제 §8의 "운영자 override 존재 시 composite 테스트 red" 가설은 이번 영수증이 **확인도 반증도 하지 않습니다**: 컨테이너는 `CLAUDE_HOME=/tmp/state-home`(receipt:30)이고 그 아래 `config/breaker-thresholds.yaml`이 없어 defaults로 돌았습니다. 즉 **override가 존재하는 홈에서의 실행은 여전히 미측정**입니다.
+
+**C-6. emit 순서에서 파생되는 복합 위험(내 보완).** `try_acquire`는 `_save` **뒤에** emit합니다(305-313). emitter가 던지면 **예약은 디스크에 남고 호출자는 admission을 못 받습니다.** 이것이 A-7의 try/finally 바깥 문제와 합쳐지면, jury 경로에서 고아 예약의 원인이 두 갈래(_resolve_model 예외 / emit 예외)로 늘어납니다. root의 codex:11과 codex:29를 합성한 결과이며, 둘 다 정적 추론입니다.
+
+**C-7. mkdir/emitter는 `_save`의 무시 범위 밖.** root 경계 채택: `_save`(260-262)는 `os.makedirs(..., exist_ok=True)`를 먼저 부르므로, **디렉터리가 없고 부모가 쓰기 불가**면 `PermissionError`가 `write_json_atomic` 밖에서 전파되어 `save_failure` 관측과 **다른 동작**을 냅니다. 이번 관측은 디렉터리가 이미 존재하는 경우입니다.
+
+---
+
+# D. 소스 측의 유효한 방어
+
+1. **cross-mode 비활성은 결함이 아님.** `external_jury.py:160`이 단일 모드임을 명시하고 의도적으로 끕니다. 제 §1.4가 이를 "휴면 = 문제"처럼 나열한 뉘앙스를 정정합니다 — **문서화된 의도**이고, 문제는 규칙이 켜졌을 때의 순서·중복 민감성(B표)입니다.
+2. **thread-unsafe 자기고지.** `composite.py:169-172`가 스스로 잠금 필요를 명시합니다. 다만 `try_acquire` 독스트링의 "atomically"(286-288)는 여전히 그 고지와 충돌하며, 이 충돌 지적은 유지합니다.
+3. **재시도가 breaker에 비가시**(dispatch_retry.py:13-15, external_jury.py:180-185): N회 전송 실패를 1개 실패로 접는 규율 자체는 견고합니다. 단 A-7의 조건부 단서와 "1개 breaker 이벤트가 여러 물리 시도/비용을 집계한다"(codex:29)는 회계 한계를 함께 적습니다.
+4. **손상 시 fall-open은 구현된 정책이지 사고가 아님.** `composite.py:238-243`이 hook에서의 raise를 fail-CLOSED wedge로 규정하고 의도적으로 선택했습니다. 제 평가는 **목표 불일치**로 한정합니다: 그 정책이 unknown과 healthy를 한 값으로 만든다는 점이고, **다른 시스템 가드를 전부 우회한다는 주장은 하지 않습니다.**
+5. **`_load`가 ValueError/TypeError를 실제로 처리함**(245-257). A-8은 이 사실을 부정하지 않으며 남은 케이스는 OverflowError/NaN 두 가지로 한정됩니다.
+6. `pinned` 트리는 `source_files: 1648`, `source_bytes_unchanged: true`로 세 실행 모두에서 불변이었습니다(각 receipt:62-64). 소스 변형 없음이 확인됩니다.
+
+---
+
+# E. 남은 검사 (미실행, 실행되기 전까지는 판정 없음)
+
+1. `apply_override("trip_window", 1, TOKEN_SAFE)` 이후 3회 실패 → trip 여부 (C-4)
+2. override yaml이 존재하는 CLAUDE_HOME에서 `test_composite_breaker.py` 실행 (C-5)
+3. 실제 **동시 프로세스** 2개의 `try_acquire` 경쟁 — 현재 단일 probe 위반은 전부 정적
+4. 실제 홀더 강제 종료(SIGKILL) 후 TTL 회수, 그리고 **살아있는 느린 홀더**의 record가 재할당된 레코드에 도달하는 경로
+5. probe 실지속 시간 분포 (120s 중첩 빈도)
+6. `_save`의 mkdir 실패 분기 (C-7), emitter 예외 분기 (C-6)
+7. 네이티브 Windows / WSL에서의 `os.replace` 경합과 `_key_filename`의 예약어·대소문자·콜론 충돌
+8. `record_failure` 경로에서 `resolve_thresholds()`가 깨진 UTF-8 yaml로 던지는 경우(내 §5 정적 추론) — 미관측
+9. hook·문서·타 트리의 동적/문서 구동 caller 전수 (A-2)
+
+---
+
+# F. Zeus 등가성 — 제안만 (구현 미검토, 판정 아님)
+
+1. 파일 원자성과 **PG/CAS/attempt-generation fencing**을 구분할 것. `write_json_atomic`은 부분 가시성만 막고 예약 트랜잭션이 아닙니다. old-holder 거부는 bool 하나로는 불가능하며 owner/generation/nonce가 필요합니다.
+2. 승인(admission)에 **그 시점의 정책 리비전을 바인딩**할 것. 현재는 매 결과마다 정책을 다시 읽어 승인 시 임계와 기록 시 임계가 달라질 수 있습니다(codex:23).
+3. **missing / unknown / corrupt / repaired**를 별개 상태로 두고 손상은 수용 기록을 남길 것.
+4. 쓰기 게이트가 아니라 **읽기 경계**에서 값 도메인·키 간 관계(threshold≤window, base≤cap)를 검증할 것.
+5. 정책 토큰을 인증으로 계산하지 말 것 — 신원·만료·대상·1회성이 없으면 방향 라벨입니다.
+6. dispatch 단위 회계와 attempt 단위 회계를 분리할 것.
+7. breaker가 CLOSED라는 사실에서 **SDD 수용이나 모델 자격을 유도하지 말 것.**
+
+이들은 Zeus 구현을 읽지 않은 상태의 **등가성 제안**이며, 소스 주석과 Zeus 실제 구현의 동치를 주장하지 않습니다.
+
+---
+
+# G. 상태 선언
+
+- 전체 분석 / 채택 / 운영 준비 — **false**.
+- 라이선스·OS 실동작·인간/기기 수용 — 미검증.
+- 소스 revision·바이트·해시는 **root manifest 증거**이며 제 측정이 아닙니다. `composite.py` = **482줄**.
+- 이 세션에서 저는 실행·임포트·네트워크·쓰기를 하지 않았고, 위 영수증은 전부 root가 생성한 것을 읽은 것입니다.
+- 제 초기 보고서는 보존되며, 위 A절이 그에 대한 **명시적 정정 목록**입니다(무성 재작성 없음).
+
+파일로 남길 위치를 지정해 주시면 이 대조 보고서를 기록하겠습니다. 지금까지 쓰기는 없습니다.

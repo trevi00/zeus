@@ -1,0 +1,20 @@
+  [OK] test_constructor_validation
+  [OK] test_initial_state_is_closed
+  [OK] test_composite_keys_are_isolated
+  [OK] test_primary_trip_at_three_in_ten
+  [OK] test_sub_threshold_stays_closed
+  [OK] test_history_window_drops_old_entries
+  [OK] test_open_to_half_open_after_cool_off
+  [OK] test_half_open_single_probe_budget
+  [OK] test_half_open_success_closes_and_resets_trip_count
+  [OK] test_half_open_failure_reopens_with_doubled_backoff
+  [OK] test_backoff_caps_at_one_hour
+  [OK] test_secondary_trip_across_modes
+  [OK] test_record_failure_in_open_state_no_state_change
+  [OK] test_persistence_round_trip
+  [OK] test_snapshot_is_immutable
+  [OK] test_event_emission_payload_shape
+  [OK] test_load_coerces_poisoned_trip_count
+  [OK] test_load_coerces_poisoned_timestamp
+
+[OK] 18 tests passed

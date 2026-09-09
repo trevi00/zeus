@@ -1,0 +1,84 @@
+{
+  "partition": "baldrix:scripts/lib:004",
+  "scope_sha256": "a425e01613dffed3bdba907af81db84992401d176dba7f531b4852173e6747e8",
+  "bytes": 197421,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/graduation.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/graduation_audit.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/ground_or_drop.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/guard_patterns.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/handoff_drift.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/handoff_surface.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/harness_audit.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/heartbeat.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/hook_io.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/hook_latency.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/import_graph.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/insight_index.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/insight_index_pollution_detector.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/intent_doc_floor.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/jsonl_cache.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/l2_facts.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/l2_promoter.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/ledger_compaction.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/meta_rules.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

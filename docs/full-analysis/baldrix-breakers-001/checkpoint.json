@@ -1,0 +1,41 @@
+{
+  "partition": "baldrix:scripts/lib/breakers:001",
+  "scope_sha256": "486f22b87fc9e170e280e10691430fa2dc270c00702cb7a0fe8a6037fde74551",
+  "record_scope_sha256": "a66b8018fdedf5e40aa4934d5b9b2bd7f77276316516b754e6ec18cf329dca79",
+  "record_scope_hash_encoding": "Python json.dumps(scope, sort_keys=True), UTF-8",
+  "scope_items": [
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/breakers/__init__.py",
+      "sha256": "25a01994403961b113c68a894392e2ec44995cba96e17892db49203ffea8a2bb"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/breakers/composite.py",
+      "sha256": "564df7a36a2ff94591dd383c60d0dee4aac6120ba865bc8379881d6fc831ac41"
+    },
+    {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/lib/breakers/config.py",
+      "sha256": "91693b4a4d45e95b513eecc61c4e9489f9e81f7c962ce530b0934852acf49ebb"
+    }
+  ],
+  "primary_count": 3,
+  "primary_bytes": 28465,
+  "primary_body_read_complete": true,
+  "root_supporting_count": 7,
+  "root_supporting_full": 4,
+  "root_supporting_partial": 3,
+  "original_unit_modules_executed": 2,
+  "original_unit_tests_passed": 34,
+  "original_component_programs_completed": 1,
+  "unit_fixture_limits": "Injected clocks/emitter callbacks/config module path plus real temporary files. Not concurrent-process or model/human acceptance.",
+  "component_limits": "Real isolated JSON/YAML/filesystem permission faults and original methods. No clock/method/provider patch. Stale seeded record is not actual holder death or concurrent-process test.",
+  "actual_provider_model_invocations": 0,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false
+}

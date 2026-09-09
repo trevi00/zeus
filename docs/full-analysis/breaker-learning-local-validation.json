@@ -1,0 +1,35 @@
+{
+  "kind": "local_validation_tool_result_transcription",
+  "source": "exec_command/write_stdin terminal results; not raw process stdout",
+  "base_revision": "2fd81d0a7bc7b6e26a0e1e8470a497ad9984b2ff",
+  "scope": "Completed breaker/lib002/lib004/integration002 evidence and verifier; runtime src/tests/workflows unchanged",
+  "pytest": {
+    "argv": ["uv", "run", "pytest", "-q"],
+    "session_id": 21515,
+    "terminal_chunk": "856697",
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 178.07
+  },
+  "ruff": {
+    "argv": ["uv", "run", "ruff", "check", "."],
+    "terminal_chunk": "95ef56",
+    "returncode": 0,
+    "output": "All checks passed!"
+  },
+  "identity_verifier": {
+    "argv": ["uv", "run", "python", "docs/full-analysis/verify-breaker-learning-checkpoint.py"],
+    "terminal_chunk": "bc935d",
+    "returncode": 0,
+    "primary_records": 62,
+    "supporting_records": 85,
+    "process_receipts": 5,
+    "artifact_hashes": 56,
+    "initial_metadata_failure": "KeyError pinned_sha256 on prior Zeus row using sha256; both schemas now compared against actual bytes. See root review."
+  },
+  "upstream_actual_model_invocations": 0,
+  "upstream_native_windows_wsl_acceptance": false,
+  "whole_analysis_complete": false,
+  "adoption_approved": false
+}

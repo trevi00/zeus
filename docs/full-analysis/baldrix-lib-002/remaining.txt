@@ -1,0 +1,2 @@
+Primary unread:0 (20 fresh +3 prior same-byte full bodies).
+Pending: exact transitive callers/config/tests; all upstream executions; licenses/vendor claims; whole-area actualClaude; Win/Linux/WSL; Zeus adoption and human acceptance.

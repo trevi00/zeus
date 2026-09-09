@@ -1,0 +1,86 @@
+[
+  {
+    "path": "scripts/lib/calendar_gate.py",
+    "prior_ledger": "docs/full-analysis/baldrix-stop-001/supporting-evidence.json",
+    "prior_ledger_sha256": "0a41791944033815483f7139fcb00018738e5d88434762b9e6e71f5df35c53b6",
+    "prior_reviews": [
+      {
+        "path": "docs/full-analysis/baldrix-stop-001/codex-initial.md",
+        "sha256": "3ec61efb66dce915bdc39ab8fc2d4a981b95f832113dc3d06e831866fda3b4fc"
+      },
+      {
+        "path": "docs/full-analysis/baldrix-stop-001/resolution.md",
+        "sha256": "78855dc4dbbfd16c775b71cd16c35779ed7434ab33c5fe280b3fc9bf64b9e0c8"
+      }
+    ],
+    "prior_read_ranges": [
+      [
+        1,
+        482
+      ]
+    ],
+    "prior_read_extent": "full_body",
+    "pinned_sha256": "acabe84529790804b1d53357dbf9310a8145ab72e65dd549e59786a077f38fa2",
+    "git_blob": "db9cb39c32d7c0e4c079029120232e991b72f49a",
+    "equality": "same pinned revision/raw SHA256/Git blob; prior full-body extent",
+    "new_read": false,
+    "new_execution": false,
+    "global_coverage_increment": false
+  },
+  {
+    "path": "scripts/lib/completion_gate.py",
+    "prior_ledger": "docs/full-analysis/baldrix-completion-authority-001/files.json",
+    "prior_ledger_sha256": "cccdb421513d025a903c4ce161de12aecde7e979bdfedb8c5ec8e5b4f0258a4e",
+    "prior_reviews": [
+      {
+        "path": "docs/full-analysis/baldrix-completion-authority-001/codex-initial.md",
+        "sha256": "a2d69b3627dfc3891a1f604cb11959386d325eb29ec8ba0c993306adf07f7d75"
+      },
+      {
+        "path": "docs/full-analysis/baldrix-completion-authority-001/resolution.md",
+        "sha256": "2ad938ce62d2ef1d723c15893957e2a1df3a06dce8930107ea9bc9817a2724f2"
+      }
+    ],
+    "prior_read_ranges": [
+      [
+        1,
+        438
+      ]
+    ],
+    "prior_read_extent": "full_body",
+    "pinned_sha256": "1b8657e376dec3e6cb43b809bc93da046180e1acfa3ea597139ce099eb46e2e7",
+    "git_blob": "d63316535fc5d5911096620a74ce451329f3db45",
+    "equality": "same pinned revision/raw SHA256/Git blob; prior full-body extent",
+    "new_read": false,
+    "new_execution": false,
+    "global_coverage_increment": false
+  },
+  {
+    "path": "scripts/lib/coverage_gate.py",
+    "prior_ledger": "docs/full-analysis/baldrix-completion-authority-001/files.json",
+    "prior_ledger_sha256": "cccdb421513d025a903c4ce161de12aecde7e979bdfedb8c5ec8e5b4f0258a4e",
+    "prior_reviews": [
+      {
+        "path": "docs/full-analysis/baldrix-completion-authority-001/codex-initial.md",
+        "sha256": "a2d69b3627dfc3891a1f604cb11959386d325eb29ec8ba0c993306adf07f7d75"
+      },
+      {
+        "path": "docs/full-analysis/baldrix-completion-authority-001/resolution.md",
+        "sha256": "2ad938ce62d2ef1d723c15893957e2a1df3a06dce8930107ea9bc9817a2724f2"
+      }
+    ],
+    "prior_read_ranges": [
+      [
+        1,
+        80
+      ]
+    ],
+    "prior_read_extent": "full_body",
+    "pinned_sha256": "802ae363fd5524b98bf95a6c1ca280580e9087f3c1f8f572a34dfa472d0b22a2",
+    "git_blob": "20491189337b053cdd8c85917240a83dffb981dd",
+    "equality": "same pinned revision/raw SHA256/Git blob; prior full-body extent",
+    "new_read": false,
+    "new_execution": false,
+    "global_coverage_increment": false
+  }
+]

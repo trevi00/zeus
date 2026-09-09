@@ -1,0 +1,22 @@
+{
+  "scope": "docs/full-analysis/baldrix-lib-004 only",
+  "metadata_recorder": "build_index.py",
+  "metadata_result": "pass",
+  "primary_count": 19,
+  "primary_bytes": 197421,
+  "primary_sha256_and_raw_git_blob_matches": 19,
+  "supporting_count": 26,
+  "supporting_full_bodies": 1,
+  "supporting_partial_bodies": 25,
+  "supporting_manifest_sha256_absent": ["settings.json"],
+  "own_ruff": {
+    "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/baldrix-lib-004/build_index.py",
+    "result": "pass",
+    "output": "All checks passed!",
+    "additional_isolated_default_rules_check": "pass"
+  },
+  "upstream_tests_executed": [],
+  "upstream_imports_or_probes_executed": [],
+  "execution_boundary": "Only inert metadata recorder and its lint ran. No upstream code was imported or executed.",
+  "test_limits": "Static primary body review and selected supporting oracle/fixture/caller review do not prove runtime closure, actual human approval, model qualification, platform behavior or adoption."
+}

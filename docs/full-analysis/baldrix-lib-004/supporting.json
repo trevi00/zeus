@@ -1,0 +1,736 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/graduate_validator.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6741,
+    "git_blob": "7914cafaea5aaf1e5f33d4c4face567412fdc115",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "282f1a294392a80669d23ee499271650a4a1ab7bbfe531335ab313e92ef1dea3",
+    "observed_sha256": null,
+    "manifest_sha256": "282f1a294392a80669d23ee499271650a4a1ab7bbfe531335ab313e92ef1dea3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        65,
+        145
+      ]
+    ],
+    "total_lines": 179,
+    "body_read_complete": false,
+    "id": "s01",
+    "purpose": "Tick, history consumer and direct graduate success output.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4480,
+    "git_blob": "f134da94e322aaa06a48a5a85ba64584c21117e4",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "observed_sha256": null,
+    "manifest_sha256": "ae5bb41b1f52507256863df44b46446863361962108697d69fa576dfc7dfac5a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        70,
+        123
+      ]
+    ],
+    "total_lines": 123,
+    "body_read_complete": false,
+    "id": "s02",
+    "purpose": "Import-time registry and direct scan adapter.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/brain_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 15224,
+    "git_blob": "3191221cbd7c31284d3b9bbcc25962c4f90e76c7",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439",
+    "observed_sha256": null,
+    "manifest_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        269,
+        306
+      ]
+    ],
+    "total_lines": 332,
+    "body_read_complete": false,
+    "id": "s03",
+    "purpose": "Snapshot restoration calling restore_streak.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/scheduler_driver.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 32149,
+    "git_blob": "3a554140a0a4a078066d02deb9b3017794d3ef7c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "830a867414747e80ac25ec76d2fdca34f3228fcde8225c285443c7ebe2c3250d",
+    "observed_sha256": null,
+    "manifest_sha256": "830a867414747e80ac25ec76d2fdca34f3228fcde8225c285443c7ebe2c3250d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        140,
+        160
+      ]
+    ],
+    "total_lines": 705,
+    "body_read_complete": false,
+    "id": "s04",
+    "purpose": "Scheduled maintenance registration of graduation tick.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/meeting_ingest.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4880,
+    "git_blob": "c523f413599a7ebceb0976bd707829b485e3859e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "eaa86288e217791a047e9ecceb7516bc02d9360d90b13ba7b18191543fa37d8d",
+    "observed_sha256": null,
+    "manifest_sha256": "eaa86288e217791a047e9ecceb7516bc02d9360d90b13ba7b18191543fa37d8d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        40,
+        83
+      ]
+    ],
+    "total_lines": 97,
+    "body_read_complete": false,
+    "id": "s05",
+    "purpose": "Grounding caller, deficit forwarding and human-approved help text.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/run_ledger_compaction.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5887,
+    "git_blob": "4f9277aedd28399f00db95a98ef9e1808d0f91fb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ccc1c5b2abe05ce3b441aefbb515c852b1045107e8e11c7f9daf9394a8452d25",
+    "observed_sha256": null,
+    "manifest_sha256": "ccc1c5b2abe05ce3b441aefbb515c852b1045107e8e11c7f9daf9394a8452d25",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        75,
+        148
+      ]
+    ],
+    "total_lines": 148,
+    "body_read_complete": false,
+    "id": "s06",
+    "purpose": "Archive then live replacement, ack and flag consumption.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/reverse_engineer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10687,
+    "git_blob": "802c3876cc4b277cc0a5652e09ac053f7e8e2250",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "57ede6f5f5793d25af80891b7610902779ea44d0de982c7c640350f8f78815af",
+    "observed_sha256": null,
+    "manifest_sha256": "57ede6f5f5793d25af80891b7610902779ea44d0de982c7c640350f8f78815af",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        180,
+        227
+      ]
+    ],
+    "total_lines": 266,
+    "body_read_complete": false,
+    "id": "s07",
+    "purpose": "Post-write floor, no_roundtrip condition and rollback.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_graduation.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 13078,
+    "git_blob": "12166f0c6ee62a8fca78ef6b27ec9b35852743f5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f7d4a5ff366301b996020a2fcf2b4d71d4205a24d3800c338c2bce322b5921c9",
+    "observed_sha256": null,
+    "manifest_sha256": "f7d4a5ff366301b996020a2fcf2b4d71d4205a24d3800c338c2bce322b5921c9",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        88,
+        130
+      ],
+      [
+        147,
+        195
+      ]
+    ],
+    "total_lines": 345,
+    "body_read_complete": false,
+    "id": "s08",
+    "purpose": "Injected watermark and ready-only graduation fixtures.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_l2_promoter.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 14508,
+    "git_blob": "148a9dfb35bcffa685a9af6b0e6a4f03f2e33149",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bdf78455dfc1074185b8c9b7a17a8338763c9c5d12f047dcc505660cfbcc422a",
+    "observed_sha256": null,
+    "manifest_sha256": "bdf78455dfc1074185b8c9b7a17a8338763c9c5d12f047dcc505660cfbcc422a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        203,
+        293
+      ]
+    ],
+    "total_lines": 347,
+    "body_read_complete": false,
+    "id": "s09",
+    "purpose": "Frame mocks, cascade cases and ID-set-only idempotency oracle.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/probe_hook_latency.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 2734,
+    "git_blob": "3e3966fe367de5d6ac256a5d274de976e3eeff7c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e766ccdc82ef09a8c764480280d4b0fb82b67f993748561a7a2f95b51f6b0768",
+    "observed_sha256": null,
+    "manifest_sha256": "e766ccdc82ef09a8c764480280d4b0fb82b67f993748561a7a2f95b51f6b0768",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        44,
+        76
+      ]
+    ],
+    "total_lines": 76,
+    "body_read_complete": false,
+    "id": "s10",
+    "purpose": "Non-None samples recorded; no success/warning field persisted.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/run_l2_promotion.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6492,
+    "git_blob": "e2736756e8bb723292eeeb8ba4b201c16a886ae6",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a35eb6ad1dd1e621400c475c499ec40938110af9aad13fb67d22a7bb1552aaa2",
+    "observed_sha256": null,
+    "manifest_sha256": "a35eb6ad1dd1e621400c475c499ec40938110af9aad13fb67d22a7bb1552aaa2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        124,
+        185
+      ]
+    ],
+    "total_lines": 185,
+    "body_read_complete": false,
+    "id": "s11",
+    "purpose": "Wrapper exception handling and promotion acknowledgement.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/insight_index_pollution_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7285,
+    "git_blob": "7fd52d48ddb0cbb17c72bfda45e7c91a86a95880",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4c460098ee38353d4ec5f9c7bf1b5ab7014ae8feba3979fbd974d02e14834b3d",
+    "observed_sha256": null,
+    "manifest_sha256": "4c460098ee38353d4ec5f9c7bf1b5ab7014ae8feba3979fbd974d02e14834b3d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        54,
+        100
+      ],
+      [
+        111,
+        157
+      ]
+    ],
+    "total_lines": 187,
+    "body_read_complete": false,
+    "id": "s12",
+    "purpose": "Measure versus detect parameters; unconditional flag consumption after loop.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/stop/learner.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7206,
+    "git_blob": "b7ce763e55156512f28c790803f36fc194848439",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "54eda8848c47806a0fb3facb800b9bc951f9882534829c78dbd9b7710e2a342f",
+    "observed_sha256": null,
+    "manifest_sha256": "54eda8848c47806a0fb3facb800b9bc951f9882534829c78dbd9b7710e2a342f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        120,
+        185
+      ]
+    ],
+    "total_lines": 190,
+    "body_read_complete": false,
+    "id": "s13",
+    "purpose": "Assistant summary to L1 digest and unchecked append return.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/session/init.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 33887,
+    "git_blob": "7f78a659b1cf6ab405a1e004a91053d6174dafa9",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "observed_sha256": null,
+    "manifest_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        60,
+        68
+      ],
+      [
+        108,
+        127
+      ],
+      [
+        350,
+        367
+      ]
+    ],
+    "total_lines": 843,
+    "body_read_complete": false,
+    "id": "s14",
+    "purpose": "Handoff constant use, separate bounded reader and graduation tick.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/pre_tool/guard.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11705,
+    "git_blob": "0197f54ceb59c77857abf7cc2f68f5960d1a9b38",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ebd3fe1ba4e6bf532b0ba5eb12d2b21498ed6b389a9522e744e21d8d1845d076",
+    "observed_sha256": null,
+    "manifest_sha256": "ebd3fe1ba4e6bf532b0ba5eb12d2b21498ed6b389a9522e744e21d8d1845d076",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        52,
+        69
+      ],
+      [
+        213,
+        243
+      ]
+    ],
+    "total_lines": 297,
+    "body_read_complete": false,
+    "id": "s15",
+    "purpose": "Pattern imports, solo override and command rewrite.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/heartbeat_check.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4359,
+    "git_blob": "0b10e62ae70ba8ed5b73090c69242142a96f11b2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c9e19e68b28f267adc1265818c9a7207edc6d7a1ef501981d37b60aaa53b3648",
+    "observed_sha256": null,
+    "manifest_sha256": "c9e19e68b28f267adc1265818c9a7207edc6d7a1ef501981d37b60aaa53b3648",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        32,
+        101
+      ]
+    ],
+    "total_lines": 124,
+    "body_read_complete": false,
+    "id": "s16",
+    "purpose": "Invalid timestamps skipped and unavailable module-level event emitter.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/phase_tree.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10138,
+    "git_blob": "29df938ffb98184ed228ba0e1875b5d9e5fccbd5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c2dd4ac49d9b3881f8307c442b1c45bb4f001294f7f76e791a035e9f433b6bac",
+    "observed_sha256": null,
+    "manifest_sha256": "c2dd4ac49d9b3881f8307c442b1c45bb4f001294f7f76e791a035e9f433b6bac",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        39,
+        47
+      ],
+      [
+        94,
+        120
+      ],
+      [
+        251,
+        278
+      ]
+    ],
+    "total_lines": 278,
+    "body_read_complete": false,
+    "id": "s17",
+    "purpose": "Status enum, promotion heuristic and parser default.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-audit.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11950,
+    "git_blob": "04482bfa23c8d6b938b15b377e39ffb05b94bc7f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e5e686db1c22d4d4c3249f8df352d479018224adbd0d19b8007e5ea82f8d750c",
+    "observed_sha256": null,
+    "manifest_sha256": "e5e686db1c22d4d4c3249f8df352d479018224adbd0d19b8007e5ea82f8d750c",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        50,
+        68
+      ]
+    ],
+    "total_lines": 253,
+    "body_read_complete": false,
+    "id": "s18",
+    "purpose": "Documented audit command and LLM scoring instructions treated as data.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/dashboard_model.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8263,
+    "git_blob": "14708da801e03e31e12b8c3add9ad07dea1ab078",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "94bb5b93a22362996a4ab6825534a577614d7f812623e7f714bcee995f7d8525",
+    "observed_sha256": null,
+    "manifest_sha256": "94bb5b93a22362996a4ab6825534a577614d7f812623e7f714bcee995f7d8525",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        143,
+        176
+      ]
+    ],
+    "total_lines": 182,
+    "body_read_complete": false,
+    "id": "s19",
+    "purpose": "Direct import_graph consumer scans twice.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_jsonl_cache.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3605,
+    "git_blob": "0a64127912e68256ea4f7f2a9dd7954cb56d7031",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f84463eca41b9ed43e2b92428593a3088ee3e63233fe2afcfbebf6df05509e0b",
+    "observed_sha256": null,
+    "manifest_sha256": "f84463eca41b9ed43e2b92428593a3088ee3e63233fe2afcfbebf6df05509e0b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        25,
+        70
+      ]
+    ],
+    "total_lines": 115,
+    "body_read_complete": false,
+    "id": "s20",
+    "purpose": "Malformed rows, same-object caching and append invalidation oracles.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/golden_signals.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 17714,
+    "git_blob": "0c1f885b4f5089aa5002390c8d68f4aa0374c25f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "26d68f1e6768d9536e43674fd23d303294486313400c40c539064c3bb4e291aa",
+    "observed_sha256": null,
+    "manifest_sha256": "26d68f1e6768d9536e43674fd23d303294486313400c40c539064c3bb4e291aa",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        182,
+        216
+      ]
+    ],
+    "total_lines": 375,
+    "body_read_complete": false,
+    "id": "s21",
+    "purpose": "Actual probe subprocess setup; failed probes retain numeric values.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/prompt/mode_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4884,
+    "git_blob": "0324fe0ef799b4df5330b2085997d9d14890dd3f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "efdc28d66ff357f18439fdd1c7b7d853529cdd42156e2938af68f79bc64d9ed0",
+    "observed_sha256": null,
+    "manifest_sha256": "efdc28d66ff357f18439fdd1c7b7d853529cdd42156e2938af68f79bc64d9ed0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        102,
+        133
+      ]
+    ],
+    "total_lines": 133,
+    "body_read_complete": false,
+    "id": "s22",
+    "purpose": "Actual additional_context caller and fail-open top-level handling.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_guard_patterns.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 16076,
+    "git_blob": "6c683498dfba0687169eb1e7f6ba246014f4ce5b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "95c366ba96aeb0cc923cda3b8449802f5a8094faddd4e02ff1dd425a5db41efb",
+    "observed_sha256": null,
+    "manifest_sha256": "95c366ba96aeb0cc923cda3b8449802f5a8094faddd4e02ff1dd425a5db41efb",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        162,
+        187
+      ]
+    ],
+    "total_lines": 392,
+    "body_read_complete": false,
+    "id": "s23",
+    "purpose": "Quoted heredoc no-warning oracle and historical limitation claim.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/event_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4402,
+    "git_blob": "b3417e72d5534b8e3c41a8bc6bbc9f06beb7a69e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd",
+    "observed_sha256": null,
+    "manifest_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        117
+      ]
+    ],
+    "total_lines": 117,
+    "body_read_complete": true,
+    "id": "s24",
+    "purpose": "Fresh full body read confirms only EventStore.append, no module-level append.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/evaluator_dispatcher.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 99934,
+    "git_blob": "00b149bba94765b6bca4c8a03f2bed36ee8d5849",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
+    "observed_sha256": null,
+    "manifest_sha256": "a5a80b5aa25ac2517f04d6fd5a93368c5f22fb23b8874e6e40c8d683835d6818",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        946,
+        998
+      ],
+      [
+        1193,
+        1215
+      ]
+    ],
+    "total_lines": 2311,
+    "body_read_complete": false,
+    "id": "s25",
+    "purpose": "Self-reported completeness and assistive-only verifier contrasted with meta-rule labels.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  },
+  {
+    "source": "baldrix",
+    "path": "settings.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10437,
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        306,
+        317
+      ]
+    ],
+    "total_lines": 386,
+    "body_read_complete": false,
+    "id": "s26",
+    "purpose": "Absolute Windows SessionStart path and 5-second timeout only.",
+    "counted_as_primary": false,
+    "read_basis": "Fresh source body/ranges read this turn; no prior full-body reuse claimed.",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Static oracle/fixture/caller analysis only; upstream execution/import 0."
+  }
+]
