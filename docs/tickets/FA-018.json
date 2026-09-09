@@ -43,18 +43,36 @@
   "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:09:32.196540+00:00",
+      "id": "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2",
+      "summary": "팀 정책 테스트와 직접 CLI를 정적으로 대조했다. alive=False를 responded로 반영하고 종료 요청 실패도 killed 집합에 넣는 경로를 확인했다. echo/상태 문자열은 실제 모델 결과·종료 확인·사람 인수와 구분해야 한다. 원본 실행 0이다.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-tests-012/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T06:43:29.155563+00:00",
+      "at": "2026-09-09T11:09:34.069945+00:00",
       "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
       "url": "https://github.com/trevi00/zeus/issues/19",
       "number": 19,
       "status": "synced",
-      "body_hash": "0802cdf02ccbcae92ea8b54a48c2fb9c8a7a42160c18068fc08890a3fdbea79c",
+      "body_hash": "4edb46af6ad841b9ac565c1d7e653b6cb8f1e488b92711eab3e29593caf3a118",
       "ticket_id": "ZEUS-07f94a1a4390",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2"
+      ],
       "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
       "synced_revision": 1
     }

@@ -1,0 +1,58 @@
+{
+  "id": "ZEUS-e52702908b8f",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "Baldrix 원본 check-flyway-collision.sh와 DB/API/검증 템플릿 9개 및 직접 소비 문서를 검토한다.",
+      "전체 분석·독립 공동 검토 후 Zeus의 실제 DB 및 마이그레이션 도구에 맞게 root가 변형 구현한다. Flyway 도입 자체를 이 티켓으로 확정하지 않는다.",
+      "기존 운영 볼륨·적용된 마이그레이션을 삭제하거나 수정하는 복구 절차를 자동 이식하지 않는다."
+    ],
+    "title": "[FA-031] 마이그레이션 사전 검사의 버전·탐색·모듈 범위와 실제 DB 인수",
+    "impact": "부팅 전 검사가 성공해도 실제 마이그레이션 대상이 검사되지 않거나 오류가 숨겨질 수 있다. 이를 배포 승인으로 사용하면 다른 컴퓨터의 설치·업데이트와 금전 데이터 무결성에 필요한 근거가 빠진다.",
+    "problem": "원본 Flyway 충돌 검사기는 버전의 첫 숫자만 비교하고 vendor basename으로 목록을 덮어쓴다. 실제 격리 실행에서 복합 버전 오탐, V08 산술 오류 뒤 종료 0, 읽기 불가 폴더의 성공, 앞 모듈 parity 누락을 관측했다.",
+    "rollback": "검사 오류·필수 범위 누락 시 신규 적용을 중지하고 기존 DB·적용 이력·실패 원문을 보존한다. 승인된 데이터 보존 복구 절차와 검증 증거가 준비될 때까지 배포 승인을 내리지 않는다.",
+    "verification": [
+      "네트워크가 없는 읽기 전용 immutable Linux 컨테이너에서 원본 Bash를 실제 scratch 파일로 12회 실행했다. 일반 중복은 종료 1, 존재하지 않는 명시 경로는 종료 1인 대조군도 보존했다.",
+      "원본 1648개 바이트 불변 및 컨테이너 정리를 확인했다. Flyway 실행 파일이 없어 엔진·실제 DB 검증은 0회이며 Windows/WSL·배포·복구·사람 인수도 미실행이다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-data-verification-001/resolution.md",
+      "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-data-verification-001/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-data-verification-001/observations.md",
+      "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-data-verification-001/attempts/e9c164a6ef4742fbb443d54e2d36389e/receipt.json",
+      "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-data-verification-001/attempts/e9c164a6ef4742fbb443d54e2d36389e/stdout.txt"
+    ],
+    "acceptance_criteria": [
+      "마이그레이션 도구와 버전을 고정하고 지원 파일명·버전 정규화 계약을 명시한다. 지원하지 않는 문법을 조용히 성공 처리하지 않으며 복합 버전과 0-padding의 결과를 실제 선택 도구와 대조한다.",
+      "설정된 locations와 실제 검색 결과를 module/vendor/path로 식별한다. 누락·권한 오류·파싱 오류와 의도적으로 빈 범위를 구별하고 필수 범위 unknown에 승인하지 않는다.",
+      "여러 모듈의 vendor 목록이 덮어써지지 않는다. 파일명 parity, SQL 내용, 적용 이력, 실제 DB 스키마 검증을 서로 다른 결과로 기록한다.",
+      "이미 적용된 버전의 불변성을 검사하고 신규 버전 경합을 배포 시점의 실제 적용 이력과 조정한다. MAX+1 안내만으로 충돌 방지를 보장하지 않는다.",
+      "정상·중복·잘못된 버전·읽기 실패·동시 변경·모듈 누락을 실제 파일과 프로세스로 검증하고 해당 revision, 입력, 도구, 환경, stdout/stderr, 종료 코드를 결속한다.",
+      "Windows/Linux/WSL의 실제 지원 실행 경로와 DB에서 설치·업그레이드·중단 후 복구 및 데이터 보존을 확인한다. 실제 제약과 핵심 금전 시나리오의 인수 증거 및 필요한 사람 승인을 연결한다.",
+      "문서의 D1-D9, OpenAPI 경로 수, 품질 점수 또는 5 Gates 통과만으로 배포 준비를 선언하지 않는다. 사용자의 8단계 SDD에서 실제 DB·API·사용자 시나리오 결과를 연결한다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T11:08:24.008119+00:00",
+  "content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T11:09:38.411864+00:00",
+      "id": "bf91359413bce0eafa1bc09744dcea43f938c5427a2ff12389658686fb2d7a85",
+      "url": "https://github.com/trevi00/zeus/issues/32",
+      "number": 32,
+      "status": "synced",
+      "body_hash": "51324e988212cf89a80595dd148b1704c74f50e7333d824ab70c00791da47b0e",
+      "ticket_id": "ZEUS-e52702908b8f",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

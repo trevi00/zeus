@@ -42,18 +42,36 @@
   "content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:09:34.136825+00:00",
+      "id": "6d36cec8cfccb24d93dc76543837a5b287503054e1f7de5cd7424faeb3f54117",
+      "summary": "DB/API/디자인/테스트의 검사 분모를 추가 대조했다. clean Git에서 디자인 검사 0개가 OK가 되는 정적 경계, quoted OpenAPI 경로의 정규식 누락, Gate 개수와 실제 시나리오 pair의 차이를 기록했다. Bash12회 실측은 별도 FA-031 범위이고 나머지는 미실행 정적 검토다.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-92ca5e645c56",
+      "content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/data-design-tests-root-review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T09:53:02.246610+00:00",
+      "at": "2026-09-09T11:09:35.962529+00:00",
       "id": "8e12f69876249ada11c5fca57b674065e1b5f5e82c636e934e0bd3b25d4b2060",
       "url": "https://github.com/trevi00/zeus/issues/28",
       "number": 28,
       "status": "synced",
-      "body_hash": "26c7ff2f3e330ea671a9f7e353a121e3378cf850b85d292e78b675b3e088a6d7",
+      "body_hash": "d05fcfd38c9e40b2ad45be2a311d859d211dfbdaafddc689ced70176be57b9d6",
       "ticket_id": "ZEUS-92ca5e645c56",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "6d36cec8cfccb24d93dc76543837a5b287503054e1f7de5cd7424faeb3f54117"
+      ],
       "content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
       "synced_revision": 1
     }

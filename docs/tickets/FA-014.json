@@ -37,18 +37,36 @@
   "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:09:27.984158+00:00",
+      "id": "44e52dad9853e8a110c0a3ce5b4f45830626a28b640d18ef7ccc5c28918dc20a",
+      "summary": "디자인 연구 7개 전문과 직접 소비 경로를 추가 검토했다. 실제 과업·Storybook·상태별 인수와 역사적 수치/카피 규칙을 구분하고, PR critic을 사람 인수·배포 승인으로 승격하지 않아야 한다. 원본 실행·실기기·사람 인수 0, 실제 Claude의 이 7개 영역 검토도 미완료다.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-f5a496e41ac2",
+      "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-design-research-001/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T05:14:45.360009+00:00",
+      "at": "2026-09-09T11:09:30.123682+00:00",
       "id": "d9c584db548ffe747d4fa6f74912b3f0cf03b3498ba5b58f7a16ce8f3d187385",
       "url": "https://github.com/trevi00/zeus/issues/15",
       "number": 15,
       "status": "synced",
-      "body_hash": "84c74fbe3e5d8a9c0b6d2896b805581234fed7190c6149311d8a224c42661350",
+      "body_hash": "8aabeb8aff90c474431e5cebcc0e28f09eb9aa7c4e14164c5857ebaf7217bd6d",
       "ticket_id": "ZEUS-f5a496e41ac2",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "44e52dad9853e8a110c0a3ce5b4f45830626a28b640d18ef7ccc5c28918dc20a"
+      ],
       "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
       "synced_revision": 1
     }

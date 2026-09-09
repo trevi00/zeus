@@ -38,18 +38,36 @@
   "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T11:09:30.191303+00:00",
+      "id": "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143",
+      "summary": "writeback 테스트와 직접 구현을 정적으로 추가 대조했다. 토큰 unlink 실패의 성공 처리, 승인과 diff의 미결속, rollback 감사 결과 무시가 남아 있다. 단일 읽기 preimage 방어는 존재한다. 원본 실행 0이며 본 리뷰는 재현·흡수·인수 승인이 아니다.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/48584626b57ba1d38bcc631363e2ac067e60e717/docs/full-analysis/baldrix-tests-013/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T05:39:31.776352+00:00",
+      "at": "2026-09-09T11:09:32.112884+00:00",
       "id": "8946b5a9efa626e86ae1edaa9bdc1848a0557f1dad6059fefa750c8031007721",
       "url": "https://github.com/trevi00/zeus/issues/16",
       "number": 16,
       "status": "synced",
-      "body_hash": "54627d86e2c9c6e7a8c4e8e41d6303517d0a346ade8d6b5be5ad1fdf0bbf3644",
+      "body_hash": "742fc7cc391054acb95dcde9e38a05aae7c239065653567df740396b5404af7d",
       "ticket_id": "ZEUS-39d3d0633060",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143"
+      ],
       "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
       "synced_revision": 1
     }
