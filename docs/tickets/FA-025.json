@@ -1,0 +1,59 @@
+{
+  "id": "ZEUS-9495da500988",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "FA-019 실행 신원, FA-022 unknown, FA-023 판정 권위, FA-024 추출 분모와 연결한다.",
+      "전체 분석과 독립 검토 이후 root가 Zeus에 변형 구현한다. 이번 체크포인트는 원본 수정·흡수·배포 승인이 아니다."
+    ],
+    "title": "[FA-025] 설치·검사 결과와 실제 후보 리비전의 결속",
+    "impact": "실제로 실행되지 않았거나 다른 리비전을 검사한 결과가 배포·자가개선 승인에 사용될 수 있다. 설치 성공 표시만으로 실효 훅과 사용자 환경 보호를 보장할 수 없다.",
+    "problem": "원본 설치기의 정적 단위 5개는 통과했지만 실제 격리 Git 설치에서 기존 훅 덮어쓰기, core.hooksPath 무시, linked worktree 실패가 관측됐다. 생성 pre-push는 후보 ref 대신 현재 작업트리를 검사한다. JaCoCo/Mermaid의 검사 누락·상태 문자열과 소비자의 반환값 해석이 어긋나며, 다른 테스트에는 격리 실패 후 지속·skip 성공 집계·합성 승인과 실제 인수의 혼동이 남아 있다.",
+    "rollback": "실효 설치 위치·후보 신원·실행 분모가 불명확하면 해당 결과의 신규 승급 사용을 중단하고 오류와 원시 실행을 보존한다. 기존 훅과 검증된 정의를 복구하며 오래된 성공 기록을 현재 승인으로 재사용하지 않는다.",
+    "verification": [
+      "실제 Claude 독립 검토와 토론에서 기본 Mermaid 경로 누락과 조건부 반환값 오해석을 분리 정정했다. raw 초기·토론 기록을 모두 보존한다.",
+      "원본 설치기 정적 테스트 5개 통과. 별도 실제 CLI/임시 Git 관측은 합성 입력을 사용했고 mock provider·method patch·가짜 프로세스 반환값을 사용하지 않았다. 원본 1648개 바이트 불변을 확인한다.",
+      "추가 56개 primary는 정적 검토이며 원본 실행 0회다. 전체 호출 폐쇄·라이선스·OS 동등성·실제 push·사람 인수·흡수는 미완료다.",
+      "Zeus 로컬 테스트 660 passed, 68 skipped. 현재 게시 기준 c8f2a03 GitHub CI 5개 작업 성공이며 새 게시 커밋의 CI는 별도 확인한다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/7d981df8c3e1082238897e6b4837b6457f689e77/docs/full-analysis/baldrix-scripts-root-001/resolution.md",
+      "https://github.com/trevi00/zeus/blob/7d981df8c3e1082238897e6b4837b6457f689e77/docs/full-analysis/baldrix-scripts-root-001/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/7d981df8c3e1082238897e6b4837b6457f689e77/docs/full-analysis/baldrix-scripts-root-001/observations.md",
+      "https://github.com/trevi00/zeus/blob/7d981df8c3e1082238897e6b4837b6457f689e77/docs/full-analysis/baldrix-scripts-root-001/components.receipt.json",
+      "https://github.com/trevi00/zeus/blob/7d981df8c3e1082238897e6b4837b6457f689e77/docs/full-analysis/scripts-contract-root-review.md",
+      "https://github.com/trevi00/zeus/blob/7d981df8c3e1082238897e6b4837b6457f689e77/docs/full-analysis/scripts-contract-checkpoint-verification.json"
+    ],
+    "acceptance_criteria": [
+      "검증 대상 source tree·후보 commit·정책·환경·실행 attempt를 결속한다. 실제 push ref와 작업트리가 다른 경우 후보에 따라 판정하며 삭제 ref·다중 ref·실행 실패를 명시한다.",
+      "Git이 해석한 실효 hook 위치를 사용하고 기존 훅 보존/합성을 검증한다. core.hooksPath·linked worktree·Windows/Linux/WSL에서 실제 설치 및 호출 증거를 확보한다.",
+      "실행 여부, checked/excluded/unavailable 분모, 구조화 판정, 종료코드와 stderr를 구분한다. 누락 카운터·빈 검사·부재 런처·손상 측정을 성공으로 승계하지 않는다.",
+      "runner 격리 실패는 실행 중단으로 처리하며 전체 skip·검사 내부 실패를 PASS로 계수하지 않는다. source import·테스트와 실제 host 실행의 부작용 및 timeout을 분리 검증한다.",
+      "재측정·watermark·repair·delivery·모델 자격은 현재 실행 신원과 PG 영수증에 결속한다. 파일 존재·문자열 승인·시각 marker·한 개 PASS를 전체 인수로 소비하지 않는다.",
+      "실제 renderer/build 산출물과 사람이 검토한 핵심 SDD 시나리오를 확보한다. 합성 fixture·원본 정적 테스트·Zeus CI를 실기기 또는 사람 인수로 보고하지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T09:05:06.068146+00:00",
+  "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T09:05:08.196961+00:00",
+      "id": "bd07e564483139323647f0798908cfeaf613b16ec8e822227597952a0fdf56f4",
+      "url": "https://github.com/trevi00/zeus/issues/26",
+      "number": 26,
+      "status": "synced",
+      "body_hash": "822d025dae69e6d9688e7790309644f75c19b31905e3085ddc74f0e81d593dea",
+      "ticket_id": "ZEUS-9495da500988",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}
