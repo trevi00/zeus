@@ -1,0 +1,41 @@
+{
+  "ticket_id": "ZEUS-3875a025c20d",
+  "revision": 1,
+  "review_ids": [
+    "61cc8bf3f87336e2c11b9a5820b0a1cabbcdd37a1c09e9ea388861407474bc1b",
+    "4f4eb29f1801204a367b2c381441be6576fa5fe605d285fced780aaf65b26395"
+  ],
+  "sync_exit_code": 0,
+  "projection": {
+    "id": "414dbcc04b3e439da9cf6fd98e68550b718936bb0d6dbb6d325b7eb5051cbf92",
+    "ticket_id": "ZEUS-3875a025c20d",
+    "repository": "trevi00/zeus",
+    "number": 18,
+    "url": "https://github.com/trevi00/zeus/issues/18",
+    "attempted_revision": 1,
+    "synced_revision": 1,
+    "content_hash": "b39225a63fb43ada4d0b0a688f8606e4a8923a4835a39f6e5bf39338f4f7140e",
+    "attempted_content_hash": "b39225a63fb43ada4d0b0a688f8606e4a8923a4835a39f6e5bf39338f4f7140e",
+    "body_hash": "c45a25beb65e893795c2a92215a5864bcae73d2ec65fd8c191b7db4571aadfef",
+    "title_hash": "3d1c4d18898336b21d293988a24cd44732ec01ec91e941a4140c142da3ffc40f",
+    "observed_body_hash": "c45a25beb65e893795c2a92215a5864bcae73d2ec65fd8c191b7db4571aadfef",
+    "observed_title_hash": "3d1c4d18898336b21d293988a24cd44732ec01ec91e941a4140c142da3ffc40f",
+    "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+    "desired_state": "OPEN",
+    "observed_state": "OPEN",
+    "lifecycle_sequence": 0,
+    "lifecycle_event": null,
+    "observation_ref": "sha256:471aa8a28f05635cde751fc31c7231d7edf82938352a063677328fcc20046d06",
+    "observation_id": "90b1bcd061105c0753096f49a2e24335d58731ca4507e8c7eccb243fc78697cc",
+    "at": "2026-09-09T17:08:59.167556+00:00",
+    "review_ids": [
+      "4f4eb29f1801204a367b2c381441be6576fa5fe605d285fced780aaf65b26395",
+      "61cc8bf3f87336e2c11b9a5820b0a1cabbcdd37a1c09e9ea388861407474bc1b"
+    ],
+    "status": "synced",
+    "projected_lifecycle_event": null
+  },
+  "source_commit": "456be22e905287d351b11d175385eea68d1ed48c",
+  "new_issue_created": false,
+  "closure_requested": false
+}

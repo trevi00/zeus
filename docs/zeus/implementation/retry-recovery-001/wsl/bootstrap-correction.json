@@ -1,0 +1,1 @@
+{"initial_exit_code": 1, "error": "Temporary connection envelope used database_url instead of runner dsn key", "scope": "Failed before clone or any test; no WSL success claimed", "correction": "Use documented runner dsn input key; credential is removed by runner before clone"}

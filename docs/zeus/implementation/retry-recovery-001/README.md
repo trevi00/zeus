@@ -61,3 +61,15 @@ zeus inspect execution_recoveries
 `pre-final-full-tests.*`는 마지막 예외 처리 보완 전 결과이며 최종 결과와 구분합니다.
 `claude-acceptance.md`는 보완 후 실제 Claude의 최종 코드 검수입니다.
 해당 검수는 현재 작업 및 threshold 리뷰 복구 구현의 차단 결함 해소를 확인했으며 테스트 실행을 대체하지 않습니다.
+
+구현 커밋 `456be22e905287d351b11d175385eea68d1ed48c`를 별도 WSL 디렉터리에 복제하여
+전체 **803 passed, 209 skipped**, 실제 PG 재시도·복구 검증 **123 passed, 1 skipped**를 확인했습니다.
+PG에서 NaN 자체를 저장할 수 없어 해당 손상 스냅샷 입력 검증은 메모리 단위 테스트로 구분합니다.
+WSL의 11개 단계, 출력 해시, UTF-8 경로 CLI 실행 증적은 `wsl/`에 보존합니다.
+최초 검증 도구의 연결정보 키 오류는 테스트 시작 전에 수정했고 `bootstrap-correction.json`에 기록했습니다.
+임시 연결정보는 삭제됐으며 공개 증적에서 실제 연결정보와 비밀번호가 없음을 검사했습니다.
+
+후속 CI는 [34380908590](https://github.com/trevi00/zeus/actions/runs/34380908590)입니다.
+이 증적 작성 시점에는 Windows 작업이 진행 중이며 전체 성공으로 주장하지 않습니다.
+기존 GitHub #18에는 현재 구현·검증과 남은 범위를 담은 Codex 및 실제 Claude 검토 두 건을
+로컬 원장을 통해 연동했습니다. 새 이슈를 만들거나 기존 티켓을 종료하지 않았습니다.
