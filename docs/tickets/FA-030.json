@@ -1,0 +1,60 @@
+{
+  "id": "ZEUS-993045a59e5c",
+  "reason": "created",
+  "status": "open",
+  "content": {
+    "scope": [
+      "Baldrix CI/플러그인/스택 선언 primary 4개와 직접 brain status 및 skill selection 소비자를 검토했다.",
+      "Zeus는 Git 정의와 PG 런타임 정본을 유지하며 원본 JSONL을 런타임 원장으로 그대로 이식하지 않는다.",
+      "전체 분석과 공동 검토 후 root가 엄격한 export/import 및 변경별 필수 검증 계약으로 변형 구현한다."
+    ],
+    "title": "[FA-030] 스냅샷 무결성 검사의 변경 분모와 엄격한 데이터 검증",
+    "impact": "검사 실행 자체의 누락과 검사 내부의 자료 누락이 함께 발생할 수 있다. 저장된 경험·철회·모델 자격 자료의 손상이나 유실을 정상 스냅샷으로 오해하면 다음 컴퓨터의 복구와 자동 개선 판단을 신뢰할 수 없다.",
+    "problem": "원본 CI는 brain snapshot 검사 job을 선언하지만 brain-only 변경은 paths 필터에 포함하지 않는다. 검사에 쓰는 status CLI는 모든 위치의 깨진 JSON 행·비객체 행을 버리고 누락 파일과 잘못된 graduation JSON을 빈 상태로 처리하며 schema_version/id 존재를 강제하지 않아 성공을 반환한다.",
+    "rollback": "손상 또는 분모 누락이 발견되면 snapshot import와 이를 근거로 한 신규 승급을 중단한다. 실패 원문·PG 시도·기존 검증된 snapshot을 보존하고 동일 기준으로 다시 검증한다.",
+    "verification": [
+      "읽기 전용 source·네트워크 차단 immutable Docker에서 원본 brain_snapshot status CLI를 7회 실행했다. committed baseline과 5개 누락/손상 사례는 rc0, 명시 버전 불일치 control은 rc1이었다.",
+      "원본 tech_stack loader는 source root에서 _common/python 후보를, source/scripts cwd에서 None을 반환했다. 존재하는 후보 디렉터리는 _common이며 full skill_match hook은 실행하지 않았다.",
+      "1648개 pinned source의 실행 전후 bytes가 일치하고 격리 컨테이너 정리가 성공했다. 원본 save/restore suite·GitHub source workflow·Claude plugin 설치·실기기·사람 인수는 실행하지 않았다.",
+      "테스트 009/010/011의 79개 primary는 별도 전문 정적 검토이며 이 CLI 실행이나 root 실제 Claude 검토와 같은 실행 분모로 합산하지 않는다."
+    ],
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/blob/87238e303b17d5bf2e8827a4fc3807ffac87cdf7/docs/full-analysis/baldrix-distribution-config-001/resolution.md",
+      "https://github.com/trevi00/zeus/blob/87238e303b17d5bf2e8827a4fc3807ffac87cdf7/docs/full-analysis/baldrix-distribution-config-001/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/87238e303b17d5bf2e8827a4fc3807ffac87cdf7/docs/full-analysis/baldrix-distribution-config-001/platform-references.md",
+      "https://github.com/trevi00/zeus/blob/87238e303b17d5bf2e8827a4fc3807ffac87cdf7/docs/full-analysis/baldrix-distribution-config-001/attempts/d9b82d63392f4a33bfb0e4076a23288c/receipt.json",
+      "https://github.com/trevi00/zeus/blob/87238e303b17d5bf2e8827a4fc3807ffac87cdf7/docs/full-analysis/baldrix-distribution-config-001/attempts/d9b82d63392f4a33bfb0e4076a23288c/stdout.txt"
+    ],
+    "acceptance_criteria": [
+      "스냅샷·정책·스킬·플러그인·스택 변경을 해당 필수 검사와 연결하고 필터로 workflow가 생략된 상태를 성공으로 표시하지 않는다. 실제 변경/이벤트와 검사 분모를 기록한다.",
+      "라이브 append 중 일시적인 torn line 처리와 확정된 snapshot 무결성 검증을 분리한다. 필수 파일/필드/타입/버전, 모든 행, 참조/철회 관계를 검사하며 손상·누락·unknown에 성공하지 않는다.",
+      "명시적인 schema version 불일치 거부는 유지한다. 상태 표시의 0개 결과를 정상적으로 비어 있음과 읽기 실패/자료 부재로 나눈다.",
+      "불변 snapshot bytes·원본/도구/환경 revision·검사 결과·해당 인수 기준을 결속하고 import 전 검증한다. 검증 실패 시 원문과 오류를 보존하고 기존 PG 상태를 손상시키지 않는다.",
+      "Windows/Linux/WSL의 실제 설치·업데이트·복구를 각각 검증하고 패키지 루트와 런타임 쓰기 루트를 구분한다. dependency 범위나 metadata 버전만으로 동일 환경 재현을 주장하지 않는다.",
+      "프로젝트 root와 하위 cwd의 스택 선택 결과가 승인된 정책과 일치해야 한다. 잘못된 설정의 전체 스킬 fallback과 실제 주입을 명시적으로 관측한다.",
+      "실제 PG/export/import와 실제 배포 환경에서 실패 복구·사람 핵심 시나리오를 검증한다. 정적 검사·fixture·CI 숫자로 사용자 인수 또는 모델 자격을 대체하지 않는다."
+    ]
+  },
+  "revision": 1,
+  "created_at": "2026-09-09T10:43:02.671144+00:00",
+  "content_hash": "17e3dc9dc5ca51e8a1d11e4214cb3372ac134de42a6798d193a90d7f8e88e2c4",
+  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
+  "current_revision": 1,
+  "reviews": [],
+  "github": [
+    {
+      "at": "2026-09-09T10:43:04.751491+00:00",
+      "id": "d1fb56309c1776be773038ea05267135b06bf455506dba95a80c49e5a5ab9226",
+      "url": "https://github.com/trevi00/zeus/issues/31",
+      "number": 31,
+      "status": "synced",
+      "body_hash": "a1f17423584454218579cd525ab203d209aab870ba818b18bb7f46ccef3b05d7",
+      "ticket_id": "ZEUS-993045a59e5c",
+      "repository": "trevi00/zeus",
+      "review_ids": [],
+      "content_hash": "17e3dc9dc5ca51e8a1d11e4214cb3372ac134de42a6798d193a90d7f8e88e2c4",
+      "synced_revision": 1
+    }
+  ],
+  "external_observations": []
+}

@@ -238,5 +238,13 @@
     "url": "https://github.com/trevi00/zeus/issues/30",
     "number": 30,
     "sync_status": "synced"
+  },
+  {
+    "topic": "FA-030",
+    "id": "ZEUS-993045a59e5c",
+    "revision": 1,
+    "url": "https://github.com/trevi00/zeus/issues/31",
+    "number": 31,
+    "sync_status": "synced"
   }
 ]

@@ -1,6 +1,6 @@
 {
   "kind": "read_only_ticket_lifecycle_observation",
-  "observed_at": "2026-09-09T10:20:24.136975+00:00",
+  "observed_at": "2026-09-09T10:43:51.460727+00:00",
   "argv": [
     "gh",
     "issue",
@@ -254,6 +254,14 @@
       "local_status": "open",
       "remote_state": "OPEN",
       "url": "https://github.com/trevi00/zeus/issues/30"
+    },
+    {
+      "topic": "FA-030",
+      "ticket_id": "ZEUS-993045a59e5c",
+      "revision": 1,
+      "local_status": "open",
+      "remote_state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/31"
     }
   ],
   "issue_close_or_reopen_operations": 0,
