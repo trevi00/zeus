@@ -127,3 +127,5 @@ harness lib의 정상 gate writer 추가 분석은 검토 도구의 자동 보�
 구조·어휘 검증기 공동 검토는 [실제 검사 분모와 인수 권위 #24](https://github.com/trevi00/zeus/issues/24)에 연결했다. 근거는 `60593c6`에 고정했으며 로컬 PostgreSQL 원장과 GitHub 24개 항목의 본문·제목·marker 일치를 확인했다.
 
 계약 추출 공동 검토는 [누락·변환 충돌·판정 권위 #25](https://github.com/trevi00/zeus/issues/25)에 연결했다. 근거는 `9929b04`에 고정했다. 저장소는 사용자 요청으로 공개 전환했으며 서비스 운영 배포와는 별개다.
+
+예제 구성·테스트 분모 검토는 [선언 그래프·실측 시나리오·필수 검사 분모 #28](https://github.com/trevi00/zeus/issues/28)에 연결했다. 근거는 `1f3851212d3725811868b75ac9d2fa9b7270c9d5`에 고정했으며 PostgreSQL 원장과 GitHub 28개 티켓의 제목·본문·연결 marker가 일치한다.

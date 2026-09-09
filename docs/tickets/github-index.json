@@ -214,5 +214,13 @@
     "url": "https://github.com/trevi00/zeus/issues/27",
     "number": 27,
     "sync_status": "synced"
+  },
+  {
+    "topic": "FA-027",
+    "id": "ZEUS-92ca5e645c56",
+    "revision": 1,
+    "url": "https://github.com/trevi00/zeus/issues/28",
+    "number": 28,
+    "sync_status": "synced"
   }
 ]

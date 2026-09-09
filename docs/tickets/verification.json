@@ -12,8 +12,8 @@
     "--json",
     "number,title,url,body"
   ],
-  "remote_issue_count": 27,
-  "local_ticket_count": 27,
+  "remote_issue_count": 28,
+  "local_ticket_count": 28,
   "results": [
     {
       "topic": "ZEUS-ANALYSIS",
@@ -280,6 +280,16 @@
       "ticket_id": "ZEUS-430121f4256d",
       "url": "https://github.com/trevi00/zeus/issues/27",
       "number": 27,
+      "title_matches": true,
+      "body_matches": true,
+      "marker_matches": true,
+      "linked_repository": "trevi00/zeus"
+    },
+    {
+      "topic": "FA-027",
+      "ticket_id": "ZEUS-92ca5e645c56",
+      "url": "https://github.com/trevi00/zeus/issues/28",
+      "number": 28,
       "title_matches": true,
       "body_matches": true,
       "marker_matches": true,
