@@ -1,6 +1,6 @@
 {
   "id": "ZEUS-97f3257c362a",
-  "reason": "created",
+  "reason": "추가 6파일 공동 검토·57개 원본 단위 테스트·실제 component 관측과 정정 증거 연결",
   "status": "open",
   "content": {
     "scope": [
@@ -11,46 +11,54 @@
     ],
     "title": "[FA-012] 스킬 평가 지표와 실제 후보 선택·본문 주입의 불일치",
     "impact": "잘못된 평가에 맞춰 프롬프트를 튜닝하거나 Astra→Sol→Terra 자격을 점수만으로 이전하면 실제 동작 보존을 입증하지 못한다. 임계1.0의 지표 이름 오류 하나가 모든 기존 PASS를 뒤집는다는 주장은 하지 않는다.",
-    "problem": "고정 Baldrix 평가기의 precision은 특이도이며 양성은 match AND winner, 음성은 match로 서로 다른 결정을 측정한다. 실제 CLI 입력에서 음성0건 PASS, 자격 미달 경쟁자가 정상 target을 탈락시키는 FAIL_RECALL, 동점 target 승리를 관측했다. 실제 hook은 다른 후보·경로 신호·stack·pipeline boost·본문 예산을 쓰므로 이 평가기 PASS를 모델 입력 도달 또는 행동 품질로 볼 수 없다.",
+    "problem": "고정 Baldrix 평가기의 precision은 특이도이며 양성은 match AND winner, 음성은 match로 서로 다른 결정을 측정한다. 실제 CLI 입력에서 음성0건 PASS, 자격 미달 경쟁자가 정상 target을 탈락시키는 FAIL_RECALL, 동점 target 승리를 관측했다. 실제 hook은 다른 후보·경로 신호·stack·pipeline boost·본문 예산을 쓰므로 이 평가기 PASS를 모델 입력 도달 또는 행동 품질로 볼 수 없다.\n\n후속 공동 검토: 원본 단위57개 PASS와 별도 component 입력에서 block skills AttributeError, 앞단계 부재·빈 뒤산출물의 잘못된 단계 추천, cwd별 스택 후보 차이, 파일명/name 교차참조 차이를 관측했다. 실제 hook·정책 writer·모델 인수는 미실행이며 본문 cap 결함은 정적 추적이다.",
     "rollback": "새 평가나 하향 모델 자격을 자동 적용하지 않는다. 적용 후 회귀 시 이전 검증된 라우팅/모델 자격으로 되돌리고 후보·평가·폐기 이력을 유지한다.",
     "verification": [
       "upstream-trigger 6개 원본 테스트와 별도 empty_negative/ineligible_rival/tie/specificity_not_precision 입력 관측을 대조한다.",
       "숫자 반례는 일부러 상충 라벨을 넣은 입력이므로 모집단 성능 추정치로 인용하지 않는다.",
-      "Windows/Linux/WSL 실행 및 실제 agent 입력·행동 증거는 구현 후 별도로 확보한다."
+      "Windows/Linux/WSL 실행 및 실제 agent 입력·행동 증거는 구현 후 별도로 확보한다.",
+      "Claude의3900→3000 반례, budget테스트가모두8000이라는주장, pipeline항상꺼짐/항상Java라는일반화는후속resolution에서정정했다. 원시보고보다최종근거와한정을따른다."
     ],
     "evidence_refs": [
       "https://github.com/trevi00/zeus/blob/29a918a451511a468b5c8d9eb792a6f2ae13b015/docs/full-analysis/cross-review-common-quality/resolution.md",
       "https://github.com/trevi00/zeus/blob/29a918a451511a468b5c8d9eb792a6f2ae13b015/docs/full-analysis/cross-review-common-quality/codex-initial.md",
       "https://github.com/trevi00/zeus/blob/29a918a451511a468b5c8d9eb792a6f2ae13b015/docs/full-analysis/cross-review-common-quality/claude-discussion.md",
       "https://github.com/trevi00/zeus/blob/29a918a451511a468b5c8d9eb792a6f2ae13b015/docs/full-analysis/cross-review-common-quality/upstream-trigger.receipt.json",
-      "https://github.com/trevi00/zeus/blob/29a918a451511a468b5c8d9eb792a6f2ae13b015/docs/full-analysis/cross-review-common-quality/reviewer-observations.stdout.txt"
+      "https://github.com/trevi00/zeus/blob/29a918a451511a468b5c8d9eb792a6f2ae13b015/docs/full-analysis/cross-review-common-quality/reviewer-observations.stdout.txt",
+      "https://github.com/trevi00/zeus/blob/7f096595d07335d407b16545567c36facf242a01/docs/full-analysis/baldrix-skill-routing-runtime/resolution.md",
+      "https://github.com/trevi00/zeus/blob/7f096595d07335d407b16545567c36facf242a01/docs/full-analysis/baldrix-skill-routing-runtime/observations.receipt.json",
+      "https://github.com/trevi00/zeus/blob/7f096595d07335d407b16545567c36facf242a01/docs/full-analysis/baldrix-skill-routing-runtime/observations.stdout.txt",
+      "https://github.com/trevi00/zeus/blob/7f096595d07335d407b16545567c36facf242a01/docs/full-analysis/baldrix-skill-routing-runtime/claude-discussion.md",
+      "https://github.com/trevi00/zeus/blob/7f096595d07335d407b16545567c36facf242a01/docs/full-analysis/baldrix-skill-routing-runtime/checkpoint.json"
     ],
     "acceptance_criteria": [
       "지표마다 같은 판정 규칙의 분모/혼동행렬을 사용하고 입력 부족·잘못된 데이터는 합격으로 취급하지 않는다.",
       "무자격 후보·동점·같은 stem·경로/파일 내용·stack·pipeline·본문 예산 사례가 실제 router 소비 결과와 대조된다.",
       "동일 검증 조건에서 Astra 결과를 Sol, 검증된 Sol 결과를 Terra에 이전하는 절차와 퇴행 시 자격 회수 증거가 있다.",
-      "사람 핵심 시나리오와 실제 인수는 별도 검토하며 축약 점수·mock 결과·과거 PASS로 대신하지 않는다."
+      "사람 핵심 시나리오와 실제 인수는 별도 검토하며 축약 점수·mock 결과·과거 PASS로 대신하지 않는다.",
+      "block/flow YAML, 프로젝트 root/서브디렉터리, 중복 이름, 순서 밖·빈·디렉터리 산출물, 최종 cap/생략표시를 실제 producer→consumer 경로에서 검증한다."
     ]
   },
-  "revision": 1,
+  "revision": 2,
   "created_at": "2026-09-09T04:36:33.987059+00:00",
-  "content_hash": "3709ffa006129ab87f4683b9fe8398d55c974aa9a9148bacc83ae14cf1c4d980",
-  "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
-  "current_revision": 1,
+  "updated_at": "2026-09-09T04:59:08.987781+00:00",
+  "content_hash": "09f50945041adafd056ce523f432706b25242e47f834b00b63759c248d60ecda",
+  "claimed_author": "Codex: user-authorized ongoing full harness review",
+  "current_revision": 2,
   "reviews": [],
   "github": [
     {
-      "at": "2026-09-09T04:36:35.676859+00:00",
+      "at": "2026-09-09T04:59:11.471942+00:00",
       "id": "171e49fb07b7ae9112f306c5b5eeed2148808b2c3b2d05668702af063523cf61",
       "url": "https://github.com/trevi00/zeus/issues/13",
       "number": 13,
       "status": "synced",
-      "body_hash": "0f6171809865cd6da55fb6e2b318caed6e0998c205a22e3c5fc3fcdaf14c9e4b",
+      "body_hash": "9da30d5ec92c8d3f527d77ab5b114468b8a4d383a2268d172c6f1ea5460ad994",
       "ticket_id": "ZEUS-97f3257c362a",
       "repository": "trevi00/zeus",
       "review_ids": [],
-      "content_hash": "3709ffa006129ab87f4683b9fe8398d55c974aa9a9148bacc83ae14cf1c4d980",
-      "synced_revision": 1
+      "content_hash": "09f50945041adafd056ce523f432706b25242e47f834b00b63759c248d60ecda",
+      "synced_revision": 2
     }
   ],
   "external_observations": []
