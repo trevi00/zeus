@@ -1,0 +1,104 @@
+"""Native WSL validation of an exact committed Zeus tree in an isolated clone."""
+import hashlib
+import io
+import json
+import os
+import platform
+import re
+import subprocess
+import sys
+import tempfile
+import urllib.request
+import zipfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+revision = sys.argv[1]
+assert re.fullmatch('[0-9a-f]{40}', revision)
+source = Path('/mnt/c/Users/rudtn/zeus')
+out = source / 'docs/zeus/implementation/stale-execution-001/wsl'
+out.mkdir(exist_ok=True)
+receipt_path = out / 'receipt.json'
+assert not receipt_path.exists(), 'Retain prior execution; inspect its PID/receipt rather than restarting blindly'
+root = Path(tempfile.mkdtemp(prefix='zeus-ticket-wsl-'))
+repo = root / 'repo'
+for name in ('home', 'tmp', 'cache'):
+    (root / name).mkdir()
+env = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'HOME': str(root / 'home'), 'TMPDIR': str(root / 'tmp'),
+       'LANG': 'C.UTF-8', 'PYTHONIOENCODING': 'utf-8', 'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': '/dev/null',
+       'GIT_CONFIG_COUNT': '1', 'GIT_CONFIG_KEY_0': 'core.hooksPath', 'GIT_CONFIG_VALUE_0': '/dev/null',
+       'UV_CACHE_DIR': str(root / 'cache'), 'UV_PROJECT_ENVIRONMENT': str(root / 'venv'),
+       'UV_PYTHON': '/usr/bin/python3', 'UV_PYTHON_DOWNLOADS': 'never'}
+credential_path = source / '.runtime/stale-execution-wsl-connection.json'
+integration_dsn = json.loads(credential_path.read_text('utf-8'))['dsn']
+credential_path.unlink()
+receipt = {'revision': revision, 'root': str(root), 'runner_pid': os.getpid(), 'status': 'running',
+           'platform': platform.platform(), 'python': platform.python_version(), 'environment': dict(env), 'stages': [],
+           'scope': 'Native WSL full ordinary suite and real PostgreSQL stale execution/concurrent process tests; no model execution'}
+def now():
+    return datetime.now(timezone.utc).isoformat()
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+def save():
+    receipt_path.write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+def run(name, argv, cwd):
+    stage = {'name': name, 'argv': argv, 'cwd': str(cwd), 'started_at': now()}
+    receipt['stages'].append(stage)
+    with (out / (name + '.stdout')).open('wb') as stdout, (out / (name + '.stderr')).open('wb') as stderr:
+        process = subprocess.Popen(argv, cwd=cwd, env=env, stdout=stdout, stderr=stderr)
+        stage['pid'] = process.pid
+        save()
+        print(json.dumps({'stage': name, 'pid': process.pid}), flush=True)
+        stage['exit_code'] = process.wait()
+    stage['finished_at'] = now()
+    for stream in ('stdout', 'stderr'):
+        data = (out / (name + '.' + stream)).read_bytes()
+        stage[stream] = {'file': name + '.' + stream, 'sha256': sha(data), 'bytes': len(data)}
+    save()
+    print(json.dumps({'stage': name, 'exit_code': stage['exit_code']}), flush=True)
+    if stage['exit_code']:
+        receipt['status'] = 'failed'
+        save()
+        raise SystemExit(stage['exit_code'])
+receipt['started_at'] = now()
+save()
+run('clone', ['git', 'clone', '--no-local', str(source), str(repo)], root)
+run('checkout', ['git', 'checkout', '--detach', revision], repo)
+with urllib.request.urlopen('https://pypi.org/pypi/uv/0.12.2/json', timeout=60) as response:
+    metadata = response.read()
+(out / 'uv-pypi-metadata.json').write_bytes(metadata)
+record = next(r for r in json.loads(metadata)['urls'] if r['filename'] ==
+              'uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl')
+with urllib.request.urlopen(record['url'], timeout=120) as response:
+    wheel = response.read()
+assert sha(wheel) == record['digests']['sha256']
+with zipfile.ZipFile(io.BytesIO(wheel)) as archive:
+    members = [n for n in archive.namelist() if n.endswith('/scripts/uv')]
+    assert len(members) == 1
+    binary = archive.read(members[0])
+uv = root / 'uv'
+uv.write_bytes(binary)
+uv.chmod(0o755)
+receipt['uv'] = {'version': '0.12.2', 'wheel_sha256': sha(wheel), 'binary_sha256': sha(binary), 'url': record['url']}
+receipt['lock_before'] = sha((repo / 'uv.lock').read_bytes())
+run('uv-version', [str(uv), '--version'], repo)
+run('sync', [str(uv), 'sync', '--frozen'], repo)
+run('ruff', [str(uv), 'run', '--frozen', 'ruff', 'check', '.'], repo)
+run('pytest', [str(uv), 'run', '--frozen', 'pytest', '-q', '-ra'], repo)
+env.update(HARNESS_INTEGRATION='1', HARNESS_DATABASE_URL=integration_dsn, ZEUS_DATABASE_URL=integration_dsn)
+run('postgres-retry-tests', [str(uv), 'run', '--frozen', 'pytest', '-q', 'tests/test_execution_rejections.py', 'tests/test_task_failure_atomicity.py', 'tests/test_decision_atomicity.py'], repo)
+for name in ('HARNESS_INTEGRATION', 'HARNESS_DATABASE_URL', 'ZEUS_DATABASE_URL'):
+    env.pop(name)
+receipt['postgres_scope'] = 'Actual isolated PostgreSQL schemas and child processes in native WSL; connection credentials excluded from receipt'
+run('build', [str(uv), 'build'], repo)
+run('flush-help', [str(uv), 'run', '--frozen', 'zeus', 'flush', '--help'], repo)
+run('inspect-help', [str(uv), 'run', '--frozen', 'zeus', 'inspect', '--help'], repo)
+run('final-status', ['git', 'status', '--porcelain'], repo)
+assert not (out / 'final-status.stdout').read_text().strip()
+receipt['lock_after'] = sha((repo / 'uv.lock').read_bytes())
+assert receipt['lock_before'] == receipt['lock_after']
+receipt['runner_sha256'] = sha(Path(__file__).read_bytes())
+receipt['status'], receipt['finished_at'] = 'passed', now()
+save()
+(out / 'runner.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'status': 'passed', 'revision': revision, 'evidence': str(out)}), flush=True)

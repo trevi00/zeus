@@ -1,0 +1,310 @@
+{
+  "revision": "212959993e3f4f023f5370d9a6c6a561f3a46cab",
+  "root": "/tmp/zeus-ticket-wsl-sajo3dhe",
+  "runner_pid": 313,
+  "status": "passed",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python": "3.14.4",
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/tmp/zeus-ticket-wsl-sajo3dhe/home",
+    "TMPDIR": "/tmp/zeus-ticket-wsl-sajo3dhe/tmp",
+    "LANG": "C.UTF-8",
+    "PYTHONIOENCODING": "utf-8",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "core.hooksPath",
+    "GIT_CONFIG_VALUE_0": "/dev/null",
+    "UV_CACHE_DIR": "/tmp/zeus-ticket-wsl-sajo3dhe/cache",
+    "UV_PROJECT_ENVIRONMENT": "/tmp/zeus-ticket-wsl-sajo3dhe/venv",
+    "UV_PYTHON": "/usr/bin/python3",
+    "UV_PYTHON_DOWNLOADS": "never"
+  },
+  "stages": [
+    {
+      "name": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-local",
+        "/mnt/c/Users/rudtn/zeus",
+        "/tmp/zeus-ticket-wsl-sajo3dhe/repo"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe",
+      "started_at": "2026-09-09T23:22:44.596957+00:00",
+      "pid": 417,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:22:46.295817+00:00",
+      "stdout": {
+        "file": "clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "clone.stderr",
+        "sha256": "089735da2c36a73a5752864b8ebba1075517f1dc5d24d03a3f6b8e7664e6e33b",
+        "bytes": 53
+      }
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "212959993e3f4f023f5370d9a6c6a561f3a46cab"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:22:46.303711+00:00",
+      "pid": 442,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:22:46.413519+00:00",
+      "stdout": {
+        "file": "checkout.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "checkout.stderr",
+        "sha256": "7803481944b477145f0d30178c3438fbe1be505b92a4e5f8e9674e1720a1ec18",
+        "bytes": 93
+      }
+    },
+    {
+      "name": "uv-version",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "--version"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:22:49.091503+00:00",
+      "pid": 453,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:22:49.101895+00:00",
+      "stdout": {
+        "file": "uv-version.stdout",
+        "sha256": "6a44d4c958923e8814b792113aa09af992fdbf283c562ee99ce52efb1ac874e2",
+        "bytes": 37
+      },
+      "stderr": {
+        "file": "uv-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "sync",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "sync",
+        "--frozen"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:22:49.108879+00:00",
+      "pid": 454,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:22:57.381140+00:00",
+      "stdout": {
+        "file": "sync.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "sync.stderr",
+        "sha256": "a1b7cdd6bb2fe4154fee9ce6ad9b3468ea9a0bbd4190afd9ce78e861fa1df0bd",
+        "bytes": 1914
+      }
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:22:57.388539+00:00",
+      "pid": 533,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:22:57.471723+00:00",
+      "stdout": {
+        "file": "ruff.stdout",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "bytes": 19
+      },
+      "stderr": {
+        "file": "ruff.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "pytest",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-q",
+        "-ra"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:22:57.479034+00:00",
+      "pid": 562,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:23:20.166900+00:00",
+      "stdout": {
+        "file": "pytest.stdout",
+        "sha256": "d26b7bab21e785578a0559edff1b750dc7e71a8bb7095a79bf58262cd8485b31",
+        "bytes": 12787
+      },
+      "stderr": {
+        "file": "pytest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "postgres-retry-tests",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-q",
+        "tests/test_execution_rejections.py",
+        "tests/test_task_failure_atomicity.py",
+        "tests/test_decision_atomicity.py"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:23:20.174341+00:00",
+      "pid": 7353,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:23:23.092686+00:00",
+      "stdout": {
+        "file": "postgres-retry-tests.stdout",
+        "sha256": "53dcca44273a7f2e8fad8c085a2c0deae8c6bfb1fe8d131f59b60a8b888e9b6b",
+        "bytes": 99
+      },
+      "stderr": {
+        "file": "postgres-retry-tests.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "build",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "build"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:23:23.100704+00:00",
+      "pid": 7359,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:23:24.899198+00:00",
+      "stdout": {
+        "file": "build.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "build.stderr",
+        "sha256": "1de0d6e1d0f3c2eb6754831f8aa82ef4abf4c948d54c51194f21c3b12f8ccc95",
+        "bytes": 185
+      }
+    },
+    {
+      "name": "flush-help",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "run",
+        "--frozen",
+        "zeus",
+        "flush",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:23:24.906591+00:00",
+      "pid": 7386,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:23:25.157320+00:00",
+      "stdout": {
+        "file": "flush-help.stdout",
+        "sha256": "a75134c3d5207f908af8d5b46adeea83b87d2683cf66fb646823396a8da170a6",
+        "bytes": 79
+      },
+      "stderr": {
+        "file": "flush-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "inspect-help",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-sajo3dhe/uv",
+        "run",
+        "--frozen",
+        "zeus",
+        "inspect",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:23:25.164694+00:00",
+      "pid": 7390,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:23:25.436329+00:00",
+      "stdout": {
+        "file": "inspect-help.stdout",
+        "sha256": "d5bb9d3ea5efb5d81b65a7e78d2ccb334ce525248931cac4d6209a88179309bb",
+        "bytes": 662
+      },
+      "stderr": {
+        "file": "inspect-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "final-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-sajo3dhe/repo",
+      "started_at": "2026-09-09T23:23:25.443841+00:00",
+      "pid": 7394,
+      "exit_code": 0,
+      "finished_at": "2026-09-09T23:23:25.550121+00:00",
+      "stdout": {
+        "file": "final-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "final-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "scope": "Native WSL full ordinary suite and real PostgreSQL stale execution/concurrent process tests; no model execution",
+  "started_at": "2026-09-09T23:22:44.593019+00:00",
+  "uv": {
+    "version": "0.12.2",
+    "wheel_sha256": "3a8d93d1fe019561b70494a8e1332492afb5f14dadc33d5239569d0964164d10",
+    "binary_sha256": "72c5f455cd0e9793910f6a1db255de37b610a36a8db858afa3c72e34668e23e2",
+    "url": "https://files.pythonhosted.org/packages/a7/fe/a87be2a492440945e745b0dc81aef7fea9730d8194af88d854b7641f5ddf/uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  },
+  "lock_before": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "postgres_scope": "Actual isolated PostgreSQL schemas and child processes in native WSL; connection credentials excluded from receipt",
+  "lock_after": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "runner_sha256": "b75dc1d7ac9130c8f96c730e40034d948cb5124f4c3b90b8610c32c010d585d4",
+  "finished_at": "2026-09-09T23:23:25.561086+00:00"
+}

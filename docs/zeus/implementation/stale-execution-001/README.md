@@ -51,6 +51,20 @@ Final Windows full regression: **833 passed, 250 skipped** (`full-tests.log`),
 with Ruff passing. Skipped integration cases are not counted as executed by the
 ordinary suite; the separate 82-test target run enabled real PostgreSQL fixtures.
 
+Exact source commit `212959993e3f4f023f5370d9a6c6a561f3a46cab` passed native WSL:
+**839 passed, 244 skipped** in the ordinary suite and **59 passed** in the isolated
+PostgreSQL execution/rejection/atomicity suite. Both real child-process replays
+executed in that target suite. All 11 runner stages passed, including build and a
+clean final tree/unchanged lockfile. `wsl/receipt.json` binds the revision and log
+hashes. The bootstrap credential file was consumed and removed, and retained files
+were scanned for the actual connection credentials.
+
+GitHub CI [34416659220](https://github.com/trevi00/zeus/actions/runs/34416659220)
+passed all five jobs on this exact commit: Windows and Ubuntu on Python 3.12/3.14,
+plus actual-service integration. Raw job and step results are archived at
+`docs/zeus/ci/34416659220.json`. No production deployment or human acceptance is
+inferred from these checks.
+
 This addresses the executor's stale-result observation path, not every direct
 internal Workflow API exception. The full FA-017 matrix, including clock-change
 disposition and remaining recovery/reconciliation cases, remains incomplete.
