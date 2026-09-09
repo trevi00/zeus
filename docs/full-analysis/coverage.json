@@ -2,8 +2,8 @@
   "tracked_paths": 2736,
   "source_counts": {
     "baldrix": {
-      "unreviewed": 1567,
-      "semantically_reviewed": 81
+      "unreviewed": 1550,
+      "semantically_reviewed": 98
     },
     "harness": {
       "unreviewed": 792,
@@ -15,8 +15,9 @@
       "semantically_reviewed": 13
     },
     "harness-design": {
-      "unreviewed": 138,
-      "semantically_reviewed": 6
+      "unreviewed": 137,
+      "semantically_reviewed": 6,
+      "body_reviewed_call_test_trace_pending": 1
     }
   },
   "whole_analysis_complete": false,

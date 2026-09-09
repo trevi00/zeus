@@ -51,24 +51,36 @@
     "pinned_sha256": "dac33971c7d6efc02486b5ec5ee1b3db0c7953f0d975f9aa2139188c2862585b",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/pattern-catalog-notes.json#abstraction-first.md",
+    "semantic_review": {
+      "purpose": "저장·adapter·상태 머신·함수 분리·wire 타입 개선을 묶은 V1–V20 변형 카탈로그와 자기 갱신 절차.",
+      "decision": "변형: pure domain/adapter 경계, 점진 분리, contract와 regression fixture 아이디어만 채택 후보. 무회귀 0·자기 수정 권한·자동화 승급·파일 runtime SSOT는 제외.",
+      "analysis": "전체 frontmatter부터 출처 표까지 연속 UTF-8 전문 검토 완료. V1 append/mirror, V2 temp rename, V3 enum 추가, V4 best-effort composition, V5 noop, V6 새 메서드, V7 delegate, V8 max fold, V9 logging, V10 total state, V11 converter, V12 injected clock, V13 minimal algorithm, V13a 분리, V14 reference algorithm, V15 cron semantics, V16/17 template reuse, V18 branch file checkout, V19 debate, V20 enum/Unknown의 전제와 실적을 모두 읽었다. 신규 모듈은 통합 회귀·동시성·성능·관찰 효과가 없다는 증명이 아니다. Mutex<File>는 프로세스 간 락이 아니며 append/mirror 실패 순서와 crash recovery가 누락된다. temp+rename의 원자 노출과 durable commit은 별개이며 temp 충돌/fsync/디렉터리 sync/다른 볼륨/Windows 열림 파일/ACL 검증이 없다. Windows ReplaceFileW 2018+ 단정과 Howard Hinnant PD, cron 표준 원문은 미확인하므로 재사용 허가/OS 보장으로 채택하지 않는다. 경로 문자열 4패턴만으로 reserved names, symlink, drive/UNC confinement을 증명하지 못한다. Noop Ok는 audit/persistence 필수 경로에서 성공을 위장할 수 있다. Best-effort side effect/부분 적용 converter는 멱등·재시도·중복 효과 계약이 필요하다. max fold는 동일 식별자/동일 단위의 누적 counter일 때만 타당하며 additive delta나 correction에 일반화 불가. enum variant 추가는 downstream exhaustive match 변경 가능; 기존 파일 본문 수정0 원칙과 V3/V7/V9가 상충. 5 LOC 컴파일 성공=정확성 보장은 거짓이며 문자열 rename은 문맥·overload를 증명하지 않는다. git checkout branch -- path는 commit cherry-pick과 다르고 기존 파일을 덮어쓸 수 있다. atomic git commit은 운영 배포 원자성/rollback 안전을 보장하지 않는다. V19 gen1이면 부적격이라는 본문과 gen1 fast-path 실적, 필수 4-gen과 gen2 실적이 상충한다. canonical snapshot hash와 코드 diff는 다른 자료형이므로 byte-identical decisions→code는 실행 가능한 검사 정의가 아니다. V20 Unknown 허용은 wire 호환 후보이나 closed enum 검증 경계는 아니며 외부 production caller 차단/semver-major와 V19 lane 설명도 상충한다. 3+ crates mandatory V19와 impl156/164/168 V20-only 예외가 충돌한다. impl168 +317/-119의 net -118은 산술상 맞지 않는다. Shared enum unit tests는 새 sink 소비자 의미를 자동 커버하지 않으며 impl170 PascalCase fixture→snake_case 수정은 기존 fixture 값 byte-identical 변경이 아니다. 16/19/20 변형·23/62/72 applications·stage0/3/4/5 설명·decision tree 12 fallback vs 실제14 등 갱신 drift가 존재한다. private commit/864PASS/Windows11 pre-existing fail 등의 주장은 현재 실행 증거가 아니다. 카탈로그·detector는 서로 인용하는 파생 문서이나 외부 SSOT가 없어 복제 동등성 미확인. 이미 읽은 matcher/frontmatter/score/budget과 debate library/CLI/command에 연결; 추가 lint/surgery 파일 검색 hit만으로 전문 검토 판정하지 않는다. Zeus domain/application pure 경계 및 skill guidance에 제한 대응, Git 정의/PostgreSQL runtime·fenced workflow·sdd 준비단계 유지. 전용 Rust tests not-run: 외부 구현 소스/원본 라이선스/의존성과 실행 fixture 미확인.",
+      "platform": "intent/phase/min_score를 가진 Claude advisory skill; phase는 matcher 실행 게이트가 아니다. Read/Edit/commit 자기 갱신과 개인 C:/Users/user/.claude 및 khanessTeam 경로는 분석 데이터다. Rust std 파일 연산의 Windows/Linux 동등성과 native 테스트 미확인. 고정 Zeus repo에서 보고서만 작성했으며 원본 명령·설정·상태 실행 없음."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "intent/phase/min_score를 가진 Claude advisory skill; phase는 matcher 실행 게이트가 아니다. Read/Edit/commit 자기 갱신과 개인 C:/Users/user/.claude 및 khanessTeam 경로는 분석 데이터다. Rust std 파일 연산의 Windows/Linux 동등성과 native 테스트 미확인. 고정 Zeus repo에서 보고서만 작성했으며 원본 명령·설정·상태 실행 없음.",
+    "windows_linux": "intent/phase/min_score를 가진 Claude advisory skill; phase는 matcher 실행 게이트가 아니다. Read/Edit/commit 자기 갱신과 개인 C:/Users/user/.claude 및 khanessTeam 경로는 분석 데이터다. Rust std 파일 연산의 Windows/Linux 동등성과 native 테스트 미확인. 고정 Zeus repo에서 보고서만 작성했으며 원본 명령·설정·상태 실행 없음.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "변형: pure domain/adapter 경계, 점진 분리, contract와 regression fixture 아이디어만 채택 후보. 무회귀 0·자기 수정 권한·자동화 승급·파일 runtime SSOT는 제외.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -291,24 +303,36 @@
     "pinned_sha256": "25df72a56033a5176a08b47fb29d73dc5896648236dc07f8b0022ab9f77f54fa",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/diagnosis-notes.json#architect-lock-reproduction-discipline.md",
+    "semantic_review": {
+      "purpose": "Preserve canonical ontology LOCK across architect generations and use deterministic convergence owner.",
+      "decision": "adapt canonical evidence hash ownership; reject copied approval as independent verdict or retroactive event edits.",
+      "analysis": "Entire body read plus lib/debate_convergence.py,cli/debate_converge_check.py,commands/harness-debate.md fully. Earlier section says key order affects canonical serialization; later2026-09-04 correction and snapshot_sha1 sort_keys=True normalize object key order while preserving list order and ensure_ascii=False. Thus byte-identical original JSON is not required. snapshot_sha1 accepts arbitrary truthy serializable shapes, returnsNone for falsey; no typed ontology schema. evaluate accepts gen1 approved without snapshot/fastpath evidence, while command final gate limits gen1 to fastpath. Latergen needs actual prior hash; skill practical option(b) first concrete LOCK doesn't satisfy implementation. Conflicting samegen verdict remains sentinel and prior conflict cannot providehash. Missing snapshot warns early and errors nearcap. CLI prior convergence returns cached decision without rechecking newly appended severity/conflicting verdict; checkthenappend not atomic at this layer. EventStore dependency unreviewed so no full concurrency guarantee. Skill retroactive conditional replacement conflicts append-only immutability. Command acknowledges orchestrator-authored verdict not trust boundary; external jury advisory never changes verdict. Tests test_debate_convergence located but not yet read/executed; no live debate or event append.",
+      "platform": "Claude Agent roles/state/debates and Python CLI require adapter mapping, UTF8 serialization explicit on Windows. Zeus canonical digest/source SHA256+fenced independent review stronger than SHA1 equality; immutable event histories and new corrective events required. Private cited sessions/links not verified; no adoption approval from converged text."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude Agent roles/state/debates and Python CLI require adapter mapping, UTF8 serialization explicit on Windows. Zeus canonical digest/source SHA256+fenced independent review stronger than SHA1 equality; immutable event histories and new corrective events required. Private cited sessions/links not verified; no adoption approval from converged text.",
+    "windows_linux": "Claude Agent roles/state/debates and Python CLI require adapter mapping, UTF8 serialization explicit on Windows. Zeus canonical digest/source SHA256+fenced independent review stronger than SHA1 equality; immutable event histories and new corrective events required. Private cited sessions/links not verified; no adoption approval from converged text.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt canonical evidence hash ownership; reject copied approval as independent verdict or retroactive event edits.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -531,24 +555,36 @@
     "pinned_sha256": "47cacddbf0b3db5894112203349bb08bd16949e4a1b45d13ce383adc2ba4f4e0",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/rubric-convention-notes.json#convention.md",
+    "semantic_review": {
+      "purpose": "Cross-stack naming, wire/schema conventions and C1-C10 design-to-code checks.",
+      "decision": "adapt explicit boundary conventions; reject universal naming/stack and count-based completeness.",
+      "analysis": "Entire body read. Stackneutral rule forbids verbs then examples ORDER_CREATE and /cancel include verbs; identical concept names rule conflicts permitted boundary casing. Version caret/tilde ban doesn't pin transitive graph or tools; example npx unpinned undermines reproducibility. C1-C8 label table contains10, C10 paths count cannot prove endpointmethod/schema equivalence or multipleAC mapping; grep lacksPatch/RequestMapping/prefix/serialization config. GeneratedTS compile doesn't validate runtime response. Error body value field can disclose inputsecrets; mandatory every400401404409example ignores applicability. Textcolor regex excludeshexCSS/rgb/dynamic and not contrast check. Conditional class/React sections explicitly illustrative, preserve that qualification. Docker rootpassword command and down-v recovery unacceptable active state. No templates copied, codegen/download/SQL/runtime spec fetched. Targeted metadata injection only, no C1-C10 executable enforcement proven.",
+      "platform": "Claude templates and .claude convention path foreign; Bash redirection/Gradle Windows wrapper differ. Zeus six-W snake_case and PostgreSQL/Git SSOT take priority over camelCase/commonresponse; stdlib domain contracts plus actual serializer tests stronger than token counts. Framework versions/private ecommerce proof not verified."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude templates and .claude convention path foreign; Bash redirection/Gradle Windows wrapper differ. Zeus six-W snake_case and PostgreSQL/Git SSOT take priority over camelCase/commonresponse; stdlib domain contracts plus actual serializer tests stronger than token counts. Framework versions/private ecommerce proof not verified.",
+    "windows_linux": "Claude templates and .claude convention path foreign; Bash redirection/Gradle Windows wrapper differ. Zeus six-W snake_case and PostgreSQL/Git SSOT take priority over camelCase/commonresponse; stdlib domain contracts plus actual serializer tests stronger than token counts. Framework versions/private ecommerce proof not verified.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt explicit boundary conventions; reject universal naming/stack and count-based completeness.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -687,24 +723,36 @@
     "pinned_sha256": "6fabb71cda85127f2f45cde60b9e325de1efb18ed7522be15f24d348da55c75e",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/diagnosis-notes.json#debugging.md",
+    "semantic_review": {
+      "purpose": "Reproduction and data-flow diagnosis, external integration triage and E2E defect workflow.",
+      "decision": "adapt hypothesis-led bounded diagnostics; reject external-first certainty and destructive environment reset.",
+      "analysis": "Complete body read. External standalone sameerror may share invalid credentials/payload/config and doesn't prove vendor fault; create success cancel failure not necessarily external mapping, contradicts measure-not-guess. 'Cannot fix without repro' overstates; explicitly bounded inference/mitigation possible. EXPLAIN ANALYZE executes query, heap/log dumps may contain secrets, env compare needs redaction. node_modules/venv deletion and no-cache builds alter workspace/resources; not authorized by diagnostic advisory. Fixeddevelop/fix branch and ecommerce container names are project assumptions. .env automatic restart behavior is framework-dependent; CORS not universal403 source; async claim refers JS Promise not everylanguage. Repeated edits3/timegap30min don't prove design flaw/block and commit timestamps not operation timeline. Generic matcher injects guide but no runbook executor proven; no Docker/DB/issue/PR/cleanup performed.",
+      "platform": "Claude Playwright MCP names and Bash commands translate per active tools, WindowsCRLF distinctions explicit. Zeus debugging tickets and immutable source/execution references preserve observed/expected states; no source tool mandate overrides runtime authorization, branch policy or isolated verification. External case/license attribution unverified."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude Playwright MCP names and Bash commands translate per active tools, WindowsCRLF distinctions explicit. Zeus debugging tickets and immutable source/execution references preserve observed/expected states; no source tool mandate overrides runtime authorization, branch policy or isolated verification. External case/license attribution unverified.",
+    "windows_linux": "Claude Playwright MCP names and Bash commands translate per active tools, WindowsCRLF distinctions explicit. Zeus debugging tickets and immutable source/execution references preserve observed/expected states; no source tool mandate overrides runtime authorization, branch policy or isolated verification. External case/license attribution unverified.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt hypothesis-led bounded diagnostics; reject external-first certainty and destructive environment reset.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -801,24 +849,36 @@
     "pinned_sha256": "a15ec9b81721ce77a45544ccc30e4168d7ffd76dffb6d263b9667b906d06bcf3",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/craft-security-notes.json#design-craft.md",
+    "semantic_review": {
+      "purpose": "Detailed visual typography/color/layout/hierarchy and premium refinement recipes.",
+      "decision": "adapt coherent visual decisions and actual render checks; reject style absolutes and contrast transfer.",
+      "analysis": "Entire22KB body read including detailed repetitions, not marked generatedduplicate. Intro no-generic-font rule softened statement-only in detail, little relation functionality. Allthreehierarchysignals demanded vs later one-dominantcue; single-shadow ban allows small1layer later; neutralmonochrome vs tintallgray; darkLsteps4-8% vs2-3% ladder and #121212≈L8-12% inconsistent colorspace assumptions. SameOKLCHL acrosshues doesn't establishWCAGcontrast, gamut affectsresult; hoverL+0.1 universally maydestroycontrast, laterhuerotation contradictsfixedH. Focusboxshadow insteadoutline losesforcedcolors resilience; outline radius claimnotgeneral. Latinlineheight1.2-1.45 conflictsKorean≥1.5; ch measureszero glyph notKoreancharacter count. 8ptabsolute forbidsnecessaryoptical adjustments while5%overshoot asks offgrid. Genericfonts/purple/700/neutral/density rules are aesthetics not validatedquality, override userbrand/localeneeds onlybyconsent. Motion≤200ms/easeout differsKoreanspring and requires reducedmotion. No image/font/contrast/browser tests or externalnamedoriginals verified; actualdesign validator reviewed earlier cannotprove this craft.",
+      "platform": "Claude Read/visualverdict and frontendCSS/Motion tokens optionalouterpresentation. Zeus SDD design/captureddevice evidence coulduse selectivechecklist, cannot promote basedstyle. Windows/Linuxfonts/zoom/forcedcolors render differences must betested; no actualvisualacceptance claim."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude Read/visualverdict and frontendCSS/Motion tokens optionalouterpresentation. Zeus SDD design/captureddevice evidence coulduse selectivechecklist, cannot promote basedstyle. Windows/Linuxfonts/zoom/forcedcolors render differences must betested; no actualvisualacceptance claim.",
+    "windows_linux": "Claude Read/visualverdict and frontendCSS/Motion tokens optionalouterpresentation. Zeus SDD design/captureddevice evidence coulduse selectivechecklist, cannot promote basedstyle. Windows/Linuxfonts/zoom/forcedcolors render differences must betested; no actualvisualacceptance claim.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt coherent visual decisions and actual render checks; reject style absolutes and contrast transfer.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -873,24 +933,36 @@
     "pinned_sha256": "8563b71bbe0ea22477252946894ae6730f8632362db01ea54e8717fd3cc4053c",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/skill-pipeline-notes.json#design-dataviz.md",
+    "semantic_review": {
+      "purpose": "Concrete chart types, typography, interactions andbrandOKLCH ramps.",
+      "decision": "adapt clear encoding/state/precision guidance; exclude rigid brandandstyle mandates.",
+      "analysis": "Entirebody/CSSrecipes read. 2slice pie firstbanned thenallowed later; uppercase formattingexamples1.28K vs1decimalrule inconsistent; localizedKoreanwonunits needlocalecontract. Grid/dots/dashes forbids can removemeaningfulobservations/uncertainty and hover-only excludeskeyboard/touch/staticexports. Baseline notexplicitlymandatoryzeroforbars; normalizeallt0=100 cannot ifbaseline0ornegative andchangesunitmeaning. Tooltip cannot beonly fullprecision/access. ConstantC Llinear guaranteeduniform/no muddy claimoverstatesgamut/displayperception; givenpaletteCchanges vsfixedC instructionand darklowestΔL.035 vs≥.12 rulecontradict. Brandgreenuniversal/palettehue restrictions notexternaluserneed; delta semantics useful. Priorframeopacity stale needs explicitloading timestamp/accessibility,not silentfreshness. 'hasonepattern that'scause' notdiagnosisproof. Nextserverclientrenderprop actualruntimecheck valuable but liveconsoleallunbounded. NoCSSrender/contrast/chart/runtime tests ororiginal named researchfetched.",
+      "platform": "Claudevisualverdict andNext/React/d3recipes optionalouterfrontend, notZeusinnerpolicy. Existingmonitoring views potentialconsumer butno chartimplementationequivalence. Windowsfont/rendering/locales vary; requireactualscreenshot andkeyboard/table alternatives. Colorvalidatorcan'tprovevisualcorrectness (alreadytraced)."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claudevisualverdict andNext/React/d3recipes optionalouterfrontend, notZeusinnerpolicy. Existingmonitoring views potentialconsumer butno chartimplementationequivalence. Windowsfont/rendering/locales vary; requireactualscreenshot andkeyboard/table alternatives. Colorvalidatorcan'tprovevisualcorrectness (alreadytraced).",
+    "windows_linux": "Claudevisualverdict andNext/React/d3recipes optionalouterfrontend, notZeusinnerpolicy. Existingmonitoring views potentialconsumer butno chartimplementationequivalence. Windowsfont/rendering/locales vary; requireactualscreenshot andkeyboard/table alternatives. Colorvalidatorcan'tprovevisualcorrectness (alreadytraced).",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt clear encoding/state/precision guidance; exclude rigid brandandstyle mandates.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -945,24 +1017,36 @@
     "pinned_sha256": "6287504e3edb5155f11bd681ffcfd6b76d2cf7e27a727263dd1677829f88c7b3",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/rubric-convention-notes.json#design-korean-premium.md",
+    "semantic_review": {
+      "purpose": "Korean-language visual style direction with typography, restrained colors and spring motion.",
+      "decision": "adapt locale/font-aware readability and token consistency; reject cultural universal/style gates.",
+      "analysis": "Entire source+linklist read. Koreanusers trust/grayscale90%/bento2026standard/warmthnonpremium are aesthetic claims not established userresearch; language audience doesn't authorize overriding brand/productneeds. Rule17px everywhere laterallows15tables and 4weights vsceiling600 inconsistentifgatedliteral. Numberstnumall conflicts design-dataviz hero proportional. Opacityhover.8/disabled.5 can breakcontrast or state distinction; sameOKLCHL not guaranteedcontrast. Mandatory countupsprings and noinfinitespinner omit reducedmotion/unknownprogress honesty; inventedprogress forbidden. OneCTA/page and minimuminput can hide necessary settings/consent. One radiustoken then card8-16/input8 describesroles notonesize. ColorCTAonly latergreentoast anddatavizgreen conflicting semanticuse. No screenshot/render/contrast/font/devicecheck executed; namedToss/KRDS/Pretendard assertions datesnotverified originals. Freshguide applies generic matcher scoring only, no actualspecialpriority overotherSaaSskills proven.",
+      "platform": "Claude visualskill references optional, fontmetrics differ Windows/Linux/browser and zoom. Zeus SDD device matrix/explicitdesign review remainsproposal only; locale requirements canselect optional tokens but not authenticate acceptance. Website research URLs readasdata, no remotecontent fetched/licenseverified."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude visualskill references optional, fontmetrics differ Windows/Linux/browser and zoom. Zeus SDD device matrix/explicitdesign review remainsproposal only; locale requirements canselect optional tokens but not authenticate acceptance. Website research URLs readasdata, no remotecontent fetched/licenseverified.",
+    "windows_linux": "Claude visualskill references optional, fontmetrics differ Windows/Linux/browser and zoom. Zeus SDD device matrix/explicitdesign review remainsproposal only; locale requirements canselect optional tokens but not authenticate acceptance. Website research URLs readasdata, no remotecontent fetched/licenseverified.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt locale/font-aware readability and token consistency; reject cultural universal/style gates.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -1731,24 +1815,36 @@
     "pinned_sha256": "86a2b6152e741bf9a8a073c782e2bc90aacc58d6a4b0e72f1a67e68e0427e3c0",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/diagnosis-notes.json#fullstack-debug.md",
+    "semantic_review": {
+      "purpose": "Trace DB→ORM/query/service/DTO/controller→frontend and restart Java app.",
+      "decision": "adapt boundary tracing; exclude mass taskkill and weak readiness predicate.",
+      "analysis": "All source includingWindowscmd and Bash loops read. Portfindstr8080 matches local/remote and substring ports; for/f token5 may kill unrelated PIDs/TIME_WAIT, no ownedexe/cmdline verification. taskkill/F bypasses graceful shutdown. curl-s health loop ignores HTTP status/body and timeout,500 can produce exit0 'ready', exhausting loop lacks explicitfailure. Mandatory DB-first8layer order too rigid for transport/auth/front errors; include effective proxy/config and deployed identity. MyBatis no lazy proxies claim overbroad; exception differs from Hibernate but optional lazyloading exists. ContentType mismatch doesn't universally bindempty (often415); readOnly missing doesn't inherently impair performance. SELECT* sensitive data and DESC MySQL-specific. Requires/backend/database lookup metadata isn't dependency enforcement. No process terminated/restarted, no SQL/health/build execution.",
+      "platform": "Source bash blocks mix native cmd for/f/taskkill with POSIX seq/$(...), unsafe to copy intoPowerShell. Gradle Windows wrapper/path quoting required. Zeus outer lifecycle adapter should use ownedprocess IDs and actual readiness contracts; PostgreSQL schema and Python domain not MyBatis default. No callable lifecycle equivalent proven."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Source bash blocks mix native cmd for/f/taskkill with POSIX seq/$(...), unsafe to copy intoPowerShell. Gradle Windows wrapper/path quoting required. Zeus outer lifecycle adapter should use ownedprocess IDs and actual readiness contracts; PostgreSQL schema and Python domain not MyBatis default. No callable lifecycle equivalent proven.",
+    "windows_linux": "Source bash blocks mix native cmd for/f/taskkill with POSIX seq/$(...), unsafe to copy intoPowerShell. Gradle Windows wrapper/path quoting required. Zeus outer lifecycle adapter should use ownedprocess IDs and actual readiness contracts; PostgreSQL schema and Python domain not MyBatis default. No callable lifecycle equivalent proven.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt boundary tracing; exclude mass taskkill and weak readiness predicate.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -2013,24 +2109,36 @@
     "pinned_sha256": "c65582cce1480d72181b1d0fca8f25b7a7142a016900a738f52f35256ed6dcf7",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/diagnosis-notes.json#investigation-discipline.md",
+    "semantic_review": {
+      "purpose": "Separate diagnosis from repair using reproduction/control/denominator and mutation-sensitive regression.",
+      "decision": "adapt evidence/control discipline; reject importing live path helpers or blanket restore mutations.",
+      "analysis": "Full source and all incident examples read. Negative control and actual changed independent variable strengthen probes; code-owned path reading corrects guessed-path false absence. But importing helper modules to ask paths can execute module side effects; inspect inert source first. git diff --quiet default misses staged/untracked/core files outside three directories and preexisting user edits, so not isolation enforcement. Intentional cli/tests exceptions can still mutate live runtime or production code. PYTHONDONTWRITEBYTECODE prevents new writes but doesn't guarantee existing .pyc not read; isolate source without cached files or verified invalidation. Quoted heredoc alone doesn't expand backslash; defect depends surrounding tool/shell/string layer, not universal Bash behavior. 'Three same metrics means not measured' also occurs genuine invariant/unsaturated cap; control needed. Always revertfix to test should operate only isolated copy, not user tree; unreproducible bug can still support cautious mitigation with uncertainty. Source says new/refactor not scope though metadata includesimplement. pending_changes/guard_patterns search reveals links, not full import/generation proof. Prior art trevi00/harness and cases unverified.",
+      "platform": "Claude path env/import-time binding, Bash git diff and Windows PowerShell encoding/quoting matter. Zeus inspection runner enforces read-only source/no-network and immutable process receipts; three markers cannot replace all path/dependency review or fencing. No foreign helper/probe/state imported or executed."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude path env/import-time binding, Bash git diff and Windows PowerShell encoding/quoting matter. Zeus inspection runner enforces read-only source/no-network and immutable process receipts; three markers cannot replace all path/dependency review or fencing. No foreign helper/probe/state imported or executed.",
+    "windows_linux": "Claude path env/import-time binding, Bash git diff and Windows PowerShell encoding/quoting matter. Zeus inspection runner enforces read-only source/no-network and immutable process receipts; three markers cannot replace all path/dependency review or fencing. No foreign helper/probe/state imported or executed.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt evidence/control discipline; reject importing live path helpers or blanket restore mutations.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -2043,24 +2151,36 @@
     "pinned_sha256": "18c95cd811927147de7ded12f410f86c1b400f27c42f5fecf6cd9dbedc560d1b",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/rubric-convention-notes.json#iso25010-scoring.md",
+    "semantic_review": {
+      "purpose": "Custom28subattribute/8base+1derived category rubric and candidate comparison.",
+      "decision": "defer optional rubric; exclude score-based autonomous approval or zero-regression claims.",
+      "analysis": "All catalog/anchors/formulas/sample/adjustment sections read. Explicit2011-based customvariant not original ISO standard; labels functional safety/8maintainability/derivedextensibility differ own claimeduniversal9axes elsewhere. Count2+3+2+2+4+4+8+3=28 correct. Meanofcategorymeans weightscategories equally versus28mean weightsmaintainability8cells; delta>.5 can occur with perfectlyconsistent entries, doesn't provebad evidence. Includingderived9view doublecounts5cells while only systemmean excludes; threshold text switches>=.5 versus<=.5 PASS. Require allmutationsconfirm tokens conflicts user authorization persistence;4freshness gates/4tierfallback/6tests/900s/crates not quantitative quality outcomes. Singleoperator doesn't remove accessibility needs, correlationID cannot be replacedbySSOsessionID without losing eventcausality. Short5sub≥4.5 plus risk0 can't authorize changes/coverage. Private47step1913points not measured here, peer doc-verify binarygate conflict with rubricassertions. No scoring engine/policy binding or tests run.",
+      "platform": "Rustcargo/Discord/Claude personalpaths source context only. Zeus independent fenced evidence approvals and real source/test coverage remainhardgates; optional rubric stays advisory and preserves missing cells/uncertainty, not selfreported scores as runtimeauthority. ISO original/licenseunverified."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Rustcargo/Discord/Claude personalpaths source context only. Zeus independent fenced evidence approvals and real source/test coverage remainhardgates; optional rubric stays advisory and preserves missing cells/uncertainty, not selfreported scores as runtimeauthority. ISO original/licenseunverified.",
+    "windows_linux": "Rustcargo/Discord/Claude personalpaths source context only. Zeus independent fenced evidence approvals and real source/test coverage remainhardgates; optional rubric stays advisory and preserves missing cells/uncertainty, not selfreported scores as runtimeauthority. ISO original/licenseunverified.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "defer optional rubric; exclude score-based autonomous approval or zero-regression claims.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -2325,24 +2445,36 @@
     "pinned_sha256": "c7504ee9fc36fe5693ce72a09f5b5e59803c2d741fddc4a4d1bd976620edebf1",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/skill-pipeline-notes.json#mock-prototype/SKILL.md",
+    "semantic_review": {
+      "purpose": "Optional throwaway interactive prototype, stakeholder review and feedback-to-design workflow.",
+      "decision": "adapt draft interaction and explicit feedback ledger; reject unconditional deletion and self-attested review.",
+      "analysis": "Fullnestedbody read. Actualgenericmatcher tree mode scans immediate*.md; nested _common/mock-prototype/SKILL.md uncollected despite claim pipeline+3 surfacesit unlessotherfallback/installflatten. Metadata lacksintent/minscore/requires and comma-separated keywords unlikewhitespace convention. Source explicitly MR2generator drift/MR3gateexecution gap, optionalattestation noauthority; later mentionspipeline_gate_runner API while still 'no runner' unresolved distinction. HEADpre-review doesn't bind dirtydocs/untrackednewdocs; anydiffpresence not acceptedfeedbackcompleteness. Agent-suppliedattested_by string cannotauthenticate humanreview. Oneinteraction/coreflow insufficienterrors/accessibility/devicecoverage. Grayscale/nevereditprototype/deletenocode universally isopinion, deleteartifacts woulddestroyreviewtrace; preserveimmutablehash/archive outside implementation. mock-sandbox insideproject suggestion conflicts noactualrepo. Instructionsemitcandidatepaths/statearedata; no mock/delete/attestperformed. stagepicker/config/runner/driftvalidator notfullyreadyet, mappinggap preserved.",
+      "platform": "Claude nestedSKILLloading semantics mismatch genericmatcher; OS temporary dirs and lockedbrowserfiles differ. Zeus SDD review/proposal_only and human_authoritymissing fits boundary; modelmust notconvertfakebackend to actualacceptance. Boehmprivate debate/source originals/licenseunverified."
+    },
+    "actual_callability": "Not collected in immediate tree mode; fallback recursive scan may collect nested SKILL.md",
+    "claude_dependencies": "Claude nestedSKILLloading semantics mismatch genericmatcher; OS temporary dirs and lockedbrowserfiles differ. Zeus SDD review/proposal_only and human_authoritymissing fits boundary; modelmust notconvertfakebackend to actualacceptance. Boehmprivate debate/source originals/licenseunverified.",
+    "windows_linux": "Claude nestedSKILLloading semantics mismatch genericmatcher; OS temporary dirs and lockedbrowserfiles differ. Zeus SDD review/proposal_only and human_authoritymissing fits boundary; modelmust notconvertfakebackend to actualacceptance. Boehmprivate debate/source originals/licenseunverified.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt draft interaction and explicit feedback ledger; reject unconditional deletion and self-attested review.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -2481,24 +2613,36 @@
     "pinned_sha256": "d4ab052dc451f8f86ef7d4f4a97df669d978b6c49b3b98c636c7e017f3b5d319",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/pattern-catalog-notes.json#pattern-auto-detector.md",
+    "semantic_review": {
+      "purpose": "Rust 함수 분리와 String→enum 변환 후보를 Q0/Q0'/Q1–Q6 및 BLOCK 1–10으로 분류하는 조언 문서.",
+      "decision": "변형: 후보 질문과 타입·callee 의존성 점검은 검토 체크리스트로만 수용. 자동 실행·차단·무회귀 보장은 제외.",
+      "analysis": "본문 전체를 연속 UTF-8 구간으로 읽었다. V13a utility/domain/batch/name-conflict와 V16/17 동형 재사용, V18 branch 통합, V19 설계 합의, V20 Unknown(String) wire 보존을 연결한다. BLOCK 6은 타입 의존, BLOCK 7은 본문 callee 의존이므로 서로 대체할 수 없다는 구분은 유용하다. 그러나 grep 호출자 0은 re-export/alias/macro/다른 프로세스/외부 소비자 부재 증명이 아니다. Serialize -A8 및 optional pub 정규식은 pub(crate), 다중 행, custom serializer를 놓치며 literal corpus 크기는 closed set 증명이 아니다. D2 tolerant comparison 검색 0 및 persistence 검색 0으로 의미 호환/저장 영향 없음 확정은 불가하다. Unknown(String)은 문자열 값을 보존하지만 임의 입력 JSON의 공백·escape·키 순서까지 byte-identical하게 만들지 않는다. Rust template는 생략부가 있는 예시이고 raw-pointer reuse 테스트는 From<String> allocation 범위만 검사한다. BLOCK 9의 3+ crates면 V19 필수와 mid scope 3 crates V20-only가 모순이다. V19 4-gen/byte-identical 설명은 실제 debate_convergence canonical sorted-key SHA1 및 gen1 fast path와 다르다. 마지막 미커밋 iter10 미발견은 뒤쪽 iter10 실적과 상충한다. Stage3/4/5 자동화·zero-effort는 수동 Grep recipe/문서 업데이트 실적만으로 실행기 증명되지 않는다. scripts/commands/agents 검색 연결은 skill_lint_report allowlist, skill_surgery 축약 분석, token budget 및 대응 테스트에 한정해 발견; 이 추가 파일 전문/테스트 실행은 미완료다. hooks 디렉터리는 없음. 이미 전문 검토한 skill_match/score/token_budget 경로로 일반 advisory 후보이며 전용 Rust AST detector 등록 증거는 없다. 개인 khanessTeam commit/테스트 수치·PATTERNS-CATALOG 원본을 조회하지 않았고 동등성이나 생성 복제를 주장하지 않는다. Zeus skill_routing/admission/guidance와 검토 가능한 변경 제안에 대응하되 domain/sdd 및 workflow 승인·실행 증거를 대체하지 않는다. 전용 source test not-run: prose에 runnable detector 없음, 외부 Rust 원본·의존성·테스트 전문 미확인.",
+      "platform": "Claude Read/Grep/Bash/Edit, /harness-debate, CLAUDE.md 및 개인 Windows/.claude 경로에 의존하는 문서. 해당 지시는 상속하지 않는다. cargo·shell recipe는 Windows quoting/path와 Linux 차이를 별도 검증해야 하며 실행하지 않았다. 라이선스/외부 commit/링크 원문 미확인."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude Read/Grep/Bash/Edit, /harness-debate, CLAUDE.md 및 개인 Windows/.claude 경로에 의존하는 문서. 해당 지시는 상속하지 않는다. cargo·shell recipe는 Windows quoting/path와 Linux 차이를 별도 검증해야 하며 실행하지 않았다. 라이선스/외부 commit/링크 원문 미확인.",
+    "windows_linux": "Claude Read/Grep/Bash/Edit, /harness-debate, CLAUDE.md 및 개인 Windows/.claude 경로에 의존하는 문서. 해당 지시는 상속하지 않는다. cargo·shell recipe는 Windows quoting/path와 Linux 차이를 별도 검증해야 하며 실행하지 않았다. 라이선스/외부 commit/링크 원문 미확인.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "변형: 후보 질문과 타입·callee 의존성 점검은 검토 체크리스트로만 수용. 자동 실행·차단·무회귀 보장은 제외.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -2679,24 +2823,36 @@
     "pinned_sha256": "0a7d9829d798d4b9cb6536a64f79330c732b4caa1eac26a3d9694ea551adaf05",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/rubric-convention-notes.json#repeat-error-tracker.md",
+    "semantic_review": {
+      "purpose": "Record recurrent failures and escalate useful prevention into skills/hooks.",
+      "decision": "adapt deduplicated recurrence evidence; reject no-first-record, forced toolratios and automatic selfmutation.",
+      "analysis": "Entire18KB source read. Calls9entries but E1-E10 now10; applications23vs33 and commits38vs37 drift. Firsterror no record cannot reliably recognize second occurrence acrosssessions; source later countsfirst but saysignore.2triggers permanentcodification vs3automation distinction ambiguous, severity mayrequire firstinstance mitigation. Monolith≤.5%/5testsfn/read3edit/importtop20 proxies don'tprove behavior, may hide missedimports or incentivizepadding; custompuredatealgorithm not automatically safer than dependency. E7 validbaseline mutateonefield valuable but assert exact error path. E8claims toolrouting fixes19/25/31tests and95/97% reductions are private selfreports, not executed here; prescribed Read/Grep insteadrg directly conflicts current agent rules, not inherited. E10 preexistingTODO/noanchorchange not sufficient dismissrealrisk, sourcewarnvsactualblocking authoritydistinct. Wholefile reading notneeded forfuturelookup differs this exhaustiveaudit requirement. Autoallprojectglobalupdates risk crossprojectknowledge/privateleak and matcherdrift. No self-edit tosource/hooks, commits or tests performed; lib/bash_tool_routing implementation still unreviewed supportinggap.",
+      "platform": "Claude hook categories/task APIs/toolrouting andRust imports foreign. Zeus occurrence_id/session scoped dedup, PostgreSQL record_incident and independent hookpromotion already mapped; firstobservation retained and stale/authorization checks needed. Windowspaths/encoding and CLI .cmd differences explicit; private reference/license unverified."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude hook categories/task APIs/toolrouting andRust imports foreign. Zeus occurrence_id/session scoped dedup, PostgreSQL record_incident and independent hookpromotion already mapped; firstobservation retained and stale/authorization checks needed. Windowspaths/encoding and CLI .cmd differences explicit; private reference/license unverified.",
+    "windows_linux": "Claude hook categories/task APIs/toolrouting andRust imports foreign. Zeus occurrence_id/session scoped dedup, PostgreSQL record_incident and independent hookpromotion already mapped; firstobservation retained and stale/authorization checks needed. Windowspaths/encoding and CLI .cmd differences explicit; private reference/license unverified.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt deduplicated recurrence evidence; reject no-first-record, forced toolratios and automatic selfmutation.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -2961,24 +3117,36 @@
     "pinned_sha256": "a1b6c4c029a074391048eea5d6a2aa494895f895ebda39de27f0105001711f12",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/craft-security-notes.json#security.md",
+    "semantic_review": {
+      "purpose": "Broad authentication/authorization/cryptography/frontend/DB and deployment security guidance.",
+      "decision": "adapt threat-model and least-privilege principles; defer versioned standards and reject unsafe defaults.",
+      "analysis": "Entire33KB body/snippets/checklists read. Source OWASP2025 label resembles olderordering; NIST/PCI/Spring version/claims not primaryverified here, cannot endorse standardcompliance. JWTdoesn't eliminateCSRF whenrefreshcookie used, contradicts owncookieCSRF checklist; permitAll /products/** allmethods can exposewrites, /auth/** needsperoperation controls. JWTsecret32chars not256bitsentropy, tokenclaimsuserrolealone omits issuer/audience/expiry validation. Refreshrotation needsatomicreusefamily/concurrentlegitrequests policy. Guava get+put counterraces/unboundedkeys/localonly and24h expiry differs5fail30min; accountlock allowsDoS, reCAPTCHAv3 notgenericchallenge. PasswordHIBP notonly blocklist option, bcryptSHAprehash advice needs documentedencoding/domainseparation/longUnicode andproperalgorithm; UUIDreset needscryptorandomvariant. email_verified alone not securecrossissueraccountlinking. httpOnly/memory labeledXSSsafe but maliciousscript can act/readtokens/network; suppressingmaps notsecurityboundary. SSRF private list omits loopback/linklocal/IPv6/redirect/DNS rebinding; allowlistmustvalidateeffective destination. GCMrandomIV uniqueness/keyrotation/AAD/versioning andscale omitted, converterempty methodsnotimplementation. @Query runtimeconcat annotation example notvalidJava compile; injectionrisk belongsactualdynamicqueries. AppDMLonly good butmigrationALL broad, auditcreated_byfromclientheader can'tauthenticateactor. printenv canexposesecrets despitelogmaskrules; envneverWrite conflicts devopsWrite guidance, operationsnotdone. Dockerflags beneficial but missingcaps/nopriv/user/socket/mount/deadline; Zeus runner stronger. No securityscanner/exploit/liveDB/network auth/codeexecution; no matchedtemplate tests read/run.",
+      "platform": "Spring6/7, Bucket4j,Guava,Lombok,JPA/MyBatis,Next/DOMPurify andLinuxupload paths externalexamples, notZeusdeps. NativeWindows encoding/shell/envhandling differ; no credentials read. Zeus six-W authorization, adapterisolation/Gitdefinitions/PostgreSQLrecords remainauthority. Secretscanning grep notproof, exactversion/threatboundary tests require separateapprovalprovenance."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Spring6/7, Bucket4j,Guava,Lombok,JPA/MyBatis,Next/DOMPurify andLinuxupload paths externalexamples, notZeusdeps. NativeWindows encoding/shell/envhandling differ; no credentials read. Zeus six-W authorization, adapterisolation/Gitdefinitions/PostgreSQLrecords remainauthority. Secretscanning grep notproof, exactversion/threatboundary tests require separateapprovalprovenance.",
+    "windows_linux": "Spring6/7, Bucket4j,Guava,Lombok,JPA/MyBatis,Next/DOMPurify andLinuxupload paths externalexamples, notZeusdeps. NativeWindows encoding/shell/envhandling differ; no credentials read. Zeus six-W authorization, adapterisolation/Gitdefinitions/PostgreSQLrecords remainauthority. Secretscanning grep notproof, exactversion/threatboundary tests require separateapprovalprovenance.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt threat-model and least-privilege principles; defer versioned standards and reject unsafe defaults.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -2991,24 +3159,36 @@
     "pinned_sha256": "4d76b3e7eb511089bf356752c14516f43c54c597df7b1846d17fcfcd0844f32e",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/diagnosis-notes.json#self-improve.md",
+    "semantic_review": {
+      "purpose": "Benchmark-guided parallel experimental worktrees with critic filtering, tournament merge and optional publish.",
+      "decision": "defer algorithm; exclude source autonomous loop/cleanup/push policy as authority.",
+      "analysis": "Entire repeatedsetup/loop/state sections read. Target-bound benchmark trust useful but arbitrary benchmark command can install/network/mutate despite 'loop no installs'; sealed validate.sh referenced but targeted scripts/commands/agents search found no implementation binding. Worktree isn't credential/network isolation. Stale cleanup 'not currentiteration' with force can destroy ownedotherworktree/uncommitted artifacts, cleanup before stop request can act after cancel. Critical architect advisory plus critic boolean lacks independently authenticated reviews. Onehypothesis/diversefamily policies can penalize bestlineage and testingfamily conflicts sealed benchmark.3runs insufficient general significance; scoreonly no-regression ignores correctness/security and multiple-selection bias. reset--merge not blanket nondestructive, snapshotnames collide acrosstopics/reruns; merge/rebenchmark may leave state/artifacts. auto_pushfalse good default but remote snapshotcheck raceswithout lease and source cannot authorize publication. JSONruntime files not atomically fenced/SSOT; no coordinator/resume implementation found or executed. No agents spawned/worktrees/branches/tags/merge/delete/benchmark/push.",
+      "platform": "Claude opus/sonnet agentIDs, .harnessstate and validate.sh foreign dependencies; Windows worktree locks/pathlength/shell execution differ. Zeus scheduled trials could use fenced runtime records, pinned immutable artifacts, independent source/conductor gates, controlled runner and authorized promotion; scoretournament not sufficient incorporation."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude opus/sonnet agentIDs, .harnessstate and validate.sh foreign dependencies; Windows worktree locks/pathlength/shell execution differ. Zeus scheduled trials could use fenced runtime records, pinned immutable artifacts, independent source/conductor gates, controlled runner and authorized promotion; scoretournament not sufficient incorporation.",
+    "windows_linux": "Claude opus/sonnet agentIDs, .harnessstate and validate.sh foreign dependencies; Windows worktree locks/pathlength/shell execution differ. Zeus scheduled trials could use fenced runtime records, pinned immutable artifacts, independent source/conductor gates, controlled runner and authorized promotion; scoretournament not sufficient incorporation.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "defer algorithm; exclude source autonomous loop/cleanup/push policy as authority.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -3063,24 +3243,36 @@
     "pinned_sha256": "8d30021a8a73d26c95ec394c9951ab6493a7738c52f6303511e832e042c7ccb8",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/skill-pipeline-notes.json#skill-distillation-pipeline.md",
+    "semantic_review": {
+      "purpose": "Source-to-skill5stage workflow with volatility tiers and9quality checks.",
+      "decision": "adapt provenance/volatility checkpoints; reject self-proof and shape-gate equivalence to research.",
+      "analysis": "Fullbody plus validators/skill_quality_axes.py read. Claimed10fieldstub actually omits paths/patterns and contains9fields inclflag. _common alwaysloaded means eligible directory not everybody; matcher budgets limitactual injection. Legacy modification prohibition contradicts earlier Editexistingsection branch. L1quote directwriting isn't verification;3-5jobposts/research90s and4-7filescohesion arbitrary. ISO9axes incl extensibility is source assertion unverified. Actual validator prefix includes systems beyonddocdata/infra/ml. Sourcecitation simply bulletcount anywhere afterSource; no actualURL/quote/date/primaryfact check, only rejects http substring (file:// accepted). Required sections substring allows codefence falsepositives; Gotchas headings counted untilSource can includelatersections. requires rawwhitespace split unlike shared listnormalizer; YAMLlist tokens break G9. axes label substrings don't prove9dimensions; secretpatterns limitedexamples falsepositive/false negatives. noSKILLS/noenforced producesPASS; main logs failures but exit0and stdoutreconfigure mayraise despite neverraisescontract. Imports telemetry_log/paths and dynamicregistry unresolved, testnotrun. Only researched evidence plus semantic review can supportadoption.",
+      "platform": "Claude WebFetch/Search/document-specialist and file:///C:/Users/user are foreign source references, not currentinstructions. PyYAMLnot usedhere but path/telemetry can write; no run. Zeus immutable retrieval/licensing/source pin+skilladmission and runner evidence replace localprefixflag as approval."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude WebFetch/Search/document-specialist and file:///C:/Users/user are foreign source references, not currentinstructions. PyYAMLnot usedhere but path/telemetry can write; no run. Zeus immutable retrieval/licensing/source pin+skilladmission and runner evidence replace localprefixflag as approval.",
+    "windows_linux": "Claude WebFetch/Search/document-specialist and file:///C:/Users/user are foreign source references, not currentinstructions. PyYAMLnot usedhere but path/telemetry can write; no run. Zeus immutable retrieval/licensing/source pin+skilladmission and runner evidence replace localprefixflag as approval.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt provenance/volatility checkpoints; reject self-proof and shape-gate equivalence to research.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {
@@ -3093,24 +3285,36 @@
     "pinned_sha256": "6f55414099b32349d4d36ca2daae079f32445863a62008dbe810030218a1e61e",
     "matches_manifest_sha256": true,
     "matches_manifest_bytes": true,
-    "disposition": "unreviewed",
-    "review_ref": "docs/full-analysis/baldrix-common/remaining.txt",
-    "semantic_review": null,
-    "actual_callability": "Not semantically evaluated",
-    "claude_dependencies": "Unreviewed",
-    "windows_linux": "Unreviewed",
-    "zeus_modules": null,
-    "adoption_decision": "defer_unreviewed",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-common/skill-pipeline-notes.json#skill-lint-workflow.md",
+    "semantic_review": {
+      "purpose": "Authoring/change/deletion lint and trigger-evaluation workflow with advisory acknowledgments.",
+      "decision": "adapt positive/negative query regression; replace misleading metrics and unevaluated runtime parity.",
+      "analysis": "Fullbody and cli/skill_trigger_eval.py read. precision calculates proportion of negatives correctly rejected (specificity), not TP/(TP+FP); F1 then not standardF1. Emptynegative set defaults1 and no7positive/5negative minimum enforced. winner chooses score ignoring eachcompetitor match boolean, target insertedfirst wins ties, same stems collide, recursion/scope differslivehandler immediateactive directories/top3/budget;score_one supplies emptyprojectfiles/dimstats. Thus measured recallwinner not actualpromptdelivery, names='description evaluator' yet descriptionnot scorer dimension. Inputs JSON shape and querytypes notvalidated; arbitrarycandidates scopepath/symlinks unconstrained, no sizecaps. stdout reconfigure unconditional. R00230KB vsdistillation8KB separateunenforced standards; explicitwaiverlocktest doesnot guarantee reviewreason. Acknowledgment can hide unresolvedaction and is runtimewrite, not approval. Actual lint_report/telemetryhook/ackregistry/test_trigger bodies not yetread here; references remain dependencygap. NoCLIorackexecution.",
+      "platform": "Claude ~/.claude/scripts paths,SessionStart/PostToolUse and WindowsUSERPROFILE walkup needexplicitadapter config. Zeus routing replay/admission exact pinned inputs+real hook parity needed, not imported1.0precision. Testsnotrun until transitive paths/testbody inspected innetworknone sourceisolation."
+    },
+    "actual_callability": "Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven",
+    "claude_dependencies": "Claude ~/.claude/scripts paths,SessionStart/PostToolUse and WindowsUSERPROFILE walkup needexplicitadapter config. Zeus routing replay/admission exact pinned inputs+real hook parity needed, not imported1.0precision. Testsnotrun until transitive paths/testbody inspected innetworknone sourceisolation.",
+    "windows_linux": "Claude ~/.claude/scripts paths,SessionStart/PostToolUse and WindowsUSERPROFILE walkup needexplicitadapter config. Zeus routing replay/admission exact pinned inputs+real hook parity needed, not imported1.0precision. Testsnotrun until transitive paths/testbody inspected innetworknone sourceisolation.",
+    "zeus_modules": {
+      "confirmed_common_overlap": [
+        "src/codex_harness/adapters/skill_routing.py",
+        "src/codex_harness/domain/skill_admission.py",
+        "src/codex_harness/domain/skill_guidance.py"
+      ],
+      "feature_equivalence": "Not established; specific counterpart in semantic_review. Git/PostgreSQL SSOT and six-W retained."
+    },
+    "adoption_decision": "adapt positive/negative query regression; replace misleading metrics and unevaluated runtime parity.",
     "tests_executed": [],
     "test_limits": "Not run. Source/test reading and review hash validation only. Requires isolated no-network read-only-source execution receipts. No source code imported or executed.",
     "license_status": "Unverified; no original/license equivalence established",
     "external_links": "Remote originals not fetched; source assertions only",
-    "duplicate_status": "Unreviewed",
+    "duplicate_status": "No generated/duplicate equivalence claimed",
     "remaining": [
-      "Read entire UTF-8 file semantically",
-      "Trace caller/implementation/configuration/tests",
-      "Record per-file decision and adaptation",
-      "Verify license/original links and run isolated tests"
+      "Resolve specific analysis caveats",
+      "Complete dependency/registration and original-license/link verification",
+      "Execute isolated matched tests and record receipts",
+      "Independent reviewer/conductor adoption gates"
     ]
   },
   {

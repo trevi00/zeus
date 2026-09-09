@@ -166,5 +166,23 @@
       "external provenance/license verification before copying"
     ],
     "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-050-autonomous-cycle-reopen-confirmed.md",
+    "git_blob": "4c4dd75ef93369ad6526cce7cf3565ac52d2270d",
+    "bytes": 9141,
+    "pinned_sha256": "c592ee322c82fa3eb284385aadc2c79e4e0ddd967b00acab393be68d99c6285f",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-canon/D050-review.md",
+    "tests_executed": [],
+    "test_limits": "Document body reviewed; historical probes and external comparisons are not current execution receipts.",
+    "remaining": [
+      "producer/consumer/configuration/test trace",
+      "isolated execution verification",
+      "independent review"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
   }
 ]

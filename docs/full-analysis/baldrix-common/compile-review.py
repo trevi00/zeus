@@ -35,6 +35,7 @@ for item in manifest['inventory']:
         'semantic_review': note,
         'actual_callability': ('Not collected: underscore authoring template' if name == '_template.md'
                               else 'Not collected: YAML authoring template' if name == 'tech-stack-template.yaml'
+                              else 'Not collected in immediate tree mode; fallback recursive scan may collect nested SKILL.md' if name == 'mock-prototype/SKILL.md'
                               else 'Generic prompt-advisory candidate via score and budgets; no dedicated executable enforcement proven')
                              if note else 'Not semantically evaluated',
         'claude_dependencies': note['platform'] if note else 'Unreviewed',
@@ -84,6 +85,7 @@ status = {'source': 'baldrix', 'revision': manifest['revision'], 'denominator': 
           'semantically_reviewed': len(notes), 'unreviewed': len(remaining),
           'tests_executed': sum(len(f['tests_executed']) for f in files),
           'upstream_test_cases_passed': 17 if (OUT / 'test-tech-stack-receipt.json').exists() else 0,
+          'body_coverage_complete': len(notes) == 98,
           'partition_complete': False, 'adoption_ready': False,
           'all_manifest_hashes_match': True,
           'review_refs': ['docs/full-analysis/baldrix-common/' + p.name for p in sorted(OUT.glob('*-notes.json'))]}

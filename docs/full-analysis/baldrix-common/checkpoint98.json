@@ -1,0 +1,40 @@
+{
+  "workspace": "C:\\Users\\rudtn\\zeus",
+  "status": {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "denominator": 98,
+    "source_bytes": 979411,
+    "semantically_reviewed": 98,
+    "unreviewed": 0,
+    "tests_executed": 2,
+    "upstream_test_cases_passed": 17,
+    "body_coverage_complete": true,
+    "partition_complete": false,
+    "adoption_ready": false,
+    "all_manifest_hashes_match": true,
+    "review_refs": [
+      "docs/full-analysis/baldrix-common/additional-notes.json",
+      "docs/full-analysis/baldrix-common/api-operations-notes.json",
+      "docs/full-analysis/baldrix-common/craft-security-notes.json",
+      "docs/full-analysis/baldrix-common/data-notes.json",
+      "docs/full-analysis/baldrix-common/design-notes.json",
+      "docs/full-analysis/baldrix-common/diagnosis-notes.json",
+      "docs/full-analysis/baldrix-common/distributed-notes.json",
+      "docs/full-analysis/baldrix-common/operations-notes.json",
+      "docs/full-analysis/baldrix-common/pattern-catalog-notes.json",
+      "docs/full-analysis/baldrix-common/review-governance-notes.json",
+      "docs/full-analysis/baldrix-common/rubric-convention-notes.json",
+      "docs/full-analysis/baldrix-common/semantic-notes.json",
+      "docs/full-analysis/baldrix-common/skill-pipeline-notes.json",
+      "docs/full-analysis/baldrix-common/spec-release-notes.json"
+    ]
+  },
+  "supporting_records": 61,
+  "preserved_raw_receipt_sha256": {
+    "template-inline-comment-probe-first-capture.json": "9fde9d534b22c80fce0e771d54b71f20754bff287192c6655b86d27961779844",
+    "template-inline-comment-probe.json": "27a958901bbcb603f92652c589c2498db861ef85350d1c073f3990628910d347",
+    "test-tech-stack-receipt.json": "16df37f1011b6383b7eff3923eaab56dc6dd094906bcd4533e52e56b5baeb49b"
+  },
+  "stop_reason": "Bounded 98 source-body semantic review complete; unresolved dependencies, original licenses/links, matched tests and adoption gates remain explicit."
+}

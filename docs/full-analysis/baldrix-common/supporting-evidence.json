@@ -593,5 +593,65 @@
     "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
     "git_blob": "8b12d00fda7fa880fef38726176fa46dde8ea76c",
     "manifest_matches": true
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/debate_convergence.py",
+    "sha256": "71ad5209899dd540e7a26a96bc7397145c2979af686865cf87affc05bf6c0704",
+    "bytes": 11894,
+    "read_extent": "full",
+    "tests_executed": false,
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "1a263a451eb1fda4263c66de7ed1842ba72afa04",
+    "manifest_matches": true,
+    "review_workspace": "C:/Users/rudtn/zeus"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/debate_converge_check.py",
+    "sha256": "7e4c5b6ef5a6ccc3c17d015bc9a547ef5c878837c15e711aeab97108c904b84b",
+    "bytes": 5822,
+    "read_extent": "full",
+    "tests_executed": false,
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5ac4bbbe39a3686dc9dde084135124023cf9b57a",
+    "manifest_matches": true,
+    "review_workspace": "C:/Users/rudtn/zeus"
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-debate.md",
+    "sha256": "89e7c0d185d291f33008d459c5f233be619037c09f98281ef10f6dafc751149f",
+    "bytes": 25819,
+    "read_extent": "full",
+    "tests_executed": false,
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "7e79260c6100f55556aa6fef8486d48280fba251",
+    "manifest_matches": true,
+    "review_workspace": "C:/Users/rudtn/zeus"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/skill_quality_axes.py",
+    "sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+    "bytes": 8848,
+    "read_extent": "full",
+    "tests_executed": false,
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "945ff93cf6d0942a8413ac430b0f8bbcc2ebf166",
+    "manifest_matches": true,
+    "review_workspace": "C:/Users/rudtn/zeus"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/skill_trigger_eval.py",
+    "sha256": "ce41ecf20d84e558ec44fa282a976fc5f9ba49fa4160f4703a1a56445a3eae19",
+    "bytes": 9101,
+    "read_extent": "full",
+    "tests_executed": false,
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "4dbdc05008c98a9325e5647a4d3e3bd36fecac3f",
+    "manifest_matches": true,
+    "review_workspace": "C:/Users/rudtn/zeus"
   }
 ]

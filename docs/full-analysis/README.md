@@ -13,7 +13,7 @@
 
 원래 세 저장소 2,592개, 필수 설계 의존성 포함 2,736개다. `.runtime/absorption/sources`에 Git 객체에서 얻은 원문과 인벤토리를 보존했다. 현재 로컬 변경은 별도의 observed/observed-deltas 해시로 결속하며 커밋의 내용이라고 표시하지 않는다. Git 밖 실제 Baldrix L1 메모리도 별도로 보존했다. credentials·승인 비밀키·브라우저 프로필·다른 프로젝트의 사적 대화 전체는 이 소스 분석의 대상이 아니다. 그 값을 Zeus로 복사하지 않는다.
 
-**범위 보강:** 위 숫자는 Git 추적 경로의 분모이며 로컬 전체 파일 수가 아니다. Git untracked/ignored 메타데이터를 추가 조사해 Baldrix 8,747항목, harness 656항목, guardian 17항목을 발견했다. 중첩 저장소 디렉터리도 포함하므로 이 수를 파일 수라고 부르지 않는다. 작업별 시험 스크립트/기록, 플러그인, 미커밋 연구 노트, 원장과 런타임 경험도 별도 분석 대상이다. 현재 3,434개 추가 자산을 observed-extra에 바이트·시각·해시로 고정했으며 아직 의미 검토 전이다. 캐시/사적 세션/인증정보/중첩 저장소/대형 인덱스의 처분과 미해결도 `local-assets-status.json` 및 private local-assets 원장에 남겼다. 캐시는 자동으로 의미 검토 완료에 합산하지 않는다.
+**범위 보강:** 위 숫자는 Git 추적 경로의 분모이며 로컬 전체 파일 수가 아니다. Git untracked/ignored 메타데이터를 추가 조사해 Baldrix 8,747항목, harness 656항목, guardian 17항목을 발견했다. 중첩 저장소 디렉터리도 포함하므로 이 수를 파일 수라고 부르지 않는다. 작업별 시험 스크립트/기록, 플러그인, 미커밋 연구 노트, 원장과 런타임 경험도 별도 분석 대상이다. 현재 3,434개 추가 자산을 observed-extra에 바이트·시각·해시로 고정했고 일부 연구 노트·역할 로그부터 의미 검토하고 있다. 이 추가 자산의 파일별 검토 기록은 각 파티션의 `local-files.json`에 두며 추적 경로 집계에 섞지 않는다. 캐시/사적 세션/인증정보/중첩 저장소/대형 인덱스의 취득 상태·처분과 미해결은 `local-assets-status.json` 및 private local-assets 원장에 남겼다. 캐시는 자동으로 의미 검토 완료에 합산하지 않는다.
 
 고정 인벤토리는 `path-ledger.json`, 검토 상태 집계는 `coverage.json`, 로컬 추가 범위는 `local-surface-summary.json`과 `local-assets-status.json`을 본다. 이 원장들도 inventory가 semantic review를 대신하지 않음을 명시한다.
 
@@ -33,8 +33,11 @@
 - harness experience: lessons 25, reports 25, trials 16, archive 22, root 회고 5개 = 93개 및 현재 lesson 변경.
 - 주 Codex: 원본 정책/구성/토폴로지, 전체 커버리지 조정, 나머지 파티션 연결과 교차 검토.
 - harness lib: 43개 공통 라이브러리의 원장·lease·중복 방지·판정 도출 등 구현/호출/테스트.
+- harness-local-research: Git 밖 연구 노트 38개와 역할 로그 23개의 과거 판단·정정·제안 연결. 추가 자산 분모이며 현재 실행 테스트와 구분한다.
 - design-canon: 설계 정본의 범위·용어·SSOT·런타임·컨텍스트 계약과 구현 차이. 아직 부분 검토.
 
 Guardian의 전체 13개 의미 검토 및 pinned/observed 각 5스위트 실행은 `guardian/review.md`에 있다. 실제 Claude와의 합의·정정, 현재 Windows Python 자식 인코딩 실패 실측은 `cross-review/resolution.md`에 연결한다. 작은 저장소의 완료나 기존 스모크 PASS를 큰 저장소·실 운영 검증으로 확대하지 않는다.
+
+harness lib의 정상 gate writer 추가 분석은 검토 도구의 자동 보안 검사로 중단됐다. 그 중단을 테스트 결과로 취급하지 않으며 기존 FA-005의 미검증 범위는 유지한다. `harness-lib/continuation-status.md`에 중단과 미실행 초안을 기록했다.
 
 분석 결과는 각 폴더의 `files.json`과 리뷰 문서에 연결한다. 현재 전체 의미 분석은 **미완료**다. 아직 처리하지 않은 파일과 하위 시스템을 후속 파티션으로 계속 분석한다. 사용자 요청에 따라 독립 `trevi00/zeus` 저장소를 만들고 [GitHub 이슈 11개](../tickets/README.md)를 로컬 PostgreSQL 원장과 연동했다. 이는 운영 배포나 기능 도입 승인이 아니다. 이후 작업 루트는 `C:/Users/rudtn/zeus`이며 과거 증거의 원본 경로는 당시 사실로 유지한다.

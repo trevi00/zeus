@@ -15033,7 +15033,7 @@
     "mode": "100644",
     "bytes": 80474,
     "pinned_sha256": "dac33971c7d6efc02486b5ec5ee1b3db0c7953f0d975f9aa2139188c2862585b",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15117,7 +15117,7 @@
     "mode": "100644",
     "bytes": 10458,
     "pinned_sha256": "25df72a56033a5176a08b47fb29d73dc5896648236dc07f8b0022ab9f77f54fa",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15201,7 +15201,7 @@
     "mode": "100644",
     "bytes": 16189,
     "pinned_sha256": "47cacddbf0b3db5894112203349bb08bd16949e4a1b45d13ce383adc2ba4f4e0",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15257,7 +15257,7 @@
     "mode": "100644",
     "bytes": 11162,
     "pinned_sha256": "6fabb71cda85127f2f45cde60b9e325de1efb18ed7522be15f24d348da55c75e",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15299,7 +15299,7 @@
     "mode": "100644",
     "bytes": 22070,
     "pinned_sha256": "a15ec9b81721ce77a45544ccc30e4168d7ffd76dffb6d263b9667b906d06bcf3",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15327,7 +15327,7 @@
     "mode": "100644",
     "bytes": 14164,
     "pinned_sha256": "8563b71bbe0ea22477252946894ae6730f8632362db01ea54e8717fd3cc4053c",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15355,7 +15355,7 @@
     "mode": "100644",
     "bytes": 17138,
     "pinned_sha256": "6287504e3edb5155f11bd681ffcfd6b76d2cf7e27a727263dd1677829f88c7b3",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15621,7 +15621,7 @@
     "mode": "100644",
     "bytes": 9239,
     "pinned_sha256": "86a2b6152e741bf9a8a073c782e2bc90aacc58d6a4b0e72f1a67e68e0427e3c0",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15719,7 +15719,7 @@
     "mode": "100644",
     "bytes": 13901,
     "pinned_sha256": "c65582cce1480d72181b1d0fca8f25b7a7142a016900a738f52f35256ed6dcf7",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15733,7 +15733,7 @@
     "mode": "100644",
     "bytes": 15278,
     "pinned_sha256": "18c95cd811927147de7ded12f410f86c1b400f27c42f5fecf6cd9dbedc560d1b",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15831,7 +15831,7 @@
     "mode": "100644",
     "bytes": 13882,
     "pinned_sha256": "c7504ee9fc36fe5693ce72a09f5b5e59803c2d741fddc4a4d1bd976620edebf1",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15887,7 +15887,7 @@
     "mode": "100644",
     "bytes": 54248,
     "pinned_sha256": "d4ab052dc451f8f86ef7d4f4a97df669d978b6c49b3b98c636c7e017f3b5d319",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -15957,7 +15957,7 @@
     "mode": "100644",
     "bytes": 18778,
     "pinned_sha256": "0a7d9829d798d4b9cb6536a64f79330c732b4caa1eac26a3d9694ea551adaf05",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -16055,7 +16055,7 @@
     "mode": "100644",
     "bytes": 32966,
     "pinned_sha256": "a1b6c4c029a074391048eea5d6a2aa494895f895ebda39de27f0105001711f12",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -16069,7 +16069,7 @@
     "mode": "100644",
     "bytes": 12347,
     "pinned_sha256": "4d76b3e7eb511089bf356752c14516f43c54c597df7b1846d17fcfcd0844f32e",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -16097,7 +16097,7 @@
     "mode": "100644",
     "bytes": 7946,
     "pinned_sha256": "8d30021a8a73d26c95ec394c9951ab6493a7738c52f6303511e832e042c7ccb8",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -16111,7 +16111,7 @@
     "mode": "100644",
     "bytes": 8534,
     "pinned_sha256": "6f55414099b32349d4d36ca2daae079f32445863a62008dbe810030218a1e61e",
-    "disposition": "unreviewed",
+    "disposition": "semantically_reviewed",
     "review_records": [
       "docs/full-analysis/baldrix-common/files.json"
     ],
@@ -33255,8 +33255,10 @@
     "mode": "100644",
     "bytes": 9141,
     "pinned_sha256": "c592ee322c82fa3eb284385aadc2c79e4e0ddd967b00acab393be68d99c6285f",
-    "disposition": "unreviewed",
-    "review_records": [],
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_records": [
+      "docs/full-analysis/design-canon/files.json"
+    ],
     "adoption_status": "not_approved_not_incorporated"
   },
   {
