@@ -1,0 +1,153 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/db-design.md",
+    "bytes": 15829,
+    "git_blob": "90b341842863e22baf4531372be7d33b24cbba68",
+    "pinned_sha256": "4763f76c389222dc1247caa8697f468c4433c822bbff4709d7a295f136b108bf",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 326,
+        "raw_range_sha256": "4763f76c389222dc1247caa8697f468c4433c822bbff4709d7a295f136b108bf"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/root-initial.md",
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "templates/dev-pipeline.md",
+    "bytes": 10324,
+    "git_blob": "8c3e1830689f8c6d8902f6cd3560cfcf9a0073f5",
+    "pinned_sha256": "93792a3c6186f8936e20c46c9ee1cee8f85ef3eb412db5f8236e1c72bc016c6a",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 201,
+        "raw_range_sha256": "93792a3c6186f8936e20c46c9ee1cee8f85ef3eb412db5f8236e1c72bc016c6a"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/root-initial.md",
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/convention.md",
+    "bytes": 16189,
+    "git_blob": "0cec4cea2411982d1834566d0b299710ba5a2d8c",
+    "pinned_sha256": "47cacddbf0b3db5894112203349bb08bd16949e4a1b45d13ce383adc2ba4f4e0",
+    "read_ranges": [
+      {
+        "start_line": 237,
+        "end_line": 306,
+        "raw_range_sha256": "f99b0be1b1e8d4b27e677f280984e724f18c8b1770c4ebd284ec6030ba21b4d7"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/root-initial.md",
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/doc-writer.md",
+    "bytes": 9541,
+    "git_blob": "b758c73ca1a59eb85b486f03aeee97841796e027",
+    "pinned_sha256": "c19aec6a186596d2dec3e36572058672e1eeba21b4613ff199d3eaf892cf4095",
+    "read_ranges": [
+      {
+        "start_line": 143,
+        "end_line": 175,
+        "raw_range_sha256": "e93b6ed159b193ed66642437bdaae7d95cec840824a2ffa74fdb16b9860d94d6"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/root-initial.md",
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/_common/iso25010-scoring.md",
+    "bytes": 15278,
+    "git_blob": "5ef192f031d8ed12cf59a64ad662d46970699acf",
+    "pinned_sha256": "18c95cd811927147de7ded12f410f86c1b400f27c42f5fecf6cd9dbedc560d1b",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 45,
+        "raw_range_sha256": "6810b2e98dbc2047031238fe9a87c66b5cd839433687a14d1ca775695cb0ccbe"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/root-initial.md",
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "skills/kookmin-sanghoe/flyway-ddl-prisma-introspect-gate.md",
+    "bytes": 13114,
+    "git_blob": "14a0cd0a0ab5334630c8948ce81b85743f7d3a16",
+    "pinned_sha256": "d9668e5941c18bfc5f8b55d58e9d0260b9faae025b296111b5e2116cf398917c",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 105,
+        "raw_range_sha256": "3e6bcbcb57f7898e00eb1547dd073cb8a82869ec3a602bf4819e5f4a24ed0837"
+      },
+      {
+        "start_line": 116,
+        "end_line": 117,
+        "raw_range_sha256": "633548d2c86511ee39e239229b57286c4112443fb951c79b4c40dcf36cea1144"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/root-initial.md",
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/openapi.py",
+    "bytes": 4352,
+    "git_blob": "63c933c4b3afd5d1de61979221cb4cd81568c9f1",
+    "pinned_sha256": "96210fe7686ca922f430639024bfda3b677220986cb675e4cb95762b0bf23054",
+    "read_ranges": [
+      {
+        "start_line": 1,
+        "end_line": 114,
+        "raw_range_sha256": "96210fe7686ca922f430639024bfda3b677220986cb675e4cb95762b0bf23054"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/codex-discussion-input.md",
+    "adoption_status": "not_approved_not_incorporated",
+    "read_phase": "after_claude_initial_for_discussion"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/handlers/post_tool/reviewer.py",
+    "bytes": 30305,
+    "git_blob": "2b0cc13fe7fb5d8418b8a16cb187d6b1b1ab62f7",
+    "pinned_sha256": "2cb914492d6aed94b49d46271c8f5f049d0f87b7918acdde2e9ba03f6571310d",
+    "read_ranges": [
+      {
+        "start_line": 351,
+        "end_line": 424,
+        "raw_range_sha256": "dcd9d332ecab3e5172ae6e4a46c647f410a5698f360a44ecdae595772253128a"
+      }
+    ],
+    "fresh_read": true,
+    "review_ref": "docs/full-analysis/baldrix-data-verification-001/codex-discussion-input.md",
+    "adoption_status": "not_approved_not_incorporated",
+    "read_phase": "after_claude_initial_for_discussion"
+  }
+]

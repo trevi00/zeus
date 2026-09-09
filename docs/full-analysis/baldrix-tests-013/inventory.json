@@ -1,0 +1,80 @@
+{
+  "partition": "baldrix:scripts/tests:013",
+  "scope_sha256": "6813bbb0893330ca4b5861b83f3de291c7a82a42b4730570bc2de1f22db95381",
+  "bytes": 167146,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_trending.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_trigger_summary.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_ultrawork_plan.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_unattended.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_unattended_e2e.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_validate_project.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_verifier.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_webhook.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_wonder.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_wonder_proposer_invariant.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_work_tree.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_work_unit_store.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_workers.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_writeback_apply.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_writeback_inspect.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_writeback_parser.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_writeback_store.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_writeback_token.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

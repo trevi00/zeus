@@ -1,0 +1,28 @@
+{
+  "primary_body_remaining": [],
+  "supporting_trace_remaining": [
+    "Unlisted intervals and complete transitive consumer/configuration/test closure.",
+    "Claim-by-claim external source snapshot, attribution, scope, current applicability and license.",
+    "Automatic dossier-to-skill generation/change propagation and per-claim revision binding.",
+    "Actual skill injection, installed module resolution, graduation state and full graduation implementation.",
+    "Actual Storybook stories/config/tests and token compiler/lockfile/component versions.",
+    "Actual Windows/Linux/WSL/browser/AT/service execution and real human task acceptance.",
+    "Samsung phone/tablet model/OS and Device Farm SDK/MCP/live/replay remain deferred.",
+    "Approval identity/artifact binding/expiration, PG transition consumer and alpha/live deployment.",
+    "Actual Claude independent review and Astra/Sol/Terra qualification.",
+    "Zeus implementation adoption and equivalence."
+  ],
+  "upstream_executions": 0,
+  "upstream_imports": 0,
+  "probes": 0,
+  "network_calls": 0,
+  "installs": 0,
+  "model_calls": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adopted": false,
+  "review_ref": "docs/full-analysis/baldrix-design-research-001/review.md#unknowns"
+}

@@ -1,0 +1,13 @@
+{
+  "scope": "Only inert review metadata programs; never upstream execution",
+  "source_executions": 0,
+  "history": [
+    {"chunk":"edd68a","action":"Create recorder/checker from existing006 templates with012 constants","exit_code":0},
+    {"chunk":"8724d3","action":"record_review.py and Ruff recorder/checker","exit_code":0,"stdout":"primary24 bytes193879 fresh24 reused0 supporting38 blob/bytes match; All checks passed!"},
+    {"chunk":"357fec","action":"Inline prose-ordering attempt","exit_code":1,"stderr":"PowerShell removed native-argument quotes; Python SyntaxError before execution; no write occurred"},
+    {"chunk":"6dd65a","action":"order_notes.py;record_review.py;check_metadata.py;Ruff;Korean review/supporting readback","exit_code":0,"stdout":"Ordered24 unique primary anchors; primary24/193879bytes fresh24 support38; hashes/blob/ranges/refs/UTF8/LF pass; Ruff All checks passed!"}
+  ],
+  "retry_method": "Persist inert order_notes.py via apply_patch to preserve literal quoting and Korean prose bytes; no upstream code retry/probe",
+  "korean_review_readback": "e749b3 and8724d3 verified per-file Korean prose;6dd65a final review/supporting Korean readback preserved meaning",
+  "upstream_execution_acceptance": false
+}

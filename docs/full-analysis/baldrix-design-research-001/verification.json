@@ -1,0 +1,37 @@
+{
+  "primary_count": 7,
+  "primary_bytes": 160202,
+  "primary_lines": 1462,
+  "supporting_rows": 19,
+  "prior_reuse_rows": 0,
+  "review_refs_checked": 46,
+  "raw_blob_size_sha256_verified": true,
+  "range_bounds_verified": true,
+  "utf8_decoding_verified": true,
+  "korean_sentinel_verified": true,
+  "own_python_lf": true,
+  "missing_manifest_snapshot_sha256": 0,
+  "upstream_tests_run": false,
+  "external_claims_verified": 0,
+  "read_receipts": {
+    "primary": [
+      "5f9736",
+      "9c747b",
+      "88a378",
+      "63b657",
+      "9daed3",
+      "64df56",
+      "f91a90"
+    ],
+    "supporting": [
+      "2b4be1",
+      "fbc8b0",
+      "0c976a",
+      "0c9633",
+      "cff2f4",
+      "238f79",
+      "2333aa"
+    ],
+    "note": "2b4be1 was truncated: design-craft is recorded only from fresh bounded rereads; tokens was reread in full. Search output is not body coverage."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "validation_scope": "Own review artifacts only; no source import, collection or execution.",
+  "commands_executed": [
+    {
+      "argv": [
+        "python",
+        "-X",
+        "utf8",
+        "docs/full-analysis/baldrix-tests-013/build_index.py"
+      ],
+      "exit_code": 0,
+      "result": "metadata PASS primary18 supporting25 upstream_execution0"
+    },
+    {
+      "argv": [
+        ".venv/Scripts/ruff.exe",
+        "check",
+        "--no-cache",
+        "docs/full-analysis/baldrix-tests-013/build_index.py"
+      ],
+      "exit_code": 0,
+      "result": "All checks passed!"
+    }
+  ],
+  "checks": {
+    "primary18_bytes167146": true,
+    "prior18_unreviewed_exact_identity": true,
+    "raw_git_blob_and_manifest_size": true,
+    "manifest_sha_absence_preserved": true,
+    "ranges_valid": true,
+    "support_primary_disjoint": true,
+    "anchors_and_file_names": true,
+    "utf8_lf_no_bom": true,
+    "ascii_report_meaning_readback": true,
+    "report_sections_reviewed": 18,
+    "ruff_own_recorder": true
+  },
+  "upstream_execution_count": 0,
+  "artifact_sha256": {
+    "build_index.py": "710f2db4a1587b65810eb7b435940d8b8d4dbc0e3f88878000952bd70813b93b",
+    "checkpoint.json": "08656347b0d3b716e09155783a695c2d66b8e5efc7e2591af66ca7cf87490f9f",
+    "files.json": "0765ae5e73197703bca64378a31a823a411f34c81f2eb5203a67a43ac4c9aeb8",
+    "inventory.json": "34e5b7c685a6e5c64d9167748c99388ef20b3d6af3d06188f3effc39f7c7fa60",
+    "prior-ledger.json": "89ebb37bf43dc3b3d624a9d6e5c9435e79eea48961126a69bdbf7c8f471b3173",
+    "read-plan.json": "99f7a323843574e0fe4387e1281ac143375e2b10b34535d8681f15f78594b9ce",
+    "README.md": "d6d012bfbebe5edf6d2002a969510a9bcac08306cb1f0a0c63ceefa2f29817be",
+    "remaining.json": "ff1792ba6534b3328d4e6cdf890324131be1809fd63c71330afa531dd5ef87d7",
+    "review.md": "6edf0c264469abd506975d2e76d87927d5cca53460ff80c9b88df97678d49d91",
+    "supporting.json": "9de0c3b8f584489570b2afc2a686955e194d73669f9ac0bfeca8a76e39fda708"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "status": "own_metadata_verified",
+  "upstream_execution_count": 0,
+  "primary_count": 7,
+  "primary_bytes": 160202,
+  "supporting_rows": 19,
+  "prior_reuse_rows": 0,
+  "checks": [
+    "raw Git blob, byte length and SHA-256 of all 26 rows",
+    "range bounds and review anchors",
+    "checkpoint artifact hashes",
+    "UTF-8 and LF",
+    "seven static test definitions, no execution"
+  ],
+  "ruff": {
+    "receipt": "b0b5db",
+    "exit_code": 0,
+    "scope": "record_review.py"
+  },
+  "korean_full_readback_receipts": [
+    "e09f24",
+    "00bdcc"
+  ],
+  "final_changed_paragraphs_readback": "same validation invocation displayed lines 19, 35 and 71",
+  "metadata_recorder_receipt": "884d2f",
+  "artifact_sha256": {
+    "checkpoint.json": "96d2e1a2aa1a574c5446b38a8a0c877a4438cfc34ab0241ea39bc5555092a66f",
+    "files.json": "2fc63df240075446a221e1fea2612be4f404b117062c81ca5eb695abb7fa3ca0",
+    "record_review.py": "2f4a7d4503bd6666b566a534aa24b1f4e94a81c17324f7b803038f7db6c6daa8",
+    "remaining.json": "6022db2446732af841f7c640300eea500cbf2d33cf10fed6b68a8b08ec386bb3",
+    "review.md": "f32f9413d61534eaaefdf2712edd266280f88caeb20fe9b0ab4079e59e7686e5",
+    "supporting-evidence.json": "006eb9ac2c1d99e0de462a994a9208f2139d4242df15fa77ded344183ba149ed",
+    "verification.json": "0f8b27b4dee8bf35b1dfd6f246e50130306eb41f4972d6dd9aae5be464d1ab34"
+  }
+}

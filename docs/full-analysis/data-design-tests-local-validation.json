@@ -1,0 +1,50 @@
+{
+  "kind": "local_validation_observations",
+  "starting_head": "852564f34e738997c19cf4af917450572d029e6c",
+  "checks": [
+    {
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "result": "All checks passed!",
+      "tool_chunk": "71c0fc"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest"
+      ],
+      "session": 10143,
+      "exit_code": 0,
+      "passed": 660,
+      "skipped": 68,
+      "duration_seconds": 175.8,
+      "terminal_tool_chunk": "63f76a",
+      "scope": "run started before final new evidence verifier was written"
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "pytest"
+      ],
+      "session": 11990,
+      "exit_code": 0,
+      "passed": 660,
+      "skipped": 68,
+      "duration_seconds": 174.79,
+      "terminal_tool_chunk": "8dbbb9",
+      "scope": "after new code and agent recorders finalized"
+    }
+  ],
+  "limits": [
+    "Existing Zeus tests only; skipped axes are not passed",
+    "Not original source tests, real DB acceptance, WSL/device/human acceptance or adoption approval"
+  ]
+}
