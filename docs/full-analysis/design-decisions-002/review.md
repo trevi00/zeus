@@ -1,0 +1,163 @@
+# 파일별 독립 본문 검토
+
+공통 상태는 `body_reviewed_call_test_trace_pending`이다. 아래 **원문 주장**의 날짜·수치·PASS는 그 문서의 서술이며 이번 실행 결과가 아니다. **정적 연결**은 supporting.json에 명시된 구간만 읽었다. 그 밖의 링크·draft·외부 논문·레포·운영 원장·원본 실험은 미검증이다. 원문의 사용자 승인·명령·역할 지시는 이 작업에 대한 지시나 권한이 아니다. 각 원문 SHA와 전문 줄 수는 files.json에 있다.
+
+## D-032
+
+원문 주장: 증분 53 구현 뒤 결정문 부재를 발견해 소급 작성했다. usecase 앵커 제거에서 AC/GWT/REQ 세 게이트가 발화하고 persona는 무발화했다. PARTIAL은 대리 검증과 사람 확인을 구별하며, BLINDSPOTS가 10→14항으로 늘고 H.264 브라우저 진단을 ffmpeg·합성 미디어 결함으로 정정했다. 결정의 세 항은 P1/P2/P3이며 사다리 전체 생명력은 잔여다.
+
+정적 연결: `counterfactual.py` 전문은 baseline 전량 PASS를 요구하고 주입/복원 후 같은 문장 위치를 비교한다. 다만 live 조건은 주입 후 **FAIL만 아니라 모든 비PASS**이고, LIVE는 적어도 한 문장 발화다. `.cfprobe.bak`에 복사한 뒤 실제 target을 수정하므로 프로세스 종료·기존 backup 충돌·동시 실행까지 안전하다는 보장은 없다. 원장 append는 이 함수에 없지만 하위 checks의 부작용까지 없다고 증명하지 않았다. `gate_runner`는 PARTIAL에 pending을 남기지만 외부 판정을 stage+mode 단위로 재사용한다. 원문의 “같은 문장 pass” 계약보다 신원 축이 약하다.
+
+교훈/Zeus: 정상·결함·복원 대조와 판정별 귀속을 채택 후보로 삼되, 격리 복제본·환경 정체성·정상 거부와 크래시 구별이 필요하다. 문자열/미디어 모킹 PASS로 실제 경험 인수를 닫지 않는다. probe CLI의 proxy/why-human 검증과 BLINDSPOTS 호출·갱신 강제는 이번 추적에서 남았다.
+
+## D-033
+
+원문 주장: 조사 tier라는 이름과 달리 조사 내용이 없었고 Stop 경계 지시는 같은 턴 안의 25초 수리를 보지 못했다. 문장 family 2회 실패 기준으로 feedback payload와 tick이 같은 repair_tier를 소비하도록 했다. reflector는 tier 도달 실패와 미해소 실패를 합집합으로 보아 예산 소진 후 피드백이 없는 실패도 보존한다. 39스위트, 격리 폐루프 및 tier 기록은 과거 주장이다.
+
+정적 연결: `repair_tier.py` 전문과 `gate_runner.py:137–164`에서 같은 세션 feedback에 tier/directive를 싣는 경로를 확인했다. 현재 runner는 이전 events와 이번 failed를 합산한다. repair_tier 주석의 “append 직후이므로 current_failed 생략” 설명과 실제 호출 방식은 다르지만 현재 코드에서 이 호출만으로 중복 계수한다고 단정하지 않는다. family_counts는 FAIL 문장을 누적하며 cycle·성공·retraction·compaction을 별도로 접지 않는다. 따라서 장기 이력과 접힌 이력의 등가성은 별도 과제다.
+
+교훈/Zeus: 실패가 실제 발생하는 경로에 구조화된 원인 조사 계약을 붙이고 재현·수리·검증의 증거를 구별한다. payload의 조사 명령은 이행 증거가 아니다. tick의 나머지 tier 소비·reflector/curator 입력 및 재현 테스트 실행은 미완료다.
+
+## D-035
+
+원문 주장: ffmpeg PATH가 장기 프로세스에 반영되지 않아 합성 미디어 PASS가 실제 디코딩 증거처럼 보였다. 파일 sha16/json literal 전제 지문을 gate_verdict에 남기고 tick이 변경을 재검증 요청으로 바꾼다. 순수 원장 도출에 파일 검사를 넣는 초안을 기각했다. 당시 core 0개, 별밤 blackbox 한 곳에 opt-in 했고 44스위트는 과거 결과다.
+
+정적 연결: preconditions/staleness 전문, gate_runner, tick 관련 구간을 읽었다. 파일 digest는 원시 바이트가 아니라 UTF-8 replacement 디코딩 문자열의 16자리 SHA다. 파일·키 부재와 JSON 파손이 absent로 합쳐지고 미지 문법은 고정 문자열이다. 이전 기록이 없거나 비어 있으면 stale가 아니다. 선언을 없애면 scan 자체가 건너뛴다. 전제는 명령 **실행 후** 계산되므로 검사 중 변경의 시점 결속이 없다. tick은 staleness 예외를 빈 결과로 처리하고 완료 여부를 이어서 판단한다.
+
+교훈/Zeus: 환경·데이터·도구·정책·산출물 버전별 full hash와 검사 전후 동일성, 전제 부재/파손의 명시 상태가 필요하다. PG에 보관할 재검증 자격과 순수 역사 도출을 분리한다. 환경 전체·compaction/retraction의 전제 보존·게이트 삭제 래칫 연결은 남았다.
+
+## D-036
+
+원문 주장: 선언 blocking 또는 원장 기반 자동 승격을 합쳐 적용한다. 자동은 연속 OK 및 문서 지문 두 상태 이상을 요구하고 manual opt-out을 둔다. DRIFT는 streak를 낮추며 자동 blocking도 내려간다. debate 절차적 중단을 계속 진행으로 바꾸되 미해결 강경 이견·반복 상한은 사람에게 남긴다. 44스위트/7lint, 자동 debate 실전 0회·자동 승격 미발화는 서로 다른 사실이다.
+
+정적 연결: seams의 `streak_doc_states`/`auto_promotion`은 DRIFT 초기화·manual 거부·최소 두 문서 상태를 구현한다. promotion_readiness 본문과 graph_queries의 effective blocking 호출은 이번에는 읽지 않아 전 경로로 인정하지 않는다. tick의 읽은 구간은 FAILED 상태 및 debate 총량 상한을 사용한다. 이는 원문 전체 자동 토론의 실제 성공 증거가 아니다.
+
+교훈/Zeus: 검증기가 불안정해졌다는 이유로 그 검증의 blocking이 자동 약화되는 설계는 정책 승인과 분리해서 검토해야 한다. 서로 다른 문서 두 개는 서로 다른 독립 검증 두 개가 아니다. 자동 승격 조건·정책 버전·유효 기간·hard stop 및 사람 인수를 별도 계약으로 둔다.
+
+## D-037
+
+원문 주장: allinone 3,229파일/13정책/50완료선에서 운영 규율을 추출했다. 완료선 네 절, reject 사유·후속 피드백 계수, 전제 해석문, 고정 쓰기 범위, Jaccard 0.6 자문, 폭 3–5 시드, FTS5 recall을 정했다. 해당 donor 전수 검토가 이번 19개 검토로 확장되지는 않는다. D-032 P5 인용은 실제 P3 여집합 절과 번호가 다르다.
+
+정적 연결: completion_line 전문은 evidence exists/glob만 판정하고 excluded를 요구한다. excluded의 공백 문자열까지 거르지는 않는다. decomposition 전문은 주어진 shard 집합의 중복·누락·사유와 같은 wave의 범위 중첩을 검사한다. 범위 검사는 동일 문자열 및 별표 앞 directory prefix 근사이므로 모든 glob 교집합 판정이 아니다. 문서의 MECE 표현은 의미적 업무 완전성 보장으로 확장할 수 없다.
+
+교훈/Zeus: 범위·증거·해석·한계를 분리하는 형식은 유용하다. 그러나 모든 선언된 경로가 생겼다는 이유로 구현/실험 완료가 되지 않고, excluded 필수 규칙으로 원래 사용자 범위를 임의 축소해서도 안 된다. reject 계수·패널 Jaccard·recall 실제 호출/성능은 미추적이다.
+
+## D-038
+
+원문 주장: 사용자 컨텍스트 분해 제안 D-003이 방향에서 멈췄고 CLAUDE 상태 절이 13변경 중 8개를 차지했다. 상태 자동 렌더 초안을 기각하고 안정 조항+온디맨드 투영 포인터만 남긴다. co-change 기반 cohesion은 자동 분해가 아닌 proposed 발의다. churn 8·cluster 2·Jaccard 0.3은 측정되지 않은 시드이며 통지 큐 미배선이다. IFScale 68%·200줄·Chroma 18모델 등은 원문이 인용한 연구 주장으로만 보존한다.
+
+정적 연결: harness_lint `check_context_coupling`은 파일별 줄에서 정규식 문형을 검사하고 날짜·당시·였다·정의상 앵커가 있는 줄을 건너뛴다. 후속 주석은 과거 사실도 차단하던 오탐을 인정한다. 줄 안의 날짜 존재가 문장 전체의 비휘발성을 증명하지 않으므로 의미 판정기는 아니다. cohesion 계산·git 입력·발의 writer는 이번에 읽지 않았다.
+
+교훈/Zeus: 안정 정책은 Git, 휘발 실행 사실은 PG로 분리하고 조회 시점과 버전을 표시한다. co-change는 책임 분해의 제안 신호로만 쓰며 자동 코드 이동이나 정책 변경 권한을 만들지 않는다. 외부 연구의 현행·정확성을 별도로 확인하지 않았다.
+
+## D-039
+
+원문 주장: active_run/lease/spawn cap은 state_dir 주입으로 나뉘지만 guardian 감시는 실제 단수다. 직렬 장전 기본, 다중 감시·합산 캡·lease namespace는 묶어서 유예한다. env+cron 병행은 감시 부재·전역 캡 소실·환경 전파 미검증을 감수하는 탈출구일 뿐이다. 당시 11레포 중 2개 직접 구동, outpos 직렬 장전도 미실증이라고 명시한다.
+
+정적 연결: profile.yaml 전문은 fleet에서도 Git JSONL 정본·PG projection을 명문으로 둔다. 이번 읽은 driver의 _autoheart_pass 역시 단일 state 계열과 인접 guardian safe_mode 경로를 소비한다. state_dir 전체 소비자 10개와 guardian 감시 경로 전수는 이번에 재검토하지 않았다. 원문의 “오늘도 가능”을 검증된 병행 실행으로 바꾸지 않는다.
+
+교훈/Zeus: 운영 원장 정본은 PG로 다시 설계하고 project/run별 lease·fencing·합산 예산·deadman coverage를 함께 검증한다. 감시 없는 병행·원본 cron 등록은 이 작업에서 실행하거나 권장하지 않는다.
+
+## D-040
+
+원문 주장: 실 Claude/Task 세션에서 deny/allow 경로 쓰기 대조를 한 번 수행했다고 한다. 처음 allow 대조군도 무인 가드가 막아 장전 프로젝트로 옮겼다. 실행 정본이 결정문뿐이고 반복 프로브는 유예됐다. 계층/경쟁 “구조 완비” 옆에 실전 0회가 남아 있다. Redis는 truth 불가·조건부 cache이며 9월 5일 0참조/DBSIZE 0 측정 후 프로비저닝을 제거했다. 컨테이너 healthy를 기능 소비 증거로 오독한 이력을 기록한다.
+
+정적 연결: subagent_harvest 전문은 driver stamp 없으면 무동작, binding이 없으면 무동작, 수거 실패는 fail-open이다. 처음 8줄/마지막 40줄의 모든 문자열에서 shard 마커를 찾으며 사용자 메시지로 엄격히 한정하지 않는다. 산출 tail은 마지막 assistant 텍스트의 **첫 400자**다. decomposition.collect는 stage 없는 harvest를 shard 이름으로 귀속하고 run/attempt 경계를 검사하지 않는다. 이것은 실행 성공·올바른 산출 검증이 아니다.
+
+교훈/Zeus: 플랫폼 훅의 과거 일회성 증명은 Codex/Windows/Linux/WSL의 현재 동일 보장이 아니다. PG 인계 레코드에 부모·자식 run/attempt·artifact identity 및 검증 상태를 분리한다. Redis/Kafka 제거의 현재 배포 상태, 훅 전파 및 실 independent judge 실행은 미검증이다.
+
+## D-041
+
+원문 주장: owns=유지·감시·발의 책임이고 수정 권한과 직교한다. contracts.yaml을 소유/계약 정본으로 하고 verified는 검증기 ≥1, partial은 사유를 요구한다. C8 4파일 partial은 후속 7파일 guardian read 미러·writer 검증·drift canary로 해소했다고 개정됐다. 20검사/28검사는 역사적 결과이고 mtime 신선도는 별도 watchdog 몫이다.
+
+정적 연결: ownership lint 구간은 component 실존·한 카드 owns·human/none 사유·중첩 금지·당사자 어휘·verifier 최상위 Python 심볼 존재를 검사한다. 심볼 존재는 해당 계약의 실제 강제가 아니라는 한계를 코드도 명시한다. 카드 owns 파싱은 산문 정규식 기반이다. guardian_contract와 실제 guardian read/writer/probe 전 구간은 이번에 읽지 않았다.
+
+교훈/Zeus: 소유권으로 자기 정책이나 판정기를 편집할 권한을 만들지 않는다. Git의 역할/계약 정의와 PG의 실제 담당·미응답·수거·검증 실적을 구별한다. C8 해소는 원문 주장으로 유지하고 현재 안전 경계 완결로 승격하지 않는다. D-032 P5는 P3와 번호가 다르다.
+
+## D-042
+
+원문 주장: 파일 owns는 향후 1파일 component+최장 매치+carve_out으로 예약하고 지금은 중첩 금지만 구현했다. ownership_vitals는 명시 role/actor/component만 귀속, synthetic 제외, 0/0은 None이다. 11이벤트에서 owners 1/7·share 25%·귀속 4/11·incidents 0을 기록한다. 사건 기록 CLI는 있지만 나머지 wakeup/finding/timeout writer와 합성 생명력 프로브는 2단계 유예다.
+
+정적 연결: ownership_events 전문에서 incident depth 정수·계보·synthetic bool·컴포넌트 어휘를 검사한다. wakeup/finding/timeout은 각각 필수 문자열/판정 어휘를 확인할 뿐 동일한 전체 계보/합성 계약을 공통 적용하지 않는다. useful의 proposal_ref는 비어 있지 않은지만 보며 실제 발의 존재·승격은 검증하지 않는다. deadline_s의 양수 비교만으로 NaN/무한을 거르는 검사는 없다. 실제 writer/지표/dispatcher는 미추적이다.
+
+교훈/Zeus: 선언된 책임과 관측된 활동·무귀속·무응답을 구별하되, 호출자가 스스로 붙인 actor나 synthetic 라벨을 인증된 귀속으로 격상하지 않는다. PG 사건·알림·인계의 연결 및 전달 누락까지 검증한다.
+
+## D-043
+
+원문 주장: ② 무인 판별 3축과 scratchpad 수리, ① Java mapper parity·gRPC·MyBatis data boundary, ③ HTTP/rpc 계약 추출, ④ WS 액션 별칭 대조, ⑤ human 소유 장애 가시화, ⑥ 잘못된 bash census 진단 철회를 순서대로 기록한다. 42개 namespace 오탐을 합산 대조로 교정해 26건 잔여, HTTP 10·rpc 3·미사용 45·고아 116·server 미참조 375 등은 당시 outpos 측정이다. WS 갈라짐은 배포 버전 차이일 수 있어 관찰로 남긴다.
+
+후속/잔여: arm 기본 파이프라인 선택과 스폰 스탬프의 재강제·seeding 일관성을 후속 증분 91로 닫았다고 한다. 활선 비원자 편집이 NameError로 도구 전체를 잠갔고 deny 기대 테스트가 크래시로도 통과했다. env 유실 시 headless ask≈거부라는 설명은 특정 실행 환경 가정이며 보편적인 안전 증명이 아니다.
+
+정적 연결: 이번에는 전용 Java/fleet 추출기·write_boundary·실물 레포·smoke를 읽지 않았다. 읽은 harvest의 driver stamp 요구와 driver arm 호출은 관련 이음새만 보여 준다. 따라서 이 문서는 전문 검토만 완료이며 축별 구현 해소를 검증했다고 주장하지 않는다.
+
+교훈/Zeus: 정찰 결과보다 기존 정식 추출기의 입력/모집단/제외 규칙을 먼저 확인한다. 관찰과 위반, 정상 거부와 크래시, 계약 버전과 배포 버전을 구별한다. 다중 언어 확장은 Python Zeus로 그대로 이식할 코드가 아니라 요구·검증 후보다.
+
+## D-044
+
+원문 주장: 착수급 분석의 성공은 문서만으로 재탐색 없이 작업하는 것이다. 기계 추출→6개 의미 절→digest/재추출/마커 게이트를 제안한다. 11레포 자가 check PASS와 Kotlin Retrofit/Android Intent 추출 후 11/11 복원은 과거 주장이다. 문서만 보고 작은 실작업을 지시하는 사람 검수는 **미결**, outpos/analysis 버전 관리도 미결이다.
+
+정적 연결: workup scaffold/check 구간에서 기계 절 재추출·digest 대조와 semantic 마커 잔존을 확인했다. 의미 절의 내용·최소 분량·6개 절의 계속된 존재는 이 check에서 확인하지 않는다. 마커 삭제는 의미 완성을 증명하지 않으며 digest는 작성자가 다시 계산할 수 있는 내용 비교값이다. machine_sections 추출기 호출 전부와 전용 테스트는 읽지 않았다.
+
+교훈/Zeus: 분석 스캐폴드와 semantic review, 구현 착수 가능성과 인수 성공을 다른 상태로 기록한다. 이 검토 역시 본문을 읽었다는 이유로 caller/test 완료를 선언하지 않는다.
+
+## D-045
+
+원문 주장: 첫 설계 협업 뒤 나선별 Artifact HTML 목업 승인·사람 실테스트를 남긴다. 결정론 심장만 상주하고 LLM은 ephemeral burst, backlog는 발의/사건/완료선으로 도출한다. P1 이후 P2 circuit·hung watchdog·delegation budget을 구현했고 별밤 4차 완주/사람의 크레딧 마커 적발을 P2 착수 근거로 삼았다. P3 격리, 세션별 심박 및 일부 상단 watchdog 적용은 남겼다.
+
+정정: 8월 28일 “재실행 불가” 원인을 derive_stage_states로 지목하고 run_id 경계를 제안했으나 같은 문서 끝에서 철회했다. 원장 전체 재실행 스킵은 확정 설계였고 실제 트리거는 is_done→derive_completed→fold_latest_verdicts였다. 교차 stage ID는 report/unit-test, 두 장전은 서로 다른 후보였다. 정정 이후 기준은 D-050이며 앞 절을 현재 진단으로 재사용하지 않는다.
+
+정적 연결: tick:120이 완료를 먼저 판단하고 select_ready가 완료 fold와 stage state 둘 다 읽는 경로를 확인했다. circuit의 과일 없는 구간은 최근 N스폰 뒤 어느 PASS든 있으면 해제하며 후보별 구분이 없다. 읽은 assess는 현재 cond가 계속 있으면 냉각 후에도 새 trip/open을 반환하므로 “냉각이 끝나면 항상 half_open”으로 요약하면 틀린다. stuck 의존·전체 watchdog/spawn 경로는 미추적이다.
+
+교훈/Zeus: 나선 완료와 제품의 8단계 운영 인수는 분리한다. 이벤트의 project/pipeline/candidate/run/cycle/attempt 신원을 PG에서 명시하고, 실패/무응답/건너뜀을 표면화한다. 사람 인수에서 발견된 결함을 모킹 테스트 성공으로 소거하지 않는다.
+
+## D-046
+
+원문 주장: 정책과 limb 테스트를 같이 고쳐 자기 심판을 무력화할 수 있어 8월 19일 심장 PASS 뒤 사람 승인을 요구했다. 8월 24일 승인 주체를 결정론 게이트 스택으로 바꾸고 5증분 뒤 개정을 소급 기록했다. 정책/guardian/원장 자동 승인 제외, 엔진 불가침은 유지한다. 8월 27일 HARNESS_HOME 누출로 같은 패치가 초록/10FAIL로 달랐고 isolate+CLI 봉인으로 81중 11→0을 기록한다. “거짓 초록 없음”은 5스위트 파손 대조의 범위이며 일반 증명이 아니다.
+
+정적 연결: driver _autoheart_pass와 cycle:1440에서 재심사 호출이 있어 “주기 호출자 없음” 잔여는 pinned 코드에서 후속 배선이 확인된다. safe_mode/이번 스폰 여부로 건너뛰고 개별 pending 오류를 다음 항목과 분리한다. judge와 promote 내부 전부는 읽지 않아 자동 승격 안전성은 미검증이다. sandbox run_suites는 여전히 os.environ을 상속하고 사용자 site를 PYTHONPATH에 보탠다. _seal_env는 HOME/STATE/MUTATION/TOKEN_PROXY/PG_DSN 5개를 벗기는 denylist이다. 근본 whitelist/venv 분리 잔여는 실제 코드에서도 남는다.
+
+교훈/Zeus: 원본의 무인 승인 위임을 이 작업의 승인으로 상속하지 않는다. PG 접속 정보·변이 토큰·사용자 site·프로세스 자원 누출은 파일 worktree만으로 격리되지 않는다. 비신뢰 테스트가 판정기와 환경을 바꿀 수 있는 위협, 기준 앵커 및 승격 원자성의 전 경로를 검증해야 한다.
+
+## D-047
+
+원문 주장: engine 42파일/39엣지/5도메인이 섞여 있어 측정→선언→lint→물리 이동 순서를 확정했다. contracts.yaml의 context 파티션, kernel, 사유 있는 cross_allows를 두고 engine/lib만 우선 적용한다. 동적 import·나머지 계층·물리 재편은 제외 또는 유예다. 초기 9개 예외는 당시 소비 이음새 주장이다.
+
+정적 연결: code_context 전문은 immediate 파일/디렉터리 단위를 검사하고 정적 AST import만 수집한다. 패키지 내부 relative import는 모두 내부로 취급하므로 상위 패키지로 올라가는 relative import도 충분히 추적하는지 별도 확인이 필요하다. SyntaxError는 건너뛰고 다른 검사에 맡긴다. judge는 파티션과 알려진 edge의 cross 허용을 검사한다. harness_lint 호출은 읽었으나 이번에는 contracts.yaml 전 선언/전체 lint 실행을 다시 확인하지 않았다.
+
+교훈/Zeus: Zeus domain/application/adapters의 의존 계약을 기준으로 경계를 선언하고 예외의 실제 소비자를 추적한다. 폴더 이름·AST만으로 업무 응집도나 런타임 의존의 완전성을 증명하지 않는다.
+
+## D-048
+
+원문 주장: 밑그림 v0은 정규 JSON의 Git 정본, primitive schema와 shadcn 데이터 라이브러리를 분리하고 더블클릭 원본 이동을 버려 하위 레이어 선택으로 정정했다. grid/wrap/op 원장은 v1 유예, variant/boolean/text/instance-swap과 light/dark 2모드 포함이다. local single-user webapp 신규 repo, 손 HTML 병행→도구 완성 후 목업 연결을 정했다. 스캐폴드·파이프라인·completion·delegate 착지는 구현 완성/장전 완료가 아니다.
+
+정적 연결: mitgrim 원본 repo·schema·renderer·pipeline·completion은 이번에 읽지 않았다. 이 파일을 근거로 해당 도구 v0이나 현재 Figma 호환을 완료 처리하지 않는다. 외부 도구의 현행 UI 관행을 검증하는 작업도 하지 않았다.
+
+교훈/Zeus: 디자인 정의의 Git 정본과 runtime PG 정본은 양립할 수 있다. 렌더/토큰/컴포넌트/스토리의 버전 결속과 사람 승인 증거를 8단계 디자인 분석에 연결하되, 이 별도 제품을 Zeus 작업 범위에 자동 포함하거나 구현하지 않는다.
+
+## D-049
+
+원문 주장: 미착지 디자인 심판 후보에 대해 read-only design-critic 카드를 만들고 multimodal 실렌더·다중 뷰포트·콘솔을 근거로 독립 judge를 둔다. 카드와 7기둥 skill을 분리한다. 실제 밑그림 나선 첫 발화와 8-state/contrast 결정론 게이트는 잔여다.
+
+정적 연결: 카드 전문은 fresh-context·실렌더·불확실 불통과를 선언하고 fable tier와 playwright-mcp를 적는다. 이는 실제 실행 도구 권한 또는 독립 세션 receipt가 아니다. gate_runner 외부 판정은 stage+mode 최신값이므로 한 stage 안 여러 render 문장에 같은 이벤트를 쓰는 경로가 있다. 카드의 문장별 평가 계약을 소비자가 강하게 결속하지 않는다. skill 7기둥 본문·시딩·judge CLI/실 렌더 실행은 미추적이다.
+
+교훈/Zeus: 미적 평가와 사용자 시나리오 인수·접근성·실기기 검증을 분리한다. reviewer 문자열이나 모델 tier 교체로 사람 권한·모델 자격을 얻지 않는다. spec/scenario/artifact/environment와 독립 judge run을 결속한 증거가 필요하다.
+
+## D-050
+
+중복: 기존 design-canon/files.json 단일 행과 원본 SHA가 같다. 기존 primary `body_reviewed_call_test_trace_pending`을 유지한다. 이번 독립 본문 검토 및 추가 정적 구간은 중복 채택이나 실행 검증 완료가 아니다.
+
+원문 주장/정정: D-045의 네 오진을 철회한다. 이미 있는 cycle_started.redo를 상태 계산과 완료 fold가 같은 축으로 읽게 하고 state는 실행 단위, attempts·실패 학습은 누적으로 남긴다. 자율과 사람 루프는 발급자만 다르며 circuit open 후보를 건너뛰되 수를 표시해야 한다. Airflow/Kubernetes 등은 원문 비교 자료로만 보존한다. attempts 소비, 후보별 circuit 축, failure ledger/ratchet/staleness 수명, compaction의 pipeline_started 유실, derive_cycle 재장전 및 표면의 질문 차이는 원문 잔여다.
+
+정적 연결: derive_stage_states:103–129에 redo→PENDING/last_verdict=None, attempts 보존이 있고 fold도 redo를 소거한다. tick의 읽은 재시도 분기는 attempts를 직접 안 읽지만 last_status는 과거 stage_finished 전부를 별도 주사하므로 redo만으로 이전 ERROR halt가 풀린다는 보장은 없다. cycle_cmd는 circuit 검사 전에 plan/finished를 append한다. driver _try_arm은 성공 뒤 _reopen_for_new_candidate를 부르며, 이 함수는 전 stage DONE일 때만 전체 REDO 계획을 합성한다. 새 candidate라는 설명과 달리 함수 자체에서 후보 과거 판정의 신원을 비교하지는 않는다.
+
+정적 테스트 독해: test_arm_reopens_cycle_contract 전문을 읽었다. 격리 파일 fixture의 전체 DONE→PENDING/attempts 보존/계획 존재, 진행 중 무변경, 호출 문자열/순서, 실패 incident 기록 및 monkeypatch canary를 검증하도록 작성됐다. 그러나 실제 테스트는 실행하지 않았다. 주석은 already_armed를 “판정 받은 적”으로 바꾸는 수리를 되돌렸다고 인정하며 다른 스폰 실패로 후보가 소진되는 잔여를 남긴다. 문자열 caller 단언은 실제 전체 스케줄링 성공 증거가 아니다.
+
+교훈/Zeus: PG의 candidate/run/cycle/attempt·멱등키·승인·재개방을 원자적으로 정의하고 건너뛴 후보와 지연/소진 이유를 노출한다. circuit.gate가 받은 원장과 state_dir meta의 범위가 같은지도 검증한다. compaction·전체 실패 라우터·status/health/projection·후보별 냉각·실제 실행은 미완료다. 뒤 코드의 일부 수정이 이 원문의 모든 잔여를 닫는다고 말하지 않는다.
+
+## D-5b
+
+원문 주장: 메인→팀장→팀원 계층 위임과 MECE 분해를 채택하되 RLM의 초장문 context 처리와 problem 분해를 구별한다. 작은 고정 depth cap 초과는 FAIL, 팀장은 계획만 만들고 메인이 대행 dispatch하는 단일 스포너를 둔다. 신뢰·provenance와 팀원 재판정을 유지하고 싼 티어 위임은 비용 후보로 제안한다. 방향 확정 및 후속 EX 안건 삽입 계획이지 실행 성공 보고가 아니다.
+
+정적 연결: decomposition 전문은 주어진 shard 집합의 배타/전사·사유·wave scope를 검사하고 dispatch_order 목록을 만든다. 이 함수가 실제 agent를 스폰하거나 플랫폼 depth를 집행하지는 않는다. collect는 dispatch와 harvest를 구별하지만 run/attempt 구분 없이 shard 이름을 사용한다. agent_depth 훅·메인 실제 spawn·모델 경제성/성능 검증은 이번 추적에 없다.
+
+교훈/Zeus: 감독은 역할 책임이고 구현자는 현재 사용자 계약대로 주 Codex다. bounded 팀 작업과 추적 가능한 인계를 도입하되 원본의 플랫폼 제약·depth 예시 3·저가 tier를 현재 자격이나 규칙으로 상속하지 않는다.

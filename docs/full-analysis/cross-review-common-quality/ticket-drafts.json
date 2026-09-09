@@ -1,0 +1,61 @@
+[
+  {
+    "topic": "FA-011",
+    "title": "[FA-011] 스킬 품질 게이트의 미검사 PASS와 템플릿 계약 불일치",
+    "problem": "고정 Baldrix 원문의 템플릿에 있는 quality_axes_enforced 인라인 주석을 그대로 복사하면 opt-in이 false가 되고 실제 검사 CLI가 inspected=0 PASS를 출력했다. 리스트 정규화와 누락 절 판정도 문서와 다르다. 원본 단위 테스트 9개는 통과하지만 이 반례를 막지 않는다. 재현은 Linux 격리 입력 fixture이며 현재 pinned 코퍼스의 실제 운영 누락 수나 사용자 인수를 입증한 결과는 아니다.",
+    "impact": "자가개선 후보와 새 스킬을 검사하지 않고 검증 완료로 취급하면 누락·오류가 Zeus에 유입될 수 있다. 형태 검사만으로 출처의 정확성이나 실제 기능 품질을 승인할 수 없다.",
+    "scope": [
+      "새 trevi00/zeus 저장소의 품질 결과 계약에 검사 범위·개수·skip/not_run/fail/pass·코드/입력/정책 해시를 결속한다.",
+      "템플릿·스키마·파서·검사기·결과 소비자를 함께 추적하고 no-target/잘못된 flag/list/절 누락을 검증한다.",
+      "원본 Claude 하네스와 다른 컴퓨터가 사용하는 codex-harness는 변경하지 않는다. 전체 분석 뒤 주 Codex가 구현한다."
+    ],
+    "acceptance_criteria": [
+      "미검사를 PASS로 승격하는 경로가 없고 정상·누락·오류 결과가 실제 소비자까지 보존된다.",
+      "배포되는 템플릿을 그대로 소비했을 때 검사 의도와 일치함을 실제 producer→validator→reader 경로에서 확인한다.",
+      "원문 반례와 철회된 CRLF 주장을 구분하고 Windows/Linux/WSL 결과를 각 실행 영수증으로 검증한다.",
+      "독립 코드 검토와 실제 모델/인수 검증이 없는 결과를 배포 승인으로 사용하지 않는다."
+    ],
+    "verification": [
+      "원본 9개 테스트 PASS와 별도 copied_inline_flag/yaml_lists/newline_boundary 관측을 함께 대조한다.",
+      "Claude 초기→Codex 반례→Claude 토론→root resolution의 정정 이력을 확인한다. 이는 소스 공동 검토이며 이 티켓 버전의 구현 승인으로 전사하지 않는다."
+    ],
+    "rollback": "새 게이트를 자동 활성화하지 않는다. 승인된 구현 이후 문제가 생기면 기존 검증된 release 경로로 복원하고 실패·미검사 증거와 티켓 이력은 보존한다.",
+    "evidence_paths": [
+      "docs/full-analysis/cross-review-common-quality/resolution.md",
+      "docs/full-analysis/cross-review-common-quality/reviewer-observations.stdout.txt",
+      "docs/full-analysis/cross-review-common-quality/reviewer-observations.receipt.json",
+      "docs/full-analysis/cross-review-common-quality/claude-discussion.md"
+    ]
+  },
+  {
+    "topic": "FA-012",
+    "title": "[FA-012] 스킬 평가 지표와 실제 후보 선택·본문 주입의 불일치",
+    "problem": "고정 Baldrix 평가기의 precision은 특이도이며 양성은 match AND winner, 음성은 match로 서로 다른 결정을 측정한다. 실제 CLI 입력에서 음성0건 PASS, 자격 미달 경쟁자가 정상 target을 탈락시키는 FAIL_RECALL, 동점 target 승리를 관측했다. 실제 hook은 다른 후보·경로 신호·stack·pipeline boost·본문 예산을 쓰므로 이 평가기 PASS를 모델 입력 도달 또는 행동 품질로 볼 수 없다.",
+    "impact": "잘못된 평가에 맞춰 프롬프트를 튜닝하거나 Astra→Sol→Terra 자격을 점수만으로 이전하면 실제 동작 보존을 입증하지 못한다. 임계1.0의 지표 이름 오류 하나가 모든 기존 PASS를 뒤집는다는 주장은 하지 않는다.",
+    "scope": [
+      "새 Zeus에서 원시 매칭·후보 순위·본문 도달·실제 행동의 측정 대상을 명시한다.",
+      "시나리오 입력 스키마와 중복/상충 라벨/분모를 검증하고 실제 사용한 후보·환경·설정·최종 입력을 버전/해시로 연결한다.",
+      "실제 router와 같은 경로에서 평가하고 모델 자격 이전을 독립 검토 및 동일 행동·회귀 증거로 결속한다.",
+      "원본 소스와 기존 codex-harness는 수정하지 않으며 전체 분석 뒤 주 Codex가 구현한다."
+    ],
+    "acceptance_criteria": [
+      "지표마다 같은 판정 규칙의 분모/혼동행렬을 사용하고 입력 부족·잘못된 데이터는 합격으로 취급하지 않는다.",
+      "무자격 후보·동점·같은 stem·경로/파일 내용·stack·pipeline·본문 예산 사례가 실제 router 소비 결과와 대조된다.",
+      "동일 검증 조건에서 Astra 결과를 Sol, 검증된 Sol 결과를 Terra에 이전하는 절차와 퇴행 시 자격 회수 증거가 있다.",
+      "사람 핵심 시나리오와 실제 인수는 별도 검토하며 축약 점수·mock 결과·과거 PASS로 대신하지 않는다."
+    ],
+    "verification": [
+      "upstream-trigger 6개 원본 테스트와 별도 empty_negative/ineligible_rival/tie/specificity_not_precision 입력 관측을 대조한다.",
+      "숫자 반례는 일부러 상충 라벨을 넣은 입력이므로 모집단 성능 추정치로 인용하지 않는다.",
+      "Windows/Linux/WSL 실행 및 실제 agent 입력·행동 증거는 구현 후 별도로 확보한다."
+    ],
+    "rollback": "새 평가나 하향 모델 자격을 자동 적용하지 않는다. 적용 후 회귀 시 이전 검증된 라우팅/모델 자격으로 되돌리고 후보·평가·폐기 이력을 유지한다.",
+    "evidence_paths": [
+      "docs/full-analysis/cross-review-common-quality/resolution.md",
+      "docs/full-analysis/cross-review-common-quality/codex-initial.md",
+      "docs/full-analysis/cross-review-common-quality/claude-discussion.md",
+      "docs/full-analysis/cross-review-common-quality/upstream-trigger.receipt.json",
+      "docs/full-analysis/cross-review-common-quality/reviewer-observations.stdout.txt"
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/cli/skill_trigger_eval.py",
+    "pinned_sha256": "ce41ecf20d84e558ec44fa282a976fc5f9ba49fa4160f4703a1a56445a3eae19",
+    "git_blob": "4dbdc05008c98a9325e5647a4d3e3bd36fecac3f",
+    "bytes": 9101,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "CLI/discovery/scorer/verdict full trace. Specificity labeled precision; incompatible positive/negative decision rules, empty-negative PASS, ineligible candidate winner and target-first tie observed through actual CLI.",
+    "review_ref": "docs/full-analysis/cross-review-common-quality/resolution.md",
+    "disposition": "body_reviewed_call_test_trace_pending"
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/validators/skill_quality_axes.py",
+    "pinned_sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+    "git_blob": "945ff93cf6d0942a8413ac430b0f8bbcc2ebf166",
+    "bytes": 8848,
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "note": "Full index/enforcement/check/main trace. Inline flag skips all checks; bare missing sections report G4, not G1/G5/G7. Stdout failure contract needs consumer trace. Original nine cases executed.",
+    "review_ref": "docs/full-analysis/cross-review-common-quality/resolution.md",
+    "disposition": "body_reviewed_call_test_trace_pending"
+  }
+]

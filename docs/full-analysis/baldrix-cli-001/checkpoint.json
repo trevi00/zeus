@@ -1,0 +1,26 @@
+{
+  "source": "baldrix",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "partition": "baldrix:scripts/cli:001",
+  "scope_sha256": "2a29705700a79874aedb8fb16c98ee7ceb0fc21b8f19858a68735ccf0b11850c",
+  "denominator": 23,
+  "source_bytes": 199004,
+  "semantically_reviewed": 23,
+  "unreviewed": 0,
+  "body_coverage_complete": true,
+  "partition_complete": false,
+  "adoption_ready": false,
+  "all_manifest_hashes_match": true,
+  "upstream_execution_processes": 3,
+  "upstream_assertions_passed": 34,
+  "supporting_full_reads": 11,
+  "tests_not_run": "All other tests; effective caller/config and transitive dependencies incomplete",
+  "workspace": "C:\\Users\\rudtn\\zeus",
+  "review_ref": "docs/full-analysis/baldrix-cli-001/review.md",
+  "files_ref": "docs/full-analysis/baldrix-cli-001/files.json",
+  "execution_refs": [
+    "docs/full-analysis/baldrix-cli-001/test_action_evolver_selfcheck.py.receipt.json",
+    "docs/full-analysis/baldrix-cli-001/test_agents_capability.py.receipt.json",
+    "docs/full-analysis/baldrix-cli-001/test_agents_normalize.py.receipt.json"
+  ]
+}

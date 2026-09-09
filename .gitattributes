@@ -6,3 +6,6 @@ docs/local-adoption/** -text
 docs/sdd/** -text
 docs/zeus/** -text
 docs/tickets/** -text
+# Captured process streams retain trailing blank lines as part of their hashes.
+docs/zeus/wsl-validation/*.stdout -whitespace
+docs/zeus/wsl-validation/*.stderr -whitespace

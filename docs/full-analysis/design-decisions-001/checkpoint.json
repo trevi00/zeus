@@ -1,0 +1,9 @@
+{
+  "partition": "harness-design:design/decisions:001",
+  "previously_reviewed_elsewhere": 3,
+  "new_bodies_reviewed": 29,
+  "all_hashes_match": true,
+  "tests_executed": 0,
+  "partition_complete": false,
+  "whole_analysis_complete": false
+}

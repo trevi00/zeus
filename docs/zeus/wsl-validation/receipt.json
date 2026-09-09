@@ -1,0 +1,472 @@
+{
+  "revision": "4cb7d02df13d7621d47f0324ae121649982db7b2",
+  "root": "/tmp/zeus-wsl-46nigh1h",
+  "runner_pid": 423,
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/tmp/zeus-wsl-46nigh1h/home",
+    "TMPDIR": "/tmp/zeus-wsl-46nigh1h/tmp",
+    "LANG": "C.UTF-8",
+    "PYTHONIOENCODING": "utf-8",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "core.hooksPath",
+    "GIT_CONFIG_VALUE_0": "/dev/null",
+    "UV_CACHE_DIR": "/tmp/zeus-wsl-46nigh1h/cache",
+    "UV_PROJECT_ENVIRONMENT": "/tmp/zeus-wsl-46nigh1h/project-venv",
+    "UV_PYTHON": "/usr/bin/python3",
+    "UV_PYTHON_DOWNLOADS": "never"
+  },
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python": "3.14.4",
+  "stages": [
+    {
+      "name": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-local",
+        "/mnt/c/Users/rudtn/zeus",
+        "/tmp/zeus-wsl-oi748ewj/repo"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj",
+      "start": "2026-09-09T04:30:22.531220+00:00",
+      "pid": 416,
+      "exit_code": 0,
+      "end": "2026-09-09T04:30:24.869507+00:00",
+      "stdout": {
+        "path": "clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "clone.stderr",
+        "sha256": "f223dee23c49ab52c1380c5f3543400f16609302bbdecfad1f62988974d70074",
+        "bytes": 46
+      }
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "4cb7d02df13d7621d47f0324ae121649982db7b2"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj/repo",
+      "start": "2026-09-09T04:30:24.879466+00:00",
+      "pid": 441,
+      "exit_code": 0,
+      "end": "2026-09-09T04:30:24.913650+00:00",
+      "stdout": {
+        "path": "checkout.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "checkout.stderr",
+        "sha256": "271bee16acb07370f9c38ac782e5aa6c729cc9505f2f94245334fac868923e80",
+        "bytes": 92
+      }
+    },
+    {
+      "name": "history",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "--is-shallow-repository",
+        "09c1d58^{commit}"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj/repo",
+      "start": "2026-09-09T04:30:24.923704+00:00",
+      "pid": 442,
+      "exit_code": 0,
+      "end": "2026-09-09T04:30:24.929239+00:00",
+      "stdout": {
+        "path": "history.stdout",
+        "sha256": "93fed889508c923acd4e9b0883026b6256143150b05ce182dce30cfaf1978a8b",
+        "bytes": 88
+      },
+      "stderr": {
+        "path": "history.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "bootstrap",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "venv",
+        "/tmp/zeus-wsl-oi748ewj/bootstrap"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj",
+      "start": "2026-09-09T04:30:24.939288+00:00",
+      "pid": 443,
+      "exit_code": 1,
+      "end": "2026-09-09T04:30:24.993633+00:00",
+      "stdout": {
+        "path": "bootstrap.stdout",
+        "sha256": "6fd87f3e79cc13ab3ef74b6b20d3983d2cc62793a524a26f74dfae6fbe7d3843",
+        "bytes": 411
+      },
+      "stderr": {
+        "path": "bootstrap.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "retry-clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-local",
+        "/mnt/c/Users/rudtn/zeus",
+        "/tmp/zeus-wsl-46nigh1h/repo"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h",
+      "start": "2026-09-09T04:31:41.796749+00:00",
+      "pid": 431,
+      "exit_code": 0,
+      "end": "2026-09-09T04:31:44.018950+00:00",
+      "stdout": {
+        "path": "retry-clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "retry-clone.stderr",
+        "sha256": "d48372e2286fdd2d960080b684dfa93f153efa812e015b74886fb2e275dcbf42",
+        "bytes": 46
+      }
+    },
+    {
+      "name": "retry-checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "4cb7d02df13d7621d47f0324ae121649982db7b2"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:31:44.029312+00:00",
+      "pid": 456,
+      "exit_code": 0,
+      "end": "2026-09-09T04:31:44.053530+00:00",
+      "stdout": {
+        "path": "retry-checkout.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "retry-checkout.stderr",
+        "sha256": "271bee16acb07370f9c38ac782e5aa6c729cc9505f2f94245334fac868923e80",
+        "bytes": 92
+      }
+    },
+    {
+      "name": "retry-history",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "--is-shallow-repository",
+        "09c1d58^{commit}"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:31:44.063473+00:00",
+      "pid": 457,
+      "exit_code": 0,
+      "end": "2026-09-09T04:31:44.069630+00:00",
+      "stdout": {
+        "path": "retry-history.stdout",
+        "sha256": "93fed889508c923acd4e9b0883026b6256143150b05ce182dce30cfaf1978a8b",
+        "bytes": 88
+      },
+      "stderr": {
+        "path": "retry-history.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "install-uv-wheel",
+      "argv": [
+        "/usr/bin/python3",
+        "/mnt/c/Users/rudtn/zeus/docs/zeus/wsl-validation/install_uv.py",
+        "/tmp/zeus-wsl-46nigh1h"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h",
+      "start": "2026-09-09T04:31:44.079332+00:00",
+      "pid": 458,
+      "exit_code": 0,
+      "end": "2026-09-09T04:31:47.032054+00:00",
+      "stdout": {
+        "path": "install-uv-wheel.stdout",
+        "sha256": "448a08be4819253639a50f7b94ddb72edd865b12f4c1434a21d8b1b16eb04dd7",
+        "bytes": 548
+      },
+      "stderr": {
+        "path": "install-uv-wheel.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "uv-version",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "--version"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:31:47.042294+00:00",
+      "pid": 459,
+      "exit_code": 0,
+      "end": "2026-09-09T04:31:47.051993+00:00",
+      "stdout": {
+        "path": "uv-version.stdout",
+        "sha256": "6a44d4c958923e8814b792113aa09af992fdbf283c562ee99ce52efb1ac874e2",
+        "bytes": 37
+      },
+      "stderr": {
+        "path": "uv-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "sync",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "sync",
+        "--frozen"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:31:47.062738+00:00",
+      "pid": 460,
+      "exit_code": 0,
+      "end": "2026-09-09T04:31:55.768090+00:00",
+      "stdout": {
+        "path": "sync.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "sync.stderr",
+        "sha256": "c63d1820a5a0a04aaadf3f384af83cea2ccc95eaadde92a48dc7a9cd53072e43",
+        "bytes": 1894
+      }
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:31:55.778217+00:00",
+      "pid": 536,
+      "exit_code": 0,
+      "end": "2026-09-09T04:31:55.874995+00:00",
+      "stdout": {
+        "path": "ruff.stdout",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "bytes": 19
+      },
+      "stderr": {
+        "path": "ruff.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "pytest",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-q",
+        "-ra"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:31:55.885002+00:00",
+      "pid": 568,
+      "exit_code": 0,
+      "end": "2026-09-09T04:32:16.182601+00:00",
+      "stdout": {
+        "path": "pytest.stdout",
+        "sha256": "35511b7a8e6731a683086d574ccec38e560feeee1d44737adb1e7aa7add19c43",
+        "bytes": 3736
+      },
+      "stderr": {
+        "path": "pytest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "build",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "build"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:32:16.192661+00:00",
+      "pid": 6339,
+      "exit_code": 0,
+      "end": "2026-09-09T04:32:16.946883+00:00",
+      "stdout": {
+        "path": "build.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "build.stderr",
+        "sha256": "1de0d6e1d0f3c2eb6754831f8aa82ef4abf4c948d54c51194f21c3b12f8ccc95",
+        "bytes": 185
+      }
+    },
+    {
+      "name": "version",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "run",
+        "--frozen",
+        "zeus",
+        "--version"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:32:16.956503+00:00",
+      "pid": 6365,
+      "exit_code": 0,
+      "end": "2026-09-09T04:32:17.218822+00:00",
+      "stdout": {
+        "path": "version.stdout",
+        "sha256": "4bf09004182b61bda64f8b9a9cc4256da804a0511bdbb153f0c65bcb54e5c2fb",
+        "bytes": 11
+      },
+      "stderr": {
+        "path": "version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "ticket-help",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "run",
+        "--frozen",
+        "python",
+        "-m",
+        "zeus",
+        "ticket",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:32:17.229004+00:00",
+      "pid": 6369,
+      "exit_code": 0,
+      "end": "2026-09-09T04:32:17.464533+00:00",
+      "stdout": {
+        "path": "ticket-help.stdout",
+        "sha256": "f9c0cf978d91b83e6d1c63a7851683c1f3227b9713789bfae1f504dffcced806",
+        "bytes": 256
+      },
+      "stderr": {
+        "path": "ticket-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "supervisor-help",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "run",
+        "--frozen",
+        "harness-supervisor",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:32:17.474561+00:00",
+      "pid": 6373,
+      "exit_code": 0,
+      "end": "2026-09-09T04:32:17.721398+00:00",
+      "stdout": {
+        "path": "supervisor-help.stdout",
+        "sha256": "2e5e4be1a5bfc5dcaf86365aadc8587a38b5e0f65ccc05a5cf77db2cec721dc6",
+        "bytes": 245
+      },
+      "stderr": {
+        "path": "supervisor-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "monitor-help",
+      "argv": [
+        "/tmp/zeus-wsl-46nigh1h/uv-bin/uv",
+        "run",
+        "--frozen",
+        "zeus-monitor",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:32:17.731636+00:00",
+      "pid": 6377,
+      "exit_code": 0,
+      "end": "2026-09-09T04:32:17.842582+00:00",
+      "stdout": {
+        "path": "monitor-help.stdout",
+        "sha256": "1c28136a2cdff2e439cc8fa57676420b3dc4be7e9f070014e9bb6b291702f483",
+        "bytes": 262
+      },
+      "stderr": {
+        "path": "monitor-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "final-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/tmp/zeus-wsl-46nigh1h/repo",
+      "start": "2026-09-09T04:32:17.853737+00:00",
+      "pid": 6381,
+      "exit_code": 0,
+      "end": "2026-09-09T04:32:17.877871+00:00",
+      "stdout": {
+        "path": "final-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "final-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "scope": "Native Ubuntu WSL2 ordinary suite; no integration services",
+  "start": "2026-09-09T04:30:22.527365+00:00",
+  "resume_start": "2026-09-09T04:31:41.793738+00:00",
+  "lock_before": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "lock_after": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "end": "2026-09-09T04:32:17.887878+00:00",
+  "runner_sha256": "33f7995f6056b9d8fca68b1309a8c6bc6e4a02429fc303ca1b4cae4384a50974"
+}

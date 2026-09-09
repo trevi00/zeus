@@ -1,0 +1,117 @@
+{
+  "__init__.py": [
+    "CLI 패키지 설명용 docstring.",
+    "실행 부작용·함수 없음. cli 하위 모듈 import의 패키지 진입점. 생성물/복제 아님.",
+    "제외: Zeus 자체 패키지 구조 유지."
+  ],
+  "action_evolver.py": [
+    "시간창 안 debate action event의 bigram·분포 편향·미사용 신호를 advisory로 출력.",
+    "analyze→_load_action_sequences→paths.state_dir/timefmt.iso_to_epoch. 문서의 5 actions와 달리 실제 6 event type이고 ralph/AC는 집계하지 않는다. type/event_type만 읽어 다른 집계기의 event 키와 다르다. timestamp 미파싱은 0으로 정렬하되 창에서 제외하지 않고 미래 시각도 포함한다. 숫자 milliseconds/boolean 처리와 JSON scalar .get 오류, 범위 무검증 threshold가 남는다. action 사이 다른 이벤트를 필터링하므로 bigram은 실제 인접 전체 event가 아니다. 경보는 원인 증명 아님; 최소 5 events에서 cap_exhausted 부재도 silent로 잡는 정책은 정상 운영을 경보화할 수 있다. _self_check는 clock 복원에 finally가 없고 CLAUDE_HOME을 복원하지 않는다. 독립 프로세스 격리에서 wrapper 실제 실행 14 assertions PASS. tests는 정상 fixture/threshold 중심으로 malformed/future/races 미검증.",
+    "변형: PostgreSQL event schema/time window에 맞춘 관찰 제안만, 빈 데이터 OK를 건전성 승인으로 사용 금지."
+  ],
+  "advisory_ack.py": [
+    "두 인자를 per-advisory CLI argv로 바꾸는 별칭.",
+    "len==2 확인 후 debate_doubts→--acknowledge, strict_design→engine.trigger_summary --ack-ts; unknown exit2. shell subprocess가 아니라 직접 main 호출/반환 전달. 권한 검증은 wrapper에 없고 ack 저장 구현에 위임한다. debate_doubts 전체 namespace 재export와 연결됨; trigger_summary/ack backend 전문 미완료. key는 그대로 전달된다.",
+    "변형: application ack use case의 별칭만; 임의 확인 처리와 승인 구분."
+  ],
+  "agents.py": [
+    "resident 실행 marker·원장·dispatch 이력에서 진행/종료 성공/계약 파싱 성공을 구분.",
+    "read_inflight는 1.2×timeout 나이를 멈춤 의심으로 표시하며 PID/lease 생존 확인 아님. unreadable marker는 표시하지만 stat race/JSON scalar/float malformed 예외에 failclosed4 매핑 없음. read_ledger OSError→빈 목록은 없음과 읽기 실패를 혼동. contract_ok는 cli.trending.parse_result에 의존하며 artifact 우선의 truthy 선택/원장 compaction 해소는 이 reader에 없다. health는 missing seconds를0으로 포함, ok truthiness 판정, corrupt행 제외로 분모 축소. dispatch 결과가 없는 저장소를 성공률에서 제외하는 구분은 유용. resident/trending 전문 미완료.",
+    "변형: Zeus monitoring와 worker lease 및 immutable execution receipt의 projection. 파싱 성공은 승인 아님."
+  ],
+  "agents_capability.py": [
+    "kha agent body의 두 경로 관례를 expects_paths frontmatter로 선언.",
+    "--check 우선, 기본 dry-run, --apply 직접 write_text. .planning/ 및 HOME/tilde GSD substring만 탐지; 부정문/예제도 요구로 분류하고 Windows 역슬래시/임의 경로 누락. missing frontmatter는 unchanged라 check PASS 가능, glob0도 PASS. YAML regex는 inline/block 일부만 처리하며 BOM/CRLF 직접입력·중복 key·block 끝 newline 구문 미검증. 기존 선언을 두 패턴만으로 제거하는 것은 수동 계약 소실 위험. 실제 11 pure tests PASS, multiline YAML/CLI filesystem/no-frontmatter check gap.",
+    "변형: 선언은 Git schema와 사람이 검토한 권한 요구로; substring 탐지는 후보만."
+  ],
+  "agents_normalize.py": [
+    "24개 고정 kha 역할의 model 필드를 opus/sonnet/haiku로 정규화.",
+    "체크는 존재뿐 아니라 정확한 desired 값 비교. normalize는 알려지지 않은 역할/없는 frontmatter unchanged. missing file issue는 check에서만 보고되어 apply/dryrun은 성공 종료할 수 있다. quoted model, duplicate key, BOM/복잡 YAML 지원 없음; write_text 원자/백업 없음. role별 모델명은 Claude 전용 정책이지 현재 Codex 모델 추천 아님. 9 pure tests PASS; 대부분 매핑 수/분포 및 간단한 문자열 변환, runtime role model 선택 미검증.",
+    "제외/변형: 고정 Claude 모델맵 제외; Zeus versioned role definitions의 명시적 검증 패턴만."
+  ],
+  "alerts.py": [
+    "alert backend의 미확인/전체 알림 표시와 일괄 ack.",
+    "--ack가 --all/--tail보다 우선하며 backend ack_all 결과0이면 exit3. 표시 tail을 max1로 보정, detail3줄110자 제한. _ago는 wall clock 미래/이상 timestamp에 음수 출력 가능. 일부만 표시 후 ack 전부 처리되어 표시 범위와 mutation 범위 다르다. lib.alert 전문/동시 추가·ack 경합 검증 미완료.",
+    "변형: Zeus 관찰/incident use case에 ack actor·범위·generation·증거 바인딩 필요."
+  ],
+  "apply_kha_fills.py": [
+    "특정 과거 OMC 팀 worker 출력에서 kha SKILL TODO 계약 본문을 채우는 일회성 도구.",
+    "TEAM_DIR는 Path.home/.omc/team/team-1777510773 고정. heading/inline/bare label 세 형식을 파싱하며 중복 skill/section은 뒤 입력이 덮는다. regex는 fenced 예시 문맥을 구분하지 않고 <!-- TODO substring이면 섹션 전체를 교체한다. 새 본문의 의미/출처/placeholder 검사 없음. 없는 SKILL 또는 없는 section도 already filled skipped로 분류하며 missing worker 외 실패는 exit0 가능. --apply는 SKILLS_DIR 자산에 직접 write_text; paths 문서의 자산 writer는 promote 하나뿐이라는 주장과 상충한다. 생성된 body의 외부 worker 원본 미확인으로 동등성 주장 불가.",
+    "제외: 과거 상태 한정 마이그레이션. 계약 채우기는 Zeus SDD 제안/검증을 거쳐야 함."
+  ],
+  "atlas_index.py": [
+    "Atlas 목록·표·링크·그래프·검색·이력·활용·승격 후보 집계.",
+    "read-only 문서와 달리 search는 build_index/invalidate 및 기본 query 로그 append를 수행한다. frontmatter list는 쉼표/대괄호만 파싱해 quotes를 제거하지 않는다. orphans는 MOC body의 stem/id substring만으로 참조 인정하므로 거짓 연결 가능; self-link도 참조로 인정. duplicate/빈 id 검사 부재, Mermaid safe id의 Unicode 소실·충돌, dot/domain/label escaping 불완전. promotion 후보는 설명의 stem/type가 아닌 동일 note_id로 묶고 project basename을 고유성으로 사용한다. body_hash 계산 후 비교하지 않으며 B축은 debate_sid 존재만 본다. C축은 git log가 아닌 첫 root.parent에서 재구성한 경로의 oldest mtime, 여러 parent/동명 project에서 틀린 경로를 볼 수 있다. history는 절대/../경로를 ATLAS_DIR 밖으로 허용, git timeout 없음; JSON 모드는 limit 미적용. utilization은 hit 없는 query가 기록되지 않아 total_queries가 전체 검색 분모가 아니다. sklearn/atlas_embeddings 전문 미완료; 라이선스와 실제 vault 미확인.",
+    "변형: Git tracked immutable evidence graph 조회로 제한; 후보 횟수·나이·sid는 승인 근거 아님."
+  ],
+  "brain_snapshot.py": [
+    "brain_store save/restore/status의 얇은 수동 CLI.",
+    "save는 snapshot 쓰기, restore는 runtime 재수화/--merge, status 읽기. brain_schema_error만 exit1로 변환하고 OSError 등 전파; positional 첫 값 외 extra flags를 무시하여 save --merge 등도 허용. _emit는 binary UTF-8로 cp949 출력 문제를 회피하되 consuming terminal codec과 일치 검증 필요. brain_store 전문 미완료로 seed-on-absent/union/재traction/atomicity를 주장으로만 유지.",
+    "변형: Git definition과 PostgreSQL runtime 분리 유지; live learned state를 Git SSOT로 승격하는 원본 방식은 제외."
+  ],
+  "breaker_override.py": [
+    "breaker 6개 threshold의 runtime YAML override wrapper.",
+    "argparse choices/int/token→apply_override→resolve_thresholds current 출력; PermissionError3 ValueError2, I/O 예외 미처리. apply와 resolve 사이 다른 쓰기가 있으면 본인 commit 값과 출력 불일치 가능. 정적 token string은 operator 신원/독립 승인 증거가 아니다. lib.breakers.config 전문 미완료; window/any와 backoff 방향 정책의 설명을 실행 의미로 인증하지 않음.",
+    "변형: 정책 변경 use case·revision compare-and-swap·actor authorization·audit receipt 필요."
+  ],
+  "calibration_review.py": [
+    "critic/breaker/threshold telemetry에서 제안과 복사 가능한 적용 명령을 출력.",
+    "적용 호출 자체는 없으나 여러 backend가 live state를 읽음. threshold proposer 예외만 catch-all→[]하여 평가 실패와 제안 없음 혼동; project-root는 critic/breaker에만 전달, threshold는 전역. min-sample 범위 미검증. _threshold_apply_command는 docstring의 gate.accept 조건을 직접 검사하지 않고 suggested!=None만 검사하므로 backend invariant에 의존. 명령 문자열에 agent/name quoting 없음. 마지막 future_apply CLI 안내는 실제 critic_policy_override와 stale. 문서 argparse exit1과 실제2 불일치. proposer/policy/registry 전문 미완료.",
+    "변형: 제안 자료와 인수 검증 분리; policy string token과 통계 빈 결과로 실행 승인 금지."
+  ],
+  "canary_apply.py": [
+    "등록된 pending Change를 before 실패→apply→after 성공→regression 순으로 적용.",
+    "lib.canary 전문 대조. --no-regression은 '진단용 적용하지 마라' 도움말과 달리 regression=None으로 실제 apply 허용. --dry-run도 canary()를 실행하므로 순수 읽기 보장 아님. regression subprocess timeout/기타 예외는 CN.run에서 catch하지 않아 rollback 없이 탈출할 수 있다. revert 반환값을 무시해 복원 실패에도 '되돌렸다' 출력; rmtree ignore_errors도 성공처럼 보일 수 있다. repo_dirty는 git 실패를 빈 set으로 만들고 after-before 경로 집합만 비교하므로 이미 dirty였던 외부 경로 수정·ignored 파일·before/after canary 부작용을 놓친다. 선언 경로 resolve confinement 없음. pending_changes callbacks와 run_all/run_units 전체 의존 전문 미완료이며 실행 금지로 유지. read-only source mount에서 이 mutation CLI를 직접 실행하지 않았다.",
+    "제외/변형: 이 적용기는 채택 차단. Zeus fenced runner·배포 revision·검증된 rollback 및 실패 상태 보존을 사용."
+  ],
+  "critic_policy_override.py": [
+    "agent의 invoke/skip runtime YAML override wrapper.",
+    "breaker wrapper와 구조 패턴은 유사하지만 bytes 동일 복제는 아니다: agent string 자유입력, decision choices, resolver 차이. apply_override 권한/정규화/동시성 backend 미확인; only PermissionError/ValueError 매핑. 테스트 전문은5개 읽었지만 CP dependency 미완료라 not-run. invalid decision test는 SystemExit 발생 자체를 assert하지 않아 return으로 바뀌면 검사가 통과할 구멍. CP.POLICY_PATH monkeypatch를 복원하지 않아 in-process pollution 가능.",
+    "변형: 독립 승인·actor·source/current policy revision 필요; literal token authority 제외."
+  ],
+  "cucumber_scaffold.py": [
+    "기존 project root에 cucumber-jvm build/runner/package skeleton 생성.",
+    "standalone --package를 testgen Steps package와 같게 전달하라는 문서일 뿐 CLI가 비교하지 않는다. domains trim/filter만 하며 out resolve/confinement/존재/overwrite 정책은 lib.write_scaffold에 전부 의존. dryrun/force 없음, args.name falsey이면 out.name. Java Gradle/library/template 전문과 dependency license 미완료. spec bundle의 TODO/빈 bundle 성공 문제와 연계해 runnable scaffold 생성≠인수 테스트 성립으로 구분.",
+    "변형: Zeus SDD 준비 단계의 출력 제안과 no-overwrite 검증, 실제 build receipt 후 평가."
+  ],
+  "dashboard.py": [
+    "dashboard_model 결과를 외부 자산 없는 정적 HTML로 출력/파일 저장/브라우저 열기.",
+    "_e로 대부분 text escape하지만 raw numeric 기대 필드 seconds/cadence/hours_since 등을 직접 삽입해 malformed string ledger일 때 HTML 주입 가능. 모델 schema 미검증. render 섹션별 예외를 error card로 바꾸지만 main failed 목록은 collect.ok만 보므로 render failure는 success exit0. json도 부분/all failed면 exit0. write_text는 atomic replace가 아니라 실패 시 이전 HTML 보존 약속 불충분. 좁은 화면 minmax320+padding overflow 가능; 접근성 렌더 미실행. nested f-string 문법은 Python3.12+ 요구 가능, 버전 지원표 확인 필요. webbrowser --open 실제 실행 없음.",
+    "변형: Zeus monitoring projection·staleness/partial completeness 표시. static HTML은 runtime SSOT 아님."
+  ],
+  "dashboard_model.py": [
+    "기존 producer를 9개 section으로 집계하고 섹션 실패를 격리.",
+    "golden_signals latency는 probe=False지만 나머지 backend 전체의 순수 읽기 보장은 미확인. decisions→roles.survey는 canary/subprocess를 실행할 수 있음(decisions 문서에서24개 실적 설명). surgery corrupt행 silent skip, not ok 모두 reverted로 계수해 실제 rollback 증명과 혼동. registry _matchable은 앞서 읽은 실제 matcher와 직접 같다고 인증 불가. import graph heuristic test-only는 실제 호출 불가 증명 아님. collect serial/time.localtime, timezone/timeout/source revision/atomic snapshot 부재. _safe 오류 200자 노출은 partial data임을 드러내나 secret redaction 없음.",
+    "변형: application monitoring projection; 각 producer의 권한/비용/정확성·현재 revision 연결 검증 필요."
+  ],
+  "debate_aggregate.py": [
+    "session event를 요약하고 과거 결정/반복 blocker/심각도/인용 지표를 advisory로 출력.",
+    "_summarize_session은 type/event 지원하지만 EventStore/다른 CLI와 schema 차이. last verdict의 missing accepted/hash는 이전 값 유지해 여러 generation 내용이 섞일 수 있다. early cap은 한번 true면 후속 approved에도 유지. first parseable ts를 첫시각으로 쓰고 문자열 timezone 정규화 없이 since lexicographic 비교, gen bool도 int로 인정. malformed JSON/OSError는 조용히 제외(문서 stderr 주장과 불일치). distribution (none) 표시는 실제 None 비교가 아니라 '(none)' 비교로0 집계. planner max8이어도 accepted decision 길이는 무제한이고 XML delimiter/topic/axis는 escape하지 않아 context 경계 오염 가능. blocker axis 빈 문자열 strip 뒤도 들어감; 미수렴=in-progress도 stalled로 분류. low lexical overlap=healthy 및 외부 citation 존재=discovery 표현은 내용 검증 아님. criticism_dedup/research_provenance 전문 미완료, tests 미실행.",
+    "변형: immutable event schema/unknown denominator/시간정규화와 token budget 적용. 검색·통계는 승인 아닌 참고."
+  ],
+  "debate_converge_check.py": [
+    "EventStore verdict를 deterministic convergence로 평가하고 primary convergence event를 기록.",
+    "common98의 architect-lock 리뷰와 같은 pinned body 재검토. prior primary status 발견하면 최초 decision을 반환하여 나중 severity invalidate/conflicting verdict를 재평가하지 않는다. EventStore constructor는 missing session에도 dir 생성하고 session_id confinement 없음. check→evaluate→append transaction/unique key 없음, exactly one은 동시 실행에서 보장 안 됨. store.replay mid-log corruption은 drop+telemetry이며 .get scalar/파일 I/O 예외는 CLI exit4; 원시 payload hash 검증 없음. gen positivity/schema가 CLI에서 검증되지 않음. lib.evaluate_convergence/command 전문은 common supporting에 기존 검토 보존, 현재 invocation 운영 실행 없음.",
+    "변형: Zeus generation fencing·append transaction·revision/evidence invalidation이 필수. cached model verdict는 승인 아님."
+  ],
+  "debate_doubts.py": [
+    "lib.debate_doubts의 namespace를 재export하는 compatibility CLI.",
+    "dir(_impl)에서 __ 제외한 모든 이름을 복사하여 public/private imported 모듈까지 노출, wrapper에 sys.path 보정 없음(모듈 실행 cwd 계약 의존). 함수 globals는 여전히 lib 쪽이라 wrapper attribute monkeypatch가 implementation constant를 바꾸지 않는다. underlying collect_doubts는 --since에서 ISO string ts와 float를 직접 비교하여 TypeError 발생 시 session 전체 catch/skip; aggregate가 이미 timestamp drift를 처리한 것과 상충. ack는 session 단위라 후속 새 doubt도 seen 가능. malformed/non-string doubt 렌더 실패와 ACK backend/trigger_summary 전문 미완료. whole module 그대로 복제 아닌 forwarding equivalence는 동일 function object에 한정.",
+    "변형: 재export는 호환용만, per-event ack와 timestamp parser 통일. 원본 API namespace 전체 복사 제외."
+  ],
+  "debate_landing.py": [
+    "수렴 session 중 landing_line 기록 존재를 세는 관찰 CLI.",
+    "landing 기록 자체가 코드 착지 증명 아님을 명확히 분리한 점 유용. 그러나 sha는 sha/this_sha만 읽어 현재 convergence writer snapshot_sha1을 놓친다. capture_noted가 수렴 이후인지/gen/hash에 속하는지 검사하지 않고 마지막 truthy문자열로 저장; later rejected/earlycap가 있어도 earlier converged 유지. payload/row dict 검증 없음. _events OSError/모든 corrupt를 []로 만들어 unreadable=false, typed1+무판독 다수도 false. tests는 이 혼합 false를 기대하고 historical sha fixture만 써 writer drift를 못 잡는다. source test는 실제 state/debates 실트리 >0을 요구하여 source-only 허용 fixture가 아닌 운영자료 의존이므로 not-run.",
+    "변형: Zeus sdd capture receipt와 실제 accepted evidence 추적. 기록 유무와 착지 확인을 별도 필드로."
+  ],
+  "debate_stagnation_check.py": [
+    "비수렴 generation의 stagnation recommendation과 early-hard-cap event 기록.",
+    "approved 인자를 신뢰해 EventStore 읽기 전에 skip; verdict와 실제 gen event 대조 없음. lib recommendation에 전체 events를 넘겨 requested gen 이후 events도 판정에 섞일 수 있다. disable env는 코드가 아니라 markdown에서만 honor. primary/terminal status 분리 유용하지만 check→append 비원자, recommendation와 terminal 두 append 사이 failure/경합 가능. 이전 recommendation false가 있어도 재평가 후 terminal true를 추가할 수 있어 문서의 same-gen no-op과 다름. invalid window flags는 에러가 아니라 env/default fallback. libs stagnation/telemetry 전문 미완료라 actual not-run.",
+    "변형: 단일 transaction·generation-bound evidence·idempotency fingerprint 및 deterministic gate 필요."
+  ],
+  "decisions.py": [
+    "resident orchestrator 결과 harvest 및 결정/거절 기억 상태 표시.",
+    "_findings process lru_cache는 survey 비용 감소하나 장수 interpreter/multiple main 또는 동시 변경 때 stale 가능. survey 읽기 주장에도 canary subprocess를 실행함. harvest는 record의 ok 확인 없이 parse 가능한 계약을 수집; empty ts를 source_ts=''로 만들어 dedup 충돌 가능. role 없음→empty findings로 measurement absence를 완료처럼 해석할 위험, list 문구에는 안착/측정소실을 구분하나 계수는 backend 의존. backend DM record/recall/rejections/resident_store/roles 전문 미완료. EXIT_FAILCLOSED 정의하지만 main 전역 예외 변환 없음. cron.run_role_cycle의 harvest call 검색 확인.",
+    "변형: Zeus backlog/event capture·evidence change invalidation·stable source execution id 필요; 측정 대상 소실≠인수 완료."
+  ]
+}

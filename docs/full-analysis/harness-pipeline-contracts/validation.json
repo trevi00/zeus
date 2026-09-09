@@ -1,0 +1,67 @@
+{
+  "paths": 61,
+  "bytes": 281967,
+  "sha256_matches": 61,
+  "body_read": 61,
+  "body_unread": 0,
+  "supporting_sources": 21,
+  "upstream_tests_executed": 0,
+  "source_commands_executed": 0,
+  "adoption_complete": false,
+  "pipeline_counts": [
+    {
+      "path": "pipelines/chat.yaml",
+      "stages": 3,
+      "raw_gates": 3,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/core.yaml",
+      "stages": 31,
+      "raw_gates": 81,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/harness-selfimprove.yaml",
+      "stages": 5,
+      "raw_gates": 21,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/overnight-python.yaml",
+      "stages": 8,
+      "raw_gates": 12,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/repair-trial.yaml",
+      "stages": 2,
+      "raw_gates": 3,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/reverse-onboarding.yaml",
+      "stages": 4,
+      "raw_gates": 14,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/role-request.yaml",
+      "stages": 1,
+      "raw_gates": 2,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/source-note.yaml",
+      "stages": 2,
+      "raw_gates": 5,
+      "source_declaration_only": true
+    },
+    {
+      "path": "pipelines/youtube-note.yaml",
+      "stages": 2,
+      "raw_gates": 5,
+      "source_declaration_only": true
+    }
+  ]
+}

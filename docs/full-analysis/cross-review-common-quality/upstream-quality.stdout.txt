@@ -1,0 +1,10 @@
+  [OK] test_missing_dir_passes
+  [OK] test_legacy_subtree_skipped
+  [OK] test_mandatory_complete_passes
+  [OK] test_mandatory_missing_sections_fails
+  [OK] test_g6_security_http_insecure
+  [OK] test_g7_missing_axis_label
+  [OK] test_g8_unknown_stack
+  [OK] test_g9_orphan_requires
+  [OK] test_enforce_via_flag_outside_prefix
+[OK] 9 tests passed

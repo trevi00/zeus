@@ -1,0 +1,200 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/diagram/_common/component-diagram.md",
+    "git_blob": "36fb63be9543119caf42f5d258d34a66d4710ced",
+    "pinned_sha256": "11b6f694c561277cd1d8e1edbf671258fd463edf4f72ef10f491e0eead529969",
+    "bytes": 3749,
+    "partition": "harness:skills/diagram:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "의존과 데이터 소유 경계 분리. prose →/Mermaid -->는 의도적 분리; 전체 문서 정규식과 코드·의미 정합은 별개.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/diagram/_common/diagram-anchor.md",
+    "git_blob": "e4fb7c869e7f64ad3c1d0f67ae6615f1586b1658",
+    "pinned_sha256": "2281cd12dbaea7d70d360d94c535bff3663f2e21aa8e6a93b7bd5b74ff3f7ebf",
+    "bytes": 4240,
+    "partition": "harness:skills/diagram:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "소비자와 실제 앵커 선확정. 역사적 0건 공허 PASS는 현행 검사기에서 FAIL이며 렌더·의미 증거를 대체하지 않음.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/diagram/_common/flowchart.md",
+    "git_blob": "b06317f70149683c015dbe65f041e20e83849b6e",
+    "pinned_sha256": "b1be30c53bb7cf294e2d5b52948bbd5886677aba74e5888a8c9e3228906edd54",
+    "bytes": 3222,
+    "partition": "harness:skills/diagram:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "UC/FLOW 출처·구체적 분기·실패 경로. 현재 모든 FLOW 문자열 커버리지와 원문의 사용자 노출 흐름 범위 조정 필요.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/diagram/_common/screen-flow.md",
+    "git_blob": "e1d136401953886f237f008959e89d535f880ea3",
+    "pinned_sha256": "f5684193256727a1048ce155260e7de67c4061ea7aa9df7f83055bb1c0c623c4",
+    "bytes": 3787,
+    "partition": "harness:skills/diagram:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "화면·컨트롤·선 종류 및 비전환을 분리. 실제 UI와 도표 양방향 대응은 기기 검증 전 후보 자산.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/diagram/_common/sequence-diagram.md",
+    "git_blob": "40c3cf6539468328f1b90341e8ce9e78921bb312",
+    "pinned_sha256": "107eac31cb61f390e678a08fb6d14f7622ce851fdf24962294815e2ccb8e9fe8",
+    "bytes": 3291,
+    "partition": "harness:skills/diagram:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "UC/EP 참여자·순서·실패 우선순위, API 계약 중복 방지. 문자열 존재는 보상·금전 재시도 순서를 증명하지 않음.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/diagram/_common/state-diagram.md",
+    "git_blob": "2b26cba05bce9567763a43ff317818b6354b68d8",
+    "pinned_sha256": "778fd7020379081027f8df50277e85f4c6c9d3a236f831d6c9b614d1aea5ec25",
+    "bytes": 3034,
+    "partition": "harness:skills/diagram:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "상태와 사건 로그 구분 및 guard/side effect/terminal. boolean 일반화는 채택하지 않으며 *_state 게이트는 의미 검증 아님.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/mobile/flutter/flutter-layering.md",
+    "git_blob": "d10e347d27993ab3f8a602729e75780bb0188fbf",
+    "pinned_sha256": "5c354e7b926f5a02dfa5b6bce6e9e5b02c59a9dda7dc6aded7d2e4cace17b859",
+    "bytes": 3964,
+    "partition": "harness:skills/mobile:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "세 Flutter 앱 계층·예외·registry와 버전별 Notifier/DI 차이. 원문 테스트 확인 부재, SDK·실기기 재현 자산은 아님.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/ontology/_common/ontology-anchor.md",
+    "git_blob": "81437bb9e68fb302fd97f06483453b17a82a2705",
+    "pinned_sha256": "db23f66f23dfd1d8e231bb4a74baa8848a58bee6eaa6fe84761e65c221e40400",
+    "bytes": 3855,
+    "partition": "harness:skills/ontology:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "다축 분류·앵커·소유권. 현재 CON 및 중복/dangling 방어 존재; 빈 JSONL과 axis-2 문자열 게이트의 의미 공백은 별도.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "skills/reverse/_common/reverse-extraction.md",
+    "git_blob": "326762d9dcbc5a7464c0d919a7c7f8c404b9ce36",
+    "pinned_sha256": "3ae8e31f4ee13dea6d1a572e162f8f8d87cbb2eac8773b38861fdf7fb509b589",
+    "bytes": 1258,
+    "partition": "harness:skills/reverse:001",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full_body",
+    "semantic_summary": "extracted 재추출 원칙. origin 없는 파일 보호·dirty 입력 해시·텍스트와 바이트 검증·빈 선택 범위는 현행 정적 경계.",
+    "review_ref": "docs/full-analysis/diagram-mobile-assets/review.md",
+    "tests_executed": [],
+    "test_limits": "정적 읽기만 수행. 원본 실행·설치·기기 조작 없음. 역사적 실측은 원문 주장; 현재 공식 자료 검증과 실제 재현 미실행.",
+    "remaining": [
+      "실제 Claude 독립 검수",
+      "격리 재현과 기존 테스트 실행",
+      "현재 공식 자료·라이선스 확인",
+      "Zeus 적응 설계와 승인"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

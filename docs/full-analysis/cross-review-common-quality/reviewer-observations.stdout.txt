@@ -1,0 +1,285 @@
+{
+  "copied_inline_flag": {
+    "line": "quality_axes_enforced: true   # _common/ 위치 시 명시",
+    "parsed_flag": "true   # _common/ 위치 시 명시",
+    "enforced": false,
+    "cli": {
+      "returncode": 0,
+      "stdout": "[PASS] skill_quality_axes 9게이트 통과 (inspected=0)\n",
+      "stderr": ""
+    }
+  },
+  "empty_negative": {
+    "returncode": 0,
+    "stdout": "{\n  \"target\": \"/tmp/tmpf0n1bn1u/empty_negative/skills/_common/target.md\",\n  \"target_name\": \"target\",\n  \"candidates_count\": 0,\n  \"recall\": 1.0,\n  \"precision\": 1.0,\n  \"f1\": 1.0,\n  \"should_trigger\": [\n    {\n      \"query\": \"uniquetarget\",\n      \"winner\": \"target\",\n      \"winner_score\": 1,\n      \"target_score\": 1,\n      \"target_matched\": true,\n      \"passes\": true\n    }\n  ],\n  \"should_not_trigger\": [],\n  \"suggested_min_score\": 1,\n  \"verdict\": \"PASS\"\n}\n",
+    "stderr": "",
+    "data": {
+      "target": "/tmp/tmpf0n1bn1u/empty_negative/skills/_common/target.md",
+      "target_name": "target",
+      "candidates_count": 0,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "should_trigger": [
+        {
+          "query": "uniquetarget",
+          "winner": "target",
+          "winner_score": 1,
+          "target_score": 1,
+          "target_matched": true,
+          "passes": true
+        }
+      ],
+      "should_not_trigger": [],
+      "suggested_min_score": 1,
+      "verdict": "PASS"
+    }
+  },
+  "specificity_not_precision": {
+    "returncode": 1,
+    "stdout": "{\n  \"target\": \"/tmp/tmpf0n1bn1u/specificity_not_precision/skills/_common/target.md\",\n  \"target_name\": \"target\",\n  \"candidates_count\": 0,\n  \"recall\": 1.0,\n  \"precision\": 0.75,\n  \"f1\": 0.857,\n  \"should_trigger\": [\n    {\n      \"query\": \"uniquetarget\",\n      \"winner\": \"target\",\n      \"winner_score\": 1,\n      \"target_score\": 1,\n      \"target_matched\": true,\n      \"passes\": true\n    }\n  ],\n  \"should_not_trigger\": [\n    {\n      \"query\": \"uniquetarget\",\n      \"winner\": \"target\",\n      \"winner_score\": 1,\n      \"target_score\": 1,\n      \"target_matched\": true,\n      \"passes\": false\n    },\n    {\n      \"query\": \"nothing\",\n      \"winner\": \"(none)\",\n      \"winner_score\": 0,\n      \"target_score\": 0,\n      \"target_matched\": false,\n      \"passes\": true\n    },\n    {\n      \"query\": \"unrelated\",\n      \"winner\": \"(none)\",\n      \"winner_score\": 0,\n      \"target_score\": 0,\n      \"target_matched\": false,\n      \"passes\": true\n    },\n    {\n      \"query\": \"elsewhere\",\n      \"winner\": \"(none)\",\n      \"winner_score\": 0,\n      \"target_score\": 0,\n      \"target_matched\": false,\n      \"passes\": true\n    }\n  ],\n  \"suggested_min_score\": 1,\n  \"verdict\": \"FAIL_PRECISION\"\n}\n",
+    "stderr": "",
+    "data": {
+      "target": "/tmp/tmpf0n1bn1u/specificity_not_precision/skills/_common/target.md",
+      "target_name": "target",
+      "candidates_count": 0,
+      "recall": 1.0,
+      "precision": 0.75,
+      "f1": 0.857,
+      "should_trigger": [
+        {
+          "query": "uniquetarget",
+          "winner": "target",
+          "winner_score": 1,
+          "target_score": 1,
+          "target_matched": true,
+          "passes": true
+        }
+      ],
+      "should_not_trigger": [
+        {
+          "query": "uniquetarget",
+          "winner": "target",
+          "winner_score": 1,
+          "target_score": 1,
+          "target_matched": true,
+          "passes": false
+        },
+        {
+          "query": "nothing",
+          "winner": "(none)",
+          "winner_score": 0,
+          "target_score": 0,
+          "target_matched": false,
+          "passes": true
+        },
+        {
+          "query": "unrelated",
+          "winner": "(none)",
+          "winner_score": 0,
+          "target_score": 0,
+          "target_matched": false,
+          "passes": true
+        },
+        {
+          "query": "elsewhere",
+          "winner": "(none)",
+          "winner_score": 0,
+          "target_score": 0,
+          "target_matched": false,
+          "passes": true
+        }
+      ],
+      "suggested_min_score": 1,
+      "verdict": "FAIL_PRECISION"
+    }
+  },
+  "ineligible_rival": {
+    "returncode": 2,
+    "stdout": "{\n  \"target\": \"/tmp/tmpf0n1bn1u/ineligible_rival/skills/_common/target.md\",\n  \"target_name\": \"target\",\n  \"candidates_count\": 1,\n  \"recall\": 0.0,\n  \"precision\": 1.0,\n  \"f1\": 0.0,\n  \"should_trigger\": [\n    {\n      \"query\": \"uniquetarget extra\",\n      \"winner\": \"rival\",\n      \"winner_score\": 2,\n      \"target_score\": 1,\n      \"target_matched\": true,\n      \"passes\": false\n    }\n  ],\n  \"should_not_trigger\": [\n    {\n      \"query\": \"unrelated\",\n      \"winner\": \"(none)\",\n      \"winner_score\": 0,\n      \"target_score\": 0,\n      \"target_matched\": false,\n      \"passes\": true\n    }\n  ],\n  \"suggested_min_score\": null,\n  \"verdict\": \"FAIL_RECALL\"\n}\n",
+    "stderr": "",
+    "data": {
+      "target": "/tmp/tmpf0n1bn1u/ineligible_rival/skills/_common/target.md",
+      "target_name": "target",
+      "candidates_count": 1,
+      "recall": 0.0,
+      "precision": 1.0,
+      "f1": 0.0,
+      "should_trigger": [
+        {
+          "query": "uniquetarget extra",
+          "winner": "rival",
+          "winner_score": 2,
+          "target_score": 1,
+          "target_matched": true,
+          "passes": false
+        }
+      ],
+      "should_not_trigger": [
+        {
+          "query": "unrelated",
+          "winner": "(none)",
+          "winner_score": 0,
+          "target_score": 0,
+          "target_matched": false,
+          "passes": true
+        }
+      ],
+      "suggested_min_score": null,
+      "verdict": "FAIL_RECALL"
+    }
+  },
+  "tie": {
+    "returncode": 0,
+    "stdout": "{\n  \"target\": \"/tmp/tmpf0n1bn1u/tie/skills/_common/target.md\",\n  \"target_name\": \"target\",\n  \"candidates_count\": 1,\n  \"recall\": 1.0,\n  \"precision\": 1.0,\n  \"f1\": 1.0,\n  \"should_trigger\": [\n    {\n      \"query\": \"uniquetarget\",\n      \"winner\": \"target\",\n      \"winner_score\": 1,\n      \"target_score\": 1,\n      \"target_matched\": true,\n      \"passes\": true\n    }\n  ],\n  \"should_not_trigger\": [\n    {\n      \"query\": \"unrelated\",\n      \"winner\": \"(none)\",\n      \"winner_score\": 0,\n      \"target_score\": 0,\n      \"target_matched\": false,\n      \"passes\": true\n    }\n  ],\n  \"suggested_min_score\": 1,\n  \"verdict\": \"PASS\"\n}\n",
+    "stderr": "",
+    "data": {
+      "target": "/tmp/tmpf0n1bn1u/tie/skills/_common/target.md",
+      "target_name": "target",
+      "candidates_count": 1,
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "should_trigger": [
+        {
+          "query": "uniquetarget",
+          "winner": "target",
+          "winner_score": 1,
+          "target_score": 1,
+          "target_matched": true,
+          "passes": true
+        }
+      ],
+      "should_not_trigger": [
+        {
+          "query": "unrelated",
+          "winner": "(none)",
+          "winner_score": 0,
+          "target_score": 0,
+          "target_matched": false,
+          "passes": true
+        }
+      ],
+      "suggested_min_score": 1,
+      "verdict": "PASS"
+    }
+  },
+  "newline_boundary": {
+    "logical_lines": 250,
+    "lf_raw_bytes": 550,
+    "crlf_raw_bytes": 800,
+    "lf_gaps": [
+      [
+        "G2-perf",
+        "line_count=251 > 250"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## 의사결정 트리"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## 가이드"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## Gotchas"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## 9축 품질 체크"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## Source"
+      ]
+    ],
+    "crlf_gaps": [
+      [
+        "G2-perf",
+        "line_count=251 > 250"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## 의사결정 트리"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## 가이드"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## Gotchas"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## 9축 품질 체크"
+      ],
+      [
+        "G4-usability",
+        "missing section: ## Source"
+      ]
+    ],
+    "same_gaps": true
+  },
+  "lint_direct_gate_check": [
+    [
+      "G2-perf",
+      "byte_count=8534 > 8192"
+    ],
+    [
+      "G3-compat",
+      "requires has 0 entries (<1)"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## 가이드"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## 9축 품질 체크"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## Source"
+    ],
+    [
+      "G8-portability",
+      "tech-stack is empty"
+    ]
+  ],
+  "yaml_lists": [
+    [
+      "G9-extensibility",
+      "requires '[a,' has no target skill"
+    ],
+    [
+      "G9-extensibility",
+      "requires 'b]' has no target skill"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## 의사결정 트리"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## 가이드"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## Gotchas"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## 9축 품질 체크"
+    ],
+    [
+      "G4-usability",
+      "missing section: ## Source"
+    ],
+    [
+      "G8-portability",
+      "tech-stack has unknown values: ['[any]'] (allowed: any/known stack)"
+    ]
+  ]
+}

@@ -1,0 +1,450 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/derive_state.py",
+    "pinned_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "git_blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+    "read_ranges_inclusive": [
+      [
+        54,
+        275
+      ]
+    ],
+    "total_lines": 547,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/tick.py",
+    "pinned_sha256": "108a2f93e5a85a98d67cbb0dfeefde2b3f38f6f29e7a6a8e6e9620b2fc07506d",
+    "git_blob": "2e406b67fd578c7f04457c93a6a9629de3273223",
+    "read_ranges_inclusive": [
+      [
+        60,
+        200
+      ]
+    ],
+    "total_lines": 379,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/select_ready.py",
+    "pinned_sha256": "97a8ceb28f55ee4d239c0b236eca569db7a285c9cd6aed1822b4619b7cf2dcb2",
+    "git_blob": "757ad7ab51eaba44d0a47da66fc16d16714c472b",
+    "read_ranges_inclusive": [
+      [
+        1,
+        99
+      ]
+    ],
+    "total_lines": 99,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/preconditions.py",
+    "pinned_sha256": "66a01b966155a29d9db7a710eb598801f199b545f9e54e04df3e7b8d0f38014b",
+    "git_blob": "0c916e8b5bf2fcb9f366179f469bcc1d12b5e4a3",
+    "read_ranges_inclusive": [
+      [
+        1,
+        100
+      ]
+    ],
+    "total_lines": 100,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/staleness.py",
+    "pinned_sha256": "b3ea2f71bc30b3617e6d7ec3ad9e7c29fdf863461900f854f20b8fbc13e9c501",
+    "git_blob": "b05817acb753b7dfc7fcb68778cb3e88b040f4e1",
+    "read_ranges_inclusive": [
+      [
+        1,
+        46
+      ]
+    ],
+    "total_lines": 46,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/repair_tier.py",
+    "pinned_sha256": "c016dde07aae2d4024d527d94333dd813c830fab8a13dc782edd846f76a0b14f",
+    "git_blob": "28a61f7109b42bc54a2f79378914239d7b078f29",
+    "read_ranges_inclusive": [
+      [
+        1,
+        82
+      ]
+    ],
+    "total_lines": 82,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/handlers/stop/subagent_harvest.py",
+    "pinned_sha256": "5628ae036cbd94dea8cfe33fdfc4f0506b20c9b4ec7a0126b8e6ce3800f2e45d",
+    "git_blob": "f3c348fe1bf03fb08f37ad00d31264b236256f0e",
+    "read_ranges_inclusive": [
+      [
+        1,
+        154
+      ]
+    ],
+    "total_lines": 154,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cron/l2_driver.py",
+    "pinned_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "read_ranges_inclusive": [
+      [
+        598,
+        780
+      ],
+      [
+        1310,
+        1347
+      ],
+      [
+        1420,
+        1450
+      ]
+    ],
+    "total_lines": 2044,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/sandbox.py",
+    "pinned_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "read_ranges_inclusive": [
+      [
+        155,
+        265
+      ]
+    ],
+    "total_lines": 551,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/sandbox_cmd.py",
+    "pinned_sha256": "b275120af02d83daa1bd60a9f35f44a331ab24dc44fb245be4e10a467d7790ce",
+    "git_blob": "f0eb07ce2b87c32878b871af73739351bc1d1451",
+    "read_ranges_inclusive": [
+      [
+        33,
+        69
+      ]
+    ],
+    "total_lines": 255,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/workup.py",
+    "pinned_sha256": "7e6135654797e2f50fec23cc152255f4b9d5ddddfc81a157c34dfdc90c83b867",
+    "git_blob": "d8c3564374f00de250ec935a6dee27a05e68117e",
+    "read_ranges_inclusive": [
+      [
+        178,
+        225
+      ]
+    ],
+    "total_lines": 225,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_arm_reopens_cycle_contract.py",
+    "pinned_sha256": "9ae78643ed6c8e9ae76409008817f1bde545d9b01ebcefc2a2395121231b7af8",
+    "git_blob": "815441b5885d16ea85bcbc1e6265b93fa89c8ded",
+    "read_ranges_inclusive": [
+      [
+        1,
+        282
+      ]
+    ],
+    "total_lines": 282,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/cli/cycle_cmd.py",
+    "pinned_sha256": "946726a2da0408b8cfe3de566407a9f17871f347006990ef8ea333f56c1b0e3e",
+    "git_blob": "0bedd50eb9d06eba8e32dd0ddda0069c9da1a7bc",
+    "read_ranges_inclusive": [
+      [
+        1,
+        118
+      ]
+    ],
+    "total_lines": 118,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/circuit.py",
+    "pinned_sha256": "0d44112c110168c01b236559af29fa76b695c7748b2b6bee1013033e46e374a6",
+    "git_blob": "2d0777115652491c962b29180631fa2ad26c7541",
+    "read_ranges_inclusive": [
+      [
+        85,
+        216
+      ]
+    ],
+    "total_lines": 237,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/completion_line.py",
+    "pinned_sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "git_blob": "de466f89378100fa6dbc4e0416610b26aa9a7980",
+    "read_ranges_inclusive": [
+      [
+        1,
+        87
+      ]
+    ],
+    "total_lines": 87,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/decomposition.py",
+    "pinned_sha256": "113f6d46c38e4fd7f5de1785de7a1ddcb42656bfb6871ed34185afa065fa8f8e",
+    "git_blob": "f5df7bdd1cc71db242d18f9f96704b77b19b99b8",
+    "read_ranges_inclusive": [
+      [
+        1,
+        188
+      ]
+    ],
+    "total_lines": 188,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/ownership_events.py",
+    "pinned_sha256": "9f1c4bdbdc32bc79c4c059b6e5b6f6bcfe5e47a99d124bf8e8bca74ded32a23d",
+    "git_blob": "f3493665a1204bc8ebcb9f32a049429296971b4d",
+    "read_ranges_inclusive": [
+      [
+        1,
+        74
+      ]
+    ],
+    "total_lines": 74,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/counterfactual.py",
+    "pinned_sha256": "592a306dd787e22dd8677028c80f451b63f9465cbe774e4b90753be67688a37d",
+    "git_blob": "09d9344b4f6a99fea088414678cff5e4216e1442",
+    "read_ranges_inclusive": [
+      [
+        1,
+        109
+      ]
+    ],
+    "total_lines": 109,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/validators/harness_lint.py",
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "read_ranges_inclusive": [
+      [
+        280,
+        335
+      ],
+      [
+        395,
+        537
+      ]
+    ],
+    "total_lines": 2092,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/seams.py",
+    "pinned_sha256": "424136000b6e8868bf852d9a6fe2a99cb2caf81d064e15a05a64d7d38ede692f",
+    "git_blob": "5ecc482e02aa98b30d9ad8d2ecd57ec935bcff8e",
+    "read_ranges_inclusive": [
+      [
+        112,
+        225
+      ]
+    ],
+    "total_lines": 350,
+    "read_extent": "selected_ranges_only",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/lib/code_context.py",
+    "pinned_sha256": "e692572c25efb346d9a3f491db78344a17d3cbeb23b092c3bffbb207cb403262",
+    "git_blob": "3e7c6f4b5261cefd10452ff85e0b0a03ad924758",
+    "read_ranges_inclusive": [
+      [
+        1,
+        128
+      ]
+    ],
+    "total_lines": 128,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "config/profile.yaml",
+    "pinned_sha256": "f94e4256f47955c1aa94f0750f2b6d648c2843bc7ad79c04a3982464a89fcf24",
+    "git_blob": "6e8b28e4f56a9aedfd2374c3af0b62e0ea0c9ad9",
+    "read_ranges_inclusive": [
+      [
+        1,
+        7
+      ]
+    ],
+    "total_lines": 7,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "agents/design-critic.md",
+    "pinned_sha256": "2a31ac669be070f3b551d72876bb876d5ec9cb84e3bcd3b697b1cb353ddc5b06",
+    "git_blob": "e5d470e718b37e1941448d5ad1d6a4726218b493",
+    "read_ranges_inclusive": [
+      [
+        1,
+        20
+      ]
+    ],
+    "total_lines": 20,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/gate_runner.py",
+    "pinned_sha256": "b0781fd1e40d0d7970f426c20ad0d47febffeaf38ad19a1cec9b199589070e59",
+    "git_blob": "bc111a1d469611f3549862df0b1df32578cd0610",
+    "read_ranges_inclusive": [
+      [
+        1,
+        179
+      ]
+    ],
+    "total_lines": 179,
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "static_source_read_not_execution"
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/domain/sdd.py",
+    "observed_sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+    "read_ranges_inclusive": [
+      [
+        1,
+        202
+      ]
+    ],
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "local_comparison_read_not_execution_or_whole_repo_claim"
+  },
+  {
+    "source": "zeus",
+    "path": "docs/zeus/full-delivery-scope.md",
+    "observed_sha256": "bded83d62a9e4a5d470febb47ad30cff5b737cc104607a8d4fc9a08f9ebee6f6",
+    "read_ranges_inclusive": [
+      [
+        1,
+        19
+      ]
+    ],
+    "read_extent": "full_body",
+    "tests_executed": [],
+    "authority": "local_comparison_read_not_execution_or_whole_repo_claim"
+  }
+]

@@ -1,0 +1,9 @@
+usage: harness-supervisor [-h] [--once] [--research] [--releases]
+                          [--repository REPOSITORY]
+
+options:
+  -h, --help            show this help message and exit
+  --once
+  --research
+  --releases
+  --repository REPOSITORY

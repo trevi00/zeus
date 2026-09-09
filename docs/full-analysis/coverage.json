@@ -2,22 +2,24 @@
   "tracked_paths": 2736,
   "source_counts": {
     "baldrix": {
-      "unreviewed": 1550,
-      "semantically_reviewed": 98
+      "unreviewed": 1503,
+      "semantically_reviewed": 143,
+      "body_reviewed_call_test_trace_pending": 2
     },
     "harness": {
-      "unreviewed": 792,
+      "unreviewed": 644,
       "semantic-reviewed-execution-not-attested": 93,
-      "semantically_reviewed": 3,
+      "semantically_reviewed_static_only": 61,
+      "semantically_reviewed": 90,
       "body_reviewed_call_test_trace_pending": 43
     },
     "guardian": {
       "semantically_reviewed": 13
     },
     "harness-design": {
-      "unreviewed": 137,
+      "unreviewed": 90,
       "semantically_reviewed": 6,
-      "body_reviewed_call_test_trace_pending": 1
+      "body_reviewed_call_test_trace_pending": 48
     }
   },
   "whole_analysis_complete": false,

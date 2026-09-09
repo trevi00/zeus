@@ -1,0 +1,22 @@
+{
+  "source": "harness",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "partitions": [
+    "harness:skills/backend:001",
+    "harness:skills/convention:001",
+    "harness:skills/data:001",
+    "harness:skills/devops:001"
+  ],
+  "expected": 32,
+  "full_body_reviewed": 32,
+  "bytes_verified": 134967,
+  "unreviewed_paths_in_partition": [],
+  "tests_executed": [],
+  "subsystem_complete": false,
+  "adoption_approved": false,
+  "claude_independent_review": "pending",
+  "status": "static_review_complete_execution_and_independent_review_pending",
+  "review_ref": "docs/full-analysis/backend-assets/review.md",
+  "prior_router_trace": "docs/full-analysis/frontend-assets/supporting-evidence.json",
+  "search_limits": "잘못 추정한 파일 경로는 이후 rg --files로 정정. 절단된 지원 파일은 해당 부분을 재독. 검색 히트는 전문 coverage로 계산하지 않음."
+}

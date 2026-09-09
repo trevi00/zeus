@@ -1,0 +1,149 @@
+{
+  "partition": "harness-design:design/decisions:002",
+  "body_reviewed": 19,
+  "primary_status": "body_reviewed_call_test_trace_pending",
+  "current_source_tests_executed": 0,
+  "adoption": "not_approved_not_incorporated",
+  "unreviewed_primary_bodies": [],
+  "per_file": [
+    {
+      "path": "design/decisions/D-032-gate-vitality-partial-blindspots-confirmed.md",
+      "remaining": [
+        "probe CLI/PARTIAL 입력 계약·BLINDSPOTS 갱신·checks 부작용·격리 실행",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-033-repair-tier-materialized-confirmed.md",
+      "remaining": [
+        "tick 전체 tier 소비·reflector/curator·접힘/철회 등가성과 실제 수리 실행",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-035-precondition-fingerprint-confirmed.md",
+      "remaining": [
+        "전제 기록의 시점 결속·선언 삭제·compaction/retraction·환경 전체 및 실제 재검증",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-036-unattended-promotion-confirmed.md",
+      "remaining": [
+        "promotion_readiness·effective blocking caller/config·전체 debate 종료 및 실전 승격",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-037-governance-remine-confirmed.md",
+      "remaining": [
+        "reject 계수·패널 독립성·Jaccard·recall 인덱스/성능 및 의미 검수",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-038-context-programming-confirmed.md",
+      "remaining": [
+        "cohesion 계산/발의 writer·실제 상시 로드 소비자·통지 및 threshold 검증",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-039-fleet-arming-confirmed.md",
+      "remaining": [
+        "state_dir 소비자 전수·guardian 다중 감시·전역 예산/lease·환경 전파·운영 실행",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-040-multiagent-topology-confirmed.md",
+      "remaining": [
+        "훅 registry/실제 플랫폼 전파·독립 세션 receipt·Redis 현재 배포·수거 재실행",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-041-company-topology-stage1.md",
+      "remaining": [
+        "contracts.yaml 전체 재대조·guardian 계약 7파일 producer/consumer·freshness·실제 probe",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-042-ownership-liveness-confirmed.md",
+      "remaining": [
+        "incident writer·vitals·깨우기 dispatcher·계보/귀속 인증·실제 무응답 검증",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-043-outpos-fleet-v2-confirmed.md",
+      "remaining": [
+        "전용 Java/fleet 추출기·write_boundary/seeding·원본 outpos 레포·축별 smoke 전체",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-044-workup-confirmed.md",
+      "remaining": [
+        "machine_sections 전체 추출기·workup CLI/test·사람 착수 검수·분석 버전 관리",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-045-autonomous-orchestrator-confirmed.md",
+      "remaining": [
+        "backlog/승인 writer·전체 spawn/watchdog/stuck·세션 심박·P3 격리·실제 사람 인수",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-046-heart-promotion-approval-confirmed.md",
+      "remaining": [
+        "autoheart judge/promote 및 기준 앵커 전체·compaction·모든 env 경로·격리 승격 실행",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-047-code-context-partition-confirmed.md",
+      "remaining": [
+        "context 선언 전부·정적 추출 밖 import·전체 lint caller 및 실행",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-048-design-canon-tool-confirmed.md",
+      "remaining": [
+        "mitgrim schema/renderer/pipeline/completion/실행·사람 렌더 검수 전부",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-049-design-critic-card-confirmed.md",
+      "remaining": [
+        "7기둥 skill·시딩/실제 독립 judge spawn·인증된 판정·실렌더/실기기",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-050-autonomous-cycle-reopen-confirmed.md",
+      "remaining": [
+        "전체 retries/ERROR 이력·candidate별 circuit·멱등키 writer/reader·compaction·표면 및 실제 실행",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    },
+    {
+      "path": "design/decisions/D-5b-refinement-hierarchical-delegation.md",
+      "remaining": [
+        "depth hook/실제 메인 spawn·모델 자격/성능·독립 팀 실행 및 검증",
+        "실행·독립 공동 검토 및 Zeus 채택/구현/검증"
+      ]
+    }
+  ],
+  "global_limits": [
+    "외부 논문·링크 본문이나 현행 사실은 이번에 검증하지 않았다. 인용은 원문 주장으로 보존한다.",
+    "다른 보고서의 PASS나 이전 Windows/Linux CI는 이 원본 실행 증거가 아니다.",
+    "supporting 전체 수집/해시는 전문 독해를 뜻하지 않는다. 구간 밖 caller/config/test는 미추적이다.",
+    "원본 쓰기·실행·자동 보안 검사 중단 probe의 우회 재시도 없이 정적 검토만 수행했다."
+  ]
+}

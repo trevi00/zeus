@@ -1,0 +1,302 @@
+[
+  {
+    "partition": "harness:agents:001",
+    "scope_sha256": "97014d8f92b016b982c0927a371ccec16cfc7550a231790fbba55838d3031038",
+    "bytes": 18848,
+    "paths": [
+      {
+        "source": "harness",
+        "path": "agents/agent-drafter.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/architect.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/critic.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/curator.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/design-critic.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/domain-lead.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/evaluator.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/generator.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/hardener.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/hook-smith.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/intent-interviewer.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/judge.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/onboarder.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/orchestrator.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/planner.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/proposer.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/reflector.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/repairer.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/researcher.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/reverse-extractor.md"
+      },
+      {
+        "source": "harness",
+        "path": "agents/skill-author.md"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "harness:completion-lines:001",
+    "scope_sha256": "40606d44e2ad8e895aec47483cb97bbdda374853a2bc7472150fff935bd74aa8",
+    "bytes": 73488,
+    "paths": [
+      {
+        "source": "harness",
+        "path": "completion-lines/byeolbam-spiral4.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/knowledge-org-v1.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/knowledge-org-v2.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/knowledge-org-v3.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/knowledge-org-v4.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/knowledge-org-v5.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/knowledge-org-v6.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/knowledge-org-v7.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/mitgrim-spiral1.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/mitgrim-spiral2.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/outpos-fleet-v1.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/outpos-fleet-v2.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "completion-lines/resident-org-v1.yaml"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "harness:config:001",
+    "scope_sha256": "96ec5fccf3843014ff3f0b253ba3b843850d0d0132b9084dfee753b78eeeced4",
+    "bytes": 4611,
+    "paths": [
+      {
+        "source": "harness",
+        "path": "config/params.json"
+      },
+      {
+        "source": "harness",
+        "path": "config/paths.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "config/profile.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "config/retriever.yaml"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "harness:config/policy:001",
+    "scope_sha256": "8878601f2acf263d60bfa30902010e532fddb3a4d196131b7e6cc5d6b6263e89",
+    "bytes": 37908,
+    "paths": [
+      {
+        "source": "harness",
+        "path": "config/policy/arming-rules.json"
+      },
+      {
+        "source": "harness",
+        "path": "config/policy/backlog-weights.json"
+      },
+      {
+        "source": "harness",
+        "path": "config/policy/goal.md"
+      },
+      {
+        "source": "harness",
+        "path": "config/policy/validator-ladder.json"
+      },
+      {
+        "source": "harness",
+        "path": "config/policy/write-boundary.json"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "harness:ontology:001",
+    "scope_sha256": "0947daff544f4708160aa7236a60e5ae46fe70104e7d88c46d1a886256456582",
+    "bytes": 57537,
+    "paths": [
+      {
+        "source": "harness",
+        "path": "ontology/contracts.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "ontology/facets.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "ontology/glossary.md"
+      },
+      {
+        "source": "harness",
+        "path": "ontology/graph-queries.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "ontology/metrics.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "ontology/schema.json"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "harness:pipelines:001",
+    "scope_sha256": "158a33a5594d103b899d7ed147569a1a80b2800f7710a8dd780808b33f519713",
+    "bytes": 85717,
+    "paths": [
+      {
+        "source": "harness",
+        "path": "pipelines/chat.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/core.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/gate-lexicon.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/harness-selfimprove.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/overnight-python.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/repair-trial.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/reverse-onboarding.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/role-request.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/source-note.yaml"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/youtube-note.yaml"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  },
+  {
+    "partition": "harness:pipelines/fixtures:001",
+    "scope_sha256": "b8f7d6770ad005e2dccc4e7d0b2b25d4432e3f6fc4e2b54c938e9c0027db1c42",
+    "bytes": 3858,
+    "paths": [
+      {
+        "source": "harness",
+        "path": "pipelines/fixtures/repair-trial/SPEC.md"
+      },
+      {
+        "source": "harness",
+        "path": "pipelines/fixtures/repair-trial/acceptance_test.py"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  }
+]

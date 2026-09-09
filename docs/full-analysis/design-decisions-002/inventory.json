@@ -1,0 +1,86 @@
+[
+  {
+    "partition": "harness-design:design/decisions:002",
+    "scope_sha256": "812a0521dbbedf0ec5963084e6f43fa82671dd95c72ae1e3f224dff9460ffa92",
+    "bytes": 103013,
+    "paths": [
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-032-gate-vitality-partial-blindspots-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-033-repair-tier-materialized-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-035-precondition-fingerprint-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-036-unattended-promotion-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-037-governance-remine-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-038-context-programming-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-039-fleet-arming-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-040-multiagent-topology-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-041-company-topology-stage1.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-042-ownership-liveness-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-043-outpos-fleet-v2-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-044-workup-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-045-autonomous-orchestrator-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-046-heart-promotion-approval-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-047-code-context-partition-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-048-design-canon-tool-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-049-design-critic-card-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-050-autonomous-cycle-reopen-confirmed.md"
+      },
+      {
+        "source": "harness-design",
+        "path": "design/decisions/D-5b-refinement-hierarchical-delegation.md"
+      }
+    ],
+    "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+  }
+]

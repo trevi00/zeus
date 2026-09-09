@@ -1,0 +1,244 @@
+[
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "ontology/graph-queries.yaml",
+    "git_blob": "ce20f77f7d7c6a554ddc266367cfa649d4aa9a2b",
+    "pinned_sha256": "37f917d30334e5fd558acbb2f36f3c6220bf3d6d3784ca01510cef5990a95ad1",
+    "bytes": 5933,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        156
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/graph_queries.py",
+    "git_blob": "c1e01a808ce6694e64ab668f3fe1b2c97b30b0b5",
+    "pinned_sha256": "f4b93486880f467c1c001b4149589a432af81cca738f2284055e1690fc874152",
+    "bytes": 38341,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        78,
+        115
+      ],
+      [
+        383,
+        414
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/engine/reverse.py",
+    "git_blob": "707a6e850e08fcbd0a1a3a1d2b436cbbdc1522a0",
+    "pinned_sha256": "0b3f0c9e9512a071c89d83005857d5a1a2f85501e0f68aeea6599f6cbb5c0f55",
+    "bytes": 14103,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        110
+      ],
+      [
+        140,
+        263
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "scripts/validators/ontology_validator.py",
+    "git_blob": "a6fff8e6e3d173a4f8662fe9fad57db1341aa7ac",
+    "pinned_sha256": "f3e51e7faa92861e38a95499fd06b02bccf4dcace81a8d9e73b999399df28d08",
+    "bytes": 10454,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        170
+      ],
+      [
+        173,
+        218
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "pipelines/core.yaml",
+    "git_blob": "32ce4144cb0e420b6961d663e1907e79ffb92339",
+    "pinned_sha256": "2816cf7b6b0c94961f68e42e01aaf88abb80c172c5be36444ad141a5c31084fe",
+    "bytes": 29324,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        59,
+        112
+      ],
+      [
+        253,
+        270
+      ],
+      [
+        428,
+        445
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_graph_smoke.py",
+    "git_blob": "0f8cb8bba54cfbf90c8e6c1ca23427019eb418af",
+    "pinned_sha256": "05a7da20b3b8b7eeb9f9e3f16d1e3e14c65f2ef36be4d7d62d0fdd475c3ed82e",
+    "bytes": 26119,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        145
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_reverse_smoke.py",
+    "git_blob": "c7f7937273521df1bf0bc5d292d31a549c0d30ea",
+    "pinned_sha256": "724a75ae645ef26c2a739cd8ea7c2022b370bf5b36e2cbf0584f8a410968629b",
+    "bytes": 10498,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        227
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/unit/test_router_smoke.py",
+    "git_blob": "81091e43109f0c93e4acaeb2063926ffdc144397",
+    "pinned_sha256": "b57a44c181af51a01ac0e54a4343617636e19d80a28b36de2052c0fb1687a356",
+    "bytes": 17248,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        196,
+        215
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "tests/contract/test_ontology_smoke.py",
+    "git_blob": "0b90d0c5bf21a0e8165c36346c3e2cac9aff5474",
+    "pinned_sha256": "7a7887995799a12566a1cbf0c7ad979c660bed0278dbe043d148591a1bd15fd9",
+    "bytes": 24809,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        183,
+        215
+      ],
+      [
+        295,
+        336
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "templates/_common/state-diagram.template.md",
+    "git_blob": "7272834eb6ba31eeb5e0a3c6d24fa194169e03af",
+    "pinned_sha256": "4582e78f82252ef8187a84e5b46a71309e0b0511e20985845b273ef0d8c95708",
+    "bytes": 765,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        26
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "templates/_common/component-diagram.template.md",
+    "git_blob": "d0f855eb1ff8ac91dab40e25ef1c411be2e584fa",
+    "pinned_sha256": "2f3cfe6df7f7b65fcba7a56ce8cb6e332457c05222928dd0834a5edee65d7f8a",
+    "bytes": 719,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        27
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "harness",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "path": "templates/_common/ontology-topology.template.md",
+    "git_blob": "8ec469d11e690bc560312334fc99fc3dcf2e951c",
+    "pinned_sha256": "063bbaeddc1e1c911538a047121e6842ed58399f6469fdf9e8e79da822fa2d03",
+    "bytes": 717,
+    "read_extent": "listed_line_ranges_only",
+    "line_ranges": [
+      [
+        1,
+        27
+      ]
+    ],
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  },
+  {
+    "source": "zeus-working-tree",
+    "path": "src/codex_harness/adapters/sdd.py",
+    "sha256": "8a8ebef555d9db097d934c029e1663db5a9478cda17b23a232fcaf3ad6b49dc5",
+    "line_ranges": [
+      [
+        73,
+        178
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "tests_executed": []
+  }
+]

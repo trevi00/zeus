@@ -1,0 +1,110 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/insight_index_pollution_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "a126ddd447ffb7a9e7cdd7188b200ae3ffab997f",
+    "pinned_sha256": "9ccfdda11b6ffd464891b06af51901f87f8ce7c4f389427e5f0432f53f73e68c",
+    "manifest_bytes": 9639,
+    "pinned_bytes": 9639,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/event_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "b3417e72d5534b8e3c41a8bc6bbc9f06beb7a69e",
+    "pinned_sha256": "4837ea55c72263a797017fa4f07af9bfa3ee65b869d0f1d5cecdf30d37182bdd",
+    "manifest_bytes": 4402,
+    "pinned_bytes": 4402,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/frontmatter_norm.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "9e4c7b59cbd1e54ee1e1b6352082ce57ef1cba91",
+    "pinned_sha256": "a373661488713fcfb36734a3ec788544c011bc616f8876dcd6342bb37e61bb31",
+    "manifest_bytes": 2308,
+    "pinned_bytes": 2308,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/milestone_spine.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3fa6edf7f597a2b29325d1f82b765fe5a65c645a",
+    "pinned_sha256": "4c257b585a8412fce3cab1f4ca7751de88732dd4952c21454dd10653e930a52d",
+    "manifest_bytes": 22612,
+    "pinned_bytes": 22612,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/endpoint_graph.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5afb2501fe31d97ccecd120a67dc44eecaebf334",
+    "pinned_sha256": "030d178b4949c90cee5d9a7b53f97d1c22ae884c49f5cd386d444fd30897fce2",
+    "manifest_bytes": 4241,
+    "pinned_bytes": 4241,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_greenfield_spec_emit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "dd917cd5e6ef3839c22c56101d210e5effac3eef",
+    "pinned_sha256": "53e7883e18f051168f70d90243d6c092b5032e5afc0c1523b6f5bb8678a12eee",
+    "manifest_bytes": 5519,
+    "pinned_bytes": 5519,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_harness_normalize.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ae38fc5fc597b222581e09eca4c7a3053304ee5e",
+    "pinned_sha256": "c9a78f5d7ca738c46b9ac1f9c0f7c4322805e4185d60ade4cbffa5408997841e",
+    "manifest_bytes": 5441,
+    "pinned_bytes": 5441,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/run_pollution_cleanup.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ccb762750e1948053849100094b376a568c39fca",
+    "pinned_sha256": "4b73db25c07c82623309db6786258f37c8a2afa1c3d6acda3791613b80359707",
+    "manifest_bytes": 4997,
+    "pinned_bytes": 4997,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/session/init.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "7f78a659b1cf6ab405a1e004a91053d6174dafa9",
+    "pinned_sha256": "a321edb8747cf9ea6e640c32ef5600e8e6e213ef28fa80fb7e96f4f83bd569be",
+    "manifest_bytes": 33887,
+    "pinned_bytes": 33887,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "lines 701-725 only; other search hits are not full review"
+  }
+]

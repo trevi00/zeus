@@ -1,0 +1,8 @@
+  [OK] test_run_eval_target_wins_simple
+  [OK] test_run_eval_near_miss_zero_tie_does_not_count_as_fp
+  [OK] test_run_eval_recall_partial
+  [OK] test_verdict_mapping
+  [OK] test_qa_boundary_self_eval_passes_recall_floor
+  [OK] test_suggested_min_score_from_lowest_pass_score
+
+[OK] 6 tests passed

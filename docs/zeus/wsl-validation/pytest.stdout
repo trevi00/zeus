@@ -1,0 +1,47 @@
+........................................................................ [  9%]
+....ssssssssssss...........................................sssssssssssss [ 19%]
+sssssssssssss........................................................... [ 29%]
+........................................................................ [ 39%]
+........................................................................ [ 49%]
+...........s.s.s....s..s................................................ [ 59%]
+.................................................................ssssss. [ 69%]
+............................s..............................s.s.s.s.s.... [ 79%]
+..................................................s.s.s.s............... [ 89%]
+..........s...............ss............................................ [ 98%]
+........                                                                 [100%]
+=========================== short test summary info ============================
+SKIPPED [12] tests/test_decision_atomicity.py:14: Integration environment required
+SKIPPED [1] tests/test_integration.py:34: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [6] tests/test_integration.py:82: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [3] tests/test_integration.py:98: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:121: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:137: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [5] tests/test_integration.py:149: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:169: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:179: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:189: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:201: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:222: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:239: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:257: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:282: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [1] tests/test_integration.py:293: Set HARNESS_INTEGRATION=1 for local services
+SKIPPED [3] tests/test_release_recovery.py:63: Integration environment required
+SKIPPED [1] tests/test_release_recovery.py:150: Integration environment required
+SKIPPED [1] tests/test_release_recovery.py:192: Integration environment required
+SKIPPED [1] tests/test_sdd.py:209: Integration environment required
+SKIPPED [1] tests/test_sdd.py:228: Integration environment required
+SKIPPED [1] tests/test_sdd.py:247: Integration environment required
+SKIPPED [1] tests/test_sdd.py:262: Integration environment required
+SKIPPED [1] tests/test_sdd.py:277: Integration environment required
+SKIPPED [1] tests/test_sdd.py:288: Integration environment required
+SKIPPED [1] tests/test_skill_history.py:110: Integration environment required
+SKIPPED [5] tests/test_task_failure_atomicity.py:14: Integration environment required
+SKIPPED [1] tests/test_tickets.py:26: Integration environment required
+SKIPPED [1] tests/test_tickets.py:44: Integration environment required
+SKIPPED [1] tests/test_tickets.py:65: Integration environment required
+SKIPPED [1] tests/test_tickets.py:91: Integration environment required
+SKIPPED [1] tests/test_usage_limit.py:179: Local PostgreSQL required
+SKIPPED [1] tests/test_verification.py:113: Explicit disposable Docker validation required
+SKIPPED [1] tests/test_windows_launchers.py:10: Native PowerShell launcher behavior
+666 passed, 62 skipped in 19.48s

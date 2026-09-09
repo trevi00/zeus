@@ -1,0 +1,127 @@
+{
+  "revision": "4cb7d02df13d7621d47f0324ae121649982db7b2",
+  "root": "/tmp/zeus-wsl-oi748ewj",
+  "runner_pid": 307,
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/tmp/zeus-wsl-oi748ewj/home",
+    "TMPDIR": "/tmp/zeus-wsl-oi748ewj/tmp",
+    "LANG": "C.UTF-8",
+    "PYTHONIOENCODING": "utf-8",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "core.hooksPath",
+    "GIT_CONFIG_VALUE_0": "/dev/null",
+    "UV_CACHE_DIR": "/tmp/zeus-wsl-oi748ewj/cache",
+    "UV_PROJECT_ENVIRONMENT": "/tmp/zeus-wsl-oi748ewj/project-venv",
+    "UV_PYTHON": "/usr/bin/python3",
+    "UV_PYTHON_DOWNLOADS": "never"
+  },
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python": "3.14.4",
+  "stages": [
+    {
+      "name": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-local",
+        "/mnt/c/Users/rudtn/zeus",
+        "/tmp/zeus-wsl-oi748ewj/repo"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj",
+      "start": "2026-09-09T04:30:22.531220+00:00",
+      "pid": 416,
+      "exit_code": 0,
+      "end": "2026-09-09T04:30:24.869507+00:00",
+      "stdout": {
+        "path": "clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "clone.stderr",
+        "sha256": "f223dee23c49ab52c1380c5f3543400f16609302bbdecfad1f62988974d70074",
+        "bytes": 46
+      }
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "4cb7d02df13d7621d47f0324ae121649982db7b2"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj/repo",
+      "start": "2026-09-09T04:30:24.879466+00:00",
+      "pid": 441,
+      "exit_code": 0,
+      "end": "2026-09-09T04:30:24.913650+00:00",
+      "stdout": {
+        "path": "checkout.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "checkout.stderr",
+        "sha256": "271bee16acb07370f9c38ac782e5aa6c729cc9505f2f94245334fac868923e80",
+        "bytes": 92
+      }
+    },
+    {
+      "name": "history",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "--is-shallow-repository",
+        "09c1d58^{commit}"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj/repo",
+      "start": "2026-09-09T04:30:24.923704+00:00",
+      "pid": 442,
+      "exit_code": 0,
+      "end": "2026-09-09T04:30:24.929239+00:00",
+      "stdout": {
+        "path": "history.stdout",
+        "sha256": "93fed889508c923acd4e9b0883026b6256143150b05ce182dce30cfaf1978a8b",
+        "bytes": 88
+      },
+      "stderr": {
+        "path": "history.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "bootstrap",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "venv",
+        "/tmp/zeus-wsl-oi748ewj/bootstrap"
+      ],
+      "cwd": "/tmp/zeus-wsl-oi748ewj",
+      "start": "2026-09-09T04:30:24.939288+00:00",
+      "pid": 443,
+      "exit_code": 1,
+      "end": "2026-09-09T04:30:24.993633+00:00",
+      "stdout": {
+        "path": "bootstrap.stdout",
+        "sha256": "6fd87f3e79cc13ab3ef74b6b20d3983d2cc62793a524a26f74dfae6fbe7d3843",
+        "bytes": 411
+      },
+      "stderr": {
+        "path": "bootstrap.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "scope": "Native Ubuntu WSL2 ordinary suite; no integration services",
+  "start": "2026-09-09T04:30:22.527365+00:00",
+  "setup_failure": "bootstrap",
+  "end": "2026-09-09T04:30:25.003525+00:00"
+}

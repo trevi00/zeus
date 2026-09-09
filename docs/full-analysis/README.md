@@ -35,6 +35,15 @@
 - harness lib: 43개 공통 라이브러리의 원장·lease·중복 방지·판정 도출 등 구현/호출/테스트.
 - harness-local-research: Git 밖 연구 노트 38개와 역할 로그 23개의 과거 판단·정정·제안 연결. 추가 자산 분모이며 현재 실행 테스트와 구분한다.
 - design-canon: 설계 정본의 범위·용어·SSOT·런타임·컨텍스트 계약과 구현 차이. 아직 부분 검토.
+- [Baldrix CLI 001](baldrix-cli-001/review.md), [002](baldrix-cli-002/review.md): 45개 전문과 직접 의존. 001의 원본 테스트 34개만 실제 실행했으며 002는 정적 검토다.
+- [프론트·SDD 자산](frontend-assets/review.md), [백엔드·데이터·DevOps](backend-assets/review.md), [다이어그램·모바일·역설계](diagram-mobile-assets/review.md): 88개 전문. 서로 다른 프로젝트의 관례와 사용자 요구를 구분하고 화살표 해석의 반증도 정정했다.
+- [파이프라인·역할·완료선](harness-pipeline-contracts/README.md): 61개 전문. 사용자 8단계 SDD, 실제 판정 소비, 실행 권한과 문서 선언을 대조했다.
+- [설계 결정문 001](design-decisions-001/review.md), [002](design-decisions-002/README.md): 추가 48개 전문 읽기 기록(D-050 기존 기록과 중복 1개 포함). 구현·호출·시험 추적은 미완료다.
+- [Common 품질 공동 검토](cross-review-common-quality/resolution.md): 실제 Claude와 Codex 독립 판단·토론·정정, 원본 단위 테스트 15개 및 별도 입력 관측. 스킬 품질과 실제 선택·주입을 두 토픽으로 분리했다.
+
+현재 고정 2,736개 중 499개에 검토 기록이 있으며 **2,237개는 아직 unreviewed**다. 499개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`을 따른다.
+
+Zeus 자체의 [Ubuntu WSL2 네이티브 검증](../zeus/wsl-validation/review.md)은 published `4cb7d02`에서 666 passed/62 skipped다. 원본 하네스 검증과 다른 범위이며 서비스 통합·인수·운영 배포는 포함하지 않는다.
 
 Guardian의 전체 13개 의미 검토 및 pinned/observed 각 5스위트 실행은 `guardian/review.md`에 있다. 실제 Claude와의 합의·정정, 현재 Windows Python 자식 인코딩 실패 실측은 `cross-review/resolution.md`에 연결한다. 작은 저장소의 완료나 기존 스모크 PASS를 큰 저장소·실 운영 검증으로 확대하지 않는다.
 

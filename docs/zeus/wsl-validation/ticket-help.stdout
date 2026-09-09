@@ -1,0 +1,8 @@
+usage: zeus ticket [-h]
+                   {list,create,show,export,update,review,dispatch,sync,pull} ...
+
+positional arguments:
+  {list,create,show,export,update,review,dispatch,sync,pull}
+
+options:
+  -h, --help            show this help message and exit

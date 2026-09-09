@@ -1,0 +1,30 @@
+{
+  "source": "harness",
+  "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+  "partitions": [
+    "harness:skills/design:001",
+    "harness:skills/frontend:001",
+    "harness:skills/spec:001",
+    "harness:skills/verification:001",
+    "harness:templates/_common:001",
+    "harness:templates:001"
+  ],
+  "expected": 47,
+  "full_body_reviewed": 47,
+  "bytes_verified": 93217,
+  "unreviewed_paths_in_partition": [],
+  "tests_executed": [],
+  "subsystem_complete": false,
+  "adoption_approved": false,
+  "claude_independent_review": "pending",
+  "status": "static_review_complete_execution_and_independent_review_pending",
+  "not_found": [
+    "scripts/engine/scaffold.py",
+    "scripts/engine/dispatch.py",
+    "scripts/validators/api_examples_lint.py",
+    "tests/unit/test_templates_smoke.py",
+    "scripts/cli/tradeoff_lint_cmd.py"
+  ],
+  "search_limits": "초기 넓은 rg 출력은 절단됨. 근거는 이후에 읽은 명시 범위와 정확한 존재 대조만 사용. 전체 검색을 전문 검토로 세지 않음.",
+  "review_ref": "docs/full-analysis/frontend-assets/review.md"
+}

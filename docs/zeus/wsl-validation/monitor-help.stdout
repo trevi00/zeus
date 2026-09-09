@@ -1,0 +1,11 @@
+usage: zeus-monitor [-h] [--once] [--repository REPOSITORY] [--port PORT]
+                    {collect,web}
+
+positional arguments:
+  {collect,web}
+
+options:
+  -h, --help            show this help message and exit
+  --once
+  --repository REPOSITORY
+  --port PORT

@@ -1,0 +1,112 @@
+{
+  "endpoint_query.py": [
+    "fleet atlas의 repo/seam/shared value 관계 조회 및 선택적 LLM 설명",
+    "fleet_atlas→endpoint_graph.query와 narration을 결합. --llm은 provider 가용성 확인/외부 추론 호출 가능하므로 docstring의 deterministic/no LLM은 기본 경로에 한정된다. --json --llm 조합도 JSON 뒤 자유 텍스트를 출력하여 machine JSON 계약을 깨뜨린다. safe_load 결과 schema/None 검증, stdout reconfigure guard 없음. endpoint_graph 전문 대조: repo명이 점을 포함하면 producer.split('.')[0]가 잘리고 repo/seam/value 이름 충돌은 repo 우선. shared wire 문자열 동일은 의미적 의존 증명 아님. narration/ground_or_drop/provider 전문 및 fleet 등록 원문 미완료.",
+    "변형: immutable topology query와 설명 분리, 근거 참조 해석만으로 LLM 주장 진실 보장 금지."
+  ],
+  "fix_subagent_refs.py": [
+    "workflow markdown의 gsd subagent_type을 존재하는 kha agent로 변경",
+    "default dirs는 실제 get-shit-done 하나로 설명의 references 디렉터리와 다름. regex는 quote 균형/코드펜스/문맥을 구분하지 않으며 IGNORECASE 매칭 후 captured name case를 그대로 set에 조회해 uppercase alias는 놓칠 수 있다. --dirs 절대/../입력 confinement 없음, relative_to 오류나 잘못된 root 접근 가능. 읽기 오류는 skip하고 exit0, missing equivalent도 성공. 존재만 확인하여 agent capability/behavior 동등성은 증명하지 않는다. write_text 직접 덮어쓰기, backup/atomic/preimage guard 없음.",
+    "변형: Git migration 제안만. AST/문서 문맥 및 실제 agent contract 검증 후 적용."
+  ],
+  "fleet_atlas.py": [
+    "seam_scan 보고서를 node/edge/1hop/shared-values 파생 뷰로 집계",
+    "scan dependency가 실제 입력 범위/추출 정확성의 권위이며 전문 미완료. shared_values는 BLOCKED 제외만 하므로 DRIFT/기타 status 포함; 같은 문자열을 semantic JOIN으로 과장하면 안 됨. empty shared는 미입력/blocked 때문일 수 있는데 renderer는 fleet disjoint·ontology 불필요로 단정. nodes present는 repo_errors에 없음만 확인. sorted everywhere 주장과 달리 deferred/undeclared 입력 순서 유지, 중복 seams key/Markdown escape 검증 없음. --json도 drift/blocked에 exit0, out은 direct overwrite. YAML parser dependency/license 미확인.",
+    "변형: partial coverage/unknown과 graph evidence를 보존하는 projection. 빈 그래프를 완전성 증거로 사용 금지."
+  ],
+  "gen_pipeline_core_overlay.py": [
+    "Java stages를 core로, Flutter/Rust 차이를 overlay로 생성",
+    "gen_core는 고정7fields와 gate/skills intent만 보존하여 다른 stage 필드 누락 가능. variant에 field가 없으면 삭제 override를 만들지 않아 core 값이 남는 merge semantics 확인 필요. duplicate id는 core_by_id last-wins, applicable 중복도 보존. --check는 결과 파일과 비교하지 않고 summary만 출력 exit0; golden 동등성은 테스트 주장이지 실행 증거 아님. 기본 mode는 core+3overlay를 연속 overwrite하여 중간 실패 원자성 없음. new stack은 variant 상수 수정 필요. _pipeline_dir/core_path 실제 config merge/lib 및 golden tests 미독.",
+    "변형: 생성/검증/적용 분리. 원본 stages·생성물·merge 전체를 대조하기 전 generated-equivalence 판정 금지."
+  ],
+  "graduate_validator.py": [
+    "advisory validator의 tick/status/history 및 blocking 승격·강등 wrapper",
+    "literal env token과 backend readiness에 위임. tick는 scan/streak 쓰기라 read-only가 아니고 검출 스캔 부작용/12h dedup은 graduation 미독 의존. status는 status_report와 ready_validators 따로 읽어 불일치 가능. status/tick extra args 무시, history 숫자 여러개는 마지막 우선. graduate/demote는 TokenError/ValueError만 매핑, I/O 예외 전파. source/state 변경과 감사기록 transaction 여부 미확인. 성공 횟수/ready와 operator identity/독립 승인 구분 필요.",
+    "변형: Zeus policy promotion·lease·current revision 인수 gate로, 환경 문자열/연속 성공 횟수 권한 제외."
+  ],
+  "greenfield_spec_emit.py": [
+    "structured draft에서 feature→bundle→testgen→stack scaffold 생성",
+    "single pkg local var를 testgen/JVM scaffolder에 전달하는 D2는 실제 연결됨. 그러나 NEW out/human-approved 문구를 확인하는 gate 없음, domain name/rel test output 경로 confinement 없고 기존 feature/test를 무조건 overwrite. schema/중복 domain/id/empty scenarios/steps/newline Gherkin injection 검증 없음. _framework_for는 오류 모두 JVM fallback; lang path traversal과 unknown framework/no scaffold가 정상 summary. flutter 문서값 flutter_gherkin과 branch gherkin-dart가 다름. framework별 next명령도 항상 gradle. written_count는 spec_emit 전체 파일 미포함, 여러domain 같은 generated path 덮음 가능. 테스트 전문4개: PendingException substring와 파일/roundtrip 구조만 보며 실제 gradle RED 실행 없음; glob(...) is not None 단언 자체는 무의미하나 뒤 len검사가 보완. wrapper=False tests와 CLI defaultTrue 외부 생성의존 차이. package consistency≠행동 의미/인수완료.",
+    "변형: SDD 준비 제안만; nonempty requirements/ID authority/nooverwrite/export validation·실제 테스트 receipt 전 인수 금지."
+  ],
+  "handoff_render.py": [
+    "HANDOFF yaml phase tree render/check/anchor rewrite/subphase promote wrapper",
+    "default Path.home/.claude는 CLAUDE_HOME/asset override 미반영. mutually exclusive actions 유용하나 promote 후 anchor 갱신은 별도 수동 명령이라 문서 즉시 drift 가능. read/write OSError 전역 미처리, YAML parse render만 catch; promote/detect 일부 error 경로 별도. arbitrary path in-place 허용/preimage hash/atomic backup 없음. 재export lib 함수는 parser/render가 진짜 구현, handoff_drift 전문 미완료.",
+    "변형: Git 정의의 derived view만; 시각화 동기화≠계획 진행 증거."
+  ],
+  "harness_health.py": [
+    "skill/lint/debate/telemetry/test presence/phase/writeback/audit/operational 집계",
+    "일부 section만 fail-soft이고 skills inventory 예외는 전체 build를 깨뜨릴 수 있다. tests presence는 실행 아니라고 명시. median upper-middle/p90 discrete 선택, runtime 후보 수와 recursive inventory 다름. debate collect 두번 호출하여 pending/logged snapshot 불일치 가능. audit skip malformed/OSError로 분모 축소; 혼합ts sort 오류, top10 agent 제한. telemetry line 수는 유효event 수 아니며 write 오류를0/없음과 혼동할 수 있음. errors가 있어도 main exit0. HANDOFF home override 불일치. 백엔드 대부분 전문 미완료.",
+    "변형: source timestamp/revision/unknown denominator를 가진 monitoring projection."
+  ],
+  "harness_normalize.py": [
+    "고정16 command metadata와 계약 heading TODO 삽입",
+    "COMMANDS_DIR는 CLAUDE_HOME 사용하여 assets root와 다름. collect는 존재 파일만 반환, check는 missing16개를 검사하지 않아 empty set에도 all16 PASS. has_section은 코드펜스의 제목도 인정하고 TODO/placeholder 의미는 검사하지 않음. metadata는 실제 본문/권한과 재검증되지 않은 고정분류. frontmatter BOM/중복키/quoted values 지원제약, ensure_field 첫키만 replace. 기본 dryrun/--apply direct write, --check/--report 우선. 테스트 전문11개는 shape/idempotence/wrongfield 중심, missing files/allTODO pass 미검증. 공통 helper의 실제 공유 확인, 과거 byte-identical extraction 원본은 미확인.",
+    "변형: scaffold와 contract validation 분리; missing files/빈요구/TODO fail closed 필요."
+  ],
+  "heartbeat_check.py": [
+    "stale heartbeat 목록 수집·event emit·선택적 prune",
+    "_raw_event_emit는 lib.event_store 모듈 append를 import하지만 전문 확인한 EventStore에 그런 symbol 없음. 모든 예외 삼켜 실제 event 발행 실패가 드러나지 않고 CLI0. taxonomy emitter 실패도 raw로 fallback하여 validation 우회 시도. malformed timestamp는 skip, max-age/prune 음수 범위 검증 없음; missing≠healthy를 구분하지 않음. --json도 emit 발생, prune deletes 가능. heartbeat/taxonomy/atomic_json 추가의존 전문 미완료, 이번 실행없음.",
+    "변형: stale는 독립 event persistence receipt 확인 필요. deadman 관찰/발행 실패 상태 분리."
+  ],
+  "hud.py": [
+    "Claude statusLine stdin을 ANSI model/cwd/git/context/warnings 한줄로 표시",
+    "active debate docstring과 달리 구현에는 없음, tracked warnings도 shim 아닌 learner-candidates. git status -uno가 untracked 제외하므로0 uncommitted는 실제 clean 아님. 여러 subprocess 총 timeout은 개별3초 누적. revlist parse 실패를 ahead=behind0→synced로 표시. transcript 전체 unbounded read에서 마지막 usage를 사용, fallback20k 추정명시. _recent_warnings는 UTC Z/offset을 자르고 local mktime 처리해 timezone 오류, event severity와 무관하게 모두 warning. 모델/경로/branch 외부문자열 ANSI/control sanitization 없음. JSON scalar/type error는 hud error exit0. ASCII모드 glyph 제한은 터미널 렌더 실험미확인.",
+    "변형: Codex monitoring schema/ANSI escaping/unknown freshness 필요; context 추정치가 admission budget 아님."
+  ],
+  "ingest_docs.py": [
+    "문서 디렉터리에서 SPEC-seed/glossary 및 분류근거 생성",
+    "operator src를 이유로 liberal=True 모든md 수집; classify와 classify_explained를 따로 실행하여 중간변경 때 결과/근거불일치 가능. dryrun도 읽기/분류를 두번 수행. output mkdir+3파일 direct overwrite, 신규프로젝트/preimage/atomic transaction 없음. stdout codec guard 없음. classifier 원본/schema/선택기준/민감내용 처리 미확인. nonempty bucket이 유효요구/승인 증명 아님.",
+    "변형: source hash별 ingest 제안, 검토된 structured draft로 SDD 연결."
+  ],
+  "insight_index_cli.py": [
+    "insight 조회·단일 retract·bulk pollution retract 계획/백업",
+    "bulk는 active entry와 retracted ids를 별도읽기, plan/snapshot 사이 변경 가능. ready flag는 exists만 검사, threshold/source hash/age/actor binding 없음. index SHA는 read와 copy2 사이 원자성이 없고 timestamp filename collision 가능. 두로그 backup도 transaction아님. 실패 일부면 flag 유지, retry멱등 backend 의존. 단일 retract는 ready/backup gate 없음. reason whitespace만이어도 truthy통과. supporting detector는 burst와 fs부재만으로 pollution 확정하여 legit archived/out-of-scope 작업 손실가능.",
+    "변형: bulk mutation은 fenced evidence-bound review와 transactional tombstone. fixture 추정으로 자동 retract 금지."
+  ],
+  "insight_index_pollution_detector.py": [
+    "cofire histogram/임계 조정 제안/ready flag와 bulk detect 실행",
+    "measure tuned값은 JSON에만 저장하고 constants/flag 내용에 반영안함; detect는 항상250ms/3. bucket500 fallback 후 rule재평가도 없음, 빈entries ratio0이라 validated flag 생성. source revision/hash/TTL 없이 validated newline 파일 존재만 권위로 사용. detect --execute는 backup/retract-plan 없이 변경하므로 다른 bulk CLI의 D4 안전전제 우회. failed>0이어도 flag삭제 exit0. lib은 같은 source/event의 occupied bucket 분모로 cofire를 재지만 detection은 모든 source/event 합산이라 측정 대상도 다르다. cid 경로 '..'/absolute 제한 없음, fs존재가 실제live 증명 아님. 미실행.",
+    "제외/변형: 현 destructive cleanup 경로 채택 차단. 관찰 후보만 허용, 측정과 적용 same evidence binding 필수."
+  ],
+  "kha_alias.py": [
+    "68 gsd→kha skill body 복사/name변환 및 선택적 deprecation",
+    "description advisory 추가는 docstring과 달리 no-op. rewrite 기존name이 이미desired여도 substitution 결과==fm면 새name을 prepend하여 duplicate key 가능. source body/subfiles crossrefs를 복사/정정하지 않아 alias 독립동작 보장 없음. 기존kha 다른내용 overwrite; 동일하면 continue하여 --deprecate-source도 skip. 반복실행시 source deprecation banner를 kha본문에 복제 가능. check는 frontmatter 구간이 아닌 전체content name검색하여 body의 name으로 오인. removal-date 고정banner일뿐90일 자동검증/제거없음. origin state report/원본 gsd 라이선스 미확인, 생성물 동등성 미판정.",
+    "제외: 과거 마이그레이션 한정. 단순 name동일이 행동 동등성 아님."
+  ],
+  "kha_migrate.py": [
+    "agent rename/reference rewrite/legacy directory delete의3단계",
+    "all은 이전단계 실패에도 다음단계 계속. phase_agents name regex 전체본문 firstmatch이며 없으면 rename만됨; write후unlink failure 원자성 없음. substitution은 오른쪽경계만 있어 prefix 내부도 교체. reference guard는 알려진map과 일부md만 보고 읽기실패skip, unknown gsd/reference runtime/외부파일 누락. phase_delete는 대상kha 존재·동등성 확인 없이 모든gsd dirs 삭제, --force로 zero check우회. CLAUDE_HOME agents/commands와 assets SKILLS_DIR가 달라 다른tree를검사후삭제 가능. 경로·symlink·백업/rollback guard미흡. doc --check-zero flag실제없음.",
+    "제외: destructive migration 채택 금지. Git isolated proposal·complete correspondence·preimage verification 필요."
+  ],
+  "kha_normalize.py": [
+    "68 kha taxonomy와 mutation/longrunning metadata 및 TODO계약제목 정규화",
+    "실제 collect는 존재하는kha SKILL만; known68missing을 검증안하고 unknown은 meta(True,False)로 분류. check emptydir에도 all68PASS(없는root는예외). headings와expectedvalues만 검사하여 TODO가완성으로보임. has_section fencedexample도인정. 항목별실제툴권한/외부동작과분류맵동등성미확인. direct write_text/중복키/BOM/quotedYAML한계. reportonly/check우선, 과거state taxonomy원문미확인.",
+    "변형: metadata 후보/템플릿 생성과 behavior validation 분리."
+  ],
+  "meeting_ingest.py": [
+    "meeting decision draft→ground/coverage→bundle와 seam delta제안 생성",
+    "human-approved는arg설명뿐 receipt/actor검사없음. --phase2 boolean만으로fabrication-drop활성화, atlas>2/8 threshold실제검사없음. touched_seams draft제공scope와coverage backend에의존, emptyclaims/emptydraftschema미검증. meeting-id absolute/../로defaultout이탈가능. output2개 sequential overwrite, incomplete bundle도exit0. delta는제안파일만쓰고 registry에apply하지않는경계는확인. assemble/coverage/ground/dependency전문미완료.",
+    "변형: pinned source/approval/coverage authority와 nooverwrite proposal export 필요."
+  ],
+  "milestone_close.py": [
+    "reason/evidence 문자열로 append-only closure 기록",
+    "main은dir존재/alreadyclosed/비공백검사하지만 close() 자체는doc와달리멱등·근거검사없음. check→append비원자. actor자유입력이고사람판정충돌·repo증거truth검증없음. supporting spine sid regex는 empty/'.'/'..' 허용하여 main milestone_dir/'..'존재검사통과가능. existingclosedlastbool은stringfalse도true. dryrun도spine생성/replay telemetry부작용가능. CLI exception4 전역매핑없음.",
+    "변형: authorized closure event를immutable evidence·generation·independent acceptance에바인딩."
+  ],
+  "milestone_feedback.py": [
+    "rewind round별실패 checklist quote/human note를executor prompt로 재전달",
+    "notes(gen,item)키로이전라운드보존유용. 실제는 applied.retryable_item_ids를신뢰하고 human fail결과재검사없음. 매round last checklist만조회해다른phaseitem누락가능. missing/hashcorruptsnapshot/quote없으면silentskip후빈성공. round예산2주장에도source에상한검사없고내용길이무제한, quote/id변경과promptinstruction경계분리없음. repeated counts는중복target/events에부풀수있음. stdoutUTF8guard없음. snapshots는spine read시contenthash재검증없음.",
+    "변형: immutable artifact handle+bounded evidence context와 typed verdict 연결. 빈피드백≠실패근거없음."
+  ],
+  "milestone_liveness.py": [
+    "단일/전체milestone state의stalled를exit3으로 알림",
+    "abandoned는의도적으로exit0이나--stale-after-days/threshold에음수NaNinf를허용하여관찰suppression가능. ValueError/OSError만catch, malformedpayloadTypeError미처리. 단일sid조회도Spineconstructor가mkdir하므로읽기전용과다름. 등록미완료doc주장은현재caller검색과별도확인필요. ML assess/scan전문미완료라threshold정책/closure/liveness의미를인증안함. WindowsUnicode출력guard없음.",
+    "변형: monitor unknown/error와stalelease조건명확화; 사용자범위bounded threshold validation."
+  ],
+  "milestone_rewind.py": [
+    "human fail retryable 항목을git revert후새round원장으로 연결",
+    "spine.human_verdicts는itemtailwins acrossround, latestchecklist는gen필터없음. --repo가spine.started.repo와일치하는지확인없고explicitbase/기본msbase의ancestor/fence검사없음(known-good후보만검사). missingbase는rootcommitfallback여전히계획소실위험. known-good에human판정없는항목은bad에없어검증된지점으로남을수있음. idempotent는revert_commit문자열만보고git실재확인안함. Gitcommit성공→rewind_applied→started 사이크래시시재되감기또는gen전진영구skip가능; transaction/lock/HEAD고정없음. gitlog실패를nothingtorevert로혼동. commit실패후revert--abort반환무시,stagedinverse잔존가능. gitcommit hooks실행/mergecommit-mainline미지원등환경위험. --dryrun도Spine생성자dir/replaytelemetry쓰기가능. fullphase범위되감기원본한계유지. 테스트·MG/item_keys의존미독이며실행금지.",
+    "제외/변형: 현재repo운영rollback채택차단; Zeusfencing·Git exactrevision·durable saga와검증된복원receipt필요."
+  ]
+}

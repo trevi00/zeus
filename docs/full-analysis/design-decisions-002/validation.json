@@ -1,0 +1,22 @@
+{
+  "kind": "reviewer_metadata_validation_not_source_test",
+  "partition": "harness-design:design/decisions:002",
+  "scope_sha256": "812a0521dbbedf0ec5963084e6f43fa82671dd95c72ae1e3f224dff9460ffa92",
+  "path_count": 19,
+  "body_review_count": 19,
+  "bytes": 103013,
+  "manifest_sha256_matches": 19,
+  "git_blob_matches": 19,
+  "review_heading_matches": 19,
+  "supporting_files": 26,
+  "source_tests_executed": 0,
+  "executed_foreign_commands": 0,
+  "source_revisions": {
+    "harness": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "harness-design": "20147dde412c1f2d84178d5c3665157ced1e7334"
+  },
+  "primary_status_counts": {
+    "body_reviewed_call_test_trace_pending": 19
+  },
+  "conclusion": "본문 검토와 해시/목록 대조만 완료. 전체 추적·실행·흡수 완료 아님."
+}

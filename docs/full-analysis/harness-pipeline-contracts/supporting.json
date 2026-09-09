@@ -1,0 +1,341 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/lib/completion_line.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "c907760863a4e6055e9ec4f70362ed24d138115c14028c8a6a323600f48a2b62",
+    "read_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/completion_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "27615a64724e24fc84f69fc05de582093879487116cd004e3d221d52e54336e9",
+    "read_ranges": [
+      [
+        1,
+        112
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/checks.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27",
+    "read_ranges": [
+      [
+        1,
+        284
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/roster.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "450e5a5ce5227679d5b98e4ccdc4eca4e44950aab95f8daf18a49ca702c88756",
+    "read_ranges": [
+      [
+        1,
+        27
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/candidate_binding.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "1be14e936f7715be01db58f836223f453fa5e9b4ed17f7894c825417d96752af",
+    "read_ranges": [
+      [
+        1,
+        135
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/pipeline_loader.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "8731d0d2325e1cc293269a27f8e21eeb58ed8555cacecab130c27460a2ea601c",
+    "read_ranges": [
+      [
+        1,
+        467
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/paths.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "read_ranges": [
+      [
+        1,
+        123
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/ontology_validator.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "f3e51e7faa92861e38a95499fd06b02bccf4dcace81a8d9e73b999399df28d08",
+    "read_ranges": [
+      [
+        1,
+        218
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/gate_runner.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "b0781fd1e40d0d7970f426c20ad0d47febffeaf38ad19a1cec9b199589070e59",
+    "read_ranges": [
+      [
+        1,
+        179
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/profile.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "2d390d1d06005ed906f2ed06eacbf93d19b71f06ba8792e5b5042f45b70984aa",
+    "read_ranges": [
+      [
+        1,
+        24
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/params.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "902305b0f5fc5a019bbc0d10bf2bc5d05b288d9b9463b4439f91b30ffae9d14b",
+    "read_ranges": [
+      [
+        1,
+        158
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/graph_queries.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "f4b93486880f467c1c001b4149589a432af81cca738f2284055e1690fc874152",
+    "read_ranges": [
+      [
+        1,
+        133
+      ],
+      [
+        383,
+        417
+      ]
+    ],
+    "full_body_read": false,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/harness_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "read_ranges": [
+      [
+        395,
+        519
+      ],
+      [
+        1031,
+        1100
+      ]
+    ],
+    "full_body_read": false,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/step_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "274043786f6517abbe5012a69c4af65efee80f03f2ab7aabe93d480b91b06d7b",
+    "read_ranges": [
+      [
+        265,
+        334
+      ],
+      [
+        460,
+        507
+      ]
+    ],
+    "full_body_read": false,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/re_anchor.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "d719e272ea860fb7aacd25ff54ee1b0435896c0353a0f5cb19e232b32a31d49f",
+    "read_ranges": [
+      [
+        142,
+        184
+      ]
+    ],
+    "full_body_read": false,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/spiral_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "ae2544523614c9c3ddcc64d3b5b78954397ff57420e7dee8926fb07165d03f97",
+    "read_ranges": [
+      [
+        80,
+        124
+      ]
+    ],
+    "full_body_read": false,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/arming.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "sha256": "18fcbea068dfcfbc3895f75321770130071e81d05b8df709f30716fac2cfdbab",
+    "read_ranges": [
+      [
+        94,
+        233
+      ],
+      [
+        348,
+        434
+      ],
+      [
+        495,
+        763
+      ]
+    ],
+    "full_body_read": false,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "zeus",
+    "path": "docs/zeus/full-delivery-scope.md",
+    "revision_basis": "working_tree_bytes_at_review",
+    "head_at_review": "4cb7d02df13d7621d47f0324ae121649982db7b2",
+    "sha256": "bded83d62a9e4a5d470febb47ad30cff5b737cc104607a8d4fc9a08f9ebee6f6",
+    "read_ranges": [
+      [
+        1,
+        19
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "zeus",
+    "path": "docs/sdd/README.md",
+    "revision_basis": "working_tree_bytes_at_review",
+    "head_at_review": "4cb7d02df13d7621d47f0324ae121649982db7b2",
+    "sha256": "f296a0fa304a85d27343fccf5b64f2fc1b1574f10d3613be223c2dd4e5aaaab8",
+    "read_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/domain/sdd.py",
+    "revision_basis": "working_tree_bytes_at_review",
+    "head_at_review": "4cb7d02df13d7621d47f0324ae121649982db7b2",
+    "sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+    "read_ranges": [
+      [
+        1,
+        202
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/resources/organization.json",
+    "revision_basis": "working_tree_bytes_at_review",
+    "head_at_review": "4cb7d02df13d7621d47f0324ae121649982db7b2",
+    "sha256": "f6550a19355c69830fba72d34c222a2505d3267986c54f56f8d1a7574b9abb3e",
+    "read_ranges": [
+      [
+        1,
+        40
+      ]
+    ],
+    "full_body_read": true,
+    "executed": false,
+    "counts_in_61": false
+  }
+]

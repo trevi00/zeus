@@ -1,0 +1,172 @@
+## 1. 전문 읽은 범위
+
+**지정 4개 (전량 1회독, 분할 없이 전체가 한 번에 들어옴)**
+
+| 파일 | 줄 수 | 읽은 주요 심볼 |
+|---|---|---|
+| `skills/_common/skill-distillation-pipeline.md` | 127 | frontmatter 12필드, 5단계 P1~P5, research level L1/L2/L3 표, 9축 표, Gotchas 6, Source 5 |
+| `skills/_common/skill-lint-workflow.md` | 122 | frontmatter 9필드, 의사결정 트리 5블록, 도구 매트릭스, Locked invariants 10, Gotchas 5 |
+| `scripts/validators/skill_quality_axes.py` | 269 | `MANDATORY_PREFIXES`, `REQUIRED_SECTIONS`, `REQUIRED_AXES_LABELS`, `KNOWN_STACKS`, `SECRET_PATTERNS`, `_is_mandatory_prefix`, `_is_enforced`, `_build_skill_index`, `_check_quality_axes`, `main` |
+| `scripts/cli/skill_trigger_eval.py` | 243 | `RECALL_FLOOR`, `PRECISION_FLOOR`, `discover_candidates`, `score_one`, `run_eval`, `winner_of`, `_verdict`, `render_text`, `main` |
+
+**판단 근거로 추가 전문 읽은 pinned 파일** (범위 차이·계약 확인 목적)
+
+- `scripts/lib/skill_score.py` (270) — `score_skill`, `HIGH_DF_INTENT`, `intent_in_prompt`, `_intent_covers_keyword`, `_path_segment_match`
+- `scripts/handlers/prompt/skill_match.py` (618) — `main`, `collect_skill_files`, `match_skill`, 계층 주입 로직
+- `scripts/lib/frontmatter.py` (62) — `parse_frontmatter` 계약
+- `scripts/lib/frontmatter_norm.py` (60) — `split_list_field`
+- `scripts/lib/paths.py` (257) — `SKILLS_DIR`/`ASSETS_HOME` 해석
+- `scripts/validators/__init__.py` (123) — validator 계약, `_BUILTIN` 등록
+- `scripts/tests/test_skill_quality_axes.py` (249), `scripts/tests/test_skill_trigger_eval.py` (234)
+
+읽지 않은 것: `lib/skill_token_budget.py`, `lib/threshold_policy.py`, `lib/pipeline_stage_picker.py`, `lib/tech_stack.py`, `cli/skill_lint_report.py`, `cli/debate_doubts.py`, `lib/advisory_ack.py`, `tests/test_skill_lint.py`. 라이브 설정·credentials·세션 미열람. 테스트 미실행. 외부 URL 미검증.
+
+---
+
+## 2. 발견 및 근거
+
+### A. 평가 지표 수식
+
+**A1. `precision`이 precision이 아니다 (심각).**
+`skill_trigger_eval.py:144`는 `precision = precision_pass / len(near_miss_results)`이고, `precision_pass`는 `should_not_trigger` 중 target이 **매칭 안 된** 건수(L138)다. 이는 TN/(TN+FP) = **특이도(specificity)**이지 TP/(TP+FP)가 아니다. 진짜 precision은 `recall_pass / (recall_pass + FP)`여야 한다. 결과적으로 L145의 `f1 = 2·recall·precision/(recall+precision)`은 재현율과 특이도의 조화평균이며 **F1이 아니다**. `render_text`(L180-183)와 PR 첨부 관행(lint-workflow L118)이 이 숫자를 "precision/f1"로 사람에게 제시한다 — Zeus의 "사람이 이해할 수 있는 결과" 요건에 대해 이름이 의미를 오도한다.
+
+**A2. 동점 시 target이 항상 이긴다 → recall 상향 편향.**
+`winner_of`(L98-107)는 target을 리스트에 **먼저** append한 뒤 `sort(key=lambda x: -x[1])`를 쓴다. Python sort는 안정 정렬이므로 target과 경쟁 스킬이 동점이면 target이 winner로 뽑힌다. `passes = target_match and winner == target_name`(L123)이므로 동점 상황이 전부 OK로 계상된다. 프로덕션에는 "winner" 개념 자체가 없으므로(§C1) 이 편향은 실제 안전마진과 대응하지 않는다.
+
+**A3. `suggested_min_score`가 순환적이다.**
+L148-149는 `passes`인 트리거들의 최소 `target_score`를 제안하는데, `passes`는 `target_match`(= `score >= 현재 min_score`)를 요구한다. 따라서 제안값은 **항상 현재 min_score 이상**이다. lint-workflow L26 "FAIL 시 keyword 추가/min_score 조정"에서 recall 미달을 min_score 인하로 고치려는 경우, 도구는 원리적으로 그 값을 제안할 수 없다. 미달 쿼리의 target_score(제안에 필요한 유일한 정보)는 계산해 놓고도 버려진다.
+
+**A4. 빈 집합의 기본값이 PASS 쪽으로 기운다.**
+L144에서 `should_not_trigger`가 비면 precision=1.0. L143에서 `should_trigger`가 비면 recall=0.0 → FAIL_RECALL. 즉 `{"should_trigger": ["아주 특이한 토큰"], "should_not_trigger": []}` 한 줄이면 recall 1.0 / precision 1.0 / PASS(exit 0)다. lint-workflow L22가 요구하는 **"should-trigger 7+ / should-NOT-trigger 5+"는 코드 어디에서도 강제되지 않는다.** 문서상의 게이트가 도구상의 게이트가 아니다.
+
+**A5. 후보 집합이 결과를 좌우하는데 기본값이 "전체"다.**
+`discover_candidates(scope=None)` → SKILLS_DIR 전체(L49-50). winner 비교는 후보 집합에 전적으로 의존한다. 같은 저장소의 `lib/skill_score.py:170-184` 주석이 **이미 이 오류를 자인**하고 있다: "처음 보고한 '정밀도 0.769 → 0.833'은 **틀린 측정**이었다 — 평가가 tech-stack 필터를 안 걸어 후보를 305개로 봤는데 프로덕션은 95개다." 그 교훈이 `skill_trigger_eval`에는 반영되지 않았다(tech-stack 필터 없음, 기본 scope 전체). lint-workflow L23은 `--candidates _common`을 예시로 주지만 근거·강제는 없다.
+
+### B. 문서와 검사기의 조건 일치
+
+**B1. 공개된 P5 스텁을 그대로 복사하면 게이트가 꺼진다 (심각).**
+distillation P5(L77)는 `quality_axes_enforced: true   # _common/ 위치 시 명시`를 스텁으로 제시한다. `parse_frontmatter`(frontmatter.py:47-50)는 `key: value`를 첫 `:`에서 자르고 **주석을 제거하지 않는다** → 값은 `"true   # _common/ 위치 시 명시"`. `_is_enforced`(skill_quality_axes.py:96-98)는 `flag.strip().lower() in {"true","yes","1"}`를 요구하므로 **False**를 반환하고, 스킬은 조용히 9게이트 밖으로 나간다. 같은 문서의 Gotcha "quality_axes_enforced 누락"(L108-109)은 플래그를 빠뜨리는 경우만 경고하고, **문서가 스스로 배포한 스텁이 그 플래그를 무력화한다**는 사실은 다루지 않는다. distillation 문서 자신의 frontmatter(L12)는 주석이 없어 enforce된다 — 즉 저자만 통과하고 복제자는 조용히 빠지는 비대칭이다.
+
+**B2. `requires`/`tech-stack`이 `split_list_field`를 쓰지 않는다 — 두 문서가 서로 모순.**
+lint-workflow L20/L94/L105-106은 "YAML list `[a, b, c]`도 허용 (`lib/frontmatter_norm.split_list_field`가 정규화)", "2026-05-05 fix 후 자동 정규화 (해결됨)"이라고 명시한다. 그러나 `skill_quality_axes.py:149`는 `str(req_raw).split()`, L199는 `str(ts_raw).replace(",", " ").split()`로 **raw 문자열을 직접 쪼갠다**. `parse_frontmatter`는 계약상 raw string만 돌려준다(frontmatter.py:20). 따라서 `requires: [doc-writer, code-quality]`는 토큰 `['doc-writer,`, `code-quality]`가 되어 **G9 오탐 2건**, `tech-stack: [any]`는 `[any]`로 **G8 오탐**이 된다. "해결됨"은 매처 경로에 한정된 사실이고 검사기 경로에는 적용되지 않는다.
+
+**B3. `MANDATORY_PREFIXES` 목록이 코드와 문서 3곳에서 어긋난다.**
+코드 L48은 `("data/", "infra/", "ml/", "systems/")` 4개. 같은 파일 docstring L17은 `(data/, infra/, ml/)` 3개. `test_skill_quality_axes.py` docstring L5도 3개. `systems/` 트리가 언제부터 강제 대상인지 문서 어디에도 없다. distillation L28은 목록을 열거하지 않아 이 드리프트를 잡아주지 못한다.
+
+**B4. "9 unit test"가 "9 게이트 커버"를 의미하지 않는다.**
+distillation L53은 "`python tests/test_skill_quality_axes.py` 9 unit test 먼저 — validator 자체 회귀 차단"이라 적어, 게이트 수와 테스트 수의 일치가 커버리지를 함의하는 것처럼 읽힌다. 실제 9개 테스트(L222-231)가 검증하는 게이트는 **G4, G6, G7, G8, G9뿐**이다. **G1(Source 0건), G2(250줄/8192바이트 초과), G3(requires 0개·frontmatter 파손), G5(Gotchas < 3)에는 음성 테스트가 하나도 없다.** 임계값 `MAX_LINES`/`MAX_BYTES`/`MIN_GOTCHAS`/`MIN_REQUIRES` 어느 것도 잠겨 있지 않다.
+
+**B5. G1은 "인용"을 검사하지 않고, G7은 "표"를 검사하지 않는다.**
+G1(L163-170)은 `## Source` 이후 `-`로 시작하는 줄이 1개 이상인지만 본다. verbatim quote·조회 날짜·URL 존재 어느 것도 안 본다. distillation P2(L61)의 `"<exact quote>" — <URL> (조회 YYYY-MM-DD)` "형식 강제"는 **사람 규범이지 기계 게이트가 아니다** (해당 Gotcha L105-106이 이를 부분적으로 자인한다). G7(L187-192)은 9개 라벨의 **substring 존재**만 본다 — 표가 전혀 없는 산문 한 문단에 9개 단어를 나열해도 통과한다. 부수적으로 블록 경계 `after.split("## ", 1)[0]`은 `"### "`가 `"## "`를 부분문자열로 포함하므로 **다음 `###` 소제목에서도 잘린다**(현재 배치에선 무해하나 절 순서가 바뀌면 조용히 오작동).
+
+**B6. G6의 http 검사가 Source 절 안으로 한정되고, `file://`는 무제한 허용된다.**
+`_HTTP_INSECURE.search(src_block)`는 `if "## Source" in text:` 블록 안(L163-172)에만 있다. Source 절이 없으면 G4만 울리고 G6은 아예 실행되지 않으며, 본문 다른 곳의 `http://`는 검사되지 않는다. 그리고 distillation 자신의 Source 4·5번(L125-126)은 `file:///C:/Users/user/.claude/...` — **다른 사용자 계정의 하드코딩된 Windows 절대경로**다. 독립 검토자가 열 수 없고, WSL/Linux에서는 존재하지 않으며, "출처·버전·증거"라는 Zeus 요건에 대해 검증 불가능한 인용이다. G6/G1 어느 게이트도 이를 잡지 않는다.
+
+**B7. validator 계약과 실제 스캔 대상이 어긋난다 (이식성·재현성 핵심).**
+`validators/__init__.py:3-6, 14-18`의 계약은 "os.getcwd() == project root를 읽는다 / cwd를 프로젝트 루트로 두고 호출"이다. 그러나 `skill_quality_axes.main()`은 **cwd를 전혀 보지 않고** `lib.paths.SKILLS_DIR`, 즉 `ASSETS_HOME/skills`(paths.py:150-152, `CLAUDE_ASSETS_HOME` 또는 `__file__`의 parents[2])를 스캔한다. 프로젝트 CI에서 이 blocking validator(`_BUILTIN`에 등록, `__init__.py:62`)를 돌리면 **저장소가 아니라 운영자의 홈 스킬 트리를 채점한다.** 결과는 실행 머신의 설치 스킬 집합에 의존하므로, Astra→Sol→Terra가 "동일 검증 조건"을 만족했다고 말할 근거가 되지 못한다. `_build_skill_index`(L102-117)의 G9 판정도 같은 이유로 머신 의존적이다.
+
+**B8. `inspected=0`이면 공허한 PASS.**
+enforce 대상이 하나도 없어도 L261-265는 `[PASS] skill_quality_axes 9게이트 통과 (inspected=0)`를 출력한다. B1(주석 스텁)·B7(다른 트리 스캔)과 결합하면 "9게이트 통과"가 아무것도 검사하지 않은 상태를 뜻할 수 있다. 사람이 읽는 문장이 검사량을 드러내긴 하나(`inspected=`), PASS/FAIL 스크레이프는 이를 구분하지 못한다.
+
+**B9. 실패 시 요약줄이 없고 종료코드가 항상 0.**
+L260의 `suffix`는 `total_fails > 0`일 때 계산되지만 L261의 `if total_fails == 0:` 안에서만 쓰여 **사실상 죽은 코드**다. 실패 시 요약 한 줄이 없어 호출자는 `[FAIL]` 라인 스크레이프에 전적으로 의존한다(계약상 의도된 바이나, `suffix` 잔재는 원래 실패 요약을 출력하려 했다가 누락된 흔적으로 보인다).
+
+**B10. import 시점 `sys.stdin.reconfigure` (L32) → "never raises" 계약 위반 가능.**
+이 validator는 stdin을 읽지 않는다. 그런데 `get_validator()`가 `import_module`을 하는 순간 이 줄이 실행되고, stdin이 없는 실행 컨텍스트(pythonw, 일부 CI/서비스 러너에서 `sys.stdin is None`)에서는 **AttributeError가 import 밖으로 전파**된다. docstring L23-24 "never raises; failures via stdout"와 `__init__.py:5-6`의 계약을 깬다. (`skill_trigger_eval`은 같은 호출을 `main()` 안에 두어 이 문제가 없다 — 두 파일의 처리가 다르다.)
+
+**B11. 절차서 자신이 자기 규범에서 면제되어 있다.**
+`skill-lint-workflow.md`의 frontmatter에는 `requires`, `tech-stack`, `quality_axes_enforced`가 **없고** `_common/`은 mandatory prefix 밖이므로 9게이트 대상이 아니다. 본문에도 `## 가이드`, `## 9축 품질 체크`, `## Source` 절이 없다. 만약 이 문서를 enforce 대상으로 켜면 **G3(requires 0), G4(3개 절 누락), G7(9라벨 전부 누락), G8(tech-stack empty), G1** 이 즉시 실패한다. 두 문서가 같은 `_common/`에 있으면서 한쪽만 게이트를 받는 이 비대칭은 문서 어디에도 근거가 적혀 있지 않다.
+
+### C. 실제 스킬 선택·프롬프트 주입과 평가기의 범위 차이 (가장 중요한 축)
+
+**C1. 프로덕션에는 "winner"가 없다. 평가기 PASS는 주입을 인증하지 않는다.**
+`skill_match.main()`(skill_match.py:392-393)은 `is_match`인 **모든** 스킬을 `matched_skills`에 넣는다. 승자독식이 아니다. 그 다음 계층 분기(L407-416)에서 `base_scores[name] >= FULL_BODY_MIN_SCORE`(기본 3, L60-64) **그리고** `len(full_skills) < FULL_BODY_TOP_K`인 것만 전문 주입되고, 나머지는 `<related-skills>` 한 줄 포인터가 된다(L520-548). 따라서:
+- target이 **score 2로 winner**여도 평가기는 PASS를 주지만, 프로덕션에서는 본문이 주입되지 않고 포인터로만 나타난다. 스킬 지침이 실제로 모델에 도달했다는 보증이 **전혀 없다.**
+- 반대로 target이 **경쟁에서 져도** score 3 이상이고 TOP_K 안이면 프로덕션에서는 정상 주입된다. 평가기는 이를 MISS로 계상해 recall을 낮춘다.
+즉 `verdict: PASS`는 "이 스킬이 저 프롬프트에서 지침으로 작동한다"를 의미하지 않는다. Zeus의 "지표나 형식 검사만으로 실제 기능을 인증하지 말 것"에 정확히 걸리는 지점이다.
+
+**C2. 4개 채점 차원 중 2개가 구조적으로 항상 0.**
+`score_one`(L83)은 `score_skill(meta, prompt.lower(), set(), {})` — `detected_paths`는 항상 빈 집합이다. `skill_score.score_skill` L248의 `if skill_paths and detected_paths:`와 L258의 `if patterns and detected_paths:` 때문에 **paths(+2)와 patterns(+1)은 절대 점수를 내지 못한다.** 프로덕션은 `extract_paths_from_prompt`(skill_match.py:113-126)로 프롬프트에서 경로를 뽑고 `read_file_head`로 파일 내용까지 본다. 결과적으로 평가기는 항상 프로덕션보다 **약한 신호 집합**으로 채점한다.
+구체 사례: `skill-lint-workflow.md` 자신이 `paths: skills/_common skills/java …`, `patterns: skill_lint skill_trigger_eval debate_doubts`, `min_score: 3`을 선언한다. 이 스킬을 자기 도구로 평가하면 최대 +2/+1 신호가 사라진 채 min_score 3을 넘겨야 한다. 문서의 자기 일관성 Gotcha(L114-115 "자기 도구로 자기 스킬 측정")가 요구하는 자기증명이 이 차원 누락 때문에 **원리적으로 프로덕션과 다른 조건에서 수행된다.**
+
+**C3. 후보 수집 규칙이 프로덕션과 다르다.**
+프로덕션 `collect_skill_files`(L256-308)는 tech-stack `active_paths`가 있으면 **해당 서브디렉터리만** 훑고, 없으면 재귀 폴백하며, 키는 **상대경로**이고, `_`로 시작하는 파일을 제외한다. 평가기 `discover_candidates`(L48-76)는 tech-stack을 모르고, `readme/changelog/todo.md`와 `_template*`만 제외한다 — 즉 `_index.md`나 `_`로 시작하는 다른 파일을 **경쟁자로 포함**하고, `<dir>/SKILL.md`의 이름을 `md.stem`("SKILL")으로 잡아 프로덕션의 `name`/디렉터리명 해석(skill_match.py:374-378)과 어긋난다. 여러 `SKILL.md`가 있으면 winner 표시가 전부 `SKILL`로 겹친다.
+
+**C4. 파이프라인 부스트와 tunable 임계가 평가기에 없다.**
+프로덕션은 파이프라인 단계 스킬에 `+3`을 주고 `is_match = True`로 **강제 매칭**시킨다(skill_match.py:387-390). 또 `FULL_BODY_MIN_SCORE`는 `lib/threshold_policy.resolve_threshold`로 **런타임에 오버라이드 가능**하다(L60-64). 평가기는 둘 다 모른다. 따라서 lock-in 테스트가 잠그는 것은 "매처 정확도"가 아니라 "부스트·임계·경로·패턴·스택 필터를 제거한 축약 모델에서의 상대 순위"다.
+
+**C5. 같은 잘못된 입력에 대해 두 경로의 행동이 갈린다.**
+`score_skill` L269 `int(meta.get("min_score","1"))`는 비정수 값에서 ValueError를 던진다. 프로덕션은 `main()` 전체가 `try/except: pass`(skill_match.py:611-612)로 감싸져 있어 **스킬 주입 전체가 조용히 사라진다**(fail-open, 무경고). 평가기는 예외가 그대로 올라와 traceback으로 죽는다. 어느 쪽도 "min_score가 잘못됐다"고 사람에게 말해주지 않는다.
+
+### D. 필수 항목과 누락의 처리
+
+**D1. 하나의 원인이 여러 게이트 실패로 증폭된다.**
+frontmatter 파싱 실패 시 `meta = {}`가 되어 G3(frontmatter missing) + G3(requires 0) + G8(tech-stack empty)이 동시에 뜨고, `total_fails`가 3 증가한다(L141-157, L198-208). 사람이 읽는 출력에서 "3개 게이트 위반"이 실제로는 "BOM 아닌 이유로 `---` 파싱 실패 1건"일 수 있다. `total_fails`는 위반 스킬 수가 아니라 **메시지 수**이므로 보고 숫자로 쓸 때 오도된다.
+
+**D2. 절 누락과 내용 부실의 게이트 귀속이 어긋난다.**
+`## Source`가 아예 없으면 G4-usability만 뜨고 **G1-evidence는 영원히 뜨지 않는다**(L163 가드). `## Gotchas`가 없어도 마찬가지로 G5는 침묵한다(L174). 문서(distillation L4-13 게이트 정의, "G1 Source ≥1 인용", "G5 Gotchas ≥3")는 이 귀속 규칙을 설명하지 않아, FAIL 목록만 보는 검토자는 "G1/G5는 통과했다"고 오독할 수 있다.
+
+**D3. `_`로 시작하는 파일 제외가 두 방향으로 영향을 준다.**
+`_build_skill_index`(L108-109)와 `main`(L224)이 `_`로 시작하는 파일을 건너뛴다. 따라서 distillation L49가 권하는 `_index.md`는 **G9 대상 인덱스에 등록되지 않아**, 다른 스킬이 `requires: <_index의 name>`을 쓰면 orphan으로 오탐된다. 반대로 `_`로 시작하는 스킬은 `quality_axes_enforced: true`를 붙여도 영원히 검사되지 않는다.
+
+---
+
+## 3. 반례 입력 설계 (설계만, 실행하지 않음)
+
+각 항목은 격리된 임시 SKILLS_DIR(테스트가 이미 쓰는 monkey-patch 방식)에서 재현 가능하도록 설계했다. **어느 것도 실행하지 않았고 결과를 관측하지 않았다.** 아래 "예상"은 읽은 코드로부터의 연역이다.
+
+| # | 대상 | 입력 | 코드상 예상 | 드러내는 발견 |
+|---|---|---|---|---|
+| R1 | `_is_enforced` | `data/` 밖 `_common/x.md`에 P5 스텁을 **글자 그대로** `quality_axes_enforced: true   # _common/ 위치 시 명시`로 넣고 본문은 빈 파일 | enforce=False → 검사 0건, `[PASS] (inspected=0)` | B1 |
+| R2 | G9/G8 | `requires: [doc-writer, code-quality]`, `tech-stack: [any]` (YAML list), 나머지 완비 | `G9 requires '[doc-writer,' has no target` + `G9 'code-quality]'` + `G8 unknown ['[any]']` | B2 |
+| R3 | G7 | 9축 표를 지우고 `## 9축 품질 체크` 아래 산문 한 줄: "기능 적합성 성능 효율성 호환성 사용성 신뢰성 보안 유지보수성 이식성 확장성 모두 고려했다" | G7 통과 | B5 |
+| R4 | G1/G5 | `## Source`와 `## Gotchas` 절을 통째로 삭제 | G4만 2건, G1·G5 무발화 | D2 |
+| R5 | G2 | 정확히 250줄 + 끝 개행 1개인 파일 / 동일 내용의 CRLF 사본 | LF판 `line_count=251` FAIL; CRLF판은 바이트 +250으로 8192 경계 판정이 LF판과 다름 | F: `text.count("\n")+1` off-by-one, Windows/Linux/WSL 판정 불일치 |
+| R6 | G6 | 본문 중간에 `http://example.com`, Source 절에는 `file:///C:/Users/other/...`만 | G6 무발화, G1 통과 | B6 |
+| R7 | 계약 | `CLAUDE_ASSETS_HOME`을 저장소 밖으로 둔 채 임의 cwd에서 `run_validator('skill_quality_axes')` | cwd와 무관하게 홈 트리 채점 | B7 |
+| R8 | 이식성 | `sys.stdin = None` 상태에서 `get_validator('skill_quality_axes')` | import 시 AttributeError 전파 | B10 |
+| R9 | 지표 | `should_trigger`에 target 전용 희귀 토큰 1개, `should_not_trigger: []` | recall 1.0 / precision 1.0 / **PASS, exit 0** | A4 |
+| R10 | 지표 | target과 경쟁 스킬이 **정확히 동점**이 되는 프롬프트 (양쪽 keyword 1개씩) | target이 winner → OK 계상 | A2 |
+| R11 | 지표 | `min_score: 3`인 target, 모든 트리거에서 score 3~4, 근접오답 5개에서 score 0 → PASS. 같은 스킬을 `should_not_trigger` 쿼리 하나에서 score 2로 만들기 | PASS인데도 프로덕션 기준 전문 주입 여부는 미지(2점이면 포인터) | C1 |
+| R12 | 차원 | frontmatter가 `paths`/`patterns`에만 신호를 두고 keywords/intent는 비운 스킬 + 그 경로를 언급하는 프롬프트 | 평가기 target_score 0, recall 0 (FAIL_RECALL) / 프로덕션은 +2 매칭 | C2 |
+| R13 | 범위 | `--candidates` 생략 vs `--candidates _common` vs tech-stack 활성 트리만, 동일 쿼리 3회 | winner·recall 상이 | A5 |
+| R14 | 경계 | SKILLS_DIR 밖(임시 디렉터리 또는 다른 드라이브)의 target에 `--candidates tree` | `relative_to` ValueError 미포착 traceback | F21 |
+| R15 | 순환 | recall 미달인 쿼리 집합에서 `--json`의 `suggested_min_score` 관찰 | 항상 현재 min_score 이상, 인하 제안 불가 | A3 |
+| R16 | 일관성 | `skill-lint-workflow.md`에 `quality_axes_enforced: true`(주석 없이) 추가 | G1·G3·G4×3·G7×9·G8 다발 실패 | B11 |
+| R17 | fail-open | `min_score: high` (비정수) | 평가기 traceback / 프로덕션은 훅 출력 전무(무경고) | C5 |
+
+---
+
+## 4. 적응 후보 (Zeus 관점, 채택 결정 아님)
+
+가치가 실재하는 부분: **9축을 파일 단위 기계 게이트로 내린 발상**, **enforce를 prefix + opt-in flag 두 경로로 분리한 wear-down**, **trigger eval을 PR 산출물로 요구하는 운영 규범**, **`HIGH_DF_INTENT` 같은 실측 기반 IDF 보정과 그 정정 이력을 코드 주석에 남기는 습관**(skill_score.py:170-184는 자기 측정 오류를 공개 정정한 모범 사례다).
+
+가져온다면 다음 수정을 전제로 해야 한다고 본다.
+
+1. **지표 이름을 사실에 맞춘다** — 현재의 `precision`을 `specificity`로 개명하거나 진짜 precision을 계산한다. `f1`은 어느 쪽이든 재정의 없이는 출력하지 않는다. (A1)
+2. **PASS 문구에서 "주입/작동" 함의를 제거한다.** 평가기는 "축약 모델에서의 상대 순위"를 잰다고 출력에 명시하고, 프로덕션 기준 `base_score >= FULL_BODY_MIN_SCORE` 도달 여부를 별도 컬럼으로 병기한다. (C1)
+3. **detected_paths/patterns를 쿼리 스키마에 넣는다** — `{"query":…, "paths":[…]}` 형태로 확장하지 않으면 4차원 중 2차원이 영구 사각이다. (C2)
+4. **후보 집합을 명시 기록**한다 — 결과 dict에 후보 목록의 개수·스코프·해시를 넣어 "어떤 집합에서 잰 숫자인가"를 사람이 판별할 수 있게 한다. (A5)
+5. **쿼리 최소 개수를 코드에서 강제**한다(문서의 7+/5+). 빈 `should_not_trigger`는 PASS가 아니라 오류. (A4)
+6. **동점 시 target을 지게 만든다**(보수적 tie-breaking). (A2)
+7. **검사기 입력을 cwd 기준 저장소로 고정**하고, `SKILLS_DIR` 전역 스캔은 명시 옵션으로만 허용한다. Astra→Sol→Terra 동일 조건 요건은 이 수정 없이는 성립하지 않는다. (B7)
+8. **frontmatter 리스트 파싱을 `split_list_field`로 단일화**하고, 값에서 `#` 이후 주석을 제거하거나 최소한 P5 스텁에서 인라인 주석을 뺀다. (B1, B2)
+9. **G1/G2/G3/G5 음성 테스트를 추가**하고 임계값을 잠근다. "테스트 9개"를 "게이트 9개 커버"로 읽는 문구를 문서에서 고친다. (B4)
+10. **G2를 줄바꿈 정규화 후 측정**(CRLF/LF 무관), 줄 수는 `len(splitlines())`. Windows/Linux/WSL 동일 판정의 최소 조건. (R5)
+11. **`file://` 로컬 절대경로 인용을 G1에서 불충분 처리**하고, 인용은 최소한 URL+조회일 형식을 기계 검사한다. 다른 계정 경로가 증거로 통과하면 "출처·증거를 가진 스킬" 요건이 형해화된다. (B6)
+12. **lock-in 테스트의 라이브 홈 의존 제거** — `test_qa_boundary_self_eval_passes_recall_floor`는 파일이 없으면 조용히 `return`하므로 다른 머신에서는 항상 공허하게 통과한다. 픽스처를 저장소 안에 둬야 회귀 방지가 실제로 작동한다. (F19)
+
+---
+
+## 5. 미검증 / 이 결과가 아닌 것
+
+- **테스트를 실행하지 않았다.** 위 "예상"은 전부 코드 독해에서 나온 연역이며 관측이 아니다. R1~R17은 설계일 뿐 결과가 없다.
+- **외부 링크(iso25000.com, himalayas.app, docs.anthropic.com)를 새로 조회하지 않았다.** distillation Source의 조회일·인용 정확성은 미검증이다. `file:///C:/Users/user/...` 두 항목은 원리적으로 이 환경에서 확인 불가하다.
+- **파일 크기(바이트)를 측정하지 않았다.** 두 `_common` 문서가 G2의 8192바이트 예산 안에 있는지는 확인하지 않았다 — 한국어 UTF-8은 글자당 3바이트라 여유가 크지 않다는 점만 지적한다.
+- **읽지 않은 모듈에 의존하는 주장은 하지 않았다**: `skill_token_budget`(`MAX_CONTEXT_CHARS`, `FULL_BODY_TOP_K`, `PER_BODY_CAP`의 실제 값), `threshold_policy`, `pipeline_stage_picker`, `tech_stack.load_tech_stack`, `telemetry_log`. C1/C4의 논지는 `skill_match.py` 안에서 확인 가능한 분기 구조에만 근거한다.
+- **lint-workflow가 참조하는 `skill_lint_report`, `debate_doubts`, `advisory_ack`, `engine.trigger_summary`, `GRANDFATHERED_PATHS`, R002/R003, snapshot `89f6af6e...`, `BASELINE_SHORT_DESCRIPTION_RATIO_CONV = 0.0070` 등 Locked invariants 10개는 전부 미검증이다.** 문서가 주장하는 debate 세션 ID들도 확인하지 않았다.
+- **`sys.stdin is None` 시나리오(B10)는 코드 경로상의 가능성**이며 이 환경에서 재현하지 않았다.
+- **이것은 전체 하네스 검토가 아니다.** 지정된 4개 파일과 그 직접 의존/테스트 8개만 본 결과다. **채택 승인도, 어떤 파일에 대한 인수·통과 판정도 아니다.** 특히 B4·C1의 성질상, 이 도구들의 PASS 출력 자체가 기능 인증으로 쓰이면 안 된다는 것이 이 검토의 결론 중 하나다.
+- 구현·쓰기·명령 실행은 하지 않았다. 다른 검수자의 보고서는 열람하지 않았다.
+
+Codex 독립 발견과 비교할 때 특히 대조하고 싶은 지점은 A1(precision 오명), B1(주석 스텁이 게이트를 끄는 문제), C1/C2(평가기 범위와 실제 주입의 괴리), B7(검사 대상 트리가 저장소가 아닌 문제) 네 가지다.

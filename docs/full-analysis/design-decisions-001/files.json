@@ -1,0 +1,524 @@
+[
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-004-ontology-confirmed.md",
+    "git_blob": "ffca10f3ea4fd67495b4af02bf08402e240f167c",
+    "bytes": 5114,
+    "pinned_sha256": "a33eef686f24b29f39e812dbe8022b65089f7c37ffd7471b1d83d884b4041cb6",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-005-pipeline-schema-confirmed.md",
+    "git_blob": "5f8b42a441e8a4620bf49e48466ada7cf9b32f5f",
+    "bytes": 4965,
+    "pinned_sha256": "037a8a62bc16a8234fc85eafceb0fa75d1ff47e68cfe6328453fcf7b9f7ab593",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-006-orchestration-debate-confirmed.md",
+    "git_blob": "f8e33dcf8e2a123aee9900b45bfdb1500d3665c6",
+    "bytes": 4843,
+    "pinned_sha256": "e02e02fe43da96d05967cb3fb35b0db0e42e31ddb66f54d0a292414918f4bbc0",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-006-refinement-research-on-failure.md",
+    "git_blob": "cd01b9a2ef6ae110684376b5de9500b0fef462ff",
+    "bytes": 3935,
+    "pinned_sha256": "6815d493756ec19455e02492d45f16fb210dd1a9d2bd7b22bd49519a17d761df",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-007-orchestration-execution-confirmed.md",
+    "git_blob": "5fbde74d38c9df05b8e5c6d05626b4325467ff76",
+    "bytes": 4377,
+    "pinned_sha256": "7e88b01791ad462918bbbc1163e8d82a152c801382b12cb9409f05792321e55b",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-008-convention-confirmed.md",
+    "git_blob": "a692868e9fd3a6754a9e4806b5b74ab121140742",
+    "bytes": 3539,
+    "pinned_sha256": "343a0bdc55319cdc1aa69eb3b585a78819ac7d9e8a95aa60142e6f5913af2995",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-009-residual-test-confirmed.md",
+    "git_blob": "d3ad68ea8a96618a8e3686d7ef5cbbeb28c658ec",
+    "bytes": 4235,
+    "pinned_sha256": "3bfb21976c1028fc6c0887cc7d1d76e3e9dfe260bf5225f0a21ab52060626a01",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-010-skill-routing-budget-confirmed.md",
+    "git_blob": "d061a88f829dd81b86b7c1e63f9df5f2c066f241",
+    "bytes": 3335,
+    "pinned_sha256": "1b210bb927cf8de1c5401b6b36cfccfc37408a8e4e589571227bf2c734df44a5",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-011-permission-sandbox-confirmed.md",
+    "git_blob": "b0df4cbe78f8351e4b29706c94c9b704446c8d09",
+    "bytes": 4677,
+    "pinned_sha256": "68d6ae6ab3c8ea749475334ede7736a1ada9559d3035a6945e008b9a9341f43f",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-012-self-improvement-engine-confirmed.md",
+    "git_blob": "d4b88e64829384424d5c14b27012a18c21cb0091",
+    "bytes": 6121,
+    "pinned_sha256": "70d6915ba10367608bf9b7f4eb02f79b7ca19da46e996a58663e39080939764a",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-013-residual-batch-confirmed.md",
+    "git_blob": "a68c6e82a1767bb0df7479a0638b0f06cc30d303",
+    "bytes": 4948,
+    "pinned_sha256": "cc76a2d912f0261bde443be20877f414a4c1d51acb65a72cb1dc2dfad2da9bc7",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-014-reverse-onramp-confirmed.md",
+    "git_blob": "84883372e26c58642753e729b106982f7b97bb1c",
+    "bytes": 5988,
+    "pinned_sha256": "ad720ae64e6fc16435ed0db051baef3e563067b25892a55116e2059c10a01443",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-015-unattended-recovery-integrity-confirmed.md",
+    "git_blob": "3b0ef30dc8fbf6a25bc27e94fd5970a07d1ff933",
+    "bytes": 5761,
+    "pinned_sha256": "d5b6c27475f3efc47500b5f1234aeff0a791ba1de39c0f04b48c58247ebbc96e",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-016-spiral-lifecycle-mode-confirmed.md",
+    "git_blob": "db548f7f71e11acfbe39f0ad246d8d593360919a",
+    "bytes": 3044,
+    "pinned_sha256": "44f8edf59a83679c60f493cf5997d7d5ec9b2392181630fe58074e6f83b34b65",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-017-scale-architecture-confirmed.md",
+    "git_blob": "37f009c81b6d51872ef381695ec2c4802f4905cf",
+    "bytes": 5511,
+    "pinned_sha256": "7739f5df5075610af5f24486fb28ca869c845fb9865750817152bc4d467d06af",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-018-closeout-details-confirmed.md",
+    "git_blob": "d27bbe03df9e97de49666b61d4c7390e0455471f",
+    "bytes": 3701,
+    "pinned_sha256": "d5f131599ec1ea086cc5aded9df0111671ca3ef46443746c74aae6e937d4fea1",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-019-khaness-remining-confirmed.md",
+    "git_blob": "11f313c375cce6f9abf7b7f1106cb8487062c723",
+    "bytes": 4126,
+    "pinned_sha256": "66c7b9a18bb1b068a2ef4608db6fe5aabd840031edc7feb5357d3e8ac537d078",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-020-oss-remining-confirmed.md",
+    "git_blob": "61e435ef3d28b964ace86ab9c57e5ae98baa6010",
+    "bytes": 3699,
+    "pinned_sha256": "a78db439faf554e430985094402e66df7e0bd7a27f440a58a1cd3897cfb98922",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-021-surface-catalog-confirmed.md",
+    "git_blob": "42a70c5220dd7f246fa7b4d80c0f2ff9a9bbf962",
+    "bytes": 1791,
+    "pinned_sha256": "7f819e91579f5e4b3c7394086dccbe67c627c9ab7e74d4e2e2553aa5b8e127ef",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-022-skeleton-confirmed.md",
+    "git_blob": "c871b4499c8a6f9d2508a1f17962772f5b4c48bb",
+    "bytes": 1761,
+    "pinned_sha256": "a3ef6138c68ffe150b7c05f792843babb1d1d78eed1333438dfacde158df980a",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-023-session-management-confirmed.md",
+    "git_blob": "369a128b36202c9af2d0702dd1f2f120356f133a",
+    "bytes": 1426,
+    "pinned_sha256": "289f08d9fa00eb9eb6d79086c375d9f1dc5bd12dd2f9861127e3c774b011d6fb",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-024-hook-hardening-confirmed.md",
+    "git_blob": "b6bdb75894b4ccf7d7d5efc47b0ee70e8af8f6b7",
+    "bytes": 1574,
+    "pinned_sha256": "5ebb6776d971f74ee6a156be96f3d77474a323f496bf16bd3b71b6b1df60a1c5",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-025-rules-agent-card-confirmed.md",
+    "git_blob": "3ef91c75e4958372ba9d452781aeada28356620c",
+    "bytes": 1721,
+    "pinned_sha256": "321da7ef898075c9e846f5f0d4f3ed39309dbb1e8edb938db38fee4fe982a460",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-026-snapshot-taxonomy-confirmed.md",
+    "git_blob": "aa7be7ee0591ca4e624f700b8850d3113725a2ed",
+    "bytes": 1205,
+    "pinned_sha256": "aae9e131a6b84a773ff982ca5e517f6cb4d7835d660745ae8e1fa02872c2b43f",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-027-state-management-confirmed.md",
+    "git_blob": "523885e1ef7772f5fabb4d60fbb4f4199f1b2dbc",
+    "bytes": 1706,
+    "pinned_sha256": "8c94865b2c18648a62884463eef824128091f44eb41c31543998a6fa52689124",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-028-templates-sweep1-confirmed.md",
+    "git_blob": "6aec06eaf00fd91e5f11daa78828721f0300de7f",
+    "bytes": 2986,
+    "pinned_sha256": "5247d6ccc20ac891107318e117216d409b1c3ad109d1966007840750f6b59015",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-029-design-bidirectional-sweep2-confirmed.md",
+    "git_blob": "cfa5b3eb2780b7365943d40a71ddc6099c5617fa",
+    "bytes": 3099,
+    "pinned_sha256": "9030d88e4e65bab399494e7ce735ccc5fbebf541bf3bfae85f2545db777a70a1",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-030-audit-alignment-confirmed.md",
+    "git_blob": "4de2c64f4dfac70f4165783c66abbe209453595a",
+    "bytes": 4634,
+    "pinned_sha256": "7185e17b1c38628fcad89658db231ce1ac157dba57cd23829b4f7eec3131aada",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  },
+  {
+    "source": "harness-design",
+    "revision": "20147dde412c1f2d84178d5c3665157ced1e7334",
+    "path": "design/decisions/D-031-unattended-operation-retro.md",
+    "git_blob": "b41b151ff71d1818ea7f6790f9fcca2aeb70e10b",
+    "bytes": 4485,
+    "pinned_sha256": "ba72aa9a6c060683d525bae1aaa2142ee72de092a6c51dc4e1fc9c18b9210bf6",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/design-decisions-001/review.md",
+    "tests_executed": [],
+    "test_limits": "Document bodies fully read; historical approvals, research and runs remain claims, not current execution receipts.",
+    "remaining": [
+      "full referenced drafts and implementation/caller/config/test trace",
+      "independent review",
+      "isolated actual execution and primary-source verification"
+    ],
+    "adoption_status": "not_approved_not_incorporated"
+  }
+]

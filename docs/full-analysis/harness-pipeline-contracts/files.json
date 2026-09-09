@@ -1,0 +1,2072 @@
+[
+  {
+    "source": "harness",
+    "path": "agents/agent-drafter.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "a12f92ce7b99353356016411298f871d57320435",
+    "bytes": 1058,
+    "pinned_sha256": "6fd7a2a56bd866aad74f84777924976896ef2cfc2580bcbc073c4eaa3538d684",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-agent-drafter-md",
+    "contract_ref": "contracts.json#agents-agent-drafter-md",
+    "finding": "명부 드리프트를 proposed 초안으로만 인계하며 조직 개편은 사람 소유다. Bash 보유와 read-only는 정적 도구명 검사로 양립하지만 실제 명령의 무쓰기를 보증하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/architect.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "cf720c6d0380c09179573c5f05923c2339efbb53",
+    "bytes": 840,
+    "pinned_sha256": "b3ec12e17651a2b1eb6f959f89000f52ce72a814f2782ecf1803f402c2dad067",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-architect-md",
+    "contract_ref": "contracts.json#agents-architect-md",
+    "finding": "구조 증거·비평을 verdict/fields/self_doubt로 수렴한다. HIGH 해소·fields SHA 재현은 계약 주장이고 이 카드만으로 승인 진실성이나 독립 심판을 보장하지 않는다. ontology owns는 변경 권한과 다르다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/critic.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "ccc431bb49bcd9f7d29f1dd2f1066dd54ac57af0",
+    "bytes": 797,
+    "pinned_sha256": "87391edcd9d928da787fc71d77a862639a864f920132e6a6f99c9c699e414d21",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-critic-md",
+    "contract_ref": "contracts.json#agents-critic-md",
+    "finding": "반증 중심 차등 자료와 구조화 blocker/severity를 요구한다. 중복·과잉 경고 방지 규율은 실제 평가 품질 검증이 아니며 역할 이름만으로 독립성을 증명하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/curator.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "2fc3b27823c4954f69166c8319c1bd4ddc51dd28",
+    "bytes": 785,
+    "pinned_sha256": "6c071ba39c63e9ef26d9581db5c75f3bd2eb3f01d95fb8725bee636d376d8478",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-curator-md",
+    "contract_ref": "contracts.json#agents-curator-md",
+    "finding": "IO는 confirmed 승급을 말하지만 실제 출력 규율은 proposed 격리→재확인+bake다. 출력·승격 단계를 분리해야 한다. pinned 자산 불가침·archive 이동은 구현 소비자 검증이 별도로 필요하다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/design-critic.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "e5d470e718b37e1941448d5ad1d6a4726218b493",
+    "bytes": 1154,
+    "pinned_sha256": "2a31ac669be070f3b551d72876bb876d5ec9cb84e3bcd3b697b1cb353ddc5b06",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-design-critic-md",
+    "contract_ref": "contracts.json#agents-design-critic-md",
+    "finding": "실렌더·다중 뷰포트·일곱 기둥과 fresh-context를 요구한다. playwright-mcp 도구명은 실제 브라우저 실행 영수증이 아니다. 코드만 볼 때 신뢰 하향이 명시돼 있다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/domain-lead.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "2d6f55d238db29052bfcae33e55ea6ca188fdcde",
+    "bytes": 1355,
+    "pinned_sha256": "3f1797bb09421d67bb6025cbaae0758440f13a45b00a120264eaa5715e735753",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-domain-lead-md",
+    "contract_ref": "contracts.json#agents-domain-lead-md",
+    "finding": "폐쇄 shard 전량·비중복·파별 scope 비겹침의 waves/rationale/scopes JSON을 낸다. 직접 spawn 금지와 CF-1 단일 스포너 규율은 goal.md의 팀장 직접 팀원 spawn 층과 구별해야 한다. activation 0은 역사적 범위 주장이다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/evaluator.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "3915e148890c305c2744696890affc1c0949b5bf",
+    "bytes": 864,
+    "pinned_sha256": "952767873857d8ad09a7ab4425bb1f2bb9b385aef10569c0b8f4a62f49713aee",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-evaluator-md",
+    "contract_ref": "contracts.json#agents-evaluator-md",
+    "finding": "exit code 원료·인접 무회귀·ERROR blocker·의미 판정 judge 위임을 요구한다. read-only와 테스트/리포트 작성 단계의 dge=evaluator는 별도 writer 위임 없이는 충돌한다. 소유 tests가 쓰기 권한은 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/generator.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "d892ef6feb68d9cadbbf54cd26c17fb45918d512",
+    "bytes": 804,
+    "pinned_sha256": "6bf6e3c5a1622e04add346082df13bf79ead089b11e4044ece15daeb8ffab0a6",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-generator-md",
+    "contract_ref": "contracts.json#agents-generator-md",
+    "finding": "승인 설계만 구현하고 설계 결함은 상류 회귀한다. Service 계층 단일 비즈니스 로직은 원본 Java 관례로 Zeus의 domain/application 경계와 그대로 같지 않다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/hardener.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6872f237418079b13295497f1e00362ff5fe1028",
+    "bytes": 799,
+    "pinned_sha256": "5418ff130a695d57da20bb4f7d0b9ef963db61f431658a3207de8676b58a5d1f",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-hardener-md",
+    "contract_ref": "contracts.json#agents-hardener-md",
+    "finding": "기계 실측과 사람 OPEN-H 결정을 분리한다. write-project 도구·owns handlers/validators/lib는 심장 직접 변경 허가가 아니다. 사람이 결정할 tradeoff를 보고서 작성자가 대신 닫지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/hook-smith.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "4790ee3eeef11d2de15c5db9d26936af3ad5e181",
+    "bytes": 1049,
+    "pinned_sha256": "22f1dd99fa3a14cf1e2cfbb74403de74c5a427354fb3ffaa8821444d2c8c6378",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-hook-smith-md",
+    "contract_ref": "contracts.json#agents-hook-smith-md",
+    "finding": "diff와 재현을 sandbox에 보내며 gate 미실행은 거부다. engine·guardian·정책은 별도 사람 경계다. risk_scope=sandbox-only는 실제 Bash 격리 보증이 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/intent-interviewer.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "9b7d52826816b2850b4116c47762c9a61d30db1d",
+    "bytes": 813,
+    "pinned_sha256": "7366dd8e0bd2c5286b5fed43d4d1a2015f0b695a0c3685cba290b2002ff11cc3",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-intent-interviewer-md",
+    "contract_ref": "contracts.json#agents-intent-interviewer-md",
+    "finding": "구조 seed에서 사람이 아는 의도만 복원하고 사실은 직접 조사한다. read-only/Read,Grep인데 requirements/usecase 출력 저작을 요구하므로 결과 인계와 파일 작성 주체를 나눠야 한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/judge.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "b31d6e86e1f487eac2343e73209bf94ece90065f",
+    "bytes": 820,
+    "pinned_sha256": "eb057c89057c6f18a7fff30602c2880830fda4d15113799e2ebb0771b55db8cc",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-judge-md",
+    "contract_ref": "contracts.json#agents-judge-md",
+    "finding": "render 증거 인용·fresh-context·human 대리 금지를 선언한다. gate_runner는 stage/mode 최신값을 소비하며 실제 독립 context나 인용 타당성을 인증하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/onboarder.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "e691fe41b803f2b1981a8e31c001f2c9df0e9f4f",
+    "bytes": 826,
+    "pinned_sha256": "a35a2f20f3bbbac905d95a6060add87d47741d08bcb9dc77d0c18b0cb8c70284",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-onboarder-md",
+    "contract_ref": "contracts.json#agents-onboarder-md",
+    "finding": "기계 구조→사람 의도→coverage를 조율하며 직접 저작하지 않는다. 프로젝트 원장 생성과 위임 요구는 read-only/Task 미보유 카드만으로 실행할 수 있는 계약이 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/orchestrator.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "a92181a480dea5ffdfd328c0ccab994e9ada2ed5",
+    "bytes": 982,
+    "pinned_sha256": "39db99c474ff894975e2e6698d889ad311c6b1c44a03d0ac8516201bdde352cf",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-orchestrator-md",
+    "contract_ref": "contracts.json#agents-orchestrator-md",
+    "finding": "관리 전용·실작업 금지·dispatch contract 기록을 요구한다. 현재 Zeus 주 Codex 구현 역할과 원본 역할 규율을 혼동하지 않는다. HARNESS-DIRECTIVE를 시스템 지시라 부르는 원문은 이 검토의 권한이 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/planner.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "7c516aeeae44a3de0d92cb0bdbb4125e4db983de",
+    "bytes": 843,
+    "pinned_sha256": "e82f5b497dfd35619647cc7a9dab82213ed8d4c0579250baba7032332c8ba852",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-planner-md",
+    "contract_ref": "contracts.json#agents-planner-md",
+    "finding": "REQ/UC/AC 앵커와 빈 앵커 거부, 미확정 OPEN을 요구한다. owns pipelines는 pipeline을 자기 재량으로 약화할 권한이 아니며 사람 결정·gate를 분리한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/proposer.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "f81af0d789cd64ebc36a4cbf8c1653bf10e6b439",
+    "bytes": 717,
+    "pinned_sha256": "fe716edfa56c72da1f094f519d7f494a5379af478a23b5a85da3f579f40b67ad",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-proposer-md",
+    "contract_ref": "contracts.json#agents-proposer-md",
+    "finding": "차등 종합 브리핑과 critic 수정을 받아 구조 제안을 낸다. 독립 context와 비평 해소는 카드 선언이지 모델·프로세스 실행 확인이 아니다. 제안은 승인과 다르다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/reflector.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "74b75207d7f08bd5de2963f6b16facd3616e1ed4",
+    "bytes": 738,
+    "pinned_sha256": "9dada46e66a52377876f192a39bfd4f7d62c484e7903f810bb4119c01220dc57",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-reflector-md",
+    "contract_ref": "contracts.json#agents-reflector-md",
+    "finding": "failure count>=2 반추를 detached fork로 proposed digest에 남긴다. prompt-cache 불변·_persist 금지·created_by 표시가 실제 포크 격리나 재현 성공을 보증하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/repairer.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "af8fad07840c9d43b9be17396be033cd899a74c9",
+    "bytes": 895,
+    "pinned_sha256": "9ee0144bfd8d200c4294574711aae1dfb91bcfc065eaaf815ce5a84fde4df6d3",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-repairer-md",
+    "contract_ref": "contracts.json#agents-repairer-md",
+    "finding": "evidence 명령 재현→근본 원인→범위 수리→인접 회귀를 요구한다. 두 번 반복 시 research tier, 예산 소진 시 debate다. PASS 줄은 curator 수확 조건이지 수리 실측의 독립 영수증은 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/researcher.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "e26529286aae31a1b17d57e944c558f3cc16291b",
+    "bytes": 749,
+    "pinned_sha256": "97c69253dff0a04970bbcdaf0b6eec01280f1c7f848d7a0ca4b5607dbec67085",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-researcher-md",
+    "contract_ref": "contracts.json#agents-researcher-md",
+    "finding": "외부 자료는 데이터이며 출처 등급을 proposed/candidate로 제한하고 confirmed 직행을 금한다. Read/WebSearch/read-only는 실제 note/uptake 쓰기 계약과 달라 앞선 run50/60 작성 실패 기록에 연결된다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/reverse-extractor.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "8d79f05b1e260c05e1538806bc901138c46bf0e9",
+    "bytes": 842,
+    "pinned_sha256": "499fc5c1d0edc66de97288b2512193ee73eddd9d5cd937d2f56d787709edcdc1",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-reverse-extractor-md",
+    "contract_ref": "contracts.json#agents-reverse-extractor-md",
+    "finding": "기계 추출 origin=extracted와 evidence span·round-trip을 요구하고 의도 발명을 금한다. Bash 실행은 파일 생성 가능하므로 Read 도구만 보고 읽기 전용이라 분류하면 안 된다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "agents/skill-author.md",
+    "partition": "harness:agents:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "e9adc52f161f2b06218c241c12cde496fafbe869",
+    "bytes": 1118,
+    "pinned_sha256": "c1c83ce4842c936c9ede8d738d6ebde56799088dcba6e9c035ab9c896972743e",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#agents-skill-author-md",
+    "contract_ref": "contracts.json#agents-skill-author-md",
+    "finding": "실측 배달 갭에 본문을 저작하고 전후 지목률을 비교한다. skill corpus 어휘 확장은 architect 제안이며 승급은 curator 몫이다. 내용 존재·routing 적중·실제 유용성을 분리한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/roster.py",
+      "scripts/validators/harness_lint.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/byeolbam-spiral4.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "8a2ad3b93385bc2b470d87094018c2137b671f83",
+    "bytes": 1411,
+    "pinned_sha256": "d0110bed12850bcbdb006bf45205aab5bbae7206c77ae160b2aa4a3fc0f32c7f",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-byeolbam-spiral4-yaml",
+    "contract_ref": "contracts.json#completion-lines-byeolbam-spiral4-yaml",
+    "finding": "5개 포함/3개 제외로 홈·Scr11 추천 표면을 겨냥한다. evidence는 test와 UI 파일 존재이며 추천 품질·개인화·AB·카탈로그 확장은 제외다. 외부 nfx-kr 실기능 검증을 이 완료선으로 승계하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/knowledge-org-v1.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "586087022082db62e05bf4c97dac675cabf9d004",
+    "bytes": 6884,
+    "pinned_sha256": "77740918b92d70a88d8edded0d0d849cb295a43da3a8516822d00afe0ae92d42",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-knowledge-org-v1-yaml",
+    "contract_ref": "contracts.json#completion-lines-knowledge-org-v1-yaml",
+    "finding": "8개 포함은 collector·note·계약·uptake·ladder 기록·heredoc·PG 진단이다. 실제 advisory 승급·PG 행수·지속 조직·transcript 부재는 증명하지 않는다. goal.md의 완주 기준과 요구량 차이를 숨기지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/knowledge-org-v2.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "38bc5d60ec76734175f5a3bbffaa1714c07573a8",
+    "bytes": 7514,
+    "pinned_sha256": "464f3cc6173650d259b2bea5ba32e1a335139e0dfbe34d838bdcadd7b7c637f6",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-knowledge-org-v2-yaml",
+    "contract_ref": "contracts.json#completion-lines-knowledge-org-v2-yaml",
+    "finding": "8개 포함은 bus watermark·배선·토픽 해명·유량/토큰 보고·handoff기구/계약·PG 설계다. 상주 LLM·PG 실제행수·SA3 토픽전량·배치격차는 제외다. v7의 handoff 코드/문서0 선언과 시간·대상 범위를 재대조해야 한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/knowledge-org-v3.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "7419c2b486997da2c5970b476715e05580de349e",
+    "bytes": 7578,
+    "pinned_sha256": "e36909d7edb458da9fb1be5fa8502b63fff4f2949d98b9aba5485b653f293ab8",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-knowledge-org-v3-yaml",
+    "contract_ref": "contracts.json#completion-lines-knowledge-org-v3-yaml",
+    "finding": "8개 포함은 reachability·계약·census·queue gate·mix·노트누적이다. 실제 false-positive율·자막원인·정련은 제외다. 생산자 gate를 세웠지만 v4의 기존queue4/5 우회로 소비 재검증 필요가 드러난다. 전부 limb라는 말은 포함 scripts/cron verifiable 정책과 맞지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/knowledge-org-v4.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "bda6e890b20b62e57524a1de56887ea4a35f5e1f",
+    "bytes": 7771,
+    "pinned_sha256": "0bc1e8066336a0249542811e448d74a4808779c99c201bc51709425eef803453",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-knowledge-org-v4-yaml",
+    "contract_ref": "contracts.json#completion-lines-knowledge-org-v4-yaml",
+    "finding": "8개 포함은 consume_gate·대조계약·일치보고·commit scope와 준수·topic 순서·yield다. hook 예방·상주층·원인해소는 제외다. 생산자와 소비시점 권한을 나눈 교훈을 채택 후보로 삼되 원문 수치4/5·8/8을 이번 실험으로 부르지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/knowledge-org-v5.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "8798599bdd27052821abf3c422482b8fbdaad5f9",
+    "bytes": 7593,
+    "pinned_sha256": "4a2c604b5fea274dee7318aea11b46dafb8f401f0a1d4d06881af0017adf021c",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-knowledge-org-v5-yaml",
+    "contract_ref": "contracts.json#completion-lines-knowledge-org-v5-yaml",
+    "finding": "8개 포함은 알려진 결함 전달·반사실·재탐침·소스무관노트·승인병목이다. 미승인 지식 전달은 정보이며 실행 허가가 아니다. 현재 notes 전문 검토는 실제 upstream 흡수나 승인완료가 아니다. 파일존재 기반 fresh note 사건 식별은 불충분하다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/knowledge-org-v6.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "0e4ee524389879cbf3e419143b2c1f5d8dd09629",
+    "bytes": 7774,
+    "pinned_sha256": "a1766a0a06bac71c47565b89c6ce8f6a8a23ea35c85be841e33ff031a63edd8e",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-knowledge-org-v6-yaml",
+    "contract_ref": "contracts.json#completion-lines-knowledge-org-v6-yaml",
+    "finding": "4개 포함은 닫힌 route진단·destination계약·첫 nonproposal보고·route코드다. INDEX가 이미 있어 공허100%였던 것을 새 보고서로 옮겼지만 그 내용의 실제 사건을 검사하지는 않는다. verifiable 목적지에 원리상 경로가 있어도 uptake가 실제 bake를 밟았는지는 제외다. 없음 허용과 nonproposal 한 번 강제의 유인을 구별한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/knowledge-org-v7.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "b5ea6922fe3791b612f91c38e3cfcb006ce16123",
+    "bytes": 10084,
+    "pinned_sha256": "947732f3b4d02b24d090458ef60c9c75704a69769d7e8f25e83389ecdad73fd8",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-knowledge-org-v7-yaml",
+    "contract_ref": "contracts.json#completion-lines-knowledge-org-v7-yaml",
+    "finding": "4개 포함은 latency소비·계약·handoff결정·idle/replace도출 시도다. 뒤 claim_amendments에서 토론 원장 부재와 idle 도출불가를 인정해 주장을 좁혔다. 증거 경로 불변은 목표 계약 불변이 아니다. 상주 팀장·경합·실구현은 여전히 제외다. 이는 조건 준비이지 조직 구축 완료가 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/mitgrim-spiral1.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "f0d87c7124fe42a8c299a6c04d8887ade97668b8",
+    "bytes": 1794,
+    "pinned_sha256": "2a333335b05cafb414f73f186b856c2e4f8cd83251b87c8e02375b382ff66663",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-mitgrim-spiral1-yaml",
+    "contract_ref": "contracts.json#completion-lines-mitgrim-spiral1-yaml",
+    "finding": "schema·canonical·Button seed·renderer·사람 review 여섯 경로다. editor·gate 통합·grid/wrap·op 원장화는 제외다. 결정론 렌더·승인 기록의 존재와 실제 인수는 다르다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/mitgrim-spiral2.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "7ad7a1b77f07bff58a820443077b0d9f3977ed17",
+    "bytes": 2061,
+    "pinned_sha256": "4571bb2e69e5de9375a0cd13c27d42c6942e2335024da783480bae4dea32ed6a",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-mitgrim-spiral2-yaml",
+    "contract_ref": "contracts.json#completion-lines-mitgrim-spiral2-yaml",
+    "finding": "ops·Canvas·LayerTree·Inspector·DTCG·zip·사람 review 일곱 경로다. 노드CRUD·variant 생성·harness gate·협업은 제외다. 편집 성공·왕복 보존은 경로 존재만으로 증명되지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/outpos-fleet-v1.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6a25676c2689b786a02ec8a9bc80337b1415d161",
+    "bytes": 3145,
+    "pinned_sha256": "64979e096aabf3785fb8be23c59eb88174ed5e9a6cd762504c295de81055ea52",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-outpos-fleet-v1-yaml",
+    "contract_ref": "contracts.json#completion-lines-outpos-fleet-v1-yaml",
+    "finding": "외부 회사 코드 관찰에서 하네스 결함 수집까지 네 경로다. reverse 온램프 완주 자체도 목표가 아니다. Dart·동시 다중프로젝트·회사 코드 수정은 제외이므로 함대 검증 완료로 읽지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/outpos-fleet-v2.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "d6a100ae4c0049044e8247bcd36e4bb66cb45f6a",
+    "bytes": 3058,
+    "pinned_sha256": "18a6748c07b9ce2a5687f641b96d05653c8fee200fbf9287353549f09751734d",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-outpos-fleet-v2-yaml",
+    "contract_ref": "contracts.json#completion-lines-outpos-fleet-v2-yaml",
+    "finding": "9개 여집합 정찰과 guard/Java/계약 추출 보강 네 경로다. WS 주 채널·payload schema·orphan 판정·Kotlin/C# 심층은 제외다. 테스트 파일 존재를 기록된 실제 42오탐 소거 재실행으로 확장하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "completion-lines/resident-org-v1.yaml",
+    "partition": "harness:completion-lines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "71e87de30f7a6b4f609ae4ed5b24acf3800987a6",
+    "bytes": 6821,
+    "pinned_sha256": "8820b5504546555e07cad1f5e9be8f3b48268929db15762b3b9c530fa8435f1b",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#completion-lines-resident-org-v1-yaml",
+    "contract_ref": "contracts.json#completion-lines-resident-org-v1-yaml",
+    "finding": "8개 포함은 수집→queue→supervisor→유휴arm→report→역할 원장 첫 관통이다. 반복·다른 역할·Kafka 3계열·나선 동일성·품질·오염된 원장9건 복구는 제외다. pipeline is_done을 목표 완료로 확대했던 사고를 기록하지만 새 완료선도 존재만 검사한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cli/completion_cmd.py",
+      "scripts/cron/re_anchor.py",
+      "scripts/cli/spiral_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/params.json",
+    "partition": "harness:config:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "dad86ef19a0237f51a87b903609dce94bf4f66b5",
+    "bytes": 1248,
+    "pinned_sha256": "53e29f6e69ffd73dd9b295ec0390af4a5fcfc191a2685c3f1fb6f2cd6b9ccfb7",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-params-json",
+    "contract_ref": "contracts.json#config-params-json",
+    "finding": "8개 시드의 강화 방향과 fallback 중 auto-tune 정지를 선언한다. compaction threshold 증가·보관일 감소를 강화라 부르는 것은 정책 선택이다. params._load_file은 누락 키와 bool/비유한 숫자를 닫지 않고 get은 개별 seed로 조용히 돌아갈 수 있다. 잠금/CAS 없는 두 writer 경쟁은 미실험이다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/params.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/paths.yaml",
+    "partition": "harness:config:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "4905eceac4c0b291b4ec789ef4b5ec13fe1ba8b1",
+    "bytes": 1816,
+    "pinned_sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-paths-yaml",
+    "contract_ref": "contracts.json#config-paths-yaml",
+    "finding": "홈 상대 경로와 외부 design_decisions 형제 경로를 선언한다. state override는 state_dir에서만 보이고 resolve(state)는 그 함수를 호출하지 않는다. _config 무인자 캐시는 HOME 변경 뒤 값이 남을 수 있다. 상대경로는 이식성의 충분조건이 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/paths.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/profile.yaml",
+    "partition": "harness:config:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6e8b28e4f56a9aedfd2374c3af0b62e0ea0c9ad9",
+    "bytes": 424,
+    "pinned_sha256": "f94e4256f47955c1aa94f0750f2b6d648c2843bc7ad79c04a3982464a89fcf24",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-profile-yaml",
+    "contract_ref": "contracts.json#config-profile-yaml",
+    "finding": "fleet와 로컬 Kafka/PG endpoint를 고정하며 Git JSONL 정본·PG projection을 선언한다. Zeus의 PostgreSQL 런타임 정본과 반대다. 평문 개발 DSN이나 5434를 복사하지 않고 독립 환경별 binding으로 바꿔야 한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/profile.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/retriever.yaml",
+    "partition": "harness:config:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "d4624259165cea1cf0e15546c66cdbaad87e62a9",
+    "bytes": 1123,
+    "pinned_sha256": "f8c6199a0cf9dd4636a6a68da2df3671c035f8e10116b4b2c5d450611dcb957c",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-retriever-yaml",
+    "contract_ref": "contracts.json#config-retriever-yaml",
+    "finding": "8,000자 예산·6,000자 파일 상한·keyword5/lesson3/top2/snippet8이다. 파일 상한은 router가 직접 소비하지 않고 lint에 의존한다고 명시한다. 문자와 토큰·바이트, self-match와 실제 세션 배달을 혼합하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/validators/harness_lint.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/arming-rules.json",
+    "partition": "harness:config/policy:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6ea755852589367b4fde9700330ce8965bbcbf4c",
+    "bytes": 9093,
+    "pinned_sha256": "89660bf986d4419ff122f0c46001b731c66813585e8cbfaa4968caecfb1a43c0",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-policy-arming-rules-json",
+    "contract_ref": "contracts.json#config-policy-arming-rules-json",
+    "finding": "default human, skip_blocked true, 이미 승인된 harness 후보 자동 장전 규칙 하나만 활성이다. high/score6 자기 승인 규칙은 꺼져 있다. arming.validate는 활성 auto에 approved=true를 요구하고 approve=true 조합을 거부하므로 주석의 결정문만 고치고 enabled를 켜서는 동작하지 않는다. HMAC·등급·신선도는 선택된 코드 경로에서 확인했지만 실제 키/장전 실행은 확인하지 않았다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/arming.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/backlog-weights.json",
+    "partition": "harness:config/policy:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "1b65d1ab6ffb02a14621bca18e55627d7e2aeca5",
+    "bytes": 834,
+    "pinned_sha256": "d070baac46638e2fe1f6e729bd4fcbeb65d1adbb7718dd40c5330993ab41dcea",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-policy-backlog-weights-json",
+    "contract_ref": "contracts.json#config-policy-backlog-weights-json",
+    "finding": "incident3 > research2 > human_capture1.8 > completion_gap1.5는 사람 정책이다. evidence 면제 capture의 순서를 낮춘 이유가 있다. skip_blocked가 실제 착수 순서를 앞지를 수 있으므로 rank는 승인이나 착수 보장이 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/arming.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/goal.md",
+    "partition": "harness:config/policy:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "6264109e3618f97157bd039555c2205ff64406f2",
+    "bytes": 10871,
+    "pinned_sha256": "cff0762e150582a040f9ddfea28b520ea83248d6bf704bd2b58493a23d82a844",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-policy-goal-md",
+    "contract_ref": "contracts.json#config-policy-goal-md",
+    "finding": "Git JSONL 정본 위 수집→연구 검토→버스→팀장 조직을 목표로 한다. LLM 판단과 gate 판정, 상주 id와 프로세스를 분리한다. 지식 v1 경로 100%를 완주라 하지만 실제 승격·PG 행수를 요구한 본문과 v1 존재 검사 범위가 다르다. 상주 LLM 조직은 뒤 완료선 v7도 구축하지 않았다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/completion_line.py",
+      "scripts/cron/re_anchor.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/validator-ladder.json",
+    "partition": "harness:config/policy:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "897e4109806c61ceda5a90f93599d7ec091dd495",
+    "bytes": 1443,
+    "pinned_sha256": "c4998aabef25e52ac680195b7b3645396090ee2c9eae5671bbe1d7cd21da8447",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-policy-validator-ladder-json",
+    "contract_ref": "contracts.json#config-policy-validator-ladder-json",
+    "finding": "clean streak5/fp0, seed blocking6+self-improve blocking3+advisory pattern_decisions1이다. cmd null은 구현 부재와 같지 않고 호출 경로 확인이 필요하다. 등급 상태는 현재 실행·실제 사람 승인 증거가 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/write-boundary.json",
+    "partition": "harness:config/policy:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "eef950a68ce7dd8d338531946a9e74be9dda5efa",
+    "bytes": 15667,
+    "pinned_sha256": "207003bca7bde54744224e259fb4ee02c8eb49a43d3ea72bb8765b0714abc49b",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#config-policy-write-boundary-json",
+    "contract_ref": "contracts.json#config-policy-write-boundary-json",
+    "finding": "deny/ask·inviolable/verifiable·collab_ask를 경로로 분리하고 원장·정책·완료선·명부의 자기 변경을 제한한다. 합법 subprocess writer가 hook 밖이라는 한계를 스스로 적는다. owner human인 agents/README가 verifiable인 차이는 소유와 변경 경로를 나눠 검토해야 하며 자동 적용 가능성은 이 파일만으로 확정하지 않는다. 이 정책을 Zeus 실행 권한으로 승계하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/lib/arming.py",
+      "scripts/lib/paths.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "ontology/contracts.yaml",
+    "partition": "harness:ontology:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "b56440b1bec22366554703cf23da06b440596807",
+    "bytes": 36677,
+    "pinned_sha256": "830a8b9a8aa9d64e4530afdb91421551b9a6a0aba81e26ba4fda6e6133d40ab0",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#ontology-contracts-yaml",
+    "contract_ref": "contracts.json#ontology-contracts-yaml",
+    "finding": "components와 owns의 정확히 한 소유자, C1~C10, agent card 어휘, code contexts, skill corpus와 test quality를 선언한다. verified는 심볼 실존·정적 계약 표지이지 이번 실측 PASS가 아니다. C4는 shard 쓰기 scope 미강제, C5는 완료 신호/검증 분리, C9는 advisory, C10은 사람 결정이다. mutation floor0.8은 n4/lib/cap8의 제한된 표본이며 주석 limb와 ontology verifiable 등급이 갈린다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/validators/harness_lint.py",
+      "scripts/lib/roster.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "ontology/facets.yaml",
+    "partition": "harness:ontology:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "c8ab2315e99aa043331ba0f40b2d669753cc792e",
+    "bytes": 1105,
+    "pinned_sha256": "84559df335ef46c47ff01cc472237c78ec8085451979e8a9711400b16834afb7",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#ontology-facets-yaml",
+    "contract_ref": "contracts.json#ontology-facets-yaml",
+    "finding": "8개 관점 축과 trust/lifecycle 분리, project>stack/version>stack>공통의 우선순위를 선언한다. core의 axis-2 문자열 gate와 이 파일의 named axes는 다른 형식이다. project 산출물 검사를 전역 facets 검증으로 오독하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/validators/ontology_validator.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "ontology/glossary.md",
+    "partition": "harness:ontology:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "b66fdaa72792418aea38beddcaaf4af2c39bc338",
+    "bytes": 529,
+    "pinned_sha256": "997d0f412566ee64e667c94630f758e102de7d90ee50ff73d91d3d92b412df38",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#ontology-glossary-md",
+    "contract_ref": "contracts.json#ontology-glossary-md",
+    "finding": "설계 저장소로 향하는 redirect stub 전문을 확인했다. root가 이미 검토한 파일이며 중복 승격하지 않는다. 새 개념의 정의나 현재 이동 완료는 이 파일에 없다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": true,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "ontology/graph-queries.yaml",
+    "partition": "harness:ontology:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "ce20f77f7d7c6a554ddc266367cfa649d4aa9a2b",
+    "bytes": 5933,
+    "pinned_sha256": "37f917d30334e5fd558acbb2f36f3c6220bf3d6d3784ca01510cef5990a95ad1",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#ontology-graph-queries-yaml",
+    "contract_ref": "contracts.json#ontology-graph-queries-yaml",
+    "finding": "coverage/partition/acyclic/code graph/contract parity/pending 카탈로그다. usecase 명사를 CON으로 보는 대신 UC 역참조를 검사하고 상태 엔티티는 _state 명명 관례로 축소한다. pending Service 정상/예외 매핑은 미구현이다. coverage는 정확한 토큰 경계가 아닌 substring 검색이므로 REQ-1과 REQ-10 같은 충돌 후보가 남는다. parity 자동 승급은 별도 정책 경로라 validator ladder와 혼동하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/graph_queries.py",
+      "scripts/engine/pipeline_loader.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "ontology/metrics.yaml",
+    "partition": "harness:ontology:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "17a237cdb2a2e8fc0aa7ea6734c01cdc92fdd6f4",
+    "bytes": 4886,
+    "pinned_sha256": "d8270793f18d163ae4af8613ec303a106579059a853fbf5833e4ba72c24e053b",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#ontology-metrics-yaml",
+    "contract_ref": "contracts.json#ontology-metrics-yaml",
+    "finding": "자유 문서 명령을 폐쇄 카탈로그로 옮긴 설계다. 실제 세 cmd는 git ls-files의 종료코드를 검사하지 않아 Git 실패를 빈 목록0으로 보일 수 있다. 주석의 YAML block scalar는 shell quoting 자체를 없애지 않는다. tracked Python LOC와 test 파일 수는 전체 로컬 자산·실행시간·품질이 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/checks.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "ontology/schema.json",
+    "partition": "harness:ontology:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "a52e252282d777a6a560f982462415234fb9832b",
+    "bytes": 8407,
+    "pinned_sha256": "f56e325e0306f04d9dd071dc12d4992e90a364f3742fb04ace353fa897d3d61b",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#ontology-schema-json",
+    "contract_ref": "contracts.json#ontology-schema-json",
+    "finding": "5평면·21kind·29artifact type·31relation·origin/evidence와 confidence5값을 정의한다. root는 $defs 저장소이고 ontology_validator가 node/edge $ref를 붙여야 실제 검사한다. edge additionalProperties 폐쇄가 없고 lifecycle은 string, capability와 artifact_type의 kind 제한은 주석뿐이다. evidence 비어 있지 않은 배열도 원문 해시·실행 출처의 진실성을 인증하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/validators/ontology_validator.py",
+      "scripts/engine/pipeline_loader.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/chat.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "54ca38a2b034bdf04bf89f195d8c5779da1c9a63",
+    "bytes": 3050,
+    "pinned_sha256": "a8a77fdda5ca49b94a4b6eb7c8d848bdeedb18b4a21ecaf45dfd6ba14c4283ae",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-chat-yaml",
+    "contract_ref": "contracts.json#pipelines-chat-yaml",
+    "finding": "intake/respond/consolidate 3단계는 INTENT/RESPONSE/EPISODE 세 substring만 확인한다. source·persona 준수·재사용 가치·proposed 격리는 산출 지시이며 gate가 증명하지 않는다. evaluator의 episode 저작 권한은 별도다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/core.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "32ce4144cb0e420b6961d663e1907e79ffb92339",
+    "bytes": 29324,
+    "pinned_sha256": "2816cf7b6b0c94961f68e42e01aaf88abb80c172c5be36444ad141a5c31084fe",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-core-yaml",
+    "contract_ref": "contracts.json#pipelines-core-yaml",
+    "finding": "31단계·81 raw gate. 17 planner와 14 개발/검증/운영 단계며 seq 중복은 표시일 뿐 input DAG가 순서다. 요구 고유 ID·모든 persona·각 JSON 예시는 substring 한 개로는 전칭을 증명하지 못한다. Java/JaCoCo/MyBatis 중심과 optional frontend/mobile/monitoring/CD/batch를 사용자 필수 8단계 SDD와 그대로 동일시하지 않는다. e2e는 implementation이 명시 input에 없고 selfimprove verify도 repair input이 빠져 있다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/gate-lexicon.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "d5ec12ce8c45059b3b1b93feebcd0831fcf41675",
+    "bytes": 3142,
+    "pinned_sha256": "8b036c6ebab3e7eb73e9aa0b91311663f41d1f3c8b0dd2df8b5221f26fdb7ae0",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-gate-lexicon-yaml",
+    "contract_ref": "contracts.json#pipelines-gate-lexicon-yaml",
+    "finding": "exact 2개 우선, pattern10개 순서로 폐쇄 check8종을 유도한다. 성공/PASS 패턴이 전칭 패턴보다 먼저이며 type만 파생해 cmd/url/target이 미결정인 경우 runtime ERROR다. 문형 등록은 실제 실행 가능성이나 의미 정확성 검증이 아니다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/harness-selfimprove.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "2d6fae65d50af0226ea22fa265d7d87f02a4d6b0",
+    "bytes": 18665,
+    "pinned_sha256": "5438a57db5847ff9e47f291b9037a83f2fe7a9b270a697cfc259a5e903c85b42",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-harness-selfimprove-yaml",
+    "contract_ref": "contracts.json#pipelines-harness-selfimprove-yaml",
+    "finding": "spiral 5단계·21gate로 주석/arming의 과거 4단계13gate보다 늘었다. triage/report candidate_binding은 최신 원장 ID를 비교하지만 문서 해시·내용·실행 generation을 묶지 않는다. verify는 repair 의존이 명시되지 않아 DAG상 병렬 ready 가능성을 남긴다. research git diff는 staged/untracked 및 일부 보호 경로를 보지 않는다. baseline과 known_good는 별도 외부 앵커이며 재표시 잔여가 명시된다. Windows cmd set 구문은 Linux/WSL로 그대로 이식할 수 없다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/overnight-python.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "d5476188dc208cbcdd4fd53e99c61522fa4d5d33",
+    "bytes": 5101,
+    "pinned_sha256": "7fda1ab0d2ef3f434725cf6fc36f32bffabb96ac89522a624c3211219dbcca3f",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-overnight-python-yaml",
+    "contract_ref": "contracts.json#pipelines-overnight-python-yaml",
+    "finding": "8단계 todo CLI 실험은 사용자의 8단계 SDD가 아니다. 모듈4종 존재 gate는 cli.py 한 파일만 보고 import는 namespace package도 가능하다. unittest discover는 0 test 성공 종료 여지가 있고 REQ 한 개 존재는 전체 추적이 아니다. CLI list rc가 명시 검사되지 않으며 고정 smoke/clig 파일은 공유 실행·실패 정리 위험이 있다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/repair-trial.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "7091b2381a351f2666f855a1923570a780286c5b",
+    "bytes": 1440,
+    "pinned_sha256": "afcd959075e19fdc2be242661aed743f99abc4f638bb3166c45950441dce8d2a",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-repair-trial-yaml",
+    "contract_ref": "contracts.json#pipelines-repair-trial-yaml",
+    "finding": "의도적으로 불완전한 SPEC과 hash oracle의 간격을 수리 루프에 부하로 준다. acceptance 파일은 premise이며 immutable 봉인이 선언돼 있지 않고 테스트 수리라는 문구가 대상 코드와 oracle 변경을 혼동시킬 수 있다. REPORT RESULT만으로 수리 횟수·재현을 인증하지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/reverse-onboarding.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "826b9f46b0988dc28227d7a58acd6d7d7ce64868",
+    "bytes": 4807,
+    "pinned_sha256": "9698b9000ca6deb8c887ff7d87c5a568ca6fd83a28b348d793c5a60d1ce9d048",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-reverse-onboarding-yaml",
+    "contract_ref": "contracts.json#pipelines-reverse-onboarding-yaml",
+    "finding": "기계 구조 추출→사람 의도 복원→coverage 4단계다. 첫 gate 자체가 reverse.py를 실행해 출력 파일을 쓰는 계약이므로 순수 read-only evaluator와 다르다. round-trip은 같은 추출기의 자기 일치이지 원래 의도나 runtime 동작 증명은 아니다. 의도·온보딩 human gate는 소스 모델 이름으로 대체할 수 없다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/role-request.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "33c715f7432f8f9a269da797c5a1122ee9bdffe2",
+    "bytes": 4997,
+    "pinned_sha256": "aafac00407fd125c82e24a3207419b0de4a1c8d5ed4229d2c6f85f6ba4b50ca1",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-role-request-yaml",
+    "contract_ref": "contracts.json#pipelines-role-request-yaml",
+    "finding": "유휴 상태에서 기존 arm/spawn 경로를 재사용해 상한을 중복하지 않는 설계다. 1단계2마커는 요청 ID 정확성·canary 품질을 확인하지 않는다. 리포트까지만 요구하고 발의를 강요하지 않는 점은 유지하되 목표 완주와 구별한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/source-note.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "bd5a76fc0d3cb43b6e7ef67fa51b6b53dd356889",
+    "bytes": 6732,
+    "pinned_sha256": "a93df0703ddcbc807a862e920dce5e1fce7e10a79fbb05fe0849bb37f6497873",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-source-note-yaml",
+    "contract_ref": "contracts.json#pipelines-source-note-yaml",
+    "finding": "2단계5마커는 첫 줄·정확한 ID·모든 주장 출처·양방향 실험·destination 기록을 실제로 강제하지 않는다. reachable false와 미판정 진행은 수집 정책이며 승인 정책이 아니다. 기존 제안 추가와 신규 외부 지식 도입의 판정 권한을 분리한다. 앞선 61개 연구자료와 직접 연결되지만 그 검토 상태를 승격으로 읽지 않는다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/youtube-note.yaml",
+    "partition": "harness:pipelines:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "ff5b9aa4fb5d3632728c2f3e036d96fd6ff12970",
+    "bytes": 8459,
+    "pinned_sha256": "d2dfaed4586d2c7829c536edfbd99cb9d789f6ab0a661dbb8b519f1622a0c450",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-youtube-note-yaml",
+    "contract_ref": "contracts.json#pipelines-youtube-note-yaml",
+    "finding": "2단계5마커이며 제목/설명만 읽은 부족 자료도 정직한 none으로 통과할 수 있다. 본문의 file_content는 부재를 못 본다는 일반화와 달리 checks.py에는 forbid가 있지만 이 다섯 gate는 안 쓴다. 금지 문구 test 존재는 transcript 미저장 실측이 아니다. 별도 원장은 pipeline identity 결함의 우회다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/fixtures/repair-trial/SPEC.md",
+    "partition": "harness:pipelines/fixtures:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "ed0e3856c2d72df4bdbf4a627066c7bfeae9e5c6",
+    "bytes": 453,
+    "pinned_sha256": "8b19061c9efc18211328e4a86305a684b3f339d8470042d06b2214925f194148",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-fixtures-repair-trial-spec-md",
+    "contract_ref": "contracts.json#pipelines-fixtures-repair-trial-spec-md",
+    "finding": "7개 요구의 수식 계산기이나 implicit multiplication·오류 메시지·지수/단항 우선순위는 충분히 명시하지 않았다. 테스트가 최종 판정한다는 요구는 oracle가 요구 의미를 몰래 확장하지 않는 검토를 대신하지 못한다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/fixtures/repair-trial/acceptance_test.py",
+    "partition": "harness:pipelines/fixtures:001",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "blob": "88b35b88eca0ded82e929a35afb6d1566c5b6b89",
+    "bytes": 3405,
+    "pinned_sha256": "8f0eb78bbaaa28672961b3511ec0a92c1c1dd4369a02a7ce60668926ad5816cf",
+    "observed_sha256": null,
+    "disposition": "semantically_reviewed_static_only",
+    "review_ref": "review.md#pipelines-fixtures-repair-trial-acceptance-test-py",
+    "contract_ref": "contracts.json#pipelines-fixtures-repair-trial-acceptance-test-py",
+    "finding": "unittest와 외부 calc에 의존하는 7개 test 메서드다. 우결합 지수·단항 precedence·implicit multiplication·정확한 오류 문자열 SHA를 요구한다. 작은 결과 공간의 SHA는 비밀 oracle가 아니며 요구에서 유도 불가한 정확한 오류 메시지를 수리 성공으로 요구하는 것은 실제 SDD 인수에 부적합하다. 실행하지 않았다.",
+    "tests_executed": [],
+    "test_limits": [
+      "Static contract review only; upstream code and commands were not executed.",
+      "Historical PASS and source-test existence are not current execution evidence.",
+      "Previously interrupted gate-writer probe was not retried or bypassed."
+    ],
+    "remaining": [
+      "Independent review and execution-backed qualification before adoption",
+      "Transitive callers and tests beyond supporting.json read ranges remain outside this review"
+    ],
+    "adoption_status": "adaptation_candidate_not_approved_not_incorporated",
+    "duplicate_review": false,
+    "supporting_ref": "supporting.json",
+    "supporting_related_paths": [
+      "scripts/engine/pipeline_loader.py",
+      "scripts/engine/checks.py",
+      "scripts/engine/gate_runner.py",
+      "scripts/cli/step_cmd.py"
+    ],
+    "supporting_limits": "Related static implementation/consumer evidence only; not every listed source is a direct caller. Exact read ranges are in supporting.json. No import or invocation was performed.",
+    "zeus_comparison_ref": "README.md"
+  }
+]

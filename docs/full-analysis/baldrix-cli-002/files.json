@@ -1,0 +1,1620 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/endpoint_query.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "77c01b0da562b924e076a86366a8bfa1482090d1",
+    "pinned_sha256": "1a7e374d6ded4c3363117703e0d8ff47c075e1c67f3c91f58daf827c80d41794",
+    "manifest_bytes": 5012,
+    "pinned_bytes": 5012,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#endpoint_query.py",
+    "semantic_review": {
+      "purpose": "fleet atlas의 repo/seam/shared value 관계 조회 및 선택적 LLM 설명",
+      "analysis": "fleet_atlas→endpoint_graph.query와 narration을 결합. --llm은 provider 가용성 확인/외부 추론 호출 가능하므로 docstring의 deterministic/no LLM은 기본 경로에 한정된다. --json --llm 조합도 JSON 뒤 자유 텍스트를 출력하여 machine JSON 계약을 깨뜨린다. safe_load 결과 schema/None 검증, stdout reconfigure guard 없음. endpoint_graph 전문 대조: repo명이 점을 포함하면 producer.split('.')[0]가 잘리고 repo/seam/value 이름 충돌은 repo 우선. shared wire 문자열 동일은 의미적 의존 증명 아님. narration/ground_or_drop/provider 전문 및 fleet 등록 원문 미완료.",
+      "decision": "변형: immutable topology query와 설명 분리, 근거 참조 해석만으로 LLM 주장 진실 보장 금지."
+    },
+    "actual_callability": "python -m cli.endpoint_query; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: immutable topology query와 설명 분리, 근거 참조 해석만으로 LLM 주장 진실 보장 금지.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "cli.fleet_atlas",
+      "lib.endpoint_graph",
+      "lib.narration",
+      "lib.providers",
+      "lib.providers.base"
+    ],
+    "caller_config_test_search_hits": [],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/fix_subagent_refs.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "ef3b9f7832f6a133ab6646819c09b0b22306b1b1",
+    "pinned_sha256": "5c608c457c5cbd58e9a9176680fed08ce30c207d1feef4093e0c14c48bf46cd7",
+    "manifest_bytes": 4282,
+    "pinned_bytes": 4282,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#fix_subagent_refs.py",
+    "semantic_review": {
+      "purpose": "workflow markdown의 gsd subagent_type을 존재하는 kha agent로 변경",
+      "analysis": "default dirs는 실제 get-shit-done 하나로 설명의 references 디렉터리와 다름. regex는 quote 균형/코드펜스/문맥을 구분하지 않으며 IGNORECASE 매칭 후 captured name case를 그대로 set에 조회해 uppercase alias는 놓칠 수 있다. --dirs 절대/../입력 confinement 없음, relative_to 오류나 잘못된 root 접근 가능. 읽기 오류는 skip하고 exit0, missing equivalent도 성공. 존재만 확인하여 agent capability/behavior 동등성은 증명하지 않는다. write_text 직접 덮어쓰기, backup/atomic/preimage guard 없음.",
+      "decision": "변형: Git migration 제안만. AST/문서 문맥 및 실제 agent contract 검증 후 적용."
+    },
+    "actual_callability": "python -m cli.fix_subagent_refs; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: Git migration 제안만. AST/문서 문맥 및 실제 agent contract 검증 후 적용.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/tests/test_subagent_refs.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/fleet_atlas.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f32e6e90a7867135558b7e5a124d52de0cde9bd1",
+    "pinned_sha256": "357040d46be384659a871f8688f79f5b69b18b82f26179ccdc22dbd3a80fbad7",
+    "manifest_bytes": 8982,
+    "pinned_bytes": 8982,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#fleet_atlas.py",
+    "semantic_review": {
+      "purpose": "seam_scan 보고서를 node/edge/1hop/shared-values 파생 뷰로 집계",
+      "analysis": "scan dependency가 실제 입력 범위/추출 정확성의 권위이며 전문 미완료. shared_values는 BLOCKED 제외만 하므로 DRIFT/기타 status 포함; 같은 문자열을 semantic JOIN으로 과장하면 안 됨. empty shared는 미입력/blocked 때문일 수 있는데 renderer는 fleet disjoint·ontology 불필요로 단정. nodes present는 repo_errors에 없음만 확인. sorted everywhere 주장과 달리 deferred/undeclared 입력 순서 유지, 중복 seams key/Markdown escape 검증 없음. --json도 drift/blocked에 exit0, out은 direct overwrite. YAML parser dependency/license 미확인.",
+      "decision": "변형: partial coverage/unknown과 graph evidence를 보존하는 projection. 빈 그래프를 완전성 증거로 사용 금지."
+    },
+    "actual_callability": "python -m cli.fleet_atlas; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: partial coverage/unknown과 graph evidence를 보존하는 projection. 빈 그래프를 완전성 증거로 사용 금지.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "cli.seam_scan"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/cli/endpoint_query.py",
+        "lines": [
+          8,
+          32
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/cli/meeting_ingest.py",
+        "lines": [
+          41
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/cli/seam_gate.py",
+        "lines": [
+          15,
+          36
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/example-fleet/README.md",
+        "lines": [
+          62
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/bundle_assembler.py",
+        "lines": [
+          5
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/coverage_gate.py",
+        "lines": [
+          5
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/endpoint_graph.py",
+        "lines": [
+          10
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_context_cloud.py",
+        "lines": [
+          25
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_endpoint_graph.py",
+        "lines": [
+          23
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_endpoint_graph_subsumes_ontology.py",
+        "lines": [
+          35
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_fleet_atlas.py",
+        "lines": [
+          2,
+          18
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_narration.py",
+        "lines": [
+          23
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/validators/coverage_gate.py",
+        "lines": [
+          7,
+          37,
+          40
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/gen_pipeline_core_overlay.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2d2cab349fa23867ddd2125103314100144e84fa",
+    "pinned_sha256": "1cd8d60e4b0ae856a85006e1de7471bc677e1e8d008adfc18667cface360df77",
+    "manifest_bytes": 8284,
+    "pinned_bytes": 8284,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#gen_pipeline_core_overlay.py",
+    "semantic_review": {
+      "purpose": "Java stages를 core로, Flutter/Rust 차이를 overlay로 생성",
+      "analysis": "gen_core는 고정7fields와 gate/skills intent만 보존하여 다른 stage 필드 누락 가능. variant에 field가 없으면 삭제 override를 만들지 않아 core 값이 남는 merge semantics 확인 필요. duplicate id는 core_by_id last-wins, applicable 중복도 보존. --check는 결과 파일과 비교하지 않고 summary만 출력 exit0; golden 동등성은 테스트 주장이지 실행 증거 아님. 기본 mode는 core+3overlay를 연속 overwrite하여 중간 실패 원자성 없음. new stack은 variant 상수 수정 필요. _pipeline_dir/core_path 실제 config merge/lib 및 golden tests 미독.",
+      "decision": "변형: 생성/검증/적용 분리. 원본 stages·생성물·merge 전체를 대조하기 전 generated-equivalence 판정 금지."
+    },
+    "actual_callability": "python -m cli.gen_pipeline_core_overlay; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: 생성/검증/적용 분리. 원본 stages·생성물·merge 전체를 대조하기 전 generated-equivalence 판정 금지.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.pipeline_overlay",
+      "lib.pipeline_yaml"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/cli/onboard_stack.py",
+        "lines": [
+          291,
+          313
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "skills/_pipeline/stages.core.yaml",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/graduate_validator.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "7914cafaea5aaf1e5f33d4c4face567412fdc115",
+    "pinned_sha256": "282f1a294392a80669d23ee499271650a4a1ab7bbfe531335ab313e92ef1dea3",
+    "manifest_bytes": 6741,
+    "pinned_bytes": 6741,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#graduate_validator.py",
+    "semantic_review": {
+      "purpose": "advisory validator의 tick/status/history 및 blocking 승격·강등 wrapper",
+      "analysis": "literal env token과 backend readiness에 위임. tick는 scan/streak 쓰기라 read-only가 아니고 검출 스캔 부작용/12h dedup은 graduation 미독 의존. status는 status_report와 ready_validators 따로 읽어 불일치 가능. status/tick extra args 무시, history 숫자 여러개는 마지막 우선. graduate/demote는 TokenError/ValueError만 매핑, I/O 예외 전파. source/state 변경과 감사기록 transaction 여부 미확인. 성공 횟수/ready와 operator identity/독립 승인 구분 필요.",
+      "decision": "변형: Zeus policy promotion·lease·current revision 인수 gate로, 환경 문자열/연속 성공 횟수 권한 제외."
+    },
+    "actual_callability": "python -m cli.graduate_validator; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: Zeus policy promotion·lease·current revision 인수 gate로, 환경 문자열/연속 성공 횟수 권한 제외.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib",
+      "validators"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/handlers/session/init.py",
+        "lines": [
+          373,
+          383
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/advisory_ack.py",
+        "lines": [
+          204
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/graduation.py",
+        "lines": [
+          22,
+          241,
+          403
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/graduation_audit.py",
+        "lines": [
+          15
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_graduate_validator.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_stdout_utf8_guard.py",
+        "lines": [
+          79
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/validators/__init__.py",
+        "lines": [
+          31
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/validators/stdout_utf8_guard.py",
+        "lines": [
+          47
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/greenfield_spec_emit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "139266d55cca9c860d1f0af36ddb623e16258e86",
+    "pinned_sha256": "ee74210453441e3cf5f8768753e1b902e10dc310e8bf78c1a5c670e4e7b188f0",
+    "manifest_bytes": 9247,
+    "pinned_bytes": 9247,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#greenfield_spec_emit.py",
+    "semantic_review": {
+      "purpose": "structured draft에서 feature→bundle→testgen→stack scaffold 생성",
+      "analysis": "single pkg local var를 testgen/JVM scaffolder에 전달하는 D2는 실제 연결됨. 그러나 NEW out/human-approved 문구를 확인하는 gate 없음, domain name/rel test output 경로 confinement 없고 기존 feature/test를 무조건 overwrite. schema/중복 domain/id/empty scenarios/steps/newline Gherkin injection 검증 없음. _framework_for는 오류 모두 JVM fallback; lang path traversal과 unknown framework/no scaffold가 정상 summary. flutter 문서값 flutter_gherkin과 branch gherkin-dart가 다름. framework별 next명령도 항상 gradle. written_count는 spec_emit 전체 파일 미포함, 여러domain 같은 generated path 덮음 가능. 테스트 전문4개: PendingException substring와 파일/roundtrip 구조만 보며 실제 gradle RED 실행 없음; glob(...) is not None 단언 자체는 무의미하나 뒤 len검사가 보완. wrapper=False tests와 CLI defaultTrue 외부 생성의존 차이. package consistency≠행동 의미/인수완료.",
+      "decision": "변형: SDD 준비 제안만; nonempty requirements/ID authority/nooverwrite/export validation·실제 테스트 receipt 전 인수 금지."
+    },
+    "actual_callability": "python -m cli.greenfield_spec_emit; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: SDD 준비 제안만; nonempty requirements/ID authority/nooverwrite/export validation·실제 테스트 receipt 전 인수 금지.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "cli.spec_bundle_emit",
+      "lib.cucumber_scaffolder",
+      "lib.dart_scaffolder",
+      "lib.nodejs_scaffolder",
+      "lib.rust_scaffolder",
+      "lib.spec_bundle",
+      "lib.testgen"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/harness-greenfield.md",
+        "lines": [
+          43
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/cli/cucumber_scaffold.py",
+        "lines": [
+          5
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/cucumber_scaffolder.py",
+        "lines": [
+          16
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_dart_scaffolder.py",
+        "lines": [
+          27
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_greenfield_spec_emit.py",
+        "lines": [
+          2,
+          25
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_nodejs_scaffolder.py",
+        "lines": [
+          30
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_rust_scaffolder.py",
+        "lines": [
+          22
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/handoff_render.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "d43b012f17955ac62c776daa2a4854605d3d3109",
+    "pinned_sha256": "fb04d6144d99110c5db6d1689b82c66db37272330f0c0e3d656c32cbf826e195",
+    "manifest_bytes": 4959,
+    "pinned_bytes": 4959,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#handoff_render.py",
+    "semantic_review": {
+      "purpose": "HANDOFF yaml phase tree render/check/anchor rewrite/subphase promote wrapper",
+      "analysis": "default Path.home/.claude는 CLAUDE_HOME/asset override 미반영. mutually exclusive actions 유용하나 promote 후 anchor 갱신은 별도 수동 명령이라 문서 즉시 drift 가능. read/write OSError 전역 미처리, YAML parse render만 catch; promote/detect 일부 error 경로 별도. arbitrary path in-place 허용/preimage hash/atomic backup 없음. 재export lib 함수는 parser/render가 진짜 구현, handoff_drift 전문 미완료.",
+      "decision": "변형: Git 정의의 derived view만; 시각화 동기화≠계획 진행 증거."
+    },
+    "actual_callability": "python -m cli.handoff_render; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: Git 정의의 derived view만; 시각화 동기화≠계획 진행 증거.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.handoff_drift"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/cli/harness_health.py",
+        "lines": [
+          465,
+          553
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/handlers/pre_tool/handoff_drift_gate.py",
+        "lines": [
+          118
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/handoff_drift.py",
+        "lines": [
+          4,
+          179,
+          414,
+          415,
+          439
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_handoff_render.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/validators/handoff_drift.py",
+        "lines": [
+          85,
+          88
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/harness_health.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "e36c4f6ea25a63bddc8c3908684c33e3552c4ddc",
+    "pinned_sha256": "dc43a634e021cd8e7ae5769d001f167e275fe2534bb4bfac477c26e1ada8de96",
+    "manifest_bytes": 22435,
+    "pinned_bytes": 22435,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#harness_health.py",
+    "semantic_review": {
+      "purpose": "skill/lint/debate/telemetry/test presence/phase/writeback/audit/operational 집계",
+      "analysis": "일부 section만 fail-soft이고 skills inventory 예외는 전체 build를 깨뜨릴 수 있다. tests presence는 실행 아니라고 명시. median upper-middle/p90 discrete 선택, runtime 후보 수와 recursive inventory 다름. debate collect 두번 호출하여 pending/logged snapshot 불일치 가능. audit skip malformed/OSError로 분모 축소; 혼합ts sort 오류, top10 agent 제한. telemetry line 수는 유효event 수 아니며 write 오류를0/없음과 혼동할 수 있음. errors가 있어도 main exit0. HANDOFF home override 불일치. 백엔드 대부분 전문 미완료.",
+      "decision": "변형: source timestamp/revision/unknown denominator를 가진 monitoring projection."
+    },
+    "actual_callability": "python -m cli.harness_health; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: source timestamp/revision/unknown denominator를 가진 monitoring projection.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "cli.debate_doubts",
+      "cli.skill_lint_report",
+      "lib.advisory_ack",
+      "lib.debate_sessions",
+      "lib.frontmatter",
+      "lib.handoff_drift",
+      "lib.operational_metrics",
+      "lib.paths",
+      "lib.skill_lint",
+      "lib.telemetry_read",
+      "lib.writeback_store"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/lib/debate_sessions.py",
+        "lines": [
+          10
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "lines": [
+          170
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_harness_health.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/validators/handoff_drift.py",
+        "lines": [
+          7
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/harness_normalize.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "789c1dc0ef03f2b428fb3aaa22ef285c88cc2c34",
+    "pinned_sha256": "f0fd1db7ae607efa80b0945089157e4111c45099a5b803ed280de634c73db6c6",
+    "manifest_bytes": 10880,
+    "pinned_bytes": 10880,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#harness_normalize.py",
+    "semantic_review": {
+      "purpose": "고정16 command metadata와 계약 heading TODO 삽입",
+      "analysis": "COMMANDS_DIR는 CLAUDE_HOME 사용하여 assets root와 다름. collect는 존재 파일만 반환, check는 missing16개를 검사하지 않아 empty set에도 all16 PASS. has_section은 코드펜스의 제목도 인정하고 TODO/placeholder 의미는 검사하지 않음. metadata는 실제 본문/권한과 재검증되지 않은 고정분류. frontmatter BOM/중복키/quoted values 지원제약, ensure_field 첫키만 replace. 기본 dryrun/--apply direct write, --check/--report 우선. 테스트 전문11개는 shape/idempotence/wrongfield 중심, missing files/allTODO pass 미검증. 공통 helper의 실제 공유 확인, 과거 byte-identical extraction 원본은 미확인.",
+      "decision": "변형: scaffold와 contract validation 분리; missing files/빈요구/TODO fail closed 필요."
+    },
+    "actual_callability": "python -m cli.harness_normalize; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: scaffold와 contract validation 분리; missing files/빈요구/TODO fail closed 필요.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.frontmatter_norm",
+      "lib.paths"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/lib/frontmatter_norm.py",
+        "lines": [
+          44,
+          55
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_harness_normalize.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/heartbeat_check.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "0b10e62ae70ba8ed5b73090c69242142a96f11b2",
+    "pinned_sha256": "c9e19e68b28f267adc1265818c9a7207edc6d7a1ef501981d37b60aaa53b3648",
+    "manifest_bytes": 4359,
+    "pinned_bytes": 4359,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#heartbeat_check.py",
+    "semantic_review": {
+      "purpose": "stale heartbeat 목록 수집·event emit·선택적 prune",
+      "analysis": "_raw_event_emit는 lib.event_store 모듈 append를 import하지만 전문 확인한 EventStore에 그런 symbol 없음. 모든 예외 삼켜 실제 event 발행 실패가 드러나지 않고 CLI0. taxonomy emitter 실패도 raw로 fallback하여 validation 우회 시도. malformed timestamp는 skip, max-age/prune 음수 범위 검증 없음; missing≠healthy를 구분하지 않음. --json도 emit 발생, prune deletes 가능. heartbeat/taxonomy/atomic_json 추가의존 전문 미완료, 이번 실행없음.",
+      "decision": "변형: stale는 독립 event persistence receipt 확인 필요. deadman 관찰/발행 실패 상태 분리."
+    },
+    "actual_callability": "python -m cli.heartbeat_check; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: stale는 독립 event persistence receipt 확인 필요. deadman 관찰/발행 실패 상태 분리.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.atomic_json",
+      "lib.event_store",
+      "lib.event_taxonomy",
+      "lib.heartbeat"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/cli/observe.py",
+        "lines": [
+          431,
+          432
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_q_activation.py",
+        "lines": [
+          10,
+          114,
+          132,
+          142
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/hud.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c2e29d5cf3678c8acc23f35fd97837ef467835d6",
+    "pinned_sha256": "8b787ef56814b80db5284ec3c5c53f0bd573b775b282c4677166fa79f7390541",
+    "manifest_bytes": 8857,
+    "pinned_bytes": 8857,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#hud.py",
+    "semantic_review": {
+      "purpose": "Claude statusLine stdin을 ANSI model/cwd/git/context/warnings 한줄로 표시",
+      "analysis": "active debate docstring과 달리 구현에는 없음, tracked warnings도 shim 아닌 learner-candidates. git status -uno가 untracked 제외하므로0 uncommitted는 실제 clean 아님. 여러 subprocess 총 timeout은 개별3초 누적. revlist parse 실패를 ahead=behind0→synced로 표시. transcript 전체 unbounded read에서 마지막 usage를 사용, fallback20k 추정명시. _recent_warnings는 UTC Z/offset을 자르고 local mktime 처리해 timezone 오류, event severity와 무관하게 모두 warning. 모델/경로/branch 외부문자열 ANSI/control sanitization 없음. JSON scalar/type error는 hud error exit0. ASCII모드 glyph 제한은 터미널 렌더 실험미확인.",
+      "decision": "변형: Codex monitoring schema/ANSI escaping/unknown freshness 필요; context 추정치가 admission budget 아님."
+    },
+    "actual_callability": "python -m cli.hud; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: Codex monitoring schema/ANSI escaping/unknown freshness 필요; context 추정치가 admission budget 아님.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.paths"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/lib/paths.py",
+        "lines": [
+          170
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/ingest_docs.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2061c27374e77e13115e48175cd80efb0bd99ebe",
+    "pinned_sha256": "80177d2b2bb2628c5adb07addd99af6424ad31c4dd80f28bec83a8007e4bf24f",
+    "manifest_bytes": 3496,
+    "pinned_bytes": 3496,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#ingest_docs.py",
+    "semantic_review": {
+      "purpose": "문서 디렉터리에서 SPEC-seed/glossary 및 분류근거 생성",
+      "analysis": "operator src를 이유로 liberal=True 모든md 수집; classify와 classify_explained를 따로 실행하여 중간변경 때 결과/근거불일치 가능. dryrun도 읽기/분류를 두번 수행. output mkdir+3파일 direct overwrite, 신규프로젝트/preimage/atomic transaction 없음. stdout codec guard 없음. classifier 원본/schema/선택기준/민감내용 처리 미확인. nonempty bucket이 유효요구/승인 증명 아님.",
+      "decision": "변형: source hash별 ingest 제안, 검토된 structured draft로 SDD 연결."
+    },
+    "actual_callability": "python -m cli.ingest_docs; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: source hash별 ingest 제안, 검토된 structured draft로 SDD 연결.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.extractors"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/kha-ingest-docs.md",
+        "lines": [
+          31,
+          44
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/cli/project_analyze.py",
+        "lines": [
+          368
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/extractors/doc_classifier.py",
+        "lines": [
+          17,
+          248
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_doc_classifier_explained.py",
+        "lines": [
+          3,
+          55
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/insight_index_cli.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "924b5135f1fdfeeb09bb4c496d99e6c0f0ee4535",
+    "pinned_sha256": "30ca70af5141444dbd175b6437229f689c9644367cee6b8c9a536ee8aef5073a",
+    "manifest_bytes": 9036,
+    "pinned_bytes": 9036,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#insight_index_cli.py",
+    "semantic_review": {
+      "purpose": "insight 조회·단일 retract·bulk pollution retract 계획/백업",
+      "analysis": "bulk는 active entry와 retracted ids를 별도읽기, plan/snapshot 사이 변경 가능. ready flag는 exists만 검사, threshold/source hash/age/actor binding 없음. index SHA는 read와 copy2 사이 원자성이 없고 timestamp filename collision 가능. 두로그 backup도 transaction아님. 실패 일부면 flag 유지, retry멱등 backend 의존. 단일 retract는 ready/backup gate 없음. reason whitespace만이어도 truthy통과. supporting detector는 burst와 fs부재만으로 pollution 확정하여 legit archived/out-of-scope 작업 손실가능.",
+      "decision": "변형: bulk mutation은 fenced evidence-bound review와 transactional tombstone. fixture 추정으로 자동 retract 금지."
+    },
+    "actual_callability": "python -m cli.insight_index_cli; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: bulk mutation은 fenced evidence-bound review와 transactional tombstone. fixture 추정으로 자동 retract 금지.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib",
+      "lib.paths"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/handlers/session/init.py",
+        "lines": [
+          630
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/validators/insight_index_importer_whitelist.py",
+        "lines": [
+          19,
+          75
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/insight_index_pollution_detector.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "7fd52d48ddb0cbb17c72bfda45e7c91a86a95880",
+    "pinned_sha256": "4c460098ee38353d4ec5f9c7bf1b5ab7014ae8feba3979fbd974d02e14834b3d",
+    "manifest_bytes": 7285,
+    "pinned_bytes": 7285,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#insight_index_pollution_detector.py",
+    "semantic_review": {
+      "purpose": "cofire histogram/임계 조정 제안/ready flag와 bulk detect 실행",
+      "analysis": "measure tuned값은 JSON에만 저장하고 constants/flag 내용에 반영안함; detect는 항상250ms/3. bucket500 fallback 후 rule재평가도 없음, 빈entries ratio0이라 validated flag 생성. source revision/hash/TTL 없이 validated newline 파일 존재만 권위로 사용. detect --execute는 backup/retract-plan 없이 변경하므로 다른 bulk CLI의 D4 안전전제 우회. failed>0이어도 flag삭제 exit0. lib은 같은 source/event의 occupied bucket 분모로 cofire를 재지만 detection은 모든 source/event 합산이라 측정 대상도 다르다. cid 경로 '..'/absolute 제한 없음, fs존재가 실제live 증명 아님. 미실행.",
+      "decision": "제외/변형: 현 destructive cleanup 경로 채택 차단. 관찰 후보만 허용, 측정과 적용 same evidence binding 필수."
+    },
+    "actual_callability": "python -m cli.insight_index_pollution_detector; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "제외/변형: 현 destructive cleanup 경로 채택 차단. 관찰 후보만 허용, 측정과 적용 same evidence binding 필수.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib",
+      "lib.paths"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/cli/insight_index_cli.py",
+        "lines": [
+          145
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/cron/run_pollution_cleanup.py",
+        "lines": [
+          69,
+          80
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/insight_index_pollution_detector.py",
+        "lines": [
+          30
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_cron_jobs.py",
+        "lines": [
+          189
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/validators/insight_index_importer_whitelist.py",
+        "lines": [
+          95
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/kha_alias.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "8b0daef533e2631364a43c6d2b420ba55b0332c0",
+    "pinned_sha256": "faf499e4770fc735c4fc00dfcad8f556e552bbc7f38e554b1464e9da64c6b2a0",
+    "manifest_bytes": 13180,
+    "pinned_bytes": 13180,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#kha_alias.py",
+    "semantic_review": {
+      "purpose": "68 gsd→kha skill body 복사/name변환 및 선택적 deprecation",
+      "analysis": "description advisory 추가는 docstring과 달리 no-op. rewrite 기존name이 이미desired여도 substitution 결과==fm면 새name을 prepend하여 duplicate key 가능. source body/subfiles crossrefs를 복사/정정하지 않아 alias 독립동작 보장 없음. 기존kha 다른내용 overwrite; 동일하면 continue하여 --deprecate-source도 skip. 반복실행시 source deprecation banner를 kha본문에 복제 가능. check는 frontmatter 구간이 아닌 전체content name검색하여 body의 name으로 오인. removal-date 고정banner일뿐90일 자동검증/제거없음. origin state report/원본 gsd 라이선스 미확인, 생성물 동등성 미판정.",
+      "decision": "제외: 과거 마이그레이션 한정. 단순 name동일이 행동 동등성 아님."
+    },
+    "actual_callability": "python -m cli.kha_alias; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "제외: 과거 마이그레이션 한정. 단순 name동일이 행동 동등성 아님.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.paths"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/harness-skill.md",
+        "lines": [
+          96
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/cli/kha_migrate.py",
+        "lines": [
+          17,
+          32,
+          61,
+          110
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_kha_alias.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_kha_migrate.py",
+        "lines": [
+          41,
+          150
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/kha_migrate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "5d45e0edf5e3b8237a6f119a637ce198754537af",
+    "pinned_sha256": "7655959397bcad8b751c137e8829de6be226b9d31f3c3563c0b384bbf2740410",
+    "manifest_bytes": 12086,
+    "pinned_bytes": 12086,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#kha_migrate.py",
+    "semantic_review": {
+      "purpose": "agent rename/reference rewrite/legacy directory delete의3단계",
+      "analysis": "all은 이전단계 실패에도 다음단계 계속. phase_agents name regex 전체본문 firstmatch이며 없으면 rename만됨; write후unlink failure 원자성 없음. substitution은 오른쪽경계만 있어 prefix 내부도 교체. reference guard는 알려진map과 일부md만 보고 읽기실패skip, unknown gsd/reference runtime/외부파일 누락. phase_delete는 대상kha 존재·동등성 확인 없이 모든gsd dirs 삭제, --force로 zero check우회. CLAUDE_HOME agents/commands와 assets SKILLS_DIR가 달라 다른tree를검사후삭제 가능. 경로·symlink·백업/rollback guard미흡. doc --check-zero flag실제없음.",
+      "decision": "제외: destructive migration 채택 금지. Git isolated proposal·complete correspondence·preimage verification 필요."
+    },
+    "actual_callability": "python -m cli.kha_migrate; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "제외: destructive migration 채택 금지. Git isolated proposal·complete correspondence·preimage verification 필요.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "cli.kha_alias",
+      "lib.paths"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/tests/test_dashboard.py",
+        "lines": [
+          224,
+          227
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_kha_migrate.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/kha_normalize.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "167b9943ff7b42e04c8663de2ac14b7788d5a637",
+    "pinned_sha256": "c7c84a67a05a0ccfdae40dd9b88ffde6f8075a6549e3ffe04500f11d155590b2",
+    "manifest_bytes": 16359,
+    "pinned_bytes": 16359,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#kha_normalize.py",
+    "semantic_review": {
+      "purpose": "68 kha taxonomy와 mutation/longrunning metadata 및 TODO계약제목 정규화",
+      "analysis": "실제 collect는 존재하는kha SKILL만; known68missing을 검증안하고 unknown은 meta(True,False)로 분류. check emptydir에도 all68PASS(없는root는예외). headings와expectedvalues만 검사하여 TODO가완성으로보임. has_section fencedexample도인정. 항목별실제툴권한/외부동작과분류맵동등성미확인. direct write_text/중복키/BOM/quotedYAML한계. reportonly/check우선, 과거state taxonomy원문미확인.",
+      "decision": "변형: metadata 후보/템플릿 생성과 behavior validation 분리."
+    },
+    "actual_callability": "python -m cli.kha_normalize; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: metadata 후보/템플릿 생성과 behavior validation 분리.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.frontmatter_norm",
+      "lib.paths"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/harness-skill.md",
+        "lines": [
+          97
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/cli/harness_normalize.py",
+        "lines": [
+          4
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/frontmatter_norm.py",
+        "lines": [
+          44,
+          55
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_kha_normalize.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/meeting_ingest.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "c523f413599a7ebceb0976bd707829b485e3859e",
+    "pinned_sha256": "eaa86288e217791a047e9ecceb7516bc02d9360d90b13ba7b18191543fa37d8d",
+    "manifest_bytes": 4880,
+    "pinned_bytes": 4880,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#meeting_ingest.py",
+    "semantic_review": {
+      "purpose": "meeting decision draft→ground/coverage→bundle와 seam delta제안 생성",
+      "analysis": "human-approved는arg설명뿐 receipt/actor검사없음. --phase2 boolean만으로fabrication-drop활성화, atlas>2/8 threshold실제검사없음. touched_seams draft제공scope와coverage backend에의존, emptyclaims/emptydraftschema미검증. meeting-id absolute/../로defaultout이탈가능. output2개 sequential overwrite, incomplete bundle도exit0. delta는제안파일만쓰고 registry에apply하지않는경계는확인. assemble/coverage/ground/dependency전문미완료.",
+      "decision": "변형: pinned source/approval/coverage authority와 nooverwrite proposal export 필요."
+    },
+    "actual_callability": "python -m cli.meeting_ingest; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: pinned source/approval/coverage authority와 nooverwrite proposal export 필요.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "cli.fleet_atlas",
+      "lib.bundle_assembler",
+      "lib.coverage_gate",
+      "lib.ground_or_drop"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/harness-greenfield.md",
+        "lines": [
+          39
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/bundle_assembler.py",
+        "lines": [
+          17
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_context_cloud.py",
+        "lines": [
+          29
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_close.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "3f83e79e6a5d649a072da603b449790200e656c5",
+    "pinned_sha256": "55237b3f39cd22a1b868360878a59d47ecac52609cf49f58b26124d0f2d902ac",
+    "manifest_bytes": 4953,
+    "pinned_bytes": 4953,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#milestone_close.py",
+    "semantic_review": {
+      "purpose": "reason/evidence 문자열로 append-only closure 기록",
+      "analysis": "main은dir존재/alreadyclosed/비공백검사하지만 close() 자체는doc와달리멱등·근거검사없음. check→append비원자. actor자유입력이고사람판정충돌·repo증거truth검증없음. supporting spine sid regex는 empty/'.'/'..' 허용하여 main milestone_dir/'..'존재검사통과가능. existingclosedlastbool은stringfalse도true. dryrun도spine생성/replay telemetry부작용가능. CLI exception4 전역매핑없음.",
+      "decision": "변형: authorized closure event를immutable evidence·generation·independent acceptance에바인딩."
+    },
+    "actual_callability": "python -m cli.milestone_close; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: authorized closure event를immutable evidence·generation·independent acceptance에바인딩.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.milestone_liveness",
+      "lib.milestone_spine"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "scripts/tests/test_milestone_close.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_feedback.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "2e5b3c69cd1efb0cf524a5eb97ca42c87b47c184",
+    "pinned_sha256": "56b144066229b58f3a30617fdcfac093f4255c117366e5608df0fb80abfaf771",
+    "manifest_bytes": 7957,
+    "pinned_bytes": 7957,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#milestone_feedback.py",
+    "semantic_review": {
+      "purpose": "rewind round별실패 checklist quote/human note를executor prompt로 재전달",
+      "analysis": "notes(gen,item)키로이전라운드보존유용. 실제는 applied.retryable_item_ids를신뢰하고 human fail결과재검사없음. 매round last checklist만조회해다른phaseitem누락가능. missing/hashcorruptsnapshot/quote없으면silentskip후빈성공. round예산2주장에도source에상한검사없고내용길이무제한, quote/id변경과promptinstruction경계분리없음. repeated counts는중복target/events에부풀수있음. stdoutUTF8guard없음. snapshots는spine read시contenthash재검증없음.",
+      "decision": "변형: immutable artifact handle+bounded evidence context와 typed verdict 연결. 빈피드백≠실패근거없음."
+    },
+    "actual_callability": "python -m cli.milestone_feedback; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: immutable artifact handle+bounded evidence context와 typed verdict 연결. 빈피드백≠실패근거없음.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib.milestone_spine"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/harness-milestone.md",
+        "lines": [
+          55
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_milestone_feedback.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_liveness.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "f31c7754bda006747f0adafc54124dea16306ef4",
+    "pinned_sha256": "e7cb42863e0b691bfb7540a433feed2575755fc4a995a0e047d7f9dfc135db2a",
+    "manifest_bytes": 5126,
+    "pinned_bytes": 5126,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#milestone_liveness.py",
+    "semantic_review": {
+      "purpose": "단일/전체milestone state의stalled를exit3으로 알림",
+      "analysis": "abandoned는의도적으로exit0이나--stale-after-days/threshold에음수NaNinf를허용하여관찰suppression가능. ValueError/OSError만catch, malformedpayloadTypeError미처리. 단일sid조회도Spineconstructor가mkdir하므로읽기전용과다름. 등록미완료doc주장은현재caller검색과별도확인필요. ML assess/scan전문미완료라threshold정책/closure/liveness의미를인증안함. WindowsUnicode출력guard없음.",
+      "decision": "변형: monitor unknown/error와stalelease조건명확화; 사용자범위bounded threshold validation."
+    },
+    "actual_callability": "python -m cli.milestone_liveness; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "변형: monitor unknown/error와stalelease조건명확화; 사용자범위bounded threshold validation.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "lib",
+      "lib.milestone_spine"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/harness-milestone.md",
+        "lines": [
+          160,
+          161
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/handlers/session/init.py",
+        "lines": [
+          718
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/lib/pending_changes.py",
+        "lines": [
+          57
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/milestone_rewind.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "git_blob": "35e1e9301dca3c6b2d06a81317d8779961fb76eb",
+    "pinned_sha256": "42eb5409075f84492e11a93197284b9e3f03df520d86b11a53379db94843432e",
+    "manifest_bytes": 13143,
+    "pinned_bytes": 13143,
+    "matches_manifest_sha256": true,
+    "matches_manifest_bytes": true,
+    "read_extent": "full",
+    "disposition": "semantically_reviewed",
+    "review_ref": "docs/full-analysis/baldrix-cli-002/semantic-notes.json#milestone_rewind.py",
+    "semantic_review": {
+      "purpose": "human fail retryable 항목을git revert후새round원장으로 연결",
+      "analysis": "spine.human_verdicts는itemtailwins acrossround, latestchecklist는gen필터없음. --repo가spine.started.repo와일치하는지확인없고explicitbase/기본msbase의ancestor/fence검사없음(known-good후보만검사). missingbase는rootcommitfallback여전히계획소실위험. known-good에human판정없는항목은bad에없어검증된지점으로남을수있음. idempotent는revert_commit문자열만보고git실재확인안함. Gitcommit성공→rewind_applied→started 사이크래시시재되감기또는gen전진영구skip가능; transaction/lock/HEAD고정없음. gitlog실패를nothingtorevert로혼동. commit실패후revert--abort반환무시,stagedinverse잔존가능. gitcommit hooks실행/mergecommit-mainline미지원등환경위험. --dryrun도Spine생성자dir/replaytelemetry쓰기가능. fullphase범위되감기원본한계유지. 테스트·MG/item_keys의존미독이며실행금지.",
+      "decision": "제외/변형: 현재repo운영rollback채택차단; Zeusfencing·Git exactrevision·durable saga와검증된복원receipt필요."
+    },
+    "actual_callability": "python -m cli.milestone_rewind; main body reviewed, effective registration and transitive behavior partially unverified",
+    "adoption_decision": "제외/변형: 현재repo운영rollback채택차단; Zeusfencing·Git exactrevision·durable saga와검증된복원receipt필요.",
+    "claude_dependencies": "Claude homes/assets/state/skills/commands and role contracts; original instructions treated as DATA",
+    "windows_linux": "Native Windows/Linux/WSL not executed in this partition. Source paths/home override and UTF-8/f-string/platform specifics retained in per-file analysis; pathlib/write_text is not cross-platform safety proof.",
+    "zeus_modules": [
+      "src/codex_harness/application/workflow.py",
+      "src/codex_harness/application/monitoring.py",
+      "src/codex_harness/domain/policy.py",
+      "src/codex_harness/domain/sdd.py"
+    ],
+    "zeus_equivalence": "Architectural mapping only, not exact-current-revision implementation equivalence; CLI should invoke use cases, Git definitions/PostgreSQL runtime and six-W preserved.",
+    "direct_imports": [
+      "cli.milestone_verdict",
+      "lib",
+      "lib.milestone_spine"
+    ],
+    "caller_config_test_search_hits": [
+      {
+        "path": "commands/harness-milestone.md",
+        "lines": [
+          136
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      },
+      {
+        "path": "scripts/tests/test_milestone_rewind.py",
+        "lines": [
+          2
+        ],
+        "extent": "search_hits_only_not_semantic_review"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "NOT RUN: explicit task restriction to static review. Test reading is not execution. Further source/transitive dependencies and fixtures need review before isolated execution.",
+    "license_status": "Upstream original licenses/private source reports/remote links unverified",
+    "duplicate_status": "No generated/byte-equivalence claim; generators and helper forwarding discussed semantically, original-output reconciliation incomplete",
+    "remaining": [
+      "Complete transitive implementation/effective configuration and caller review",
+      "Resolve per-file contradictions and malformed/concurrent/crash cases",
+      "Verify generator originals/outputs and licenses/external references",
+      "Execute matched tests after static dependency review in authorized isolation",
+      "Independent lead/conductor exact-revision adoption gates"
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "initial_tool_exit": 1,
+  "initial_failure": "ensurepip unavailable; preserved bootstrap.stdout and bootstrap-failure-receipt.json",
+  "resume_failure": {
+    "tool_chunk_id": "581d38",
+    "exit_code": 1,
+    "raw_capture_available": false,
+    "observed_error": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/zeus-wsl-oi748ewj/home'",
+    "interpretation": "Previous WSL /tmp directory absent; cause unverified; new full clone used"
+  },
+  "successful_tool_session_id": 39995,
+  "successful_tool_final_exit_code": 0,
+  "process_status": "runner and all waited subprocesses exited; no validation process left running"
+}
