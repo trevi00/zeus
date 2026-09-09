@@ -104,8 +104,9 @@ class Tickets:
             links = [r for r in tx.scan("ticket_github") if r["ticket_id"] == ticket_id]
             observations = [r for r in tx.scan("ticket_remote_observations") if r["ticket_id"] == ticket_id]
         return {**row, "current_revision": current["revision"], "status": current["status"],
-                "reviews": sorted(reviews, key=lambda r: (r["at"], r["id"])), "github": links,
-                "external_observations": observations}
+                "reviews": sorted(reviews, key=lambda r: (r["at"], r["id"])),
+                "github": sorted(links, key=lambda r: r["id"]),
+                "external_observations": sorted(observations, key=lambda r: (r["at"], r["id"]))}
 
     def list(self):
         with self.store.transaction() as tx:
@@ -151,8 +152,11 @@ class Tickets:
             details = {"objective": content["title"] + "\n" + content["problem"],
                        "acceptance_criteria": content["acceptance_criteria"], "zeus_ticket": bound,
                        "ticket_context": content, "ticket_reviews": reviews}
-            details["external_ticket_observations"] = [r for r in tx.scan("ticket_remote_observations")
-                                                       if r["ticket_id"] == ticket_id]
+            observations = sorted((r for r in tx.scan("ticket_remote_observations")
+                                   if r["ticket_id"] == ticket_id), key=lambda r: (r["at"], r["id"]))
+            details["external_ticket_observations"] = observations[-10:]
+            details["external_ticket_observations_total"] = len(observations)
+            details["external_ticket_observations_omitted"] = max(0, len(observations) - 10)
             message = envelope("task.assign", "conductor", "lead:improvement", "plan", details,
                                "ticket:" + ticket_id + ":" + str(expected_revision))
             message["where"]["revision"] = repository_revision

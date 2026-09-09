@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-09-09T14:17:05.751351+00:00",
+  "mode": "actual PostgreSQL plus actual GitHub existing issue readback; no remote content/state change",
+  "ticket_id": "ZEUS-db4ecdcd9fa8",
+  "issue": "https://github.com/trevi00/zeus/issues/30",
+  "base_revision": "89c09c025ddc9284fc07cd2a3b6f161cee22a2b8",
+  "source_sha256": {
+    "src/codex_harness/adapters/github_tickets.py": "b73fff8e4e6c8d950f3d5c82c5794e977531826419a3efe3fb249c56a933375c",
+    "src/codex_harness/application/tickets.py": "815cf0870ba224b1414b93b89e399aae8377b27700bb3b2fa86975f2d46eee18",
+    "src/codex_harness/cli.py": "7618d69f54b96c9876bb0d9e0b7e755106b3d942f7f29d1bf741c21be895232d",
+    "tests/test_github_tickets.py": "b8d1b562862d65373e0cdade63b98fc5572c0f2ddaa013cd09e80cbf5434c74a"
+  },
+  "result": {
+    "id": "0eeada92dcb6321cb49f4e36a1249ed8a71cb06955aeb4d5862c2ff9d86a37b5",
+    "ticket_id": "ZEUS-db4ecdcd9fa8",
+    "repository": "trevi00/zeus",
+    "number": 30,
+    "url": "https://github.com/trevi00/zeus/issues/30",
+    "attempted_revision": 1,
+    "synced_revision": 1,
+    "content_hash": "9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691",
+    "attempted_content_hash": "9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691",
+    "body_hash": "9075d9b8c75647f78b79759d7ada3a5e20b5d8b5bdc47142f06459f846e9d6fa",
+    "title_hash": "3f8cb0524d7835898a72d9a4df1ad77a1cc0eb01622d7fda4b620be74319a72a",
+    "observed_body_hash": "9075d9b8c75647f78b79759d7ada3a5e20b5d8b5bdc47142f06459f846e9d6fa",
+    "observed_title_hash": "3f8cb0524d7835898a72d9a4df1ad77a1cc0eb01622d7fda4b620be74319a72a",
+    "title": "[FA-029] \uac80\uc99d \uc99d\uac70\uc5d0 \uacb0\uc18d\ub41c \ud2f0\ucf13 \uc885\ub8cc\u00b7\uc7ac\uac1c\uc640 PG/GitHub \uc0c1\ud0dc \uc870\uc815",
+    "desired_state": "OPEN",
+    "observed_state": "OPEN",
+    "observation_ref": "sha256:77f0692c3c97fd237b21028f2e4efde9774b7442faa4fff58a9ae98edeaa74f1",
+    "observation_id": "10ba0a208a0196c69fca7f2689deab335ee858f5901bbd5edb5e8ba33c7391c5",
+    "at": "2026-09-09T14:17:05.071902+00:00",
+    "review_ids": [
+      "2b87a97a05b4b24e59a419cf4a690d3fa1bb4d6e6b3246f9df3b6c61c906441e",
+      "f55540e0800f5099e55111d89c556b148a6a9b04c24e81c289324b3c9c768822"
+    ],
+    "status": "synced"
+  },
+  "local_status": "open",
+  "remote_unchanged": true,
+  "not_verified": [
+    "external conflict mutation on live issue",
+    "actual close/reopen",
+    "production deployment",
+    "human acceptance"
+  ]
+}

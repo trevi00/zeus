@@ -1,0 +1,58 @@
+{
+  "source_sha256": {
+    "src/codex_harness/adapters/github_tickets.py": "b73fff8e4e6c8d950f3d5c82c5794e977531826419a3efe3fb249c56a933375c",
+    "src/codex_harness/application/tickets.py": "815cf0870ba224b1414b93b89e399aae8377b27700bb3b2fa86975f2d46eee18",
+    "src/codex_harness/cli.py": "7618d69f54b96c9876bb0d9e0b7e755106b3d942f7f29d1bf741c21be895232d",
+    "tests/test_github_tickets.py": "b8d1b562862d65373e0cdade63b98fc5572c0f2ddaa013cd09e80cbf5434c74a"
+  },
+  "checks": [
+    {
+      "command": "uv run ruff check .",
+      "result": "passed",
+      "tool": "036a29"
+    },
+    {
+      "command": "uv run pytest",
+      "result": "passed",
+      "passed": 676,
+      "skipped": 92,
+      "duration_seconds": 248.14,
+      "tool": "49d053",
+      "boundary": "Windows full suite; optional integration tests skipped unless enabled"
+    },
+    {
+      "command": "HARNESS_INTEGRATION=1 uv run pytest tests/test_github_tickets.py tests/test_tickets.py -q",
+      "result": "passed",
+      "passed": 56,
+      "skipped": 0,
+      "duration_seconds": 24.75,
+      "tool": "933734",
+      "boundary": "Memory and isolated actual PostgreSQL; GitHub transport replaced for deterministic failure tests"
+    },
+    {
+      "command": "uv run zeus ticket sync --help",
+      "result": "passed",
+      "tool": "c04ed2"
+    },
+    {
+      "command": "actual PostgreSQL/GitHub readback",
+      "result": "passed",
+      "tool": "15e166",
+      "evidence": "live-readback-final.json"
+    },
+    {
+      "command": "git index SHA-256 comparison",
+      "result": "passed",
+      "tool": "f5d94a",
+      "boundary": "All staged source/test bytes equal live-readback source hashes"
+    }
+  ],
+  "review": {
+    "provider": "actual Claude CLI",
+    "session_id": "2dc41532-c263-4a29-8689-c8b385e1da27",
+    "result": "approved incremental patch",
+    "evidence": "claude-correction.md"
+  },
+  "ci": "pending after commit",
+  "fa_029": "open; full close/reopen acceptance not implemented"
+}

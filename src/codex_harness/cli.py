@@ -227,6 +227,8 @@ def parser() -> argparse.ArgumentParser:
             sub.add_argument("--repo", required=True, help="GitHub owner/repository")
         if name == "sync":
             sub.add_argument("--preview", action="store_true", help="Print projection; no network or state changes")
+            sub.add_argument("--reconcile-observation", help="Explicitly replace the observed title/body with the local projection")
+            sub.add_argument("--revision", type=int, help="Required current revision when reconciling")
     return p
 
 
@@ -256,7 +258,11 @@ def ticket_command(service, args):
         from codex_harness.adapters.configuration import runtime_dir
         from codex_harness.adapters.github_tickets import GitHubTickets
         github = GitHubTickets(tickets, FileArtifacts(runtime_dir() / "artifacts"))
-        emit(getattr(github, command)(args.ticket_id, args.repo))
+        if command == "sync":
+            emit(github.sync(args.ticket_id, args.repo,
+                            reconcile_observation=args.reconcile_observation, expected_revision=args.revision))
+        else:
+            emit(github.pull(args.ticket_id, args.repo))
 
 
 def main() -> None:
