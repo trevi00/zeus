@@ -1,0 +1,2034 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_autopilot_pane_events.py",
+    "git_blob": "f3bd851c3c243aab4beb5604799c81fa6f4b512b",
+    "pinned_sha256": "2e0cfc91240459b7a99848e753a9727e65dc460c16fd5ad4a25da1f633d2d0a1",
+    "pinned_bytes": 9055,
+    "manifest_bytes": 9055,
+    "line_count": 244,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        244
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_pane_events.py",
+      "git_blob": "f3bd851c3c243aab4beb5604799c81fa6f4b512b",
+      "mode": "100644",
+      "bytes": 9055,
+      "pinned_sha256": "2e0cfc91240459b7a99848e753a9727e65dc460c16fd5ad4a25da1f633d2d0a1",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-01",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/autopilot_pane_events.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 91,
+            "raw_range_sha256": "5add458ec3afdbb8af807839d770859690e59e196a23968e9c1004c216f4787a"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/telemetry_log.py",
+        "read_ranges": [
+          {
+            "start": 27,
+            "end": 60,
+            "raw_range_sha256": "095801770d93243cc3ee2d378eed126da02a00512a31521bcd04d9d3edb210c9"
+          }
+        ]
+      },
+      {
+        "path": "commands/harness-autopilot.md",
+        "read_ranges": [
+          {
+            "start": 35,
+            "end": 66,
+            "raw_range_sha256": "f01761c2bafd4b72a52c06d7c43ca892ea6115c57f069b0ea442971881fae05c"
+          },
+          {
+            "start": 215,
+            "end": 246,
+            "raw_range_sha256": "2c97dd4a54b76e57f840342ac3bd75f25b7f8363e41183cec741f9b786640dee"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_autopilot_pane_events.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_autopilot_pane_spawn.py",
+    "git_blob": "edf2f042fb901d828745a9825adbb2da67897bfe",
+    "pinned_sha256": "12110d1a82093943b1f6ebd9d557ffc3f9e8bba883d64ef08df4c85a65fa3789",
+    "pinned_bytes": 16554,
+    "manifest_bytes": 16554,
+    "line_count": 397,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        397
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_pane_spawn.py",
+      "git_blob": "edf2f042fb901d828745a9825adbb2da67897bfe",
+      "mode": "100644",
+      "bytes": 16554,
+      "pinned_sha256": "12110d1a82093943b1f6ebd9d557ffc3f9e8bba883d64ef08df4c85a65fa3789",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-02",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/autopilot_pane_spawn.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 153,
+            "raw_range_sha256": "096e0f91753bf46004dc5571354e5500fc48b837101e28979b9a2f3bd6d07e12"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "commands/harness-autopilot.md",
+        "read_ranges": [
+          {
+            "start": 35,
+            "end": 66,
+            "raw_range_sha256": "f01761c2bafd4b72a52c06d7c43ca892ea6115c57f069b0ea442971881fae05c"
+          },
+          {
+            "start": 215,
+            "end": 246,
+            "raw_range_sha256": "2c97dd4a54b76e57f840342ac3bd75f25b7f8363e41183cec741f9b786640dee"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_autopilot_pane_spawn.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_autopilot_parallel_e2e_smoke.py",
+    "git_blob": "f1747db86f6bb5d196b6ad6e0c2ad58f34207bbb",
+    "pinned_sha256": "6b894cc17aad2d72f3d6a7d4f3a0513e2b50785bc5670f7864a77101d817032f",
+    "pinned_bytes": 13562,
+    "manifest_bytes": 13562,
+    "line_count": 339,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        339
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_parallel_e2e_smoke.py",
+      "git_blob": "f1747db86f6bb5d196b6ad6e0c2ad58f34207bbb",
+      "mode": "100644",
+      "bytes": 13562,
+      "pinned_sha256": "6b894cc17aad2d72f3d6a7d4f3a0513e2b50785bc5670f7864a77101d817032f",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-03",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/autopilot_pane_events.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 91,
+            "raw_range_sha256": "5add458ec3afdbb8af807839d770859690e59e196a23968e9c1004c216f4787a"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/autopilot_pane_spawn.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 153,
+            "raw_range_sha256": "096e0f91753bf46004dc5571354e5500fc48b837101e28979b9a2f3bd6d07e12"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/autopilot_phase1_merge.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 227,
+            "raw_range_sha256": "e49353b8dde3bc53893f9ff81eb9122c97ca2a59a723a5846b29e21bca6f7931"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/telemetry_log.py",
+        "read_ranges": [
+          {
+            "start": 27,
+            "end": 60,
+            "raw_range_sha256": "095801770d93243cc3ee2d378eed126da02a00512a31521bcd04d9d3edb210c9"
+          }
+        ]
+      },
+      {
+        "path": "commands/harness-autopilot.md",
+        "read_ranges": [
+          {
+            "start": 35,
+            "end": 66,
+            "raw_range_sha256": "f01761c2bafd4b72a52c06d7c43ca892ea6115c57f069b0ea442971881fae05c"
+          },
+          {
+            "start": 215,
+            "end": 246,
+            "raw_range_sha256": "2c97dd4a54b76e57f840342ac3bd75f25b7f8363e41183cec741f9b786640dee"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_autopilot_parallel_e2e_smoke.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_autopilot_phase1_merge.py",
+    "git_blob": "d879a9c26db0d629ab4dbb11973229ff91bce0fa",
+    "pinned_sha256": "aac857d04f8add2c1afef692ac8f3fbd7c0adcc3591fd5dbf2628b0ab41353e2",
+    "pinned_bytes": 16138,
+    "manifest_bytes": 16138,
+    "line_count": 434,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        434
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_phase1_merge.py",
+      "git_blob": "d879a9c26db0d629ab4dbb11973229ff91bce0fa",
+      "mode": "100644",
+      "bytes": 16138,
+      "pinned_sha256": "aac857d04f8add2c1afef692ac8f3fbd7c0adcc3591fd5dbf2628b0ab41353e2",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-04",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/autopilot_phase1_merge.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 227,
+            "raw_range_sha256": "e49353b8dde3bc53893f9ff81eb9122c97ca2a59a723a5846b29e21bca6f7931"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "commands/harness-autopilot.md",
+        "read_ranges": [
+          {
+            "start": 35,
+            "end": 66,
+            "raw_range_sha256": "f01761c2bafd4b72a52c06d7c43ca892ea6115c57f069b0ea442971881fae05c"
+          },
+          {
+            "start": 215,
+            "end": 246,
+            "raw_range_sha256": "2c97dd4a54b76e57f840342ac3bd75f25b7f8363e41183cec741f9b786640dee"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_autopilot_phase1_merge.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_autopilot_state.py",
+    "git_blob": "0b804030029b94dc011511a3adabe67b93224da7",
+    "pinned_sha256": "564cf4a479314b6ece2c30ba80e78d412e1dbea8330d268b481788637e588fd0",
+    "pinned_bytes": 19704,
+    "manifest_bytes": 19704,
+    "line_count": 543,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        543
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_state.py",
+      "git_blob": "0b804030029b94dc011511a3adabe67b93224da7",
+      "mode": "100644",
+      "bytes": 19704,
+      "pinned_sha256": "564cf4a479314b6ece2c30ba80e78d412e1dbea8330d268b481788637e588fd0",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-05",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/autopilot_state.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 343,
+            "raw_range_sha256": "2f6fffebd7f08e39f1a22491c14cf14f4bda6c7abac1e8b94974536871046702"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/handlers/session/init.py",
+        "read_ranges": [
+          {
+            "start": 247,
+            "end": 300,
+            "raw_range_sha256": "1585a3d1cfdd2f48077e6aae40daffba47d9884d5f87b484561234f9033ac5e9"
+          },
+          {
+            "start": 404,
+            "end": 447,
+            "raw_range_sha256": "060cab7646cee6f23e45e0044af2fdad86c927d5d934ea612f0df0aa56f4669d"
+          },
+          {
+            "start": 801,
+            "end": 822,
+            "raw_range_sha256": "15875d8ecb2a8de5618c2e727ce4e688b4f47c97cdd48f3d33a6b8e4f1ec4f0f"
+          }
+        ]
+      },
+      {
+        "path": "settings.json",
+        "read_ranges": [
+          {
+            "start": 207,
+            "end": 234,
+            "raw_range_sha256": "248b4ee93e6751312f4790dbcd17952140c00552d9806d9b44efdaa3a30e233f"
+          },
+          {
+            "start": 305,
+            "end": 320,
+            "raw_range_sha256": "87930cdde3d1ad616916486f26e2c516fdc5dec1f7bfac48c474eee85b3d12e1"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/work_unit_store.py",
+        "read_ranges": [
+          {
+            "start": 250,
+            "end": 293,
+            "raw_range_sha256": "b5752797643c722489c783efcc5cf7a0c5a5cec0d38af5525529c132029542c4"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_autopilot_state.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_autopilot_worktree_probe.py",
+    "git_blob": "4d7617ce7193a57dc32fce38ecc843f3a9c249ca",
+    "pinned_sha256": "6899d48e7fbfa37b51b1a8618152228be217963f157084606cda46226d4f02d2",
+    "pinned_bytes": 8071,
+    "manifest_bytes": 8071,
+    "line_count": 202,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        202
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_worktree_probe.py",
+      "git_blob": "4d7617ce7193a57dc32fce38ecc843f3a9c249ca",
+      "mode": "100644",
+      "bytes": 8071,
+      "pinned_sha256": "6899d48e7fbfa37b51b1a8618152228be217963f157084606cda46226d4f02d2",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-06",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/autopilot_worktree_probe.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 81,
+            "raw_range_sha256": "91f3875d0e56b991eee40d0250fdafc94e21ed2c1a986e88bb2593c98719acbf"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "commands/harness-autopilot.md",
+        "read_ranges": [
+          {
+            "start": 35,
+            "end": 66,
+            "raw_range_sha256": "f01761c2bafd4b72a52c06d7c43ca892ea6115c57f069b0ea442971881fae05c"
+          },
+          {
+            "start": 215,
+            "end": 246,
+            "raw_range_sha256": "2c97dd4a54b76e57f840342ac3bd75f25b7f8363e41183cec741f9b786640dee"
+          }
+        ]
+      },
+      {
+        "path": "scripts/engine/orchestrator.py",
+        "read_ranges": [
+          {
+            "start": 481,
+            "end": 510,
+            "raw_range_sha256": "5266ba2d54fde5a2ba97d03ea62d09b1695d8567445a8d04fb5a41758b71a4ce"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_autopilot_worktree_probe.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_axis_scores_log.py",
+    "git_blob": "a29cf2ae13e6a1b75139f41725836ccc7c16ccaa",
+    "pinned_sha256": "aa7ec5117c514fead3acba4e6d0b27358a4d00ffefeb71003553feeffd7377a3",
+    "pinned_bytes": 14191,
+    "manifest_bytes": 14191,
+    "line_count": 368,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        368
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_axis_scores_log.py",
+      "git_blob": "a29cf2ae13e6a1b75139f41725836ccc7c16ccaa",
+      "mode": "100644",
+      "bytes": 14191,
+      "pinned_sha256": "aa7ec5117c514fead3acba4e6d0b27358a4d00ffefeb71003553feeffd7377a3",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-07",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/axis_scores_log.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 262,
+            "raw_range_sha256": "59b7fb5233219e048a2d0d261913251405000cd5d9b19f85e6031e36ba548cb0"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/handlers/session/init.py",
+        "read_ranges": [
+          {
+            "start": 247,
+            "end": 300,
+            "raw_range_sha256": "1585a3d1cfdd2f48077e6aae40daffba47d9884d5f87b484561234f9033ac5e9"
+          },
+          {
+            "start": 404,
+            "end": 447,
+            "raw_range_sha256": "060cab7646cee6f23e45e0044af2fdad86c927d5d934ea612f0df0aa56f4669d"
+          },
+          {
+            "start": 801,
+            "end": 822,
+            "raw_range_sha256": "15875d8ecb2a8de5618c2e727ce4e688b4f47c97cdd48f3d33a6b8e4f1ec4f0f"
+          }
+        ]
+      },
+      {
+        "path": "settings.json",
+        "read_ranges": [
+          {
+            "start": 207,
+            "end": 234,
+            "raw_range_sha256": "248b4ee93e6751312f4790dbcd17952140c00552d9806d9b44efdaa3a30e233f"
+          },
+          {
+            "start": 305,
+            "end": 320,
+            "raw_range_sha256": "87930cdde3d1ad616916486f26e2c516fdc5dec1f7bfac48c474eee85b3d12e1"
+          }
+        ]
+      },
+      {
+        "path": "commands/harness-autopilot.md",
+        "read_ranges": [
+          {
+            "start": 35,
+            "end": 66,
+            "raw_range_sha256": "f01761c2bafd4b72a52c06d7c43ca892ea6115c57f069b0ea442971881fae05c"
+          },
+          {
+            "start": 215,
+            "end": 246,
+            "raw_range_sha256": "2c97dd4a54b76e57f840342ac3bd75f25b7f8363e41183cec741f9b786640dee"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_axis_scores_log.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_bash_tool_routing.py",
+    "git_blob": "f26cffb8046371976ea8623457ee070d17f32a5c",
+    "pinned_sha256": "0399742f76c719ab4de37038d601554df832dbb724e0cbee94c2bdcda5ae697e",
+    "pinned_bytes": 9244,
+    "manifest_bytes": 9244,
+    "line_count": 269,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        269
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_bash_tool_routing.py",
+      "git_blob": "f26cffb8046371976ea8623457ee070d17f32a5c",
+      "mode": "100644",
+      "bytes": 9244,
+      "pinned_sha256": "0399742f76c719ab4de37038d601554df832dbb724e0cbee94c2bdcda5ae697e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-08",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/bash_tool_routing.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 162,
+            "raw_range_sha256": "1bfb5ddaeeb20d2236577947bf7b131e1330bd96edf680ed2527fed459532b6b"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/handlers/post_tool/reviewer.py",
+        "read_ranges": [
+          {
+            "start": 468,
+            "end": 479,
+            "raw_range_sha256": "90ab7c3aa18cff6b00f728acee3f34e8ece17fb0001e3be44e9c5db7623d9e4d"
+          },
+          {
+            "start": 530,
+            "end": 563,
+            "raw_range_sha256": "59c0984d264e76b98d19405fbd652adc6e0a1142b68ab9d309e37eee89b25914"
+          }
+        ]
+      },
+      {
+        "path": "settings.json",
+        "read_ranges": [
+          {
+            "start": 207,
+            "end": 234,
+            "raw_range_sha256": "248b4ee93e6751312f4790dbcd17952140c00552d9806d9b44efdaa3a30e233f"
+          },
+          {
+            "start": 305,
+            "end": 320,
+            "raw_range_sha256": "87930cdde3d1ad616916486f26e2c516fdc5dec1f7bfac48c474eee85b3d12e1"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_bash_tool_routing.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_boilerplate.py",
+    "git_blob": "abad3ba140643a5e3df058a2873983b5b2bd6007",
+    "pinned_sha256": "e6a4367acb70c9f5e56e88f5fd682d09bb629600f017081c3f884966a0ea5bce",
+    "pinned_bytes": 9034,
+    "manifest_bytes": 9034,
+    "line_count": 252,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        252
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_boilerplate.py",
+      "git_blob": "abad3ba140643a5e3df058a2873983b5b2bd6007",
+      "mode": "100644",
+      "bytes": 9034,
+      "pinned_sha256": "e6a4367acb70c9f5e56e88f5fd682d09bb629600f017081c3f884966a0ea5bce",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-09",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/validators/boilerplate.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 252,
+            "raw_range_sha256": "c7aa9b1eb51360c5a8193f29bc6eabebb602335b141e960baee8d151ad2ad1f1"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/validators/semantic.py",
+        "read_ranges": [
+          {
+            "start": 171,
+            "end": 217,
+            "raw_range_sha256": "58cb7ac57c0c6cff857e463b9097f01cd1812ef6f6a3a8cf29d737ae674aa633"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_boilerplate.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_brain_autopush.py",
+    "git_blob": "37028971e04c77e907d0b67e0e3114b950ca6fc4",
+    "pinned_sha256": "bcd5f1735ee196ba066337d8475480ff7a8dec54e92a1f6d88569fb2c20c200e",
+    "pinned_bytes": 6423,
+    "manifest_bytes": 6423,
+    "line_count": 142,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        142
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_brain_autopush.py",
+      "git_blob": "37028971e04c77e907d0b67e0e3114b950ca6fc4",
+      "mode": "100644",
+      "bytes": 6423,
+      "pinned_sha256": "bcd5f1735ee196ba066337d8475480ff7a8dec54e92a1f6d88569fb2c20c200e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-10",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/brain_autopush.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 185,
+            "raw_range_sha256": "2fd77f3f2e4077b7f4a5a97eff9222826274b38f7bf83d297bf2541bbf00c159"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/brain_store.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 332,
+            "raw_range_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/cron/run_brain_push.py",
+        "read_ranges": [
+          {
+            "start": 43,
+            "end": 123,
+            "raw_range_sha256": "4b1bcba455e03466c8952406b1500aa6272ce44662bf0a3a325923415ec0c9f3"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_brain_autopush.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_brain_git_status.py",
+    "git_blob": "1e168583d98c7cc1080a2895a116ab6d287935c8",
+    "pinned_sha256": "b70dd78527d848c693e6c144133cf54252078174ae98b54b6572382409391c7b",
+    "pinned_bytes": 5269,
+    "manifest_bytes": 5269,
+    "line_count": 140,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        140
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_brain_git_status.py",
+      "git_blob": "1e168583d98c7cc1080a2895a116ab6d287935c8",
+      "mode": "100644",
+      "bytes": 5269,
+      "pinned_sha256": "b70dd78527d848c693e6c144133cf54252078174ae98b54b6572382409391c7b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-11",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/brain_autopush.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 185,
+            "raw_range_sha256": "2fd77f3f2e4077b7f4a5a97eff9222826274b38f7bf83d297bf2541bbf00c159"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/brain_git_status.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 131,
+            "raw_range_sha256": "c91b53e65a443ca5c277cc2023ab812a7648f628dc37b9d443430d827409f6e0"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/brain_store.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 332,
+            "raw_range_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_brain_git_status.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_brain_store.py",
+    "git_blob": "aac7d2277fd9ea1db7cc800868bb08e5c7ea381c",
+    "pinned_sha256": "c7ba74b5c0968365b00ea2d2c9689304e47e06b8540978ba012a90e6259918f3",
+    "pinned_bytes": 11875,
+    "manifest_bytes": 11875,
+    "line_count": 268,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        268
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_brain_store.py",
+      "git_blob": "aac7d2277fd9ea1db7cc800868bb08e5c7ea381c",
+      "mode": "100644",
+      "bytes": 11875,
+      "pinned_sha256": "c7ba74b5c0968365b00ea2d2c9689304e47e06b8540978ba012a90e6259918f3",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-12",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/brain_store.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 332,
+            "raw_range_sha256": "8389b694870e986aa8ffe25a08b3bfc502af7d47ebb3d8d169bae602eb001439"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/graduation.py",
+        "read_ranges": [
+          {
+            "start": 149,
+            "end": 210,
+            "raw_range_sha256": "504b086c72e7e2996da7832a84f5a61235334f55811e138e0878f1a56c369aea"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_brain_store.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_breaker_config.py",
+    "git_blob": "b3afc1440f7bd90d4c634ae86312418f0a49d48c",
+    "pinned_sha256": "eef1f71d0103b87e7ab0f584e7faecdf27722a00ece346a792c01989e45d9b1d",
+    "pinned_bytes": 11192,
+    "manifest_bytes": 11192,
+    "line_count": 325,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        325
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_breaker_config.py",
+      "git_blob": "b3afc1440f7bd90d4c634ae86312418f0a49d48c",
+      "mode": "100644",
+      "bytes": 11192,
+      "pinned_sha256": "eef1f71d0103b87e7ab0f584e7faecdf27722a00ece346a792c01989e45d9b1d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-13",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/breakers/config.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 215,
+            "raw_range_sha256": "91693b4a4d45e95b513eecc61c4e9489f9e81f7c962ce530b0934852acf49ebb"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/cli/breaker_override.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 78,
+            "raw_range_sha256": "9e8b124c606a8ac62dd76b5b0079bac67e6d676af4b21f1288bfbdacd861bdcd"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/breakers/composite.py",
+        "read_ranges": [
+          {
+            "start": 190,
+            "end": 220,
+            "raw_range_sha256": "d7705eaa4b7a245525d4d4a1bdbdea8a03da57e106df6ef2083484c28ab32ddd"
+          },
+          {
+            "start": 340,
+            "end": 420,
+            "raw_range_sha256": "0c7723885be094690f64f4c29601b99b1cc9f2efdda8826e9ff9b5f9dacde7e5"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_breaker_config.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_breaker_proposer.py",
+    "git_blob": "2722de3f189cb7df3f5c9a164401cb84d71b9d3f",
+    "pinned_sha256": "f8b0c8b04cb6298f788ea4db7f39eed545ed142b59366cee4ff456452ec89814",
+    "pinned_bytes": 12058,
+    "manifest_bytes": 12058,
+    "line_count": 331,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        331
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_breaker_proposer.py",
+      "git_blob": "2722de3f189cb7df3f5c9a164401cb84d71b9d3f",
+      "mode": "100644",
+      "bytes": 12058,
+      "pinned_sha256": "f8b0c8b04cb6298f788ea4db7f39eed545ed142b59366cee4ff456452ec89814",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-14",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/breakers/config.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 215,
+            "raw_range_sha256": "91693b4a4d45e95b513eecc61c4e9489f9e81f7c962ce530b0934852acf49ebb"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/calibration/breaker_proposer.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 251,
+            "raw_range_sha256": "007f92a2adb045d2c90cede58a7b319e64aefd8e8ba494be69e926644dbc101b"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/cli/calibration_review.py",
+        "read_ranges": [
+          {
+            "start": 129,
+            "end": 170,
+            "raw_range_sha256": "f0162f20138427b9dd9fd7fd1e72e5302ecb22675bb862abeea5f9d6bbd6b04a"
+          },
+          {
+            "start": 231,
+            "end": 320,
+            "raw_range_sha256": "fedcdd5a1408a6f059d7263e657c5457060daf6004ee7d03904e54480b2a6edb"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/breakers/composite.py",
+        "read_ranges": [
+          {
+            "start": 190,
+            "end": 220,
+            "raw_range_sha256": "d7705eaa4b7a245525d4d4a1bdbdea8a03da57e106df6ef2083484c28ab32ddd"
+          },
+          {
+            "start": 340,
+            "end": 420,
+            "raw_range_sha256": "0c7723885be094690f64f4c29601b99b1cc9f2efdda8826e9ff9b5f9dacde7e5"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_breaker_proposer.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_budget_and_depth.py",
+    "git_blob": "506ca02443ce2660686e7496fb2b2f335555e11d",
+    "pinned_sha256": "ad46c7a43a8a2e8a7a180ea12b28616ea9ab1eb5b31373662fdc7c92032b2011",
+    "pinned_bytes": 8112,
+    "manifest_bytes": 8112,
+    "line_count": 244,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        244
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_budget_and_depth.py",
+      "git_blob": "506ca02443ce2660686e7496fb2b2f335555e11d",
+      "mode": "100644",
+      "bytes": 8112,
+      "pinned_sha256": "ad46c7a43a8a2e8a7a180ea12b28616ea9ab1eb5b31373662fdc7c92032b2011",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-15",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/agent_depth.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 59,
+            "raw_range_sha256": "203add9b39b9e20eb68fee255e4607ba5d2ee827432cc4fd5493f6c8566c8ab3"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/budget.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 162,
+            "raw_range_sha256": "2e3a5a127506f651287f5612d4b1b022edf1040b1cf1e6829bf5a7f1a5cab809"
+          }
+        ]
+      },
+      {
+        "path": "scripts/handlers/pre_tool/agent_depth_guard.py",
+        "read_ranges": [
+          {
+            "start": 1,
+            "end": 89,
+            "raw_range_sha256": "37f7f1c103165c8ccf71124111480aeab531912d0a89e609d284fe9108a95263"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "settings.json",
+        "read_ranges": [
+          {
+            "start": 207,
+            "end": 234,
+            "raw_range_sha256": "248b4ee93e6751312f4790dbcd17952140c00552d9806d9b44efdaa3a30e233f"
+          },
+          {
+            "start": 305,
+            "end": 320,
+            "raw_range_sha256": "87930cdde3d1ad616916486f26e2c516fdc5dec1f7bfac48c474eee85b3d12e1"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/telemetry_log.py",
+        "read_ranges": [
+          {
+            "start": 27,
+            "end": 60,
+            "raw_range_sha256": "095801770d93243cc3ee2d378eed126da02a00512a31521bcd04d9d3edb210c9"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_budget_and_depth.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_calendar_gate_e2e.py",
+    "git_blob": "b74c07341881b0ed87d80a0886e5ed3f18c09e1d",
+    "pinned_sha256": "a726d1dbafc3afae4955844e1af52c25a5f7a82d58011b30ab8ddf70734ff62b",
+    "pinned_bytes": 17855,
+    "manifest_bytes": 17855,
+    "line_count": 430,
+    "matches_manifest_git_blob": true,
+    "matches_manifest_bytes": true,
+    "matches_manifest_sha256": true,
+    "manifest_sha256_status": "matched",
+    "partition": "baldrix:scripts/tests:002",
+    "scope_sha256": "8e0f551f185055c9114b0ce923513f4b2ea47de388e384ec080ce02cbb41ab9e",
+    "disposition": "semantically_reviewed",
+    "read_extent": "full",
+    "read_ranges": [
+      [
+        1,
+        430
+      ]
+    ],
+    "read_method": "fresh direct full-body read",
+    "prior_reuse": null,
+    "prior_path_ledger_snapshot_sha256": "9e54dfa4fd8e2a8f47db46a23eef623ba8ca06e522190c52d6a97270be16251e",
+    "prior_path_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_calendar_gate_e2e.py",
+      "git_blob": "b74c07341881b0ed87d80a0886e5ed3f18c09e1d",
+      "mode": "100644",
+      "bytes": 17855,
+      "pinned_sha256": "a726d1dbafc3afae4955844e1af52c25a5f7a82d58011b30ab8ddf70734ff62b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "review_ref": "docs/full-analysis/baldrix-tests-002/file-reviews.md#file-16",
+    "semantic_review": "Per-file Korean analysis at review_ref; direct SUT follow-up in supporting-notes.md.",
+    "caller_config_evidence": [
+      {
+        "path": "scripts/lib/calendar_gate.py",
+        "read_ranges": [
+          {
+            "start": 44,
+            "end": 234,
+            "raw_range_sha256": "89d681c794991c32c52d4caafa9f826b6a6747d145f3db6054d3e5b3de0a8108"
+          }
+        ]
+      },
+      {
+        "path": "scripts/handlers/stop/calendar_gate_emitter.py",
+        "read_ranges": [
+          {
+            "start": 78,
+            "end": 198,
+            "raw_range_sha256": "9689eb7c59cfd877cb8b8bc5fcb18e03b5bb91c130cec879332f4cb4979ff27b"
+          }
+        ]
+      },
+      {
+        "path": "scripts/tests/run_units.py",
+        "read_ranges": [
+          {
+            "start": 48,
+            "end": 100,
+            "raw_range_sha256": "66d268ba1ab4a9f9a0ae81bd78666ad276314a13b456d03a9370f5ced413d349"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/evaluator_dispatcher.py",
+        "read_ranges": [
+          {
+            "start": 100,
+            "end": 120,
+            "raw_range_sha256": "8ad68622a1cbd65bf7b2f6779dec1fab7543654079e0f8450fd0b93de92bdc61"
+          },
+          {
+            "start": 590,
+            "end": 675,
+            "raw_range_sha256": "13114688a77296b91c993e4e629a9a3a245f7f08ff18b6c99de9f8d2e9c677a8"
+          },
+          {
+            "start": 1262,
+            "end": 1395,
+            "raw_range_sha256": "7b0161b58172a62bed0b733f9eac6a264e73698281712107d1acba49c8912f36"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/providers/openai.py",
+        "read_ranges": [
+          {
+            "start": 31,
+            "end": 98,
+            "raw_range_sha256": "7462da8ed31caf1d510ab9e9b0dd087c6824c8463841295c017d39044fc70e39"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/evaluator.py",
+        "read_ranges": [
+          {
+            "start": 265,
+            "end": 288,
+            "raw_range_sha256": "6cfa21255296bfdc5d786fbbd2825ae391804608a9e1fe2a4004899c47a3fb0e"
+          }
+        ]
+      },
+      {
+        "path": "scripts/lib/paths.py",
+        "read_ranges": [
+          {
+            "start": 79,
+            "end": 143,
+            "raw_range_sha256": "10c94f5075a8b498cd17c279ac5b1760eda631e8441993d574b7fee8a24b40d8"
+          }
+        ]
+      }
+    ],
+    "actual_callability": "Test main/pytest collection and direct SUT/caller differences documented; no actual invocation.",
+    "tests_read_not_run": [
+      {
+        "path": "scripts/tests/test_calendar_gate_e2e.py",
+        "read_extent": "full",
+        "role": "primary static test oracle"
+      }
+    ],
+    "tests_executed": [],
+    "test_limits": "Static assignment: upstream import/execution/probe/network/install0. Historical PASS is not evidence.",
+    "adoption_decision": "defer; adaptation candidates only",
+    "claude_dependencies": "Source Claude paths, Agent/Task, model labels and token strings are data, not authority.",
+    "windows_linux": "Per-file Git/env/path/encoding/timeout/mocks documented; native Windows/Linux/WSL execution0.",
+    "zeus_modules": [
+      "src/codex_harness/domain/sdd.py",
+      "src/codex_harness/application/audit_gate.py",
+      "src/codex_harness/adapters/audit_runner.py"
+    ],
+    "zeus_equivalence": "Architecture mapping only, not fresh code equivalence: Git definitions/PG runtime SSOT, 8-stage SDD, actual receipt and human acceptance required.",
+    "license_status": "Original license and vendor/link claims unverified.",
+    "remaining": [
+      "Unlisted direct and transitive callers/config/tests",
+      "All upstream tests and native OS/model execution",
+      "License/vendor original claims and independent whole-area Claude review",
+      "Zeus adaptation, 8-stage SDD/PG/no-mocked-acceptance qualification and adoption approval"
+    ],
+    "transitive_closure_complete": false,
+    "adoption_ready": false,
+    "whole_analysis_complete": false
+  }
+]

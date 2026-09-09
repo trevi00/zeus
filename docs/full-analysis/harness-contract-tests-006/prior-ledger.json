@@ -1,0 +1,53 @@
+{
+  "ledger_path": "docs/full-analysis/path-ledger.json",
+  "ledger_sha256": "399d65ec9872614191f2addbc6b2b8329f65ae8781b4b66e416a37ea3f87f8b9",
+  "row_index_base": 0,
+  "rows": [
+    {
+      "row_index": 2491,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_verdict_reprobe_contract.py",
+        "git_blob": "c912523ebf605ed850f3b8134bc1e061a0dfc680",
+        "mode": "100644",
+        "bytes": 7663,
+        "pinned_sha256": "48ba3952039637bac578332b3991880401b64dd1707c518e39fa5be5b088b7af",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2492,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_youtube_note_contract.py",
+        "git_blob": "d8df855adbe5ba0f4d8e7db08d761b9b2630dd12",
+        "mode": "100644",
+        "bytes": 8164,
+        "pinned_sha256": "b05caf2c229788dc1949c9765800167a1d5d2a94e42679d57b34777b6b4fc6f1",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2493,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_youtube_queue_contract.py",
+        "git_blob": "d5d06e23241de7a7dbf327ef3b0aa9a3c5bf7157",
+        "mode": "100644",
+        "bytes": 11854,
+        "pinned_sha256": "830f4804430f98edd68ec9e10d81be631a27dfaf6cf1a78b428b71dd392e5776",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    }
+  ],
+  "semantic_reuse": false
+}

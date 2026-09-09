@@ -1,0 +1,11 @@
+{
+  "status": "launch_error",
+  "returncode": null,
+  "timed_out": false,
+  "process_tree_termination_verified": false,
+  "error_type": "FileNotFoundError",
+  "error": "[WinError 2] 지정된 파일을 찾을 수 없습니다",
+  "completed_at": "2026-09-09T09:22:26.521355+00:00",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,328 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/run_all.py",
+    "bytes": 13346,
+    "git_blob": "5847db0d9d93272a17411be61b016449dd19de5d",
+    "pinned_sha256": "a1d1a5e37a22758d1579ac439cad844c113208daf44ca73ca6998fc3f3dce9ee",
+    "matches_manifest_sha256": true,
+    "line_count": 304,
+    "read_ranges": [
+      [
+        1,
+        304
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-test-runners-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ],
+    "fresh_full_reread": true,
+    "global_primary_increment": 0,
+    "prior_primary": {
+      "ledger": "docs/full-analysis/baldrix-tests-001/files.json",
+      "ledger_sha256": "9bb6774a61bf3ac01ac3b0e31d5baf9899092f0408db2d6cfd41b01d2a54f902",
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "scripts/tests/run_all.py",
+        "git_blob": "5847db0d9d93272a17411be61b016449dd19de5d",
+        "pinned_sha256": "a1d1a5e37a22758d1579ac439cad844c113208daf44ca73ca6998fc3f3dce9ee",
+        "pinned_bytes": 13346,
+        "manifest_bytes": 13346,
+        "line_count": 304,
+        "matches_manifest_git_blob": true,
+        "matches_manifest_bytes": true,
+        "matches_manifest_sha256": true,
+        "manifest_sha256_status": "matched",
+        "partition": "baldrix:scripts/tests:001",
+        "scope_sha256": "9d1c10cbeb203a9f8286f5ee844cb6508f7e20dab087c46b039a38f5e067ffc5",
+        "disposition": "semantically_reviewed",
+        "read_extent": "full",
+        "read_ranges": [
+          [
+            1,
+            304
+          ]
+        ],
+        "read_method": "fresh direct full-body read",
+        "prior_reuse": null,
+        "review_ref": "docs/full-analysis/baldrix-tests-001/file-reviews.md#file-04",
+        "semantic_review": "1~304 전문(큰 첫 출력의 잘린 166~304를 별도 재독해). validator registry별 main 존재를 먼저 import로 검사하고 test module missing만 skip, transitive ModuleNotFound는 다시 던진다. missing test를 skip 분모로 드러내는 방어는 보존한다. 그러나 import 단계는 per-test try/cwd 복원 밖이고 SystemExit는 main 검사의 Exception에 잡히지 않아 runner 중단 가능하다. test SystemExit는 subprocess 재실행하므로 이미 수행한 side effect가 반복될 수 있다. in-process에는 timeout 없고 sys.modules/env 등의 상태가 유지된다. 실패 토큰은 stdout만 정규식 검사하여 stderr-only 오류나 다른 표기는 빠지고 정상 negative-test 출력은 오탐할 수 있다. 모든 skip도 rc0이며 pytest rc0는 세부 skip 분모를 모듈 PASS에 합친다.\n\n격리 재실행은 환경 플래그만으로 우회 가능하고 home 빌드/import/자식 예외 또는 timeout에 None을 반환해 원래 홈에서 계속할 수 있다. 주석의 과거35/35는 이번 증거 아니다. telemetry 단일 module global 임시 변경은 전체 저장 경로를 격리하지 않는다. run_units의 junction/symlink 자산은 실제 read-only가 아니다. Zeus는 격리 실패를 blocked로 기록하고 모듈 count와 실제 case 실행/skip를 분리해야 한다. 실제 runner/validator 실행0, 관련 SUT는 primary run_units/conftest 및 후속 지원을 구분한다.",
+        "caller_config_evidence": [
+          {
+            "path": "scripts/validators/__init__.py",
+            "read_ranges": [
+              {
+                "start": 1,
+                "end": 83,
+                "raw_range_sha256": "8cb043caa84080557c4ba69ed2a761961c52c76ae569bed8f0e1e549f7a2fa28"
+              }
+            ]
+          }
+        ],
+        "actual_callability": "Function/module/callback/CLI behavior differentiated in semantic review; no live invocation observed.",
+        "tests_read_not_run": [
+          {
+            "path": "scripts/tests/run_all.py",
+            "extent": "Primary full-body static test/fixture/runner read; NOT RUN"
+          }
+        ],
+        "tests_executed": [],
+        "test_limits": "Static-only assignment; no upstream import/execution/probe/network/install. Source assertions/historical PASS are not execution receipts.",
+        "adoption_decision": "defer; adaptation candidate only, no adoption or acceptance approval",
+        "claude_dependencies": "Claude paths/env/Agent/Task/model and source token/prompt contracts are DATA, never inherited authority.",
+        "windows_linux": "Per-file path/encoding/temp/mtime/Git/shell/scaffolder behavior recorded; native Windows/Linux/WSL execution0.",
+        "zeus_modules": [
+          "src/codex_harness/domain/sdd.py",
+          "src/codex_harness/application/audit_gate.py",
+          "src/codex_harness/adapters/audit_runner.py"
+        ],
+        "zeus_equivalence": "Architecture mapping only, not fresh Zeus source equivalence. Git definitions/PG runtime, generation/attempt/CAS/lease and actual evidence required.",
+        "license_status": "Unverified original license and linked claims; no adoption authorization.",
+        "remaining": [
+          "Complete direct/transitive caller/config/test closure outside exact listed ranges",
+          "Source test/runtime execution prohibited this assignment; tests_not_run remain open",
+          "License/vendor original claims, actual model and Windows/Linux/WSL equivalence",
+          "Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification",
+          "Whole-area independent Claude review and adoption approval"
+        ],
+        "transitive_closure_complete": false,
+        "adoption_ready": false,
+        "whole_analysis_complete": false
+      },
+      "review_ref": "docs/full-analysis/baldrix-tests-001/file-reviews.md#file-04",
+      "review_sha256": "c046e186b7a4e720cdaf142c44fe9ad13271f1e61b672263a31a2154dc8071d1"
+    }
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/run_units.py",
+    "bytes": 17340,
+    "git_blob": "7c61b756e5ac9127ed57bddf136582fc67629a16",
+    "pinned_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+    "matches_manifest_sha256": true,
+    "line_count": 407,
+    "read_ranges": [
+      [
+        1,
+        407
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-test-runners-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ],
+    "fresh_full_reread": true,
+    "global_primary_increment": 0,
+    "prior_primary": {
+      "ledger": "docs/full-analysis/baldrix-tests-001/files.json",
+      "ledger_sha256": "9bb6774a61bf3ac01ac3b0e31d5baf9899092f0408db2d6cfd41b01d2a54f902",
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "scripts/tests/run_units.py",
+        "git_blob": "7c61b756e5ac9127ed57bddf136582fc67629a16",
+        "pinned_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+        "pinned_bytes": 17340,
+        "manifest_bytes": 17340,
+        "line_count": 407,
+        "matches_manifest_git_blob": true,
+        "matches_manifest_bytes": true,
+        "matches_manifest_sha256": true,
+        "manifest_sha256_status": "matched",
+        "partition": "baldrix:scripts/tests:001",
+        "scope_sha256": "9d1c10cbeb203a9f8286f5ee844cb6508f7e20dab087c46b039a38f5e067ffc5",
+        "disposition": "semantically_reviewed",
+        "read_extent": "full",
+        "read_ranges": [
+          [
+            1,
+            407
+          ]
+        ],
+        "read_method": "fresh direct full-body read",
+        "prior_reuse": null,
+        "review_ref": "docs/full-analysis/baldrix-tests-001/file-reviews.md#file-05",
+        "semantic_review": "1~407 전문(첫 출력 잘린 1~196을 별도 재독해). validator registry 밖 test_*.py를 찾고 fixture 이름 세 가지를 top-level def 정규식으로 검사하여 pytest를 라우팅한다. class method/async/custom fixture는 놓칠 수 있고 pytest 없음은 warning 후 main fallback이므로 검사 의미가 달라진다. pytest 수집0 rc5 실패는 유용하지만 all-skipped rc0와 assertions 실행 수를 분리하지 않는다. main 없는 파일은 probe import rc3이면 skip이며 import가 sys.exit(3)해도 no-main으로 오인 가능하다. 검사 전 import probe와 본 실행이 분리돼 side effect가 두 번 발생한다. source stderr는 rc0에서 버리고 stdout failure token만 판정한다. SKIP-SUITE 문자열만 별도 skip, 일반 SKIP/0tests 출력은 PASS가 될 수 있다. 모든 skip도 rc0이다.\n\nCLAUDE_HOME 임시 홈은 실제 assets를 junction/symlink로 연결하므로 쓰기 금지 권한이 없다. required asset가 존재하지 않으면 continue해서 없어도 성공이며 link 생성 실패는 None 후 비격리 실행이다. reset은 이름만으로 보존 링크를 골라 오류를 무시하고 cleanup도 실패를 숨긴다. 링크 대상 변경/추가 symlink 및 남은 자식 작업의 쓰기 전이 폐쇄가 없다. subprocess timeout은 직계 자식 종료일 뿐 전체 트리 종료 보장이 아니다. Windows cmd mklink/rmdir와 POSIX symlink 차이, UTF8 child 및 부모 env 상속은 미실행이다. Zeus는 source-only read-only 환경과 process tree 종료, PG attempt authority를 쓰고 이 자체 runner를 안전격리 증명으로 채택하지 않는다.",
+        "caller_config_evidence": [
+          {
+            "path": "scripts/validators/__init__.py",
+            "read_ranges": [
+              {
+                "start": 1,
+                "end": 83,
+                "raw_range_sha256": "8cb043caa84080557c4ba69ed2a761961c52c76ae569bed8f0e1e549f7a2fa28"
+              }
+            ]
+          }
+        ],
+        "actual_callability": "Function/module/callback/CLI behavior differentiated in semantic review; no live invocation observed.",
+        "tests_read_not_run": [
+          {
+            "path": "scripts/tests/run_units.py",
+            "extent": "Primary full-body static test/fixture/runner read; NOT RUN"
+          }
+        ],
+        "tests_executed": [],
+        "test_limits": "Static-only assignment; no upstream import/execution/probe/network/install. Source assertions/historical PASS are not execution receipts.",
+        "adoption_decision": "defer; adaptation candidate only, no adoption or acceptance approval",
+        "claude_dependencies": "Claude paths/env/Agent/Task/model and source token/prompt contracts are DATA, never inherited authority.",
+        "windows_linux": "Per-file path/encoding/temp/mtime/Git/shell/scaffolder behavior recorded; native Windows/Linux/WSL execution0.",
+        "zeus_modules": [
+          "src/codex_harness/domain/sdd.py",
+          "src/codex_harness/application/audit_gate.py",
+          "src/codex_harness/adapters/audit_runner.py"
+        ],
+        "zeus_equivalence": "Architecture mapping only, not fresh Zeus source equivalence. Git definitions/PG runtime, generation/attempt/CAS/lease and actual evidence required.",
+        "license_status": "Unverified original license and linked claims; no adoption authorization.",
+        "remaining": [
+          "Complete direct/transitive caller/config/test closure outside exact listed ranges",
+          "Source test/runtime execution prohibited this assignment; tests_not_run remain open",
+          "License/vendor original claims, actual model and Windows/Linux/WSL equivalence",
+          "Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification",
+          "Whole-area independent Claude review and adoption approval"
+        ],
+        "transitive_closure_complete": false,
+        "adoption_ready": false,
+        "whole_analysis_complete": false
+      },
+      "review_ref": "docs/full-analysis/baldrix-tests-001/file-reviews.md#file-05",
+      "review_sha256": "c046e186b7a4e720cdaf142c44fe9ad13271f1e61b672263a31a2154dc8071d1"
+    }
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/conftest.py",
+    "bytes": 3406,
+    "git_blob": "0d407ca6fadd49a40f6a0d98417c68fe33a39da9",
+    "pinned_sha256": "e7f56d0c8ef2a3491e14ce7c7cbedf8165d2abd419207013ebd777eb0573d50d",
+    "matches_manifest_sha256": true,
+    "line_count": 83,
+    "read_ranges": [
+      [
+        1,
+        83
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-test-runners-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ],
+    "fresh_full_reread": true,
+    "global_primary_increment": 0,
+    "prior_primary": {
+      "ledger": "docs/full-analysis/baldrix-tests-001/files.json",
+      "ledger_sha256": "9bb6774a61bf3ac01ac3b0e31d5baf9899092f0408db2d6cfd41b01d2a54f902",
+      "row": {
+        "source": "baldrix",
+        "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+        "path": "scripts/tests/conftest.py",
+        "git_blob": "0d407ca6fadd49a40f6a0d98417c68fe33a39da9",
+        "pinned_sha256": "e7f56d0c8ef2a3491e14ce7c7cbedf8165d2abd419207013ebd777eb0573d50d",
+        "pinned_bytes": 3406,
+        "manifest_bytes": 3406,
+        "line_count": 83,
+        "matches_manifest_git_blob": true,
+        "matches_manifest_bytes": true,
+        "matches_manifest_sha256": true,
+        "manifest_sha256_status": "matched",
+        "partition": "baldrix:scripts/tests:001",
+        "scope_sha256": "9d1c10cbeb203a9f8286f5ee844cb6508f7e20dab087c46b039a38f5e067ffc5",
+        "disposition": "semantically_reviewed",
+        "read_extent": "full",
+        "read_ranges": [
+          [
+            1,
+            83
+          ]
+        ],
+        "read_method": "fresh direct full-body read",
+        "prior_reuse": null,
+        "review_ref": "docs/full-analysis/baldrix-tests-001/file-reviews.md#file-02",
+        "semantic_review": "1~83 전문. pytest autouse로 CLAUDE_HOME을 tmp_path로 돌리고 insight index whitelist를 넓히며 두 cache를 비운다. 테스트용 writer 허용 확대는 production 권한 검증과 다르다. insight_index import가 env 변경보다 앞이므로 module 상수 및 fixture 이전 collection import의 side effect는 막지 못한다. fixture teardown은 monkeypatch 환경/whitelist만 자동복원하고 cache 이전 내용은 복원하지 않는다. private pytest DontReadFromInput class에 reconfigure noop을 영구 추가하여 stdin 호환 실패를 가리며 실제 콘솔 UTF8 효과를 검사하지 않는다. pytest 아닌 main 실행에는 이 fixture가 없고 파일시스템/네트워크/다른 HOME 경로를 sandbox하지 않는다. Zeus는 환경 주입 전 import 금지 및 실제 read-only 격리를 실행 영수증에 결속하고 whitelist 완화 검사를 실제 승인 테스트로 승격하지 않는다. 정확 SUT 부분은 후속 지원 추적 pending.",
+        "caller_config_evidence": [
+          {
+            "path": "scripts/lib/insight_index.py",
+            "read_ranges": [
+              {
+                "start": 85,
+                "end": 142,
+                "raw_range_sha256": "b33888ed1698a1cef6162fd75af17eea9decee657b818a64637ff55544728ae3"
+              },
+              {
+                "start": 161,
+                "end": 188,
+                "raw_range_sha256": "ba4f89d118ecfca9ee48dc97815fdad94eeb0dac57b9cc502323469f74a8b618"
+              }
+            ]
+          },
+          {
+            "path": "scripts/lib/paths.py",
+            "read_ranges": [
+              {
+                "start": 12,
+                "end": 110,
+                "raw_range_sha256": "7f9192b09d7f5d4d6d5f61832330c15c8b465f2ef391bc9bfe8d0ed26899b7e8"
+              },
+              {
+                "start": 145,
+                "end": 158,
+                "raw_range_sha256": "53614df85db3d4410393ed53f5d1e849447a5852c659f2b43d8617f7043426dc"
+              }
+            ]
+          }
+        ],
+        "actual_callability": "Function/module/callback/CLI behavior differentiated in semantic review; no live invocation observed.",
+        "tests_read_not_run": [
+          {
+            "path": "scripts/tests/conftest.py",
+            "extent": "Primary full-body static test/fixture/runner read; NOT RUN"
+          }
+        ],
+        "tests_executed": [],
+        "test_limits": "Static-only assignment; no upstream import/execution/probe/network/install. Source assertions/historical PASS are not execution receipts.",
+        "adoption_decision": "defer; adaptation candidate only, no adoption or acceptance approval",
+        "claude_dependencies": "Claude paths/env/Agent/Task/model and source token/prompt contracts are DATA, never inherited authority.",
+        "windows_linux": "Per-file path/encoding/temp/mtime/Git/shell/scaffolder behavior recorded; native Windows/Linux/WSL execution0.",
+        "zeus_modules": [
+          "src/codex_harness/domain/sdd.py",
+          "src/codex_harness/application/audit_gate.py",
+          "src/codex_harness/adapters/audit_runner.py"
+        ],
+        "zeus_equivalence": "Architecture mapping only, not fresh Zeus source equivalence. Git definitions/PG runtime, generation/attempt/CAS/lease and actual evidence required.",
+        "license_status": "Unverified original license and linked claims; no adoption authorization.",
+        "remaining": [
+          "Complete direct/transitive caller/config/test closure outside exact listed ranges",
+          "Source test/runtime execution prohibited this assignment; tests_not_run remain open",
+          "License/vendor original claims, actual model and Windows/Linux/WSL equivalence",
+          "Zeus exact implementation/8-stage SDD/no-mocked acceptance/PG qualification",
+          "Whole-area independent Claude review and adoption approval"
+        ],
+        "transitive_closure_complete": false,
+        "adoption_ready": false,
+        "whole_analysis_complete": false
+      },
+      "review_ref": "docs/full-analysis/baldrix-tests-001/file-reviews.md#file-02",
+      "review_sha256": "c046e186b7a4e720cdaf142c44fe9ad13271f1e61b672263a31a2154dc8071d1"
+    }
+  }
+]

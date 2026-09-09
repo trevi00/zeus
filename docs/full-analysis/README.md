@@ -96,7 +96,11 @@
 - [Harness 계약 테스트001](harness-contract-tests-001/review.md): 11개 전문·지원29개. acceptance 탑재/인수, 후보 소진, 버스 held 실패 로그 및 실제 승인·전송 분모를 구분했다. 원본 실행0이다.
 - [Harness 계약 테스트002](harness-contract-tests-002/review.md): 19개 전문·지원33개. projection heartbeat 조건, env 복원, 실제 reconfirmation 방어와 fixture/선언/실행 증거의 경계를 대조했다. 원본 실행0이다.
 
-현재 고정 2,736개 중 1,173개에 검토 기록이 있으며 **1,563개는 아직 unreviewed**다. 이번 묶음 61개는 모두 새 primary 경로다. 1,173개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`과 [root 검토](scripts-contract-root-review.md)를 따른다.
+현재 고정 2,736개 중 1,236개에 검토 기록이 있으며 **1,500개는 아직 unreviewed**다. 이번 묶음은 새 primary 63개와 별도 실행기 재검토 3개다. 재검토는 새 파일 수에 더하지 않는다. 1,236개에도 본문만 읽었거나 실행·호출 추적이 남은 상태가 포함된다. 이것을 의미 분석 완료율이나 흡수 완료 수로 쓰지 않는다. 정확한 처분별 수는 `coverage.json`과 [root 검토](runner-tests-root-review.md)를 따른다.
+
+- [실행기 공동 재검토](baldrix-test-runners-001/resolution.md): 기존 3개 전문·지원 10개, 실제 Claude 독립 검토와 토론. 원본 compaction 수동 6개 통과와 실제 helper 관측으로 pytest 실패 오분류·검사 분모·링크 쓰기를 확인했다. Claude가 지적한 root 기록기 결함도 수정하고 실제 타임아웃/오류/재시도 보존을 검증했다.
+- [Baldrix tests 002](baldrix-tests-002/review.md), [003](baldrix-tests-003/review.md): 45개 전문·지원 83개. 수동 목록 누락·다른 pytest 오라클, 합성 E2E, 내구성/승인 근거와 실제 효과를 구분했다. 원본 실행 0건이다.
+- [Harness contract 005](harness-contract-tests-005/review.md), [006](harness-contract-tests-006/review.md): 18개 전문·지원 42개. suite와 sandbox 판정 차이, 승인 표시/arming, 재실행·측정·queue 상태의 귀속을 대조했다. 원본 실행 0건이다.
 
 - [루트 스크립트 공동 검토](baldrix-scripts-root-001/resolution.md): 5개 전문·지원 6개, 실제 Claude 독립 검토와 토론. 원본 설치기 정적 단위 5개 통과와 별도 실제 Git/CLI 격리 관측으로 훅 덮어쓰기, hooksPath 불일치, worktree 실패, 검사 누락과 반환값 모순을 기록했다.
 - [Baldrix tests 001](baldrix-tests-001/review.md): 26개 전문·지원 29개. runner 격리 실패 후 지속, skip 집계, compaction 실패 전달, 합성 성공과 실제 인수를 구분했다. 원본 실행 0건이다.

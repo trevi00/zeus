@@ -1,0 +1,18 @@
+{
+  "own_metadata": "PASS",
+  "own_ruff": "PASS",
+  "source_execution_count": 0,
+  "checks": [
+    "manifest revision/scope",
+    "raw Git blob and bytes",
+    "manifest SHA when present",
+    "prior ledger byte identity",
+    "read bounds",
+    "anchors and supporting refs",
+    "UTF-8 LF JSON",
+    "No question-mark substitution runs or U+FFFD in all text/JSON",
+    "Rendered tool-output sample visibly readable English"
+  ],
+  "subsystem_validation": false,
+  "content_repair": "Initial Korean stdin conversion damaged review and README; both restored in English, metadata regenerated. Source-byte hashes unchanged."
+}

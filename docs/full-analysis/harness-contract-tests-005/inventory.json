@@ -1,0 +1,68 @@
+{
+  "partition": "harness:tests/contract:005",
+  "scope_sha256": "8a54ffa7032050d7ae3c90d23698573f4a359bb8618d1b9e0a338fb5e84bc3b5",
+  "bytes": 196677,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "tests/contract/test_role_supervisor_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_run_marker_halt_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_sandbox_runner_env_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_self_qualification_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_session_handoff_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_skill_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_skill_corpus_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_skill_eval.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_source_note_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_spiral_candidate_cut_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_suite_runner_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_tick_encoding_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_topic_reaper_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_tradeoff_lint_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_uptake_routes_contract.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

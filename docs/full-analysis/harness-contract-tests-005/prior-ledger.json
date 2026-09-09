@@ -1,0 +1,233 @@
+{
+  "ledger_path": "docs/full-analysis/path-ledger.json",
+  "ledger_sha256": "399d65ec9872614191f2addbc6b2b8329f65ae8781b4b66e416a37ea3f87f8b9",
+  "row_index_base": 0,
+  "rows": [
+    {
+      "row_index": 2476,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_role_supervisor_contract.py",
+        "git_blob": "40ef635ca3ed0dcad762c008946068a23c23c97b",
+        "mode": "100644",
+        "bytes": 33391,
+        "pinned_sha256": "4da60355ee555c65e28b184245c799f58c11756bfed81c6a86b982fd0af9e1c8",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2477,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_run_marker_halt_contract.py",
+        "git_blob": "831e693cc83bab9cdbe15b01ae68b94b0635f503",
+        "mode": "100644",
+        "bytes": 13600,
+        "pinned_sha256": "5f1aba3351e59a6129fb43d32a1e0801a49f721ecc7d9b6cc109a9a5e30a4b48",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2478,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_sandbox_runner_env_contract.py",
+        "git_blob": "895efd862fd34f794a1a6d5412900b0dc1abfa45",
+        "mode": "100644",
+        "bytes": 11098,
+        "pinned_sha256": "bee20a599f38c42b55bc52eec30e8d119d1e75bfaadb3200c3bacf72742d1ac1",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2479,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_self_qualification_contract.py",
+        "git_blob": "d3660d3c28b84956ea35ecba29bdffbf58bbb392",
+        "mode": "100644",
+        "bytes": 6648,
+        "pinned_sha256": "887b79976a44eb15da2e07ec276ab42628a529675f559816fe8389d8dd9a4454",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2480,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_session_handoff_contract.py",
+        "git_blob": "1121a8008550dec1a27c2d0b67fc87abbe5c0339",
+        "mode": "100644",
+        "bytes": 10017,
+        "pinned_sha256": "a31ee1035eb8141d8ad051d7bec28e631b29172ae2f3daec726ca6449be3fff6",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2481,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_skill_contract.py",
+        "git_blob": "c5e99d1c978c64ecc78a166f0fa225aa3426d46b",
+        "mode": "100644",
+        "bytes": 10256,
+        "pinned_sha256": "a695590e4975e10c76b77d12c5cce946e30abb1c3b2f453175497749101fe61f",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2482,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_skill_corpus_smoke.py",
+        "git_blob": "4dcf0c16265273dbb79e96e389ea07db56fce0e4",
+        "mode": "100644",
+        "bytes": 3154,
+        "pinned_sha256": "216161d8936259eeef15f27adf09ff240d2372e5e2bdd6c12508e95c95443b71",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2483,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_skill_eval.py",
+        "git_blob": "d3416e941b2e78ecec9ebb08acab509abb34cc6a",
+        "mode": "100644",
+        "bytes": 16360,
+        "pinned_sha256": "3d23788187171185172fc57248c23e9131b2c16a3084807191ae39ef5c2519aa",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2484,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_source_note_contract.py",
+        "git_blob": "005fbfee94adcaa9698ed35d061b30d8d1b4546e",
+        "mode": "100644",
+        "bytes": 11229,
+        "pinned_sha256": "3a259bd5a396e79e697d802e56a86d005b6b68a423aed937d6006fab38edb906",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2485,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_spiral_candidate_cut_contract.py",
+        "git_blob": "256a9511392a3305fd928b56ff60a7cbd4a3b2c8",
+        "mode": "100644",
+        "bytes": 6343,
+        "pinned_sha256": "6100d77a19b6dfd42cc0201219c89c4b1e344121012fb6d0f526bcf2c9f752fe",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2486,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_suite_runner_smoke.py",
+        "git_blob": "b25ad8604448370be2027c245545e3afd6c78008",
+        "mode": "100644",
+        "bytes": 28554,
+        "pinned_sha256": "4cc72b93e6479838430ef9a3c4105fcd27b515c0d5cf596b7a9f00e6d02f55fa",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2487,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_tick_encoding_contract.py",
+        "git_blob": "5b7e9b9bebe9d914ba999672484de104cee2a3f4",
+        "mode": "100644",
+        "bytes": 6775,
+        "pinned_sha256": "196750cd44b71ceaed368fc2af9f4bd0efe38e40ee384c34ea1d3c5c99a7468b",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2488,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_topic_reaper_contract.py",
+        "git_blob": "16c4722b584d5c98e017f530a92e8b0339f3839e",
+        "mode": "100644",
+        "bytes": 11829,
+        "pinned_sha256": "5d90bf453f81b004fcaf56d1bfa33def3bc97884a22a818da64d68af938d6ede",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2489,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_tradeoff_lint_contract.py",
+        "git_blob": "38c68b512559ba49bcd1bb5da0e8c48cc0c11891",
+        "mode": "100644",
+        "bytes": 11007,
+        "pinned_sha256": "73d883ea4367dd49f56b5b724280fd319da954a0808306caad83cae845a83e05",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2490,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_uptake_routes_contract.py",
+        "git_blob": "7c30c5b3940826404691fb443cb960eea36dbbdc",
+        "mode": "100644",
+        "bytes": 16416,
+        "pinned_sha256": "c03e179559d4dc2e48437f3868c26fce170d1de576b2146ac1f85fd00788e090",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    }
+  ],
+  "semantic_reuse": false
+}

@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+    "-c",
+    "print('normal-output')"
+  ],
+  "timeout_seconds": 10,
+  "container_name": null,
+  "started_at": "2026-09-09T09:24:22.271085+00:00",
+  "cwd": "C:\\Users\\rudtn\\zeus",
+  "metadata": null
+}

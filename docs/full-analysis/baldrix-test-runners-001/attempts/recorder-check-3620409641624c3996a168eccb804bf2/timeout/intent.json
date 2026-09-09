@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+    "-u",
+    "-c",
+    "import time; print('before-timeout', flush=True); time.sleep(10)"
+  ],
+  "timeout_seconds": 1,
+  "container_name": null,
+  "started_at": "2026-09-09T09:22:25.512682+00:00",
+  "cwd": "C:\\Users\\rudtn\\zeus"
+}

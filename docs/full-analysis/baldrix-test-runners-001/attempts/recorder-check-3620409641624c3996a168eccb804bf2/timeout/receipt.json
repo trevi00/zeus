@@ -1,0 +1,9 @@
+{
+  "status": "timed_out",
+  "returncode": 1,
+  "timed_out": true,
+  "process_tree_termination_verified": false,
+  "completed_at": "2026-09-09T09:22:26.519010+00:00",
+  "stdout_sha256": "54fe85571ee3e4648e7641ff0cbde16bf1a83b4e09200434aa7ea102c49dfe5c",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

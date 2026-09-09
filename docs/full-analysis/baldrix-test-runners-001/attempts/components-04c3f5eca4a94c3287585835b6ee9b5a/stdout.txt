@@ -1,0 +1,22 @@
+{"case": "dependencies", "python": "3.13.15 (main, Sep  1 2026, 00:09:11) [GCC 12.2.0]", "pytest_available": true}
+{"case": "subprocess_empty", "direct_rc": 0, "direct_stdout": "", "direct_stderr": "", "helper_rc": 0, "helper_output": ""}
+{"case": "subprocess_stderr_marker", "direct_rc": 0, "direct_stdout": "", "direct_stderr": "[FAIL] diagnostic\n", "helper_rc": 0, "helper_output": ""}
+{"case": "subprocess_stdout_marker", "direct_rc": 0, "direct_stdout": "[FAIL] diagnostic\n", "direct_stderr": "", "helper_rc": 1, "helper_output": "silent-failure: stdout contains failure marker\n[FAIL] diagnostic\n\n"}
+{"case": "subprocess_silent_nonzero", "direct_rc": 2, "direct_stdout": "", "direct_stderr": "", "helper_rc": 2, "helper_output": ""}
+{"case": "subprocess_skip_suite", "direct_rc": 0, "direct_stdout": "[SKIP-SUITE] dependency missing\n", "direct_stderr": "", "helper_rc": 0, "helper_output": "[SKIP-SUITE] dependency missing\n"}
+{"case": "selector_named_fixture", "needs_pytest": true}
+{"case": "selector_custom_fixture", "needs_pytest": false}
+{"case": "selector_class_fixture", "needs_pytest": false}
+{"case": "selector_async_fixture", "needs_pytest": false}
+{"case": "selector_string_literal", "needs_pytest": true}
+{"case": "selector_invalid_utf8", "error_type": "UnicodeDecodeError"}
+{"case": "pytest_test_zero", "helper_rc": 1, "helper_output": "pytest \uac00 \uc544\ubb34\uac83\ub3c4 \uc218\uc9d1\ud558\uc9c0 \ubabb\ud588\ub2e4\n\nno tests ran in 0.00s\n"}
+{"case": "pytest_test_ordinary_failure", "helper_rc": 1, "helper_output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n_________________________________ test_failure _________________________________\n\n    def test_failure():\n>       assert False, 'ordinary failure'\nE       AssertionError: ordinary failure\nE       assert False\n\n/tmp/runner-observations-v9ltueu0/test_ordinary_failure.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED ../../tmp/runner-observations-v9ltueu0/test_ordinary_failure.py::test_failure\n1 failed in 0.01s\n"}
+{"case": "pytest_test_dependency_phrase", "helper_rc": -1, "helper_output": "pytest \uc5c6\uc74c"}
+{"case": "asset_link", "created": true, "is_symlink": true}
+{"case": "reset_writes", "target_write_exists": true, "ordinary_write_exists": false}
+{"case": "cleanup", "target_exists": true, "target_file_exists": true, "home_exists": false}
+{"case": "real_pinned_asset_home", "created": true, "link_count": 9, "linked_names": ["agents", "atlas", "commands", "docs", "get-shit-done", "scripts", "skill-bodies", "skills", "templates"], "original_root": "/source"}
+{"case": "real_pinned_asset_cleanup", "home_exists": false}
+{"case": "compaction_failure_helper", "returned": null, "failures_added": 1}
+{"case": "stdout_oracle", "marker": true, "unbracketed": false, "indented_traceback": false}

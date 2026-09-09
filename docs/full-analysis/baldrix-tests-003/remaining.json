@@ -1,0 +1,26 @@
+{
+  "primary_body_remaining": [],
+  "supporting_trace_remaining": [
+    "All unlisted source intervals and transitive dependencies remain unreviewed here.",
+    "run_all and conftest full semantics and isolation are independent root scope.",
+    "Connected fleet fixture service bodies, extractor and bundle assembler full trace.",
+    "Completion inline self-check body and axis reader full schema/provenance chain.",
+    "Seven other command bodies, scheduler, brain remote effects, atomic helper implementation.",
+    "Actual Claude independent review, licenses, Windows/Linux/WSL execution.",
+    "Actual service/device/replay, alpha/live deployment and human acceptance.",
+    "Zeus adoption and implementation equivalence."
+  ],
+  "upstream_executions": 0,
+  "upstream_imports": 0,
+  "probes": 0,
+  "network_calls": 0,
+  "installs": 0,
+  "model_calls": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adopted": false,
+  "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#unknowns"
+}

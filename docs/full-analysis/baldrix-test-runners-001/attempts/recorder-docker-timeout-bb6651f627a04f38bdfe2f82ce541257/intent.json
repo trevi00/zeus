@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "docker",
+    "run",
+    "--name",
+    "zeus-review-timeout-bb6651f627a04f38bdfe2f82ce541257",
+    "--pull",
+    "never",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--pids-limit",
+    "32",
+    "--memory",
+    "128m",
+    "--cpus",
+    "1",
+    "--user",
+    "65534:65534",
+    "--entrypoint",
+    "/usr/bin/timeout",
+    "sha256:39d4f226fa8b1ae6087b283b16d0176e9181f8aaf31dcbf0c9145e513453725a",
+    "20",
+    "/app/.venv/bin/python",
+    "-u",
+    "-c",
+    "import time; print('container-before-timeout', flush=True); time.sleep(10)"
+  ],
+  "timeout_seconds": 2,
+  "container_name": "zeus-review-timeout-bb6651f627a04f38bdfe2f82ce541257",
+  "started_at": "2026-09-09T09:26:13.488774+00:00",
+  "cwd": "C:\\Users\\rudtn\\zeus",
+  "metadata": {
+    "kind": "recorder_fault_observation_no_upstream_source",
+    "recorder_sha256": "8e0e5e2b192ee1c27eb49b917878a1f6c6a96b09c610fb5bad75921b085e6ebf"
+  }
+}

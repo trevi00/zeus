@@ -1,0 +1,21 @@
+{
+  "kind": "local_command_result_transcription",
+  "repository_base_revision": "2458b8fd73616d4cd28d5e7a2f9a0457c72b9fc4",
+  "command": "uv run pytest",
+  "session_id": 77832,
+  "terminal_chunk": "0dcdd0",
+  "returncode": 0,
+  "passed": 660,
+  "skipped": 68,
+  "duration_seconds": 165.91,
+  "scope": "Zeus Windows local suite with current review artifact work; not full upstream suites, cross-platform equivalence, device or human acceptance",
+  "after_recorder_changes": {
+    "command": "uv run pytest -q",
+    "session_id": 49991,
+    "terminal_chunk": "a2a406",
+    "returncode": 0,
+    "passed": 660,
+    "skipped": 68,
+    "duration_seconds": 171.22
+  }
+}

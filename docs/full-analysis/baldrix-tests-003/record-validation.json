@@ -1,0 +1,16 @@
+{
+  "artifact_hashes_checked": 6,
+  "own_ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/baldrix-tests-003/record_review.py",
+    "exit_code": 0,
+    "stdout": "All checks passed!"
+  },
+  "recorder_exit_code": 0,
+  "korean_readback_checked": true,
+  "source_execution_count": 0,
+  "checkpoint_sha256": "528001458470d36b8ba710ab6269f900b1993278d782fe717b43cee06b420b08",
+  "review_sha256": "029ae86b6d21bb7ab5a9b088ad26084352c52cc6110f3860820f75d4951f2f35",
+  "primary_prior_dispositions": [
+    "unreviewed"
+  ]
+}

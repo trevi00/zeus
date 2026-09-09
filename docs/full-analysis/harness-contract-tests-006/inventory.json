@@ -1,0 +1,20 @@
+{
+  "partition": "harness:tests/contract:006",
+  "scope_sha256": "fc504d1325c366643610d89a39125c2596b469214978f66cc218a657f4ba74ba",
+  "bytes": 27681,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "tests/contract/test_verdict_reprobe_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_youtube_note_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_youtube_queue_contract.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

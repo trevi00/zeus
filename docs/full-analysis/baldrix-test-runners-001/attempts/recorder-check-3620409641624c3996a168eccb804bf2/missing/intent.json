@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus\\docs\\full-analysis\\baldrix-test-runners-001\\attempts\\recorder-check-3620409641624c3996a168eccb804bf2\\does-not-exist.exe"
+  ],
+  "timeout_seconds": 1,
+  "container_name": null,
+  "started_at": "2026-09-09T09:22:26.520327+00:00",
+  "cwd": "C:\\Users\\rudtn\\zeus"
+}

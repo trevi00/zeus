@@ -1,0 +1,21 @@
+{
+  "kind": "selected_prior_primary_rereview",
+  "paths": [
+    {
+      "path": "scripts/tests/run_all.py",
+      "bytes": 13346,
+      "sha256": "a1d1a5e37a22758d1579ac439cad844c113208daf44ca73ca6998fc3f3dce9ee"
+    },
+    {
+      "path": "scripts/tests/run_units.py",
+      "bytes": 17340,
+      "sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68"
+    },
+    {
+      "path": "scripts/tests/conftest.py",
+      "bytes": 3406,
+      "sha256": "e7f56d0c8ef2a3491e14ce7c7cbedf8165d2abd419207013ebd777eb0573d50d"
+    }
+  ],
+  "scope_sha256": "8e2d05f3b14053414969375cabb3dea9a845c83ff76b505e689ff337e4dc4856"
+}

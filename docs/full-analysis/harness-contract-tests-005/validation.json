@@ -1,0 +1,16 @@
+{
+  "own_metadata": "PASS",
+  "own_ruff": "PASS",
+  "source_execution_count": 0,
+  "checks": [
+    "manifest revision/scope",
+    "raw Git blob/bytes/SHA",
+    "prior ledger row/raw identity",
+    "source range bounds",
+    "primary/support separation",
+    "review anchors and support IDs",
+    "UTF-8 LF JSON",
+    "ASCII English review and README; no substitution runs; actual output sampled"
+  ],
+  "subsystem_validation": false
+}

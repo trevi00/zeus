@@ -1,0 +1,19 @@
+{
+  "kind": "selected_prior_primary_fresh_rereview",
+  "source_partition": "baldrix:scripts/tests:001",
+  "primary_files": 3,
+  "primary_bytes": 34092,
+  "new_global_primary_files": 0,
+  "supporting_records": 10,
+  "supporting_full": 9,
+  "supporting_partial": 1,
+  "original_compaction_manual_tests_passed": 6,
+  "full_original_suites_executed": 0,
+  "original_helper_observation_programs": 1,
+  "mocked_provider_or_method_results": 0,
+  "original_helper_observation_executions": 2,
+  "actual_claude_review_and_discussion_processes": 2,
+  "recorder_fault_and_control_processes": 7,
+  "whole_analysis_complete": false,
+  "adoption_approved": false
+}

@@ -1,0 +1,17 @@
+# Fresh supporting reads
+
+All listed ranges were freshly read by root. Primary re-reviews are run_all.py, run_units.py and conftest.py in full. Their previous tests001 records remain prior evidence, not proof of this fresh read. No new global coverage is claimed for the three paths.
+
+Full validators/__init__.py: registry builtins plus runtime graduated names, callable-main lookup and explicit drift scanner dispatch. Full telemetry_log.py: environment telemetry override takes precedence over its module constant, append/rotation failures go to stderr, caller records can override the initial timestamp, timed propagates wrapped BaseException. Full paths.py: explicit state/telemetry overrides remain independent of CLAUDE_HOME, frozen constants and lazy accessors differ, assets derive from explicit override or module path. These are address selection rules, not write restrictions.
+
+graduation.py 1–165 and 196–220 only: imported state constants feed the state path; fail-soft load and strict graduated=True selection influence the imported registry. Its docstring's call-time claim does not make an imported constant dynamically recompute. Other graduation mutations and later helpers are not freshly closed here.
+
+Full test_autopilot_compaction.py and lib/autopilot_compaction.py: manual main consumes the global failure list, helper itself does not throw, six test functions and eight self-check predicate calls are different denominators. The directive is text instructing compaction; actual compacted context, safety-cap enforcement and Stop wiring are outside this execution. Boolean/integer and every argument edge cases were read but not exercised here.
+
+Full install_pre_commit.sh and .github/workflows/ci.yml: local pre-push runs current-tree run_all then run_units and only checks their exit status, while the two-job Ubuntu workflow orders run_units then run_all and permits documented atlas skips. Filtered paths omit some relevant asset-only changes. No actual upstream CI or generated hook run was observed; previous root installation observations remain separately linked evidence.
+
+Full cli/state_leak_check.py: snapshots paths and mtimes under state, omits deletions, and skips per-entry read errors. Empty initial state returns fail-closed4, but partial unreadability is not a complete snapshot guarantee. It retains child rc in the report yet its own final status depends only on detected additions/mtime changes. A failed or zero-work suite can therefore be clean for this narrow leak metric. It does not measure telemetry, asset writes, preserved-mtime content edits or all isolated-home correctness. Outer timeout handling and process-tree termination were not executed. Historical statements that both runners always warn or are always isolated are broader than the primary code.
+
+Full cli/canary_apply.py was read after Claude's initial report: regression retains a summary line and gates on child rc, without retaining stderr or requiring a complete checked denominator. The diagnostic no-regression flag passes None to CN.run despite a help-text instruction not to apply with it; CN.run and pending_changes are not freshly read here, so the actual effect remains unclosed. The dry-run before failure is a canary property check, not application or human approval.
+
+Root did not read all discovered runner tests or every transitive import. Actual Claude separately declares its own read scope. Native Windows/WSL, production leakage, licenses, model qualification, actual SDD acceptance and adoption remain incomplete.

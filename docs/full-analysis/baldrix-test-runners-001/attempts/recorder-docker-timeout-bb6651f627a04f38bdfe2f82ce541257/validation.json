@@ -1,0 +1,6 @@
+{
+  "docker_outer_timeout_recorded": true,
+  "partial_output_retained": true,
+  "named_container_removal_returncode": 0,
+  "program_sha256": "8e0e5e2b192ee1c27eb49b917878a1f6c6a96b09c610fb5bad75921b085e6ebf"
+}

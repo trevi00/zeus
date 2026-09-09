@@ -1,0 +1,110 @@
+{
+  "kind": "Own documentation metadata validation, not upstream tests",
+  "started_utc": "2026-09-09T09:23:07.700133+00:00",
+  "ended_utc": "2026-09-09T09:23:07.706082+00:00",
+  "argv": [
+    "python",
+    "docs/full-analysis/baldrix-tests-002/check_artifacts.py"
+  ],
+  "workdir": "C:\\Users\\rudtn\\zeus",
+  "source_executions": 0,
+  "source_imports": 0,
+  "source_network": 0,
+  "source_probes": 0,
+  "source_installations": 0,
+  "live_state_access": 0,
+  "recorder_sha256": "de9226d4ab96c7913639c0230a6204a07c06a2d27ebe4f4c87a3999823876ba0",
+  "checker_sha256": "acd54218877f1028a7b9f285a558413ea4c53eb4093f5adcff4b98b5c98d8505",
+  "recorder_receipt": {
+    "argv": [
+      "python",
+      "docs/full-analysis/baldrix-tests-002/record_review.py"
+    ],
+    "tool_chunk": "501d48",
+    "exit_code": 0,
+    "stdout": "{\"primary\": 16, \"bytes\": 188337, \"fresh\": 16, \"reused\": 0, \"supporting\": 36, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\r\n",
+    "stderr": ""
+  },
+  "recorder_ruff_receipt": {
+    "argv": [
+      ".venv/Scripts/ruff.exe",
+      "check",
+      "docs/full-analysis/baldrix-tests-002/record_review.py"
+    ],
+    "tool_chunk": "73510b",
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  "read_history": {
+    "primary_full_read_chunks": [
+      "d87ef5",
+      "3267b1",
+      "ce5ffe",
+      "6757d4",
+      "28a013",
+      "6eaa2f",
+      "55d752",
+      "7e0091",
+      "14c632",
+      "9898ee",
+      "f216cd",
+      "b29c7c",
+      "657187",
+      "befe03",
+      "016c45",
+      "ece74e"
+    ],
+    "supporting_read_chunks": [
+      "f16fa9",
+      "d77278",
+      "1f4786",
+      "0af07a",
+      "a4ebb6",
+      "c7bb38",
+      "e4f9e6",
+      "e3f2a8",
+      "368b0c",
+      "5dd9f9",
+      "4150d9",
+      "8be924",
+      "7d9903",
+      "1daccd",
+      "169716",
+      "552970",
+      "09a2cc"
+    ],
+    "preserved_failures": [
+      {
+        "tool_chunk": "6f7e8e",
+        "exit_code": 1,
+        "kind": "inert reader stdout encoding",
+        "detail": "cp949 UnicodeEncodeError on em dash after line1; no source executed. Re-read full body with stdout UTF-8 in55d752."
+      },
+      {
+        "tool_chunk": "11de29",
+        "kind": "exact-path lookup failed",
+        "detail": "commands/autopilot.md absent; rg reported OS error2 three times. Actual commands/harness-autopilot.md subsequently located and scoped-read. Final shell rc0 from final independent inventory search is not lookup success."
+      }
+    ],
+    "timestamp_limit": "Individual source read start/end timestamps not captured; tool chunk IDs preserve sequence. No invented timings."
+  },
+  "validation": {
+    "primary": 16,
+    "supporting": 36,
+    "byte_sum": 188337,
+    "manifest_git_blob_bytes": true,
+    "references": true,
+    "utf8": true,
+    "python_lf": true,
+    "primary_execution_count": 0,
+    "shared_coverage_modified": false
+  },
+  "unresolved": [
+    "transitive closure",
+    "whole-area Claude",
+    "license/vendor original",
+    "native OS/model execution",
+    "Zeus adoption and human acceptance"
+  ]
+}

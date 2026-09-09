@@ -1,0 +1,7 @@
+  [OK] test_boundary_semantics
+  [OK] test_deterministic_and_safe
+  [OK] test_directive_is_not_a_termination_signal
+  [OK] test_iter_zero_never_due
+  [OK] test_off_by_default_byte_identical
+  [OK] test_wire_appends_only_when_env_set
+[OK] autopilot_compaction (6 tests)

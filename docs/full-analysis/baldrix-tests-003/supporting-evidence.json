@@ -1,0 +1,1613 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/calibration/proposer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f978d8d237a79d5bb07003cc757bad50d2849e037450bf48bcb4e2607c9d63fb",
+    "git_blob": "dc40e19c771630ab5ca17f7e3a1898acbabaa50c",
+    "bytes": 11305,
+    "lines": 295,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f978d8d237a79d5bb07003cc757bad50d2849e037450bf48bcb4e2607c9d63fb",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 663,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S01",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        127,
+        184
+      ],
+      [
+        186,
+        295
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i01",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i01"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/critic_policy.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f69e4e61ff335a0c1e9c6aa885c6dddc898580d4b752d5f3ed331d1c719aa07b",
+    "git_blob": "6991fba0d88764eaf9e292814b856f03d361fcee",
+    "bytes": 9257,
+    "lines": 256,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f69e4e61ff335a0c1e9c6aa885c6dddc898580d4b752d5f3ed331d1c719aa07b",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 672,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S02",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        97,
+        227
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i01",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i01",
+      "docs/full-analysis/baldrix-tests-003/review.md#i21",
+      "docs/full-analysis/baldrix-tests-003/review.md#i23"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/critic_policy_override.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "65c392b61ff9b7ad3189ba4f3cb1e1219de8912e90d157d55ce69b6a04424939",
+    "git_blob": "dbe11417c68da1ca3e31a24cdc06a4efa552c542",
+    "bytes": 2841,
+    "lines": 87,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "65c392b61ff9b7ad3189ba4f3cb1e1219de8912e90d157d55ce69b6a04424939",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 469,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S03",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i23",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i23"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/pre_tool/critic_policy_advisor.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "370376db681dd1299dd7dffacb86465dcfbf8af4a38559bf7ef4d78693891d38",
+    "git_blob": "a7b04d35a632a3380eb98eae329b4a17a1b276fc",
+    "bytes": 3630,
+    "lines": 116,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "370376db681dd1299dd7dffacb86465dcfbf8af4a38559bf7ef4d78693891d38",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 604,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S04",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        35,
+        110
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i22",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i22"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/calibration_review.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "40722d5c03f64d2f8ef0f5f7313142d7ba5d4a8f60a2c584b928c120ac7964ad",
+    "git_blob": "b893686a3e7a19c25fa934e4f0c3778d0a48b701",
+    "bytes": 12392,
+    "lines": 324,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "40722d5c03f64d2f8ef0f5f7313142d7ba5d4a8f60a2c584b928c120ac7964ad",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 467,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S05",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        32,
+        79
+      ],
+      [
+        129,
+        164
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i01",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i01"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/canary.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "8c70dfe1dab0e953463fd43897aabe4c8bd88724773bc93cc4ae978720cbde34",
+    "git_blob": "24e8740537fe85f581830ab5024bdcf63b5b7ee4",
+    "bytes": 10583,
+    "lines": 245,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "8c70dfe1dab0e953463fd43897aabe4c8bd88724773bc93cc4ae978720cbde34",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 667,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S06",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        62,
+        113
+      ],
+      [
+        115,
+        242
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i02",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i02"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/changelog_io.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "7d54d60cd356b3fd716dea40d88dc9370ccc8cbd8348f087b68eec5bac18bc4d",
+    "git_blob": "9dff93d53eba29f6e3ec664923e03ea2670096a3",
+    "bytes": 5347,
+    "lines": 132,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "7d54d60cd356b3fd716dea40d88dc9370ccc8cbd8348f087b68eec5bac18bc4d",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 668,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S07",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        18,
+        114
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i03",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i03"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/check_brain_push.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "961f0cb6586343f5e78189d364a9af02d9c3cc981c036dc2229bfdc37040a3ca",
+    "git_blob": "3e7446428254158299cf7ccdd0844e09fc2e1442",
+    "bytes": 5301,
+    "lines": 128,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "961f0cb6586343f5e78189d364a9af02d9c3cc981c036dc2229bfdc37040a3ca",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 542,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S08",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        56,
+        122
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i04",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i04",
+      "docs/full-analysis/baldrix-tests-003/review.md#i25"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/claim_verifier.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "01416d46807202f70881c9ba865d6dd31fdb5189c33d0ca3910a4f3357225525",
+    "git_blob": "8548a2b88ae642daaa39d35d692c6f08478fbf4b",
+    "bytes": 8534,
+    "lines": 211,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "01416d46807202f70881c9ba865d6dd31fdb5189c33d0ca3910a4f3357225525",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1203,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S09",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        127,
+        210
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i07",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i07"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/handoff_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "bb1cd194421eabdeaaafa0a7e64f2f918b041df41ff0275630db4eab54d133ca",
+    "git_blob": "bed08d706ec96dffb088b4eaf4a9e9859c8f43eb",
+    "bytes": 18225,
+    "lines": 442,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "bb1cd194421eabdeaaafa0a7e64f2f918b041df41ff0275630db4eab54d133ca",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 712,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S10",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        149,
+        183
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i08",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i08"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/code_blind_proceed.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "2414b9f527be657e34664a2192fe51845a1aadf7e375e6b582c6c29704ab9c64",
+    "git_blob": "138ec7838393ee86cee24ea72f617fd7b036008f",
+    "bytes": 2504,
+    "lines": 67,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2414b9f527be657e34664a2192fe51845a1aadf7e375e6b582c6c29704ab9c64",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1204,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S11",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        38,
+        65
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i08",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i08"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/completion_gate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1b8657e376dec3e6cb43b809bc93da046180e1acfa3ea597139ce099eb46e2e7",
+    "git_blob": "d63316535fc5d5911096620a74ce451329f3db45",
+    "bytes": 17622,
+    "lines": 438,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1b8657e376dec3e6cb43b809bc93da046180e1acfa3ea597139ce099eb46e2e7",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 669,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S12",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        49,
+        109
+      ],
+      [
+        147,
+        252
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i13",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i13"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/engine/orchestrator.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "45ebe36ba1e9fd919f7592967b4700a412122fe5625976a305f8707d5c00c5c6",
+    "git_blob": "d66ffda7b3fb736b61006dbd534af105bbccab3f",
+    "bytes": 23018,
+    "lines": 655,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "45ebe36ba1e9fd919f7592967b4700a412122fe5625976a305f8707d5c00c5c6",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 567,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S13",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        557,
+        619
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i13",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i13"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/breakers/composite.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "564df7a36a2ff94591dd383c60d0dee4aac6120ba865bc8379881d6fc831ac41",
+    "git_blob": "fca201f0b0ae5deded5ad869878e0efabe7a55a1",
+    "bytes": 20297,
+    "lines": 482,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "564df7a36a2ff94591dd383c60d0dee4aac6120ba865bc8379881d6fc831ac41",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 656,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S14",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        226,
+        339
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i14",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i14"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/resident_store.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "62b54ea95f1e40e0d3276e36901c04f3d63a9a39d7df3127b947674916b4f23d",
+    "git_blob": "075de80ba489b90c666cf499048092c75d97bf99",
+    "bytes": 20148,
+    "lines": 457,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "62b54ea95f1e40e0d3276e36901c04f3d63a9a39d7df3127b947674916b4f23d",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 779,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S15",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        140,
+        192
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i18",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i18"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/coverage_gate.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "802ae363fd5524b98bf95a6c1ca280580e9087f3c1f8f572a34dfa472d0b22a2",
+    "git_blob": "20491189337b053cdd8c85917240a83dffb981dd",
+    "bytes": 4141,
+    "lines": 80,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "802ae363fd5524b98bf95a6c1ca280580e9087f3c1f8f572a34dfa472d0b22a2",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 671,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S16",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        32,
+        79
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i15",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i15"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/pre_tool/dart_strict_type_advisor.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "00f5136a6e79897a6cd795be2728b4969739aaf4338cd380415ad0d98b573b6a",
+    "git_blob": "563ebe5d8e2bfa418d035f7a4696a8ca6a06ccd0",
+    "bytes": 6365,
+    "lines": 186,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "00f5136a6e79897a6cd795be2728b4969739aaf4338cd380415ad0d98b573b6a",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 605,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S17",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        20,
+        145
+      ],
+      [
+        156,
+        186
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i29",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i29"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/ci.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "71d46ac6739bddbf36dc8f894680c4ad4b39b8ba1a86d9bb4d462fba6b300cd8",
+    "git_blob": "6f133b0a0118001eb7c5adb0b3b3b47e9a60798c",
+    "bytes": 7503,
+    "lines": 197,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "71d46ac6739bddbf36dc8f894680c4ad4b39b8ba1a86d9bb4d462fba6b300cd8",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1202,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S18",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        197
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i06",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i06"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/codegen.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "cac920d6267156ea169490cac2359d5d4706ad99165e62e084a0bda003deff4e",
+    "git_blob": "13b42471452a1a38d5be7f22f80f36beca77316c",
+    "bytes": 8174,
+    "lines": 217,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "cac920d6267156ea169490cac2359d5d4706ad99165e62e084a0bda003deff4e",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1205,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S19",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        217
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i09",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i09"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/collab.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "9c35400edadcd0d80a87139a6cee6b7f2ee7b2516609676b8b72a7b01fc9d968",
+    "git_blob": "90be5a782e57c98045f135751e9293bca5b5ad65",
+    "bytes": 2368,
+    "lines": 68,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "9c35400edadcd0d80a87139a6cee6b7f2ee7b2516609676b8b72a7b01fc9d968",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1206,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S20",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        68
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i10",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i10"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/contract.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "dda6c2fef7e0fe8fcb527e855dc32c7b8aee6ce7d42507855a9be8ee90dbf16f",
+    "git_blob": "e1080cef34a086d5a38efb3af9a8bf9a450ffd18",
+    "bytes": 8599,
+    "lines": 244,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "dda6c2fef7e0fe8fcb527e855dc32c7b8aee6ce7d42507855a9be8ee90dbf16f",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1209,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S21",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        244
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i17",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i17"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/convention.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1316c87727d80a3f1a70e9ceba4509546585b10be0a1424fd14d2c0c8c2ce682",
+    "git_blob": "e127596db7c334f333ef07399bfeb00f332f31d8",
+    "bytes": 4019,
+    "lines": 97,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1316c87727d80a3f1a70e9ceba4509546585b10be0a1424fd14d2c0c8c2ce682",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1210,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S22",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        97
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i19",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i19"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/cooldown.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "481306c93636366ee57b8c642d5ab46c501db9d5505f2fc98c9e7931c25e25ff",
+    "git_blob": "291e08b145e2798aca9fee58600acd8eab9014ca",
+    "bytes": 1393,
+    "lines": 44,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "481306c93636366ee57b8c642d5ab46c501db9d5505f2fc98c9e7931c25e25ff",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 670,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S23",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        44
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i20",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i20"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/commit_layer_adjacency.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "2dfab623751dcf684091299646c4a9edddcc35a11d11276b5828981898730971",
+    "git_blob": "314de264867a5e9a5d0f59eaec6f5f0b5707e882",
+    "bytes": 6705,
+    "lines": 200,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2dfab623751dcf684091299646c4a9edddcc35a11d11276b5828981898730971",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1207,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S24",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        35,
+        118
+      ],
+      [
+        151,
+        200
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i12",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i12"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/context_coupling.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ea53dd2c23e7e0a831f62827831f1df68676f1743bd3c6254b43cb5130104621",
+    "git_blob": "8eab4185730d5fc4fe226cfd7ab1fe8a654654cb",
+    "bytes": 6152,
+    "lines": 155,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ea53dd2c23e7e0a831f62827831f1df68676f1743bd3c6254b43cb5130104621",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1208,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S25",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        50,
+        155
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i16",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i16"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/criticism_dedup.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "3b1bc0864607359f471cc61c20e2d7edf362d37a9666dc9442c7552e8c4b539c",
+    "git_blob": "a09fcd63ad3ed20c994fd8ab1f7b2d80c00fd9eb",
+    "bytes": 11711,
+    "lines": 285,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "3b1bc0864607359f471cc61c20e2d7edf362d37a9666dc9442c7552e8c4b539c",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 673,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S26",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        130,
+        243
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i24",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i24"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/validators/cross_ref.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "221a7020869004086e04153af1b97ba113e2ac96146f0fb6052a242099449769",
+    "git_blob": "8303315752605f006d52d5114103ef5a78e8cd5d",
+    "bytes": 6800,
+    "lines": 181,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "221a7020869004086e04153af1b97ba113e2ac96146f0fb6052a242099449769",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 831,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S27",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        78,
+        181
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i26",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i26"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/meeting_ingest.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "eaa86288e217791a047e9ecceb7516bc02d9360d90b13ba7b18191543fa37d8d",
+    "git_blob": "c523f413599a7ebceb0976bd707829b485e3859e",
+    "bytes": 4880,
+    "lines": 97,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "eaa86288e217791a047e9ecceb7516bc02d9360d90b13ba7b18191543fa37d8d",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 496,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S28",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        47,
+        57
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i15",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i15"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/ground_or_drop.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "37bc4466c73fe9b203d4441183ff385b7c3c3736a9427afe8981bcb77d40dab7",
+    "git_blob": "ca4e8af867e0e3595d7b49d58043c87fd9fc8aac",
+    "bytes": 4427,
+    "lines": 87,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "37bc4466c73fe9b203d4441183ff385b7c3c3736a9427afe8981bcb77d40dab7",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 710,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S29",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        29,
+        87
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i15",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i15"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/cucumber_scaffolder.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f70f5e81410a74c1559f6087cab03db67bb81a39cc7193e5cd9cf8df84e52d3d",
+    "git_blob": "4a25074b55094ec368979a26980b65ad5199fc3a",
+    "bytes": 9698,
+    "lines": 197,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f70f5e81410a74c1559f6087cab03db67bb81a39cc7193e5cd9cf8df84e52d3d",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 674,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S30",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        84,
+        151
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i27",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i27"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/dart_scaffolder.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1422ba91528c2d514b80f5e6cabf86d2b6a35fdcea6ab6448189103676e2f0a4",
+    "git_blob": "0f99d841b249b4ca983e9756fd2f03677357aee9",
+    "bytes": 6630,
+    "lines": 150,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1422ba91528c2d514b80f5e6cabf86d2b6a35fdcea6ab6448189103676e2f0a4",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 675,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S31",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        30,
+        109
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i28",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i28"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/testgen.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "be328dd5f87ab4cee0ae726129843b3bf115669c8b04c0514b77a684b1552ab2",
+    "git_blob": "9d87e59179936fd1e0fe828f45963a5f01b61b09",
+    "bytes": 13483,
+    "lines": 305,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "be328dd5f87ab4cee0ae726129843b3bf115669c8b04c0514b77a684b1552ab2",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 823,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S32",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        199,
+        241
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i28",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i28"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/greenfield_spec_emit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ee74210453441e3cf5f8768753e1b902e10dc310e8bf78c1a5c670e4e7b188f0",
+    "git_blob": "139266d55cca9c860d1f0af36ddb623e16258e86",
+    "bytes": 9247,
+    "lines": 182,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ee74210453441e3cf5f8768753e1b902e10dc310e8bf78c1a5c670e4e7b188f0",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 484,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S33",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        62,
+        152
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i28",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i28"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/run_ledger_compaction.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ccc1c5b2abe05ce3b441aefbb515c852b1045107e8e11c7f9daf9394a8452d25",
+    "git_blob": "4f9277aedd28399f00db95a98ef9e1808d0f91fb",
+    "bytes": 5887,
+    "lines": 148,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "ccc1c5b2abe05ce3b441aefbb515c852b1045107e8e11c7f9daf9394a8452d25",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 553,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S34",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        62,
+        148
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i25",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i25"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cron/run_pollution_cleanup.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "4b73db25c07c82623309db6786258f37c8a2afa1c3d6acda3791613b80359707",
+    "git_blob": "ccb762750e1948053849100094b376a568c39fca",
+    "bytes": 4997,
+    "lines": 122,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "4b73db25c07c82623309db6786258f37c8a2afa1c3d6acda3791613b80359707",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 554,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S35",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        48,
+        122
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i25",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i25"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/paths.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "git_blob": "b34f04cf2766b423eaf6d51b063672a079e1b60c",
+    "bytes": 13699,
+    "lines": 257,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "a1e52130388197ec165e2de1c358cfd3d9b2cb1cb7d94865ce2869dc9a2ccc7d",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 749,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S36",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        12,
+        34
+      ],
+      [
+        100,
+        139
+      ],
+      [
+        159,
+        239
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i03",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i03",
+      "docs/full-analysis/baldrix-tests-003/review.md#i13",
+      "docs/full-analysis/baldrix-tests-003/review.md#i22"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/run_units.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+    "git_blob": "7c61b756e5ac9127ed57bddf136582fc67629a16",
+    "bytes": 17340,
+    "lines": 407,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 891,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S37",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        39,
+        46
+      ],
+      [
+        75,
+        99
+      ],
+      [
+        130,
+        166
+      ],
+      [
+        330,
+        387
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#trace",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#trace",
+      "docs/full-analysis/baldrix-tests-003/review.md#i05",
+      "docs/full-analysis/baldrix-tests-003/review.md#i29"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/axis_scores_log.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "59b7fb5233219e048a2d0d261913251405000cd5d9b19f85e6031e36ba548cb0",
+    "git_blob": "df0c8134b38a742d6f4fc679bdbe57237ccbd91a",
+    "bytes": 10002,
+    "lines": 262,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "59b7fb5233219e048a2d0d261913251405000cd5d9b19f85e6031e36ba548cb0",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 649,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S38",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        97,
+        126
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i13",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i13"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/stop/autopilot_continue.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d52f2b0923c48f855a4b01c4d54e1427d9f711a11ce09ea42210ca6857be52c0",
+    "git_blob": "08faccf26b2856223cfcb39ff8a21fdfbcb4a7e0",
+    "bytes": 34072,
+    "lines": 757,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "d52f2b0923c48f855a4b01c4d54e1427d9f711a11ce09ea42210ca6857be52c0",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 620,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S39",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        635,
+        685
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i13",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i13"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/handlers/post_tool/agent_outcome_audit.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "git_blob": "b8a953fdcf82c52180004b8d667c91aaba375dc3",
+    "bytes": 19209,
+    "lines": 471,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "fda8fb0613e2547b77a8c5bb5910cb4565de6e007ec26dabeaec4fd501e34314",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 599,
+    "path_ledger_disposition_at_recording": "body_reviewed_call_test_trace_pending",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S40",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        426,
+        450
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i22",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i22"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/resident.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "044bf4e6e69c10e2c1e7b0d0f6b6c1af575a1da749018e81054181cc7cf9412a",
+    "git_blob": "32bf442909937b3fe54962874e1f7ecbf4a7181d",
+    "bytes": 21511,
+    "lines": 463,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "044bf4e6e69c10e2c1e7b0d0f6b6c1af575a1da749018e81054181cc7cf9412a",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 515,
+    "path_ledger_disposition_at_recording": "semantically_reviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S41",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        212,
+        225
+      ],
+      [
+        270,
+        275
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i18",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i18"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "settings.json",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "ff053f0057d9ec801bef5153e73131b2d6daeda844daa7bb8f867a1ba0ec9884",
+    "git_blob": "312320e7e32f9dcbd723911fb6f297494caddba0",
+    "bytes": 10437,
+    "lines": 386,
+    "manifest_snapshot_sha256_present": false,
+    "manifest_snapshot_sha256": null,
+    "hash_verification": "raw_git_blob_size_and_separate_sha256_path_ledger_manifest_sha_absent",
+    "path_ledger_row_index": 1249,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S42",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        179,
+        211
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i22",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i22",
+      "docs/full-analysis/baldrix-tests-003/review.md#i29"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "agents/harness-git-master.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "1140428c8da9def12f1c5304ca801928497ebd0ac65647db8919e147a1530ff1",
+    "git_blob": "97bc263844ed11fd57f2c67a1acc56b95b951576",
+    "bytes": 4989,
+    "lines": 115,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "1140428c8da9def12f1c5304ca801928497ebd0ac65647db8919e147a1530ff1",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 21,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S43",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        70,
+        103
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i05",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i05"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "commands/harness-debate.md",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "89e7c0d185d291f33008d459c5f233be619037c09f98281ef10f6dafc751149f",
+    "git_blob": "7e79260c6100f55556aa6fef8486d48280fba251",
+    "bytes": 25819,
+    "lines": 184,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "89e7c0d185d291f33008d459c5f233be619037c09f98281ef10f6dafc751149f",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 239,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S44",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        42,
+        62
+      ],
+      [
+        118,
+        145
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i11",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i11"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/example-fleet/fleet.absent.yaml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "d07f94b83c992368be1b1de7166ef9369e1266719e51089a8726223115cdfb08",
+    "git_blob": "632a9cd6eb6a4f6d5d84c8eddd0de8d209dee753",
+    "bytes": 810,
+    "lines": 10,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "d07f94b83c992368be1b1de7166ef9369e1266719e51089a8726223115cdfb08",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 573,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S45",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        10
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i15",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i15"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/example-fleet/seams.absent.spec.yaml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "5a969186eb62cb1314db633f9c153a0de747db79df208f40af61b20eb845c8f1",
+    "git_blob": "3b75e390a945f719990f184632ebf0bba9695a3d",
+    "bytes": 656,
+    "lines": 13,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "5a969186eb62cb1314db633f9c153a0de747db79df208f40af61b20eb845c8f1",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 589,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S46",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        13
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i15",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i15"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_pipeline/overlays/dart.overlay.yaml",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "pinned_sha256": "f6f40fa79dca659178403a56650331c25c7618132b3e15dd2cb500d4eff38a3f",
+    "git_blob": "a4ffb677f076a9758f2e850f3953638858c883ab",
+    "bytes": 1002,
+    "lines": 27,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f6f40fa79dca659178403a56650331c25c7618132b3e15dd2cb500d4eff38a3f",
+    "hash_verification": "raw_git_blob_size_snapshot_sha256_and_path_ledger",
+    "path_ledger_row_index": 1363,
+    "path_ledger_disposition_at_recording": "unreviewed",
+    "upstream_disposition_unchanged": "unreviewed",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "support_id": "S47",
+    "disposition": "supporting_read_only",
+    "line_ranges": [
+      [
+        1,
+        27
+      ]
+    ],
+    "read_extent": "explicit_ranges_only",
+    "read_basis": "displayed_and_read_current_review",
+    "review_ref": "docs/full-analysis/baldrix-tests-003/review.md#i28",
+    "review_refs": [
+      "docs/full-analysis/baldrix-tests-003/review.md#i28"
+    ],
+    "counted_as_primary_body": false,
+    "purpose": "Direct SUT, configuration, fixture or consumer trace for cited per-file review."
+  }
+]

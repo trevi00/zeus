@@ -1,0 +1,8 @@
+{
+  "normal": true,
+  "timeout_partial_output_retained": true,
+  "launch_error_receipt": true,
+  "existing_attempt_rejected_before_launch": true,
+  "program_sha256": "18af5d65a73446be8ebbfb1195ce2bb6e9846fbacea5c7d847a8e5f7be2556df",
+  "docker_backend_tested": false
+}
