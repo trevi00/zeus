@@ -82,19 +82,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:20:09.001976+00:00",
+      "id": "2dfa26bf131b0f4f776d7e130f9461536cee4c3224e218e4630b38f64a41bac7",
+      "summary": "Fresh frontmatter implementation trace: reader selects last YAML block while writer replaces first; key-presence schema validation and skipped artifacts can lose original obligation denominator. Existing syntax guards remain useful but do not prove semantic requirement/SDD acceptance. Original parser tests not executed.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-f5a496e41ac2",
+      "content_hash": "521dcfd15185e61a9d98d68f49b9253b027ac2f401a3de745ad7838942fa38a0",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/da48189ce59f07101f73dc9adb3ba272a711744b/docs/full-analysis/baldrix-gsd-bin-001/file-reviews.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:00:08.776182+00:00",
+      "at": "2026-09-09T12:20:11.918895+00:00",
       "id": "d9c584db548ffe747d4fa6f74912b3f0cf03b3498ba5b58f7a16ce8f3d187385",
       "url": "https://github.com/trevi00/zeus/issues/15",
       "number": 15,
       "status": "synced",
-      "body_hash": "0f07cb5dfb2f481161fee5e1edbb788b12ed2140dc36e104637e4d3080533015",
+      "body_hash": "80ccd26618b2063ac71312cf5fd8199187fa45fd18cbaadd7d79b2edf986e308",
       "ticket_id": "ZEUS-f5a496e41ac2",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "2dfa26bf131b0f4f776d7e130f9461536cee4c3224e218e4630b38f64a41bac7",
         "44e52dad9853e8a110c0a3ce5b4f45830626a28b640d18ef7ccc5c28918dc20a",
         "9a2191e51350988dcab160a0e1d9b2ef4f20569e708b1ca003281e86a4b8e3d4",
         "fc06f13f49a0a4f61cb8011054ea3296e37659c9d04fca768fb505ea97357b21"

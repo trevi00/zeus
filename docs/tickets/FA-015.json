@@ -53,20 +53,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:20:12.032558+00:00",
+      "id": "dcd2d763d2128eaa80791c1b4bcaac45adf30c61ec9d79856bfada7e03e59a54",
+      "summary": "Fresh workflow and implementation review: noncurrent worktree enumeration lacks run ownership, new planning files can satisfy resurrection-deletion test, expected-base is not enforced in selected merge helper, and failed rollback/reconcile can precede cleanup. Thirteen real-Git-oriented test definitions were read elsewhere in this batch, not run. No actual destructive operation or loss incident reproduced.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/da48189ce59f07101f73dc9adb3ba272a711744b/docs/full-analysis/baldrix-gsd-workflows-002/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:09:32.112884+00:00",
+      "at": "2026-09-09T12:20:14.411880+00:00",
       "id": "8946b5a9efa626e86ae1edaa9bdc1848a0557f1dad6059fefa750c8031007721",
       "url": "https://github.com/trevi00/zeus/issues/16",
       "number": 16,
       "status": "synced",
-      "body_hash": "742fc7cc391054acb95dcde9e38a05aae7c239065653567df740396b5404af7d",
+      "body_hash": "871e4f00c5448b0bf86f0fd34b4e7ecb542099e959adc5df90e3abd942604fad",
       "ticket_id": "ZEUS-39d3d0633060",
       "repository": "trevi00/zeus",
       "review_ids": [
-        "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143"
+        "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143",
+        "dcd2d763d2128eaa80791c1b4bcaac45adf30c61ec9d79856bfada7e03e59a54"
       ],
       "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
       "synced_revision": 1

@@ -38,18 +38,36 @@
   "content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
   "claimed_author": "Codex: user-authorized local ledger and GitHub topic review",
   "current_revision": 1,
-  "reviews": [],
+  "reviews": [
+    {
+      "at": "2026-09-09T12:20:21.229950+00:00",
+      "id": "658fa8bd2115292b34673298aded67a8b170bb28ced3c0b4ffa75dc642ea91ed",
+      "summary": "Fresh schema drift detector/consumer trace: inline PLAN file text, summary and recent cross-ref Git messages provide command-string evidence without actual DB execution; quoted/block-list paths and finite ORM patterns can leave targets unrecognized. Preserve DB apply history and exact-target runtime evidence. No real DB/schema operation, migration or acceptance performed.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-e52702908b8f",
+      "content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/da48189ce59f07101f73dc9adb3ba272a711744b/docs/full-analysis/baldrix-gsd-bin-003/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
+    }
+  ],
   "github": [
     {
-      "at": "2026-09-09T11:09:38.411864+00:00",
+      "at": "2026-09-09T12:20:23.447191+00:00",
       "id": "bf91359413bce0eafa1bc09744dcea43f938c5427a2ff12389658686fb2d7a85",
       "url": "https://github.com/trevi00/zeus/issues/32",
       "number": 32,
       "status": "synced",
-      "body_hash": "51324e988212cf89a80595dd148b1704c74f50e7333d824ab70c00791da47b0e",
+      "body_hash": "90a9f0d1ff1b7fd990839d56f9b171a1de3de76f408cc05aa154cf8882235064",
       "ticket_id": "ZEUS-e52702908b8f",
       "repository": "trevi00/zeus",
-      "review_ids": [],
+      "review_ids": [
+        "658fa8bd2115292b34673298aded67a8b170bb28ced3c0b4ffa75dc642ea91ed"
+      ],
       "content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
       "synced_revision": 1
     }

@@ -69,20 +69,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:20:18.916402+00:00",
+      "id": "174935eceb5656851c567e5cbfbe116287b0d04d6371301a38854f25be1ee7d1",
+      "summary": "Fresh environment/config trace: core loader reads scoped planning config while config-get and health use shared root; routing state can differ from the configuration updated. Context setting interface is confirmed, Markdown loading is unconfirmed. Static Windows branches are not actual OS qualification; no installer/runtime migration executed.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-9495da500988",
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/da48189ce59f07101f73dc9adb3ba272a711744b/docs/full-analysis/baldrix-gsd-bin-003/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:00:15.409734+00:00",
+      "at": "2026-09-09T12:20:21.122627+00:00",
       "id": "bd07e564483139323647f0798908cfeaf613b16ec8e822227597952a0fdf56f4",
       "url": "https://github.com/trevi00/zeus/issues/26",
       "number": 26,
       "status": "synced",
-      "body_hash": "27a38fd10191fa738e660f31a86959d193e6f89614c516bb2bbdb4e1dc4b6f9d",
+      "body_hash": "9606b853daaa06308a12198189fcb2e925d27d3d8b91510c7d47494a101a96f2",
       "ticket_id": "ZEUS-9495da500988",
       "repository": "trevi00/zeus",
       "review_ids": [
         "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924",
+        "174935eceb5656851c567e5cbfbe116287b0d04d6371301a38854f25be1ee7d1",
         "4aa0f40a708618af52fe0d0867dcbafa46dbc434cf55a2aee4c11cb89f06741b"
       ],
       "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",

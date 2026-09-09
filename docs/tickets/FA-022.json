@@ -62,19 +62,35 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:20:16.749781+00:00",
+      "id": "16a7ce825541a58094803edb26bbc4396fe7f585dcbc85973606b29c9d75aad8",
+      "summary": "Seven original reference Bash calls in immutable offline Linux: comment-only input emits WIRED/SUBSTANTIVE; missing-file labels can exit0; no grep match produces 0-newline-0 numeric error, rc2 for check_stubs but THIN/rc0 for check_substantive. These are emitted labels, not verifier PASS; TODO control retained. No full source suite/service/Windows/WSL/human acceptance.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/da48189ce59f07101f73dc9adb3ba272a711744b/docs/full-analysis/baldrix-gsd-guidance-002/observations.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T11:32:07.692630+00:00",
+      "at": "2026-09-09T12:20:18.828296+00:00",
       "id": "762c7b28f0d163d919f17692ddf3524d72daa1e5c226a20798ac2b645f4ce4af",
       "url": "https://github.com/trevi00/zeus/issues/23",
       "number": 23,
       "status": "synced",
-      "body_hash": "c6a8498bbb31643b02fb1c5544b7b7d7dbfe6b021935602627f86d81dc280a5b",
+      "body_hash": "68331aba40fb1371ca515ab63c5c8835989ccc9b70eaa716caf4212a4f74493a",
       "ticket_id": "ZEUS-a9984f5b7caf",
       "repository": "trevi00/zeus",
       "review_ids": [
+        "16a7ce825541a58094803edb26bbc4396fe7f585dcbc85973606b29c9d75aad8",
         "1d68df10d6ef94a229d2e042529968139e1c7b5b859747d45bc3b526510c070b"
       ],
       "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",

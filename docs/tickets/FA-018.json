@@ -88,20 +88,36 @@
       ],
       "claimed_provider": "Codex",
       "claimed_reviewer": "Codex root"
+    },
+    {
+      "at": "2026-09-09T12:20:14.539922+00:00",
+      "id": "49c0c68e13065a735e34664aea7e061394f53f7e5562a61a9d58244c0c19e890",
+      "summary": "Fresh state/verify/UAT consumers: summary counts and status text are not executed obligations; zero or skipped parser denominators can yield valid/all_passed, and partial UAT inventory is rendered All Clear. Preserve original denominator and human-needed evidence. Static implementation review only; no complete verifier or acceptance execution.",
+      "verdict": "changes_requested",
+      "revision": 1,
+      "authority": "advisory_only",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/blob/da48189ce59f07101f73dc9adb3ba272a711744b/docs/full-analysis/baldrix-gsd-bin-003/review.md"
+      ],
+      "claimed_provider": "Codex",
+      "claimed_reviewer": "Codex root"
     }
   ],
   "github": [
     {
-      "at": "2026-09-09T12:00:10.846618+00:00",
+      "at": "2026-09-09T12:20:16.641194+00:00",
       "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
       "url": "https://github.com/trevi00/zeus/issues/19",
       "number": 19,
       "status": "synced",
-      "body_hash": "5acb1439bdf67e5e7f617c1d7f9c38094692d50909cb47606708362f8e0b435f",
+      "body_hash": "abeea714197331e35c7583d9f5f05003a17484b854e9f6946178f0de5d4f2931",
       "ticket_id": "ZEUS-07f94a1a4390",
       "repository": "trevi00/zeus",
       "review_ids": [
         "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2",
+        "49c0c68e13065a735e34664aea7e061394f53f7e5562a61a9d58244c0c19e890",
         "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f",
         "b926dc82cfd99fcb4b079ef86b37b643b159c3615ff4a382f2a00c5aeacfabb3"
       ],
