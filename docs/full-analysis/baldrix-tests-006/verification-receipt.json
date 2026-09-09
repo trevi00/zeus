@@ -1,0 +1,13 @@
+{
+  "tool_chunk": "15f4e1",
+  "workdir": "C:/Users/rudtn/zeus",
+  "commands": [
+    ".venv/Scripts/ruff.exe check docs/full-analysis/baldrix-tests-006/record_review.py docs/full-analysis/baldrix-tests-006/check_metadata.py",
+    ".venv/Scripts/python.exe docs/full-analysis/baldrix-tests-006/check_metadata.py"
+  ],
+  "ruff_stdout": "All checks passed!",
+  "metadata_check": "24 primary, 198562 bytes, 29 supporting; blob/bytes/SHA/ranges/refs/UTF8/LF and then-current artifact index verified",
+  "source_execution": 0,
+  "upstream_tests_execution": 0,
+  "limitations": "Inert artifact validation only. This receipt is subsequently included in a regenerated artifact index; no upstream PASS or acceptance is claimed."
+}

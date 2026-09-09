@@ -1,0 +1,33 @@
+[
+  {
+    "topic": "FA-029",
+    "title": "[FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정",
+    "problem": "현재 Zeus Tickets와 CLI에는 close/reopen이 없고 GitHub sync는 본문만 투영한다. 원격 CLOSED 상태여도 synced로 기록될 수 있어 사용자 요구인 해결 및 인수 검증 후 양쪽 종료를 아직 구현하지 못한다.",
+    "impact": "분석 완료·코드 작성·본문 동기화를 실제 해결로 오해하거나 한쪽만 종료된 상태를 놓칠 수 있다. 재발·개정 변경과 실패 복구에도 증거에 결속된 상태 전이가 필요하다.",
+    "scope": [
+      "Zeus application Tickets, GitHub adapter, CLI 및 실제 PG/GitHub 검증을 대상으로 한다.",
+      "전체 분석 중 발견한 원본 milestone 종결 문제와 구분해 Zeus의 현재 미구현 계약을 다룬다.",
+      "현재는 정적 감사다. 실제 Claude 공동 검토와 SDD 설계 후 root가 구현한다."
+    ],
+    "acceptance_criteria": [
+      "티켓 개정/content hash/해결 commit과 모든 인수 기준의 결과·불변 증거·필요한 사람 승인에 결속된 close 결정을 PG에 남긴다. 누락·실패·unknown·skip·오래된 증거로 닫지 않는다.",
+      "close/reopen은 기대 개정과 상태를 검증하며 재발·변경 이유와 과거 증거를 보존한다. actor 문자열만으로 사람 인수를 인정하지 않는다.",
+      "PG 결정과 GitHub 반영을 재개 가능한 단계로 분리하고 pending과 실제 원격 상태 확인 완료를 구분한다. 양쪽 동시 원자성을 주장하지 않는다.",
+      "ACK 유실·PG 후속 실패·중복 요청·동시 종료/재개·중간 개정 변경·lease 만료 후 늦은 응답에서 잘못된 완료나 중복 결정을 방지하고 조정 절차를 제공한다.",
+      "원격 수동 종료와 외부 제목/본문 변경을 관측하고 충돌을 표시한다. 외부 상태로 로컬 인수 승인을 자동 생성하지 않는다.",
+      "실제 PG 및 승인된 별도 GitHub 시험 이슈로 종료·재개·재시도 흐름을 검증한다. 실제 열린 개선 이슈를 시험 목적으로 닫지 않는다."
+    ],
+    "verification": [
+      "18c91d6의 Tickets, GitHubTickets, CLI 및 직접 테스트에 대한 Codex 정적 감사와 root 구현 대조를 수행했다.",
+      "close/reopen API 및 인수 기준별 증거 거부·종료 상태 일치·종료 중 PG 실패 복구 검사는 현재 없다.",
+      "이번 감사는 실행·DB 변경·GitHub 종료 0회이며 실제 Claude 검토와 실제 외부 종료 인수는 미완료다."
+    ],
+    "rollback": "종료 동기화에 모순이 있으면 자동 종료 처리를 중단하고 PG 결정·원격 관측·실패 증거를 보존한다. 수동 조정도 이유와 기대 개정을 기록하며 원래 이슈의 미해결 기준을 삭제하지 않는다.",
+    "evidence_paths": [
+      "docs/ticket-lifecycle-review.md",
+      "src/codex_harness/application/tickets.py",
+      "src/codex_harness/adapters/github_tickets.py",
+      "src/codex_harness/cli.py"
+    ]
+  }
+]

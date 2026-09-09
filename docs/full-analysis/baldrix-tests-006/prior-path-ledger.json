@@ -1,0 +1,386 @@
+[
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_guard_patterns.py",
+      "git_blob": "6c683498dfba0687169eb1e7f6ba246014f4ce5b",
+      "mode": "100644",
+      "bytes": 16076,
+      "pinned_sha256": "95c366ba96aeb0cc923cda3b8449802f5a8094faddd4e02ff1dd425a5db41efb",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_handoff_drift.py",
+      "git_blob": "39fc93a58326782113bfe3ca12fd93106c94e7a9",
+      "mode": "100644",
+      "bytes": 8194,
+      "pinned_sha256": "410db0dd8f1ee50f54c033312a9eae74f061212440f57e24305f80ffcd72e94e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_handoff_drift_gate.py",
+      "git_blob": "44e13f14a0862bd16b954cd55ec301c0f389c9e1",
+      "mode": "100644",
+      "bytes": 6422,
+      "pinned_sha256": "7aa8c661c989b97a9be65a4e3d21a5f5adee9c3c84db28e93b48d2b483dd45b1",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_handoff_render.py",
+      "git_blob": "029d80e832f580f96e9ee7012fc06ed33024915a",
+      "mode": "100644",
+      "bytes": 15565,
+      "pinned_sha256": "b2ae92a2e6f63f225805f9b52cb50a7194903173b39ee18bc35790737d63bd10",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_handoff_resume.py",
+      "git_blob": "bc3ddb8ab059beace15e53406077eaf15882a3ae",
+      "mode": "100644",
+      "bytes": 5365,
+      "pinned_sha256": "cad1131ec1e1334937efd67d9b587821829d99ed50604c4112684db9b7606d73",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_harness_audit.py",
+      "git_blob": "b7ca2ceb49baed39ef88849497c2c03b9494441b",
+      "mode": "100644",
+      "bytes": 3442,
+      "pinned_sha256": "0a069e4e1444b99239067a2b663dfc28cd643dfe57481d4e2db2c757a9ad346e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_harness_bridge_state_block.py",
+      "git_blob": "92b63f848f429899401744faf5a037f788f07c77",
+      "mode": "100644",
+      "bytes": 10882,
+      "pinned_sha256": "dc00b7a1dd5c17bf7c9af3482681e0da7cd0c96a28b0f0878eccb24829da231b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_harness_health.py",
+      "git_blob": "08a8e766f68c85c960d052f8516e330aedaa95ba",
+      "mode": "100644",
+      "bytes": 19255,
+      "pinned_sha256": "19081633f82d3f9d62c680805767ef660b7772d46ce4baec7fc171b47c0a2ed2",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_harness_normalize.py",
+      "git_blob": "ae38fc5fc597b222581e09eca4c7a3053304ee5e",
+      "mode": "100644",
+      "bytes": 5441,
+      "pinned_sha256": "c9a78f5d7ca738c46b9ac1f9c0f7c4322805e4185d60ade4cbffa5408997841e",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_hashline.py",
+      "git_blob": "023bcbd785fbb0fd2df9f29edd4fb837b0578e85",
+      "mode": "100644",
+      "bytes": 6974,
+      "pinned_sha256": "2bde4281b2c846d4f90c365e56c5d6a878a6284aeb8d3a3ba3711c32f5c4bf49",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_heartbeat_and_taxonomy.py",
+      "git_blob": "12e76ddc605338b90d76f5bb9217b600c9f5a030",
+      "mode": "100644",
+      "bytes": 7581,
+      "pinned_sha256": "cd1cd8f6ff852be6acf37fcb2f70f78f3804e1cb85a8c169c67cf46bbc241c20",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_hook_e2e.py",
+      "git_blob": "4fbe9f1138855d1918af61f6cef256ddc34553bd",
+      "mode": "100644",
+      "bytes": 9596,
+      "pinned_sha256": "bb5c5406284d0a3dd82767c51078c50f87ec3a8c5b3ed1a545daa578d34a4d95",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_hook_latency.py",
+      "git_blob": "67972256121cdebf86e60722b1b67e98ba5a3323",
+      "mode": "100644",
+      "bytes": 8291,
+      "pinned_sha256": "8a4b3f3839d880958fb3a07997d6bda482e15eca1cdfcb3c4569c7e0093f4fa8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_import_graph.py",
+      "git_blob": "a7d067e343c50834197f49fa8c5a13eedc830582",
+      "mode": "100644",
+      "bytes": 12302,
+      "pinned_sha256": "c0fb3c518829c0c60ede99f4f01a74320935c87f58bc61e1931811ae77ac6e22",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_import_hygiene.py",
+      "git_blob": "6082a69400d4b4a79a846b8c0c948364603f2787",
+      "mode": "100644",
+      "bytes": 8220,
+      "pinned_sha256": "4085a927a36d79d1ac07d0e0cd4087ac3c400a230389deeb807c38fafd7d6138",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_import_layering.py",
+      "git_blob": "ac6fd36fb8824ee1e7bd80f3226d44103a81aaa5",
+      "mode": "100644",
+      "bytes": 4954,
+      "pinned_sha256": "24b2f5624cb086b79aa5d127e41d4aa601b3b28bd09116bf2e1df823cc94aaae",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_insight_index.py",
+      "git_blob": "027912fac7b380bff519ff67be11ec7460c3a69d",
+      "mode": "100644",
+      "bytes": 12307,
+      "pinned_sha256": "0f57dee513a34db7c3d7d9337a1b0e930cbfd761704921a52056c8705f5f4237",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_insight_index_importer_whitelist.py",
+      "git_blob": "bc2f70da74e16a3cc0386c46cb52cbc2f215ae49",
+      "mode": "100644",
+      "bytes": 5197,
+      "pinned_sha256": "47ec468b605dce0e2c227b3f490c98474486e5be00e4b42de4f1ac7fac5df6cd",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_insight_index_pollution_detector.py",
+      "git_blob": "e579c1fb4fe2e32ee567a5b3a2c83127da653cad",
+      "mode": "100644",
+      "bytes": 5776,
+      "pinned_sha256": "cd639dd51358206a46fa67bc93039577cc811a881eea6509b4a5724656d55374",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_install_hooks.py",
+      "git_blob": "d334aeb9cf0ecdb1dcd41000022aa2666edab044",
+      "mode": "100644",
+      "bytes": 3843,
+      "pinned_sha256": "a2801b30558752515d25e5776cada4709278744c48618174c7145e49b5a6fe52",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_inventory_drift.py",
+      "git_blob": "46807ce3c4ff87cf414521d93140d444b41ba84e",
+      "mode": "100644",
+      "bytes": 2845,
+      "pinned_sha256": "04aaf679ab7069d078f499791ec133d0ba3fa42a1d1088090ce8dd47a2fe1183",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_io.py",
+      "git_blob": "ab418d3f764ae72285ac6ab51705348a0550c7b8",
+      "mode": "100644",
+      "bytes": 7733,
+      "pinned_sha256": "26625a63c55c808b3956b460df4c56d8f9a8fb6f0fd263b553d965f9558e20b5",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_java_golden_pin.py",
+      "git_blob": "4750e3a3643abe5144f5fb10564fa2984739b720",
+      "mode": "100644",
+      "bytes": 8696,
+      "pinned_sha256": "83b8fb9eb730330fd5f35371745dbb18d6d3ec7cd3f42033fab4be4e354566e8",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  },
+  {
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_jsonl_cache.py",
+      "git_blob": "0a64127912e68256ea4f7f2a9dd7954cb56d7031",
+      "mode": "100644",
+      "bytes": 3605,
+      "pinned_sha256": "f84463eca41b9ed43e2b92428593a3088ee3e63233fe2afcfbebf6df05509e0b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "3d959282826f6c75153995cec08d3b880e140e78ae11399912798c5f5c64d893",
+    "reused_for_read": false
+  }
+]

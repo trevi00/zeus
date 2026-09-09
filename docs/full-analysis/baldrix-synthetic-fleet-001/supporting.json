@@ -1,0 +1,20 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/tests/test_ontology_query.py",
+    "bytes": 6785,
+    "git_blob": "b6ab3cfa225657919831882d0ee203619e4dd33f",
+    "pinned_sha256": "34937028672a873b556069f0b0be425ed6d5fbace2db4c84456ef7ed68b1e0d5",
+    "read_ranges": [
+      [
+        1,
+        156
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh full supporting read in root turn",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "counted_as_primary": false
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "partitions": [
+    "baldrix:scripts/synthetic-fleet:001",
+    "baldrix:scripts/synthetic-fleet/syn-agent:001",
+    "baldrix:scripts/synthetic-fleet/syn-kds:001",
+    "baldrix:scripts/synthetic-fleet/syn-poslink:001",
+    "baldrix:scripts/synthetic-fleet/syn-tran:001",
+    "baldrix:scripts/synthetic-fleet/syn-wating:001"
+  ],
+  "scope_sha256": "5c6e255e7bd937af030cfe10bfddc6fa338ebaf6d7dd880627fa0bbceb2249bf",
+  "primary_files": 38,
+  "primary_bytes": 41587,
+  "fresh_supporting_full": 1,
+  "same_byte_reused_supporting_full": 15,
+  "original_manual_tests_passed": 5,
+  "original_cli_subprocesses": 2,
+  "original_observation_programs": 1,
+  "actual_claude_discussion_complete": true,
+  "whole_analysis_complete": false,
+  "adoption_approved": false,
+  "actual_claude_processes": 2
+}

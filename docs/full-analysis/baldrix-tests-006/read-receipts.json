@@ -1,0 +1,40 @@
+{
+  "primary": [
+    "b7f03a",
+    "d02c39",
+    "d02c39",
+    "716646",
+    "94f129",
+    "94f129",
+    "94f129",
+    "8b672e",
+    "a5fb4b",
+    "a5fb4b",
+    "a5fb4b",
+    "bc1236",
+    "bc1236",
+    "c739a9",
+    "c739a9",
+    "c739a9",
+    "e1dc4e",
+    "e1dc4e",
+    "e1dc4e",
+    "902623",
+    "902623",
+    "902623",
+    "902623",
+    "902623"
+  ],
+  "supporting_chunks": [
+    "145fc9",
+    "d61ffb",
+    "d8bf9e",
+    "c49977",
+    "1bdd5c",
+    "1c03c9",
+    "18092b"
+  ],
+  "initial_scope_instructions": "55a3f7",
+  "inventory_prior_snapshot": "481c6a",
+  "meaning": "Tool output chunk identifiers of fresh static reads; not upstream execution evidence; raw source not reproduced in public report."
+}

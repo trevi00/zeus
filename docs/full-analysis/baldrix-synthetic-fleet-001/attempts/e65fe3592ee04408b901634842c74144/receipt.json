@@ -1,0 +1,11 @@
+{
+  "status": "completed",
+  "returncode": 0,
+  "timed_out": false,
+  "process_tree_termination_verified": false,
+  "pid": 8280,
+  "container_cleanup_returncode": 0,
+  "completed_at": "2026-09-09T09:58:39.203150+00:00",
+  "stdout_sha256": "f5f959a9d777f9478b752f61b769cff6013d7a1548c799ed39d128188a0b3550",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

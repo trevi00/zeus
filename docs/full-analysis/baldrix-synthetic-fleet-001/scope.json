@@ -1,0 +1,203 @@
+{
+  "partitions": [
+    "baldrix:scripts/synthetic-fleet:001",
+    "baldrix:scripts/synthetic-fleet/syn-agent:001",
+    "baldrix:scripts/synthetic-fleet/syn-kds:001",
+    "baldrix:scripts/synthetic-fleet/syn-poslink:001",
+    "baldrix:scripts/synthetic-fleet/syn-tran:001",
+    "baldrix:scripts/synthetic-fleet/syn-wating:001"
+  ],
+  "paths": [
+    {
+      "path": "scripts/synthetic-fleet/FLEET-MAP.md",
+      "bytes": 3323,
+      "sha256": "f2a0f5e8097919c1bee7ced674e96e0f85e32a192618ebed06a73215a965778c"
+    },
+    {
+      "path": "scripts/synthetic-fleet/README.md",
+      "bytes": 4603,
+      "sha256": "a3397a06872fc665eb4b049d2ce194da543c2273249b8a4a3aa94e9abc55e14f"
+    },
+    {
+      "path": "scripts/synthetic-fleet/fleet.syn.yaml",
+      "bytes": 980,
+      "sha256": "83ae51d180b31ef30f63cf6a3fdf50fec55b4dd1bbeda47e968314bfe0869995"
+    },
+    {
+      "path": "scripts/synthetic-fleet/ontology.jsonl",
+      "bytes": 8937,
+      "sha256": "8225d08009cf3f08d7dc1946dfc310ef7710f38def5121648b58ea3a6c57718b"
+    },
+    {
+      "path": "scripts/synthetic-fleet/seams.syn.spec.yaml",
+      "bytes": 2737,
+      "sha256": "fa723d7e6c823aa50e8b89af716429f81b9a4b2a22c4c5c966587cb11133bd50"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/README.md",
+      "bytes": 806,
+      "sha256": "d8f11bbb46deda9d9993d8819530f7ecc76b5f3d14e51f13890c9560a224739c"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Data/socket_data.dart",
+      "bytes": 1487,
+      "sha256": "78b7eb8a75c4028f0d382466188d019e4cdc1966ecd661d7405659d9de699668"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/kds/kds_server_action.dart",
+      "bytes": 507,
+      "sha256": "59c50ce181ce5110029e4091ac0fbef95bac1effb6585ed658a220f2ac2af8d8"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/poslink/pos_link_client_action.dart",
+      "bytes": 488,
+      "sha256": "6094fd8f7f46d772284462fa593c8d50cb12dce9695131014942dde7052d0998"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/poslink/pos_link_server_action.dart",
+      "bytes": 563,
+      "sha256": "5c3814344602fc8f1977614e51726f2d36a0bb76105bf800075d89561557ecca"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/socket_action.dart",
+      "bytes": 248,
+      "sha256": "428584dd23dd13091f127faee96ec3b1759d9b7971f8d5906d18a454479b41bd"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/waiting/waiting_server_action.dart",
+      "bytes": 446,
+      "sha256": "0ac3056906cecc1d989c3f10ee9a083205f58f16f3525a55df1536318aa8280f"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/error/socket_error.dart",
+      "bytes": 694,
+      "sha256": "bf22fc0cbed8dd6b4ffd6e5e8f665c6579bcf072f5204022aa11879f65942dbd"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Table/database.dart",
+      "bytes": 1131,
+      "sha256": "ff94210d4cf48bcb748d79bcd6aac460a276f7a27780ab5f1f75a1473bfb59b7"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/protos/tran.proto",
+      "bytes": 472,
+      "sha256": "27304c48f348d73cdf41621403f933ec3f18a118b5bd19fe12d0feed62d6c8a1"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-agent/pubspec.yaml",
+      "bytes": 285,
+      "sha256": "f4185dd9f33aececabdf9ee661cde40d77f754ca8062eeebfb13677e4e59301e"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-kds/README.md",
+      "bytes": 843,
+      "sha256": "69647891ee75e3e6ec22991b11d071d8d5dfe3688c20a82bed2562a5c882b0cd"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-kds/lib/src/Common/Data/socket_data.dart",
+      "bytes": 1709,
+      "sha256": "d4ff3035b040afa570188c2a012884a180459781d60f0d269fd4c53e2247f950"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-kds/lib/src/Common/Enums/action/kds_client_action.dart",
+      "bytes": 513,
+      "sha256": "bfa7d45f07a150bae1339e7178900a558953df9c75577d926aecbce21d6b763c"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-kds/lib/src/Common/Enums/action/socket_action.dart",
+      "bytes": 248,
+      "sha256": "428584dd23dd13091f127faee96ec3b1759d9b7971f8d5906d18a454479b41bd"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-kds/pubspec.yaml",
+      "bytes": 355,
+      "sha256": "89456d97730cc3dce40ea6c0d8249c3f27fbb1aadc8d0cc0293c727cdbd4ef6f"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/README.md",
+      "bytes": 610,
+      "sha256": "de1530b508b0f32e9efa510372b486a41a2061b5140bf28a205efc7f85517501"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/build.gradle",
+      "bytes": 229,
+      "sha256": "c581f9a97c768534e496e0c6d3a7dbbbfb3f977ca517213fe7614bfcf264228c"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/protos/tran.proto",
+      "bytes": 470,
+      "sha256": "f3219653837fd9c4d427a7be922f8f20debf5f17afcef6169e46a37a937bc004"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/action/SocketAction.java",
+      "bytes": 275,
+      "sha256": "94204488486974480690c6fc87523f0182ad282a84553006cfb37a99f1b35095"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/action/SocketClientAction.java",
+      "bytes": 512,
+      "sha256": "35bdb06529c3bbf6aae40fc8fbd290694d9c41b6bbcd87228124b119e50983d4"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/action/SocketServerAction.java",
+      "bytes": 541,
+      "sha256": "bf325350a73759d4482434c7710655ada145e4f3b424fdb098b2e9ebc1248a40"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/error/ErrorType.java",
+      "bytes": 399,
+      "sha256": "8928d2247afb1d823dcbf8176fd50b1752a14753dcda35566b06b2abca22b7de"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/error/SocketError.java",
+      "bytes": 888,
+      "sha256": "f954c53d51ca5a71eab22e2e4635153b05fa86e08c5ae8c47eabd5c28ab7e167"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/socket/SocketData.java",
+      "bytes": 341,
+      "sha256": "32f657d5bf7aa5937834bd98cd6c0036d9694cb2cfe878c0d2a395c6bbb70d2b"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-tran/README.md",
+      "bytes": 482,
+      "sha256": "187cbc5cb947d6ea2cfc3418900a703365bc2a1e0538da9b2c1e970b51a006bc"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-tran/protos/tran.proto",
+      "bytes": 1665,
+      "sha256": "d8194ca3a41ce30653520f1a3ab5dcf17a3bc60dc3e145f7c6e54ec4ca652a98"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-wating/README.md",
+      "bytes": 652,
+      "sha256": "bda32411f84fe6d7c6f3684430506d176f58820d44672094a43d6677c3a317a5"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Data/socket_data.dart",
+      "bytes": 1446,
+      "sha256": "de801ba7413796b5e1856c94021b50651889d7bb006f2271515f0def7181fe6a"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Enums/action/socket_action.dart",
+      "bytes": 248,
+      "sha256": "428584dd23dd13091f127faee96ec3b1759d9b7971f8d5906d18a454479b41bd"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Enums/action/waiting_client_action.dart",
+      "bytes": 453,
+      "sha256": "8b2f7587b9d16da41928e1f58d4a3170687320b28541d82cc5c54b5c3a39fe1e"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Enums/error/waiting_error.dart",
+      "bytes": 624,
+      "sha256": "12ae41499c9eedab17bc87ab5ed3ac497e1f039596c7859b77b3d3b91cdac6df"
+    },
+    {
+      "path": "scripts/synthetic-fleet/syn-wating/pubspec.yaml",
+      "bytes": 377,
+      "sha256": "f6c28d4e118bbfd8299f082ce0a192f4e7fd1045cd5838696bd9e1e0a87fe992"
+    }
+  ],
+  "scope_sha256": "5c6e255e7bd937af030cfe10bfddc6fa338ebaf6d7dd880627fa0bbceb2249bf"
+}

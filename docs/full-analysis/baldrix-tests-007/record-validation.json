@@ -1,0 +1,25 @@
+{
+  "status": "pass",
+  "scope": "own_metadata_only",
+  "upstream_execution_count": 0,
+  "primary_count": 23,
+  "supporting_rows": 40,
+  "raw_sources_rechecked": 63,
+  "review_refs_checked": 112,
+  "all_artifact_hashes_match": true,
+  "utf8_lf_verified": true,
+  "korean_full_body_readback_chunk": "0d9114",
+  "final_changed_paragraph_readback": "this_command_output",
+  "ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check docs/full-analysis/baldrix-tests-007/record_review.py",
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "tool_chunk_id": "23bcdf",
+    "record_review_sha256": "9cc6b757d5795adf7de228515f01d4d7a51c6a8ab95c33da167bb80e61d4e869"
+  },
+  "metadata_recorder_tool_chunk_id": "48ed0a",
+  "review_sha256": "8790acdeadfd02709aa88d32a81e96ff0541cf706bb7204209859941c84bddf9",
+  "checkpoint_sha256": "ae12d7a51f5e2b2201031d8c9e2483417657cedbe812fb94b2c07be79698cc86",
+  "actual_claude_review_complete": false,
+  "adoption_approved": false
+}

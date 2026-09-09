@@ -1,0 +1,112 @@
+{
+  "partition": "baldrix:scripts/tests:008",
+  "scope_sha256": "a91f30a4c9492e6111bd7d29e2757415afa0ff5fdb050098c28674a0d7800292",
+  "bytes": 194042,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_mock_doc_drift.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_mock_review_skip.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_mock_review_stage.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_model_router.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_mutation.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_mutation_runner.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_mutation_safety.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_narration.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_no_degradation_gate.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_nodejs_scaffolder.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_on_notification_smoke.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_onboard_stack.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_ontology_query.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_openapi.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_operational_metrics.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_operator_ledger.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_optimize_baseline.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_orchestrator.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_ouroboros_e2e.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_outpos_guard.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_output_schema_audit.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_parser_equivalence.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_path_delegation.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_path_denylist.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_phase_detector.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/tests/test_phase_events.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

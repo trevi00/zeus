@@ -1,0 +1,27 @@
+{
+  "primary_body_remaining": [],
+  "supporting_trace_remaining": [
+    "Unlisted intervals and complete transitive consumer closure are not read here.",
+    "Node mergeOneWorktree/helpers and remaining node:test scenarios 246-444.",
+    "Milestone self-check full bodies, full L1/cache/atomic/token/cron scheduling.",
+    "Provider and evaluator qualification, real prompt dispatch and convergence.",
+    "Notification delivery, concurrency, interrupted writes and rollback effects.",
+    "Multi-phase progress, approval carry, latest checklist denominator, duplicate L2 edges and dirty mirror baseline require separate verification.",
+    "Actual Claude independent review, licenses, Windows/Linux/WSL execution.",
+    "Actual service/device/replay, alpha/live deployment and human acceptance.",
+    "Zeus PG/source implementation adoption and equivalence."
+  ],
+  "upstream_executions": 0,
+  "upstream_imports": 0,
+  "probes": 0,
+  "network_calls": 0,
+  "installs": 0,
+  "model_calls": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "blocked_probe_retried": false,
+  "full_analysis_complete": false,
+  "transitive_closure_complete": false,
+  "adopted": false,
+  "review_ref": "docs/full-analysis/baldrix-tests-007/review.md#unknowns"
+}

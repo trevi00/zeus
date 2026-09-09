@@ -1,0 +1,762 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/FLEET-MAP.md",
+    "bytes": 3323,
+    "git_blob": "8065c9e565bcf07c2ae8b9bd54a4d704d2fb464e",
+    "pinned_sha256": "f2a0f5e8097919c1bee7ced674e96e0f85e32a192618ebed06a73215a965778c",
+    "read_ranges": [
+      [
+        1,
+        63
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/README.md",
+    "bytes": 4603,
+    "git_blob": "3ea0f3fbc8bed970aea8b862407d42cd93782c83",
+    "pinned_sha256": "a3397a06872fc665eb4b049d2ce194da543c2273249b8a4a3aa94e9abc55e14f",
+    "read_ranges": [
+      [
+        1,
+        68
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/fleet.syn.yaml",
+    "bytes": 980,
+    "git_blob": "0e417448dfae37775552b0582091edac746c3896",
+    "pinned_sha256": "83ae51d180b31ef30f63cf6a3fdf50fec55b4dd1bbeda47e968314bfe0869995",
+    "read_ranges": [
+      [
+        1,
+        15
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/ontology.jsonl",
+    "bytes": 8937,
+    "git_blob": "0d035b4323c228cda7eede7c46c0bf5bf46075d5",
+    "pinned_sha256": "8225d08009cf3f08d7dc1946dfc310ef7710f38def5121648b58ea3a6c57718b",
+    "read_ranges": [
+      [
+        1,
+        106
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/seams.syn.spec.yaml",
+    "bytes": 2737,
+    "git_blob": "a3c637fd50327307b5ae6d1280830b8715790373",
+    "pinned_sha256": "fa723d7e6c823aa50e8b89af716429f81b9a4b2a22c4c5c966587cb11133bd50",
+    "read_ranges": [
+      [
+        1,
+        51
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/README.md",
+    "bytes": 806,
+    "git_blob": "cea9b496f1cbb205e49676f34fb9186bcbd0d0d5",
+    "pinned_sha256": "d8f11bbb46deda9d9993d8819530f7ecc76b5f3d14e51f13890c9560a224739c",
+    "read_ranges": [
+      [
+        1,
+        3
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Data/socket_data.dart",
+    "bytes": 1487,
+    "git_blob": "7625bf607abbafa3b2b6ecc761f4203c162344a2",
+    "pinned_sha256": "78b7eb8a75c4028f0d382466188d019e4cdc1966ecd661d7405659d9de699668",
+    "read_ranges": [
+      [
+        1,
+        54
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/kds/kds_server_action.dart",
+    "bytes": 507,
+    "git_blob": "188f71b4223ea2446cd8b34bbc598138eb05f127",
+    "pinned_sha256": "59c50ce181ce5110029e4091ac0fbef95bac1effb6585ed658a220f2ac2af8d8",
+    "read_ranges": [
+      [
+        1,
+        20
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/poslink/pos_link_client_action.dart",
+    "bytes": 488,
+    "git_blob": "65755a3514caf50198c23c96f5519fcfde9070e5",
+    "pinned_sha256": "6094fd8f7f46d772284462fa593c8d50cb12dce9695131014942dde7052d0998",
+    "read_ranges": [
+      [
+        1,
+        20
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/poslink/pos_link_server_action.dart",
+    "bytes": 563,
+    "git_blob": "f35a85e787345da71881c7938b7495636fc4fb2a",
+    "pinned_sha256": "5c3814344602fc8f1977614e51726f2d36a0bb76105bf800075d89561557ecca",
+    "read_ranges": [
+      [
+        1,
+        21
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/socket_action.dart",
+    "bytes": 248,
+    "git_blob": "4accb5632b7f7c7f32be0a7c1a8ce95ed6317198",
+    "pinned_sha256": "428584dd23dd13091f127faee96ec3b1759d9b7971f8d5906d18a454479b41bd",
+    "read_ranges": [
+      [
+        1,
+        5
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/action/waiting/waiting_server_action.dart",
+    "bytes": 446,
+    "git_blob": "6f9f3c11b38101e5d28a934b9822749de0343f97",
+    "pinned_sha256": "0ac3056906cecc1d989c3f10ee9a083205f58f16f3525a55df1536318aa8280f",
+    "read_ranges": [
+      [
+        1,
+        19
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Enums/error/socket_error.dart",
+    "bytes": 694,
+    "git_blob": "4c3dd87c9ea4ad3edf94edf0d80acb3b6d3fcf3a",
+    "pinned_sha256": "bf22fc0cbed8dd6b4ffd6e5e8f665c6579bcf072f5204022aa11879f65942dbd",
+    "read_ranges": [
+      [
+        1,
+        21
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/lib/src/Common/Table/database.dart",
+    "bytes": 1131,
+    "git_blob": "9224bda76292569a02a55d3fc9afe6d9f6a29e76",
+    "pinned_sha256": "ff94210d4cf48bcb748d79bcd6aac460a276f7a27780ab5f1f75a1473bfb59b7",
+    "read_ranges": [
+      [
+        1,
+        35
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/protos/tran.proto",
+    "bytes": 472,
+    "git_blob": "767d1e201616514a27367c3ac043815d2635774d",
+    "pinned_sha256": "27304c48f348d73cdf41621403f933ec3f18a118b5bd19fe12d0feed62d6c8a1",
+    "read_ranges": [
+      [
+        1,
+        17
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-agent/pubspec.yaml",
+    "bytes": 285,
+    "git_blob": "48d6586e7eed1d0ba38c8878cf88cec5f3758ab5",
+    "pinned_sha256": "f4185dd9f33aececabdf9ee661cde40d77f754ca8062eeebfb13677e4e59301e",
+    "read_ranges": [
+      [
+        1,
+        14
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-kds/README.md",
+    "bytes": 843,
+    "git_blob": "49734ffed8ed12e9eeff5a0973cea20c77977b5a",
+    "pinned_sha256": "69647891ee75e3e6ec22991b11d071d8d5dfe3688c20a82bed2562a5c882b0cd",
+    "read_ranges": [
+      [
+        1,
+        3
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-kds/lib/src/Common/Data/socket_data.dart",
+    "bytes": 1709,
+    "git_blob": "2b5fa7bdb53e48154ecce162661a54a655a095d1",
+    "pinned_sha256": "d4ff3035b040afa570188c2a012884a180459781d60f0d269fd4c53e2247f950",
+    "read_ranges": [
+      [
+        1,
+        60
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-kds/lib/src/Common/Enums/action/kds_client_action.dart",
+    "bytes": 513,
+    "git_blob": "750c636c882392e5ae71eceaa5558bb9186c59dd",
+    "pinned_sha256": "bfa7d45f07a150bae1339e7178900a558953df9c75577d926aecbce21d6b763c",
+    "read_ranges": [
+      [
+        1,
+        20
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-kds/lib/src/Common/Enums/action/socket_action.dart",
+    "bytes": 248,
+    "git_blob": "4accb5632b7f7c7f32be0a7c1a8ce95ed6317198",
+    "pinned_sha256": "428584dd23dd13091f127faee96ec3b1759d9b7971f8d5906d18a454479b41bd",
+    "read_ranges": [
+      [
+        1,
+        5
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-kds/pubspec.yaml",
+    "bytes": 355,
+    "git_blob": "2ffeb9248caa9889f174946174533ff0880741e1",
+    "pinned_sha256": "89456d97730cc3dce40ea6c0d8249c3f27fbb1aadc8d0cc0293c727cdbd4ef6f",
+    "read_ranges": [
+      [
+        1,
+        19
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/README.md",
+    "bytes": 610,
+    "git_blob": "22b4c2102ce9a7ae0ad69196707e8bd7f4e8dd37",
+    "pinned_sha256": "de1530b508b0f32e9efa510372b486a41a2061b5140bf28a205efc7f85517501",
+    "read_ranges": [
+      [
+        1,
+        3
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/build.gradle",
+    "bytes": 229,
+    "git_blob": "5a9d2a22fbc3a6a040eb4803efdee064a1272bc4",
+    "pinned_sha256": "c581f9a97c768534e496e0c6d3a7dbbbfb3f977ca517213fe7614bfcf264228c",
+    "read_ranges": [
+      [
+        1,
+        18
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/protos/tran.proto",
+    "bytes": 470,
+    "git_blob": "0cd5a0686ee0e51ecaf874cd0a177cd20b5a04db",
+    "pinned_sha256": "f3219653837fd9c4d427a7be922f8f20debf5f17afcef6169e46a37a937bc004",
+    "read_ranges": [
+      [
+        1,
+        20
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/action/SocketAction.java",
+    "bytes": 275,
+    "git_blob": "8ac3ebfeec9669d5395d4b8db327085d2d102166",
+    "pinned_sha256": "94204488486974480690c6fc87523f0182ad282a84553006cfb37a99f1b35095",
+    "read_ranges": [
+      [
+        1,
+        7
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/action/SocketClientAction.java",
+    "bytes": 512,
+    "git_blob": "1461f6d0c8b7425a460571d046b190723429032e",
+    "pinned_sha256": "35bdb06529c3bbf6aae40fc8fbd290694d9c41b6bbcd87228124b119e50983d4",
+    "read_ranges": [
+      [
+        1,
+        18
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/action/SocketServerAction.java",
+    "bytes": 541,
+    "git_blob": "0e608e6ea8248edfc3adffc664c13cc6696436f4",
+    "pinned_sha256": "bf325350a73759d4482434c7710655ada145e4f3b424fdb098b2e9ebc1248a40",
+    "read_ranges": [
+      [
+        1,
+        21
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/error/ErrorType.java",
+    "bytes": 399,
+    "git_blob": "4ba76e2fa3527184aab77e0825f79be9c6aa5c68",
+    "pinned_sha256": "8928d2247afb1d823dcbf8176fd50b1752a14753dcda35566b06b2abca22b7de",
+    "read_ranges": [
+      [
+        1,
+        13
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/enums/error/SocketError.java",
+    "bytes": 888,
+    "git_blob": "f0a13dbc5c1230bc43cec7abc991f59f73f4bf35",
+    "pinned_sha256": "f954c53d51ca5a71eab22e2e4635153b05fa86e08c5ae8c47eabd5c28ab7e167",
+    "read_ranges": [
+      [
+        1,
+        31
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-poslink/src/main/java/kr/outlier/poslink/socket/SocketData.java",
+    "bytes": 341,
+    "git_blob": "4f016324acab4d6ee201a8571b59f7c4fee704c8",
+    "pinned_sha256": "32f657d5bf7aa5937834bd98cd6c0036d9694cb2cfe878c0d2a395c6bbb70d2b",
+    "read_ranges": [
+      [
+        1,
+        13
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-tran/README.md",
+    "bytes": 482,
+    "git_blob": "12458cce47d04f07af8726ee2b975aa202ac6197",
+    "pinned_sha256": "187cbc5cb947d6ea2cfc3418900a703365bc2a1e0538da9b2c1e970b51a006bc",
+    "read_ranges": [
+      [
+        1,
+        3
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-tran/protos/tran.proto",
+    "bytes": 1665,
+    "git_blob": "d1dce4fa40f6d784066c07e042b61eff193bb734",
+    "pinned_sha256": "d8194ca3a41ce30653520f1a3ab5dcf17a3bc60dc3e145f7c6e54ec4ca652a98",
+    "read_ranges": [
+      [
+        1,
+        41
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-wating/README.md",
+    "bytes": 652,
+    "git_blob": "236695a4b1eb080558600b5eeff9a37878ac8f52",
+    "pinned_sha256": "bda32411f84fe6d7c6f3684430506d176f58820d44672094a43d6677c3a317a5",
+    "read_ranges": [
+      [
+        1,
+        3
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Data/socket_data.dart",
+    "bytes": 1446,
+    "git_blob": "dc1139accaa16bb8aa1f2aa2e4e99a6fd912438c",
+    "pinned_sha256": "de801ba7413796b5e1856c94021b50651889d7bb006f2271515f0def7181fe6a",
+    "read_ranges": [
+      [
+        1,
+        54
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Enums/action/socket_action.dart",
+    "bytes": 248,
+    "git_blob": "4accb5632b7f7c7f32be0a7c1a8ce95ed6317198",
+    "pinned_sha256": "428584dd23dd13091f127faee96ec3b1759d9b7971f8d5906d18a454479b41bd",
+    "read_ranges": [
+      [
+        1,
+        5
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Enums/action/waiting_client_action.dart",
+    "bytes": 453,
+    "git_blob": "5f23ae4e8161984a491c05898adb4d4b933cfea7",
+    "pinned_sha256": "8b2f7587b9d16da41928e1f58d4a3170687320b28541d82cc5c54b5c3a39fe1e",
+    "read_ranges": [
+      [
+        1,
+        19
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-wating/lib/src/Common/Enums/error/waiting_error.dart",
+    "bytes": 624,
+    "git_blob": "11e08dd35c949538e243a5d6e40bb6bdfdd423b0",
+    "pinned_sha256": "12ae41499c9eedab17bc87ab5ed3ac497e1f039596c7859b77b3d3b91cdac6df",
+    "read_ranges": [
+      [
+        1,
+        14
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/synthetic-fleet/syn-wating/pubspec.yaml",
+    "bytes": 377,
+    "git_blob": "d056808c79f4f9358b716afa92d3e60ba93b4468",
+    "pinned_sha256": "f6c28d4e118bbfd8299f082ce0a192f4e7fd1045cd5838696bd9e1e0a87fe992",
+    "read_ranges": [
+      [
+        1,
+        20
+      ]
+    ],
+    "read_extent": "full_body",
+    "read_basis": "fresh complete body read by root before actual Claude result",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-synthetic-fleet-001/resolution.md",
+    "whole_analysis_complete": false,
+    "adoption_approved": false
+  }
+]
