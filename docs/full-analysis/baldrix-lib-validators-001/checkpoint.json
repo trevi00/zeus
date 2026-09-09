@@ -1,0 +1,19 @@
+{
+  "partition": "baldrix:scripts/lib/validators:001",
+  "scope_sha256": "472776938cb3976606c189d8a3817afc613c25029036b6a11f0fd390309c035b",
+  "primary_count": 5,
+  "primary_bytes": 39639,
+  "primary_body_read_complete": true,
+  "root_supporting_count": 7,
+  "root_supporting_fresh_full": 4,
+  "root_supporting_fresh_partial": 2,
+  "root_supporting_joined_current_prior_full": 1,
+  "original_unit_modules_executed": 4,
+  "original_unit_tests_passed": 61,
+  "original_component_programs_completed": 1,
+  "actual_provider_model_invocations": 0,
+  "execution_limits": "Actual original functions and isolated files with synthetic schemas/summaries/evidence. No method/clock/subprocess/provider patch; no historical claim truth, host hook/ledger, model/human/nativeWindowsWSL acceptance.",
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false
+}

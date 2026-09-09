@@ -1,0 +1,114 @@
+# Baldrix `scripts/lib/validators/` 독립 정적 리뷰
+
+**핀**: `cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2` · **읽은 본문 5개**: `__init__.py`(56L), `structural.py`(293L), `semantic.py`(293L), `cross_ref.py`(182L), `boilerplate.py`(253L)
+**방법**: Read/Grep/Glob 전용. 실행·import·쓰기·네트워크 없음. 제시된 39639 bytes / SHA256 `4727769...c035b`는 **검증하지 않음**(해시 계산은 실행 필요). 다른 리뷰어 보고서는 읽지 않음. 소스 내 주석/독스트링은 데이터로만 취급.
+
+---
+
+## 1. 실제 스키마 서브셋 (structural.py Layer 1)
+
+**F-01 (High) — 미지원 키워드가 무경고로 통과.**
+지원: `type/required/properties/additionalProperties/items/enum/minLength/maxLength/minimum/maximum`. 미지원: `pattern`, `format`, `minItems/maxItems`, `uniqueItems`, `anyOf/oneOf/allOf/not`, `patternProperties`, `$ref`, tuple 형식 `items: [...]`(`structural.py:170`이 dict만 수용).
+비대칭이 핵심입니다 — 알 수 없는 **타입명**은 오류로 보고(`:112`)하지만 알 수 없는 **키워드**는 조용히 무시됩니다. 작성자가 `"pattern": "^[a-z]+$"`나 `"minItems": 1`을 쓰면 강제력 0인데 진단도 0이라 "검증됨"이라는 거짓 확신이 생깁니다. 최소한 미인식 키워드에 대해 진단 문자열 1줄을 누적하거나, 서브셋 경계를 검사하는 별도 린트가 필요합니다.
+
+**F-02 (High) — 스키마 작성자 오류가 에이전트 breaker에 청구됨.**
+`structural.py:112`(unknown type)과 `:125`(schema node가 dict 아님)은 **스키마 쪽 결함**인데 `SCHEMA_VIOLATION`으로 반환되고, `agent_outcome_audit.py:247→406→424`에서 `CompositeBreaker.record_failure()`로 이어집니다. 즉 `agents/<type>.md` frontmatter의 스키마 오타가 해당 에이전트의 차단기를 트립 방향으로 밉니다.
+같은 모듈이 Layer 2에서는 정확히 반대 원칙을 이미 채택하고 있습니다 — `:216-219`은 `OSError`를 "env brokenness, not a fake claim"이라며 FABRICATION에서 분리합니다. 그 원칙이 Layer 1에는 적용되지 않은 **모듈 내부 비일관**입니다. 별도 모드(예: `schema_config_error`)로 분리하고 breaker 집계에서 제외하는 것이 맞습니다.
+
+**F-03 (Low)** — `additionalProperties: false`는 `properties`가 dict일 때만 동작(`:163`). `properties` 없는 `additionalProperties:false` 스키마는 무효과.
+**F-04 (Low)** — `enum` 비교가 `in`(=`==`) 기반이라 `True`/`1`, `1`/`1.0`이 동치 취급. `_TYPE_PREDICATES`는 bool/int를 엄격히 구분(`:97-99`)하는데 enum만 느슨 — 일관성 결여.
+
+## 2. Evidence 동일성과 경로
+
+**F-05 (High) — evidence 경로가 어떤 루트에도 고정(anchor)되지 않음.**
+`os.stat(fp)`(`structural.py:213`)와 `open(path,"rb")`(`semantic.py:178`)는 훅 프로세스의 **CWD** 기준으로 해석됩니다. 훅은 chdir하지 않고, `PROJECT_ROOT`는 ledger에만 쓰입니다(`agent_outcome_audit.py:135`). 서브에이전트가 다른 루트 기준 상대경로를 보고하면 `FileNotFoundError` → `EVIDENCE_FABRICATION` → breaker 실패 + `verified_by="self_only"`. **경로 해석 불일치가 위조 고발로 승격**됩니다. `realpath` 정규화도, 프로젝트 루트 포함 검사도 없습니다.
+
+**F-06 (Med) — "파일이 존재한다"는 조건은 머신 상의 임의 파일로 충족됨.**
+`C:\Windows\...`나 `/etc/passwd`도 Layer 2를 통과합니다. 이는 D2 self_doubt가 지적한 바로 그 구멍이고, D2.5/2.6/2.7이 부분 완화하려는 대상입니다. 다만 containment 검사(evidence는 repo 내부여야 함)는 **결정론적이고 LLM 불필요**하므로 invariant를 깨지 않고 지금 추가 가능한 가장 값싼 강화입니다. 완화 레이어들이 임의 경로의 내용을 읽지만 발췌를 영속화하진 않는 점은 확인했습니다(길이/비율만 기록).
+
+**F-07 (Med) — 디렉터리 evidence가 전 레이어를 조용히 통과.**
+`os.stat(dir)`는 성공 → Layer 2 clean. `open(dir,'rb')`는 OSError → semantic은 err 기록 후 항목 제외, boilerplate는 파일명 불일치 시 무음 skip(`boilerplate.py:236`). 결과적으로 아무 신호도 남지 않습니다.
+
+**F-08 (Med) — 중복 경로가 dict에서 축약되어 거짓 cherry-picked 생성.**
+`cross_ref.py:153,161,165`의 `file_overlaps`는 **fp를 키로 하는 dict**입니다. 같은 파일을 2회 나열하면 `len(paths)>=2` 게이트(`:150`)는 통과하지만 dict 엔트리는 1개 → `sorted_ratios` 길이 1 → `rest_max=0.0`(`:174`) → `top>=0.5`이면 `SUSPICIOUS_CHERRY_PICKED`. 정직한 요약 + 중복 나열만으로 상위 2등급 낙인이 찍힙니다.
+읽기 실패 파일이 `file_overlaps`에서 **제외**되는 경로(`:156-158`)도 같은 축약을 일으킵니다.
+
+**F-09 (Low)** — 동일 evidence 파일을 훅 1회당 최대 3회 재읽기(semantic / cross_ref consensus / boilerplate). 캐시 없음. 4096B 상한 덕에 치명적이진 않으나 evidence N개 × 3 syscall 세트.
+
+## 3. 어휘/의미 계산과 분모·미지·오류 처리
+
+**F-10 (High) — 분모는 요약 전체, 분자는 파일 앞 4096바이트.**
+`semantic.py:277`의 `ratio = |matched| / |summary_tokens|`에서 파일 측 토큰은 `_read_file_head(fp, 4096)` 발췌에서만 나옵니다(`:171-180`). 호출부는 `max_file_bytes`를 넘기지 않아(`agent_outcome_audit.py:303`) 항상 4096B입니다. 관련 내용이 4096바이트 뒤에 있는 큰 소스 파일은 overlap 0 → **`STRONG_SUSPICION`** → `evidence_validator_lexical_strong_suspicion` 등급. 즉 **파일이 클수록 거짓 고발 확률이 오르는** 구조입니다. UTF-8 한국어는 3바이트/자라 실질 ~1365자로 더 취약합니다. 절단 발생 여부가 `EvidenceBreakdown`에 기록되지 않아 소비자가 구분할 수도 없습니다.
+
+**F-11 (High) — 빈 파일 행이 "채점된 0.0"과 구분 불가.**
+`semantic.py:269-272`는 빈 파일에 대해 `overlap_ratio=0.0` 행을 `evidence_breakdown`에 넣으면서 `saw_signal`은 세우지 않습니다(=verdict 미반영). 의도는 옳지만 **행에 플래그가 없습니다**. 독스트링이 명시한 소비자(calibration proposer, grafana)가 `evidence_breakdown[].overlap_ratio`를 집계하면 이 미채점 0.0이 진짜 0.0(강한 의심)과 합산되어 분포를 아래로 왜곡합니다. `scored: bool` 또는 별도 verdict 필드가 필요합니다.
+
+**F-12 (Med) — 빈/무토큰 파일 처리가 레이어 간 상반됨.**
+같은 조건에 대해 semantic은 면책(채점 제외), cross_ref는 `0.0`으로 **채점에 포함**(`cross_ref.py:160-162`), boilerplate는 유죄 추정(`_content_is_boilerplate`가 빈 문자열에 True, `:166-167`). 결과: 정당한 evidence 묶음에 `.gitkeep` 하나가 섞이면 consensus에서 top 0.6 / rest_max 0.0 → **거짓 cherry-picked**. 세 레이어가 동일 사실을 세 방향으로 해석합니다.
+
+**F-13 (Med) — 짧은 요약에서 두 레이어가 서로 반대 방향으로 작동.**
+`min_summary_tokens=3`에서 토큰 3개짜리 요약은 (a) 파일과 1개만 겹쳐도 ratio 0.33 ≥ 0.20 → semantic **CLEAN**(회피가 매우 쉬움), 동시에 (b) 3개가 모두 프롬프트에 있으면 ratio 1.0 → **STRONG_PLAGIARIZED**(최상위 등급). 같은 변수(요약 길이)에 대해 공동 캘리브레이션 없이 상반된 압력이 걸립니다. 0.90 임계에 대해 최소 3토큰 게이트는 지나치게 낮습니다.
+
+**F-14 (Med) — plagiarized 지표가 프롬프트 길이에 대해 방향이 뒤집혀 있음.**
+`check_summary_vs_prompt`는 하한(`<5` 토큰 skip, `:107`)만 두고 상한 보정이 없습니다. 프롬프트가 길고 상세할수록 토큰 집합이 커져 정당한 요약이 부분집합이 될 확률이 오르고 overlap이 올라갑니다. 즉 **더 잘 명세된 작업일수록 표절로 보입니다.** Jaccard나 프롬프트 IDF 보정 없이 단방향 포함률만 쓰는 것이 원인입니다.
+
+**F-15 (Med) — `_tokenize_cjk`의 짧은 run 분기는 도달 불가 + 독스트링 반증.**
+`semantic.py:147-153`: `len(run) < 2`이면 `if len(run)>=1 and ngram_size>=2 and len(run)>=1: continue`가 항상 참(정규식이 `+`이므로 len≥1) → `tokens.add(run)`(`:153`)은 기본 `ngram_size=2`에서 **절대 실행되지 않습니다**. 독스트링의 "짧은 run은 통째로 token (예: 외자 한자어)"은 실제 동작과 반대이고, 인라인 주석 자체도 "통째로 보존"과 "skip"으로 자기모순입니다. `test_cjk_short_run_is_not_tokenized_for_noise_reduction`은 *skip 쪽*을 고정하고 있으므로 죽은 코드와 독스트링을 지우는 방향이 맞습니다.
+
+**F-16 (Low)** — `min_token_chars` 파라미터가 사실상 무효. `_TOKEN_RE = [A-Za-z][A-Za-z0-9_]{2,}`가 이미 3자 하한을 강제하므로(`:64`) `min_chars=2`를 넘겨도 아무 변화가 없습니다. 계약과 구현 불일치.
+**F-17 (Low)** — `가-힯`(AC00–D7AF)은 한글 음절 끝(D7A3)을 넘어 Jamo Ext-B를 포함. 반대로 CJK Ext-A(3400–4DBF), 호환 자모, 반각 가타카나는 미포함.
+**F-18 (Low)** — `semantic.py:43`의 `import os`는 **미사용**(grep 확인: 모듈 내 `os.` 사용 0건).
+
+## 4. Boilerplate 휴리스틱
+
+**F-19 (Med) — 정당한 작업의 주 산출물이 boilerplate로 분류됨.**
+`_BOILERPLATE_BASENAMES`(`:57-84`)에 `requirements.txt`, `setup.cfg`, `changelog.md`, `.gitignore`, `__init__.py`가 들어 있습니다. "의존성 X 추가", "CHANGELOG 갱신" 같은 작업에서 **정확히 그 파일이 정답 evidence**입니다. `requirements.txt`가 100자 미만이면(흔함) filename+content 동시 매치 → `BOILERPLATE` → `evidence_validator_boilerplate_evidence` 등급이 semantic clean보다 **상위**로 부여됩니다. 모듈이 성실하게 나열한 "검출 불가능한 클래스"(`:26-29`) 목록에 이 거짓양성 클래스는 빠져 있습니다. 파일명 매치만으로 유죄를 올리기보다 `filename_match`는 LIKELY 상한으로 두는 편이 낫습니다.
+
+**F-20 (Low)** — `len(stripped) < 100` 단독 규칙(`:168`)은 짧은 config·작은 테스트도 content_match로 만듭니다. 다만 filename 불일치 시 LIKELY에 머물러 등급이 붙지 않으므로 영향은 이벤트 노이즈 수준.
+**F-21 (Low)** — `_LOCK_FILE_RE`는 `re.match`+basename이라 두 번째 대안의 `^`가 잉여이고, 첫 대안 `.*\.lock$`가 `myfeature.lock` 같은 도메인 파일도 포착.
+
+## 5. 호출부 해석과 advisory vs 승인 권한
+
+**가드 유지 확인 (양호).** 세 완화 레이어는 `failure_mode` 산출에 전혀 관여하지 않습니다 — `agent_outcome_audit.py:406`은 `_resolve_failure_mode(d1_verdict, d2_result)`만 호출하고, breaker 경로(`:410-426`)는 그 결과에만 의존합니다. "advisory only, breaker trip 안 함"이라는 선언이 코드로 실제 지켜집니다. `__init__.py`의 NO-LLM/NO-embedder invariant도 4개 모듈 모두 순수 stdlib(`re`/`set`/`os.path`/`open`)로 준수합니다. **이 가드들은 그대로 보존해야 합니다.**
+
+**F-22 (High) — 약한 cross_ref 신호가 강한 boilerplate/semantic 신호를 가림.**
+`_resolve_verified_by`(`:161-227`)는 `SUSPICIOUS_PLAGIARIZED`를 포함한 **모든** cross_ref 비-clean 등급을 boilerplate/semantic보다 먼저 반환합니다(`:194-199`). 그런데 같은 함수 독스트링의 우선순위 요약(`:165-167`)은 "cross_ref strong > boilerplate strong > semantic strong > **cross_ref weak** > ..."로 적혀 있어 코드와 어긋납니다(아래 열거형 목록 `:169-176`은 코드와 일치). F-13/F-14로 cross_ref 약등급이 쉽게 오발되는 점을 합치면, **거짓 표절 신호 하나가 진짜 boilerplate 위조 신호를 ledger에서 덮어씁니다.** 등급이 단일 문자열 하나뿐이라 신호가 손실되는 구조 자체가 원인 — 다중 신호를 리스트로 병기하는 편이 안전합니다.
+
+**F-23 (Med) — `LIKELY_BOILERPLATE`가 긍정 등급에 흡수됨.**
+LIKELY는 전용 등급이 없어 fall-through(`:184` 주석대로)하고, 그 아래 semantic이 CLEAN이면 최종 `verified_by`는 `evidence_validator_lexical_clean`입니다. 즉 **의심 신호가 있는 케이스가 ledger에 "clean"으로 기록**됩니다. 이벤트(`:369`)는 별도로 나가지만 ledger만 읽는 소비자에게는 보이지 않습니다.
+
+**F-24 (Med) — `downstream_used`가 상수로 하드코딩됨.**
+`agent_outcome_audit.py:462`에서 `"downstream_used": True` 고정. `operator_ledger.py:264`의 `ledger.verification_gap` 부수채널은 `verified_by=="self_only" AND downstream_used`로 발화하므로, 실제로는 **"D2 실패"의 동의어**로 축소되어 `failure_modes`와 중복 신호가 됩니다. 필드의 정의된 의미("하류에서 소비되었는가")를 훅이 알 수 없는데 참으로 단정하는 것은 evidence 동일성 관점에서 ledger 신뢰도를 갉아먹습니다. `null`(unknown)이 정직한 값입니다. 같은 맥락으로 `critic_verdict`/`replay_hash`/`retry_count`도 상수 — 특히 D1 arm(b)가 실제 replay를 수행(`evidence_fab.py:152-164`)하는데 `replay_hash`는 계속 `None`입니다.
+
+**F-25 (Low) — `success`의 해석 위험.** `success = failure_mode is None`(`:452`)이므로 STRONG_PLAGIARIZED + BOILERPLATE + STRONG_SUSPICION이 동시에 붙은 레코드도 `success: true`입니다. advisory 설계상 일관되지만, `success`만 집계하는 캘리브레이션 소비자는 위조 의심 실행을 성공으로 셉니다.
+
+**F-26 (Low) — 패키지 정책문이 실제 범위와 어긋남.** `__init__.py:9-10`은 허용 대상을 "filesystem stat, structural schema shape, declared tool allowlist"로 열거하지만 D2.5/2.6/2.7은 **파일 내용을 읽습니다**. 결정론 invariant는 깨지지 않았으나 열거된 범위는 갱신되지 않았습니다. 헤더도 여전히 `(v15.10 D2)`인데 v15.25 심볼을 export합니다.
+**F-27 (Low) — private 심볼의 모듈 간 결합.** `cross_ref.py:39`와 `boilerplate.py:45`가 semantic의 `_read_file_head/_tokenize/_extract_summary/_iter_evidence_paths`를 import합니다. semantic의 "Public API" 독스트링에 없는 이름들이라 리팩터 시 두 모듈이 조용히 깨집니다. 공유 내부 모듈로 승격하거나 패키지-내부 계약으로 명문화가 필요합니다.
+
+## 6. 테스트가 실제로 측정하는 것
+
+테스트 이름/개수는 수용 근거가 아니므로 **무엇이 고정되어 있는지**만 봤습니다(함수 시그니처 라인만 열람, 본문 미열람).
+`test_structural.py` 21개, `test_semantic.py` 18개, `test_cross_ref.py` 11개, `test_boilerplate.py` 12개, `test_agent_outcome_audit.py` 9개.
+
+미측정으로 확인된 항목: 중복 evidence 경로(F-08), `max_file_bytes` 절단 경계(F-10), consensus 내 빈 파일(F-12), 상대경로/CWD 해석(F-05), 디렉터리 evidence(F-07), 미지원 스키마 키워드(F-01), 스키마 작성자 오류의 breaker 귀속(F-02). `verified_by` 우선순위는 `test_plagiarized_summary_records_cross_ref_verdict_in_verified_by` **1건**뿐이며, F-22의 충돌 조합(cross_ref 약 vs boilerplate 강)과 boilerplate 등급 자체는 훅 레벨에서 고정되어 있지 않습니다. 임계 상수는 어떤 레지스트리에도 없습니다 — grep 결과 `SUSPICION_THRESHOLD` 등은 자기 테스트 1곳 외 참조 0건이며, 트리에 존재하는 `threshold_registry_locked.py`의 관리 대상이 아닙니다(레지스트리 본문 미열람).
+
+---
+
+## 우선순위 권고
+
+1. **F-02** 스키마 작성자 오류를 breaker 귀속에서 분리 (Layer 2가 이미 쓰는 원칙을 Layer 1에 적용).
+2. **F-10 + F-11** 절단 사실과 미채점 사실을 `EvidenceBreakdown`에 명시. 캘리브레이션 소비자가 현재 오염된 분모를 보고 있습니다.
+3. **F-22** `verified_by` 단일 문자열을 신호 리스트로 전환하거나, 최소한 코드와 독스트링 우선순위를 일치시킬 것.
+4. **F-05/F-06** evidence 경로를 프로젝트 루트에 고정 + containment 검사. LLM 없이 가능한 최대 강화이며 self_doubt 구멍에 직접 대응합니다.
+5. **F-08/F-12** consensus의 경로 중복 축약과 빈 파일 채점 정책 정리.
+6. **F-15/F-18** 죽은 CJK 분기와 미사용 import 제거 + 독스트링 정정.
+
+## 명시적 미열람 범위 (unread scope)
+
+- 제공된 39639 bytes / SHA256은 미검증(해시 계산 불가). 읽은 5개 파일 합계는 1077행.
+- 테스트 4개 + `test_agent_outcome_audit.py`는 **함수 시그니처 라인만** grep으로 확인, 본문 assert 미열람. `test_import_layering.py`, `test_operator_ledger.py` 미열람.
+- `operator_ledger.py`는 grep 발췌(`:22-34, 211-221, 237-270`)만 열람. 전체 미열람.
+- `agent_outcome_audit.py`, `observers/evidence_fab.py`는 전문 열람.
+- 미열람: `cli/observe.py`, `cli/sensor_anomaly.py`, `cli/output_schema_migrate.py`, `lib/observers/__init__.py`, `lib/frontmatter.py`, `lib/paths.py`, `lib/event_taxonomy.py`, `lib/breakers/composite.py`, `scripts/validators/threshold_registry_locked.py`, `atlas/` 전체, agent frontmatter(`.md`) 실물.
+- Zeus 측 코드 일절 미열람 — 따라서 PG/Git identity, runner receipt, human SDD/no-mocked-acceptance, qualified model routing은 본 리뷰의 판정 근거로 사용하지 않았습니다(적응 기준으로만 취급).
+- closure/license/OS/adoption 판정은 수행하지 않음(false).

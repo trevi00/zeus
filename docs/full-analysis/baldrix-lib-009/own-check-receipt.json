@@ -1,0 +1,30 @@
+{
+  "kind": "inert metadata and own recorder validation only",
+  "source_executions": 0,
+  "tests_executed": [],
+  "recording_argv": [
+    "python",
+    "-X",
+    "utf8",
+    "docs/full-analysis/baldrix-lib-009/record_review.py"
+  ],
+  "ruff_argv": [
+    ".venv/Scripts/ruff.exe",
+    "check",
+    "docs/full-analysis/baldrix-lib-009/record_review.py"
+  ],
+  "tool_chunk": "ed9097",
+  "exit_code": 0,
+  "stdout": "All checks passed!\n{\"primary\": 10, \"bytes\": 88013, \"fresh\": 10, \"reused\": 0, \"supporting\": 10, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\n",
+  "stderr": "",
+  "recorder_sha256": "a25c548d7011acbc750e42cebe0fa4613163f3177994308b56d9290eb65c3d44",
+  "reader_failure": {
+    "tool_chunk": "c32c4e",
+    "type": "FileNotFoundError",
+    "wrong_candidate": "tests/test_writeback_token.py",
+    "corrected_to": "scripts/tests/test_writeback_token.py",
+    "subsequent_read_chunk": "5e06e1",
+    "source_execution": false
+  },
+  "limits": "No upstream executed. Artifact checks are not tests or acceptance. Wall-clock start/end not separately captured; tool chunks retain execution provenance."
+}

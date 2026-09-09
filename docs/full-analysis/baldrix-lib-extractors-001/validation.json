@@ -1,0 +1,35 @@
+{
+  "own_metadata_recorder": {
+    "argv": [
+      "python",
+      "-X",
+      "utf8",
+      "docs\\full-analysis\\baldrix-lib-extractors-001\\build_index.py"
+    ],
+    "exit_code": 0,
+    "result": "PASS"
+  },
+  "own_ruff": {
+    "argv": [
+      ".venv/Scripts/ruff.exe",
+      "check",
+      "--no-cache",
+      "docs\\full-analysis\\baldrix-lib-extractors-001\\build_index.py"
+    ],
+    "exit_code": 0,
+    "result": "PASS"
+  },
+  "checks": [
+    "UTF-8 without BOM; LF",
+    "JSON parse",
+    "exact partition paths and byte denominator",
+    "manifest revision and raw Git blob / byte size",
+    "snapshot SHA-256 where present; absence explicitly distinguished",
+    "read range bounds",
+    "primary review anchors",
+    "support not double counted as primary"
+  ],
+  "upstream_tests_executed": [],
+  "upstream_execution_count": 0,
+  "note": "Own metadata checks only; no source import, execution, probe, installation or network."
+}

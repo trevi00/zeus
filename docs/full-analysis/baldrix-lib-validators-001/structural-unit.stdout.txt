@@ -1,0 +1,23 @@
+  [OK] test_clean_object_passes_schema
+  [OK] test_missing_required_property_is_schema_violation
+  [OK] test_type_mismatch_is_schema_violation
+  [OK] test_enum_violation_is_schema_violation
+  [OK] test_additional_properties_false_rejects_extras
+  [OK] test_array_items_schema_validates_per_element
+  [OK] test_string_length_bounds
+  [OK] test_numeric_bounds
+  [OK] test_missing_output_schema_skips_layer_1
+  [OK] test_all_evidence_paths_present_is_clean
+  [OK] test_missing_evidence_file_is_fabrication
+  [OK] test_non_string_file_path_silently_skipped
+  [OK] test_no_evidence_array_is_clean
+  [OK] test_tool_calls_in_allowlist_is_clean
+  [OK] test_tool_call_out_of_allowlist_is_tool_misuse
+  [OK] test_empty_tool_allowlist_skips_layer_3
+  [OK] test_schema_failure_short_circuits_layer_2
+  [OK] test_fabrication_short_circuits_layer_3
+  [OK] test_all_layers_clean_returns_ok
+  [OK] test_invalid_spec_shape_is_tolerated
+  [OK] test_validation_result_dataclass_shape
+
+[OK] 21 tests passed

@@ -1,0 +1,13 @@
+  [OK] test_summary_vs_prompt_malformed_skipped
+  [OK] test_summary_vs_prompt_short_summary_skipped
+  [OK] test_summary_vs_prompt_empty_prompt_skipped
+  [OK] test_summary_vs_prompt_short_prompt_skipped
+  [OK] test_low_overlap_is_clean
+  [OK] test_high_overlap_70_is_suspicious_plagiarized
+  [OK] test_perfect_overlap_is_strong_plagiarized
+  [OK] test_single_file_is_skipped
+  [OK] test_no_evidence_is_skipped
+  [OK] test_balanced_overlap_is_clean
+  [OK] test_top_file_dominates_is_cherry_picked
+
+[OK] 11 tests passed

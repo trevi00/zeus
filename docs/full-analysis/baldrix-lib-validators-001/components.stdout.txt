@@ -1,0 +1,123 @@
+{
+  "structural_no_checks": {
+    "ok": true,
+    "failure_mode": null,
+    "errors": []
+  },
+  "additional_false_without_properties": {
+    "ok": true,
+    "failure_mode": null,
+    "errors": []
+  },
+  "bool_in_integer_enum": true,
+  "nan_with_numeric_bounds": true,
+  "nested_evidence_unchecked": true,
+  "missing_tool_manifest": true,
+  "nul_path_exception": "ValueError",
+  "unhashable_schema_type_exception": "TypeError",
+  "semantic_clean_with_missing": {
+    "verdict": "clean",
+    "evidence_breakdown": [
+      {
+        "file_path": "/tmp/validator-review-49clutnj/rich.txt",
+        "summary_tokens": 5,
+        "matched_tokens": 5,
+        "overlap_ratio": 1.0,
+        "file_excerpt_len": 30
+      }
+    ],
+    "errors": [
+      "file not found: /tmp/validator-review-49clutnj/missing.txt"
+    ]
+  },
+  "consensus_duplicate_single_file": {
+    "verdict": "suspicious_cherry_picked",
+    "summary_token_count": 5,
+    "prompt_token_count": 0,
+    "overlap_ratio": 1.0,
+    "per_file_overlap": {
+      "/tmp/validator-review-49clutnj/rich.txt": 1.0
+    },
+    "errors": []
+  },
+  "consensus_one_readable_one_missing": {
+    "verdict": "suspicious_cherry_picked",
+    "summary_token_count": 5,
+    "prompt_token_count": 0,
+    "overlap_ratio": 1.0,
+    "per_file_overlap": {
+      "/tmp/validator-review-49clutnj/rich.txt": 1.0
+    },
+    "errors": [
+      "file not found: /tmp/validator-review-49clutnj/missing.txt"
+    ]
+  },
+  "consensus_two_unrelated": {
+    "verdict": "clean",
+    "summary_token_count": 5,
+    "prompt_token_count": 0,
+    "overlap_ratio": 0.0,
+    "per_file_overlap": {
+      "/tmp/validator-review-49clutnj/other.txt": 0.0,
+      "/tmp/validator-review-49clutnj/third.txt": 0.0
+    },
+    "errors": []
+  },
+  "semantic_ascii_lower_minimum": [],
+  "semantic_cjk_ignores_large_minimum": [
+    "완료",
+    "주문",
+    "처리"
+  ],
+  "semantic_default_head": {
+    "verdict": "strong_suspicion",
+    "evidence_breakdown": [
+      {
+        "file_path": "/tmp/validator-review-49clutnj/long.txt",
+        "summary_tokens": 5,
+        "matched_tokens": 0,
+        "overlap_ratio": 0.0,
+        "file_excerpt_len": 4096
+      }
+    ],
+    "errors": []
+  },
+  "semantic_negative_cap": {
+    "verdict": "clean",
+    "evidence_breakdown": [
+      {
+        "file_path": "/tmp/validator-review-49clutnj/long.txt",
+        "summary_tokens": 5,
+        "matched_tokens": 5,
+        "overlap_ratio": 1.0,
+        "file_excerpt_len": 6030
+      }
+    ],
+    "errors": []
+  },
+  "boilerplate_small_cap": {
+    "verdict": "likely_boilerplate",
+    "per_file": [
+      {
+        "file_path": "/tmp/validator-review-49clutnj/long.txt",
+        "filename_match": false,
+        "content_match": true,
+        "excerpt_len": 20
+      }
+    ],
+    "errors": []
+  },
+  "boilerplate_legitimate_license_target": {
+    "verdict": "boilerplate",
+    "per_file": [
+      {
+        "file_path": "/tmp/validator-review-49clutnj/LICENSE",
+        "filename_match": true,
+        "content_match": true,
+        "excerpt_len": 292
+      }
+    ],
+    "errors": []
+  },
+  "boilerplate_windows_basename_on_linux": false
+}

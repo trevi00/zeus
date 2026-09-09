@@ -1,0 +1,12 @@
+{
+  "primary_body_unread": [],
+  "remaining": [
+    "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+    "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "Actual Claude review, license/dependency closure, model qualification pending.",
+    "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+    "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+  ],
+  "subsystem_complete": false,
+  "adoption_approved": false
+}

@@ -1,0 +1,528 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/__init__.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3104,
+    "git_blob": "bff69642860b8196d13c85d1ba1c2a029ff9c297",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "161469757810c2f3392122d92bb97dc035a483b90f9d2f01cf2c6f6d9c58a80b",
+    "observed_sha256": null,
+    "manifest_sha256": "161469757810c2f3392122d92bb97dc035a483b90f9d2f01cf2c6f6d9c58a80b",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        92
+      ]
+    ],
+    "total_lines": 92,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f01",
+    "supporting_ids": [
+      "s01",
+      "s10",
+      "s13"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/_java_socket_parse.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4175,
+    "git_blob": "78ad896c94f8f3cd3add95879893840d91eaeaff",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2a7d21831950c42af04228e4860d4231990a229853b6b65e4ba95b6b5f351670",
+    "observed_sha256": null,
+    "manifest_sha256": "2a7d21831950c42af04228e4860d4231990a229853b6b65e4ba95b6b5f351670",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        101
+      ]
+    ],
+    "total_lines": 101,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f02",
+    "supporting_ids": [
+      "s01",
+      "s05",
+      "s06",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/base.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3229,
+    "git_blob": "287c4759c73d9aad40d0221b128d61af9a4e8ff0",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bd0625d1bd4000630647c4325d4d57e77ae2f58b0aa4e5f7879c112ff6b744a1",
+    "observed_sha256": null,
+    "manifest_sha256": "bd0625d1bd4000630647c4325d4d57e77ae2f58b0aa4e5f7879c112ff6b744a1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        94
+      ]
+    ],
+    "total_lines": 94,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f03",
+    "supporting_ids": [
+      "s01",
+      "s04",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/conceptual.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 9958,
+    "git_blob": "2800b5869cab79d21ad4925ee1b5f5f1d125521b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c5d5530914e469eb220ed965860c29aa91dd2e4ba5d226baf90abba6f1da9070",
+    "observed_sha256": null,
+    "manifest_sha256": "c5d5530914e469eb220ed965860c29aa91dd2e4ba5d226baf90abba6f1da9070",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        198
+      ]
+    ],
+    "total_lines": 198,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f04",
+    "supporting_ids": [
+      "s01",
+      "s05",
+      "s06",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/convention.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8444,
+    "git_blob": "5ab1261fb75c7aac7ab357ba457dc3f40c1a21f5",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6870f27a7f293e88cbfb3e7ca4e2ecc8879ee44e433f780cc6d25954f1158d62",
+    "observed_sha256": null,
+    "manifest_sha256": "6870f27a7f293e88cbfb3e7ca4e2ecc8879ee44e433f780cc6d25954f1158d62",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        226
+      ]
+    ],
+    "total_lines": 226,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f05",
+    "supporting_ids": [
+      "s01",
+      "s08",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/dart_drift.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7651,
+    "git_blob": "df9c834fdb7b37c8124d8d06df2ddb444f4d142c",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f032d5b694e38c4e2b5edc17e0eb9aee0109cfe489d4ad137a263ec0bcdf7c28",
+    "observed_sha256": null,
+    "manifest_sha256": "f032d5b694e38c4e2b5edc17e0eb9aee0109cfe489d4ad137a263ec0bcdf7c28",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        176
+      ]
+    ],
+    "total_lines": 176,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f06",
+    "supporting_ids": [
+      "s01",
+      "s09",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/doc_classifier.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11435,
+    "git_blob": "df280eaf6694520a271db8719db952e7fb011e76",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6f0d3c241c62e7a67810a1a1d99568c565553fdc3eadaa16dc69ac20d3d48c5a",
+    "observed_sha256": null,
+    "manifest_sha256": "6f0d3c241c62e7a67810a1a1d99568c565553fdc3eadaa16dc69ac20d3d48c5a",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        276
+      ]
+    ],
+    "total_lines": 276,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f07",
+    "supporting_ids": [
+      "s01",
+      "s02",
+      "s03",
+      "s11",
+      "s12",
+      "s13"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/er.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5444,
+    "git_blob": "637fce7a9bb4cb1295471f1f85c2f860e44a0410",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "b9645fff94c01c8c7a8ec93852dbbc0d59cab1293129f3deb0ea90bfa24c8fea",
+    "observed_sha256": null,
+    "manifest_sha256": "b9645fff94c01c8c7a8ec93852dbbc0d59cab1293129f3deb0ea90bfa24c8fea",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        139
+      ]
+    ],
+    "total_lines": 139,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f08",
+    "supporting_ids": [
+      "s01",
+      "s04",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/flowchart.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7218,
+    "git_blob": "e7fd9d287eb6d7456cf255272482f89869a2889b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4bfc66204dfb7b8a0bea61b81655c5c0f05ae44cf9d8592361aa769edb129e59",
+    "observed_sha256": null,
+    "manifest_sha256": "4bfc66204dfb7b8a0bea61b81655c5c0f05ae44cf9d8592361aa769edb129e59",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        160
+      ]
+    ],
+    "total_lines": 160,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f09",
+    "supporting_ids": [
+      "s01",
+      "s05",
+      "s06",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/logical.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 7714,
+    "git_blob": "f1331fa837fe48c8f6c54957a5a3f7530cae5495",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "089a99da926cf61d68ab753a597b6fdc9153c98a8e443c23c4ce7683d141aeec",
+    "observed_sha256": null,
+    "manifest_sha256": "089a99da926cf61d68ab753a597b6fdc9153c98a8e443c23c4ce7683d141aeec",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        202
+      ]
+    ],
+    "total_lines": 202,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f10",
+    "supporting_ids": [
+      "s01",
+      "s04",
+      "s09",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/prd.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6121,
+    "git_blob": "eaec093c0d1a8f05516b876c7a0d2b3ec7b8d5f1",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "80c3ee692c06ea1026d01c2e349f7bb75a178aa049465b37df2cc724e7f21adc",
+    "observed_sha256": null,
+    "manifest_sha256": "80c3ee692c06ea1026d01c2e349f7bb75a178aa049465b37df2cc724e7f21adc",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        124
+      ]
+    ],
+    "total_lines": 124,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f11",
+    "supporting_ids": [
+      "s01",
+      "s05",
+      "s06",
+      "s07",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/extractors/requirements.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 11608,
+    "git_blob": "47a32e1b43610731a338b46bda9bef38dd7dc4c1",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "f62ad64f3855dd2ea0c78cd21219d8b9a1325c4bf344156171222276022ed9d3",
+    "observed_sha256": null,
+    "manifest_sha256": "f62ad64f3855dd2ea0c78cd21219d8b9a1325c4bf344156171222276022ed9d3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        247
+      ]
+    ],
+    "total_lines": 247,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "partition": "baldrix:scripts/lib/extractors:001",
+    "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "primary_status": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md#f12",
+    "supporting_ids": [
+      "s01",
+      "s05",
+      "s06",
+      "s10"
+    ],
+    "remaining": [
+      "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+      "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+      "Actual Claude review, license/dependency closure, model qualification pending.",
+      "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+      "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+    ],
+    "adoption_approved": false,
+    "prior_full_body_reused": false
+  }
+]

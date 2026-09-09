@@ -1,0 +1,19 @@
+  [OK] test_malformed_envelope_is_skipped
+  [OK] test_summary_too_short_is_skipped
+  [OK] test_no_evidence_is_skipped
+  [OK] test_missing_files_only_is_skipped_with_errors
+  [OK] test_perfect_overlap_is_clean
+  [OK] test_partial_above_threshold_is_clean
+  [OK] test_tiny_overlap_above_zero_is_suspicious
+  [OK] test_zero_overlap_is_strong_suspicion
+  [OK] test_worst_case_across_entries
+  [OK] test_tokenizer_min_chars_and_case_insensitive
+  [OK] test_short_tokens_ignored
+  [OK] test_empty_file_records_zero_overlap_but_no_verdict_signal
+  [OK] test_cjk_korean_overlap_clean
+  [OK] test_cjk_korean_zero_overlap_strong_suspicion
+  [OK] test_cjk_japanese_overlap
+  [OK] test_mixed_ascii_and_cjk
+  [OK] test_cjk_short_run_is_not_tokenized_for_noise_reduction
+
+[OK] 17 tests passed

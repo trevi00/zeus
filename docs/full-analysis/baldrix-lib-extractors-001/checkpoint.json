@@ -1,0 +1,31 @@
+{
+  "partition": "baldrix:scripts/lib/extractors:001",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+  "primary_paths": 12,
+  "primary_bytes": 86101,
+  "primary_full_body_read": 12,
+  "primary_full_body_reused": 0,
+  "global_coverage_mutated": false,
+  "prior_primary_inventory_basis": "Parent allocation: all 12 previously unreviewed; no global ledger modified.",
+  "supporting_paths": 13,
+  "supporting_full_body_read": 9,
+  "supporting_partial_body_read": 4,
+  "supporting_reused": 0,
+  "source_execution_count": 0,
+  "source_import_probe_network_install_count": 0,
+  "source_runtime_shared_coverage_changes": 0,
+  "subsystem_complete": false,
+  "adoption_approved": false,
+  "review_sha256": "73ce2423bead42372b99e310ef954231b4925a1e4e78867c3c3615e7098ece6a",
+  "files_sha256": "8e0eea4917cb26e9b2ef5fe0e1825647fd12305c37835367a19c6b00536fbce1",
+  "supporting_sha256": "c686b5288461b54129b1f6780a58fcba949d485b496989be7dfe00cebeaaa1e3",
+  "manifest_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+  "remaining": [
+    "Transitive caller/config/test closure pending; only recorded ranges reviewed.",
+    "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "Actual Claude review, license/dependency closure, model qualification pending.",
+    "Windows/Linux/WSL execution, human experience acceptance, adoption approval pending.",
+    "Zeus implementation equivalence and exact eight-stage SDD wiring not established."
+  ]
+}

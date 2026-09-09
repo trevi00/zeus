@@ -1,0 +1,19 @@
+{
+  "partition": "harness:tests/integration:005",
+  "primary_body_remaining": [],
+  "remaining": [
+    "Upstream execution and runtime failure reproduction; no execution is authorized in this review.",
+    "Full transitive callers, fixtures, policies, tests and deployment closure.",
+    "Authenticated human acceptance and real product/device evidence.",
+    "Windows, Linux, WSL, concurrency, reset and process isolation matrix.",
+    "Actual independent Claude review managed by root.",
+    "License and redistribution review; adoption approval and Zeus implementation."
+  ],
+  "specific_partial_traces": [
+    "Complete sandbox autoheart gates, Guardian authentication and notification relay acknowledgement.",
+    "Extractor parser helpers, template/skill content, testgen execution and scenario semantic fidelity.",
+    "All shell grammar variants, launch registrations, live approval channels and environment restoration.",
+    "Actual deployment triggers, production state and PostgreSQL transition consumers."
+  ],
+  "review_ref": "docs/full-analysis/harness-integration-tests-005/review.md#unknowns"
+}

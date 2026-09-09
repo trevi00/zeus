@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--resume",
+    "cde967fb-681d-4430-8c94-5a1759a5538e",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Resume actual Claude comparison. Keep initial response unchanged; explicitly correct overclaims. Read this folder's codex-initial.md, observations.md, component_observations.py, run_observations.py, raw unit/component stdout and receipts. These are root-controlled isolated original executions, not your own execution. Read/Glob/Grep only; no execution/import/write/network/credential/live harness. Root read all five primary bodies independently before your response, plus four test bodies FULL (61 listed tests: structural21 semantic17 cross_ref11 boilerplate12) and caller137–219 fresh. Other caller ranges were read in prior observer work. Scope SHA identity is root-verifiable, not your hash observation. Return Korean discussion with explicit agreements/corrections/remaining scope; don't claim root measured production rates or actual human/model acceptance.\n\n1. Directory path: source preserves semantic/errors and may yield boilerplate filename-only signal. Your F07 'all layers silently/no signal' is too broad; directory named __init__.py differs. Distinguish discarded diagnostics in a sampled consumer from no result signal. Our component did not execute directory here (prior observer did), no universal whole-hook pass claim.\n2. F10 'larger file increases false accusation probability' is not a measured rate nor monotonic for all content. Actual long-file/default-head versus negative-cap observation is bounded. Hook uses default; custom negative cap reachability through hook not proven. Summaries are lexical, not authenticated fraud. F22 'true boilerplate fabrication' and F12 'guilty/innocent' overstate names: legitimate generated/config/license files can be actual task evidence. Read error/empty/tokenless are distinct cases.\n3. F11 empty row is partly distinguishable using file_excerpt_len=0 plus aggregate SKIPPED/signal context; no explicit per-entry scored field remains valid. You did not read actual calibration/Grafana consumers and cannot claim they currently aggregate evidence_breakdown or currently have contaminated distributions. Root's prior calibration review is docs/full-analysis/baldrix-calibration-001/resolution.md; pinned calibration/proposer.py actually aggregates failure_modes/success (read exact body if asserting more). Hook ledger stores verified_by, not all breakdowns. No global absence proof from grep.\n4. F16 min_token_chars is not universally ineffective: values above3 filter ASCII; below3 cannot defeat regex and CJK ignores that min. Root observed min1 ASCIIempty and min99 CJKthree tokens. F17 exact Unicode block assertion lacks primary-source verification here; do not repeat the claim that D7A4-D7AF is Jamo Ext-B without authoritative evidence. No need internet in this restricted review; mark unverified/withdraw instead. Avoid replacing task quality with unmeasured Jaccard/IDF recommendations.\n5. Test signatures don't establish no coverage or exact runner TESTS count. Root FULL reads and actual original wrappers report21+17+11+12=61. Correct semantic18 claim or distinguish signature/import references from listed executed tests. Body oracle, hook conflict combinations, threshold registry global absence cannot be inferred from grep. You didn't read registry; constants references don't prove registry nonmembership. Preserve this as unverified.\n6. F02 meaningful owner/config-vs-agent attribution distinction; however Layer2 OSError is still SCHEMA_VIOLATION and sampled breaker consumes it, so don't present it as exempt from breaker attribution. Source missing/spec schema can skip checks, None/errors can collapse into success only with no other failure and successful append. Actual hook/ledger/breaker side effects not executed here.\n7. Containment must reflect explicitly approved source/artifact roots: not every legitimate evidence lives inside repo. Bind capabilities/context/source/attempt/immutable artifacts; realpath alone doesn't solve races/symlinks/OS differences. Source declarations aren't new authority and don't authorize reading host credentials. Default shell/file read caps aren't complete time/output/entry budgets or process isolation.\n8. Root observed: additionalProperties false without properties accepts extras; enum=[1] accepts True without type=integer (integer predicate still excludesbool); NaN passes numeric bounds; nested evidence and missing tool_calls are unchecked; NUL/unhashable type raises; semantic CLEAN can retain missing error; duplicate/single-readable consensus cherry-picked; two unrelated files consensus CLEAN0 (not wholehookclean); negative cap reads6030vs4096; tinycap creates likelyboilerplate; Windows basename string on Linuxfalse. Discuss these exact results and their limits, not generic success/fraud claims.\n9. Preserve useful typed errors, advisory-only no-breaker link in sampled hook, explicit non-LLM invariant and configured default limits. Low/strong cross-ref priority differs from summary doc; full signals can exist outside scalar grade. Need authenticated checked denominator/runner evidence/human SDD, not blind heuristic replacement.\n10. State exact primary/support/test/runner reads and what remains unread, license/OS/caller/calibration/acceptance limitations. Actual Claude discussion is not permission to adopt these changes; root implements only after full analysis and agreed requirements.\n"
+  ],
+  "returncode": 0,
+  "duration_seconds": 193.3079845905304,
+  "stdout_sha256": "e1b8952c700d5b89deab7414652eb049732f96c28ea45c31c7fe262a1ebd275c",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "LIBVALIDATORS001 joint discussion; Claude static only; root original units61 and isolated actual files with synthetic schemas/summaries/evidence separately recorded; no historical claim truth/human/model/nativeOS acceptance",
+  "session_id": "cde967fb-681d-4430-8c94-5a1759a5538e",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 16,
+    "cache_creation_input_tokens": 27505,
+    "cache_read_input_tokens": 592505,
+    "output_tokens": 12341,
+    "output_tokens_details": {
+      "thinking_tokens": 2842
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 27505,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 10356,
+        "cache_read_input_tokens": 84629,
+        "cache_creation_input_tokens": 420,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 420
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.8799075,
+  "model_usage": {
+    "claude-opus-5[1m]": {
+      "inputTokens": 16,
+      "outputTokens": 12341,
+      "cacheReadInputTokens": 592505,
+      "cacheCreationInputTokens": 27505,
+      "webSearchRequests": 0,
+      "costUSD": 0.8799075,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 2842,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

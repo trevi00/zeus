@@ -1,0 +1,56 @@
+{
+  "partition": "baldrix:scripts/lib/extractors:001",
+  "scope_sha256": "7cdfa7ee00ab8451b416a5c3f854581705e06c2196293cfc2a7306f207093952",
+  "bytes": 86101,
+  "paths": [
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/__init__.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/_java_socket_parse.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/base.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/conceptual.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/convention.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/dart_drift.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/doc_classifier.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/er.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/flowchart.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/logical.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/prd.py"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/extractors/requirements.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

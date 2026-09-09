@@ -1,0 +1,43 @@
+[
+  {
+    "topic": "FA-023",
+    "title": "[FA-023] 구조·어휘 검사의 실제 분모와 인수 권위 분리",
+    "problem": "고정 Baldrix 검증기의 실제 격리 실행에서 미검사 구조 ok, properties 없는 additionalProperties=false 수용, NaN 수치 범위 통과, 읽기 오류와 공존하는 lexical CLEAN, 단일 중복 경로의 다중파일 의심, 무관한 두 파일의 consensus CLEAN0을 확인했다. 파일 head/사용자 지정 읽기 상한도 판정을 바꿨다. 원본 61개 단위 PASS는 이 분류 동작을 확인하며 실제 의미·과거 진위·사람 인수를 입증하지 않는다.",
+    "impact": "검사하지 않은 상태와 부분 자료가 검증 완료처럼 소비되거나, 정상적인 코드·설계·라이선스 작업이 어휘 라벨만으로 부정적으로 평가될 수 있다. 이 등급이 자가개선·모델 자격·SDD 인수에 연결되면 잘못된 완료나 승급 판단이 누적된다.",
+    "scope": [
+      "지원 schema의 명시적 계약, 설정 소유권, 검사 분모, 다중 신호와 실제 인수 권한을 분리한다.",
+      "FA-022의 검사/replay 신원 및 실행 권한과 연결하되 이번 토픽은 구조·어휘·파일명 휴리스틱의 입력/출력 의미와 소비 정책을 다룬다.",
+      "FA-014 스펙 생성과 FA-021 평가 보정의 소비자가 같은 정의·실행·인수 근거를 확인하도록 요구한다.",
+      "전체 분석 후 root가 합의된 Zeus 구현을 진행한다. 검토·단위 통과는 채택이나 운영 배포 승인이 아니다."
+    ],
+    "acceptance_criteria": [
+      "지원 schema 버전과 키워드를 명시하고 미지원·잘못된 schema·출력 위반을 구분한다. 설정 소유자 오류를 에이전트 품질 실패와 같은 원인으로 집계하지 않는다.",
+      "bool/숫자 enum, 비유한 수치, 잘못된 type/items/required/allowlist 및 깊이/크기 경계를 검증한다. 선언이 없거나 검사를 건너뛴 상태는 실제 통과 분모와 구분한다.",
+      "출력의 tool_calls 선언과 runner가 실제 관측한 도구 사용·권한을 별도 필드로 기록한다. self-report가 권한 위반 부재를 인증하지 않는다.",
+      "근거는 승인된 source/artifact 루트·내용 hash·범위·revision·시도·환경에 결속한다. 읽기 오류·빈 자료·토큰 없음·절단·검사 제외를 명시하고 raw bytes를 보존한다.",
+      "여러 파일 검사는 원본 identity로 중복을 제거한 실제 읽은 모집단을 사용한다. raw 항목 수나 읽기 실패를 다중 독립 증거로 인정하지 않는다.",
+      "어휘 포함률·파일명·짧은 본문·생성표식은 한정된 advisory 신호다. task 목적과 관계를 검토하며 표절/위조/실제 사람 인수로 자동 승격하지 않는다.",
+      "모든 신호와 오류를 보존하고 UI/PG projection의 우선순위를 Git 정책과 일치시킨다. scalar clean 등급이 미검사·다른 의심·저장 실패를 숨기지 않는다.",
+      "실제 downstream 사용 여부와 검수 주체를 영수증으로 기록한다. 상수 downstream_used, generated PASS, confidence, stable ID roundtrip은 실제 실행과 인수를 대신하지 않는다.",
+      "실제 사용자가 검토한 핵심 시나리오에서 오류·부분 관측·정상 대조군을 측정한다. 대체 유사도 공식이나 반복 관측만으로 품질 향상·Astra/Sol/Terra 자격을 승인하지 않는다.",
+      "Windows/Linux/WSL에서 실제 경로·인코딩·읽기 상한·실행/저장·알림 누락과 재개를 검증하고 환경별 결과를 구분한다. 합성 단위 결과를 제품/실기기/사람 인수로 계상하지 않는다."
+    ],
+    "verification": [
+      "원본 structural21/semantic17/cross_ref11/boilerplate12 단위 테스트 61개 PASS. 실제 원본 함수와 임시 파일, 합성 schema/summary/evidence 사용.",
+      "별도 관측은 원본 method/clock/subprocess/provider patch 없이 실제 격리 파일을 사용했고 1648개 source 파일은 실행 전후 바이트 동일했다.",
+      "실제 Claude 독립 검토/토론 후 근거 없는 탐지율·전역 침묵·소비자 분포 오염·서명 grep 기반 시험 부재·Unicode block 단정을 철회했다.",
+      "음수/custom cap은 직접 함수 인자이며 실제 hook 경로 도달을 증명하지 않는다. consensus CLEAN0은 그 함수 단독 결과이고 전체 hook/인수가 CLEAN이라는 주장이 아니다."
+    ],
+    "rollback": "검사 정책·자료 identity·분모 또는 소비 권한이 깨지면 해당 등급의 신규 승급/인수 사용을 중단한다. 원시 신호와 PG 시도/정책 세대를 보존하고 검증된 정책으로 재평가하며 과거 영수증을 조용히 덮어쓰지 않는다.",
+    "evidence_paths": [
+      "docs/full-analysis/baldrix-lib-validators-001/resolution.md",
+      "docs/full-analysis/baldrix-lib-validators-001/codex-initial.md",
+      "docs/full-analysis/baldrix-lib-validators-001/claude-discussion.md",
+      "docs/full-analysis/baldrix-lib-validators-001/observations.md",
+      "docs/full-analysis/baldrix-lib-validators-001/components.stdout.txt",
+      "docs/full-analysis/baldrix-lib-validators-001/components.receipt.json",
+      "docs/full-analysis/validator-workflow-root-review.md",
+      "docs/full-analysis/validator-workflow-checkpoint-verification.json"
+    ]
+  }
+]

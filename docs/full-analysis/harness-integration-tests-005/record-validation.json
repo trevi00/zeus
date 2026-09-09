@@ -1,0 +1,17 @@
+{
+  "own_ruff": "passed",
+  "scope_raw_blob_bytes_sha": "passed",
+  "references_checked": 91,
+  "explicit_reference_anchors_valid": true,
+  "utf8_no_replacement": true,
+  "python_lf": true,
+  "prior_ledger_hash_ranges_and_refs_valid": true,
+  "original_executions": 0,
+  "primary_files": 9,
+  "primary_bytes": 145150,
+  "primary_lines": 2725,
+  "support_harness": 43,
+  "support_zeus": 4,
+  "prior_support_reuse": 11,
+  "review_sha256": "ce8033fdd712a85f0553323cdbca05673f0f2359043af49e091834620eb2e878"
+}

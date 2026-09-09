@@ -1,0 +1,366 @@
+[
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/reverse_engineer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 10687,
+    "git_blob": "802c3876cc4b277cc0a5652e09ac053f7e8e2250",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "57ede6f5f5793d25af80891b7610902779ea44d0de982c7c640350f8f78815af",
+    "observed_sha256": null,
+    "manifest_sha256": "57ede6f5f5793d25af80891b7610902779ea44d0de982c7c640350f8f78815af",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        266
+      ]
+    ],
+    "total_lines": 266,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s01",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/ingest_docs.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3496,
+    "git_blob": "2061c27374e77e13115e48175cd80efb0bd99ebe",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "80177d2b2bb2628c5adb07addd99af6424ad31c4dd80f28bec83a8007e4bf24f",
+    "observed_sha256": null,
+    "manifest_sha256": "80177d2b2bb2628c5adb07addd99af6424ad31c4dd80f28bec83a8007e4bf24f",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        80
+      ]
+    ],
+    "total_lines": 80,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s02",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/cli/project_analyze.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 20533,
+    "git_blob": "02d12e8e023ca8a130e1868a49be1cd75476d407",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0eb294c1d0bc4f495e59d7f3d0a3834ff99f8c7e2bf5c32d25e4a1c5eb3c5bb0",
+    "observed_sha256": null,
+    "manifest_sha256": "0eb294c1d0bc4f495e59d7f3d0a3834ff99f8c7e2bf5c32d25e4a1c5eb3c5bb0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        350,
+        396
+      ]
+    ],
+    "total_lines": 562,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s03",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/spec_facets.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 12430,
+    "git_blob": "4ef5443d33802174d3885b97588f06a9b4c47c70",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "990fa962d094c08be063d126889816f4a2b65a96d5361a96d0f27177ad83805e",
+    "observed_sha256": null,
+    "manifest_sha256": "990fa962d094c08be063d126889816f4a2b65a96d5361a96d0f27177ad83805e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        123,
+        179
+      ]
+    ],
+    "total_lines": 282,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s04",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/lib/intent_doc_floor.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3011,
+    "git_blob": "5fc64b58d9b0e54106627788390732d54129dd63",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "82b12834fe7dc5366f887b13570fa020a05b6729f2817100b9af0f1d8147cd77",
+    "observed_sha256": null,
+    "manifest_sha256": "82b12834fe7dc5366f887b13570fa020a05b6729f2817100b9af0f1d8147cd77",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "total_lines": 69,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s05",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/probe_intent_docs.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 6027,
+    "git_blob": "28bffdcc8a2217aee17b5ead255b1862b5f0adfc",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9f4d30b32082fae9b92db90f49c9a38ba97b44680631d68cf280576b5acc2612",
+    "observed_sha256": null,
+    "manifest_sha256": "9f4d30b32082fae9b92db90f49c9a38ba97b44680631d68cf280576b5acc2612",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        124
+      ]
+    ],
+    "total_lines": 124,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s06",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/prd.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4154,
+    "git_blob": "bcae0b7ba707d524cbc4444be186c59e1be36615",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "5702824fe7abce4167679648aabdc4367dbe787839b5acff743bbea877e53bf6",
+    "observed_sha256": null,
+    "manifest_sha256": "5702824fe7abce4167679648aabdc4367dbe787839b5acff743bbea877e53bf6",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        98
+      ]
+    ],
+    "total_lines": 98,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s07",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/convention.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 4019,
+    "git_blob": "e127596db7c334f333ef07399bfeb00f332f31d8",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1316c87727d80a3f1a70e9ceba4509546585b10be0a1424fd14d2c0c8c2ce682",
+    "observed_sha256": null,
+    "manifest_sha256": "1316c87727d80a3f1a70e9ceba4509546585b10be0a1424fd14d2c0c8c2ce682",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        97
+      ]
+    ],
+    "total_lines": 97,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s08",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/validators/logical.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 5483,
+    "git_blob": "84a4d76245d3d0845df4331b0e954da8c1908d58",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "33045ccba1a829c15c6d11a17c78dbdae539858dd30f7887f0607cada7bcca38",
+    "observed_sha256": null,
+    "manifest_sha256": "33045ccba1a829c15c6d11a17c78dbdae539858dd30f7887f0607cada7bcca38",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        143
+      ]
+    ],
+    "total_lines": 143,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s09",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_extractors.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 37309,
+    "git_blob": "6fe0b31c62de9034cde75a62503b8f47eb447f44",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "082bfd3180769b907e4f87f806bcf94c787d147d6ba56a6ecb6980d62446e9f2",
+    "observed_sha256": null,
+    "manifest_sha256": "082bfd3180769b907e4f87f806bcf94c787d147d6ba56a6ecb6980d62446e9f2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        895
+      ]
+    ],
+    "total_lines": 895,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s10",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_doc_classifier.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 8627,
+    "git_blob": "853edd79c4e88dce103d4f937141d47ba4b88bc8",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0a34c2012e523548c2bbce1bbc1ac346909b07d49e6ff29430157e6727863bca",
+    "observed_sha256": null,
+    "manifest_sha256": "0a34c2012e523548c2bbce1bbc1ac346909b07d49e6ff29430157e6727863bca",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        130
+      ]
+    ],
+    "total_lines": 221,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s11",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_doc_classifier_explained.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 3988,
+    "git_blob": "a45c9ee1dd6c2fa18b86b0140a4dfc218647d469",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e870514c2bb4cbbd11967bc4064cb9debe5e2838bb82cac23de7be048621458d",
+    "observed_sha256": null,
+    "manifest_sha256": "e870514c2bb4cbbd11967bc4064cb9debe5e2838bb82cac23de7be048621458d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "total_lines": 100,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s12",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "baldrix",
+    "path": "scripts/tests/test_reverse_engineer.py",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "bytes": 1984,
+    "git_blob": "48091d46118dc71c5e1e62e71021d5368523680e",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "7561ec6d66a03d005f0ba1acbcc29b0f8a5b97ed964f5e368ea089044160dbf4",
+    "observed_sha256": null,
+    "manifest_sha256": "7561ec6d66a03d005f0ba1acbcc29b0f8a5b97ed964f5e368ea089044160dbf4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        69
+      ]
+    ],
+    "total_lines": 69,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream tests/import/probe execution prohibited in this static partition: not run.",
+    "id": "s13",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/baldrix-lib-extractors-001/review.md",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  }
+]
