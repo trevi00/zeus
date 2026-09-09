@@ -1,0 +1,20 @@
+{
+  "scope": "Own metadata only; upstream source execution is zero",
+  "metadata": {
+    "command": "python docs/full-analysis/harness-contract-tests-003/build_index.py",
+    "exit_code": 0,
+    "result": "PASS",
+    "checks": ["16 primary, 178523 bytes", "35 supporting paths", "pinned manifest revision and partition scope", "raw Git blob identity and manifest byte size", "available manifest SHA-256", "exact recorded read ranges within UTF-8 line bounds", "file-specific review anchors and supporting ID references", "prior path-ledger row identity and ledger hash", "UTF-8 without BOM, LF, JSON parse"]
+  },
+  "own_ruff": {
+    "command": ".venv/Scripts/ruff.exe check --no-cache docs/full-analysis/harness-contract-tests-003/build_index.py",
+    "exit_code": 0,
+    "result": "All checks passed!"
+  },
+  "upstream_tests_executed": [],
+  "source_import_probe_network_install_count": 0,
+  "live_or_credential_access_count": 0,
+  "source_runtime_shared_coverage_changes": 0,
+  "subsystem_complete": false,
+  "adoption_approved": false
+}

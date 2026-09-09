@@ -1,0 +1,13 @@
+{
+  "scope_match": true,
+  "primary_hash_size_git_blob_checks": true,
+  "support_hash_size_git_blob_checks": true,
+  "explicit_anchor_checks": true,
+  "primary_count": 14,
+  "primary_bytes": 187846,
+  "support_count": 30,
+  "review_sha256": "4eb52f73fd4deaaf2a20bc35d96421a79b221c6d3ad14f01c2d380b313777d7e",
+  "method": "Own stdlib metadata recorder only; no source import/execution.",
+  "upstream_tests_executed": 0,
+  "upstream_pass_claimed": false
+}

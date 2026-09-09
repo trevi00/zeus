@@ -1,0 +1,7 @@
+  [OK] test_installer_exists
+  [OK] test_installs_precommit_layer_gate
+  [OK] test_installs_prepush_full_suite_gate
+  [OK] test_prepush_skips_non_harness_trees
+  [OK] test_installer_is_idempotent_by_construction
+
+[OK] 5 tests passed

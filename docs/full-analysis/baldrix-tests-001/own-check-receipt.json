@@ -1,0 +1,34 @@
+{
+  "kind": "own inert recorder and metadata validation, not upstream tests",
+  "recording_argv": [
+    "python",
+    "-X",
+    "utf8",
+    "docs/full-analysis/baldrix-tests-001/record_review.py"
+  ],
+  "recording_chunk": "dc97d9",
+  "recording_exit_code": 0,
+  "recording_stdout": "{\"primary\": 26, \"bytes\": 191653, \"fresh\": 26, \"reused\": 0, \"supporting\": 29, \"source_executions\": 0, \"manifest_blob_bytes_all_match\": true}\n",
+  "recording_stderr": "",
+  "ruff_argv": [
+    ".venv/Scripts/ruff.exe",
+    "check",
+    "docs/full-analysis/baldrix-tests-001/record_review.py"
+  ],
+  "ruff_chunk": "a467ae",
+  "ruff_exit_code": 0,
+  "ruff_stdout": "All checks passed!\n",
+  "ruff_stderr": "",
+  "recorder_sha256": "13fc3dd93a21dd605e94a3f5a1bf03c462d681b596ba8e804e8b04b61518b73d",
+  "prior_primary_disposition_counts": {
+    "unreviewed": 26
+  },
+  "prior_body_reused": 0,
+  "source_executions": 0,
+  "tests_executed": [],
+  "read_output_truncation_recovery": {
+    "dc781a": "run_all 166-304 and run_units1-196 reread in2ed80c; remaining full bodies visible",
+    "ae5411": "agent_invocation440-484 and full agent_outcome1-331 reread45ca96"
+  },
+  "limits": "Wall-clock timestamps not independently captured; tool chunks identify raw results. No upstream imports/probes/network/install. No credentials or long source reproductions included in artifacts."
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "local_command_result_transcription",
+  "repository_base_revision": "c8f2a03b69c5ecc36f14a082907a9f746ffae9af",
+  "command": "uv run pytest",
+  "session_id": 11239,
+  "terminal_chunk": "0d2686",
+  "returncode": 0,
+  "passed": 660,
+  "skipped": 68,
+  "duration_seconds": 175.65,
+  "scope": "Zeus local suite with current review artifact changes; not upstream, platform equivalence, device or human acceptance"
+}

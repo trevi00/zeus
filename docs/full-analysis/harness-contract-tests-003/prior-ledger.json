@@ -1,0 +1,248 @@
+{
+  "ledger_path": "docs/full-analysis/path-ledger.json",
+  "ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+  "row_index_base": 0,
+  "rows": [
+    {
+      "row_index": 2446,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_gate_executable_contract.py",
+        "git_blob": "2d06d48ec7799a63052f7388482ad5f8da77bded",
+        "mode": "100644",
+        "bytes": 9291,
+        "pinned_sha256": "7a4d7a487c5c1c1a3796551f11f6ddf71213a0fa0997a921e23a0bbd10607fb0",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2447,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_guardian_contract_smoke.py",
+        "git_blob": "03b4cfafe6c10b5c618c665a60923d7f5ef2c269",
+        "mode": "100644",
+        "bytes": 15733,
+        "pinned_sha256": "ec034f207e507161b5a708fbd59fa4849e45cdfb2874d7723c0d311fd96048ca",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2448,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_harness_lint.py",
+        "git_blob": "ec342d4026f39ce85b1662f64344afbc616d63ef",
+        "mode": "100644",
+        "bytes": 1699,
+        "pinned_sha256": "7bedde0e7be7aa171663ae1f6800297381ff0b7590b19ec7aabfdd6cf3a0ec2b",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2449,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_health_alerts_surface_contract.py",
+        "git_blob": "e730f757dac2b09607aa6175bf2c29b92945823c",
+        "mode": "100644",
+        "bytes": 7186,
+        "pinned_sha256": "f901d57c389202f3ad43daa21594a889884237590f13ff6bdb14df524ba789c3",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2450,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_heredoc_guard_contract.py",
+        "git_blob": "df1970b8c6c7a8bd276bcf33450b75977b999d9e",
+        "mode": "100644",
+        "bytes": 8615,
+        "pinned_sha256": "46283e05a87c530807935e73190c28bf0fa5eddbc47ec8fc68a851aebc2f6526",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2451,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_hollow_audit.py",
+        "git_blob": "58eea16c965ca83a28cceeee3aed457ba876a371",
+        "mode": "100644",
+        "bytes": 8776,
+        "pinned_sha256": "c19602fccbf13e0759d926cad9d61e198d129328725d6e525565e94b6e6827da",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2452,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_hook_adversarial.py",
+        "git_blob": "503ce0765c9f52d251bb0a87a43df7d54dbe28d0",
+        "mode": "100644",
+        "bytes": 10832,
+        "pinned_sha256": "9fd01024768d325d8a79856d9082fc6e367e7e4fd13143ef2baa99af063ccb13",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2453,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_idle_role_arm_contract.py",
+        "git_blob": "e322a0372b6dd86be1107feb420839620ea65d43",
+        "mode": "100644",
+        "bytes": 14336,
+        "pinned_sha256": "091d73ec9ffcbb4ad2c426dfbb8bec05f5c61fd6d58c12d246b5ca596af0c8be",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2454,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_inv_bite_smoke.py",
+        "git_blob": "a24f4c74a04fb458421ec3d2efbbab911e3bfaeb",
+        "mode": "100644",
+        "bytes": 5506,
+        "pinned_sha256": "30ddbab8ccf49cea471a02ecf43c7fe92e7ff2d362fffc5605f39057a72e14ce",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2455,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_isolation_deferred_contract.py",
+        "git_blob": "f046e79afb2d3d6ea686851b205cd76d1b247eab",
+        "mode": "100644",
+        "bytes": 4753,
+        "pinned_sha256": "637d9806f0e24fe2becf619bcaa9d60a1f9f8547f75a89981b4b73cfa27d20dc",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2456,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_judge_integrity_league.py",
+        "git_blob": "a386bf26b276e12772b03e9f552bf29acee53439",
+        "mode": "100644",
+        "bytes": 10952,
+        "pinned_sha256": "925dfc86a4e18fbfb6b958c200b5a734e0bbfbbc75636ce4018ec1bec0d4a6e4",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2457,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_judgment_paths_contract.py",
+        "git_blob": "e72354767305b4edb55cfa757a8932904fc327d6",
+        "mode": "100644",
+        "bytes": 8637,
+        "pinned_sha256": "f1e8ff059cef5cb5f02d55aa593bf87e2367542fe4fd6c282701202f730b4fee",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2458,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_known_issues_contract.py",
+        "git_blob": "bc0168b42e60cd5cb6ec92e7ce7fa9ae4b268622",
+        "mode": "100644",
+        "bytes": 14190,
+        "pinned_sha256": "eee4515191eb32d1d164e4b6d9ea97a057298b562c9d2bfda1d8087e8b336343",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2459,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_l2_driver_latency_gate.py",
+        "git_blob": "bd7cfa9961bb1eb0b029545e86d7e4c3f5038d61",
+        "mode": "100644",
+        "bytes": 24344,
+        "pinned_sha256": "3a6a313d59a2dc945cfae31e772b0f364501e9d0771c4b44f1427cf870bf9eff",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2460,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_ladder_sweep_contract.py",
+        "git_blob": "d54c95e764dc961c965c14466cd0c170385b5118",
+        "mode": "100644",
+        "bytes": 12902,
+        "pinned_sha256": "b97ac664ffe09fd121a2931fbc55603aa22767f462fafc56e268f4a63e9d871c",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    },
+    {
+      "row_index": 2461,
+      "row": {
+        "source": "harness",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "path": "tests/contract/test_latency_consumer_contract.py",
+        "git_blob": "f0f9266dce94596a0bd9f37d9a8b678f1a59a67d",
+        "mode": "100644",
+        "bytes": 20771,
+        "pinned_sha256": "4f689db243548506db9c8fb1e30a54b437cffc5b558ba902a45404fb3d796aa8",
+        "disposition": "unreviewed",
+        "review_records": [],
+        "adoption_status": "not_approved_not_incorporated"
+      }
+    }
+  ],
+  "semantic_reuse": false
+}

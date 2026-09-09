@@ -1,0 +1,1354 @@
+[
+  {
+    "source": "harness",
+    "path": "brain/spikes/role_section.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "67d4ada07396b0f53ae2c9b710f8931f132c4cd99343cba770b0f11d8715980f",
+    "git_blob": "f488e1f0615302ea52030675744cb3635d155f2d",
+    "bytes": 6848,
+    "lines": 154,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "67d4ada07396b0f53ae2c9b710f8931f132c4cd99343cba770b0f11d8715980f",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        27,
+        123
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/goal.md",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "cff0762e150582a040f9ddfea28b520ea83248d6bf704bd2b58493a23d82a844",
+    "git_blob": "6264109e3618f97157bd039555c2205ff64406f2",
+    "bytes": 10871,
+    "lines": 194,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "cff0762e150582a040f9ddfea28b520ea83248d6bf704bd2b58493a23d82a844",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        63,
+        75
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/harness-selfimprove.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "5438a57db5847ff9e47f291b9037a83f2fe7a9b270a697cfc259a5e903c85b42",
+    "git_blob": "2d6fae65d50af0226ea22fa265d7d87f02a4d6b0",
+    "bytes": 18665,
+    "lines": 274,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "5438a57db5847ff9e47f291b9037a83f2fe7a9b270a697cfc259a5e903c85b42",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        158,
+        180
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/fleet_status_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "59cf2d8349ba98ec98f726eafc31eb5f20dc4569eb75a027cd69c2477b283ed1",
+    "git_blob": "6aed177d1b9a8d5eb88037eb76d1f7f381d991d0",
+    "bytes": 8421,
+    "lines": 195,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "59cf2d8349ba98ec98f726eafc31eb5f20dc4569eb75a027cd69c2477b283ed1",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        45,
+        151
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/health_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "git_blob": "ffc56a369eae2661de3f9ac954c8721385966065",
+    "bytes": 49796,
+    "lines": 957,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        48,
+        137
+      ],
+      [
+        198,
+        224
+      ],
+      [
+        823,
+        867
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/l2_driver.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "bytes": 119098,
+    "lines": 2044,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        560,
+        599
+      ],
+      [
+        1443,
+        1458
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/note_archive.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "64145e19fd5c7bc271e022fb95f54ca024e8854bfdf227e70f1864d829d62bee",
+    "git_blob": "39637be324079b02a7923f2040c244482892c2e0",
+    "bytes": 7944,
+    "lines": 193,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "64145e19fd5c7bc271e022fb95f54ca024e8854bfdf227e70f1864d829d62bee",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        44,
+        180
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/reachability.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "git_blob": "838e3ab5fc6cc969a2de74a4b0dabf76fe792a78",
+    "bytes": 14657,
+    "lines": 333,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "6a75e3d240d68e803140b5d9b4b40a54d6d8b7c6c5bc3cea8f644fb11a310288",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        166,
+        232
+      ],
+      [
+        259,
+        313
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/research_collector.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "86bf12b452bc21cc2f406690869a83a8b364400492d89e58353ce25884240fa7",
+    "git_blob": "ffb9e29ffa8f14410c1c0b21d34a6a684102a24c",
+    "bytes": 11860,
+    "lines": 280,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "86bf12b452bc21cc2f406690869a83a8b364400492d89e58353ce25884240fa7",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        67,
+        137
+      ],
+      [
+        139,
+        276
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/research_queue.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "fab86c2547e989d01bccf36fe0383572775fdd6431afc93d6894b518348b9d6f",
+    "git_blob": "1fb3b66c5fd2b61b01cb5e3b9a7f6d6c6fd67643",
+    "bytes": 7491,
+    "lines": 169,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "fab86c2547e989d01bccf36fe0383572775fdd6431afc93d6894b518348b9d6f",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        70,
+        149
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/role_supervisor.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "c6b8f29fc9f76d35b05ca03163776a8176e8cb1616e7efd35ceb17eff4b564d4",
+    "git_blob": "1c749fbfdafca3a18185cefd0a9c090d0a11bcba",
+    "bytes": 13132,
+    "lines": 263,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "c6b8f29fc9f76d35b05ca03163776a8176e8cb1616e7efd35ceb17eff4b564d4",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        97,
+        139
+      ],
+      [
+        182,
+        251
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/youtube_queue.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "e15e6a75f6ab020744f7fdcb310e551440626f815ec56f1d55e7713d95883f69",
+    "git_blob": "743630b717ea9c88d8d4bf81c347737b9a02781c",
+    "bytes": 10007,
+    "lines": 211,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "e15e6a75f6ab020744f7fdcb310e551440626f815ec56f1d55e7713d95883f69",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        105,
+        203
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/ontology_index.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "b0270420b01efe00615a10c479067e450ba9163b09b562b2c04c08b75997c2d6",
+    "git_blob": "e8316fff06a491bb29993ca0f82f4a9d3ca23d96",
+    "bytes": 14189,
+    "lines": 288,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "b0270420b01efe00615a10c479067e450ba9163b09b562b2c04c08b75997c2d6",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        114,
+        128
+      ],
+      [
+        253,
+        288
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/sandbox.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "git_blob": "4da9d3d9805e1569c532ddd2a38165cd0c10b007",
+    "bytes": 32037,
+    "lines": 551,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "546fef7acd39664d6b73eae74688cd824ef005da59e679939c4e3d1e3b2c5a9f",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        447,
+        535
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/derive_state.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "git_blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+    "bytes": 27995,
+    "lines": 547,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        427,
+        541
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/research_digest.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "d8c14973ce0f378727c3e907026c2d71440f601113d9e629d44674c9e857dc8a",
+    "git_blob": "2c0d6c5dd20d46dfa2d2a64a142dab58a3683f6d",
+    "bytes": 7877,
+    "lines": 179,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "d8c14973ce0f378727c3e907026c2d71440f601113d9e629d44674c9e857dc8a",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        51,
+        159
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/harness_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "bytes": 107200,
+    "lines": 2092,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        83,
+        129
+      ],
+      [
+        375,
+        517
+      ],
+      [
+        601,
+        632
+      ],
+      [
+        740,
+        813
+      ],
+      [
+        1031,
+        1190
+      ],
+      [
+        1321,
+        1387
+      ],
+      [
+        1389,
+        1438
+      ],
+      [
+        1566,
+        1622
+      ],
+      [
+        1829,
+        1907
+      ],
+      [
+        1933,
+        2030
+      ],
+      [
+        2050,
+        2092
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/ontology_validator.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "f3e51e7faa92861e38a95499fd06b02bccf4dcace81a8d9e73b999399df28d08",
+    "git_blob": "a6fff8e6e3d173a4f8662fe9fad57db1341aa7ac",
+    "bytes": 10454,
+    "lines": 218,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f3e51e7faa92861e38a95499fd06b02bccf4dcace81a8d9e73b999399df28d08",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        32,
+        83
+      ],
+      [
+        108,
+        216
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/repair_evidence.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "f7d248012dd7e15605092ed205a3cfd4593a85cad0b0388a91d1075bfcf43b54",
+    "git_blob": "ac600705c26c59eb2e8f4af70cb136c074b63cd4",
+    "bytes": 8243,
+    "lines": 187,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "f7d248012dd7e15605092ed205a3cfd4593a85cad0b0388a91d1075bfcf43b54",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        75,
+        178
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "displayed_and_read_current_review",
+    "previous_review_reuse": null,
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false
+  },
+  {
+    "source": "harness",
+    "path": "tests/_isolate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+    "git_blob": "ac21d23d01c3ee75c109cb1d462a5c2b03ba793b",
+    "bytes": 21666,
+    "lines": 402,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        107
+      ],
+      [
+        164,
+        229
+      ],
+      [
+        388,
+        402
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 0,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "tests/_isolate.py",
+      "sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "source_row": {
+        "source": "harness",
+        "path": "tests/_isolate.py",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "pinned_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+        "git_blob": "ac21d23d01c3ee75c109cb1d462a5c2b03ba793b",
+        "bytes": 21666,
+        "lines": 402,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+        "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+        "upstream_disposition_unchanged": "unreviewed",
+        "line_ranges": [
+          [
+            1,
+            107
+          ],
+          [
+            164,
+            229
+          ],
+          [
+            388,
+            402
+          ]
+        ],
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "read_extent": "listed_line_ranges_only",
+        "counted_in_partition_coverage": false
+      },
+      "line_ranges": [
+        [
+          1,
+          107
+        ],
+        [
+          164,
+          229
+        ],
+        [
+          388,
+          402
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/paths.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "git_blob": "c1a7284adf7c53a8fab9f074e0c23c5558d95d22",
+    "bytes": 5363,
+    "lines": 123,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        20,
+        105
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 2,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "scripts/lib/paths.py",
+      "sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "source_row": {
+        "source": "harness",
+        "path": "scripts/lib/paths.py",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "pinned_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+        "git_blob": "c1a7284adf7c53a8fab9f074e0c23c5558d95d22",
+        "bytes": 5363,
+        "lines": 123,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "88c61358add0bc97b1f81e4d8469618b137062810b6be3171d23fd72ed284387",
+        "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+        "upstream_disposition_unchanged": "unreviewed",
+        "line_ranges": [
+          [
+            20,
+            105
+          ]
+        ],
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "read_extent": "listed_line_ranges_only",
+        "counted_in_partition_coverage": false
+      },
+      "line_ranges": [
+        [
+          20,
+          105
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/suite_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+    "bytes": 35632,
+    "lines": 624,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        65,
+        169
+      ],
+      [
+        254,
+        277
+      ],
+      [
+        341,
+        465
+      ],
+      [
+        605,
+        624
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 3,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "scripts/cli/suite_cmd.py",
+      "sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "source_row": {
+        "source": "harness",
+        "path": "scripts/cli/suite_cmd.py",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "pinned_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+        "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+        "bytes": 35632,
+        "lines": 624,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+        "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+        "upstream_disposition_unchanged": "unreviewed",
+        "line_ranges": [
+          [
+            65,
+            169
+          ],
+          [
+            254,
+            277
+          ],
+          [
+            341,
+            465
+          ],
+          [
+            605,
+            624
+          ]
+        ],
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "read_extent": "listed_line_ranges_only",
+        "counted_in_partition_coverage": false
+      },
+      "line_ranges": [
+        [
+          65,
+          169
+        ],
+        [
+          254,
+          277
+        ],
+        [
+          341,
+          465
+        ],
+        [
+          605,
+          624
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/test_outcome.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "git_blob": "d8f1c080bada2a498a1bc27799b65a21bb579c85",
+    "bytes": 18074,
+    "lines": 345,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        65,
+        105
+      ],
+      [
+        189,
+        252
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 4,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "scripts/lib/test_outcome.py",
+      "sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "source_row": {
+        "source": "harness",
+        "path": "scripts/lib/test_outcome.py",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "pinned_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+        "git_blob": "d8f1c080bada2a498a1bc27799b65a21bb579c85",
+        "bytes": 18074,
+        "lines": 345,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+        "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+        "upstream_disposition_unchanged": "unreviewed",
+        "line_ranges": [
+          [
+            65,
+            105
+          ],
+          [
+            189,
+            252
+          ]
+        ],
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "read_extent": "listed_line_ranges_only",
+        "counted_in_partition_coverage": false
+      },
+      "line_ranges": [
+        [
+          65,
+          105
+        ],
+        [
+          189,
+          252
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace"
+  },
+  {
+    "source": "harness",
+    "path": "config/paths.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e",
+    "git_blob": "4905eceac4c0b291b4ec789ef4b5ec13fe1ba8b1",
+    "bytes": 1816,
+    "lines": 32,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        1,
+        32
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 19,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "config/paths.yaml",
+      "sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "source_row": {
+        "source": "harness",
+        "path": "config/paths.yaml",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "pinned_sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e",
+        "git_blob": "4905eceac4c0b291b4ec789ef4b5ec13fe1ba8b1",
+        "bytes": 1816,
+        "lines": 32,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "0f6943296cf012e34264868e8e66f50d114aa6f27446e313202efa948742bf6e",
+        "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+        "upstream_disposition_unchanged": "unreviewed",
+        "line_ranges": [
+          [
+            1,
+            32
+          ]
+        ],
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "read_extent": "listed_line_ranges_only",
+        "counted_in_partition_coverage": false
+      },
+      "line_ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/ledger.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "git_blob": "5e7534695489901c673ed95f65f7fd634390549d",
+    "bytes": 23573,
+    "lines": 429,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        132,
+        169
+      ],
+      [
+        243,
+        320
+      ],
+      [
+        350,
+        387
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 21,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "scripts/lib/ledger.py",
+      "sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "source_row": {
+        "source": "harness",
+        "path": "scripts/lib/ledger.py",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "pinned_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+        "git_blob": "5e7534695489901c673ed95f65f7fd634390549d",
+        "bytes": 23573,
+        "lines": 429,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "95b8f0e1c2daa5e244afd7e8dbf82ab1906cfc7b58461d67f7747667db9e6411",
+        "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+        "upstream_disposition_unchanged": "unreviewed",
+        "line_ranges": [
+          [
+            132,
+            169
+          ],
+          [
+            243,
+            320
+          ],
+          [
+            350,
+            387
+          ]
+        ],
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "read_extent": "listed_line_ranges_only",
+        "counted_in_partition_coverage": false
+      },
+      "line_ranges": [
+        [
+          132,
+          169
+        ],
+        [
+          243,
+          320
+        ],
+        [
+          350,
+          387
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/derive_state.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "pinned_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "git_blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+    "bytes": 27995,
+    "lines": 547,
+    "manifest_snapshot_sha256_present": true,
+    "manifest_snapshot_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+    "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+    "upstream_disposition_unchanged": "unreviewed",
+    "line_ranges": [
+      [
+        182,
+        225
+      ]
+    ],
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#trace",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 22,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "scripts/lib/derive_state.py",
+      "sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "source_row": {
+        "source": "harness",
+        "path": "scripts/lib/derive_state.py",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "pinned_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+        "git_blob": "83f3018b1c4fd187f5939d03d690735730f96e7a",
+        "bytes": 27995,
+        "lines": 547,
+        "manifest_snapshot_sha256_present": true,
+        "manifest_snapshot_sha256": "31eee2d4fa25db55dbc24a5a8a11f59496878110854dbf6094ec12ee58b9c6ae",
+        "hash_verification": "git_blob_and_bytes_and_snapshot_sha256",
+        "upstream_disposition_unchanged": "unreviewed",
+        "line_ranges": [
+          [
+            182,
+            225
+          ]
+        ],
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "tests_executed": [],
+        "read_extent": "listed_line_ranges_only",
+        "counted_in_partition_coverage": false
+      },
+      "line_ranges": [
+        [
+          182,
+          225
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "tests_executed": [],
+    "read_extent": "listed_line_ranges_only",
+    "counted_in_partition_coverage": false,
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#trace"
+  },
+  {
+    "source": "zeus",
+    "path": "AGENTS.md",
+    "revision": "working_tree_not_source_manifest",
+    "sha256": "535230bb5054c307c7d90dc14ea26f4a840d1f9a4f8ae2a5c1601df2033da9f2",
+    "bytes": 1399,
+    "lines": 17,
+    "line_ranges": [
+      [
+        1,
+        17
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#zeus",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 23,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "AGENTS.md",
+      "sha256": "535230bb5054c307c7d90dc14ea26f4a840d1f9a4f8ae2a5c1601df2033da9f2",
+      "revision": "working_tree_not_source_manifest",
+      "source_row": {
+        "source": "zeus",
+        "path": "AGENTS.md",
+        "revision": "working_tree_not_source_manifest",
+        "sha256": "535230bb5054c307c7d90dc14ea26f4a840d1f9a4f8ae2a5c1601df2033da9f2",
+        "bytes": 1399,
+        "lines": 17,
+        "line_ranges": [
+          [
+            1,
+            17
+          ]
+        ],
+        "read_extent": "listed_line_ranges_only",
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "counted_in_partition_coverage": false,
+        "tests_executed": []
+      },
+      "line_ranges": [
+        [
+          1,
+          17
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "counted_in_partition_coverage": false,
+    "tests_executed": [],
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus"
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/domain/sdd.py",
+    "revision": "working_tree_not_source_manifest",
+    "sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+    "bytes": 12845,
+    "lines": 202,
+    "line_ranges": [
+      [
+        8,
+        22
+      ],
+      [
+        169,
+        202
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#zeus",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 24,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "src/codex_harness/domain/sdd.py",
+      "sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+      "revision": "working_tree_not_source_manifest",
+      "source_row": {
+        "source": "zeus",
+        "path": "src/codex_harness/domain/sdd.py",
+        "revision": "working_tree_not_source_manifest",
+        "sha256": "ce732ce4264baaddd6ba05c41086828f5420916eec8a75f5321f024f1404e1cc",
+        "bytes": 12845,
+        "lines": 202,
+        "line_ranges": [
+          [
+            8,
+            22
+          ],
+          [
+            169,
+            202
+          ]
+        ],
+        "read_extent": "listed_line_ranges_only",
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "counted_in_partition_coverage": false,
+        "tests_executed": []
+      },
+      "line_ranges": [
+        [
+          8,
+          22
+        ],
+        [
+          169,
+          202
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "counted_in_partition_coverage": false,
+    "tests_executed": [],
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus"
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/application/sdd.py",
+    "revision": "working_tree_not_source_manifest",
+    "sha256": "eb513617efd896f1ab7b89379fc023c30bd2a1a6f09130e6be828c22dc8065b0",
+    "bytes": 12402,
+    "lines": 197,
+    "line_ranges": [
+      [
+        159,
+        184
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#zeus",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 25,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "src/codex_harness/application/sdd.py",
+      "sha256": "eb513617efd896f1ab7b89379fc023c30bd2a1a6f09130e6be828c22dc8065b0",
+      "revision": "working_tree_not_source_manifest",
+      "source_row": {
+        "source": "zeus",
+        "path": "src/codex_harness/application/sdd.py",
+        "revision": "working_tree_not_source_manifest",
+        "sha256": "eb513617efd896f1ab7b89379fc023c30bd2a1a6f09130e6be828c22dc8065b0",
+        "bytes": 12402,
+        "lines": 197,
+        "line_ranges": [
+          [
+            159,
+            184
+          ]
+        ],
+        "read_extent": "listed_line_ranges_only",
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "counted_in_partition_coverage": false,
+        "tests_executed": []
+      },
+      "line_ranges": [
+        [
+          159,
+          184
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "counted_in_partition_coverage": false,
+    "tests_executed": [],
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus"
+  },
+  {
+    "source": "zeus",
+    "path": "src/codex_harness/domain/model_routing.py",
+    "revision": "working_tree_not_source_manifest",
+    "sha256": "d0ae2ae1718ca860a09e56b0b594533d50ff4d47d8394b354620c5fc321ec3e8",
+    "bytes": 1514,
+    "lines": 39,
+    "line_ranges": [
+      [
+        24,
+        39
+      ]
+    ],
+    "read_extent": "listed_line_ranges_only",
+    "review_ref": "docs/full-analysis/harness-contract-tests-004/review.md#zeus",
+    "read_basis": "same_bytes_prior_read_ranges_reused",
+    "previous_review_reuse": {
+      "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+      "review_sha256": "574fa2432a79d284d8ef32baf547290e745e4d14f8eacfcc9d03f281990ecaff",
+      "supporting_ledger_row_index_zero_based": 26,
+      "supporting_ledger": "docs/full-analysis/harness-integration-tests-001/supporting-evidence.json",
+      "supporting_ledger_sha256": "4c87d34e05d3a30efd59e0a4118afef08f482cc6100fce043764b96804886199",
+      "path": "src/codex_harness/domain/model_routing.py",
+      "sha256": "d0ae2ae1718ca860a09e56b0b594533d50ff4d47d8394b354620c5fc321ec3e8",
+      "revision": "working_tree_not_source_manifest",
+      "source_row": {
+        "source": "zeus",
+        "path": "src/codex_harness/domain/model_routing.py",
+        "revision": "working_tree_not_source_manifest",
+        "sha256": "d0ae2ae1718ca860a09e56b0b594533d50ff4d47d8394b354620c5fc321ec3e8",
+        "bytes": 1514,
+        "lines": 39,
+        "line_ranges": [
+          [
+            24,
+            39
+          ]
+        ],
+        "read_extent": "listed_line_ranges_only",
+        "review_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus",
+        "read_basis": "displayed_and_read_current_review",
+        "previous_review_reuse": null,
+        "counted_in_partition_coverage": false,
+        "tests_executed": []
+      },
+      "line_ranges": [
+        [
+          24,
+          39
+        ]
+      ],
+      "same_bytes_verified_current_review": true
+    },
+    "counted_in_partition_coverage": false,
+    "tests_executed": [],
+    "prior_ref": "docs/full-analysis/harness-integration-tests-001/review.md#zeus"
+  }
+]

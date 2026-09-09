@@ -1,0 +1,20 @@
+{
+  "partition": "baldrix:scripts:001",
+  "scope_sha256": "88f312e063cef98546adc6c289ba4b0670596f45b361f52b9790626619ca4d34",
+  "primary_count": 5,
+  "primary_bytes": 26711,
+  "primary_body_read_complete": true,
+  "root_supporting_count": 6,
+  "root_supporting_fresh_full": 2,
+  "root_supporting_fresh_partial": 4,
+  "prior_read_reused": 0,
+  "original_unit_tests_passed": 5,
+  "unit_oracle": "Static installer-text assertions, not installed-hook execution",
+  "original_component_programs_completed": 1,
+  "component_scope": "Actual original CLI processes on synthetic files and actual ephemeral Git repo/worktree hook installation. Missing-jq original Bash failure observed separately from passing unit tests.",
+  "actual_push_or_full_generated_hook_suite_executions": 0,
+  "actual_provider_model_task_invocations": 0,
+  "whole_analysis_complete": false,
+  "partition_complete": false,
+  "adoption_approved": false
+}

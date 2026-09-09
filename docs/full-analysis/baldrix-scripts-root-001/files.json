@@ -1,0 +1,127 @@
+[
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/context-bar.sh",
+    "bytes": 8489,
+    "git_blob": "283befd1183906f4653716fac97e288991a9ec31",
+    "pinned_sha256": "f7cc0bb6eea0846cff565cf590f5fe669149eeb5492a60f609ff6c78dd67036e",
+    "matches_manifest_sha256": true,
+    "line_count": 222,
+    "read_ranges": [
+      [
+        1,
+        222
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-scripts-root-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/file-changed-handler.py",
+    "bytes": 3227,
+    "git_blob": "d1305d051ef04db168d9bbc39c78d5e6e097035c",
+    "pinned_sha256": "31e9a8cbbe9f084c3056bfed20bee907786576da09dd828b7b5523699e3c892f",
+    "matches_manifest_sha256": true,
+    "line_count": 111,
+    "read_ranges": [
+      [
+        1,
+        111
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-scripts-root-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/install_pre_commit.sh",
+    "bytes": 4521,
+    "git_blob": "5fc3725f360de9f95afec97f9d6e6929b0705ad7",
+    "pinned_sha256": "ff5b93819c13cea4c40c20ee9ecf21b2f437ab67016de465a6c11a0a7a67d676",
+    "matches_manifest_sha256": true,
+    "line_count": 87,
+    "read_ranges": [
+      [
+        1,
+        87
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-scripts-root-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/jacoco-gap.py",
+    "bytes": 4202,
+    "git_blob": "76eb366ca82f01274d9b2932b858d12746ceb74d",
+    "pinned_sha256": "9e5b8a28e7d95a76588ede090a626d1a3b7294af09844329b40a4500e44dcdc4",
+    "matches_manifest_sha256": true,
+    "line_count": 116,
+    "read_ranges": [
+      [
+        1,
+        116
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-scripts-root-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  },
+  {
+    "source": "baldrix",
+    "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+    "path": "scripts/mermaid-validate.py",
+    "bytes": 6272,
+    "git_blob": "1e8bc79f83d509814678d1e52ef4647da3249f0e",
+    "pinned_sha256": "ac25d8d60b6b2f2d6f34a404d452b8a106daef671435ee3d44d0555c24dcee7a",
+    "matches_manifest_sha256": true,
+    "line_count": 186,
+    "read_ranges": [
+      [
+        1,
+        186
+      ]
+    ],
+    "read_extent": "full_body",
+    "reader": "Codex root",
+    "disposition": "body_reviewed_call_test_trace_pending",
+    "review_ref": "docs/full-analysis/baldrix-scripts-root-001/resolution.md",
+    "remaining": [
+      "Complete transitive callers/config/tests",
+      "Platform and acceptance qualification",
+      "License/provenance and Zeus adoption decision"
+    ]
+  }
+]

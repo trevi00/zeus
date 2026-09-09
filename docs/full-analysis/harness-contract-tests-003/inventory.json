@@ -1,0 +1,72 @@
+{
+  "partition": "harness:tests/contract:003",
+  "scope_sha256": "e847aa7f221647d76e63d55172f16f264b415dcfa6e793712e760dc0bb47b188",
+  "bytes": 178523,
+  "paths": [
+    {
+      "source": "harness",
+      "path": "tests/contract/test_gate_executable_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_guardian_contract_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_harness_lint.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_health_alerts_surface_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_heredoc_guard_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_hollow_audit.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_hook_adversarial.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_idle_role_arm_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_inv_bite_smoke.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_isolation_deferred_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_judge_integrity_league.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_judgment_paths_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_known_issues_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_l2_driver_latency_gate.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_ladder_sweep_contract.py"
+    },
+    {
+      "source": "harness",
+      "path": "tests/contract/test_latency_consumer_contract.py"
+    }
+  ],
+  "purpose": "Work partition only; inventory/grouping is not semantic review or subsystem completion."
+}

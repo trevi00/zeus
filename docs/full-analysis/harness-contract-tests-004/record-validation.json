@@ -1,0 +1,18 @@
+{
+  "metadata_valid": true,
+  "refs_checked": 55,
+  "primary_files": 14,
+  "primary_bytes": 187846,
+  "primary_lines": 3537,
+  "support_rows": 30,
+  "prior_rows": 11,
+  "prior_raw_ledger_review_row_identity_verified": true,
+  "utf8_valid": true,
+  "recorder_lf": true,
+  "own_ruff": "passed",
+  "upstream_execution": 0,
+  "live_state_accessed": false,
+  "credentials_accessed": false,
+  "review_sha256": "4eb52f73fd4deaaf2a20bc35d96421a79b221c6d3ad14f01c2d380b313777d7e",
+  "checkpoint_sha256": "8a57c051e51bdbc503049f6e00aa01b7471d16f189b0924d298d8057a11e3ddf"
+}

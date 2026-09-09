@@ -1,0 +1,22 @@
+{
+  "partition": "baldrix:scripts/tests:001",
+  "scope_sha256": "9d1c10cbeb203a9f8286f5ee844cb6508f7e20dab087c46b039a38f5e067ffc5",
+  "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "primary_count": 26,
+  "primary_bytes": 191653,
+  "full_body_accounted": 26,
+  "fresh_full_body_reads": 26,
+  "same_byte_prior_full_body_reused": 0,
+  "primary_unread": [],
+  "source_executions": 0,
+  "tests_executed": [],
+  "supporting_files": 29,
+  "transitive_closure_complete": false,
+  "partition_complete": false,
+  "whole_analysis_complete": false,
+  "adoption_ready": false,
+  "actual_claude_whole_area": false,
+  "manifest_sha256": "0b716d66babe444d28a20093a95a5d13639c7c7dbcc364906a6a9af3596237a5",
+  "partitions_sha256": "b0542d3c42e7780d6174b3b31c13d73f0067f57c4288705849bb2e42943b31e8",
+  "reason": "Bounded static primary checkpoint; all unexecuted tests and trace/license/platform/model gaps remain open."
+}

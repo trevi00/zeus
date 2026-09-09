@@ -1,0 +1,470 @@
+[
+  {
+    "path": "scripts/tests/__init__.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/__init__.py",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "bytes": 0,
+      "pinned_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/conftest.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/conftest.py",
+      "git_blob": "0d407ca6fadd49a40f6a0d98417c68fe33a39da9",
+      "mode": "100644",
+      "bytes": 3406,
+      "pinned_sha256": "e7f56d0c8ef2a3491e14ce7c7cbedf8165d2abd419207013ebd777eb0573d50d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/probe_intent_docs.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/probe_intent_docs.py",
+      "git_blob": "28bffdcc8a2217aee17b5ead255b1862b5f0adfc",
+      "mode": "100644",
+      "bytes": 6027,
+      "pinned_sha256": "9f4d30b32082fae9b92db90f49c9a38ba97b44680631d68cf280576b5acc2612",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/run_all.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/run_all.py",
+      "git_blob": "5847db0d9d93272a17411be61b016449dd19de5d",
+      "mode": "100644",
+      "bytes": 13346,
+      "pinned_sha256": "a1d1a5e37a22758d1579ac439cad844c113208daf44ca73ca6998fc3f3dce9ee",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/run_units.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/run_units.py",
+      "git_blob": "7c61b756e5ac9127ed57bddf136582fc67629a16",
+      "mode": "100644",
+      "bytes": 17340,
+      "pinned_sha256": "604dcf79343099bd6bfd87586591daa7db06eef5a88c922890a2b01e13ce9f68",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_ac_tree.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_ac_tree.py",
+      "git_blob": "f8a720607485915d300ef4a81e5dd03d75c6d747",
+      "mode": "100644",
+      "bytes": 6923,
+      "pinned_sha256": "b050b03810c68e6cf1d2672e18d8a85861272b50b86d3fab2c96c1c04b6faf80",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_action_evolver_selfcheck.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_action_evolver_selfcheck.py",
+      "git_blob": "c61376077f17800651ddb3dc4094366ff50b6880",
+      "mode": "100644",
+      "bytes": 796,
+      "pinned_sha256": "5b4c3b13720cccc7d9f0c96eee0c485453f0b92f83eccf7733e5d3f8138646ac",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_advisory_ack.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_advisory_ack.py",
+      "git_blob": "5cd9554f0f3c744fd2d86144e54f32766530b353",
+      "mode": "100644",
+      "bytes": 6489,
+      "pinned_sha256": "30707569b3948b9ba255b9fedc58649559a2130e9afd71061df414523fb52961",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_advisory_research_dispatch.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_advisory_research_dispatch.py",
+      "git_blob": "9e791aacc0d06255c1aa16c19a04ae03f57a35d6",
+      "mode": "100644",
+      "bytes": 5060,
+      "pinned_sha256": "8f148fbd139935732c48550b380c5fa246740d554c87f839a28f880ebfcb0f5b",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_agent_invocation_audit.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_agent_invocation_audit.py",
+      "git_blob": "4afd1e044aea2cc7dabcefee86121bcc76952acc",
+      "mode": "100644",
+      "bytes": 17286,
+      "pinned_sha256": "4fbcf7c9b93ffe468059872b9656809ea18af536313b930d61fa0a82e8fbb39c",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_agent_outcome_audit.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_agent_outcome_audit.py",
+      "git_blob": "7f1da5fa8e2728531eed361d8fa64b1d188ce012",
+      "mode": "100644",
+      "bytes": 11892,
+      "pinned_sha256": "3e833bfceb47157a946f2bf4bdbcbaaa738d5d4b9e9959c3c3692e462c553a60",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_agent_tool_audit.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_agent_tool_audit.py",
+      "git_blob": "04cc145ac83417eda3f21f0829b46deff12feef3",
+      "mode": "100644",
+      "bytes": 12956,
+      "pinned_sha256": "8c3c1b827db8ed3555e536477a6789796e483b2a3cb3e9dbc513022e22fcc088",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_agents_capability.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_agents_capability.py",
+      "git_blob": "b05d7eb1a47819eac7cdcdec07a72d2fdb1c4c17",
+      "mode": "100644",
+      "bytes": 3583,
+      "pinned_sha256": "8f4dbac35e6dac2134ad69db2f94339f016f47caa6d73250155562aec9a842cb",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_agents_normalize.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_agents_normalize.py",
+      "git_blob": "c6499bbcf8ed701ed807d5939831e58de381ebb5",
+      "mode": "100644",
+      "bytes": 3383,
+      "pinned_sha256": "d76dcbd6c4acf8be74cbc6744e8b20903d208846531aa18adb387cead5a086c4",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_ai_spec_eval_coverage.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_ai_spec_eval_coverage.py",
+      "git_blob": "646feef6333baf1d5d5873fd8422319606c04caa",
+      "mode": "100644",
+      "bytes": 8168,
+      "pinned_sha256": "6d9150948cfa1f87f1a1f1a33231a41b65420786ad64425ac608381603c286fc",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_allsolution_metrics.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_allsolution_metrics.py",
+      "git_blob": "83450893bc235e155388c0d38d58f9c630dfb429",
+      "mode": "100644",
+      "bytes": 3641,
+      "pinned_sha256": "4b797354f60992f0c1f9a29636e3640cb2f069cac126456a801cc6a41bf6e3aa",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_ambiguity_report.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_ambiguity_report.py",
+      "git_blob": "fa88db166df1d0fa6bbb6280dd10ce71ca6e40ca",
+      "mode": "100644",
+      "bytes": 3012,
+      "pinned_sha256": "126883dbed5707da975f23f04c812860a97ff8cc43b9f1ead89bb74440569653",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_ambiguity_score.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_ambiguity_score.py",
+      "git_blob": "a6854902b3e6c68838f0ae8b748764410cd7f10a",
+      "mode": "100644",
+      "bytes": 847,
+      "pinned_sha256": "2238e2c8ec9c663bc83d8fdc6f69666b6dbf453f9a8f64c9d1f1c5d20c53602d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_assets_home_split.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_assets_home_split.py",
+      "git_blob": "877091dbdd5901962e6eaf1ae40fe146310dfc1f",
+      "mode": "100644",
+      "bytes": 6460,
+      "pinned_sha256": "e632786b421ede0907bae8f291312c89133d2baefe563e63802eb50b3cb59894",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_atlas_frontmatter.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_atlas_frontmatter.py",
+      "git_blob": "a15d2f091f972b0b6cb042fbf4c7c87c84649d51",
+      "mode": "100644",
+      "bytes": 3620,
+      "pinned_sha256": "3b9d5996a4ab75b4d4d1bd394241305bdd8caf385ae76635ebc75956ea7c6b87",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_atlas_structure.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_atlas_structure.py",
+      "git_blob": "2144b28b2f419743a84d6e97eabc7f81d98a1a89",
+      "mode": "100644",
+      "bytes": 2719,
+      "pinned_sha256": "9883053dc6050c2aaa3f70e9ddaf037ad6a8a39854c9a591aea75a8084e4aa0f",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_atomic_json.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_atomic_json.py",
+      "git_blob": "f889679aa42fea8ce10f3db36f3ea5857a174d28",
+      "mode": "100644",
+      "bytes": 8950,
+      "pinned_sha256": "da0171daab1c67fe77a259637744ecddf9ee4409b26fd9337f4cb925354c981d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_autopilot_compaction.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_compaction.py",
+      "git_blob": "22a4c24b901d6e8cf9cf32bebd9a9afde0fb8007",
+      "mode": "100644",
+      "bytes": 3330,
+      "pinned_sha256": "25e884e91d3ec2a06c1b7a2fb6a601fdfd9b24a1fcc6cb7b2b3e96949616b748",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_autopilot_continue.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_continue.py",
+      "git_blob": "018b4d0d2631bc3be5c0a86e505d653d12e86eb2",
+      "mode": "100644",
+      "bytes": 23780,
+      "pinned_sha256": "c202b3571f77bd7e06127196aa36ad9e2bd369ffaeec7b820786b61104f0907d",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_autopilot_flip_policy.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_flip_policy.py",
+      "git_blob": "e12b675a3ab385b8d9997490783389b89c487e3c",
+      "mode": "100644",
+      "bytes": 8625,
+      "pinned_sha256": "a439d3b554f5530204cf28a7b145aab20b91c384eaef9de6b057e4579febf7b9",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  },
+  {
+    "path": "scripts/tests/test_autopilot_kha_bridge.py",
+    "prior_ledger_row": {
+      "source": "baldrix",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "path": "scripts/tests/test_autopilot_kha_bridge.py",
+      "git_blob": "a692bb32a475d35e74610468237d4defb13760cb",
+      "mode": "100644",
+      "bytes": 10014,
+      "pinned_sha256": "b0628ef1c7d98b3095ec26fbf359abe58a1c695f359dc5de67a545c03ae0570a",
+      "disposition": "unreviewed",
+      "review_records": [],
+      "adoption_status": "not_approved_not_incorporated"
+    },
+    "prior_ledger_sha256": "148f2625175cdf82ef38ea94ae464385b3da24b0a8c05c0c1f6413d76d04cf7f",
+    "reused_for_read": false,
+    "new_global_coverage_claim": false
+  }
+]

@@ -1,0 +1,1098 @@
+[
+  {
+    "source": "harness",
+    "path": "scripts/validators/harness_lint.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 107200,
+    "git_blob": "50c0fa8284947feeaca160c1c0a49bdcd6b7e2a2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "observed_sha256": null,
+    "manifest_sha256": "45951f4a899a2854d9528e772db119a5840a8c8d323c5e518d6a4c3013972740",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1462,
+        1534
+      ],
+      [
+        1642,
+        1787
+      ],
+      [
+        2044,
+        2092
+      ]
+    ],
+    "total_lines": 2092,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s01",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/health_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 49796,
+    "git_blob": "ffc56a369eae2661de3f9ac954c8721385966065",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "observed_sha256": null,
+    "manifest_sha256": "0cc137674b2484cb1040f3c7e48f533280cb8b7583f87de92c1622eae7a3ba32",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        226,
+        350
+      ],
+      [
+        421,
+        427
+      ],
+      [
+        527,
+        606
+      ],
+      [
+        873,
+        895
+      ]
+    ],
+    "total_lines": 957,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s02",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/latency_gate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10813,
+    "git_blob": "f8a831f4a625750a70fa7a392f889fc2dbd06736",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c593e0469d6319f134e0991031400c1a7354bdc7948be79a047e564ac925fbcb",
+    "observed_sha256": null,
+    "manifest_sha256": "c593e0469d6319f134e0991031400c1a7354bdc7948be79a047e564ac925fbcb",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        57,
+        181
+      ]
+    ],
+    "total_lines": 200,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s03",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/heredoc_guard.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5882,
+    "git_blob": "4c911f35704830bc1ce114701c0ec8511f160d85",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "16cdafb98b75f7912e9fbba7c7764574ee60f78f8ae7582469f5f1ebd5418ba8",
+    "observed_sha256": null,
+    "manifest_sha256": "16cdafb98b75f7912e9fbba7c7764574ee60f78f8ae7582469f5f1ebd5418ba8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        26,
+        138
+      ]
+    ],
+    "total_lines": 138,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s04",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/isolation_deferred.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7007,
+    "git_blob": "3550af376791fbb3c96d8895b7c3a72117a96876",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c64cbe3d462daad0ab0ee2bb7ce589af9bb2e81148a654a168bbe7cdc7450be3",
+    "observed_sha256": null,
+    "manifest_sha256": "c64cbe3d462daad0ab0ee2bb7ce589af9bb2e81148a654a168bbe7cdc7450be3",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        38,
+        153
+      ]
+    ],
+    "total_lines": 153,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s05",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/judge_integrity.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7073,
+    "git_blob": "18810bab69c51d6e1797b176918a35aeda23e9ef",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8df5d919ae53c601f9d38ff7f13061f16c349cf5435335f4bec8dce1f1507e09",
+    "observed_sha256": null,
+    "manifest_sha256": "8df5d919ae53c601f9d38ff7f13061f16c349cf5435335f4bec8dce1f1507e09",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        40,
+        157
+      ]
+    ],
+    "total_lines": 157,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s06",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/l2_driver.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 119098,
+    "git_blob": "a5775ab038e33c8ad721e0e476246adac72687d3",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "observed_sha256": null,
+    "manifest_sha256": "00d9b0f569969d61175e8e70ff8a67cd77f7a5ec219a0be30bf54874c88c2c79",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        292,
+        446
+      ],
+      [
+        859,
+        1136
+      ],
+      [
+        1356,
+        1416
+      ],
+      [
+        1420,
+        1468
+      ],
+      [
+        1754,
+        1831
+      ],
+      [
+        1842,
+        1883
+      ],
+      [
+        1917,
+        1930
+      ]
+    ],
+    "total_lines": 2044,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s07",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/autoheart_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 82521,
+    "git_blob": "54b05e8a985aa808332faeac36ec42188ae5a228",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "70d5ac60fa8475f8a659f8c9bc11fa8e7308b7e7859d4e37f0ad37d22c0c3c81",
+    "observed_sha256": null,
+    "manifest_sha256": "70d5ac60fa8475f8a659f8c9bc11fa8e7308b7e7859d4e37f0ad37d22c0c3c81",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        350,
+        356
+      ],
+      [
+        773,
+        826
+      ],
+      [
+        950,
+        970
+      ],
+      [
+        1050,
+        1078
+      ],
+      [
+        1104,
+        1142
+      ]
+    ],
+    "total_lines": 1444,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s08",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/judgment_paths.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8326,
+    "git_blob": "ea20fa75faa0faa462041e7a33ff20038c60fb95",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a304eaa95c8039e7d387d808ffabfe6292fbe3ac1f27aa86d39fdf6991e9cfe7",
+    "observed_sha256": null,
+    "manifest_sha256": "a304eaa95c8039e7d387d808ffabfe6292fbe3ac1f27aa86d39fdf6991e9cfe7",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        26,
+        150
+      ]
+    ],
+    "total_lines": 167,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s09",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/hollow_audit.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6999,
+    "git_blob": "6ff3da459b10a29c31d44da5e57be985e5a2cf4f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "5e746af736118a003f6484d28c2120f262e0fbffef2b2f0d0723765c69d9e0d2",
+    "observed_sha256": null,
+    "manifest_sha256": "5e746af736118a003f6484d28c2120f262e0fbffef2b2f0d0723765c69d9e0d2",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        45,
+        166
+      ]
+    ],
+    "total_lines": 166,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s10",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/hollow_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6249,
+    "git_blob": "7bc5a60ee37316fae0d60fc7e6e756842b9856ef",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bc8e9d67bb318501be0c6b85e070bd99b7ef0de60ca866e79106f6100a9d40b4",
+    "observed_sha256": null,
+    "manifest_sha256": "bc8e9d67bb318501be0c6b85e070bd99b7ef0de60ca866e79106f6100a9d40b4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        30,
+        94
+      ]
+    ],
+    "total_lines": 144,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s11",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/invariants_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 26694,
+    "git_blob": "1df82f15cb43d21c13fd047bcbd40850219f0a6a",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "395c8bbdfc5d938057a6e36229b277a3b1aada2c50d916b68b291f3c881706b9",
+    "observed_sha256": null,
+    "manifest_sha256": "395c8bbdfc5d938057a6e36229b277a3b1aada2c50d916b68b291f3c881706b9",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        390,
+        451
+      ]
+    ],
+    "total_lines": 526,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s12",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/guardian_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7882,
+    "git_blob": "04e1685e19a38f14ad41280449cd7cbcf314177f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1cd82ffe99e903d27e6689f0f58546a1712401a6ba90924ce4ee5d2cb44af40e",
+    "observed_sha256": null,
+    "manifest_sha256": "1cd82ffe99e903d27e6689f0f58546a1712401a6ba90924ce4ee5d2cb44af40e",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        27,
+        145
+      ]
+    ],
+    "total_lines": 146,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s13",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/dispatch.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 15100,
+    "git_blob": "9632145bbdbadf27ffabc2d8140a9e510829c4bb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e6a991db9cc472e64f580a022d78c275ef0ea47bb8e908d841b64fd86af44092",
+    "observed_sha256": null,
+    "manifest_sha256": "e6a991db9cc472e64f580a022d78c275ef0ea47bb8e908d841b64fd86af44092",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        160,
+        264
+      ],
+      [
+        266,
+        311
+      ]
+    ],
+    "total_lines": 311,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s14",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/hook_protocol.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 6678,
+    "git_blob": "fb3d15d991e64a1c965b98ade949f86cf8fca2bb",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "6a7e42b754a3db7eb191ab2801351654b9d7fecee9b11111f07a8b3e60caaca4",
+    "observed_sha256": null,
+    "manifest_sha256": "6a7e42b754a3db7eb191ab2801351654b9d7fecee9b11111f07a8b3e60caaca4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        30,
+        73
+      ],
+      [
+        103,
+        167
+      ]
+    ],
+    "total_lines": 167,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s15",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/stop/heartbeat.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1895,
+    "git_blob": "22f83b6c17430a9bc599ea20b7f9714a9824aa8f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "633e1054e7516f9b8baa885742dee29c24d56d9a611c794e8005dc6cb472bca5",
+    "observed_sha256": null,
+    "manifest_sha256": "633e1054e7516f9b8baa885742dee29c24d56d9a611c794e8005dc6cb472bca5",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        45
+      ]
+    ],
+    "total_lines": 45,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s16",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/dispatch.sh",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1530,
+    "git_blob": "5f3d2ab5bcfc3969450c975fa16635d898a71733",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df",
+    "observed_sha256": null,
+    "manifest_sha256": "9b58370b0b6c37203c7375913facde2c1ebf6769b0abf367a0ab50a09441a0df",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        25
+      ]
+    ],
+    "total_lines": 25,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s17",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cron/known_issues.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 8360,
+    "git_blob": "3cfac1da20fee1601e3541934f367cb699db35c8",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "dc3255792c3faa9074d553b4d5bede71ed0b46aa3f2243ffdd6f2ebf8cf8951d",
+    "observed_sha256": null,
+    "manifest_sha256": "dc3255792c3faa9074d553b4d5bede71ed0b46aa3f2243ffdd6f2ebf8cf8951d",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        64,
+        174
+      ]
+    ],
+    "total_lines": 191,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s18",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/pr4.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 9550,
+    "git_blob": "d494e5cf248ff9555d6fd5587a704c47403a0587",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "1faa167746d59086af48ab3125c9d2fca4c44384f4c7aa0218a8790fe3d37405",
+    "observed_sha256": null,
+    "manifest_sha256": "1faa167746d59086af48ab3125c9d2fca4c44384f4c7aa0218a8790fe3d37405",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        83,
+        184
+      ]
+    ],
+    "total_lines": 224,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s19",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/validators/todo_scan.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 3422,
+    "git_blob": "ffc0ebdcf1ab533d960a77366d35f89c38215e40",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "deb30faf232b79b4202374911e641eaf06492c0de9bac2f941efce4b2ec52235",
+    "observed_sha256": null,
+    "manifest_sha256": "deb30faf232b79b4202374911e641eaf06492c0de9bac2f941efce4b2ec52235",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        22,
+        78
+      ]
+    ],
+    "total_lines": 78,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s20",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "tests/contract/test_role_supervisor_contract.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 33391,
+    "git_blob": "40ef635ca3ed0dcad762c008946068a23c23c97b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "4da60355ee555c65e28b184245c799f58c11756bfed81c6a86b982fd0af9e1c8",
+    "observed_sha256": null,
+    "manifest_sha256": "4da60355ee555c65e28b184245c799f58c11756bfed81c6a86b982fd0af9e1c8",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        110,
+        146
+      ],
+      [
+        149,
+        156
+      ],
+      [
+        292,
+        357
+      ]
+    ],
+    "total_lines": 649,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s21",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "pipelines/role-request.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 4997,
+    "git_blob": "33c715f7432f8f9a269da797c5a1122ee9bdffe2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "aafac00407fd125c82e24a3207419b0de4a1c8d5ed4229d2c6f85f6ba4b50ca1",
+    "observed_sha256": null,
+    "manifest_sha256": "aafac00407fd125c82e24a3207419b0de4a1c8d5ed4229d2c6f85f6ba4b50ca1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        83
+      ]
+    ],
+    "total_lines": 83,
+    "body_read_complete": true,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s22",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/run_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 18018,
+    "git_blob": "720f5bd6837e2dc81118e36a42c05a2f1986eb7f",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "a5bfa1c7f898da4117412fb734a8e3d8928a7fcbc038e94715a7aa884d700f47",
+    "observed_sha256": null,
+    "manifest_sha256": "a5bfa1c7f898da4117412fb734a8e3d8928a7fcbc038e94715a7aa884d700f47",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        60,
+        155
+      ]
+    ],
+    "total_lines": 322,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s23",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/checks.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 13179,
+    "git_blob": "ed9d1a309a0d8eb789d831e6d57d3ca8c6a84e41",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27",
+    "observed_sha256": null,
+    "manifest_sha256": "86d78e579a5c2f149ffbc44f6e63231293bb7d5f6592b631383271b88a047f27",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        18,
+        31
+      ],
+      [
+        63,
+        70
+      ],
+      [
+        92,
+        113
+      ],
+      [
+        115,
+        145
+      ],
+      [
+        147,
+        154
+      ],
+      [
+        170,
+        204
+      ],
+      [
+        214,
+        248
+      ],
+      [
+        259,
+        275
+      ]
+    ],
+    "total_lines": 284,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s24",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/pipeline_loader.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 22805,
+    "git_blob": "31763ff0da1a1e26942c288faebd991c0c8abc35",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "8731d0d2325e1cc293269a27f8e21eeb58ed8555cacecab130c27460a2ea601c",
+    "observed_sha256": null,
+    "manifest_sha256": "8731d0d2325e1cc293269a27f8e21eeb58ed8555cacecab130c27460a2ea601c",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        25,
+        35
+      ],
+      [
+        78,
+        101
+      ]
+    ],
+    "total_lines": 467,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s25",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/test_outcome.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 18074,
+    "git_blob": "d8f1c080bada2a498a1bc27799b65a21bb579c85",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "observed_sha256": null,
+    "manifest_sha256": "cdfa76528df5a5aef40fae0ae59287b9b512042b5d07e10f38525e314549e6e9",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        90,
+        105
+      ],
+      [
+        189,
+        253
+      ]
+    ],
+    "total_lines": 345,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s26",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/suite_cmd.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 35632,
+    "git_blob": "13e92d6a8be8e30d25a44bc7ba8d90fd0f010712",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "observed_sha256": null,
+    "manifest_sha256": "bc4ed2f887fdfece0b3ec07d64342b31ac09cc7214817b1a31f01a51815444fe",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        75,
+        110
+      ]
+    ],
+    "total_lines": 624,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s27",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/handlers/registry.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5748,
+    "git_blob": "a7697308e6b79bc466276dd13c011bc1dbffc8bd",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "fb1f148241c27cc78481c8f8e32747582cf5b492183754c4cce0a72cdca766a4",
+    "observed_sha256": null,
+    "manifest_sha256": "fb1f148241c27cc78481c8f8e32747582cf5b492183754c4cce0a72cdca766a4",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        26,
+        89
+      ]
+    ],
+    "total_lines": 97,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s28",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": ".claude/settings.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 2146,
+    "git_blob": "543919592f4bf4b9e0f0e9eb16299c1788b84409",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "d7f9e4b551505c3fef8a3dc4470f50e024e21494cc6337c1d58e44355753da0a",
+    "observed_sha256": null,
+    "manifest_sha256": null,
+    "manifest_sha256_status": "absent_computed_only",
+    "read_ranges": [
+      [
+        1,
+        96
+      ]
+    ],
+    "total_lines": 98,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s29",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "ontology/contracts.yaml",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 36677,
+    "git_blob": "b56440b1bec22366554703cf23da06b440596807",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "830a8b9a8aa9d64e4530afdb91421551b9a6a0aba81e26ba4fda6e6133d40ab0",
+    "observed_sha256": null,
+    "manifest_sha256": "830a8b9a8aa9d64e4530afdb91421551b9a6a0aba81e26ba4fda6e6133d40ab0",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        507,
+        524
+      ]
+    ],
+    "total_lines": 548,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s30",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "config/policy/validator-ladder.json",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 1443,
+    "git_blob": "897e4109806c61ceda5a90f93599d7ec091dd495",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c4998aabef25e52ac680195b7b3645396090ee2c9eae5671bbe1d7cd21da8447",
+    "observed_sha256": null,
+    "manifest_sha256": "c4998aabef25e52ac680195b7b3645396090ee2c9eae5671bbe1d7cd21da8447",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        1,
+        65
+      ]
+    ],
+    "total_lines": 66,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s31",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/engine/ladder_probe.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 10203,
+    "git_blob": "02c60b2a69669cfc21e7062a124a4b8387f237d2",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "9a5de2f038f53e6655a57e7e9f5e4feecf3f04e67436b679cbf44d8be5c371c1",
+    "observed_sha256": null,
+    "manifest_sha256": "9a5de2f038f53e6655a57e7e9f5e4feecf3f04e67436b679cbf44d8be5c371c1",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        183,
+        224
+      ]
+    ],
+    "total_lines": 224,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s32",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/lib/lease.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 5752,
+    "git_blob": "dcf661e9f709c5d81120b462503af0e0fcd9c69a",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "c79fae38c34ece03a67a87d2072c3efea71a40a220dca1fc6d7303d1d6a86244",
+    "observed_sha256": null,
+    "manifest_sha256": "c79fae38c34ece03a67a87d2072c3efea71a40a220dca1fc6d7303d1d6a86244",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        57,
+        95
+      ]
+    ],
+    "total_lines": 144,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s33",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "scripts/cli/hook_latency_probe.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 7248,
+    "git_blob": "85b7ea609a174db037a468244d1d589b78adba33",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "e150384a28f73c6be1f78536a775e269fa5c979890a252f71a650fe05e0259cf",
+    "observed_sha256": null,
+    "manifest_sha256": "e150384a28f73c6be1f78536a775e269fa5c979890a252f71a650fe05e0259cf",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        47,
+        124
+      ]
+    ],
+    "total_lines": 158,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s34",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  },
+  {
+    "source": "harness",
+    "path": "tests/_isolate.py",
+    "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+    "bytes": 21666,
+    "git_blob": "ac21d23d01c3ee75c109cb1d462a5c2b03ba793b",
+    "raw_git_blob_status": "matched",
+    "pinned_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+    "observed_sha256": null,
+    "manifest_sha256": "2de08b28c848524765a70cf38a52fa57265c92fdea51aa336b320c850d7872fa",
+    "manifest_sha256_status": "matched",
+    "read_ranges": [
+      [
+        47,
+        110
+      ],
+      [
+        214,
+        243
+      ]
+    ],
+    "total_lines": 402,
+    "body_read_complete": false,
+    "read_basis": "fresh_pinned_body_read",
+    "prior_ref": null,
+    "tests_executed": [],
+    "test_limits": "Upstream execution/import/probe/network/install prohibited: none performed.",
+    "id": "s35",
+    "counted_as_primary": false,
+    "review_ref": "docs/full-analysis/harness-contract-tests-003/review.md#supporting",
+    "disposition": "supporting_ranges_reviewed_execution_pending"
+  }
+]
