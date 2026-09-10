@@ -492,6 +492,26 @@ its owner to resume, and a tampered bundle is preserved and not used. Every run 
 its source revision and environment. None of this is a user acceptance, a privacy
 qualification or a deployment.
 
+## INV-COMPLETION-001
+
+A task row's `succeeded` status is the executor's self-report; completion authority comes
+only from a completion verdict bound to that execution. Verdict records use a closed,
+versioned schema: an unknown or missing schema version, an unrelated event name, a verdict
+that is not one of approved/iterate/escalate, a non-finite or naive or future observed time,
+a caller-supplied completeness or cross-target flag, and every unexpected key are refused as
+structured errors and kept as rejection notices, never as evidence. Each verdict binds the
+task, generation and attempt (checked against the PostgreSQL-owned row in the same
+transaction), the spec revision, the evaluation artifact hash, a runner invocation receipt
+whose target must equal the verdict's, and a named reviewer; cross-target is derived from the
+receipt. The current verdict is the last recorded one for the current execution, spec and
+artifact; observed time never orders verdicts and a redelivered verdict keeps its original
+sequence, so an earlier approval never outranks a later rejection. Approval grants authority
+only when every expected scenario passed or carries a human-approved exclusion with a revision
+and reason; an empty scenario denominator is incomplete. Missing ledger, corrupt or partially
+corrupt rows, an unreadable store, rejection-only and not-evaluated are distinct states and
+none of them grants authority; no cold-start path waives evaluation. Dispatch does not consult
+this ledger yet; consumers opt in explicitly.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
