@@ -106,7 +106,8 @@
     "wsl/sync.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "wsl/uv-pypi-metadata.json": "e99b33a25577b1bc6561623d9652b95fc6164a9381ef1f4056bb966684ca2d4b",
     "wsl/uv-version.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "wsl/uv-version.stdout": "6a44d4c958923e8814b792113aa09af992fdbf283c562ee99ce52efb1ac874e2"
+    "wsl/uv-version.stdout": "6a44d4c958923e8814b792113aa09af992fdbf283c562ee99ce52efb1ac874e2",
+    "ticket-review-projection.json": "440a0b5f1558bbfaa0cfaddad20e892082bc2ae669c2d6daeeeaf09bda61cbc5"
   },
   "human_acceptance_granted": false
 }
