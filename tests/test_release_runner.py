@@ -57,12 +57,13 @@ def test_runner_refuses_reviewed_candidate_whose_patch_or_target_drifted(tmp_pat
     from codex_harness.domain.model import ContractError, digest
     service = Harness(MemoryStore(), organization())
     git = SimpleNamespace(repository=tmp_path, remote="fixture/repo", _git=lambda *args: "base",
+                          target_identity=lambda: "github:fixture/repo",
                           inspect=lambda *args: {"tree": "tree", "diff": "reviewed diff"},
                           review_workspace=lambda *args: str(tmp_path))
     artifacts = FileArtifacts(tmp_path / "artifacts")
     runner = ReleaseRunner(service, git, artifacts, str(tmp_path / "unused-auth"))
     candidate = {"revision": "candidate", "base": "base", "tree": "tree", "author": "worker:implementation",
-                 "repository": "fixture/repo" if drift == "patch" else "other/repo",
+                 "repository": "github:fixture/repo" if drift == "patch" else "github:other/repo",
                  "diff_hash": digest("tampered diff" if drift == "patch" else "reviewed diff")}
     release = runner.releases.propose(candidate, {"checks": ["tests", "cli_start", "cli_file_task"]})
     for actor in ("lead:improvement", "conductor"):

@@ -13,6 +13,17 @@ class GitCommandError(RuntimeError):
     """Transport/tool failure, distinct from a violated candidate contract."""
 
 
+GITHUB_REMOTE = re.compile(r"(?:(?:https?://|ssh://git@|git@)(?:www\.)?github\.com[:/])?"
+                           r"(?P<owner>[A-Za-z0-9][A-Za-z0-9-]{0,38})/(?P<repo>[A-Za-z0-9_.-]{1,100}?)(?:\.git)?/?\Z")
+
+
+def canonical_remote(remote: str) -> str:
+    """One identity per GitHub repository, whatever spelling configured it (slug, https, ssh, .git)."""
+    match = isinstance(remote, str) and GITHUB_REMOTE.fullmatch(remote.strip())
+    require(bool(match), "Unsupported remote target; use a GitHub owner/repo slug or URL")
+    return "github:" + match.group("owner").lower() + "/" + match.group("repo").lower()
+
+
 class GitWorkspace:
     def __init__(self, repository: str, workspaces: str, remote: str | None = None):
         self.repository = Path(repository).resolve()
@@ -28,13 +39,24 @@ class GitWorkspace:
         return result.stdout.strip() if strip else result.stdout
 
     def target_identity(self) -> str:
-        return self.remote or "local"
+        """Canonical target: the GitHub repository, or this exact local repository (its Git common
+        directory, re-read from Git on every call). A clone or copy is a different target (PR #48)."""
+        if self.remote:
+            return canonical_remote(self.remote)
+        common = Path(self._git("rev-parse", "--path-format=absolute", "--git-common-dir")).resolve()
+        return "local:" + common.as_posix()
 
-    def require_target(self, candidate: dict) -> None:
-        """A candidate captured for one repository never merges or publishes into another."""
+    def require_target(self, candidate: dict) -> str:
+        """A candidate captured for one repository never merges or publishes into another.
+
+        Candidates recorded before FA-015 carry no `repository`; they pass as `legacy_unverified`,
+        an explicit exception to the target guarantee, never as a verified target.
+        """
         recorded = candidate.get("repository")
-        require(recorded is None or recorded == self.target_identity(),
-                "Candidate target repository changed since review")
+        if recorded is None:
+            return "legacy_unverified"
+        require(recorded == self.target_identity(), "Candidate target repository changed since review")
+        return "verified"
 
     def prepare(self, task_id: str, base: str = "HEAD") -> dict:
         require(bool(re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", task_id)), "Invalid workspace ID")
@@ -155,7 +177,7 @@ class GitWorkspace:
         return result.returncode == 0
 
     def merge(self, candidate: dict) -> dict:
-        self.require_target(candidate)
+        target = self.require_target(candidate)
         require(self._git("rev-parse", candidate["revision"] + "^{tree}") == candidate["tree"],
                 "Candidate tree changed")
         if candidate.get("diff_hash"):
@@ -172,8 +194,8 @@ class GitWorkspace:
                     "Merged tree differs from reviewed candidate")
             self._git("merge", "--ff-only", merged_revision)
             return {"merged": True, "revision": candidate["revision"], "merged_revision": merged_revision,
-                    "transport": "github"}
+                    "transport": "github", "target": target}
         require(not self._git("status", "--porcelain"), "Main worktree is dirty")
         require(self._git("rev-parse", "HEAD") == candidate["base"], "Main changed; rebase and review again")
         self._git("merge", "--ff-only", candidate["revision"])
-        return {"merged": True, "revision": candidate["revision"], "transport": "local"}
+        return {"merged": True, "revision": candidate["revision"], "transport": "local", "target": target}

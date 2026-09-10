@@ -43,6 +43,19 @@ revision에, 검증은 revision+policy hash에, 승격 intent는 candidate 해�
 | Windows 전체 `uv run pytest -q` (Python 3.12.14) | 920 passed, 305 skipped (169s) |
 | `uv run ruff check .` | 통과 |
 
+## 검토 반영 (PR #48, P1: 서로 다른 로컬 저장소가 같은 `local` 대상으로 취급됨)
+
+- `adapters/git.target_identity()`: remote가 있으면 `canonical_remote()`로 정규화한 `github:owner/repo`
+  (slug·https·ssh·`.git`·대소문자 무관, GitHub 외 호스트는 거절), 없으면 `git rev-parse --git-common-dir`를 매번
+  다시 읽은 절대 경로 `local:<common-dir>`입니다. A를 B로 clone하면 identity가 달라 B의 `merge()`는 `Candidate
+  target repository changed since review`로 거절되고 B는 손대지 않습니다.
+- `require_target()`은 `verified`/`legacy_unverified`를 돌려주고 merge 결과에 `target`으로 남깁니다. `repository`가
+  없는 레거시 후보는 계약의 명시적 예외이며 검증된 대상이 아닙니다(실제 승격 전 재검토 대상). `deployment.py`는
+  `git.target_identity()`를 그대로 사용합니다.
+- 회귀: `test_another_local_repository_is_another_target`(실제 Git clone), `test_remote_spellings_normalize_to_one_
+  target`, 기존 검사의 `local` 문자열 기대를 identity 값으로 갱신, release runner 드리프트 검사는 정규화된 identity
+  사용.
+
 ## 남은 범위
 
 - 상류의 단일 소비 토큰(consume의 read/check/unlink 직렬화)은 Zeus에 대응물이 없습니다 — 승격 intent는 PG 트랜잭션 안의

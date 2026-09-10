@@ -47,7 +47,7 @@ def test_capture_binds_target_repository_and_patch_hash_and_merge_rechecks_them(
     workspace = adapter.prepare("task-one", "HEAD")
     (Path(workspace["path"]) / "change.txt").write_text("review me", encoding="utf-8")
     candidate = adapter.capture(workspace)
-    assert candidate["repository"] == "local"
+    assert candidate["repository"] == adapter.target_identity() == "local:" + root.resolve().as_posix() + "/.git"
     assert candidate["diff_hash"] == digest(adapter.inspect(candidate["revision"], candidate["base"])["diff"])
     remote_adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"), remote="owner/repo")
     with pytest.raises(ContractError, match="target repository changed"):
@@ -58,7 +58,37 @@ def test_capture_binds_target_repository_and_patch_hash_and_merge_rechecks_them(
         adapter.merge({**candidate, "diff_hash": "0" * 64})
     assert not (root / "change.txt").exists(), "no rejected path touched main"
     legacy = {k: v for k, v in candidate.items() if k not in {"repository", "diff_hash"}}
-    assert adapter.merge(legacy)["merged"], "pre-FA-015 candidates stay mergeable"
+    merged = adapter.merge(legacy)
+    assert merged["merged"] and merged["target"] == "legacy_unverified", "pre-FA-015 candidates merge as an explicit exception"
+
+
+def test_another_local_repository_is_another_target(tmp_path):
+    # Review counterexample (PR #48): a clone of the reviewed repository consumed its approval.
+    root = repository(tmp_path)
+    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"))
+    workspace = adapter.prepare("task-one", "HEAD")
+    (Path(workspace["path"]) / "change.txt").write_text("review me", encoding="utf-8")
+    candidate = adapter.capture(workspace)
+    clone = tmp_path / "clone"
+    git(tmp_path, "clone", "--quiet", str(root), str(clone))
+    other = GitWorkspace(str(clone), str(tmp_path / "other-workspaces"))
+    assert other.target_identity() != adapter.target_identity()
+    with pytest.raises(ContractError, match="target repository changed"):
+        other.merge(candidate)
+    assert git(clone, "rev-parse", "HEAD") == candidate["base"], "the clone is untouched"
+    assert adapter.merge(candidate)["target"] == "verified"
+
+
+def test_remote_spellings_normalize_to_one_target(tmp_path):
+    from codex_harness.adapters.git import canonical_remote
+    root = repository(tmp_path)
+    spellings = ["Owner/Repo", "owner/repo.git", "https://github.com/Owner/Repo", "git@github.com:owner/repo.git",
+                 "ssh://git@github.com/owner/repo", "https://www.github.com/owner/repo/"]
+    assert {GitWorkspace(str(root), str(tmp_path / "w"), remote=r).target_identity() for r in spellings} == {"github:owner/repo"}
+    for bad in ("https://gitlab.com/owner/repo", "owner", "owner/repo/extra", ""):
+        with pytest.raises(ContractError, match="Unsupported remote target"):
+            canonical_remote(bad)
+    assert GitWorkspace(str(root), str(tmp_path / "w"), remote="other/repo").target_identity() != "github:owner/repo"
 
 
 def test_main_advance_invalidates_previous_merge_approval(tmp_path):

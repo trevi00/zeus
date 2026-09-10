@@ -104,7 +104,7 @@ class ReleaseRunner:
         if candidate.get("diff_hash"):
             require(digest(inspected["diff"]) == candidate["diff_hash"], "Candidate patch mismatch")
         if candidate.get("repository") is not None:
-            require(candidate["repository"] == (getattr(self.git, "remote", None) or "local"),
+            require(candidate["repository"] == self.git.target_identity(),
                     "Candidate target repository changed since review")
         incumbent = self.git.review_workspace(candidate["base"], "evaluator-" + release_id[:16])
         path = self.git.review_workspace(candidate["revision"], "canary-" + release_id[:16])
@@ -159,7 +159,7 @@ class ReleaseRunner:
         release_id, candidate, checks = release["id"], release["candidate"], release["checks"]
         self.fence()
         if candidate.get("repository") is not None:
-            require(candidate["repository"] == (getattr(self.git, "remote", None) or "local"),
+            require(candidate["repository"] == self.git.target_identity(),
                     "Candidate target repository changed since review")
         with self.service.store.transaction() as tx:
             ticket_binding(tx, candidate)
