@@ -137,6 +137,45 @@ def test_reservation_is_bound_to_current_ownership_and_capacity(backend, request
 
 
 @pytest.mark.parametrize('backend', ['memory', 'postgres'])
+@pytest.mark.parametrize('ending', ['cancel', 'fail_final', 'lease_expired'])
+def test_dead_executions_release_capacity_with_unknown_usage(backend, request, ending):
+    # Review counterexample (PR #51): a reservation of a cancelled execution stayed `reserved` and
+    # blocked every other execution at capacity=1 forever; only the same task's next attempt cleaned up.
+    store = backend_store(backend, request)
+    workflow, lease = running_lease(store, seconds=1 if ending == 'lease_expired' else 60)
+    ledger = InvocationLedger(store, capacity=1)
+    req = parse_request('app_server', {'model': 'gpt-5-codex', 'timeout': 30})
+    held = ledger.reserve(lease, request=req, budget_seconds=30, guard=lambda tx: workflow._owned(tx, lease))
+    other_workflow, other = running_lease(store, owner='owner-2', agent='worker:github')
+    with pytest.raises(ContractError, match='capacity is reserved'):
+        ledger.reserve(other, request=req, budget_seconds=30)
+    if ending == 'cancel':
+        workflow.cancel(lease['id'], 'conductor', 'operator stopped it')
+    elif ending == 'fail_final':
+        workflow.fail(lease, 'boom')
+        for _ in range(10):  # exhaust retries: the task ends failed without a newer attempt
+            retry = workflow.claim('worker:implementation', 'owner-1')
+            if retry is None:
+                break
+            workflow.fail(retry, 'boom again')
+    else:
+        import time
+        time.sleep(1.3)
+    released = ledger.reserve(other, request=req, budget_seconds=30)
+    assert released['status'] == 'reserved', ending
+    with store.transaction() as tx:
+        dead = tx.get(BUCKET, held['id'])
+        task = tx.get('tasks', lease['id'])
+    assert dead['status'] == 'unsettled_unknown' and dead['usage'] == {'source': 'unknown', 'total_tokens': None, 'last_tokens': None}
+    assert dead['reason'].startswith('execution_'), (ending, dead['reason'], task['status'])
+    if ending == 'lease_expired':
+        assert dead['reason'] == 'execution_lease_expired', 'an expired lease is not a live execution even before anyone reclaims the task'
+    summary = ledger.summary()
+    assert summary['by_status']['unsettled_unknown'] >= 1 and summary['usage_unknown'] >= 2, 'unknown stays unknown, never zero'
+    assert ledger.reclaim() == [], 'nothing else to reclaim'
+
+
+@pytest.mark.parametrize('backend', ['memory', 'postgres'])
 def test_settlement_is_idempotent_and_unknown_usage_is_never_zero(backend, request):
     store = backend_store(backend, request)
     workflow, lease = running_lease(store)

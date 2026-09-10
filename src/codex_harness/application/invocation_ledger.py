@@ -4,7 +4,9 @@ One reservation per model invocation of an execution attempt (bucket, task, gene
 invocation index), taken in the same transaction that proves current ownership; an attempt holds
 at most one open reservation at a time. Open reservations are the real concurrency budget.
 A reservation that never settles (crash, timeout, cancel) is closed as `unsettled_unknown` with
-unknown usage when the next attempt reserves; nothing is ever back-filled to zero.
+unknown usage when the next attempt reserves, or when any reservation finds that the execution
+holding it is no longer the current one (cancelled, failed, expired, superseded); nothing is ever
+back-filled to zero and a dead execution never holds capacity (review, PR #51).
 """
 from datetime import datetime, timezone
 
@@ -50,6 +52,7 @@ class InvocationLedger:
                     # stops counting against capacity only now that a newer attempt exists.
                     tx.put(BUCKET, row['id'], {**row, 'status': 'unsettled_unknown', 'usage': dict(UNKNOWN_USAGE),
                                                'closed_at': now, 'reason': 'superseded_by_new_attempt'})
+            self._reclaim_dead(tx, now)
             open_rows = [row for row in tx.scan(BUCKET) if row['status'] == 'reserved']
             require(len(open_rows) < self.capacity, 'Invocation capacity is reserved by other executions')
             row = {'id': key, 'bucket': bucket, 'task_id': lease['id'], 'generation': lease['generation'],
@@ -59,6 +62,33 @@ class InvocationLedger:
                    'usage': dict(UNKNOWN_USAGE), 'outcome': None}
             tx.put(BUCKET, key, row)
             return row
+
+    @staticmethod
+    def _reclaim_dead(tx, now):
+        """An open reservation counts only while the execution that took it is still the current one."""
+        reclaimed = []
+        for row in tx.scan(BUCKET):
+            if row['status'] != 'reserved':
+                continue
+            task = tx.get(row['bucket'], row['task_id'])
+            same_attempt = task is not None and (task.get('generation'), task.get('attempt')) == (row['generation'], row['attempt'])
+            lease_until = task.get('lease_until') if task else None
+            lease_live = isinstance(lease_until, str) and datetime.fromisoformat(lease_until) > datetime.fromisoformat(now)
+            alive = (same_attempt and task.get('status') == 'running' and task.get('lease_owner') == row['owner'] and lease_live)
+            if alive:
+                continue
+            reason = ('execution_missing' if task is None else 'execution_superseded' if not same_attempt
+                      else 'execution_lease_expired' if task.get('status') == 'running' and task.get('lease_owner') == row['owner']
+                      else 'execution_' + str(task.get('status')))
+            tx.put(BUCKET, row['id'], {**row, 'status': 'unsettled_unknown', 'usage': dict(UNKNOWN_USAGE),
+                                       'closed_at': now, 'reason': reason})
+            reclaimed.append(row['id'])
+        return reclaimed
+
+    def reclaim(self):
+        """Explicit recovery: close every reservation whose execution is no longer current."""
+        with self.store.transaction() as tx:
+            return self._reclaim_dead(tx, utcnow())
 
     def settle(self, reservation_id, *, outcome, usage, evidence_ref=None):
         outcome_check(outcome)
