@@ -1,0 +1,246 @@
+{
+  "issues": [
+    {
+      "number": 33,
+      "title": "[FA-032] 프로필 수집·모델 입력·출력의 민감정보 처리와 동의 범위 결속",
+      "url": "https://github.com/trevi00/zeus/issues/33"
+    },
+    {
+      "number": 32,
+      "title": "[FA-031] 마이그레이션 사전 검사의 버전·탐색·모듈 범위와 실제 DB 인수",
+      "url": "https://github.com/trevi00/zeus/issues/32"
+    },
+    {
+      "number": 31,
+      "title": "[FA-030] 스냅샷 무결성 검사의 변경 분모와 엄격한 데이터 검증",
+      "url": "https://github.com/trevi00/zeus/issues/31"
+    },
+    {
+      "number": 30,
+      "title": "[FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정",
+      "url": "https://github.com/trevi00/zeus/issues/30"
+    },
+    {
+      "number": 29,
+      "title": "[FA-028] enum·proto 집합 검사를 봉투·RPC·실제 인수와 분리",
+      "url": "https://github.com/trevi00/zeus/issues/29"
+    },
+    {
+      "number": 28,
+      "title": "[FA-027] 선언 그래프·실측 시나리오·필수 검사 분모 분리",
+      "url": "https://github.com/trevi00/zeus/issues/28"
+    },
+    {
+      "number": 27,
+      "title": "[FA-026] 테스트 실행기의 격리·수집 분모·실패 전달",
+      "url": "https://github.com/trevi00/zeus/issues/27"
+    },
+    {
+      "number": 26,
+      "title": "[FA-025] 설치·검사 결과와 실제 후보 리비전의 결속",
+      "url": "https://github.com/trevi00/zeus/issues/26"
+    },
+    {
+      "number": 25,
+      "title": "[FA-024] 계약 추출의 누락·변환 충돌·판정 권위 검증",
+      "url": "https://github.com/trevi00/zeus/issues/25"
+    },
+    {
+      "number": 24,
+      "title": "[FA-023] 구조·어휘 검사의 실제 분모와 인수 권위 분리",
+      "url": "https://github.com/trevi00/zeus/issues/24"
+    },
+    {
+      "number": 23,
+      "title": "[FA-022] 증거 검사 unknown·재실행 동일성·실행 권한 결속",
+      "url": "https://github.com/trevi00/zeus/issues/23"
+    },
+    {
+      "number": 22,
+      "title": "[FA-021] 자동 보정의 실제 평가 분모·소비자 동등성·승인값 결속",
+      "url": "https://github.com/trevi00/zeus/issues/22"
+    },
+    {
+      "number": 21,
+      "title": "[FA-020] 차단기 단일 재시험 예약·세대·저장 성공과 정책 경계 결속",
+      "url": "https://github.com/trevi00/zeus/issues/21"
+    },
+    {
+      "number": 20,
+      "title": "[FA-019] 모델 호출 계약·실측 사용량·실행 예산과 자격 증거 결속",
+      "url": "https://github.com/trevi00/zeus/issues/20"
+    },
+    {
+      "number": 19,
+      "title": "[FA-018] 완료 판정에 실제 평가 실행·대상·시도 신원 결속",
+      "url": "https://github.com/trevi00/zeus/issues/19"
+    },
+    {
+      "number": 18,
+      "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+      "url": "https://github.com/trevi00/zeus/issues/18"
+    },
+    {
+      "number": 17,
+      "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+      "url": "https://github.com/trevi00/zeus/issues/17"
+    },
+    {
+      "number": 16,
+      "title": "[FA-015] writeback 승인 대상 결속·단일 소비·다중 파일 복구 계약 보강",
+      "url": "https://github.com/trevi00/zeus/issues/16"
+    },
+    {
+      "number": 15,
+      "title": "[FA-014] 스펙 템플릿·GWT 검사·인수 테스트 생성의 계약 불일치",
+      "url": "https://github.com/trevi00/zeus/issues/15"
+    },
+    {
+      "number": 14,
+      "title": "[FA-013] 외부 게이트의 문장 귀속·철회·PARTIAL 소비 불일치",
+      "url": "https://github.com/trevi00/zeus/issues/14"
+    },
+    {
+      "number": 13,
+      "title": "[FA-012] 스킬 평가 지표와 실제 후보 선택·본문 주입의 불일치",
+      "url": "https://github.com/trevi00/zeus/issues/13"
+    },
+    {
+      "number": 12,
+      "title": "[FA-011] 스킬 품질 게이트의 미검사 PASS와 템플릿 계약 불일치",
+      "url": "https://github.com/trevi00/zeus/issues/12"
+    },
+    {
+      "number": 11,
+      "title": "[FA-010] Git 추적 밖 경험·플러그인·미커밋 노트의 분석 누락",
+      "url": "https://github.com/trevi00/zeus/issues/11"
+    },
+    {
+      "number": 10,
+      "title": "[FA-009] 테스트의 배선 문자열 검사와 실제 동작 혼동",
+      "url": "https://github.com/trevi00/zeus/issues/10"
+    },
+    {
+      "number": 9,
+      "title": "[FA-008] 기술 스택 템플릿과 실제 라우터 불일치",
+      "url": "https://github.com/trevi00/zeus/issues/9"
+    },
+    {
+      "number": 8,
+      "title": "[FA-007] 신규 compaction sidecar로 봉인 파손 판정 강등",
+      "url": "https://github.com/trevi00/zeus/issues/8"
+    },
+    {
+      "number": 7,
+      "title": "[FA-006] malformed 알림이 전체 릴레이 중단",
+      "url": "https://github.com/trevi00/zeus/issues/7"
+    },
+    {
+      "number": 6,
+      "title": "[FA-005] PASS 이후 ERROR를 완료 helper가 무시",
+      "url": "https://github.com/trevi00/zeus/issues/6"
+    },
+    {
+      "number": 5,
+      "title": "[FA-004] 중복 방지 검사와 기록 사이 동시 실행 경쟁",
+      "url": "https://github.com/trevi00/zeus/issues/5"
+    },
+    {
+      "number": 4,
+      "title": "[FA-003] lease epoch 재사용으로 이전 소유자 권한 부활",
+      "url": "https://github.com/trevi00/zeus/issues/4"
+    },
+    {
+      "number": 3,
+      "title": "[FA-002] 경험 수집 횟수와 독립 검증 횟수 혼동",
+      "url": "https://github.com/trevi00/zeus/issues/3"
+    },
+    {
+      "number": 2,
+      "title": "[FA-001] Windows Python 자식 출력 인코딩 계약 누락",
+      "url": "https://github.com/trevi00/zeus/issues/2"
+    },
+    {
+      "number": 1,
+      "title": "[ZEUS-ANALYSIS] Claude 로컬 하네스 전체 분석과 Zeus 흡수",
+      "url": "https://github.com/trevi00/zeus/issues/1"
+    }
+  ],
+  "prs": [
+    {
+      "headRefOid": "6c5734010044125e07db98523f22723b121453eb",
+      "number": 63,
+      "url": "https://github.com/trevi00/zeus/pull/63"
+    },
+    {
+      "headRefOid": "571e6cef57df4b817f634fa53d1cfe1db48234c9",
+      "number": 62,
+      "url": "https://github.com/trevi00/zeus/pull/62"
+    },
+    {
+      "headRefOid": "b7c301cf6f7de1133d2ee1be12354f0ad829a703",
+      "number": 61,
+      "url": "https://github.com/trevi00/zeus/pull/61"
+    },
+    {
+      "headRefOid": "a321c70b0d04ac7f65ca591e7bd2ad19386c57e1",
+      "number": 60,
+      "url": "https://github.com/trevi00/zeus/pull/60"
+    },
+    {
+      "headRefOid": "922e8c76152b4e1ad3ff59c447bb7f413f9ce92d",
+      "number": 59,
+      "url": "https://github.com/trevi00/zeus/pull/59"
+    },
+    {
+      "headRefOid": "ffe49cac4e3e757e71c618b8fa281703616ab58f",
+      "number": 58,
+      "url": "https://github.com/trevi00/zeus/pull/58"
+    },
+    {
+      "headRefOid": "f6acba25b9379328ab32bec522a1072b3745653c",
+      "number": 57,
+      "url": "https://github.com/trevi00/zeus/pull/57"
+    },
+    {
+      "headRefOid": "9ba590b1d7891048244a208fdd27ded92dd4df6c",
+      "number": 56,
+      "url": "https://github.com/trevi00/zeus/pull/56"
+    },
+    {
+      "headRefOid": "fc35ed0dcd9d3a9af31ddb712761b614d88055c6",
+      "number": 55,
+      "url": "https://github.com/trevi00/zeus/pull/55"
+    },
+    {
+      "headRefOid": "b2f36cb29430c37e8435c5f90479f3cd758ef1f4",
+      "number": 54,
+      "url": "https://github.com/trevi00/zeus/pull/54"
+    },
+    {
+      "headRefOid": "ae0f373a6b47d9622a90dfce99fb359b506cbfe9",
+      "number": 52,
+      "url": "https://github.com/trevi00/zeus/pull/52"
+    },
+    {
+      "headRefOid": "820d35358eb56f86e41da5689c83f5fba985f8f9",
+      "number": 51,
+      "url": "https://github.com/trevi00/zeus/pull/51"
+    },
+    {
+      "headRefOid": "7866032f8d485995f2ead86dc59449f273e37397",
+      "number": 50,
+      "url": "https://github.com/trevi00/zeus/pull/50"
+    },
+    {
+      "headRefOid": "f055fafdcf15774655dae16e6fde42edb3007adb",
+      "number": 49,
+      "url": "https://github.com/trevi00/zeus/pull/49"
+    },
+    {
+      "headRefOid": "318ce36c2e882f8e9e528ad309b63c8ac7631bb0",
+      "number": 46,
+      "url": "https://github.com/trevi00/zeus/pull/46"
+    }
+  ]
+}

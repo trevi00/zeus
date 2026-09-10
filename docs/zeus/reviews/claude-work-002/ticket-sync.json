@@ -1,0 +1,1110 @@
+[
+  {
+    "pr": 36,
+    "issue": 3,
+    "review": {
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "revision": 1,
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #36: 수용 후보\n\n검토 head: `620029f9e561fb77fbcc22f6a5817e054b8773bb`. Codex 독립 검토입니다.\n\n동일 본문의 observed → pinned A → pinned B 수집을 같은 claim 아래 별도 acquisition으로 보존합니다. 독립 재현에서 충돌 없이 세 provenance가 기록되며 occurrence 증가로 간주하지 않습니다.\n\n검증: 해당 head의 대상 검사 **22 passed in 3.16s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n\n?? ??: Ruff ??, ?? 990 passed / 314 skipped, PostgreSQL ?? 274 passed. ?? ?? `1954c3f66f506367f1ff11d886842aa77fa4aabf`. ?? ?? tree? ?? ??? `71001482cc965914daa1db9ff44a74cedf5e92dc`? ??? ?????.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/36",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/36-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "a3f2c19639df47919021819d29c58b5f86a2e7cc2bd6a16d16efeaf84a448360",
+      "at": "2026-09-10T11:35:33.381822+00:00"
+    },
+    "projection": {
+      "id": "585ca10b95f1ca1089293d0ee63d05256366ab8b656b18166e45fa399715e17e",
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "repository": "trevi00/zeus",
+      "number": 3,
+      "url": "https://github.com/trevi00/zeus/issues/3",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "attempted_content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "body_hash": "73f2b01d888499c9ad52a27b9f2d4947d41829e72e0fb7109e957a02fda05de3",
+      "title_hash": "ce80e20fc6e3d327ac6bd78a926bb65b9171c69064448cc1e1c90fdd1713891c",
+      "observed_body_hash": "73f2b01d888499c9ad52a27b9f2d4947d41829e72e0fb7109e957a02fda05de3",
+      "observed_title_hash": "ce80e20fc6e3d327ac6bd78a926bb65b9171c69064448cc1e1c90fdd1713891c",
+      "title": "[FA-002] 경험 수집 횟수와 독립 검증 횟수 혼동",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:28972d91c2091c863f7167bee5788bf18d8d9229a19c281fdc5f3c85599351fa",
+      "observation_id": "c516af01a289346b2cb84e7f8ca35b52f4e0325560d5c1b73382edef14b1d1cb",
+      "at": "2026-09-10T11:35:35.964004+00:00",
+      "review_ids": [
+        "a3f2c19639df47919021819d29c58b5f86a2e7cc2bd6a16d16efeaf84a448360",
+        "f34b42c55a69f1364f9cb63aad38871f47f3d46807730313d219bcf318ae26ee"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 38,
+    "issue": 5,
+    "review": {
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "revision": 1,
+      "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #38: 수용 후보\n\n검토 head: `dc083caa73a2f4a1b0b64a5105208307ddec783d`. Codex 독립 검토입니다.\n\n자식 프로세스 ready 신호와 unlocked scan rendezvous를 분리했습니다. 실제 PostgreSQL 다중 프로세스 검사에서 직렬화 경로와 잠금 제거 음성 대조군을 확인했습니다.\n\n검증: 해당 head의 대상 검사 **6 passed in 11.57s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n\n?? ??: Ruff ??, ?? 990 passed / 314 skipped, PostgreSQL ?? 274 passed. ?? ?? `ba9d48d303cc17b4e3bba6ee660fb35fcff33074`. ?? ?? tree? ?? ??? `71001482cc965914daa1db9ff44a74cedf5e92dc`? ??? ?????.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/38",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/38-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "6214697c5fd93c1c8e2780fcc085f143589a9ee4190f9892c0bef229ad1753c7",
+      "at": "2026-09-10T11:35:36.038337+00:00"
+    },
+    "projection": {
+      "id": "0bf747cf0fb8e608613565ac45a06418988799f61768db10cd823b61cd786174",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "repository": "trevi00/zeus",
+      "number": 5,
+      "url": "https://github.com/trevi00/zeus/issues/5",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "attempted_content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "body_hash": "9c0c593a0165ec811c0d73da774c22a05424d8a3eec4fcf4e6945bce497bda15",
+      "title_hash": "2dbd644b65e6e6d58a504816adf8e60232240b5e8d40479b8fdd72899d9951c0",
+      "observed_body_hash": "9c0c593a0165ec811c0d73da774c22a05424d8a3eec4fcf4e6945bce497bda15",
+      "observed_title_hash": "2dbd644b65e6e6d58a504816adf8e60232240b5e8d40479b8fdd72899d9951c0",
+      "title": "[FA-004] 중복 방지 검사와 기록 사이 동시 실행 경쟁",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:b4d75a09e4893a78d431b7b485f6593de50f77e3149a17f7b113e778d4551c1b",
+      "observation_id": "b3dc61e6efaeb4c704cfe87f2223803468e3cdeaa4bcb1312a0c8f68dae81440",
+      "at": "2026-09-10T11:35:39.002660+00:00",
+      "review_ids": [
+        "27cc968e8840103e72a9c492ec4a6fcf944d9a9f8fb12c1e7bd5811a3057c131",
+        "28af6f639a36436fe21a4c9c67844cb74875e8708a5376e0ef3d7b80876651e2",
+        "2b4606aff7a2999ed1bdf6dbeaff1012b0049747f6048ccec144c0880265097b",
+        "4645989bd809b415e5438e7cc50fba5ee50f60021b387458094e8bb3ebbc5ccc",
+        "6214697c5fd93c1c8e2780fcc085f143589a9ee4190f9892c0bef229ad1753c7"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 39,
+    "issue": 6,
+    "review": {
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "revision": 1,
+      "content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #39: 수용 후보\n\n검토 head: `fd45154f13f2674a483ca9593bf35e7542894b46`. Codex 독립 검토입니다.\n\n동일 execution의 거부 뒤 assessment 공백만 바꾼 재승인을 독립 재현했습니다. 이제 새 inspection execution을 요구하고 adoption_eligible=false가 유지됩니다.\n\n검증: 해당 head의 대상 검사 **78 passed in 72.84s (0:01:12)**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n\n?? ??: Ruff ??, ?? 990 passed / 314 skipped, PostgreSQL ?? 274 passed. ?? ?? `6b6a56d7970c33d1a33c01333093837e4f525bed`. ?? ?? tree? ?? ??? `71001482cc965914daa1db9ff44a74cedf5e92dc`? ??? ?????.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/39",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/39-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "e60b2cde189425f442df4746ba4cdf568cf5d6cbe24f85139cdf3df68a5af069",
+      "at": "2026-09-10T11:35:39.071883+00:00"
+    },
+    "projection": {
+      "id": "1973e58fc98ea656a9fac5b3caf3bbff637e92cc827220581949b6a7deed1309",
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "repository": "trevi00/zeus",
+      "number": 6,
+      "url": "https://github.com/trevi00/zeus/issues/6",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "attempted_content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "body_hash": "a818d4ff1368f66c110dfc9f54057a90dfce0936aee3e9202c0f527c26798dc2",
+      "title_hash": "c10c1aedb839d73073df52732704d0ceb3d5c109fa6d77dc358ca0093aac74cb",
+      "observed_body_hash": "a818d4ff1368f66c110dfc9f54057a90dfce0936aee3e9202c0f527c26798dc2",
+      "observed_title_hash": "c10c1aedb839d73073df52732704d0ceb3d5c109fa6d77dc358ca0093aac74cb",
+      "title": "[FA-005] PASS 이후 ERROR를 완료 helper가 무시",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:74aa01a7fdcf1c0828c30ada976b9c4083455707d8a20aa6a68336136480fd20",
+      "observation_id": "468b30feaf423ddcffe2c75f0fe48db404ffa18533328d562aeed5676d2931a2",
+      "at": "2026-09-10T11:35:41.469038+00:00",
+      "review_ids": [
+        "3d8aec71be619fa6e6d86f891e7c53b58c7e3c448ceb86b6fe138a3dc2ed7559",
+        "d79c8e80e18556e9248e3afca1a3ec4f84e63ec0958289db12ec0cf79c67f299",
+        "e60b2cde189425f442df4746ba4cdf568cf5d6cbe24f85139cdf3df68a5af069"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 45,
+    "issue": 13,
+    "review": {
+      "ticket_id": "ZEUS-97f3257c362a",
+      "revision": 2,
+      "content_hash": "09f50945041adafd056ce523f432706b25242e47f834b00b63759c248d60ecda",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #45: 수용 후보\n\n검토 head: `7426bce806e4ea28044ede2a6f64a03595222085`. Codex 독립 검토입니다.\n\n실제 context compiler가 큰 본문을 제외한 뒤 finalize_delivery를 거치면 full=0, omitted=1로 기록됩니다. 이 증거는 최종 context 구성까지이며 모델이 실제 읽었다는 증거는 아닙니다.\n\n검증: 해당 head의 대상 검사 **61 passed in 11.04s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n\n?? ??: Ruff ??, ?? 990 passed / 314 skipped, PostgreSQL ?? 274 passed. ?? ?? `d0b57c39692f9b51200da85822b1b84c55ada2fa`. ?? ?? tree? ?? ??? `71001482cc965914daa1db9ff44a74cedf5e92dc`? ??? ?????.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/45",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/45-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "ddb85c916655442d071ac1c19a77f5a661815c134b2bae04bddebc83cc2ffe5d",
+      "at": "2026-09-10T11:35:41.530422+00:00"
+    },
+    "projection": {
+      "id": "171e49fb07b7ae9112f306c5b5eeed2148808b2c3b2d05668702af063523cf61",
+      "ticket_id": "ZEUS-97f3257c362a",
+      "repository": "trevi00/zeus",
+      "number": 13,
+      "url": "https://github.com/trevi00/zeus/issues/13",
+      "attempted_revision": 2,
+      "synced_revision": 2,
+      "content_hash": "09f50945041adafd056ce523f432706b25242e47f834b00b63759c248d60ecda",
+      "attempted_content_hash": "09f50945041adafd056ce523f432706b25242e47f834b00b63759c248d60ecda",
+      "body_hash": "ac4c5c7124245cd3232d44a14e0cbd3455cb499098209879b39d6a5f82e79dfa",
+      "title_hash": "5d0afed0ce3a6a45fbc1ab57ad5f9c4b1218f61ae92cf0ed9248669454c50faa",
+      "observed_body_hash": "ac4c5c7124245cd3232d44a14e0cbd3455cb499098209879b39d6a5f82e79dfa",
+      "observed_title_hash": "5d0afed0ce3a6a45fbc1ab57ad5f9c4b1218f61ae92cf0ed9248669454c50faa",
+      "title": "[FA-012] 스킬 평가 지표와 실제 후보 선택·본문 주입의 불일치",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:84ebdeaa44b9dc6f99ad702edbaa17f07322178476fa6211edf9a2332d519a80",
+      "observation_id": "99e76b9aa11b49028c68bc43af22921fed489f26f64484989e052a7111dfc646",
+      "at": "2026-09-10T11:35:44.127778+00:00",
+      "review_ids": [
+        "b4d4858b36dd9896b04329a74b84cb3fadd5dc3e08b13187aa8110e33a779a62",
+        "ddb85c916655442d071ac1c19a77f5a661815c134b2bae04bddebc83cc2ffe5d"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 46,
+    "issue": 14,
+    "review": {
+      "ticket_id": "ZEUS-fb2ab61807b4",
+      "revision": 1,
+      "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #46: 변경 요청 / 병합 보류\n\n검토 head: `318ce36c2e882f8e9e528ad309b63c8ac7631bb0`. Codex 독립 검토입니다.\n\n**[P1] 인증 없는 철회가 거부를 없애고 이전 PASS를 되살립니다**\n\n동일 statement의 authenticated PASS → REJECT 뒤 actor 문자열만 있는 RETRACT를 넣으면 fold complete가 false → true가 됩니다. record_gate_verdict도 retracts가 있으면 provider 검증과 runner receipt 검증을 모두 건너뜁니다. 이전 foreign-run 철회는 수정됐지만 같은 binding의 권한 우회는 남습니다.\n\n위치: [src/codex_harness/application/sdd.py:64](https://github.com/trevi00/zeus/blob/318ce36c2e882f8e9e528ad309b63c8ac7631bb0/src/codex_harness/application/sdd.py#L64)\n\n수정·재검증 조건: 철회도 원 결정과 같은 신뢰 수준의 provider 검증을 요구하고 대상 actor/binding에 결속하세요. 인증 실패·다른 actor·인증된 철회의 양성/음성 검사를 추가해야 합니다.\n\n검증: 해당 head의 대상 검사 **27 passed in 3.85s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/46",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/46-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "cb61073e5f60b7a6cab2b4fd2b3dbd32c0db6aa65f2ca68326675209cee0e2ec",
+      "at": "2026-09-10T11:35:44.178493+00:00"
+    },
+    "projection": {
+      "id": "7b8f10a7f600d24397da1c9fe6a72030b5d92db63284efa959f20260c3db2599",
+      "ticket_id": "ZEUS-fb2ab61807b4",
+      "repository": "trevi00/zeus",
+      "number": 14,
+      "url": "https://github.com/trevi00/zeus/issues/14",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+      "attempted_content_hash": "396c7efcc1003b016f417abc11ae7eaa4718b3812f9aca1c7c350f87b074a466",
+      "body_hash": "3254cb824f9c4cbd66b181dc2e24324ccf7bcf73b1f90da9e3fb5388c8082349",
+      "title_hash": "1e47b07c7aca9ab0299572ebcfe566fac9b465b77dc0e6159d2bda4d9e655857",
+      "observed_body_hash": "3254cb824f9c4cbd66b181dc2e24324ccf7bcf73b1f90da9e3fb5388c8082349",
+      "observed_title_hash": "1e47b07c7aca9ab0299572ebcfe566fac9b465b77dc0e6159d2bda4d9e655857",
+      "title": "[FA-013] 외부 게이트의 문장 귀속·철회·PARTIAL 소비 불일치",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:b5baa4368e6369415d0db0ccc8088fd8d3b01c6808064d9b2a55121cad8bea24",
+      "observation_id": "287dea668f41264ca12af8c8d1b6909ac78fd82426468ee93dd2f74384297e0a",
+      "at": "2026-09-10T11:35:46.790467+00:00",
+      "review_ids": [
+        "0f5ad093fb7979b356d5c1571ee92ff130ef1b05878c99040875dc46c58608f1",
+        "1e3f82240016bf865cb050f6e0f7ef3ffb11a0cb6129bb75367887134d4cc8cb",
+        "39e5fb0cab1c069b666ea82c5c343250d6cbbe873931a0e2210ff96e2e5d581f",
+        "56e1368f114eb80ed8124a07c47113e20fcaa0986f436d1fa57b60b0d7ef525a",
+        "8fa107c6a87e81b4934d5d800da1bedda5c2491becdf30c1ffc0100aa83c8b20",
+        "cb61073e5f60b7a6cab2b4fd2b3dbd32c0db6aa65f2ca68326675209cee0e2ec"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 48,
+    "issue": 16,
+    "review": {
+      "ticket_id": "ZEUS-39d3d0633060",
+      "revision": 1,
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #48: 수용 후보\n\n검토 head: `c7674d6b3d4444dccb1b25611d70e7ff9429e760`. Codex 독립 검토입니다.\n\n실제 별도 로컬 Git clone 두 개로 검증했습니다. A에서 검토한 후보를 B에 merge하면 target 변경으로 거절하고 B 파일은 생기지 않습니다. 기존 무결속 후보의 legacy_unverified 호환 범위는 남습니다.\n\n검증: 해당 head의 대상 검사 **32 passed in 27.93s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n\n?? ??: Ruff ??, ?? 990 passed / 314 skipped, PostgreSQL ?? 274 passed. ?? ?? `6bf5ec164dd2c131cf4965c4883350aaa021385b`. ?? ?? tree? ?? ??? `71001482cc965914daa1db9ff44a74cedf5e92dc`? ??? ?????.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/48",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/48-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "06e1f83a5174bd7ad8bc09f159aa1e586e7ebee9cf06deab50a5b2f83b36e9e3",
+      "at": "2026-09-10T11:35:46.847096+00:00"
+    },
+    "projection": {
+      "id": "8946b5a9efa626e86ae1edaa9bdc1848a0557f1dad6059fefa750c8031007721",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "repository": "trevi00/zeus",
+      "number": 16,
+      "url": "https://github.com/trevi00/zeus/issues/16",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "attempted_content_hash": "d9fe56ca6804e3b71ca2429d541134fa5968895baf8379eb99a2e635205e5506",
+      "body_hash": "eb3287c01a02ba1d9c080195e6926d76fef0713db35c75d685d245de05e87ab6",
+      "title_hash": "ce761c0f0c9a022add3c37a26d8f52e3586bb74cb2e572b6bbf3515e17fafac8",
+      "observed_body_hash": "eb3287c01a02ba1d9c080195e6926d76fef0713db35c75d685d245de05e87ab6",
+      "observed_title_hash": "ce761c0f0c9a022add3c37a26d8f52e3586bb74cb2e572b6bbf3515e17fafac8",
+      "title": "[FA-015] writeback 승인 대상 결속·단일 소비·다중 파일 복구 계약 보강",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:e27dc462f28e35133afcf944e649a6a0d398a70374035ff3425eefc5028d47ec",
+      "observation_id": "d8c79eb04b90396fb8f5d6ae640d6149a923b62470f9a2269b7c6e681f83d6bb",
+      "at": "2026-09-10T11:35:49.499722+00:00",
+      "review_ids": [
+        "06e1f83a5174bd7ad8bc09f159aa1e586e7ebee9cf06deab50a5b2f83b36e9e3",
+        "1a2a1d1ea633ef003d2521acc577bf308be5010ea8b957f63ec0051a28e2f073",
+        "6356916822b0b9156b405834315924139611ad27e8546f591c052452c3fb7143",
+        "66d808bbc4ae0fb7fdaf1a0dfc39766a71026136272fbd67f6a628c393679444",
+        "792abed2f50540269d9f355607e13cb2709a3a046b8598146333a023883ee5eb",
+        "dcd2d763d2128eaa80791c1b4bcaac45adf30c61ec9d79856bfada7e03e59a54",
+        "e6d318c59bd560eaaef6821dd60b6a7b253c5879c5dcd5bcb39fce1222e78bac"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 49,
+    "issue": 17,
+    "review": {
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "revision": 1,
+      "content_hash": "8dc9bd2589c25cff9207bfa96a0dc7f41f8a6eceff72cb60531f7c82d839fa6f",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #49: 변경 요청 / 병합 보류\n\n검토 head: `f055fafdcf15774655dae16e6fde42edb3007adb`. Codex 독립 검토입니다.\n\n**[P2] 중첩 event shape가 아직 검증되지 않습니다**\n\n실제 Executor/원장에 fixture transport event를 공급하면 method=[]가 TypeError로 실행을 끊습니다. item=\"garbage\"는 sequence를 증가시키고 malformed_events=0으로 기록됩니다. 실제 모델 실행 증거는 아닙니다. clock 수정은 통과했지만 이전 지적의 malformed 경로는 그대로입니다.\n\n위치: [src/codex_harness/adapters/executor.py:248](https://github.com/trevi00/zeus/blob/f055fafdcf15774655dae16e6fde42edb3007adb/src/codex_harness/adapters/executor.py#L248)\n\n수정·재검증 조건: method 문자열, params/item 객체와 event별 필수 식별자를 먼저 검증하고 malformed 이벤트가 progress를 전진시키지 않도록 하세요.\n\n검증: 해당 head의 대상 검사 **40 passed in 19.34s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/49",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/49-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "72009b0e06b8d43912bb4270d45dfd9dc9b4b52dae6b01e3b19f390c0f68534e",
+      "at": "2026-09-10T11:35:49.574653+00:00"
+    },
+    "projection": {
+      "id": "e8cd426b35d68130a77d7056c01617d07f03a8d1d66a5d629c70780caf6f2483",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "number": 17,
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "8dc9bd2589c25cff9207bfa96a0dc7f41f8a6eceff72cb60531f7c82d839fa6f",
+      "attempted_content_hash": "8dc9bd2589c25cff9207bfa96a0dc7f41f8a6eceff72cb60531f7c82d839fa6f",
+      "body_hash": "57b129803a0c917e315ea1d283fff52fc1e431b2e186a7f58d018afe26ccde78",
+      "title_hash": "bdd0bf867501d6870a9c824ce08899282d1d3ff62d86ef86f0fd4b8175860987",
+      "observed_body_hash": "57b129803a0c917e315ea1d283fff52fc1e431b2e186a7f58d018afe26ccde78",
+      "observed_title_hash": "bdd0bf867501d6870a9c824ce08899282d1d3ff62d86ef86f0fd4b8175860987",
+      "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:2d8071e37695a06221a6e95b9d41fe183415aa130e3cc0c7f199427ded933e91",
+      "observation_id": "69702eb33551c0403236cf2673b5d26b7f143b077d9bd48d5d3e1540ece42e66",
+      "at": "2026-09-10T11:35:51.958760+00:00",
+      "review_ids": [
+        "72009b0e06b8d43912bb4270d45dfd9dc9b4b52dae6b01e3b19f390c0f68534e",
+        "f786a08a47345cacd524bba31bf479ccc72bdeffeea6d1d7f39465e04961c8c1"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 50,
+    "issue": 19,
+    "review": {
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "revision": 1,
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #50: 변경 요청 / 병합 보류\n\n검토 head: `7866032f8d485995f2ead86dc59449f273e37397`. Codex 독립 검토입니다.\n\n**[P1] 존재하지 않는 실행·평가 증적도 completion authority가 됩니다**\n\nworker task를 succeeded로 만든 뒤 실제 receipt/artifact를 하나도 생성하지 않고 형식만 맞춘 runner_receipt digest와 evaluation_artifact를 record하면 inspect가 state=authoritative, authority=true를 반환합니다. 같은 JSON 안의 값 비교는 출처 검증이 아닙니다.\n\n위치: [src/codex_harness/application/completion.py:36](https://github.com/trevi00/zeus/blob/7866032f8d485995f2ead86dc59449f273e37397/src/codex_harness/application/completion.py#L36)\n\n수정·재검증 조건: 독립 runner 원장/불변 artifact 실재와 digest, reviewer 출처 및 승인된 spec의 scenario 분모를 검증하세요. 연결 전에는 claim/advisory로 유지하고 require_authority가 허용하지 않아야 합니다.\n\n검증: 해당 head의 대상 검사 **21 passed in 16.62s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/50",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/50-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "8a18b62b7b4e30f5efd25596a6f358300f581dd54b3c2d96ab56815d58eaf61a",
+      "at": "2026-09-10T11:35:52.032193+00:00"
+    },
+    "projection": {
+      "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "repository": "trevi00/zeus",
+      "number": 19,
+      "url": "https://github.com/trevi00/zeus/issues/19",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "attempted_content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "body_hash": "e2400a09ba51659c9bca531bf1290a3a77fb5f5257c81d60e98fbeadfcbcd434",
+      "title_hash": "a01f3e7d22624aabd539618f1ea0facdd111b3b830c57e2f5143695477392e2d",
+      "observed_body_hash": "e2400a09ba51659c9bca531bf1290a3a77fb5f5257c81d60e98fbeadfcbcd434",
+      "observed_title_hash": "a01f3e7d22624aabd539618f1ea0facdd111b3b830c57e2f5143695477392e2d",
+      "title": "[FA-018] 완료 판정에 실제 평가 실행·대상·시도 신원 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:05026ad651fe9792cb0fdacc6c0c1734b28d4c434963b6c12ac2660eb451f53a",
+      "observation_id": "e5f6ddc8ffaba7b871f44af359170ee0b5b345f4f788c661ed78da922dfb79fb",
+      "at": "2026-09-10T11:35:54.862544+00:00",
+      "review_ids": [
+        "08c32fc4bb0334999c368f2bd90a0f7257d8d2c62fb364f515ee4c23cf791e37",
+        "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2",
+        "49c0c68e13065a735e34664aea7e061394f53f7e5562a61a9d58244c0c19e890",
+        "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f",
+        "8a18b62b7b4e30f5efd25596a6f358300f581dd54b3c2d96ab56815d58eaf61a",
+        "b926dc82cfd99fcb4b079ef86b37b643b159c3615ff4a382f2a00c5aeacfabb3",
+        "edf1ef47b236f3e2ac60f9faa6d0e9e91ff3907d50a503a9d11a031d77106931",
+        "f465d93323da7cc25a2950a43c6be4501b9a830a46076a57ac4707e7059e2918"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 51,
+    "issue": 20,
+    "review": {
+      "ticket_id": "ZEUS-15c0d970315a",
+      "revision": 1,
+      "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #51: 변경 요청 / 병합 보류\n\n검토 head: `820d35358eb56f86e41da5689c83f5fba985f8f9`. Codex 독립 검토입니다.\n\n**[P1] 취소된 작업의 예약이 다른 작업의 실행 용량을 영구 점유합니다**\n\ncapacity=1에서 작업 A를 reserve하고 worker 중단 후 Workflow.cancel을 적용하면 예약은 reserved로 남습니다. 다른 작업 B의 reserve는 계속 capacity 오류가 납니다. 정리는 같은 task의 다음 attempt에만 있어 재시도 없는 취소/최종 실패에는 도달하지 않습니다.\n\n위치: [src/codex_harness/application/invocation_ledger.py:53](https://github.com/trevi00/zeus/blob/820d35358eb56f86e41da5689c83f5fba985f8f9/src/codex_harness/application/invocation_ledger.py#L53)\n\n수정·재검증 조건: 현재 실행의 생존/종료를 fence와 함께 확인하는 복구 경로를 추가하세요. 중단→취소/최종 실패→다른 작업 admission을 실측하고 usage는 unknown으로 보존해야 합니다.\n\n검증: 해당 head의 대상 검사 **44 passed in 12.30s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/51",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/51-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "d29ee66376c1024f6f8fe9710bf13d4a502eac449b2f35ae812201069c5a316b",
+      "at": "2026-09-10T11:35:54.918858+00:00"
+    },
+    "projection": {
+      "id": "70762c25dbf581fc55f5e07958ce18e2aa50081b37121ae72322fe6b180499f9",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "repository": "trevi00/zeus",
+      "number": 20,
+      "url": "https://github.com/trevi00/zeus/issues/20",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
+      "attempted_content_hash": "6056e8bf0853e769f5e7361157b4f3349a43992859574e6ac95849bc6914ee2f",
+      "body_hash": "da880ebcf31e8141fb873525d92354caabb627190fc31a23189c0ecfed6edb9a",
+      "title_hash": "913e444b7a4fb8ef4b23f3267d560e8aec57392ee9588757542ced927103aad1",
+      "observed_body_hash": "da880ebcf31e8141fb873525d92354caabb627190fc31a23189c0ecfed6edb9a",
+      "observed_title_hash": "913e444b7a4fb8ef4b23f3267d560e8aec57392ee9588757542ced927103aad1",
+      "title": "[FA-019] 모델 호출 계약·실측 사용량·실행 예산과 자격 증거 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:9d7063c9df4ee87c9f708521401eaa940c17ddde685d54bab7416cd272495215",
+      "observation_id": "a31595095c487d23a796a1c13d0aaa5284c539d524492a2dbc9a7fe60cfc4c2e",
+      "at": "2026-09-10T11:35:57.742650+00:00",
+      "review_ids": [
+        "29a6d85f1be788cde09fd37ddc122cff2c521c0700d36078b1d9480a5a86b4e6",
+        "2c0c7cfe0d27135d920e9071eeb106bcac7dd8e013dc7b33d741534c3cff01be",
+        "8b3f8b8d23903979d98a08a53fa88630fd83987925635f877cf53d166abd0d5b",
+        "d29ee66376c1024f6f8fe9710bf13d4a502eac449b2f35ae812201069c5a316b",
+        "f086480570da2bb2cf5c246575cce408a84e541ab520c5cea6390010b6b90f86",
+        "f099832640af05a0237c2be233e87338c8f9ba0aa02eefd3580efcdf2858d4a0"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 52,
+    "issue": 21,
+    "review": {
+      "ticket_id": "ZEUS-0ecf8213b0da",
+      "revision": 1,
+      "content_hash": "302a82d0a247f9fee7ed92f6ef1d35edd47a7f28a406956c3ed65f35dc139857",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #52: 변경 요청 / 병합 보류\n\n검토 head: `ae0f373a6b47d9622a90dfce99fb359b506cbfe9`. Codex 독립 검토입니다.\n\n**[P2] 만료된 half-open probe의 성공 보고가 breaker를 닫습니다**\n\nprobe TTL 2초로 예약 후 만료 시각을 지난 now에서 success를 report하면 applied=true, state=closed가 됩니다. 현재 검증은 generation만 비교하며 slot 소유자, 만료, 소비 여부를 재확인하지 않습니다. 호스트 시계는 바꾸지 않고 명시적 now 입력으로 재현했습니다.\n\n위치: [src/codex_harness/application/breaker.py:129](https://github.com/trevi00/zeus/blob/ae0f373a6b47d9622a90dfce99fb359b506cbfe9/src/codex_harness/application/breaker.py#L129)\n\n수정·재검증 조건: report 트랜잭션에서 현재 reservation과 token의 task/generation/attempt/owner 및 만료를 비교하세요. 만료·unknown으로 해제된 token의 후속 성공은 무효로 처리해야 합니다.\n\n검증: 해당 head의 대상 검사 **68 passed in 26.73s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/52",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/52-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "b0cd56e83cc963f10d693c29d4153b199d3d14544dc668cb8d366594b487a1e7",
+      "at": "2026-09-10T11:35:57.819226+00:00"
+    },
+    "projection": {
+      "id": "5a58244ed8ae967a328e1fb891f8bd855fde6d98cccaac533c3fcdfcddec0522",
+      "ticket_id": "ZEUS-0ecf8213b0da",
+      "repository": "trevi00/zeus",
+      "number": 21,
+      "url": "https://github.com/trevi00/zeus/issues/21",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "302a82d0a247f9fee7ed92f6ef1d35edd47a7f28a406956c3ed65f35dc139857",
+      "attempted_content_hash": "302a82d0a247f9fee7ed92f6ef1d35edd47a7f28a406956c3ed65f35dc139857",
+      "body_hash": "6d21d1882ad4c8975c7e6d55c25f98a46b1dc91919abc49c3f24d865abfd7852",
+      "title_hash": "d17b91d909e554a1d84a0b8c772d23c18e4fbaa506412c2bfe61102608226042",
+      "observed_body_hash": "6d21d1882ad4c8975c7e6d55c25f98a46b1dc91919abc49c3f24d865abfd7852",
+      "observed_title_hash": "d17b91d909e554a1d84a0b8c772d23c18e4fbaa506412c2bfe61102608226042",
+      "title": "[FA-020] 차단기 단일 재시험 예약·세대·저장 성공과 정책 경계 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:8aa9fa34a430851533c05351d4be18b850c35d8a9b5e48388627b0700b1a31af",
+      "observation_id": "594c57a27ba0f2a706dcce182062a7e0d4a0e84d05897c2f66ccbe4177522fbb",
+      "at": "2026-09-10T11:36:00.272003+00:00",
+      "review_ids": [
+        "b0cd56e83cc963f10d693c29d4153b199d3d14544dc668cb8d366594b487a1e7"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 53,
+    "issue": 22,
+    "review": {
+      "ticket_id": "ZEUS-916e0f1f4333",
+      "revision": 1,
+      "content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #53: 수용 후보\n\n검토 head: `4ea2f561a73ca6ad947b52e0c091689909cc29d8`. Codex 독립 검토입니다.\n\n중복 corpus와 빈 admission 거부, 정확한 값·환경·유효기간·단회 소비 전이를 검토하고 대상 검사를 수행했습니다. 문서에 명시한 대로 실제 Git 변경을 읽어 재증명하는 소비자는 아직 없습니다. 본 모듈의 수용은 실제 정책 적용·모델 자격·배포 승인이 아닙니다.\n\n검증: 해당 head의 대상 검사 **20 passed in 41.69s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n\n?? ??: Ruff ??, ?? 990 passed / 314 skipped, PostgreSQL ?? 274 passed. ?? ?? `e0855dda379e18ddb5232b180bbac4ff0c608f90`. ?? ?? tree? ?? ??? `71001482cc965914daa1db9ff44a74cedf5e92dc`? ??? ?????.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/53",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/53-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "e3b4188ba6bb293ac62c5bd677cea6f09b2b3a7fbf5ccfe43897d66ec8c10d4e",
+      "at": "2026-09-10T11:36:00.357606+00:00"
+    },
+    "projection": {
+      "id": "ba3625b1b97a67b2800cc754bac91ef5b03e4f11f29203e957779aad61d26d43",
+      "ticket_id": "ZEUS-916e0f1f4333",
+      "repository": "trevi00/zeus",
+      "number": 22,
+      "url": "https://github.com/trevi00/zeus/issues/22",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",
+      "attempted_content_hash": "b9cdd8f8fb842d373b9aa0121851776711e03aa20bd75e09e7073d1a682ddebe",
+      "body_hash": "c1847c301e9507627f5cd5db7cbe2504aab51f4530d77b12b1f70d3f574bc057",
+      "title_hash": "a051104f15731b652335ae07e8cba6de5f53e3f382f86dec3fadeede09f470b5",
+      "observed_body_hash": "c1847c301e9507627f5cd5db7cbe2504aab51f4530d77b12b1f70d3f574bc057",
+      "observed_title_hash": "a051104f15731b652335ae07e8cba6de5f53e3f382f86dec3fadeede09f470b5",
+      "title": "[FA-021] 자동 보정의 실제 평가 분모·소비자 동등성·승인값 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:8725e576848578d76023e1cdb5e1b32e9e89760a43cbb4a4ac70271de38d4732",
+      "observation_id": "d7288a5ca05ede0415ed80086ac3f1b0464bf3dd6ef19c08884c28c9d8996420",
+      "at": "2026-09-10T11:36:03.073470+00:00",
+      "review_ids": [
+        "07d290348c6ebeb9079e51d4c9bef13fcd33135cc8bd69e9aa649edc6b192569",
+        "b4dcaa9ac772c26e70f698e4dd696623fb5056737a3c321802c1e9fde05b0e95",
+        "e3b4188ba6bb293ac62c5bd677cea6f09b2b3a7fbf5ccfe43897d66ec8c10d4e"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 54,
+    "issue": 23,
+    "review": {
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "revision": 1,
+      "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #54: 변경 요청 / 병합 보류\n\n검토 head: `b2f36cb29430c37e8435c5f90479f3cd758ef1f4`. Codex 독립 검토입니다.\n\n**[P1] 정책 변경 뒤에도 과거 all_checked 캐시가 반환됩니다**\n\n허용된 실제 Python child replay를 검사한 다음 같은 task/revision/claims에 해당 명령을 금지한 정책으로 다시 검사하면 기존 all_checked와 옛 policy_hash가 반환됩니다. 새 inspector를 직접 실행하면 not_checked입니다. cache key에 정책이 없습니다.\n\n위치: [src/codex_harness/application/evidence_inspection.py:33](https://github.com/trevi00/zeus/blob/b2f36cb29430c37e8435c5f90479f3cd758ef1f4/src/codex_harness/application/evidence_inspection.py#L33)\n\n수정·재검증 조건: 정규화한 policy hash와 결과를 결정하는 실행 환경을 identity에 포함하고 require_all_checked에서도 소비 시 요구하는 binding을 검증하세요. 정책 강화/환경 변경 음성 검사를 추가하세요.\n\n검증: 해당 head의 대상 검사 **12 passed in 7.64s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/54",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/54-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "a328f677394150aafc580f024a937a5a6d8e3496436b704a10d6246500a48612",
+      "at": "2026-09-10T11:36:03.172995+00:00"
+    },
+    "projection": {
+      "id": "762c7b28f0d163d919f17692ddf3524d72daa1e5c226a20798ac2b645f4ce4af",
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "repository": "trevi00/zeus",
+      "number": 23,
+      "url": "https://github.com/trevi00/zeus/issues/23",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
+      "attempted_content_hash": "1e01a80769626e558dd43770e7ffde1580426753e09dacdef0997c68973b1e44",
+      "body_hash": "45fe5384bad1f6409e387d7a80a4a4372e1417a01e826900d56eaae59d8355d3",
+      "title_hash": "25a8ed1fec4862b7c4f2f2ec5f3ef241d9f73f1f12c5ea33b2861719b7171fc2",
+      "observed_body_hash": "45fe5384bad1f6409e387d7a80a4a4372e1417a01e826900d56eaae59d8355d3",
+      "observed_title_hash": "25a8ed1fec4862b7c4f2f2ec5f3ef241d9f73f1f12c5ea33b2861719b7171fc2",
+      "title": "[FA-022] 증거 검사 unknown·재실행 동일성·실행 권한 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:f8011b477ff38fdda3d0097302c8206d9b248e27328be91a5845748c6df2cb5b",
+      "observation_id": "261a770aa0da653204a24363a7cb48c3b111ed6215538c6d018d5f7299cc922e",
+      "at": "2026-09-10T11:36:06.128442+00:00",
+      "review_ids": [
+        "16a7ce825541a58094803edb26bbc4396fe7f585dcbc85973606b29c9d75aad8",
+        "1d68df10d6ef94a229d2e042529968139e1c7b5b859747d45bc3b526510c070b",
+        "a328f677394150aafc580f024a937a5a6d8e3496436b704a10d6246500a48612"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 55,
+    "issue": 24,
+    "review": {
+      "ticket_id": "ZEUS-5f46ad3a1d56",
+      "revision": 1,
+      "content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #55: 변경 요청 / 병합 보류\n\n검토 head: `fc35ed0dcd9d3a9af31ddb712761b614d88055c6`. Codex 독립 검토입니다.\n\n**[P1] 선언한 JSON Schema dialect와 실제 검증 dialect가 다릅니다**\n\nschema에 $schema=draft-07, type=array, prefixItems=[{type:integer}]를 주고 [\"not-an-integer\"]를 검사하면 answer가 수용되고 schema=checked입니다. preflight 영수증은 2020-12를 주장하지만 jsonschema.validate가 draft-07을 선택해 prefixItems를 무시합니다.\n\n위치: [src/codex_harness/adapters/execution_output.py:64](https://github.com/trevi00/zeus/blob/fc35ed0dcd9d3a9af31ddb712761b614d88055c6/src/codex_harness/adapters/execution_output.py#L64)\n\n수정·재검증 조건: 지원 dialect를 2020-12로 고정하거나 다른 선언을 거절하고 실제 validator와 영수증을 일치시키세요. 지원 목록의 format도 assertion인지 annotation인지 명시해야 합니다. tool_usage의 params=None 방어도 추가 검토 대상입니다.\n\n검증: 해당 head의 대상 검사 **43 passed in 16.98s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/55",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/55-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "a74c323b232b1a12e757beac46db7a773a736ff6a61d6c96c47ab571116faaa8",
+      "at": "2026-09-10T11:36:06.182742+00:00"
+    },
+    "projection": {
+      "id": "a67cf245e665bc901322da1707bf8eca94cc00974ea5027a9c1788296a3a628c",
+      "ticket_id": "ZEUS-5f46ad3a1d56",
+      "repository": "trevi00/zeus",
+      "number": 24,
+      "url": "https://github.com/trevi00/zeus/issues/24",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
+      "attempted_content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
+      "body_hash": "67bc14562a3054d164ee96f1dc5423bc005c78c73ac754adead1a75799522b70",
+      "title_hash": "24400b4c1431dba4f278032ed35cf2a27876b0fa95f196e633f02d1f0defd510",
+      "observed_body_hash": "67bc14562a3054d164ee96f1dc5423bc005c78c73ac754adead1a75799522b70",
+      "observed_title_hash": "24400b4c1431dba4f278032ed35cf2a27876b0fa95f196e633f02d1f0defd510",
+      "title": "[FA-023] 구조·어휘 검사의 실제 분모와 인수 권위 분리",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:126a675ac5e49901e7c648c9a79d58b143e11915706b23c4b0de8ad9cf9ddcde",
+      "observation_id": "fa761df144634254925e744ac5f2064ae8c16c90c1d188a36ed0a16121318938",
+      "at": "2026-09-10T11:36:08.743577+00:00",
+      "review_ids": [
+        "759f9e3c491a2151b6798d12c62b39df9a4dffdbe80ab231528f0d0af01cca1b",
+        "a74c323b232b1a12e757beac46db7a773a736ff6a61d6c96c47ab571116faaa8"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 56,
+    "issue": 25,
+    "review": {
+      "ticket_id": "ZEUS-8bbe68a96580",
+      "revision": 1,
+      "content_hash": "54cbd41c0bc57ea7554289b20941c950991614d5395660c30fa420702979f731",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #56: 변경 요청 / 병합 보류\n\n검토 head: `9ba590b1d7891048244a208fdd27ded92dd4df6c`. Codex 독립 검토입니다.\n\n**[P1] Python enum 멤버 누락을 HIGH로 표시합니다**\n\n실제 파일의 class Status(Enum): A=1; B: int=2를 추출하면 A만 남고 fidelity=HIGH, symbols_found=1, unresolved=0입니다. B도 실제 enum 멤버인데 AnnAssign을 조용히 건너뜁니다.\n\n위치: [src/codex_harness/adapters/seam_extraction.py:66](https://github.com/trevi00/zeus/blob/9ba590b1d7891048244a208fdd27ded92dd4df6c/src/codex_harness/adapters/seam_extraction.py#L66)\n\n수정·재검증 조건: AnnAssign 등 지원할 syntax를 추출하고 미지원 멤버 후보는 분모/unresolved에 포함하세요. 이름이 Enum인 일반 class를 enum으로 오인하는 import/base 해석 범위도 명시해야 합니다.\n\n검증: 해당 head의 대상 검사 **11 passed in 1.00s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/56",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/56-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "b81244d371f8ab3d3b93f6ff4a977344df10313a4b3e2e2151f5bebafa938981",
+      "at": "2026-09-10T11:36:08.820131+00:00"
+    },
+    "projection": {
+      "id": "9369e6287b4c66babff8c9fc651c8b8e136bb0924404af30535879a090f6ab71",
+      "ticket_id": "ZEUS-8bbe68a96580",
+      "repository": "trevi00/zeus",
+      "number": 25,
+      "url": "https://github.com/trevi00/zeus/issues/25",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "54cbd41c0bc57ea7554289b20941c950991614d5395660c30fa420702979f731",
+      "attempted_content_hash": "54cbd41c0bc57ea7554289b20941c950991614d5395660c30fa420702979f731",
+      "body_hash": "a363562e27ca34922f14f7a8d7a46fa54eaefdeb0b16e1b2c6b25832efd41722",
+      "title_hash": "c983cfdd2b9850e7a1fccfde54a1a3eebc21c16fe837b5cf5164f25733e61e6f",
+      "observed_body_hash": "a363562e27ca34922f14f7a8d7a46fa54eaefdeb0b16e1b2c6b25832efd41722",
+      "observed_title_hash": "c983cfdd2b9850e7a1fccfde54a1a3eebc21c16fe837b5cf5164f25733e61e6f",
+      "title": "[FA-024] 계약 추출의 누락·변환 충돌·판정 권위 검증",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:1fbfe7d40c761e7d5dfff4fb84a006e774b7cca74be99dfdf034667b9aab986c",
+      "observation_id": "16d139c2a72bc6e51a0ecf59195a95076a4bf7dec9ffc6c5a71b87275aea14d7",
+      "at": "2026-09-10T11:36:11.354781+00:00",
+      "review_ids": [
+        "b81244d371f8ab3d3b93f6ff4a977344df10313a4b3e2e2151f5bebafa938981"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 57,
+    "issue": 26,
+    "review": {
+      "ticket_id": "ZEUS-9495da500988",
+      "revision": 1,
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #57: 변경 요청 / 병합 보류\n\n검토 head: `f6acba25b9379328ab32bec522a1072b3745653c`. Codex 독립 검토입니다.\n\n**[P1] 검증 서비스의 이중 __enter__로 배포 검사가 실패합니다**\n\nendpoints=services.__enter__() 후 with services가 다시 __enter__를 호출합니다. 실제 임시 PostgreSQL/Redis Docker stack에서 첫 진입은 성공, 두 번째는 directory.mkdir의 FileExistsError로 실패했습니다. 두 번째 with 진입 실패는 __exit__를 호출하지 않아 stack도 남습니다. 검수 중 만든 stack은 직접 정상 정리했습니다.\n\n위치: [src/codex_harness/adapters/deployment.py:151](https://github.com/trevi00/zeus/blob/f6acba25b9379328ab32bec522a1072b3745653c/src/codex_harness/adapters/deployment.py#L151)\n\n수정·재검증 조건: 컨텍스트는 정확히 한 번 진입하고 진입 실패와 본문 실패의 cleanup을 모두 검증하세요. 실제 _run의 서비스 시작→incumbent/candidate test→종료까지 재실측해야 합니다.\n\n검증: 해당 head의 대상 검사 **9 passed in 7.83s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/57",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/57-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "f5a2c98d67349c0921ea06964c9c576a8ce23d591c9a9e89df5919960df5eb82",
+      "at": "2026-09-10T11:36:11.409263+00:00"
+    },
+    "projection": {
+      "id": "bd07e564483139323647f0798908cfeaf613b16ec8e822227597952a0fdf56f4",
+      "ticket_id": "ZEUS-9495da500988",
+      "repository": "trevi00/zeus",
+      "number": 26,
+      "url": "https://github.com/trevi00/zeus/issues/26",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "attempted_content_hash": "2a28075ea644f2a65ef352173f5b1a00e2e61e661e7ee99888cbbddf28947ab8",
+      "body_hash": "37a60ae2fd3f8f9d9b8d8471150ff86c85eab5ae859dc155d674934994f3c853",
+      "title_hash": "a25cc4dc5d5ee88c76b74f61a53658688274bf8aeab35f06626dc33c97d3bfab",
+      "observed_body_hash": "37a60ae2fd3f8f9d9b8d8471150ff86c85eab5ae859dc155d674934994f3c853",
+      "observed_title_hash": "a25cc4dc5d5ee88c76b74f61a53658688274bf8aeab35f06626dc33c97d3bfab",
+      "title": "[FA-025] 설치·검사 결과와 실제 후보 리비전의 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:d31b25e1d45160b4379663dadd3456df206910e18527e746f9ec2e813c3f9e79",
+      "observation_id": "d5c141bcae32b73fe775b1207fb8b14a8fe1f5e397f756b336076cfc575f542c",
+      "at": "2026-09-10T11:36:13.963233+00:00",
+      "review_ids": [
+        "09ee3643e44aab6d13e18a37cc37a105b75aede2d391045e96c1ba76c8726924",
+        "16717d7d477a83428219abac87558b4f5c02d11611159479c32a8363dbcca5b5",
+        "174935eceb5656851c567e5cbfbe116287b0d04d6371301a38854f25be1ee7d1",
+        "4aa0f40a708618af52fe0d0867dcbafa46dbc434cf55a2aee4c11cb89f06741b",
+        "a029456fd0ac54a7bcfa21ba6ede99655c450d6b80cd0f905a89c2709f019f3d",
+        "f5a2c98d67349c0921ea06964c9c576a8ce23d591c9a9e89df5919960df5eb82"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 58,
+    "issue": 27,
+    "review": {
+      "ticket_id": "ZEUS-430121f4256d",
+      "revision": 1,
+      "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #58: 변경 요청 / 병합 보류\n\n검토 head: `ffe49cac4e3e757e71c618b8fa281703616ab58f`. Codex 독립 검토입니다.\n\n**[P1] 새 실행 판정의 실패가 기존 승인 소비자에 전달되지 않습니다**\n\npytest stdout=\"3 skipped in 0.02s\", rc=0이면 새 classifier는 passed=false/empty_check입니다. 그러나 category=executed라 receipt는 exit_status=0, inspection_blocked=false입니다. Research의 승인 조건은 이 두 값만 보므로 성공으로 취급합니다. 선행 #57도 배포 검증 이중 진입 문제가 있습니다.\n\n위치: [src/codex_harness/adapters/source_execution.py:139](https://github.com/trevi00/zeus/blob/ffe49cac4e3e757e71c618b8fa281703616ab58f/src/codex_harness/adapters/source_execution.py#L139)\n\n수정·재검증 조건: passed/outcome을 ExecutionReceipt 및 승인 소비자까지 결속하세요. all-skip·빈 출력·stderr-only의 실제 runner→receipt→Research 승인 거부 통합 검사가 필요합니다.\n\n검증: 해당 head의 대상 검사 **7 passed in 5.95s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/58",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/58-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "61621a258f261a445da2ac1a9b9219b9c639357a7599231a13bc28f1451f9f70",
+      "at": "2026-09-10T11:36:14.056266+00:00"
+    },
+    "projection": {
+      "id": "a45b769d327bca3028206c26e75364356553bd2fb56ce147f19bb75284d0c0f5",
+      "ticket_id": "ZEUS-430121f4256d",
+      "repository": "trevi00/zeus",
+      "number": 27,
+      "url": "https://github.com/trevi00/zeus/issues/27",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
+      "attempted_content_hash": "11464ec851d1d17c3ec6be6aab6ae5bc2dabbceb3d74378315b86943d5a48f21",
+      "body_hash": "888f1a33d3c12551e464f39ef065734d773797aecb73d09b67d2d06f9f0141f6",
+      "title_hash": "3e708e8e654a2f2d7b027ea264b547923dd358c690ba512821953144e059a40e",
+      "observed_body_hash": "888f1a33d3c12551e464f39ef065734d773797aecb73d09b67d2d06f9f0141f6",
+      "observed_title_hash": "3e708e8e654a2f2d7b027ea264b547923dd358c690ba512821953144e059a40e",
+      "title": "[FA-026] 테스트 실행기의 격리·수집 분모·실패 전달",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:5d21544c2816dab6d67ed39a739e30620cae266eac36df60dcf40c33283abf8d",
+      "observation_id": "585eb469924365ca998ef87198aa5413d60ef936438fa9941d15dd2e301bc576",
+      "at": "2026-09-10T11:36:16.771286+00:00",
+      "review_ids": [
+        "569f1ff9e7613535da9c467323f61fbe3c486769627f7d631c249901614433a1",
+        "61621a258f261a445da2ac1a9b9219b9c639357a7599231a13bc28f1451f9f70",
+        "6ae04e2d455af203bb3ed5f13b2b1a9c8a8d42fbb27c6ae3385e751a799449db"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 59,
+    "issue": 28,
+    "review": {
+      "ticket_id": "ZEUS-92ca5e645c56",
+      "revision": 1,
+      "content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #59: 변경 요청 / 병합 보류\n\n검토 head: `922e8c76152b4e1ad3ff59c447bb7f413f9ce92d`. Codex 독립 검토입니다.\n\n**[P2] 두 번째 소스 revision이 누적되면 seam view를 만들 수 없습니다**\n\n같은 enum의 revision A와 B를 정상 record_observation으로 기록한 뒤 view를 부르면 서로 다른 sources 오류입니다. append-only 원장의 모든 과거 관측/비교를 한 view에 전달하므로 일반적인 반복 개발만으로 영구 실패합니다.\n\n위치: [src/codex_harness/application/seam_ledger.py:100](https://github.com/trevi00/zeus/blob/922e8c76152b4e1ad3ff59c447bb7f413f9ce92d/src/codex_harness/application/seam_ledger.py#L100)\n\n수정·재검증 조건: view 입력을 명시적 release/revision/observation ID로 한정하고 comparison이 참조한 정확한 관측을 선택하세요. 과거 기록 보존과 최신/과거 view 재생성을 함께 검사해야 합니다.\n\n검증: 해당 head의 대상 검사 **10 passed in 1.42s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/59",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/59-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "40519ef8bc549cc27d0c30de4c872e3dfbf37efa54dad95785345397b546d59d",
+      "at": "2026-09-10T11:36:16.845359+00:00"
+    },
+    "projection": {
+      "id": "8e12f69876249ada11c5fca57b674065e1b5f5e82c636e934e0bd3b25d4b2060",
+      "ticket_id": "ZEUS-92ca5e645c56",
+      "repository": "trevi00/zeus",
+      "number": 28,
+      "url": "https://github.com/trevi00/zeus/issues/28",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
+      "attempted_content_hash": "25949ee3eea347687ae54e00d3a2742a391746a19bda007a4a620c570345531a",
+      "body_hash": "de82d8b4f36fd8dc143cc296bddc56cf36824e9902e94021a721492efa22a690",
+      "title_hash": "f4b1016b3a0964bab21f8cae144082271b779b8f03dc16fa8c98cfb3bb81b8e2",
+      "observed_body_hash": "de82d8b4f36fd8dc143cc296bddc56cf36824e9902e94021a721492efa22a690",
+      "observed_title_hash": "f4b1016b3a0964bab21f8cae144082271b779b8f03dc16fa8c98cfb3bb81b8e2",
+      "title": "[FA-027] 선언 그래프·실측 시나리오·필수 검사 분모 분리",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:9e0aec476ebf4fd41a0b788171598fd472f3b90838d9b173983fb7d17da2dd16",
+      "observation_id": "1e5e6556d341f4d9e3553fc7d63f53985ead80cc5e01b1e219260be90e4084de",
+      "at": "2026-09-10T11:36:19.517611+00:00",
+      "review_ids": [
+        "40519ef8bc549cc27d0c30de4c872e3dfbf37efa54dad95785345397b546d59d",
+        "6d36cec8cfccb24d93dc76543837a5b287503054e1f7de5cd7424faeb3f54117",
+        "a3df365647f35d20bdc1dafe6c4e325e8df48443548ab686d2bc1f810aa7ee25"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 60,
+    "issue": 29,
+    "review": {
+      "ticket_id": "ZEUS-79ad5a0e514a",
+      "revision": 1,
+      "content_hash": "6ca965714f1acba28e19e799b22b0576b8f2af683870b71ea2c7b5de60e4e4eb",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #60: 변경 요청 / 병합 보류\n\n검토 head: `a321c70b0d04ac7f65ca591e7bd2ad19386c57e1`. Codex 독립 검토입니다.\n\n**[P2] 선행 seam 추출·view 결함이 수정되지 않은 상태입니다**\n\nrequired scopes와 byte identity 분리는 유용하지만 #56의 AnnAssign 누락/HIGH 반례가 이 head에서도 재현됩니다. #59의 전체 과거 관측 혼합 경로도 상속합니다. 따라서 complete scope가 실제 누락을 검증한 것으로 해석될 수 있습니다.\n\n위치: [src/codex_harness/adapters/seam_extraction.py:66](https://github.com/trevi00/zeus/blob/a321c70b0d04ac7f65ca591e7bd2ad19386c57e1/src/codex_harness/adapters/seam_extraction.py#L66)\n\n수정·재검증 조건: 선행 #56/#59 수정본에 rebase한 뒤 멤버 분모와 두 revision view 시나리오를 포함해 scope gate를 재검증하세요. 이 PR만 먼저 병합하지 않습니다.\n\n검증: 해당 head의 대상 검사 **9 passed in 1.05s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/60",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/60-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "95cb903697578202fb9ba5414fbff0393383699457575918b5789d0621ad11da",
+      "at": "2026-09-10T11:36:19.595370+00:00"
+    },
+    "projection": {
+      "id": "e08c81626fa9a7fbe939e75ed63523f71dab4b084a280aded6cf58c87e4d3f67",
+      "ticket_id": "ZEUS-79ad5a0e514a",
+      "repository": "trevi00/zeus",
+      "number": 29,
+      "url": "https://github.com/trevi00/zeus/issues/29",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "6ca965714f1acba28e19e799b22b0576b8f2af683870b71ea2c7b5de60e4e4eb",
+      "attempted_content_hash": "6ca965714f1acba28e19e799b22b0576b8f2af683870b71ea2c7b5de60e4e4eb",
+      "body_hash": "6ff0a43cd05772e2dc185a2fb5d96c98791844cd6558e0c607d1a3309f2cf92a",
+      "title_hash": "479d5a4199ed9284032b8c7d5aff8d20e79030e4c89346fc83386c85c4b855fe",
+      "observed_body_hash": "6ff0a43cd05772e2dc185a2fb5d96c98791844cd6558e0c607d1a3309f2cf92a",
+      "observed_title_hash": "479d5a4199ed9284032b8c7d5aff8d20e79030e4c89346fc83386c85c4b855fe",
+      "title": "[FA-028] enum·proto 집합 검사를 봉투·RPC·실제 인수와 분리",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:d89447588feb6181e09d57a3eb09459202be5e7b636623ca1cb91f52456cd6d4",
+      "observation_id": "2532206aaecaae453c09e8f234334afc0ac718c147ec2ecc0ec48a83351733a4",
+      "at": "2026-09-10T11:36:22.029219+00:00",
+      "review_ids": [
+        "95cb903697578202fb9ba5414fbff0393383699457575918b5789d0621ad11da"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 61,
+    "issue": 31,
+    "review": {
+      "ticket_id": "ZEUS-993045a59e5c",
+      "revision": 1,
+      "content_hash": "17e3dc9dc5ca51e8a1d11e4214cb3372ac134de42a6798d193a90d7f8e88e2c4",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #61: 변경 요청 / 병합 보류\n\n검토 head: `b7c301cf6f7de1133d2ee1be12354f0ad829a703`. Codex 독립 검토입니다.\n\n**[P1] pretty-printed JSON의 dangling reference가 통과합니다**\n\nkind=json 파일은 문서 단위로 유효성 검사하지만 참조 검사는 모든 형식에 대해 줄 단위 json.loads를 합니다. 존재하지 않는 parent를 가진 같은 JSON이 compact에서는 invalid, indent=2에서는 valid/dangling_references=0입니다.\n\n위치: [src/codex_harness/domain/snapshot_integrity.py:155](https://github.com/trevi00/zeus/blob/b7c301cf6f7de1133d2ee1be12354f0ad829a703/src/codex_harness/domain/snapshot_integrity.py#L155)\n\n수정·재검증 조건: 검증한 parsed record 집합을 참조 검사에 재사용하고 json/jsonl을 구분하세요. 중첩/비문자 reference는 예외 누락 대신 명시적 invalid로 처리하는 검사도 필요합니다.\n\n검증: 해당 head의 대상 검사 **10 passed in 0.99s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/61",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/61-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "e8805479cc7717dc35a35d950d15e779000a6766a631262a12bf8f25633fc85c",
+      "at": "2026-09-10T11:36:22.106111+00:00"
+    },
+    "projection": {
+      "id": "d1fb56309c1776be773038ea05267135b06bf455506dba95a80c49e5a5ab9226",
+      "ticket_id": "ZEUS-993045a59e5c",
+      "repository": "trevi00/zeus",
+      "number": 31,
+      "url": "https://github.com/trevi00/zeus/issues/31",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "17e3dc9dc5ca51e8a1d11e4214cb3372ac134de42a6798d193a90d7f8e88e2c4",
+      "attempted_content_hash": "17e3dc9dc5ca51e8a1d11e4214cb3372ac134de42a6798d193a90d7f8e88e2c4",
+      "body_hash": "7e90f0269ee949dc5dc79e1197588b221bc76a0949d3e7d95174ca04d9fd0102",
+      "title_hash": "9779e189dd31b7fc62fe1cb9a2d6f76e0ea8da95f6f5973c15e4f32c2669a58e",
+      "observed_body_hash": "7e90f0269ee949dc5dc79e1197588b221bc76a0949d3e7d95174ca04d9fd0102",
+      "observed_title_hash": "9779e189dd31b7fc62fe1cb9a2d6f76e0ea8da95f6f5973c15e4f32c2669a58e",
+      "title": "[FA-030] 스냅샷 무결성 검사의 변경 분모와 엄격한 데이터 검증",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:735c6319b4abbcf6c02121edfe46fc4994742b28479d92382c414eff54729800",
+      "observation_id": "531b841d2da3d8c047448c58535c483ab21ca80f9be85fd19e24121c63b32900",
+      "at": "2026-09-10T11:36:24.595607+00:00",
+      "review_ids": [
+        "e8805479cc7717dc35a35d950d15e779000a6766a631262a12bf8f25633fc85c"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 62,
+    "issue": 32,
+    "review": {
+      "ticket_id": "ZEUS-e52702908b8f",
+      "revision": 1,
+      "content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #62: 변경 요청 / 병합 보류\n\n검토 head: `571e6cef57df4b817f634fa53d1cfe1db48234c9`. Codex 독립 검토입니다.\n\n**[P2] 다른 config의 precheck 결과를 적용 허용 증적으로 수용합니다**\n\nrun.config_hash=A, 실제 stdout.plan.config_hash=B인 receipt를 record한 뒤 require_approved하면 통과합니다. source_revision/environment/tool 비교만으로 어떤 migration config를 검사했는지는 결속되지 않습니다.\n\n위치: [src/codex_harness/application/migration_receipts.py:53](https://github.com/trevi00/zeus/blob/571e6cef57df4b817f634fa53d1cfe1db48234c9/src/codex_harness/application/migration_receipts.py#L53)\n\n수정·재검증 조건: stdout의 operation/config_hash와 제출 binding을 비교하고 소비 시 expected config/root/tool을 요구하세요. 다른 config/root의 성공 receipt 재사용은 거절되어야 합니다.\n\n검증: 해당 head의 대상 검사 **14 passed in 8.12s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/62",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/62-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "b5b6d18d7ad7e7996ce7cb8e24e8ba240e088223246535f350fe619657533a5d",
+      "at": "2026-09-10T11:36:24.649583+00:00"
+    },
+    "projection": {
+      "id": "bf91359413bce0eafa1bc09744dcea43f938c5427a2ff12389658686fb2d7a85",
+      "ticket_id": "ZEUS-e52702908b8f",
+      "repository": "trevi00/zeus",
+      "number": 32,
+      "url": "https://github.com/trevi00/zeus/issues/32",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
+      "attempted_content_hash": "e7963e689a75237f7f8e4609f28753f4ae4376cbff81152a3b894f9034601f4d",
+      "body_hash": "8db0c6ae1761c3019b7b71c4fed56a930143ae5ec05d357da6bfa2b2ad811442",
+      "title_hash": "550eee70a4448f5514c23399f8b3d71a48c7171cf00f0cab4d427181f3b3cb80",
+      "observed_body_hash": "8db0c6ae1761c3019b7b71c4fed56a930143ae5ec05d357da6bfa2b2ad811442",
+      "observed_title_hash": "550eee70a4448f5514c23399f8b3d71a48c7171cf00f0cab4d427181f3b3cb80",
+      "title": "[FA-031] 마이그레이션 사전 검사의 버전·탐색·모듈 범위와 실제 DB 인수",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:bc86ba8660674004650ea8a093caa71c127f002ee7aa759a33d28c79a9292e52",
+      "observation_id": "c57c8266578f9a8767e2fdac1af5ff8c1017678e948aa4aabc548e0c5967d324",
+      "at": "2026-09-10T11:36:27.133153+00:00",
+      "review_ids": [
+        "658fa8bd2115292b34673298aded67a8b170bb28ced3c0b4ffa75dc642ea91ed",
+        "b5b6d18d7ad7e7996ce7cb8e24e8ba240e088223246535f350fe619657533a5d"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 63,
+    "issue": 33,
+    "review": {
+      "ticket_id": "ZEUS-1c4267ee50b8",
+      "revision": 1,
+      "content_hash": "1c4c06f643e79c3f914e9d007f62a4212de307974eea022d4836606fbea2bb28",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "# PR #63: 변경 요청 / 병합 보류\n\n검토 head: `6c5734010044125e07db98523f22723b121453eb`. Codex 독립 검토입니다.\n\n**[P1] 허용 필드에서 제외한 본문이 모델 입력에 남습니다**\n\npolicy.fields={kind:...}로 설정해도 minimize는 content와 project_ref를 input에 항상 넣습니다. 실제 결과가 dropped_fields=[content,project_path]라고 하면서 그 content를 그대로 반환합니다. synthetic sentinel로 확인했으며 실제 사용자 대화나 비밀은 사용하지 않았습니다.\n\n위치: [src/codex_harness/domain/profile_privacy.py:165](https://github.com/trevi00/zeus/blob/6c5734010044125e07db98523f22723b121453eb/src/codex_harness/domain/profile_privacy.py#L165)\n\n수정·재검증 조건: 모델 입력을 승인한 fields로 실제 제한하고 필수 필드 조합이면 정책 단계에서 명시적으로 거절하세요. temporary=none 정책도 scratch write와 일치하도록 검사해야 합니다.\n\n검증: 해당 head의 대상 검사 **11 passed in 0.72s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/63",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/63-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "8e7967c8028b403a0d2f952586b58243ce5a131197281559d94eb318fc7d3c1f",
+      "at": "2026-09-10T11:36:27.191282+00:00"
+    },
+    "projection": {
+      "id": "6241b83215dd1a7a592eaa2e9db8f1fbc9fe685b73b459994bb9358761527529",
+      "ticket_id": "ZEUS-1c4267ee50b8",
+      "repository": "trevi00/zeus",
+      "number": 33,
+      "url": "https://github.com/trevi00/zeus/issues/33",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "1c4c06f643e79c3f914e9d007f62a4212de307974eea022d4836606fbea2bb28",
+      "attempted_content_hash": "1c4c06f643e79c3f914e9d007f62a4212de307974eea022d4836606fbea2bb28",
+      "body_hash": "4ca784247971d0a15eda0ef8758ddbcaa2944f3ecc37fa7675f48ae4bda9976b",
+      "title_hash": "d6b23d4ee1ba33fcda87ae358569e1dd3ce89aee33f3c560bf6d28326159de1e",
+      "observed_body_hash": "4ca784247971d0a15eda0ef8758ddbcaa2944f3ecc37fa7675f48ae4bda9976b",
+      "observed_title_hash": "d6b23d4ee1ba33fcda87ae358569e1dd3ce89aee33f3c560bf6d28326159de1e",
+      "title": "[FA-032] 프로필 수집·모델 입력·출력의 민감정보 처리와 동의 범위 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:ca003bb095cc3ea8006a21894ba57a6cd954ba12cdb227aa7f4cdee9469f98a3",
+      "observation_id": "bdf25442914106ee3d1e13ddd6f6267a264ee3dfc6b1749c4356032b79ade541",
+      "at": "2026-09-10T11:36:29.920451+00:00",
+      "review_ids": [
+        "0451083ffff181b9d128f8713d3fff9cf336cb179bf20582de47a0622c78ad6e",
+        "31b4531c12b05609573e779001544b6ec3fb1699a2831a6bbdb46de838c406cf",
+        "8e7967c8028b403a0d2f952586b58243ce5a131197281559d94eb318fc7d3c1f",
+        "b019ca4ae081fbda92e41e512f68f85097629f3444b8f8a9c215d90669e4508e"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 64,
+    "issue": 30,
+    "review": {
+      "ticket_id": "ZEUS-db4ecdcd9fa8",
+      "revision": 1,
+      "content_hash": "9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691",
+      "claimed_reviewer": "Codex independent Claude PR review 002",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #64: 수용 후보\n\n검토 head: `c60cbfb59b6cd2cd7f79e50920e0d7e80e4f7634`. Codex 독립 검토입니다.\n\n동일 clock tick의 remote observation에 트랜잭션 내 sequence를 부여하는 수정을 검토했습니다. GitHub ticket/로컬 ticket 회귀 검사와 PostgreSQL 검사를 수행했습니다. 이슈 종료 권한을 생성하는 변경은 아닙니다.\n\n검증: 해당 head의 대상 검사 **54 passed in 15.69s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n\n?? ??: Ruff ??, ?? 990 passed / 314 skipped, PostgreSQL ?? 274 passed. ?? ?? `3a4240e6534b24f0579712551027e4353f8cb5f6`. ?? ?? tree? ?? ??? `71001482cc965914daa1db9ff44a74cedf5e92dc`? ??? ?????.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/64",
+        "https://github.com/trevi00/zeus/blob/88f87b25b816a3d22cf58733fa554a950cd0e68b/docs/zeus/reviews/claude-work-002/64-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "9b0bb1cc72549d8c3c6f76ec041687683e7c56752e7a2dc793f0fbdd10455d9b",
+      "at": "2026-09-10T11:36:29.991950+00:00"
+    },
+    "projection": {
+      "id": "0eeada92dcb6321cb49f4e36a1249ed8a71cb06955aeb4d5862c2ff9d86a37b5",
+      "ticket_id": "ZEUS-db4ecdcd9fa8",
+      "repository": "trevi00/zeus",
+      "number": 30,
+      "url": "https://github.com/trevi00/zeus/issues/30",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691",
+      "attempted_content_hash": "9f4fba44ae77192ce94edfcfb90a14c523cf205263629df8ec5a8a9817e67691",
+      "body_hash": "595b6276cbb78a48d342ef405f648c44d7a677fe7ff14bd0f643c0ddd825e684",
+      "title_hash": "3f8cb0524d7835898a72d9a4df1ad77a1cc0eb01622d7fda4b620be74319a72a",
+      "observed_body_hash": "595b6276cbb78a48d342ef405f648c44d7a677fe7ff14bd0f643c0ddd825e684",
+      "observed_title_hash": "3f8cb0524d7835898a72d9a4df1ad77a1cc0eb01622d7fda4b620be74319a72a",
+      "title": "[FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:c76c8186aa8672508be961c92311e3b787bd3d882cbe1b4a7fab7e3168747491",
+      "observation_id": "a3fd4acfa9b2f6dd71b11fb725eeaff0cafae320d9bca8fad494c2d89a2955fb",
+      "at": "2026-09-10T11:36:32.679795+00:00",
+      "review_ids": [
+        "2b87a97a05b4b24e59a419cf4a690d3fa1bb4d6e6b3246f9df3b6c61c906441e",
+        "9b0bb1cc72549d8c3c6f76ec041687683e7c56752e7a2dc793f0fbdd10455d9b",
+        "f55540e0800f5099e55111d89c556b148a6a9b04c24e81c289324b3c9c768822"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  }
+]

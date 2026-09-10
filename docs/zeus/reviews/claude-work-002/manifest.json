@@ -106,6 +106,7 @@
   "64-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
   "64-tests.json": "9110939e48166fcb66c121f4186bdafb2d34a2341b776536d136962b94dd2f68",
   "64-tests.log": "cbd137b51d7c68799df27563f3205a0b6a617ff40cf49996f432b3097860f9c0",
+  "final-open-state.json": "490dd7f99f77b4e0171f41d92d2fc1c06ccf6debfb2897db69d825ab784746c1",
   "github-reviews.json": "888abc02206d04ac6888a3cc211a4e754608441f29c29d93e9bc0be1919bac98",
   "integration-full.log": "58704309bfb746661d32ed81ead47bcf546939fa13a4f785653a8d0c40e342e1",
   "integration-postgres-targets.log": "b052baab4fdec8df5a5aecde65b920c790664c885cbd73ae15e3bfece7385765",
@@ -114,6 +115,7 @@
   "integration.py.txt": "0f97e8924c29624648df329f536859b4efc5265ae940e5cfef1cd84ffdfe225a",
   "local-worktrees.json": "7b5affc9cbabd8b88201e7f3c815b194197e9e0a12040350250ec6d9496552f1",
   "merge-preflight.json": "914764e68b46808e037dcfd62934da5762576bb78e567b2119d72060d5001f6f",
+  "merged-main-ci.json": "8636781d1f4b78d1eab3409e1159d86b4737d81805b9fc17001dd32bda0db5f4",
   "merges.json": "9a240a7348254029329d8ccc7f8d0407daa5b7dcceccb447b1fe4a0943ac5af2",
   "probe39.py.txt": "b7c0dd0647b567dae1105c35e1ccd12ee587a880a241b7cf9f99bc55f5f284a3",
   "probe45.py.txt": "2a30b3a317a05c7c06760995a1971802e1b3c951d58180b96f829986fa2b363d",
@@ -121,8 +123,9 @@
   "probe49.py.txt": "cd8cbd2e0a3b325b859cdffba6d6d24430c39e327c11326cc2e65bf4dd1b0b99",
   "probe57.py.txt": "797aeba56631eba04cf2f74fc1c9293db1fa470f1132ac7839ff1caf0837ebda",
   "probes.py.txt": "812ee6dadedf9a9576c59e9620fce7b55e93d08188064b1c16abcc9f00074f85",
-  "README.md": "0f09df01b94c64be75ffcf1bbec0c570608301b473779b25d13cf40b1b6f1b78",
+  "README.md": "448d0e044a302f35076061a269d7a6a3da289f0287959bd039965f781182d043",
   "reviews.json": "29345b84e14c64ba5344dbd905e761e02ccaadd6917022a9460a85791e019b11",
   "run_tests.py.txt": "d97f9ca86e9fd4a10ac68f33364642c3d60d2372d8b22e1c9872512e0b2cad80",
+  "ticket-sync.json": "923557b35dcffd0f4446c4471e225c4d183482eb002e9c13df251fc06fbadc30",
   "unpublished-analysis-inventory.json": "ea62ccbe1e8035b916a32d027cea9645aa0a634bff1d4b331cb27bf2ea0af818"
 }
