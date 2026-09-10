@@ -43,6 +43,7 @@ jobs:
       - run: python -m pip install uv==0.12.2
       - run: uv sync --frozen
       - run: uv run harness setup
+      - run: docker compose version
       - run: docker compose -p harness-ci up -d --wait postgres redis
       - run: uv run python scripts/check.py --integration
       - run: uv run pytest -q tests/test_verification.py tests/test_host_interruption.py

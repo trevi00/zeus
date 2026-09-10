@@ -212,6 +212,8 @@ def test_postgres_restart_rolls_back_unconfirmed_failure(disposable_service, tmp
     w.submit(assignment())
     lease = w.claim('worker:implementation', 'owner', lease_seconds=120)
     original_port = conninfo_to_dict(store.dsn)['port']
+    original_container = service._command('ps', '--all', '--quiet', 'postgres')
+    assert original_container
     child = launch(tmp_path, store, lease, 'uncommitted')
     try:
         await_ready(child, tmp_path/'ready.json')
@@ -220,11 +222,13 @@ def test_postgres_restart_rolls_back_unconfirmed_failure(disposable_service, tmp
         stdout, _ = finish(child)
         assert child.returncode != 0 and not stdout
     finally:
-        service._command('start', '--wait', 'postgres')
+        # Compose 2.x start has no --wait; retain the existing container explicitly.
+        service._command('up', '-d', '--no-recreate', '--wait', 'postgres')
         refresh_test_endpoint(service, store)
         if child.poll() is None:
             (tmp_path/'go').write_text('cleanup', encoding='utf-8')
             finish(child)
+    assert service._command('ps', '--all', '--quiet', 'postgres') == original_container
     with store.transaction() as tx:
         assert tx.get('tasks', lease['id']) == lease
         assert not tx.scan('execution_failures') and not tx.scan('outbox')
@@ -235,6 +239,7 @@ def test_postgres_restart_rolls_back_unconfirmed_failure(disposable_service, tmp
     evidence('pg-restart', {'unconfirmed_exit': child.returncode, 'rollback_verified': True,
              'original_port': original_port, 'restored_port': conninfo_to_dict(store.dsn)['port'],
              'storage': 'Dedicated VerificationServices named database volume',
+             'retained_container_id':original_container,
              'endpoint_scope': 'Fixture rediscovery, not production automatic repair'})
 
 
@@ -246,6 +251,8 @@ def test_postgres_outage_cannot_extend_durable_deadline(disposable_service, tmp_
     message['when']['deadline'] = due.isoformat()
     w.submit(message)
     lease = w.claim('worker:implementation', 'owner')
+    original_container = service._command('ps', '--all', '--quiet', 'postgres')
+    assert original_container
     try:
         service._command('stop', '--timeout', '5', 'postgres')
         child = launch(tmp_path, store, lease, 'complete')
@@ -254,8 +261,10 @@ def test_postgres_outage_cannot_extend_durable_deadline(disposable_service, tmp_
         while datetime.now(timezone.utc) <= due:
             time.sleep(.05)
     finally:
-        service._command('start', '--wait', 'postgres')
+        # Compose 2.x start has no --wait; retain the existing container explicitly.
+        service._command('up', '-d', '--no-recreate', '--wait', 'postgres')
         refresh_test_endpoint(service, store)
+    assert service._command('ps', '--all', '--quiet', 'postgres') == original_container
     observer = launch(tmp_path, store, lease, 'complete')
     stdout, stderr = finish(observer)
     assert observer.returncode == 0, stderr.decode('utf-8')
@@ -267,7 +276,8 @@ def test_postgres_outage_cannot_extend_durable_deadline(disposable_service, tmp_
         assert tx.scan('execution_time_events')[0]['reason'] == 'deadline_exceeded'
     evidence('pg-outage-deadline', {'unavailable_exit':child.returncode,
              'after_restart_exit':observer.returncode, 'result_committed':False,
-             'deadline':due.isoformat(), 'disposition':'deadline_exceeded'})
+             'deadline':due.isoformat(), 'disposition':'deadline_exceeded',
+             'retained_container_id':original_container})
 
 
 def test_host_probe_never_falls_back_to_public_tasks(disposable_service, monkeypatch):
