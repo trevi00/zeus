@@ -33,6 +33,49 @@ extensions: [flutter/outpos-agent, _gsd]
     assert 'typescript/18.x' in paths and paths[-2:] == ['flutter/outpos-agent', '_gsd']
 
 
+def test_inline_comment_template_routes_to_clean_paths():
+    # FA-008: the upstream template's routing values carry inline comments; they never reach paths.
+    profile = parse_profile('''stack:
+  language: java                   # java | kotlin | typescript | python
+  framework: springboot            # springboot | android | react | flutter
+  version: "3.2"                   # 프레임워크 버전 (스킬 디렉토리명과 매치)
+extensions: []                     # 프로젝트 전용 서브트리
+''')
+    assert profile['stacks'] == [{'language': 'java', 'framework': 'springboot', 'version': '3.2'}]
+    paths = eligible_paths(profile)
+    assert paths == ['_common', 'java/springboot-3.2', 'java/springboot', 'java/3.2', 'java/3.x',
+                     'java/lang', 'java']
+    assert not any('#' in p or ' ' in p for p in paths)
+
+
+def test_flutter_stack_activates_the_flutter_tree_not_dart():
+    profile = parse_profile('stack: {language: flutter, framework: flutter, version: "3.24"}')
+    paths = eligible_paths(profile)
+    assert paths == ['_common', 'flutter/flutter-3.24', 'flutter/flutter', 'flutter/3.24', 'flutter/3.x',
+                     'flutter/lang', 'flutter']
+    assert not any(p.startswith('dart') for p in paths)
+
+
+@pytest.mark.parametrize('text', [
+    'stack: {language: "java # java | kotlin"}',
+    'stack: {language: java, version: "3.2 # version"}',
+    "stack: {language: 'flutter 3.x'}",
+])
+def test_comment_or_space_inside_a_quoted_value_fails_explicitly(text):
+    with pytest.raises(ContractError, match='Invalid stack path segment'):
+        parse_profile(text)
+
+
+def test_packaged_skills_are_collected_at_any_depth_and_underscore_directories_are_skipped():
+    profile = parse_profile('stack: {language: python, framework: fastapi}')
+    inventory = ['python/fastapi/testing/SKILL.md', 'python/fastapi/testing/integration/SKILL.md',
+                 'python/fastapi/testing/integration/notes.md', 'python/fastapi/_drafts/SKILL.md',
+                 'python/fastapi/testing/_wip/deep/SKILL.md', 'python/fastapi/lint/README.md',
+                 'python/django/deep/SKILL.md']
+    assert select_skill_paths(profile, inventory) == ['python/fastapi/testing/SKILL.md',
+                                                      'python/fastapi/testing/integration/SKILL.md']
+
+
 @pytest.mark.parametrize('text', [
     'stack:\n  language: python\n  language: java',
     'extensions: [../outside]', 'extensions: [/absolute]', 'extensions: [C:\\escape]',
