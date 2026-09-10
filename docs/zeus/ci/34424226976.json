@@ -1,0 +1,669 @@
+{
+  "conclusion": "success",
+  "databaseId": 34424226976,
+  "headSha": "f2ceeb38f44286c458c967de386ebf36e8bbe87a",
+  "jobs": [
+    {
+      "completedAt": "2026-09-10T01:10:01Z",
+      "conclusion": "success",
+      "databaseId": 102705926982,
+      "name": "integration",
+      "startedAt": "2026-09-10T01:08:05Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-09-10T01:08:07Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-09-10T01:08:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:09Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-09-10T01:08:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:09Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 3,
+          "startedAt": "2026-09-10T01:08:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:11Z",
+          "conclusion": "success",
+          "name": "Run python -m pip install uv==0.12.2",
+          "number": 4,
+          "startedAt": "2026-09-10T01:08:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:13Z",
+          "conclusion": "success",
+          "name": "Run uv sync --frozen",
+          "number": 5,
+          "startedAt": "2026-09-10T01:08:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:14Z",
+          "conclusion": "success",
+          "name": "Run uv run harness setup",
+          "number": 6,
+          "startedAt": "2026-09-10T01:08:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:28Z",
+          "conclusion": "success",
+          "name": "Run docker compose -p harness-ci up -d --wait postgres redis",
+          "number": 7,
+          "startedAt": "2026-09-10T01:08:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:09:55Z",
+          "conclusion": "success",
+          "name": "Run uv run python scripts/check.py --integration",
+          "number": 8,
+          "startedAt": "2026-09-10T01:08:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:09:58Z",
+          "conclusion": "success",
+          "name": "Run uv run pytest -q tests/test_verification.py",
+          "number": 9,
+          "startedAt": "2026-09-10T01:09:55Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:09:59Z",
+          "conclusion": "success",
+          "name": "Run docker compose -p harness-ci down --volumes",
+          "number": 10,
+          "startedAt": "2026-09-10T01:09:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:09:59Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 19,
+          "startedAt": "2026-09-10T01:09:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:09:59Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 20,
+          "startedAt": "2026-09-10T01:09:59Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:09:59Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "startedAt": "2026-09-10T01:09:59Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/trevi00/zeus/actions/runs/34424226976/job/102705926982",
+      "raw_log_sha256": "3d88c15b450bc5d4d2d8b76709f46b355a8033bf065d59006064a073f84fc026",
+      "test_summary_lines": [
+        "2026-09-10T01:09:55.0511654Z 1123 passed, 3 skipped in 85.91s (0:01:25)",
+        "2026-09-10T01:09:58.4220950Z 10 passed in 2.90s"
+      ]
+    },
+    {
+      "completedAt": "2026-09-10T01:13:07Z",
+      "conclusion": "success",
+      "databaseId": 102705927191,
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T01:08:04Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-09-10T01:08:06Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-09-10T01:08:05Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:12Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-09-10T01:08:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:12Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 3,
+          "startedAt": "2026-09-10T01:08:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:19Z",
+          "conclusion": "success",
+          "name": "Run python -m pip install uv==0.12.2",
+          "number": 4,
+          "startedAt": "2026-09-10T01:08:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:27Z",
+          "conclusion": "success",
+          "name": "Run uv sync --frozen",
+          "number": 5,
+          "startedAt": "2026-09-10T01:08:19Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:28Z",
+          "conclusion": "success",
+          "name": "Run uv run ruff check .",
+          "number": 6,
+          "startedAt": "2026-09-10T01:08:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:12:52Z",
+          "conclusion": "success",
+          "name": "Run uv run pytest -q",
+          "number": 7,
+          "startedAt": "2026-09-10T01:08:28Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:00Z",
+          "conclusion": "success",
+          "name": "Run uv build",
+          "number": 8,
+          "startedAt": "2026-09-10T01:12:52Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:01Z",
+          "conclusion": "success",
+          "name": "Run uv run harness-supervisor --help",
+          "number": 9,
+          "startedAt": "2026-09-10T01:13:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:02Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus --version",
+          "number": 10,
+          "startedAt": "2026-09-10T01:13:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:03Z",
+          "conclusion": "success",
+          "name": "Run uv run python -m zeus ticket --help",
+          "number": 11,
+          "startedAt": "2026-09-10T01:13:02Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:03Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus-monitor --help",
+          "number": 12,
+          "startedAt": "2026-09-10T01:13:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:04Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 23,
+          "startedAt": "2026-09-10T01:13:03Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:06Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 24,
+          "startedAt": "2026-09-10T01:13:04Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:13:06Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 25,
+          "startedAt": "2026-09-10T01:13:06Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/trevi00/zeus/actions/runs/34424226976/job/102705927191",
+      "raw_log_sha256": "d5a2a5fa4b7bd29fa4342c5246bd9ad76e660ab9f24f63e959241d4063d3bbe5",
+      "test_summary_lines": [
+        "2026-09-10T01:12:52.6712655Z 862 passed, 264 skipped in 262.25s (0:04:22)"
+      ]
+    },
+    {
+      "completedAt": "2026-09-10T01:14:39Z",
+      "conclusion": "success",
+      "databaseId": 102705927232,
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T01:08:05Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-09-10T01:08:07Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-09-10T01:08:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:14Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-09-10T01:08:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:14Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 3,
+          "startedAt": "2026-09-10T01:08:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:21Z",
+          "conclusion": "success",
+          "name": "Run python -m pip install uv==0.12.2",
+          "number": 4,
+          "startedAt": "2026-09-10T01:08:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:32Z",
+          "conclusion": "success",
+          "name": "Run uv sync --frozen",
+          "number": 5,
+          "startedAt": "2026-09-10T01:08:21Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:32Z",
+          "conclusion": "success",
+          "name": "Run uv run ruff check .",
+          "number": 6,
+          "startedAt": "2026-09-10T01:08:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:10Z",
+          "conclusion": "success",
+          "name": "Run uv run pytest -q",
+          "number": 7,
+          "startedAt": "2026-09-10T01:08:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:31Z",
+          "conclusion": "success",
+          "name": "Run uv build",
+          "number": 8,
+          "startedAt": "2026-09-10T01:14:10Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:32Z",
+          "conclusion": "success",
+          "name": "Run uv run harness-supervisor --help",
+          "number": 9,
+          "startedAt": "2026-09-10T01:14:31Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:33Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus --version",
+          "number": 10,
+          "startedAt": "2026-09-10T01:14:32Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:34Z",
+          "conclusion": "success",
+          "name": "Run uv run python -m zeus ticket --help",
+          "number": 11,
+          "startedAt": "2026-09-10T01:14:33Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:35Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus-monitor --help",
+          "number": 12,
+          "startedAt": "2026-09-10T01:14:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:35Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 23,
+          "startedAt": "2026-09-10T01:14:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:37Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 24,
+          "startedAt": "2026-09-10T01:14:35Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:14:37Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 25,
+          "startedAt": "2026-09-10T01:14:37Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/trevi00/zeus/actions/runs/34424226976/job/102705927232",
+      "raw_log_sha256": "0169f40c15f9199775d238b1ba9bf79a470426451c12a3aae9a78cb81192f2cd",
+      "test_summary_lines": [
+        "2026-09-10T01:14:09.9600063Z 862 passed, 264 skipped in 334.65s (0:05:34)"
+      ]
+    },
+    {
+      "completedAt": "2026-09-10T01:09:01Z",
+      "conclusion": "success",
+      "databaseId": 102705927250,
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T01:08:06Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-09-10T01:08:08Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-09-10T01:08:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:09Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-09-10T01:08:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:09Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 3,
+          "startedAt": "2026-09-10T01:08:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:14Z",
+          "conclusion": "success",
+          "name": "Run python -m pip install uv==0.12.2",
+          "number": 4,
+          "startedAt": "2026-09-10T01:08:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:15Z",
+          "conclusion": "success",
+          "name": "Run uv sync --frozen",
+          "number": 5,
+          "startedAt": "2026-09-10T01:08:14Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:16Z",
+          "conclusion": "success",
+          "name": "Run uv run ruff check .",
+          "number": 6,
+          "startedAt": "2026-09-10T01:08:15Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:53Z",
+          "conclusion": "success",
+          "name": "Run uv run pytest -q",
+          "number": 7,
+          "startedAt": "2026-09-10T01:08:16Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:56Z",
+          "conclusion": "success",
+          "name": "Run uv build",
+          "number": 8,
+          "startedAt": "2026-09-10T01:08:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:56Z",
+          "conclusion": "success",
+          "name": "Run uv run harness-supervisor --help",
+          "number": 9,
+          "startedAt": "2026-09-10T01:08:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:57Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus --version",
+          "number": 10,
+          "startedAt": "2026-09-10T01:08:56Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:57Z",
+          "conclusion": "success",
+          "name": "Run uv run python -m zeus ticket --help",
+          "number": 11,
+          "startedAt": "2026-09-10T01:08:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:57Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus-monitor --help",
+          "number": 12,
+          "startedAt": "2026-09-10T01:08:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:58Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 23,
+          "startedAt": "2026-09-10T01:08:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:58Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 24,
+          "startedAt": "2026-09-10T01:08:58Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:58Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 25,
+          "startedAt": "2026-09-10T01:08:58Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/trevi00/zeus/actions/runs/34424226976/job/102705927250",
+      "raw_log_sha256": "427470f6aadcea1675f52e3996b9c88c6b9ac94b963eb9776adc27894c056d43",
+      "test_summary_lines": [
+        "2026-09-10T01:08:53.4860552Z 867 passed, 259 skipped in 33.99s"
+      ]
+    },
+    {
+      "completedAt": "2026-09-10T01:08:49Z",
+      "conclusion": "success",
+      "databaseId": 102705927282,
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T01:08:05Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-09-10T01:08:07Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-09-10T01:08:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:09Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-09-10T01:08:07Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:09Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-python@v5",
+          "number": 3,
+          "startedAt": "2026-09-10T01:08:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:11Z",
+          "conclusion": "success",
+          "name": "Run python -m pip install uv==0.12.2",
+          "number": 4,
+          "startedAt": "2026-09-10T01:08:09Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:12Z",
+          "conclusion": "success",
+          "name": "Run uv sync --frozen",
+          "number": 5,
+          "startedAt": "2026-09-10T01:08:11Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:13Z",
+          "conclusion": "success",
+          "name": "Run uv run ruff check .",
+          "number": 6,
+          "startedAt": "2026-09-10T01:08:12Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:43Z",
+          "conclusion": "success",
+          "name": "Run uv run pytest -q",
+          "number": 7,
+          "startedAt": "2026-09-10T01:08:13Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:45Z",
+          "conclusion": "success",
+          "name": "Run uv build",
+          "number": 8,
+          "startedAt": "2026-09-10T01:08:43Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:46Z",
+          "conclusion": "success",
+          "name": "Run uv run harness-supervisor --help",
+          "number": 9,
+          "startedAt": "2026-09-10T01:08:45Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:46Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus --version",
+          "number": 10,
+          "startedAt": "2026-09-10T01:08:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:46Z",
+          "conclusion": "success",
+          "name": "Run uv run python -m zeus ticket --help",
+          "number": 11,
+          "startedAt": "2026-09-10T01:08:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:46Z",
+          "conclusion": "success",
+          "name": "Run uv run zeus-monitor --help",
+          "number": 12,
+          "startedAt": "2026-09-10T01:08:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:47Z",
+          "conclusion": "success",
+          "name": "Post Run actions/setup-python@v5",
+          "number": 23,
+          "startedAt": "2026-09-10T01:08:46Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:47Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 24,
+          "startedAt": "2026-09-10T01:08:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-09-10T01:08:47Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 25,
+          "startedAt": "2026-09-10T01:08:47Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/trevi00/zeus/actions/runs/34424226976/job/102705927282",
+      "raw_log_sha256": "3dc3a79e68ab9df03dacd03c3e1c6444c612586234f878c80102e439b083a6c9",
+      "test_summary_lines": [
+        "2026-09-10T01:08:43.6508177Z 867 passed, 259 skipped in 29.58s"
+      ]
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/trevi00/zeus/actions/runs/34424226976"
+}

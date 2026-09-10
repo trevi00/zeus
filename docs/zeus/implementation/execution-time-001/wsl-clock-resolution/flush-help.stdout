@@ -1,0 +1,4 @@
+usage: zeus flush [-h]
+
+options:
+  -h, --help  show this help message and exit

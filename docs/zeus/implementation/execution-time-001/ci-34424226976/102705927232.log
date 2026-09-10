@@ -1,0 +1,362 @@
+﻿2026-09-10T01:08:06.5674447Z Current runner version: '2.337.0'
+2026-09-10T01:08:06.5704031Z ##[group]Runner Image Provisioner
+2026-09-10T01:08:06.5705257Z Hosted Compute Agent
+2026-09-10T01:08:06.5706220Z Version: 20260819.586
+2026-09-10T01:08:06.5708435Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-09-10T01:08:06.5709808Z Build Date: 2026-08-18T23:20:18Z
+2026-09-10T01:08:06.5710876Z Worker ID: {7ac9258e-1554-4c71-b827-7feb2797298a}
+2026-09-10T01:08:06.5712060Z Azure Region: westus
+2026-09-10T01:08:06.5712946Z ##[endgroup]
+2026-09-10T01:08:06.5715101Z ##[group]Operating System
+2026-09-10T01:08:06.5716109Z Microsoft Windows Server 2025
+2026-09-10T01:08:06.5717114Z 10.0.26100
+2026-09-10T01:08:06.5717870Z Datacenter
+2026-09-10T01:08:06.5718728Z ##[endgroup]
+2026-09-10T01:08:06.5719652Z ##[group]Runner Image
+2026-09-10T01:08:06.5720698Z Image: windows-2025-vs2026
+2026-09-10T01:08:06.5722088Z Version: 20260824.214.3
+2026-09-10T01:08:06.5724721Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260824.214/images/windows/Windows2025-VS2026-Readme.md
+2026-09-10T01:08:06.5727721Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260824.214
+2026-09-10T01:08:06.5729787Z ##[endgroup]
+2026-09-10T01:08:06.5731639Z ##[group]GITHUB_TOKEN Permissions
+2026-09-10T01:08:06.5734583Z Contents: read
+2026-09-10T01:08:06.5735473Z Metadata: read
+2026-09-10T01:08:06.5736311Z ##[endgroup]
+2026-09-10T01:08:06.5739676Z Secret source: Actions
+2026-09-10T01:08:06.5741127Z Cache mode: write
+2026-09-10T01:08:06.5742679Z Prepare workflow directory
+2026-09-10T01:08:06.6174602Z Prepare all required actions
+2026-09-10T01:08:06.6233333Z Getting action download info
+2026-09-10T01:08:06.9778066Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-10T01:08:07.1225545Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-09-10T01:08:07.4232962Z Complete job name: test (windows-latest, 3.14)
+2026-09-10T01:08:07.5830762Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T01:08:07.5840739Z ##[group]Run actions/checkout@v4
+2026-09-10T01:08:07.5841480Z with:
+2026-09-10T01:08:07.5841878Z   fetch-depth: 0
+2026-09-10T01:08:07.5842306Z   repository: trevi00/zeus
+2026-09-10T01:08:07.5846654Z   token: ***
+2026-09-10T01:08:07.5847238Z   ssh-strict: true
+2026-09-10T01:08:07.5847648Z   ssh-user: git
+2026-09-10T01:08:07.5848065Z   persist-credentials: true
+2026-09-10T01:08:07.5848516Z   clean: true
+2026-09-10T01:08:07.5848940Z   sparse-checkout-cone-mode: true
+2026-09-10T01:08:07.5849436Z   fetch-tags: false
+2026-09-10T01:08:07.5849868Z   show-progress: true
+2026-09-10T01:08:07.5850269Z   lfs: false
+2026-09-10T01:08:07.5850732Z   submodules: false
+2026-09-10T01:08:07.5851144Z   set-safe-directory: true
+2026-09-10T01:08:07.5851609Z   allow-unsafe-pr-checkout: false
+2026-09-10T01:08:07.5852378Z ##[endgroup]
+2026-09-10T01:08:07.7457393Z Syncing repository: trevi00/zeus
+2026-09-10T01:08:07.7459295Z ##[group]Getting Git version info
+2026-09-10T01:08:07.7459909Z Working directory is 'D:\a\zeus\zeus'
+2026-09-10T01:08:07.8581921Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-10T01:08:08.3233717Z git version 2.55.0.windows.5
+2026-09-10T01:08:08.3281687Z ##[endgroup]
+2026-09-10T01:08:08.3304256Z Temporarily overriding HOME='D:\a\_temp\445416fb-101f-41ab-ad25-5f86de0ac87c' before making global git config changes
+2026-09-10T01:08:08.3306205Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T01:08:08.3315229Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\zeus\zeus
+2026-09-10T01:08:08.3960031Z Deleting the contents of 'D:\a\zeus\zeus'
+2026-09-10T01:08:08.3967648Z ##[group]Initializing the repository
+2026-09-10T01:08:08.3977971Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\zeus\zeus
+2026-09-10T01:08:08.4876823Z Initialized empty Git repository in D:/a/zeus/zeus/.git/
+2026-09-10T01:08:08.4927102Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/trevi00/zeus
+2026-09-10T01:08:08.5591250Z ##[endgroup]
+2026-09-10T01:08:08.5592687Z ##[group]Disabling automatic garbage collection
+2026-09-10T01:08:08.5601653Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-10T01:08:08.5941815Z ##[endgroup]
+2026-09-10T01:08:08.5943619Z ##[group]Setting up auth
+2026-09-10T01:08:08.5954646Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T01:08:08.6288638Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-10T01:08:10.1812611Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T01:08:10.2164405Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-10T01:08:10.8165702Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T01:08:10.8531008Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-10T01:08:11.4699319Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-10T01:08:11.5049794Z ##[endgroup]
+2026-09-10T01:08:11.5054065Z ##[group]Fetching the repository
+2026-09-10T01:08:11.5066831Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-09-10T01:08:13.3019508Z From https://github.com/trevi00/zeus
+2026-09-10T01:08:13.3020146Z  * [new branch]      main       -> origin/main
+2026-09-10T01:08:13.3074286Z [command]"C:\Program Files\Git\bin\git.exe" branch --list --remote origin/main
+2026-09-10T01:08:13.3452044Z   origin/main
+2026-09-10T01:08:13.3501428Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse refs/remotes/origin/main
+2026-09-10T01:08:13.4019018Z f2ceeb38f44286c458c967de386ebf36e8bbe87a
+2026-09-10T01:08:13.4061759Z ##[endgroup]
+2026-09-10T01:08:13.4062870Z ##[group]Determining the checkout info
+2026-09-10T01:08:13.4063950Z ##[endgroup]
+2026-09-10T01:08:13.4075744Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-10T01:08:13.4645005Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-10T01:08:13.5066927Z ##[group]Checking out the ref
+2026-09-10T01:08:13.5068008Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2026-09-10T01:08:14.4371592Z Switched to a new branch 'main'
+2026-09-10T01:08:14.4390740Z branch 'main' set up to track 'origin/main'.
+2026-09-10T01:08:14.4453243Z ##[endgroup]
+2026-09-10T01:08:14.4811415Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-10T01:08:14.5095199Z f2ceeb38f44286c458c967de386ebf36e8bbe87a
+2026-09-10T01:08:14.5596778Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T01:08:14.5598769Z ##[group]Run actions/setup-python@v5
+2026-09-10T01:08:14.5599821Z with:
+2026-09-10T01:08:14.5600041Z   python-version: 3.14
+2026-09-10T01:08:14.5600310Z   check-latest: false
+2026-09-10T01:08:14.5603424Z   token: ***
+2026-09-10T01:08:14.5603658Z   update-environment: true
+2026-09-10T01:08:14.5603897Z   allow-prereleases: false
+2026-09-10T01:08:14.5604130Z   freethreaded: false
+2026-09-10T01:08:14.5604350Z ##[endgroup]
+2026-09-10T01:08:14.7299779Z ##[group]Installed versions
+2026-09-10T01:08:14.7489434Z (node:10016) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-10T01:08:14.7490397Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-10T01:08:14.7491172Z Successfully set up CPython (3.14.7)
+2026-09-10T01:08:14.7491908Z ##[endgroup]
+2026-09-10T01:08:14.7923398Z ##[group]Run python -m pip install uv==0.12.2
+2026-09-10T01:08:14.7923915Z [36;1mpython -m pip install uv==0.12.2[0m
+2026-09-10T01:08:14.9870753Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:08:14.9871280Z env:
+2026-09-10T01:08:14.9871635Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:14.9872245Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:08:14.9872925Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:14.9873468Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:14.9874009Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:14.9874432Z ##[endgroup]
+2026-09-10T01:08:20.6928936Z Collecting uv==0.12.2
+2026-09-10T01:08:20.7638106Z   Downloading uv-0.12.2-py3-none-win_amd64.whl.metadata (11 kB)
+2026-09-10T01:08:20.8106098Z Downloading uv-0.12.2-py3-none-win_amd64.whl (20.2 MB)
+2026-09-10T01:08:21.2465652Z    ---------------------------------------- 20.2/20.2 MB 52.3 MB/s  0:00:00
+2026-09-10T01:08:21.4920321Z Installing collected packages: uv
+2026-09-10T01:08:21.7253257Z Successfully installed uv-0.12.2
+2026-09-10T01:08:21.9744220Z ##[group]Run uv sync --frozen
+2026-09-10T01:08:21.9744590Z [36;1muv sync --frozen[0m
+2026-09-10T01:08:21.9847739Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:08:21.9848104Z env:
+2026-09-10T01:08:21.9848402Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:21.9848855Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:08:21.9849305Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:21.9849697Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:21.9850095Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:21.9850418Z ##[endgroup]
+2026-09-10T01:08:22.5087347Z Using CPython 3.14.7 interpreter at: C:\hostedtoolcache\windows\Python\3.14.7\x64\python3.exe
+2026-09-10T01:08:22.5089515Z Creating virtual environment at: .venv
+2026-09-10T01:08:22.5925096Z    Building zeus-harness @ file:///D:/a/zeus/zeus
+2026-09-10T01:08:22.7230572Z Downloading pygments (1.2MiB)
+2026-09-10T01:08:22.7370258Z Downloading pillow (6.9MiB)
+2026-09-10T01:08:22.7392155Z Downloading psycopg-binary (3.6MiB)
+2026-09-10T01:08:22.7426244Z Downloading tokenizers (2.7MiB)
+2026-09-10T01:08:22.7476665Z Downloading ruff (10.1MiB)
+2026-09-10T01:08:22.7500515Z Downloading numpy (12.1MiB)
+2026-09-10T01:08:22.7505171Z Downloading hf-xet (3.8MiB)
+2026-09-10T01:08:22.7510006Z Downloading onnxruntime (13.7MiB)
+2026-09-10T01:08:24.5305177Z  Downloaded tokenizers
+2026-09-10T01:08:24.5466281Z  Downloaded psycopg-binary
+2026-09-10T01:08:24.6231732Z  Downloaded hf-xet
+2026-09-10T01:08:25.9003609Z  Downloaded ruff
+2026-09-10T01:08:26.1374790Z  Downloaded pillow
+2026-09-10T01:08:27.7196007Z  Downloaded pygments
+2026-09-10T01:08:28.8530430Z  Downloaded onnxruntime
+2026-09-10T01:08:28.9332475Z       Built zeus-harness @ file:///D:/a/zeus/zeus
+2026-09-10T01:08:30.2012236Z  Downloaded numpy
+2026-09-10T01:08:30.2049278Z Prepared 57 packages in 7.66s
+2026-09-10T01:08:30.2070536Z warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+2026-09-10T01:08:30.2074237Z          If the cache and target directories are on different filesystems, hardlinking may not be supported.
+2026-09-10T01:08:30.2075656Z          If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+2026-09-10T01:08:31.9421306Z Installed 57 packages in 1.73s
+2026-09-10T01:08:31.9424040Z  + anyio==4.15.1
+2026-09-10T01:08:31.9425351Z  + arrow==1.4.0
+2026-09-10T01:08:31.9427318Z  + attrs==26.1.0
+2026-09-10T01:08:31.9428675Z  + certifi==2026.7.22
+2026-09-10T01:08:31.9430458Z  + charset-normalizer==3.5.1
+2026-09-10T01:08:31.9432114Z  + click==8.5.0
+2026-09-10T01:08:31.9433474Z  + colorama==0.4.6
+2026-09-10T01:08:31.9435608Z  + fastembed==0.8.0
+2026-09-10T01:08:31.9437846Z  + filelock==3.32.5
+2026-09-10T01:08:31.9438213Z  + flatbuffers==25.12.19
+2026-09-10T01:08:31.9439891Z  + fqdn==1.5.1
+2026-09-10T01:08:31.9440993Z  + fsspec==2026.7.0
+2026-09-10T01:08:31.9443468Z  + h11==0.16.0
+2026-09-10T01:08:31.9445248Z  + hf-xet==1.6.0
+2026-09-10T01:08:31.9446573Z  + httpcore==1.0.9
+2026-09-10T01:08:31.9449038Z  + httpx==0.28.1
+2026-09-10T01:08:31.9450418Z  + huggingface-hub==1.30.0
+2026-09-10T01:08:31.9452407Z  + idna==3.19
+2026-09-10T01:08:31.9454354Z  + iniconfig==2.3.0
+2026-09-10T01:08:31.9456694Z  + isoduration==20.11.0
+2026-09-10T01:08:31.9458431Z  + jsonpointer==3.1.1
+2026-09-10T01:08:31.9461553Z  + jsonschema==4.26.0
+2026-09-10T01:08:31.9462592Z  + jsonschema-specifications==2025.9.1
+2026-09-10T01:08:31.9465274Z  + loguru==0.7.3
+2026-09-10T01:08:31.9466768Z  + mmh3==5.3.0
+2026-09-10T01:08:31.9468550Z  + numpy==2.5.3
+2026-09-10T01:08:31.9470668Z  + onnxruntime==1.29.0
+2026-09-10T01:08:31.9472870Z  + packaging==26.3
+2026-09-10T01:08:31.9474473Z  + pillow==12.3.0
+2026-09-10T01:08:31.9476871Z  + pluggy==1.6.0
+2026-09-10T01:08:31.9482649Z  + protobuf==7.36.1
+2026-09-10T01:08:31.9483093Z  + psycopg==3.3.5
+2026-09-10T01:08:31.9483642Z  + psycopg-binary==3.3.5
+2026-09-10T01:08:31.9485224Z  + py-rust-stemmers==0.1.8
+2026-09-10T01:08:31.9487941Z  + pygments==2.21.0
+2026-09-10T01:08:31.9488590Z  + pytest==9.1.1
+2026-09-10T01:08:31.9491010Z  + python-dateutil==2.9.0.post0
+2026-09-10T01:08:31.9492375Z  + pyyaml==6.0.3
+2026-09-10T01:08:31.9494308Z  + redis==6.4.0
+2026-09-10T01:08:31.9495597Z  + referencing==0.37.0
+2026-09-10T01:08:31.9496983Z  + requests==2.34.2
+2026-09-10T01:08:31.9498571Z  + rfc3339-validator==0.1.4
+2026-09-10T01:08:31.9499254Z  + rfc3987==1.3.8
+2026-09-10T01:08:31.9500792Z  + rpds-py==2026.6.3
+2026-09-10T01:08:31.9501948Z  + ruff==0.16.6
+2026-09-10T01:08:31.9503564Z  + six==1.17.0
+2026-09-10T01:08:31.9504725Z  + tokenizers==0.23.2
+2026-09-10T01:08:31.9506282Z  + tqdm==4.70.0
+2026-09-10T01:08:31.9507370Z  + tree-sitter==0.25.2
+2026-09-10T01:08:31.9509362Z  + tree-sitter-python==0.25.0
+2026-09-10T01:08:31.9510909Z  + typing-extensions==4.16.0
+2026-09-10T01:08:31.9511631Z  + tzdata==2026.3
+2026-09-10T01:08:31.9513483Z  + uri-template==1.3.0
+2026-09-10T01:08:31.9514825Z  + urllib3==2.7.0
+2026-09-10T01:08:31.9516061Z  + webcolors==25.10.0
+2026-09-10T01:08:31.9517329Z  + win32-setctime==1.2.0
+2026-09-10T01:08:31.9519187Z  + zeus-harness==0.2.0 (from file:///D:/a/zeus/zeus)
+2026-09-10T01:08:32.1514377Z ##[group]Run uv run ruff check .
+2026-09-10T01:08:32.1514750Z [36;1muv run ruff check .[0m
+2026-09-10T01:08:32.1621800Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:08:32.1622177Z env:
+2026-09-10T01:08:32.1622446Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.1623171Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:08:32.1623633Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.1624029Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.1624673Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.1624993Z ##[endgroup]
+2026-09-10T01:08:32.8052204Z All checks passed!
+2026-09-10T01:08:32.9335855Z ##[group]Run uv run pytest -q
+2026-09-10T01:08:32.9336220Z [36;1muv run pytest -q[0m
+2026-09-10T01:08:32.9491777Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:08:32.9492361Z env:
+2026-09-10T01:08:32.9492793Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.9493566Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:08:32.9494334Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.9495011Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.9495692Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:08:32.9496232Z ##[endgroup]
+2026-09-10T01:08:40.3657249Z .......................................................................s [  6%]
+2026-09-10T01:08:42.2856241Z ............ssssssssssss..ss....ssss.s.s..ss.s.s.s.s.s.ss.s.s......s..s. [ 12%]
+2026-09-10T01:08:43.4029947Z s.s.s......ssssss........ssssssss.s.s.s.s.ss.s...sss.s..ss....ssss.s.s.s [ 19%]
+2026-09-10T01:08:44.2556572Z .s.s.s.s.s.s.s.s.ss...s.s.s........s.s.s.s.s.s.s.s.sss.................. [ 25%]
+2026-09-10T01:08:57.8876956Z ..............s.s.s.s.s..ss.s.s.s.s.s.s.s.s.s.s.s.s.s..ss.s.s.ssssssssss [ 31%]
+2026-09-10T01:08:59.4084245Z ssssssssssssssss........................................................ [ 38%]
+2026-09-10T01:09:12.0018650Z .............................................ssssss.s.s.s.s.s.s.s....... [ 44%]
+2026-09-10T01:09:17.7220591Z ........................................................................ [ 51%]
+2026-09-10T01:09:54.6140681Z ........................................s.s.s....s..s................... [ 57%]
+2026-09-10T01:10:44.3636797Z ........................................................s.s.s.........ss [ 63%]
+2026-09-10T01:11:05.0800893Z sssssss.....sssss.s.ss.s.s.s....ssss..ss.s.............................. [ 70%]
+2026-09-10T01:11:08.2704008Z .........ssssss.............................s........................... [ 76%]
+2026-09-10T01:13:03.5856241Z ...s.s.s.s.s......................................................s..... [ 83%]
+2026-09-10T01:13:37.4719218Z ...ssssssss.....sssss.s.s.s.s.s.s..ss.......sssssss.s.s.s.s.s.s.s.s.s.s. [ 89%]
+2026-09-10T01:14:08.3989217Z s.s.s.s.s.s.s.s.s.s.s.s.........................s...............s....... [ 95%]
+2026-09-10T01:14:09.9599227Z .........s....s....s....s....s....s...........                           [100%]
+2026-09-10T01:14:09.9600063Z 862 passed, 264 skipped in 334.65s (0:05:34)
+2026-09-10T01:14:10.4310678Z ##[group]Run uv build
+2026-09-10T01:14:10.4311046Z [36;1muv build[0m
+2026-09-10T01:14:10.4423371Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:14:10.4423791Z env:
+2026-09-10T01:14:10.4424137Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:10.4424691Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:14:10.4425221Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:10.4425702Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:10.4426466Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:10.4427071Z ##[endgroup]
+2026-09-10T01:14:10.8014189Z Building source distribution...
+2026-09-10T01:14:28.8349142Z Building wheel from source distribution...
+2026-09-10T01:14:31.4385018Z Successfully built dist\zeus_harness-0.2.0.tar.gz
+2026-09-10T01:14:31.4386253Z Successfully built dist\zeus_harness-0.2.0-py3-none-any.whl
+2026-09-10T01:14:31.5662580Z ##[group]Run uv run harness-supervisor --help
+2026-09-10T01:14:31.5663382Z [36;1muv run harness-supervisor --help[0m
+2026-09-10T01:14:31.5784721Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:14:31.5786748Z env:
+2026-09-10T01:14:31.5787304Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:31.5788193Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:14:31.5789119Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:31.5790257Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:31.5791097Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:31.5791763Z ##[endgroup]
+2026-09-10T01:14:32.3585246Z usage: python.exe D:\a\zeus\zeus\.venv\Scripts\harness-supervisor
+2026-09-10T01:14:32.3586296Z        [-h] [--once] [--research] [--releases] [--repository REPOSITORY]
+2026-09-10T01:14:32.3586925Z 
+2026-09-10T01:14:32.3587070Z options:
+2026-09-10T01:14:32.3587508Z   -h, --help            show this help message and exit
+2026-09-10T01:14:32.3588032Z   --once
+2026-09-10T01:14:32.3588423Z   --research
+2026-09-10T01:14:32.3588773Z   --releases
+2026-09-10T01:14:32.3589136Z   --repository REPOSITORY
+2026-09-10T01:14:32.5740051Z ##[group]Run uv run zeus --version
+2026-09-10T01:14:32.5740543Z [36;1muv run zeus --version[0m
+2026-09-10T01:14:32.5844670Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:14:32.5845062Z env:
+2026-09-10T01:14:32.5845403Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:32.5845933Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:14:32.5846454Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:32.5846927Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:32.5847398Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:32.5847781Z ##[endgroup]
+2026-09-10T01:14:33.3090370Z Zeus 0.2.0
+2026-09-10T01:14:33.4990850Z ##[group]Run uv run python -m zeus ticket --help
+2026-09-10T01:14:33.4991317Z [36;1muv run python -m zeus ticket --help[0m
+2026-09-10T01:14:33.5096605Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:14:33.5096982Z env:
+2026-09-10T01:14:33.5097266Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:33.5097730Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:14:33.5098194Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:33.5098601Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:33.5099005Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:33.5099345Z ##[endgroup]
+2026-09-10T01:14:34.2619950Z usage: zeus ticket [-h]
+2026-09-10T01:14:34.2621112Z                    {list,create,show,export,update,review,dispatch,sync,pull,evidence,prepare-close,close,reopen,review-close} ...
+2026-09-10T01:14:34.2621895Z 
+2026-09-10T01:14:34.2622066Z positional arguments:
+2026-09-10T01:14:34.2622904Z   {list,create,show,export,update,review,dispatch,sync,pull,evidence,prepare-close,close,reopen,review-close}
+2026-09-10T01:14:34.2623646Z 
+2026-09-10T01:14:34.2623764Z options:
+2026-09-10T01:14:34.2624131Z   -h, --help            show this help message and exit
+2026-09-10T01:14:34.4452168Z ##[group]Run uv run zeus-monitor --help
+2026-09-10T01:14:34.4452658Z [36;1muv run zeus-monitor --help[0m
+2026-09-10T01:14:34.4558924Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-10T01:14:34.4559388Z env:
+2026-09-10T01:14:34.4559732Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:34.4560262Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.7\x64/lib/pkgconfig
+2026-09-10T01:14:34.4560823Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:34.4561286Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:34.4561746Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.7\x64
+2026-09-10T01:14:34.4562342Z ##[endgroup]
+2026-09-10T01:14:34.9851388Z usage: python.exe D:\a\zeus\zeus\.venv\Scripts\zeus-monitor
+2026-09-10T01:14:34.9852251Z        [-h] [--once] [--repository REPOSITORY] [--port PORT] {collect,web}
+2026-09-10T01:14:34.9852868Z 
+2026-09-10T01:14:34.9853291Z positional arguments:
+2026-09-10T01:14:34.9853722Z   {collect,web}
+2026-09-10T01:14:34.9853979Z 
+2026-09-10T01:14:34.9854135Z options:
+2026-09-10T01:14:34.9854617Z   -h, --help            show this help message and exit
+2026-09-10T01:14:34.9855223Z   --once
+2026-09-10T01:14:34.9855661Z   --repository REPOSITORY
+2026-09-10T01:14:34.9856154Z   --port PORT
+2026-09-10T01:14:35.1541145Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T01:14:35.1542520Z Post job cleanup.
+2026-09-10T01:14:35.3127697Z (node:7312) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-10T01:14:35.3128606Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-10T01:14:35.3489577Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T01:14:35.3491165Z Post job cleanup.
+2026-09-10T01:14:35.5866379Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-10T01:14:35.6173526Z git version 2.55.0.windows.5
+2026-09-10T01:14:35.6245943Z Temporarily overriding HOME='D:\a\_temp\c18aa34f-3040-4293-9ec0-642a20a64d8c' before making global git config changes
+2026-09-10T01:14:35.6247211Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T01:14:35.6257803Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\zeus\zeus
+2026-09-10T01:14:35.6573412Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T01:14:35.6879784Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-10T01:14:36.2754673Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T01:14:36.3041087Z http.https://github.com/.extraheader
+2026-09-10T01:14:36.3093115Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-09-10T01:14:36.3435045Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-10T01:14:36.8989814Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T01:14:36.9311564Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-10T01:14:37.5858089Z Cleaning up orphan processes
+2026-09-10T01:14:37.6522521Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

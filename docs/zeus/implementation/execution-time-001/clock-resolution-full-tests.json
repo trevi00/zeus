@@ -1,0 +1,1 @@
+{"argv": ["uv", "run", "pytest", "-q"], "exit_code": 0, "seconds": 220.22995471954346, "integration": false}

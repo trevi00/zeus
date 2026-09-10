@@ -95,7 +95,7 @@ Windows validation: Ruff passed; full suite 861 passed / 265 skipped;
 actual PostgreSQL/Redis targeted suite 220 passed / 7 skipped. Skipped tests are
 not acceptance evidence. Raw failed/superseded logs retain their original bytes,
 including diagnostic trailing whitespace; source and prose whitespace are checked
-separately. WSL and CI receipts will be attached against the committed source.
+separately. WSL and CI receipts below identify their exact committed source.
 
 Native WSL validation of source commit `5ccd2e926384fbdf1f6cac286a628f77614eb210`
 passed all 11 recorded stages: frozen dependency sync, Ruff, full suite
@@ -127,3 +127,26 @@ startup budget and waits until the same monotonic clock has explicitly crossed
 the observed remaining budget plus 100 ms. It no longer infers elapsed runtime
 clock time from one short sleep. This is still a transport unit fixture; no model
 turn is represented as executed. The runtime source remains unchanged.
+
+Local measurement now directly reproduces the clock-resolution difference
+(`windows-clock-observations.json`): Python 3.12.14 reports `GetTickCount64()` with
+15.625 ms resolution and one requested 60 ms sleep measured about 47 ms;
+Python 3.14.7 reports `QueryPerformanceCounter()` with 100 ns resolution.
+These are observations of this machine, not a guarantee for every Windows build.
+All 24 corrected App Server tests passed in the isolated Windows Python 3.12
+environment (`windows312-app-server.json`), as well as the ordinary Python 3.14 run.
+
+The final local full suite at `f2ceeb38f44286c458c967de386ebf36e8bbe87a`
+again passed 861 tests / skipped 265 (`clock-resolution-full-tests.log`).
+The final WSL clone passed all 24 App Server tests and all 11 recorded stages,
+including runtime source equivalence to the full integration baseline
+(`wsl-clock-resolution/receipt.json`).
+
+Final CI [34424226976](https://github.com/trevi00/zeus/actions/runs/34424226976)
+passed all five jobs at `f2ceeb38f44286c458c967de386ebf36e8bbe87a`:
+Windows Python 3.12/3.14 each 862 passed / 264 skipped; Linux Python 3.12/3.14
+each 867 passed / 259 skipped; integration 1123 passed / 3 skipped and 10 Docker
+verification tests passed. Raw job logs and their receipt hashes are preserved
+under `ci-34424226976/` and `../../ci/34424226976.json`.
+This completes the documented execution-time implementation milestone, not the
+remaining full FA-017 acceptance criteria or a production deployment.

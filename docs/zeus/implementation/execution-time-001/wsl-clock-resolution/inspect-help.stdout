@@ -1,0 +1,8 @@
+usage: zeus inspect [-h]
+                    {incidents,hooks,sessions,events,deliveries,outbox,outbox_quarantine,outbox_delivery,outbox_attempts,execution_failures,execution_recoveries,execution_notices,execution_notice_errors,execution_rejections,execution_time_events,tasks,decisions_pending,releases,deployment,release_queue}
+
+positional arguments:
+  {incidents,hooks,sessions,events,deliveries,outbox,outbox_quarantine,outbox_delivery,outbox_attempts,execution_failures,execution_recoveries,execution_notices,execution_notice_errors,execution_rejections,execution_time_events,tasks,decisions_pending,releases,deployment,release_queue}
+
+options:
+  -h, --help            show this help message and exit

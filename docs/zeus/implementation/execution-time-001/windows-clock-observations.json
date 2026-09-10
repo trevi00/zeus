@@ -1,0 +1,53 @@
+{
+  "scope": "Actual local clock resolution and short sleep measurements; no host clock changed",
+  "results": [
+    {
+      "python": "3.12.14 (main, Aug 14 2026, 15:40:22) [MSC v.1944 64 bit (AMD64)]",
+      "clock": {
+        "implementation": "GetTickCount64()",
+        "monotonic": true,
+        "adjustable": false,
+        "resolution": 0.015625
+      },
+      "sleep_requested_seconds": 0.06,
+      "observed_seconds": [
+        0.06300000000192085,
+        0.06199999999807915,
+        0.06300000000192085,
+        0.06199999999807915,
+        0.06300000000192085,
+        0.046999999998661224,
+        0.062000000001717126,
+        0.06299999999828287,
+        0.062000000001717126,
+        0.06299999999828287,
+        0.062000000001717126,
+        0.06299999999828287
+      ]
+    },
+    {
+      "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+      "clock": {
+        "implementation": "QueryPerformanceCounter()",
+        "monotonic": true,
+        "adjustable": false,
+        "resolution": 1e-07
+      },
+      "sleep_requested_seconds": 0.06,
+      "observed_seconds": [
+        0.06008300000030431,
+        0.06021120000150404,
+        0.06020910000006552,
+        0.06019950000336394,
+        0.06048290000035195,
+        0.06007540000064182,
+        0.06050400000094669,
+        0.06026740000015707,
+        0.06018519999997807,
+        0.06012870000267867,
+        0.06043069999941508,
+        0.06033290000050329
+      ]
+    }
+  ]
+}
