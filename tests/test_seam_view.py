@@ -10,7 +10,7 @@ import pytest
 from test_seam_contracts import POLICY, REV, observation
 
 from codex_harness.adapters.store import MemoryStore
-from codex_harness.application.seam_ledger import VIEWS, SeamLedger
+from codex_harness.application.seam_ledger import OBSERVATIONS, VIEWS, SeamLedger
 from codex_harness.domain.model import ContractError
 from codex_harness.domain.sdd import gate_report
 from codex_harness.domain.seam_view import (
@@ -122,6 +122,31 @@ def test_ledger_view_row_is_derived_and_regenerable(backend, request):
     assert stricter['id'] != view['id'] and stricter['view']['gate']['decision'] == 'fail'
     with store.transaction() as tx:
         assert len(tx.scan(VIEWS)) == 2
+    assert view['view']['receipt']['revision'] == REV and view['view']['receipt']['comparison_rows'] == sorted([drift['id'], ok['id']])
+    # Review counterexample (PR #59): a second revision of the same contracts accumulates in the append-only
+    # ledger; the view is per revision, so ordinary iteration never breaks it and history stays regenerable.
+    later = 'f' * 40
+    evolved = [{**o, 'source': {**o['source'], 'revision': later, 'blob_sha': 'sha256:' + ('9' * 63) + str(i)}} for i, o in enumerate(observations[:3])]
+    evolved[1] = {**evolved[1], 'members': observations[0]['members']}  # the consumer caught up: no drift at the later revision
+    rows2 = [ledger.record_observation(o, binding={'revision': later}) for o in evolved]
+    fixed = ledger.compare(rows2[0]['id'], rows2[1]['id'], identity, POLICY)
+    still_ok = ledger.compare(rows2[0]['id'], rows2[2]['id'], identity, POLICY)
+    newest = ledger.view(policy)
+    assert newest['view']['receipt']['revision'] == later and newest['view']['receipt']['revisions_recorded'] == [REV, later]
+    assert {e['comparison'] for e in newest['view']['edges']} == {fixed['id'], still_ok['id']} and newest['view']['gate']['decision'] == 'pass'
+    older = ledger.view(policy, revision=REV)
+    assert older['id'] == view['id'] and older['view']['receipt']['revision'] == REV, 'the earlier view regenerates unchanged'
+    explicit = ledger.view(policy, revision=later, comparison_ids=[fixed['id']])
+    assert [e['comparison'] for e in explicit['view']['edges'] if 'comparison' in e] == [fixed['id']], 'declared-only seams stay as placeholders'
+    with pytest.raises(ContractError, match='outside revision'):
+        ledger.view(policy, revision=REV, comparison_ids=[fixed['id']])
+    with pytest.raises(ContractError, match='Unknown seam comparison ids'):
+        ledger.view(policy, comparison_ids=['nope'])
+    with pytest.raises(ContractError, match='No observations recorded'):
+        SeamLedger(MemoryStore()).view(policy)
+    with store.transaction() as tx:
+        assert len(tx.scan(OBSERVATIONS)) == 6, 'history is preserved, never rewritten'
+        assert len(tx.scan(VIEWS)) == 4
 
 
 def test_sdd_report_separates_stage_denominators():

@@ -94,12 +94,40 @@ class SeamLedger:
             tx.put(IMPORTS, key, row)
             return row
 
-    def view(self, policy):
-        """Project the recorded rows into one deterministic view; the row is derived and regenerable."""
+    def view(self, policy, *, revision=None, comparison_ids=None):
+        """Project one revision's rows into a deterministic view; the row is derived and regenerable.
+
+        The ledger is append-only, so it holds every revision ever observed. A view is about one
+        source revision (review, PR #59): its observations are the rows recorded at that revision, and
+        its comparisons are exactly those whose producer and consumer rows belong to it (or the
+        explicit `comparison_ids`). With no revision named, the newest recorded revision is used and
+        the receipt says which.
+        """
+        require(revision is None or (type(revision) is str and revision), 'View revision must be text')
+        require(comparison_ids is None or (isinstance(comparison_ids, list) and all(type(c) is str for c in comparison_ids)),
+                'comparison_ids must be a list of comparison ids')
         with self.store.transaction() as tx:
-            observations = [row['observation'] for row in tx.scan(OBSERVATIONS)]
-            comparisons = [{'id': row['id'], 'result': row['result']} for row in tx.scan(COMPARISONS)]
+            observation_rows = tx.scan(OBSERVATIONS)
+            comparison_rows = tx.scan(COMPARISONS)
+        revisions = sorted({row['binding']['revision'] for row in observation_rows}, key=lambda r: max(
+            row['recorded_at'] for row in observation_rows if row['binding']['revision'] == r))
+        if revision is None:
+            require(revisions, 'No observations recorded; nothing to view')
+            revision = revisions[-1]
+        by_id = {row['id']: row for row in observation_rows if row['binding']['revision'] == revision}
+        if comparison_ids is None:
+            selected = [row for row in comparison_rows if row['producer_row'] in by_id and row['consumer_row'] in by_id]
+        else:
+            selected = [row for row in comparison_rows if row['id'] in comparison_ids]
+            missing = sorted(set(comparison_ids) - {row['id'] for row in selected})
+            require(not missing, 'Unknown seam comparison ids: ' + ', '.join(missing))
+            outside = [row['id'] for row in selected if row['producer_row'] not in by_id or row['consumer_row'] not in by_id]
+            require(not outside, 'Comparisons outside revision ' + revision + ': ' + ', '.join(outside))
+        observations = [row['observation'] for row in by_id.values()]
+        comparisons = [{'id': row['id'], 'result': row['result']} for row in selected]
         view = build_view(observations, comparisons, policy)
+        view['receipt'] = {**view['receipt'], 'revision': revision, 'revisions_recorded': revisions,
+                           'observation_rows': sorted(by_id), 'comparison_rows': sorted(row['id'] for row in selected)}
         key = view['receipt']['inputs_hash']
         with self.store.transaction() as tx:
             existing = tx.get(VIEWS, key)
