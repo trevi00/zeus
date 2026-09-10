@@ -91,10 +91,14 @@ def test_vacuous_reference_acceptance_is_explicitly_blocked(policy_repo, tmp_pat
         tx.put('skill_history', 'project', {'events': events(empty=True)})
     run = ThresholdProposals(store, artifacts, lambda: current_policy(git)).collect('project')
     row, = run['proposals']
-    assert row['proposal']['reference_accepted']
-    assert 'empty_admission' in row['activation_blockers'] and not row['activation_ready']
+    # FA-021: the value that admits nothing (4) is refused by the gate itself, visibly; only the
+    # value that still admits matches (2) can be suggested, and it is still not activation-ready.
+    vacuous = next(c for c in row['proposal']['alternatives'] if c['value'] == 4)
+    assert vacuous['report']['gate']['reason'] == 'empty_admission' and not vacuous['report']['gate']['accept']
+    assert row['proposal']['suggested'] == 2 and 'empty_admission' not in row['activation_blockers']
+    assert not row['activation_ready'] and 'native_task_success_and_release_review_required' in row['activation_blockers']
     for part in row['proposal']['report']['partitions'].values():
-        assert part['current_admitted_entries'] > 0 and part['proposed_admitted_entries'] == 0
+        assert part['current_admitted_entries'] > 0 and part['proposed_admitted_entries'] > 0
 
 
 def test_import_to_replay_and_proposal_preserves_legacy_provenance(policy_repo, tmp_path):

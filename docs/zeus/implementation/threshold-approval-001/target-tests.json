@@ -1,0 +1,32 @@
+{
+  "scope": "FA-021 target tests; approval flow reaches assessed through the real review chain; PostgreSQL concurrency on an isolated schema (HARNESS_INTEGRATION=1)",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_threshold_approvals.py tests/test_threshold_proposals.py tests/test_threshold_replay.py tests/test_threshold_collection.py tests/test_threshold_reviews.py tests/test_runtime_thresholds.py",
+  "started_at": "2026-09-10T06:34:40.568415+00:00",
+  "finished_at": "2026-09-10T06:35:52.956450+00:00",
+  "exit_code": 0,
+  "summary": [
+    "65 passed in 71.87s (0:01:11)"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "unique_events() keeps duplicates",
+      "result": "1 failed (denominator test), 15 passed"
+    },
+    {
+      "control": "evaluate_threshold_change() accepts a value that admits nothing",
+      "result": "2 failed (approval gate test, collection vacuous test), 14 passed"
+    },
+    {
+      "control": "consume() skips the binding check for issued approvals",
+      "result": "1 failed (exact-change test), 15 passed"
+    },
+    {
+      "control": "consume() lets a consumed approval be consumed again",
+      "result": "2 failed (exact-change test, PostgreSQL concurrency test), 14 passed"
+    }
+  ],
+  "not_claimed": "No Git policy change or release was applied; the consumer of an approval does not exist yet. Human scenario acceptance, model qualification and Windows/Linux/WSL apply/rollback runs were not performed."
+}
