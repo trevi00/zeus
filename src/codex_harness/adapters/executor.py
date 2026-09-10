@@ -27,9 +27,11 @@ from codex_harness.application.execution_time import (
     pin_clock,
     running,
 )
+from codex_harness.application.invocation_ledger import InvocationLedger
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
+from codex_harness.domain.invocation import classify_result, parse_request, usage_record
 from codex_harness.domain.model import (
     ContextItem,
     ContractError,
@@ -142,6 +144,7 @@ class Executor:
         self.service, self.git, self.artifacts = service, git, artifacts
         self.knowledge, self.research, self.release_runner = knowledge, research, release_runner
         self.workflow = Workflow(service.store, service.org)
+        self.invocations = InvocationLedger(service.store)
         self.releases = Releases(service.store, service.org)
         self.audit_execution = None
         if audit_runner is not None:
@@ -344,16 +347,25 @@ class Executor:
 
             started = time.monotonic()
             result = None
+            timeout = time_limit
+            if lease:
+                timeout = self.workflow.remaining_seconds(lease, timeout)
+            # INV-INVOCATION-001: the request is checked against the transport's support matrix and
+            # the attempt is reserved (ownership re-proven in the same transaction) before any call.
+            request = parse_request('app_server', {'model': selection.requested_model, 'timeout': timeout,
+                                                   'output_schema': schema, 'read_only': read_only})
+            reservation = (self.invocations.reserve(lease, request=request, budget_seconds=timeout, stage=stage,
+                                                    guard=lambda tx: self.workflow._owned(tx, lease))
+                           if lease else None)
             try:
                 with AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration()) as runtime:
-                    timeout = time_limit
-                    if lease:
-                        timeout = self.workflow.remaining_seconds(lease, timeout)
                     result = runtime.run(prompt, cwd, schema, timeout,
                                          on_event=observe, read_only=read_only, on_tick=lambda: observe(None),
                                          model=selection.requested_model)
             except Exception as exc:
                 if result is None or not (result.get("inspection_blocked") or result.get("failure")):
+                    if reservation is not None:
+                        self.invocations.abandon(reservation['id'], 'exception:' + type(exc).__name__)
                     raise
                 # INV-RELEASE-001 / INV-SESSION-001: cleanup cannot erase a known
                 # blocked result before its artifact and fenced checkpoint are saved.
@@ -362,6 +374,12 @@ class Executor:
                 result.update(elapsed_seconds=time.monotonic() - started,
                               context_ref=context_ref["ref"], research_binding=binding)
             result["model_selection"] = selection.receipt()
+            result['invocation'] = {'request': request, 'outcome': classify_result(result),
+                                    'usage': usage_record({**result, 'requested_model': selection.requested_model}),
+                                    'reservation': reservation['id'] if reservation else None}
+            if reservation is not None:
+                self.invocations.settle(reservation['id'], outcome=result['invocation']['outcome'],
+                                        usage=result['invocation']['usage'])
             if history_recording:
                 result['skill_history_recording'] = history_recording
             evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,
