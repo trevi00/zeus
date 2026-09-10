@@ -1,8 +1,8 @@
 """Versioned SDD work and evidence preparation, without impersonating human acceptance."""
-from dataclasses import asdict
+from dataclasses import asdict, replace
 
 from codex_harness.application.tickets import ticket_binding
-from codex_harness.domain.gate_verdicts import fold_verdicts, parse_verdict
+from codex_harness.domain.gate_verdicts import bind_runner_receipt, fold_verdicts, parse_verdict
 from codex_harness.domain.model import canonical, digest, require, utcnow
 from codex_harness.domain.sdd import (
     STAGES,
@@ -51,14 +51,38 @@ class SDD:
             verdict = parse_verdict({**document, 'run_id': row['id'], 'cycle': row['revision'],
                                      'sequence': row['sequence'] + 1,
                                      'definition_hash': definitions[document['statement_id']]})
+            details = {}
             if verdict.receipt_ref:
                 self.artifacts.inspect(verdict.receipt_ref)
+            if verdict.retracts is None and verdict.origin == 'runner_receipt':
+                # The receipt is evidence only if it names this run, cycle, statement, definition and
+                # exit status itself; free text or a receipt for another statement is not (PR #46).
+                details['receipt_binding'] = bind_runner_receipt(
+                    verdict, self.artifacts.document(verdict.receipt_ref))
+            elif verdict.retracts is None and verdict.authority == 'authenticated_provider':
+                verdict, details['provider_decision'] = self._provider_decision(verdict)
             if verdict.retracts is not None:
                 fold_verdicts(self._gate_verdicts(tx, row) + [asdict(verdict)], definitions, row['id'], row['revision'])
             event = self._append(tx, row, 'gate_verdict_recorded',
-                                 [verdict.receipt_ref] if verdict.receipt_ref else [], verdict=asdict(verdict))
+                                 [verdict.receipt_ref] if verdict.receipt_ref else [], verdict=asdict(verdict),
+                                 **details)
             return {'sequence': event['sequence'], 'verdict': asdict(verdict),
                     'gate': self._gates(tx, row)[stage], 'release_authorized': False}
+
+    def _provider_decision(self, verdict):
+        """Authority comes from the provider's own verification of this exact statement, never from
+        the caller's claim. An unverified claim is kept as a pending unauthenticated claim."""
+        verify = getattr(self.human_provider, 'verify', None)
+        require(callable(verify), 'Decision provider must verify reviewer decisions')
+        decision = verify({key: getattr(verdict, key) for key in
+                           ('statement_id', 'stage', 'run_id', 'cycle', 'definition_hash', 'actor', 'verdict')})
+        require(isinstance(decision, dict) and type(decision.get('authenticated')) is bool
+                and all(decision.get(key) == getattr(verdict, key) for key in
+                        ('statement_id', 'run_id', 'cycle', 'definition_hash', 'actor', 'verdict')),
+                'Decision provider result does not bind this reviewer decision')
+        if not decision['authenticated']:
+            verdict = replace(verdict, authority='unauthenticated_claim')
+        return verdict, {'authenticated': decision['authenticated'], 'provider': type(self.human_provider).__name__}
 
     def _spec(self, row):
         spec = self.artifacts.document(row["spec_ref"])

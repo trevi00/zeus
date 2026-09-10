@@ -14,6 +14,11 @@ VERDICTS = ('PASS', 'FAIL', 'ERROR', 'PARTIAL', 'REJECT')
 ORIGINS = ('runner_receipt', 'reviewer_decision')
 AUTHORITIES = ('authenticated_provider', 'unauthenticated_claim')
 STATES = ('passed', 'failed', 'error', 'pending', 'not_run')
+# Statements that only a person can settle: a runner receipt can never carry them (review, PR #46).
+HUMAN_STATEMENTS = frozenset({'human_scope', 'human_design', 'human_acceptance'})
+BINDING = ('statement_id', 'stage', 'run_id', 'cycle', 'definition_hash')
+RECEIPT_BINDING = ('run_id', 'cycle', 'statement_id', 'definition_hash', 'artifact_hash', 'environment_hash',
+                   'exit_status')
 HASH = re.compile(r'[0-9a-f]{64}\Z')
 REFERENCE = re.compile(r'sha256:[0-9a-f]{64}\Z')
 IDENTIFIER = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.:/-]{0,199}\Z')
@@ -56,6 +61,8 @@ class GateVerdict:
                     'A retraction names its actor and carries no verdict of its own')
             return
         require(self.verdict in VERDICTS, 'Unknown gate verdict')
+        require(self.statement_id not in HUMAN_STATEMENTS or self.origin == 'reviewer_decision',
+                'Human statements accept only reviewer decisions')
         if self.origin == 'runner_receipt':
             require(isinstance(self.receipt_ref, str) and REFERENCE.fullmatch(self.receipt_ref),
                     'Runner verdict requires an immutable receipt')
@@ -87,6 +94,18 @@ def parse_verdict(document):
     return verdict
 
 
+def bind_runner_receipt(verdict, receipt):
+    """A runner receipt is evidence for one verdict only when it names the same run, cycle,
+    statement, definition, artifact, environment and the real exit status."""
+    require(isinstance(receipt, dict) and all(key in receipt for key in RECEIPT_BINDING),
+            'Runner receipt does not bind this verdict')
+    for key in RECEIPT_BINDING:
+        expected = getattr(verdict, key)
+        require(receipt[key] == expected and type(receipt[key]) is type(expected),
+                'Runner receipt does not bind this verdict: ' + key)
+    return {key: receipt[key] for key in RECEIPT_BINDING}
+
+
 def fold_verdicts(verdicts, statements, run_id, cycle):
     """One deterministic view: the latest live verdict per required statement of this run and cycle.
 
@@ -104,14 +123,21 @@ def fold_verdicts(verdicts, statements, run_id, cycle):
     sequences = [v.sequence for v in parsed]
     require(len(sequences) == len(set(sequences)), 'Duplicate gate verdict sequence')
     by_sequence = {v.sequence: v for v in parsed}
-    retracted = set()
+    retracted, foreign, ignored = set(), 0, []
     for verdict in parsed:
-        if verdict.retracts is not None:
-            target = by_sequence.get(verdict.retracts)
-            require(target is not None and target.statement_id == verdict.statement_id
-                    and target.retracts is None, 'Retraction must name a live verdict of the same statement')
-            retracted.add(verdict.retracts)
-    latest, foreign, ignored = {}, 0, []
+        if verdict.retracts is None:
+            continue
+        if verdict.run_id != run_id or verdict.cycle != cycle:
+            # A retraction issued for another run or cycle never touches this fold (review, PR #46).
+            foreign += 1
+            ignored.append(verdict.sequence)
+            continue
+        target = by_sequence.get(verdict.retracts)
+        require(target is not None and target.retracts is None and all(
+            getattr(target, key) == getattr(verdict, key) for key in BINDING),
+            'Retraction must name a live verdict of the same statement and binding')
+        retracted.add(verdict.retracts)
+    latest = {}
     for verdict in sorted(parsed, key=lambda v: v.sequence):
         if verdict.retracts is not None or verdict.sequence in retracted:
             continue
@@ -137,7 +163,17 @@ def fold_verdicts(verdicts, statements, run_id, cycle):
 
 
 def compact(verdicts):
-    """Drop retraction pairs; the fold of the compacted view must equal the fold of the full view."""
+    """Drop bound retraction pairs; the fold of the compacted view must equal the fold of the full view.
+
+    A retraction that does not bind its target (another run, cycle, stage or definition) is not a
+    pair: it stays in the record as the foreign verdict it is, and its target stays live.
+    """
     parsed = [v if isinstance(v, GateVerdict) else parse_verdict(v) for v in verdicts]
-    retracted = {v.retracts for v in parsed if v.retracts is not None}
-    return [asdict(v) for v in parsed if v.retracts is None and v.sequence not in retracted]
+    by_sequence = {v.sequence: v for v in parsed}
+    pairs = set()
+    for verdict in parsed:
+        target = by_sequence.get(verdict.retracts) if verdict.retracts is not None else None
+        if target is not None and target.retracts is None and all(
+                getattr(target, key) == getattr(verdict, key) for key in BINDING):
+            pairs.update({verdict.sequence, target.sequence})
+    return [asdict(v) for v in parsed if v.sequence not in pairs]

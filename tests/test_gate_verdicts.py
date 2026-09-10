@@ -111,12 +111,22 @@ def registered_iteration(tmp_path):
     return service, row
 
 
+def runner_receipt(service, row, statement, exit_status=0, **changes):
+    """A structured receipt naming exactly what the runner judged; free text is not a receipt."""
+    stage = row['stage']
+    body = {'run_id': row['id'], 'cycle': row['revision'], 'statement_id': statement,
+            'definition_hash': service.statement_definitions(row, stage)[statement],
+            'artifact_hash': None, 'environment_hash': None, 'exit_status': exit_status, 'stdout': 'runner output'}
+    body.update(changes)
+    return service.artifacts.put(json.dumps(body), 'runner-receipt')['ref']
+
+
 def test_iteration_records_verdicts_in_the_journal_and_advance_consumes_the_fold(tmp_path):
     service, row = registered_iteration(tmp_path)
-    receipt = service.artifacts.put('runner output', 'fixture')['ref']
     stage = row['stage']
     definitions = service.statement_definitions(row, stage)
-    statement = sorted(definitions)[0]
+    statement = 'spec_integrity'
+    receipt = runner_receipt(service, row, statement)
     document = {'statement_id': statement, 'stage': stage, 'artifact_hash': None, 'environment_hash': None,
                 'verdict': 'PASS', 'origin': 'runner_receipt', 'receipt_ref': receipt, 'exit_status': 0,
                 'actor': None, 'authority': None}
@@ -130,7 +140,8 @@ def test_iteration_records_verdicts_in_the_journal_and_advance_consumes_the_fold
     blocked = service.request_advance(row['id'], status['sequence'])
     assert blocked['status'] == 'blocked' and 'not passed' in blocked['reason'] and statement not in blocked['reason']
     # A later ERROR for the same statement withdraws the PASS on every read path.
-    service.record_gate_verdict(row['id'], {**document, 'verdict': 'ERROR', 'exit_status': 2})
+    service.record_gate_verdict(row['id'], {**document, 'verdict': 'ERROR', 'exit_status': 2,
+                                            'receipt_ref': runner_receipt(service, row, statement, 2)})
     assert service.status(row['id'])['gates'][stage]['statements'][statement]['state'] == 'error'
     later = service.request_advance(row['id'], service.status(row['id'])['sequence'])
     assert f'{statement}=error' in later['reason']
@@ -144,6 +155,9 @@ def test_iteration_records_verdicts_in_the_journal_and_advance_consumes_the_fold
         service.record_gate_verdict(row['id'], {**document, 'statement_id': 'human_approved'})
     with pytest.raises(ContractError, match='non-zero exit'):
         service.record_gate_verdict(row['id'], {**document, 'exit_status': 1})
+    with pytest.raises(ContractError, match='Human statements accept only reviewer decisions'):
+        service.record_gate_verdict(row['id'], {**document, 'statement_id': 'human_scope',
+                                                'receipt_ref': runner_receipt(service, row, 'human_scope')})
     with pytest.raises((ContractError, FileNotFoundError, ValueError)):
         service.record_gate_verdict(row['id'], {**document, 'receipt_ref': 'sha256:' + 'f' * 64})
     with pytest.raises(ContractError, match='live verdict'):
@@ -156,3 +170,89 @@ def test_iteration_records_verdicts_in_the_journal_and_advance_consumes_the_fold
     events = service.status(row['id'])['events']
     assert [e['kind'] for e in events][-3:] == ['gate_verdict_recorded', 'transition_blocked', 'gate_verdict_recorded']
     assert replace(parse_verdict(events[-1]['details']['verdict']), sequence=1).sequence == 1
+
+
+class FixtureDecisionProvider:
+    """Stands in for an authenticated decision channel; it verifies the exact statement it is asked about."""
+
+    def __init__(self, authenticated, actor='qa-lead'):
+        self.authenticated, self.actor, self.calls = authenticated, actor, []
+
+    def verify(self, claim):
+        self.calls.append(claim)
+        return {**claim, 'authenticated': self.authenticated and claim['actor'] == self.actor}
+
+
+def test_runner_receipt_must_bind_the_verdict_it_supports(tmp_path):
+    # Review counterexample (PR #46): free text with a caller-written exit_status is not evidence.
+    service, row = registered_iteration(tmp_path)
+    stage = row['stage']
+    base = {'statement_id': 'spec_integrity', 'stage': stage, 'artifact_hash': None, 'environment_hash': None,
+            'verdict': 'PASS', 'origin': 'runner_receipt', 'exit_status': 0, 'actor': None, 'authority': None}
+    before = service.status(row['id'])['sequence']
+    free_text = service.artifacts.put('runner output', 'fixture')['ref']
+    with pytest.raises((ContractError, ValueError)):
+        service.record_gate_verdict(row['id'], {**base, 'receipt_ref': free_text})
+    for drift in ({'exit_status': 1}, {'statement_id': 'human_scope'}, {'run_id': 'other-run'},
+                  {'cycle': row['revision'] + 1}, {'definition_hash': 'e' * 64}, {'artifact_hash': 'a' * 64}):
+        receipt = runner_receipt(service, row, 'spec_integrity', **drift)
+        with pytest.raises(ContractError, match='Runner receipt does not bind this verdict'):
+            service.record_gate_verdict(row['id'], {**base, 'receipt_ref': receipt})
+    assert service.status(row['id'])['sequence'] == before, 'refused receipts leave no journal event'
+    recorded = service.record_gate_verdict(row['id'], {**base, 'receipt_ref': runner_receipt(service, row, 'spec_integrity')})
+    assert recorded['gate']['statements']['spec_integrity']['state'] == 'passed'
+    event = service.status(row['id'])['events'][-1]
+    assert event['details']['receipt_binding']['statement_id'] == 'spec_integrity'
+    assert event['details']['receipt_binding']['exit_status'] == 0
+
+
+def test_human_statements_settle_only_through_the_provider_verification(tmp_path):
+    service, row = registered_iteration(tmp_path)
+    stage = row['stage']
+    claim = {'statement_id': 'human_scope', 'stage': stage, 'artifact_hash': None, 'environment_hash': None,
+             'verdict': 'PASS', 'origin': 'reviewer_decision', 'receipt_ref': None, 'exit_status': None,
+             'actor': 'qa-lead', 'authority': 'authenticated_provider'}
+    # A provider object that cannot verify is not a provider; configuring `object()` grants nothing.
+    service.human_provider = object()
+    with pytest.raises(ContractError, match='Decision provider must verify'):
+        service.record_gate_verdict(row['id'], claim)
+    # The provider says this actor is not authenticated: the claim is kept, pending, never passed.
+    service.human_provider = FixtureDecisionProvider(authenticated=False)
+    kept = service.record_gate_verdict(row['id'], claim)
+    assert kept['verdict']['authority'] == 'unauthenticated_claim'
+    assert kept['gate']['statements']['human_scope']['state'] == 'pending'
+    # Authenticated for another actor only: the impersonating claim stays pending.
+    service.human_provider = FixtureDecisionProvider(authenticated=True, actor='someone-else')
+    assert service.record_gate_verdict(row['id'], claim)['gate']['statements']['human_scope']['state'] == 'pending'
+    # A provider whose answer names a different statement or verdict is refused outright.
+    class Drifting(FixtureDecisionProvider):
+        def verify(self, claim):
+            return {**super().verify(claim), 'verdict': 'FAIL'}
+    service.human_provider = Drifting(authenticated=True)
+    with pytest.raises(ContractError, match='does not bind this reviewer decision'):
+        service.record_gate_verdict(row['id'], claim)
+    provider = FixtureDecisionProvider(authenticated=True)
+    service.human_provider = provider
+    passed = service.record_gate_verdict(row['id'], claim)
+    assert passed['gate']['statements']['human_scope']['state'] == 'passed' and not passed['release_authorized']
+    assert provider.calls[-1]['statement_id'] == 'human_scope' and provider.calls[-1]['run_id'] == row['id']
+    event = service.status(row['id'])['events'][-1]
+    assert event['details']['provider_decision'] == {'authenticated': True, 'provider': 'FixtureDecisionProvider'}
+
+
+def test_retraction_is_bound_to_run_cycle_stage_and_definition():
+    # Review counterexample (PR #46): a foreign run's RETRACT must not remove this run's PASS.
+    foreign = retraction('a', 1, 2)
+    foreign = GateVerdict(**{**asdict(foreign), 'run_id': 'run-9'})
+    fold = fold_verdicts([runner('a', 'PASS', 1), foreign], DEFINITION, 'run-1', 1)
+    assert fold['statements']['a']['state'] == 'passed' and fold['foreign_verdicts'] == 1
+    assert fold['ignored_sequences'] == [2] and fold['retracted_sequences'] == []
+    other_cycle = GateVerdict(**{**asdict(retraction('a', 1, 2)), 'cycle': 2})
+    assert fold_verdicts([runner('a', 'PASS', 1), other_cycle], DEFINITION, 'run-1', 1)['statements']['a']['state'] == 'passed'
+    # Same run and cycle but a retraction aimed at a verdict of another definition or stage is malformed.
+    for change in ({'definition_hash': 'd' * 64}, {'stage': 'qa_evidence'}):
+        with pytest.raises(ContractError, match='same statement and binding'):
+            fold_verdicts([runner('a', 'PASS', 1), GateVerdict(**{**asdict(retraction('a', 1, 2)), **change})],
+                          DEFINITION, 'run-1', 1)
+    # Compaction keeps the foreign retraction out of the picture as well.
+    assert fold_verdicts(compact([runner('a', 'PASS', 1), foreign]), DEFINITION, 'run-1', 1)['statements'] == fold['statements']

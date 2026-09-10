@@ -50,6 +50,23 @@ Zeus SDD는 8단계 보고서가 전부 `blocked`이고 `advance`는 blocked만 
 | Windows 전체 `uv run pytest -q` (Python 3.12.14) | 923 passed, 305 skipped (200s) |
 | `uv run ruff check .` | 통과 |
 
+## 검토 반영 (PR #46)
+
+- **P1 임의 영수증·`object()` 제공자로 human_scope PASS**: `domain/gate_verdicts.bind_runner_receipt()`가 영수증
+  아티팩트(JSON)의 `run_id/cycle/statement_id/definition_hash/artifact_hash/environment_hash/exit_status`가 판정과
+  타입까지 일치할 때만 받아들이고, 자유 텍스트나 다른 문장·다른 exit의 영수증은 `Runner receipt does not bind this
+  verdict`로 거절합니다(저널 이벤트 없음). `human_scope/human_design/human_acceptance`는 `reviewer_decision`만
+  허용합니다. `authenticated_provider` 권한은 `SDD._provider_decision()`이 설정된 제공자의 `verify(claim)`를 호출해
+  같은 문장·run·cycle·정의·actor·verdict를 돌려주고 `authenticated=True`일 때만 부여하고, 검증 불가(`verify` 없음)는
+  거절, 미인증 결과는 `unauthenticated_claim`(pending)으로 보관합니다. 결과는 이벤트 `receipt_binding`/
+  `provider_decision`에 남습니다.
+- **P2 외부 run의 RETRACT**: `fold_verdicts`에서 run/cycle이 다른 철회는 foreign으로 세고 무시하며, 같은 run의
+  철회는 대상과 statement/stage/run/cycle/definition이 모두 같아야 합니다. `compact()`도 결속된 쌍만 접습니다.
+- 회귀: `test_runner_receipt_must_bind_the_verdict_it_supports`, `test_human_statements_settle_only_through_the_
+  provider_verification`(`object()`·미인증·다른 actor·판정이 어긋난 제공자·정상 제공자),
+  `test_retraction_is_bound_to_run_cycle_stage_and_definition`. 픽스처 제공자는 인증 채널의 대역이며 실제 사람
+  승인 측정이 아닙니다. artifact/environment 해시는 영수증 결속에는 쓰지만 아티팩트 존재 검증은 아직 소비하지 않습니다.
+
 ## 남은 범위
 
 - 이 계약은 **판정의 기록과 소비**입니다. 실제 8단계 전이, 인증된 사람 결정 제공자, 러너가 영수증과 함께 판정을 자동
