@@ -268,6 +268,20 @@ the release stays reviewed; nothing downstream is a pass. Zeus installs no Git h
 Codex hooks are verified per candidate manifest and discovered through the transport, and no
 installation success, file presence or string marker is a check result.
 
+## INV-RUNNER-001
+
+An isolated source run is named by where the attempt ended and what it produced, never by an
+exit status alone. Materialization or runner start failures are `isolation_unavailable` with
+the failing stage and error; they are never substituted by a run in the host environment. A
+runner client that outlives its deadline is `client_timeout` and the uniquely named container
+is removed regardless. In-container deadline exits (124, 137) are `timeout`; the runner's own
+exits (125-127) are `runner_error`, not the command's verdict. An executed command passes only
+with exit 0 and observable stdout: exit 0 with no output, or with diagnostics only on stderr,
+is not a pass; a pytest command passes only by its parsed denominator (INV-CHECK-001), and an
+assertion message is never read as a missing dependency. Every receipt carries the command,
+the runner mode, output digests, the category and, when dispatched from the queue, the
+request, owner, task and generation it ran for.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

@@ -1,0 +1,28 @@
+{
+  "scope": "FA-026 target tests: stage/exit/output classification, runner receipts with fixture docker processes, a real spawn failure without docker on PATH, materialization failure, client timeout",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_runner_categories.py tests/test_research_audits.py tests/test_check_binding.py",
+  "started_at": "2026-09-10T09:36:41.962855+00:00",
+  "finished_at": "2026-09-10T09:37:27.307954+00:00",
+  "exit_code": 0,
+  "summary": [
+    "78 passed in 44.87s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "negative_controls": [
+    {
+      "control": "exit 0 passes whatever the output",
+      "result": "classification and receipt tests fail"
+    },
+    {
+      "control": "runner exits 124-137 treated as the command's verdict",
+      "result": "classification and receipt tests fail"
+    },
+    {
+      "control": "isolation failure reported as an executed run",
+      "result": "isolation test fails"
+    }
+  ],
+  "stacked_on": "fix/fa-025-check-binding (PR #57) for classify_test_run",
+  "not_claimed": "No real Docker container run, Linux/WSL process-tree or scratch permission measurement; docker processes in the receipt tests are fixtures, the spawn failure is real."
+}

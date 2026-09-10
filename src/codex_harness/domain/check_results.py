@@ -64,3 +64,42 @@ def bind_revision(expected, observed, dirty):
     if dirty:
         return {'bound': False, 'reason': 'workspace is dirty: the checked tree is not the candidate tree'}
     return {'bound': True, 'reason': 'observed HEAD equals the candidate and the tree is clean'}
+
+
+RUN_CATEGORIES = ('executed', 'isolation_unavailable', 'client_timeout', 'timeout', 'runner_error')
+RUNNER_EXIT = {124: 'timeout', 137: 'timeout', 125: 'runner_error', 126: 'runner_error', 127: 'runner_error'}
+
+
+def classify_isolated_run(*, stage, exit_status, stdout, stderr, command, client_timeout=False, error=None):
+    """Name what an isolated run was: never a pass by exit status, empty output or a diagnostic alone.
+
+    `stage` is where the attempt ended: `materialize` (source could not be laid out), `spawn` (the
+    runner could not be started), or `run` (a child ran to some exit). Isolation failures are
+    unavailable, never a substitute execution; an in-container deadline (124/137) is a timeout; the
+    runner's own exits (125-127) are runner errors, not the command's verdict.
+    """
+    require(stage in ('materialize', 'spawn', 'run'), 'Unknown run stage')
+    require(isinstance(command, list) and command, 'Command required')
+    if stage != 'run':
+        return {'category': 'isolation_unavailable', 'stage': stage, 'passed': False, 'reason': error or stage + ' failed',
+                'output_class': 'none', 'substitute_execution': False}
+    if client_timeout:
+        return {'category': 'client_timeout', 'stage': stage, 'passed': False, 'output_class': 'none',
+                'reason': error or 'runner client timed out; the container may have outlived the client', 'substitute_execution': False}
+    require(type(exit_status) is int, 'Exit status must be an integer')
+    stdout, stderr = stdout or '', stderr or ''
+    output_class = 'empty' if not stdout.strip() and not stderr.strip() else 'stderr_only' if not stdout.strip() else 'stdout'
+    if exit_status in RUNNER_EXIT:
+        return {'category': RUNNER_EXIT[exit_status], 'stage': stage, 'passed': False, 'exit_status': exit_status,
+                'output_class': output_class, 'reason': f'exit {exit_status} belongs to the runner or its deadline, not the command'}
+    result = {'category': 'executed', 'stage': stage, 'exit_status': exit_status, 'output_class': output_class}
+    if is_test_run(command):
+        verdict = classify_test_run(exit_status, stdout)
+        return {**result, **verdict, 'mode': 'pytest'}
+    if exit_status != 0:
+        return {**result, 'passed': False, 'mode': 'command', 'reason': f'exit {exit_status}'}
+    if output_class == 'empty':
+        return {**result, 'passed': False, 'mode': 'command', 'reason': 'exit 0 with no output: nothing observable ran'}
+    if output_class == 'stderr_only':
+        return {**result, 'passed': False, 'mode': 'command', 'reason': 'exit 0 with diagnostics only on stderr; not a verdict'}
+    return {**result, 'passed': True, 'mode': 'command', 'reason': 'exit 0 with output'}
