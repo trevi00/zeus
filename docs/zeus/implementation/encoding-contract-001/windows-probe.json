@@ -1,0 +1,158 @@
+{
+  "platform": "win32",
+  "os": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.14 (main, Aug 14 2026, 15:40:22) [MSC v.1944 64 bit (AMD64)]",
+  "contract_present": true,
+  "scope": "Actual native child process encoding only; no database, release, Codex or GitHub execution.",
+  "source_hashes": {
+    "src/codex_harness/adapters/commands.py": "82200f42fd48962545232654b2132757130bdd7afeb916e220bd8546e63dcd71",
+    "src/codex_harness/adapters/verification.py": "50b5949f3fb7b6d8379b2e935c2eef00fec81d28b233d7731f692198c9e98668",
+    "src/codex_harness/adapters/hooks.py": "67dc4cc3991a6613a6a7354ae1957b682555cf2756ed819a1f8c0e7b2258dd70"
+  },
+  "cases": [
+    {
+      "case": "inherited_environment",
+      "note": "Parent environment as-is.",
+      "PYTHONIOENCODING": null,
+      "PYTHONUTF8": null,
+      "runs": {
+        "literal": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+          ],
+          "returncode": 1,
+          "stdout": "cp949\n",
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nUnicodeEncodeError: 'cp949' codec can't encode character '\\u2014' in position 3: illegal multibyte sequence\n",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": false
+        },
+        "roundtrip": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print(sys.stdin.read(),flush=True)"
+          ],
+          "returncode": 0,
+          "stdout": "cp949\n검증 — 완료\n",
+          "stderr": "",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": false
+        }
+      }
+    },
+    {
+      "case": "adversarial_cp949",
+      "note": "Operator-set cp949 channel, failure control.",
+      "PYTHONIOENCODING": "cp949",
+      "PYTHONUTF8": "0",
+      "runs": {
+        "literal": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+          ],
+          "returncode": 1,
+          "stdout": "cp949\n",
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nUnicodeEncodeError: 'cp949' codec can't encode character '\\u2014' in position 3: illegal multibyte sequence\n",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": false
+        },
+        "roundtrip": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print(sys.stdin.read(),flush=True)"
+          ],
+          "returncode": 1,
+          "stdout": "cp949\n",
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nUnicodeDecodeError: 'cp949' codec can't decode byte 0x80 in position 2: illegal multibyte sequence\n",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": false
+        }
+      }
+    },
+    {
+      "case": "verification_environment",
+      "note": "Release pytest environment built from the adversarial parent.",
+      "PYTHONIOENCODING": "utf-8",
+      "PYTHONUTF8": null,
+      "runs": {
+        "literal": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+          ],
+          "returncode": 0,
+          "stdout": "utf-8\n검증 — 완료\n",
+          "stderr": "",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": true
+        },
+        "roundtrip": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print(sys.stdin.read(),flush=True)"
+          ],
+          "returncode": 0,
+          "stdout": "utf-8\n검증 — 완료\n",
+          "stderr": "",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": true
+        }
+      }
+    },
+    {
+      "case": "python_channel_environment",
+      "note": "Explicit machine-channel contract over the adversarial parent.",
+      "PYTHONIOENCODING": "utf-8",
+      "PYTHONUTF8": "0",
+      "runs": {
+        "literal": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print('검증 — 완료',flush=True)"
+          ],
+          "returncode": 0,
+          "stdout": "utf-8\n검증 — 완료\n",
+          "stderr": "",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": true
+        },
+        "roundtrip": {
+          "argv": [
+            "C:\\Users\\rudtn\\zeus-pr\\fa-001\\.venv\\Scripts\\python.exe",
+            "-X",
+            "utf8=0",
+            "-c",
+            "import sys;print(sys.stdout.encoding,flush=True);print(sys.stdin.read(),flush=True)"
+          ],
+          "returncode": 0,
+          "stdout": "utf-8\n검증 — 완료\n",
+          "stderr": "",
+          "expected_stdout": "utf-8\n검증 — 완료\n",
+          "matches_expected": true
+        }
+      }
+    }
+  ]
+}

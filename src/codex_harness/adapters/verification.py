@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
-from codex_harness.adapters.commands import run_process
+from codex_harness.adapters.commands import python_channel_environment, run_process
 from codex_harness.domain.model import canonical, digest, require, utcnow
 
 ENVIRONMENT_KEYS = {"PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP", "TMPDIR",
@@ -22,7 +22,9 @@ def verification_environment(endpoints, environ=None):
     # INV-RELEASE-001: old incumbent tests mutate HARNESS_*; remove inherited Zeus aliases.
     env.update(HARNESS_INTEGRATION="1", HARNESS_DATABASE_URL=endpoints["database_url"],
                HARNESS_REDIS_URL=endpoints["redis_url"], HARNESS_REDIS_NAMESPACE="zeus-verification")
-    return env
+    # INV-ENCODING-001: release pytest is a Python child; the allowlist above already dropped
+    # any inherited PYTHONIOENCODING/PYTHONUTF8, so the channel is bound here explicitly.
+    return python_channel_environment(env)
 
 
 class VerificationServices:
