@@ -1,0 +1,17 @@
+[
+  {
+    "exit": 0,
+    "stdout": "{\"pr\": 59, \"scope\": \"synthetic inputs through production functions; no actual model/human acceptance\", \"hashseed\": \"1\", \"selected_revision\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"expected_latest\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}\n",
+    "stderr": ""
+  },
+  {
+    "exit": 0,
+    "stdout": "{\"pr\": 59, \"scope\": \"synthetic inputs through production functions; no actual model/human acceptance\", \"hashseed\": \"2\", \"selected_revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"expected_latest\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}\n",
+    "stderr": ""
+  },
+  {
+    "exit": 0,
+    "stdout": "{\"pr\": 59, \"scope\": \"synthetic inputs through production functions; no actual model/human acceptance\", \"hashseed\": \"3\", \"selected_revision\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"expected_latest\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}\n",
+    "stderr": ""
+  }
+]

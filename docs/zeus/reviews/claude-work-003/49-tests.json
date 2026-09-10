@@ -1,0 +1,13 @@
+{
+  "head": "10b024ea9983da4ce34027dd29e37f0c10d24862",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_execution_output.py",
+    "tests/test_execution_progress.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 26.0174485000025,
+  "log_sha256": "f71cfe29997e28b39fcbffe385c178596eed13f963f1b6346f09ff2af800ad45",
+  "postgres_enabled": true
+}

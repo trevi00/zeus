@@ -1,0 +1,12 @@
+{
+  "head": "0235421248867cf0a47b71bbb0f25447e529a7e5",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_profile_privacy.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 2.965815700008534,
+  "log_sha256": "38fc063bf0b85a02ee7914249a55b02823c03d0317dd4714178a3bf288e0f994",
+  "postgres_enabled": true
+}

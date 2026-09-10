@@ -1,0 +1,7 @@
+[
+  {
+    "exit": 0,
+    "stdout": "{\"pr\": 50, \"scope\": \"synthetic inputs through production functions; no actual model/human acceptance\", \"authority\": true, \"state\": \"authoritative\", \"human_provider_calls\": 0, \"artifacts_contain_only_fixture_labels\": true, \"expected_spec_scenarios_not_supplied\": true}\n",
+    "stderr": ""
+  }
+]

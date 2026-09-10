@@ -1,0 +1,92 @@
+[
+  {
+    "pr": 46,
+    "head": "cafeb17ee84a83ac4771f49e8eda935630502400",
+    "accepted": true,
+    "finding": "권한 있는 reviewer_decision만 철회에 반영하고, 대상과 행위자를 묶는 검사를 확인했습니다. fold와 compact 양쪽 회귀 테스트가 통과했습니다."
+  },
+  {
+    "pr": 49,
+    "head": "10b024ea9983da4ce34027dd29e37f0c10d24862",
+    "accepted": true,
+    "finding": "잘못된 progress 이벤트의 method/params/item/status/tokenUsage 형태를 거부하고 정상 이벤트의 순서를 오염시키지 않는 것을 확인했습니다."
+  },
+  {
+    "pr": 50,
+    "head": "ac436349760d09f7833c2e031a8b1486fbc2e6fa",
+    "accepted": false,
+    "finding": "[P1] 파일 존재와 호출자 문자열만으로 완료 권위를 만들 수 있습니다. 실행·평가 artifact 내용이 fixture label뿐이고 실제 reviewer/provider 호출이 0회여도 require_authority가 authoritative=true를 반환했습니다. expected_scenarios를 생략하면 스펙 시나리오 완전성 검사도 생략됩니다. 실행/평가 내용의 task·attempt·spec 결합과 검증된 reviewer 실행을 확인하고 스펙에서 기대 시나리오를 필수로 도출해야 합니다."
+  },
+  {
+    "pr": 51,
+    "head": "1ea2558306c49f75ccc3c5a7e67066c194eb2c13",
+    "accepted": true,
+    "finding": "현재 task generation/attempt/status/lease를 기준으로 예약을 회수합니다. 취소 및 최종 실패의 잔여 예약 회귀 테스트가 통과했습니다."
+  },
+  {
+    "pr": 52,
+    "head": "5556a3f6b64e515f1e180ec204aeaa8aa2cd65ad",
+    "accepted": true,
+    "finding": "breaker token을 현재 reservation 및 task/attempt/owner에 묶고 만료·해제·다른 소유자 토큰을 거부합니다."
+  },
+  {
+    "pr": 54,
+    "head": "b1d8d4092a9d2426827d98894931bd419922f8e7",
+    "accepted": false,
+    "finding": "[P1] 캐시 identity가 환경변수 이름만 포함합니다. 실제 Python replay를 LANG=review-pass에서 통과시킨 뒤 LANG=review-fail로 변경하면 캐시는 all_checked를 반환하지만 새 inspector는 verified_mismatch입니다. replay에 사용한 유효 환경의 값 및 도구 identity를 안전한 digest로 결합하고 같은 snapshot을 실행에 사용해야 합니다."
+  },
+  {
+    "pr": 55,
+    "head": "5fbb7a4b4797f556d622a3e4043b11ed66d74ef4",
+    "accepted": false,
+    "finding": "[P1] 중첩 $schema 선언으로 dialect 제한을 우회합니다. properties.x에 draft-07 $schema와 prefixItems integer를 함께 선언하면 x=[\"not-an-integer\"]를 checked로 승인하면서 receipt에는 2020-12를 기록합니다. schema 위치의 중첩/$defs/$ref 대상 dialect를 일관되게 검증해야 합니다. 예제 annotation 객체와 실제 schema는 구분해야 합니다."
+  },
+  {
+    "pr": 56,
+    "head": "123b30a07467c0fced12026aaf0820ad00798863",
+    "accepted": true,
+    "finding": "AnnAssign 리터럴을 분석하고 다중 바인딩은 unresolved로 남깁니다. 이름 기반 상속 분석의 범위 제한도 명시했습니다."
+  },
+  {
+    "pr": 57,
+    "head": "ced216f841fc6f428c5fee0f6e40aa17158f1a01",
+    "accepted": true,
+    "finding": "ExitStack을 사용해 서비스 context를 한 번만 진입하고 정리합니다. 이 PC의 실제 Docker PostgreSQL/Redis로 ReleaseRunner를 실행했습니다. 실제 연결 테스트는 통과했고 의도한 incumbent 계약 실패 후 rejected, 진입 1회/정리 1회, 잔여 컨테이너 없음, 후속 단계 생략을 확인했습니다. 모델·사람 승인과 실제 배포를 검증한 것은 아닙니다."
+  },
+  {
+    "pr": 58,
+    "head": "3743cafc5ba4e875c62ea2c6b90960e79e6517da",
+    "accepted": true,
+    "finding": "passed/outcome을 receipt에 기록하고 소비자도 성공 여부를 요구합니다. 이전 형식의 passed 없는 receipt는 실패 폐쇄 방식으로 처리됩니다."
+  },
+  {
+    "pr": 59,
+    "head": "4b715b643eb49e49d0f3cf83e20dd1e10f45b942",
+    "accepted": false,
+    "finding": "[P2] 같은 recorded_at을 가진 A→B revision에서 기본 view가 set 순서에 의존합니다. PYTHONHASHSEED=1은 B, 2/3은 과거 A를 선택했습니다. 트랜잭션 내 단조 증가 순서 등으로 최신 revision 선택을 결정하거나 명시 revision을 필수화해야 합니다."
+  },
+  {
+    "pr": 60,
+    "head": "994c92933437b73c4d230c0c1c0edf4564c0ac4f",
+    "accepted": false,
+    "finding": "[P2] base #59의 최신 revision 비결정성을 그대로 상속합니다. 이 PR head에서도 동일 timestamp의 A→B 관측에 대해 hash seed 1은 B, 2/3은 A를 선택했습니다. base 수정 후 다시 rebase하고 이 head에서 재검증해야 합니다."
+  },
+  {
+    "pr": 61,
+    "head": "638f2776d1e44f0668df17f089ed7e238b004923",
+    "accepted": true,
+    "finding": "파싱된 JSON/JSONL 레코드에 reference 검증을 적용하고 중첩 잘못된 reference를 명시적으로 거부합니다."
+  },
+  {
+    "pr": 62,
+    "head": "9ea8f8a28b66129f559e3ca57d79c184f224b3b4",
+    "accepted": true,
+    "finding": "receipt를 operation/config/root에 결합하고 소비 시 기대 config/root와 일치해야 승인합니다."
+  },
+  {
+    "pr": 63,
+    "head": "0235421248867cf0a47b71bbb0f25447e529a7e5",
+    "accepted": false,
+    "finding": "[P1] 새 observed_at 매핑이 privacy scan을 우회합니다. observed_at=\"password=UNSCANNED_SENTINEL\"이 model input으로 그대로 전달되지만 ready/unchecked=[]이고 checked는 content/project_path/kind뿐입니다. timestamp를 타입 검증·정규화하고 전달되는 모든 텍스트를 검사하거나 잘못된 형태를 거부해야 합니다."
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "scope": "production ReleaseRunner.run with real Git, uv, pytest, Docker PostgreSQL/Redis; MemoryStore fixture review precondition; no model/human approval or deployment",
+  "head": "ced216f841fc6f428c5fee0f6e40aa17158f1a01",
+  "result": "rejected",
+  "test_summary": "1 failed, 1 passed; intentional incumbent contract rejection after successful real PostgreSQL and Redis connections",
+  "services_ready": 1,
+  "services_removed": 1,
+  "remaining_containers": false,
+  "entry_count": 1,
+  "exit_count": 1,
+  "downstream_skipped": true
+}

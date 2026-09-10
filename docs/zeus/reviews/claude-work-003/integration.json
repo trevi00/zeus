@@ -1,0 +1,60 @@
+{
+  "tree": "a7e11c4981ff50bb8db540199a2a49f588c6c125",
+  "checks": [
+    {
+      "check": "ruff",
+      "exit": 0,
+      "seconds": 0.05836830000043847,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "postgres_enabled": false,
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-review3-integration\\.venv\\Scripts\\ruff.exe",
+        "check",
+        "."
+      ]
+    },
+    {
+      "check": "full",
+      "exit": 0,
+      "seconds": 338.5416215000005,
+      "sha256": "c9780421eb7cf23f15f7c718fc4d4f58f013dc65158077868a13684d1cc1e887",
+      "postgres_enabled": false,
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-review3-integration\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q"
+      ]
+    },
+    {
+      "check": "postgres-targets",
+      "exit": 0,
+      "seconds": 164.42194980000204,
+      "sha256": "40b185483f9d16b53970fdc7f41e1989c00fe8b7d7398498b9d62f6d5333cea2",
+      "postgres_enabled": true,
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-review3-integration\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_architecture.py",
+        "tests/test_breaker.py",
+        "tests/test_check_binding.py",
+        "tests/test_execution_identity.py",
+        "tests/test_execution_output.py",
+        "tests/test_execution_progress.py",
+        "tests/test_gate_verdicts.py",
+        "tests/test_invocation_breaker_integration.py",
+        "tests/test_invocation_ledger.py",
+        "tests/test_maintenance.py",
+        "tests/test_migration_precheck.py",
+        "tests/test_project_skills.py",
+        "tests/test_research_audits.py",
+        "tests/test_runner_categories.py",
+        "tests/test_sdd.py",
+        "tests/test_seam_contracts.py",
+        "tests/test_snapshot_integrity.py"
+      ]
+    }
+  ]
+}

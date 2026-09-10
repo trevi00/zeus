@@ -1,0 +1,7 @@
+[
+  {
+    "exit": 0,
+    "stdout": "{\"pr\": 55, \"scope\": \"synthetic inputs through production functions; no actual model/human acceptance\", \"answer\": {\"x\": [\"not-an-integer\"]}, \"schema_check\": \"checked\", \"receipt_dialect\": \"https://json-schema.org/draft/2020-12/schema\"}\n",
+    "stderr": ""
+  }
+]

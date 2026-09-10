@@ -1,0 +1,53 @@
+import os,sys,json,subprocess
+from pathlib import Path
+sys.path.insert(0,'C:/Users/rudtn/zeus-review3-57/src')
+from codex_harness.adapters.git import GitWorkspace
+from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.store import MemoryStore
+from codex_harness.application.service import Harness
+from codex_harness.adapters.deployment import ReleaseRunner
+from codex_harness.bootstrap import organization
+from codex_harness.domain.model import canonical
+b=Path('C:/Users/rudtn/zeus/.runtime/claude-work-review-003/docker57');b.mkdir(parents=True,exist_ok=True)
+repo=b/'repo';repo.mkdir();(repo/'tests').mkdir()
+(repo/'pyproject.toml').write_text('[project]\nname="zeus-real-check-probe"\nversion="0.0.1"\nrequires-python=">=3.12"\ndependencies=["pytest","psycopg[binary]"]\n','utf-8')
+(repo/'.gitignore').write_text('.venv/\n.pytest_cache/\n__pycache__/\n','utf-8')
+(repo/'candidate.flag').write_text('approved','utf-8')
+(repo/'tests/test_actual_services.py').write_text('''import os,socket
+from pathlib import Path
+from urllib.parse import urlparse
+import psycopg
+def test_actual_postgres_and_redis():
+    with psycopg.connect(os.environ['HARNESS_DATABASE_URL']) as conn:
+        assert conn.execute('select 17').fetchone()[0]==17
+    u=urlparse(os.environ['HARNESS_REDIS_URL'])
+    with socket.create_connection((u.hostname,u.port),timeout=5) as s:
+        s.sendall(b'*1\\r\\n$4\\r\\nPING\\r\\n');assert s.recv(100)==b'+PONG\\r\\n'
+def test_candidate_contract():
+    assert Path('candidate.flag').read_text()=='approved'
+''','utf-8')
+def cmd(*args):return subprocess.run(list(args),cwd=repo,check=True,capture_output=True)
+cmd('uv','lock');cmd('git','init','-b','main');cmd('git','add','--all');cmd('git','-c','user.name=Review','-c','user.email=review@example.invalid','commit','-m','fixture incumbent contract')
+git=GitWorkspace(str(repo),str(b/'workspaces'));workspace=git.prepare('candidate');Path(workspace['path'],'candidate.flag').write_text('rejected','utf-8');candidate=git.capture(workspace)
+artifacts=FileArtifacts(b/'artifacts');service=Harness(MemoryStore(),organization());runner=ReleaseRunner(service,git,artifacts,str(b/'unused-auth'),auto_merge=False)
+release=runner.releases.propose(candidate,{'checks':['tests','cli_start','cli_file_task']})
+# Controlled review precondition only, not an actual model/human approval or production release.
+with service.store.transaction() as tx:
+    row=tx.get('releases',release['id']);row['status']='reviewed';tx.put('releases',row['id'],row)
+os.environ['ZEUS_RUNTIME_DIR']=str(b/'runtime');os.environ['HARNESS_RUNTIME_DIR']=str(b/'runtime')
+os.environ['PYTHONIOENCODING']='utf-8'
+result=runner.run(release['id'])
+test_doc=artifacts.document(result['checks']['tests']['evidence'])
+stdout=test_doc['stdout'];assert '1 failed, 1 passed' in stdout
+events=[]
+for p in (b/'artifacts').rglob('*'):
+    if p.is_file():
+        try:
+            value=json.loads(p.read_text('utf-8'))
+            if isinstance(value,dict) and value.get('status') in {'services_ready','services_removed','cleanup_failed'}:events.append(value)
+        except (ValueError,UnicodeError,OSError):pass
+ready=[e for e in events if e['status']=='services_ready'];removed=[e for e in events if e['status']=='services_removed']
+assert len(ready)==1 and len(removed)==1 and ready[0]['project']==removed[0]['project']
+containers=subprocess.check_output(['docker','ps','-aq','--filter','label=com.docker.compose.project='+ready[0]['project']],text=True).strip();assert not containers
+out={'scope':'production ReleaseRunner.run with real Git, uv, pytest, Docker PostgreSQL/Redis; MemoryStore fixture review precondition; no model/human approval or deployment','head':'ced216f841fc6f428c5fee0f6e40aa17158f1a01','result':result['status'],'test_summary':'1 failed, 1 passed; intentional incumbent contract rejection after successful real PostgreSQL and Redis connections','services_ready':len(ready),'services_removed':len(removed),'remaining_containers':bool(containers),'entry_count':1,'exit_count':1,'downstream_skipped':result['checks']['cli_file_task'].get('skipped')}
+Path('C:/Users/rudtn/zeus/.runtime/claude-work-review-003/57-docker.json').write_text(json.dumps(out,indent=2),'utf-8');print(json.dumps(out),flush=True)

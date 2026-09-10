@@ -1,0 +1,12 @@
+{
+  "head": "638f2776d1e44f0668df17f089ed7e238b004923",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_snapshot_integrity.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 4.083222800007206,
+  "log_sha256": "0020fa6e71800948448c323b1d2909a66d59257c2aad042d230c8acea25d2b4f",
+  "postgres_enabled": true
+}
