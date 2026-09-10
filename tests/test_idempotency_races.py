@@ -42,10 +42,28 @@ from codex_harness.bootstrap import organization
 
 spec = json.loads(Path(sys.argv[1]).read_text('utf-8'))
 pause = spec['pause']
+rendezvous = Path(spec['rendezvous'])
+racers = spec['racers']
+
+def wait_for(count, prefix, timeout):
+    deadline = time.monotonic() + timeout
+    while len(list(rendezvous.glob(prefix + '-*'))) < count:
+        if time.monotonic() > deadline:
+            raise SystemExit('rendezvous timeout: ' + prefix)
+        time.sleep(0.005)
+
 original_scan = PostgresTransaction.scan
+read_marked = False
 def paused_scan(self, bucket):
+    global read_marked
     rows = original_scan(self, bucket)
-    time.sleep(pause)  # the upstream barrier: every racer has read before anyone writes
+    if spec['unlocked'] and bucket == spec['rendezvous_bucket'] and not read_marked:
+        # The upstream barrier, made explicit: every racer has finished this read before any
+        # of them writes. Only meaningful without the advisory lock (with it, this would deadlock).
+        read_marked = True
+        (rendezvous / ('read-' + spec['index'])).write_text('read', encoding='utf-8')
+        wait_for(racers, 'read', 20)
+    time.sleep(pause)
     return rows
 PostgresTransaction.scan = paused_scan
 if spec['unlocked']:
@@ -56,8 +74,13 @@ if spec['unlocked']:
             yield PostgresTransaction(conn)
     PostgresStore.transaction = unlocked
 store = PostgresStore(spec['dsn'])
+# Ready ACK: the parent releases the gate only after every racer has imported and reached it.
+(rendezvous / ('ready-' + spec['index'])).write_text('ready', encoding='utf-8')
 gate = Path(spec['gate'])
+deadline = time.monotonic() + 60
 while not gate.exists():
+    if time.monotonic() > deadline:
+        raise SystemExit('gate timeout')
     time.sleep(0.005)
 if spec['operation'] == 'record_incident':
     result = Harness(store, organization()).record_incident(spec['message'])
@@ -71,26 +94,46 @@ print(json.dumps(result, ensure_ascii=False))
 '''
 
 
+RENDEZVOUS_BUCKETS = {'record_incident': 'incidents', 'submit': 'tasks', 'claim': 'tasks', 'handle': 'workflow_inbox'}
+
+
 def race(store, tmp_path, operation, specs, unlocked=False):
+    """Start every racer on a ready ACK, not a fixed sleep; unlocked racers also rendezvous after
+    their read so the interleaving is fixed by the test, not by the scheduler (review, PR #38)."""
     script = tmp_path / 'racer.py'
     script.write_text(CHILD, encoding='utf-8')
-    gate = tmp_path / ('gate-' + uuid4().hex)
+    run = uuid4().hex
+    rendezvous = tmp_path / ('rendezvous-' + run)
+    rendezvous.mkdir()
+    gate = tmp_path / ('gate-' + run)
     children = []
-    for index, spec in enumerate(specs):
-        path = tmp_path / f'spec-{operation}-{index}.json'
-        path.write_text(json.dumps({**spec, 'operation': operation, 'dsn': store.dsn, 'gate': str(gate),
-                                    'pause': PAUSE, 'unlocked': unlocked}), encoding='utf-8')
-        children.append(subprocess.Popen([sys.executable, str(script), str(path)], stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE, env=dict(os.environ, PYTHONIOENCODING='utf-8'),
-                                         creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0))
-    time.sleep(1.0)  # let every interpreter import and reach the gate
-    gate.write_text('go', encoding='utf-8')
-    results = []
-    for child in children:
-        stdout, stderr = child.communicate(timeout=60)
-        assert child.returncode == 0, stderr.decode('utf-8', 'replace')
-        results.append(json.loads(stdout))
-    return results
+    try:
+        for index, spec in enumerate(specs):
+            path = tmp_path / f'spec-{operation}-{run}-{index}.json'
+            path.write_text(json.dumps({**spec, 'operation': operation, 'dsn': store.dsn, 'gate': str(gate),
+                                        'pause': PAUSE, 'unlocked': unlocked, 'index': str(index),
+                                        'racers': len(specs), 'rendezvous': str(rendezvous),
+                                        'rendezvous_bucket': RENDEZVOUS_BUCKETS[operation]}), encoding='utf-8')
+            children.append(subprocess.Popen([sys.executable, str(script), str(path)], stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE, env=dict(os.environ, PYTHONIOENCODING='utf-8'),
+                                             creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0))
+        deadline = time.monotonic() + 60
+        while len(list(rendezvous.glob('ready-*'))) < len(specs):
+            assert time.monotonic() < deadline, 'racers did not become ready'
+            assert all(child.poll() is None for child in children), 'a racer exited before the gate'
+            time.sleep(0.01)
+        gate.write_text('go', encoding='utf-8')
+        results = []
+        for child in children:
+            stdout, stderr = child.communicate(timeout=90)
+            assert child.returncode == 0, stderr.decode('utf-8', 'replace')
+            results.append(json.loads(stdout))
+        return results
+    finally:
+        for child in children:
+            if child.poll() is None:
+                child.kill()
+                child.communicate(timeout=10)
 
 
 def test_same_key_processes_serialize_on_postgres(isolated_pgstore, tmp_path):
