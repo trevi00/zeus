@@ -348,6 +348,26 @@ assertion message is never read as a missing dependency. Every receipt carries t
 the runner mode, output digests, the category and, when dispatched from the queue, the
 request, owner, task and generation it ran for.
 
+## INV-SNAPSHOT-001
+
+A confirmed snapshot is verified against a closed manifest that names every required file, its
+kind, its schema version, its required fields and its references. Every line of every required
+file is checked: a line that is not an object, lacks a required field, carries another schema
+version, contains a non-finite number or cannot be parsed is corrupt and counted, never dropped.
+A missing file, an unreadable file, a corrupt file and a legitimately empty file are four
+distinct states, and "0 records" is reported with the state that produced it. A torn trailing
+line is tolerated only in live mode as a line that is not yet part of the confirmed set; in
+confirmed mode it is corruption. A reference to an id that no required file declares dangles and
+invalidates the snapshot. The verdict carries the whole denominator (files required, present,
+valid, empty, missing, unreadable, corrupt; lines total, corrupt; records valid; torn tails;
+dangling references; extra files). An import archives the exact bytes, binds the source, tool
+and environment revisions and the manifest hash, records valid and invalid snapshots alike, and
+lets only a valid snapshot be consumed; an invalid one never touches runtime state. A change
+names the checks it obliges through an explicit path policy; a change that obliges no check is
+stated as such and is never a passed check, and an unmapped change is named, never silently
+unchecked. Zeus's own CI runs every job on every push and pull request without path filters;
+commits marked to skip CI carry no check result at all and must not be read as green.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

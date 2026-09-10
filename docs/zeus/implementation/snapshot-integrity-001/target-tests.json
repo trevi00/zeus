@@ -1,0 +1,32 @@
+{
+  "scope": "FA-030 target tests: manifest, per-line strictness, file states, torn tails by mode, dangling references, change-to-check policy, import binding on MemoryStore + isolated PostgreSQL",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_snapshot_integrity.py tests/test_architecture.py",
+  "started_at": "2026-09-10T09:51:54.722310+00:00",
+  "finished_at": "2026-09-10T09:51:55.744027+00:00",
+  "exit_code": 0,
+  "summary": [
+    "10 passed in 0.58s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "corrupt lines dropped instead of counted",
+      "result": "strictness and import tests fail"
+    },
+    {
+      "control": "missing file treated as empty",
+      "result": "strictness and import tests fail"
+    },
+    {
+      "control": "torn tail accepted in confirmed mode",
+      "result": "torn-tail test fails"
+    },
+    {
+      "control": "dangling references ignored",
+      "result": "strictness test fails"
+    }
+  ],
+  "not_claimed": "No real snapshot producer is wired; no Windows/Linux/WSL install/update/recovery run; the change-to-check policy is a function, Zeus CI itself is unchanged (no path filters exist)."
+}
