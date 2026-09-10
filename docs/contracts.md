@@ -252,6 +252,24 @@ its own event and consumes nothing; a consumed or revoked approval certifies not
 issued, consumed, revoked, expired, missing and corrupt are distinct states. The approval
 never writes the active definition and never authorizes routing, graduation or deployment.
 
+## INV-INVOCATION-001
+
+A model invocation is a typed request against a declared transport support matrix: unknown
+options and options the transport does not support are refused before execution with their
+names, never silently dropped, and invalid types or values (empty model, non-finite or
+non-positive timeout, empty schema) are refused the same way. A probe proves an executable and
+at most a version; it never proves model readiness or qualification, and registry lookup is not
+availability. Before the call, the attempt reserves one invocation in the transaction that
+re-proves current ownership; an attempt holds at most one open reservation, open reservations
+are the concurrency budget, and a reservation that never settles is closed as
+`unsettled_unknown` with unknown usage when the next attempt reserves or the transport raises.
+The result is classified from what was observed — accepted, empty answer, invalid output,
+tool-only, interrupted, inspection-blocked, provider failure — so a clean exit with no answer is
+never acceptance. Usage names its source event and basis; absent usage is unknown, never zero,
+and unknown usage is excluded from measured sums. The requested model and the model the
+transport reported are separate fields; an unreported model stays unknown. The raw event stream
+is hashed (surrogates preserved) and kept with the execution evidence.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

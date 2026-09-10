@@ -1,0 +1,28 @@
+{
+  "scope": "FA-019 target tests on MemoryStore and an isolated PostgreSQL schema (HARNESS_INTEGRATION=1)",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_invocation_ledger.py tests/test_execution_output.py tests/test_executor_research.py tests/test_model_routing.py tests/test_context_recovery.py",
+  "started_at": "2026-09-10T06:15:15.349374+00:00",
+  "finished_at": "2026-09-10T06:15:31.269018+00:00",
+  "exit_code": 0,
+  "summary": [
+    "87 passed in 15.45s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "usage_record maps absent usage to total_tokens=0 with a real source",
+      "result": "1 failed (test_results_are_classified_by_observation_and_usage_stays_unknown), 10 passed"
+    },
+    {
+      "control": "reserve() capacity check disabled",
+      "result": "2 failed (test_reservation_is_bound_to_current_ownership_and_capacity[memory|postgres]), 9 passed"
+    },
+    {
+      "control": "executor never reserves",
+      "result": "2 failed (executor reserve/abandon tests), 9 passed"
+    }
+  ],
+  "not_claimed": "No real Codex app-server or model call; the transport is the protocol replay fixture, so confirmed_model stays unknown and usage comes only from replayed events."
+}
