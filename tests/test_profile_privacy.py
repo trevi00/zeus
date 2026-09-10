@@ -96,14 +96,22 @@ def test_minimize_refuses_blocked_records_and_never_marks_unchecked_input_safe()
     policy = parse_policy(POLICY)
     granted = parse_consent(consent(POLICY), POLICY)
     ready = minimize({'content': 'I prefer short diffs. mail me@example.com at C:\\Users\\sentinel-user\\notes', 'project_path': PROJECT_WIN,
-                      'kind': 'user_message', 'session_id': 's1', 'observed_at': 't'}, policy, granted)
+                      'kind': 'user_message', 'session_id': 's1', 'observed_at': '2026-09-10T00:00:00+00:00'}, policy, granted)
     assert ready['status'] == 'ready' and ready['findings'] == {'email': 1, 'user_path': 1} and ready['dropped_fields'] == ['observed_at', 'session_id']
     assert ready['input'] == {'content': 'I prefer short diffs. mail [REDACTED email] at [REDACTED user_path]\\notes',
                               'project_ref': project_ref(PROJECT_WIN), 'kind': 'user_message'}, 'dropped fields never reach the input'
     wider = parse_policy({**POLICY, 'fields': {**POLICY['fields'], 'observed_at': 'ordering', 'session_id': 'grouping'}})
-    wide = minimize({'content': 'x', 'project_path': PROJECT_WIN, 'kind': 'user_message', 'session_id': 's1', 'observed_at': 't1'}, wider, granted)
+    wide = minimize({'content': 'x', 'project_path': PROJECT_WIN, 'kind': 'user_message', 'session_id': 's1', 'observed_at': '2026-09-10T00:00:00Z'}, wider, granted)
     assert set(wide['input']) == {'content', 'project_ref', 'kind', 'session_ref', 'observed_at'} and wide['input']['session_ref'] != 's1'
-    assert wide['dropped_fields'] == [] and 's1' not in json.dumps(wide)
+    assert wide['dropped_fields'] == [] and 's1' not in json.dumps(wide) and wide['input']['observed_at'] == '2026-09-10T00:00:00+00:00'
+    assert wide['checked_fields'] == ['content', 'project_path', 'kind', 'session_id', 'observed_at']
+    # Review counterexample (PR #63, round 2): observed_at is a typed timestamp, never text that bypasses the scan.
+    for bad in ('password=UNSCANNED_SENTINEL', '2026-09-10T00:00:00', 'yesterday', 20260910, None):
+        leaked = minimize({'content': 'x', 'project_path': PROJECT_WIN, 'kind': 'user_message', 'observed_at': bad}, wider, granted)
+        assert leaked['status'] == 'parse_error' and leaked['unchecked_fields'] == ['observed_at'] and 'input' not in leaked, bad
+        assert 'UNSCANNED' not in json.dumps(leaked)
+    assert minimize({'content': 'x', 'project_path': PROJECT_WIN, 'kind': 'user_message', 'session_id': ''}, wider, granted)['status'] == 'parse_error'
+    assert minimize({'content': 'x', 'project_path': PROJECT_WIN, 'kind': 'user_message', 'observed_at': '2026-09-10T00:00:00Z'}, policy, granted)['input'].keys() == {'content', 'project_ref', 'kind'}, 'not in the policy: not in the input, even when valid'
     assert 'sentinel-user' not in json.dumps(ready) and 'example.com' not in json.dumps(ready), 'neither the ledger nor the input keeps the value'
     blocked = minimize({'content': 'use password: hunter2-sentinel please', 'project_path': PROJECT_LINUX, 'kind': 'user_message'}, policy, granted)
     assert blocked['status'] == 'blocked' and 'input' not in blocked and blocked['findings'] == {'credential': 1} and 'hunter2' not in json.dumps(blocked)

@@ -12,6 +12,7 @@ checked or named as unchecked, and "none detected" is never said about an unchec
 """
 import hashlib
 import re
+from datetime import datetime
 
 from codex_harness.domain.model import ContractError, digest, require
 
@@ -152,6 +153,20 @@ def minimize(record, policy, consent):
         return {'status': 'parse_error', 'error': 'missing ' + ', '.join(missing), 'checked_fields': [], 'unchecked_fields': missing, 'findings': {}}
     if type(record['content']) is not str or type(record['project_path']) is not str or type(record['kind']) is not str:
         return {'status': 'parse_error', 'error': 'content, project_path and kind must be text', 'checked_fields': [], 'unchecked_fields': ['content', 'project_path', 'kind'], 'findings': {}}
+    # Every value that can reach the model input is typed and normalized before it is passed on (review,
+    # PR #63): a timestamp is a timestamp, never free text that slipped past the scan.
+    observed_at = None
+    if 'observed_at' in record:
+        try:
+            require(type(record['observed_at']) is str, 'text')
+            parsed = datetime.fromisoformat(record['observed_at'].replace('Z', '+00:00'))
+            require(parsed.tzinfo is not None, 'timezone')
+            observed_at = parsed.isoformat()
+        except (ValueError, ContractError):
+            return {'status': 'parse_error', 'error': 'observed_at is not an ISO 8601 timestamp with a timezone',
+                    'checked_fields': [], 'unchecked_fields': ['observed_at'], 'findings': {}}
+    if 'session_id' in record and (type(record['session_id']) is not str or not record['session_id']):
+        return {'status': 'parse_error', 'error': 'session_id must be non-empty text', 'checked_fields': [], 'unchecked_fields': ['session_id'], 'findings': {}}
     if record['kind'] not in policy['read_scope']['kinds']:
         return {'status': 'out_of_scope', 'error': 'kind not in read scope', 'checked_fields': ['kind'], 'unchecked_fields': [], 'findings': {}}
     if not consent['collect'] or record['project_path'] not in consent['projects']:
@@ -161,15 +176,15 @@ def minimize(record, policy, consent):
     counts = {}
     for finding in findings:
         counts[finding['kind']] = counts.get(finding['kind'], 0) + 1
-    checked = ['content', 'project_path', 'kind']
+    checked = ['content', 'project_path', 'kind'] + [f for f in ('session_id', 'observed_at') if f in record]
     dropped = sorted(set(record) - set(policy['fields']))
     if any(kind in BLOCKING for kind in counts):
         return {'status': 'blocked', 'error': 'record carries ' + ', '.join(sorted(k for k in counts if k in BLOCKING)),
                 'checked_fields': checked, 'unchecked_fields': [], 'findings': counts, 'dropped_fields': dropped}
     # The model input carries exactly the policy fields, nothing the policy did not name.
     values = {'content': redact(content, findings), 'project_path': project_ref(record['project_path']), 'kind': record['kind'],
-              'session_id': hashlib.sha256(str(record.get('session_id')).encode('utf-8', 'surrogatepass')).hexdigest()[:16] if 'session_id' in record else None,
-              'observed_at': record.get('observed_at')}
+              'session_id': hashlib.sha256(record['session_id'].encode('utf-8', 'surrogatepass')).hexdigest()[:16] if 'session_id' in record else None,
+              'observed_at': observed_at}
     model_input = {INPUT_OF[field]: values[field] for field in policy['fields'] if field in record}
     return {'status': 'ready', 'checked_fields': checked, 'unchecked_fields': [], 'findings': counts, 'dropped_fields': dropped,
             'truncated': len(record['content']) > len(content), 'input': model_input}
