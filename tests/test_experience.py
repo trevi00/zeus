@@ -134,6 +134,31 @@ def test_versions_are_separate_claims_and_reimport_is_idempotent(tmp_path):
                                                  'independent_occurrences_sum': 0, 'unverified': 2, 'recomputed': 0}
 
 
+def test_same_bytes_acquired_on_different_bases_accumulate_without_new_versions():
+    # Review counterexample (PR #36): observed -> pinned A -> pinned B of identical bytes must not be
+    # refused as "different content", and must not add versions or occurrences either.
+    store = MemoryStore()
+    claims = ExperienceClaims(store)
+    data = lesson()
+    pinned_b = {'kind': 'pinned', 'revision': 'b' * 40}
+    first = claims.record(parse_lesson('harness', PATH, data, OBSERVED), 'sha256:' + '0' * 64)
+    second = claims.record(parse_lesson('harness', PATH, data, PINNED), 'sha256:' + '0' * 64)
+    third = claims.record(parse_lesson('harness', PATH, data, pinned_b), 'sha256:' + '0' * 64)
+    repeat = claims.record(parse_lesson('harness', PATH, data, PINNED), 'sha256:' + '0' * 64)
+    assert first['changed'] and first['id'] == second['id'] == third['id']
+    assert (second['changed'], second['acquisition_added']) == (False, True)
+    assert (third['changed'], third['acquisition_added']) == (False, True)
+    assert (repeat['changed'], repeat['acquisition_added']) == (False, False)
+    versions = claims.versions('harness', PATH)
+    assert len(versions) == 1 and versions[0]['acquisitions'] == [OBSERVED, PINNED, pinned_b]
+    assert versions[0]['source']['kind'] == 'observed', 'the first acquisition stays the recorded source'
+    assert claims.summary() == {'claims': 1, 'upstream_occurrences_sum': 308, 'independent_occurrences_sum': 0,
+                                'unverified': 1, 'recomputed': 0}
+    # Different bytes on any basis are still a separate version.
+    assert claims.record(parse_lesson('harness', PATH, lesson(occurrences=309), pinned_b), 'sha256:' + '1' * 64)['changed']
+    assert len(claims.versions('harness', PATH)) == 2
+
+
 def test_same_id_with_different_content_is_rejected():
     store = MemoryStore()
     claim = parse_lesson('harness', 'lessons/x.md', lesson(), PINNED)
