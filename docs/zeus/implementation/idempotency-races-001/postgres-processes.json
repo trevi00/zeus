@@ -1,0 +1,103 @@
+{
+  "scope": "Four interpreters per operation on an isolated PostgreSQL schema, file gate start, 0.4s pause after every read inside the transaction; advisory lock present",
+  "record_incident": [
+    {
+      "occurrences": 1,
+      "duplicate_occurrence": false,
+      "hook_id": null,
+      "hook_created": false
+    },
+    {
+      "occurrences": 2,
+      "duplicate_occurrence": false,
+      "hook_id": "hook-fe1b31e72b1dd3208cbf0ece",
+      "hook_created": true
+    },
+    {
+      "occurrences": 4,
+      "duplicate_occurrence": false,
+      "hook_id": "hook-fe1b31e72b1dd3208cbf0ece",
+      "hook_created": false
+    },
+    {
+      "occurrences": 3,
+      "duplicate_occurrence": false,
+      "hook_id": "hook-fe1b31e72b1dd3208cbf0ece",
+      "hook_created": false
+    }
+  ],
+  "submit_identical": true,
+  "claims": [
+    {
+      "id": "2a30fdc0-2b39-4f13-9826-f84a52d4398a",
+      "agent": "worker:implementation",
+      "error": null,
+      "result": null,
+      "status": "running",
+      "attempt": 1,
+      "message": {
+        "how": {
+          "constraints": [],
+          "context_ref": null,
+          "result_schema": "six-w.v1",
+          "acceptance_criteria": [
+            "Preserve normal behavior"
+          ]
+        },
+        "who": {
+          "owner": "worker:implementation",
+          "sender": "lead:improvement",
+          "recipient": "worker:implementation"
+        },
+        "why": {
+          "objective": "Improve harness reliability from verified evidence",
+          "evidence_refs": []
+        },
+        "type": "task.assign",
+        "what": {
+          "action": "implement",
+          "details": {
+            "objective": "fixture"
+          }
+        },
+        "when": {
+          "after": [],
+          "deadline": null,
+          "created_at": "2026-09-10T04:33:01.753937+00:00"
+        },
+        "where": {
+          "revision": "bootstrap",
+          "repository": "codex-harness",
+          "environment": "local",
+          "allowed_paths": []
+        },
+        "message_id": "2a30fdc0-2b39-4f13-9826-f84a52d4398a",
+        "causation_id": null,
+        "correlation_id": "test",
+        "schema_version": "1.0"
+      },
+      "created_at": "2026-09-10T04:33:02.799017+00:00",
+      "generation": 1,
+      "input_hash": "98e91d8b0a2f4ce5cc83bd8117055e29d3fed4ccd65e412a6fc8138649107843",
+      "lease_owner": "owner-0",
+      "lease_until": "2026-09-10T04:43:05.086678+00:00",
+      "retry_budget": {
+        "max_attempts": 3,
+        "bound_at": "2026-09-10T04:33:05.085440+00:00",
+        "version": 1,
+        "origin": "first_claim"
+      },
+      "execution_clock": {
+        "version": 1,
+        "domain": "80cf1858-3fd0-456f-8111-9313b270d89b",
+        "wall": "2026-09-10T04:33:05.086678+00:00",
+        "monotonic": 36013.828,
+        "lease_seconds": 600.0,
+        "deadline_remaining": null
+      }
+    },
+    null,
+    null,
+    null
+  ]
+}

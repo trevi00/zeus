@@ -1,0 +1,30 @@
+{
+  "scope": "Same racers and pause without the advisory lock (probe-only patch)",
+  "record_incident": [
+    {
+      "occurrences": 1,
+      "duplicate_occurrence": false,
+      "hook_id": null,
+      "hook_created": false
+    },
+    {
+      "occurrences": 1,
+      "duplicate_occurrence": false,
+      "hook_id": null,
+      "hook_created": false
+    },
+    {
+      "occurrences": 1,
+      "duplicate_occurrence": false,
+      "hook_id": null,
+      "hook_created": false
+    },
+    {
+      "occurrences": 1,
+      "duplicate_occurrence": false,
+      "hook_id": null,
+      "hook_created": false
+    }
+  ],
+  "lost_second_strike": true
+}
