@@ -1,0 +1,17 @@
+{
+  "scope": "Real isolated PostgreSQL schema, direct application calls; not model E2E",
+  "results": [
+    {
+      "field": "agent",
+      "outcome": "accepted"
+    },
+    {
+      "field": "actor",
+      "outcome": "accepted"
+    },
+    {
+      "field": "recovery_sequence",
+      "outcome": "accepted"
+    }
+  ]
+}

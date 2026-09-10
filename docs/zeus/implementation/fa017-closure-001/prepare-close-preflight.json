@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "zeus",
+    "ticket",
+    "prepare-close",
+    "ZEUS-3875a025c20d",
+    "--file",
+    "docs\\zeus\\implementation\\fa017-closure-001\\acceptance\\acceptance.json",
+    "--output",
+    ".runtime\\fa017-unsigned-packet.json"
+  ],
+  "exit_code": 1,
+  "observed_blocker": "Out-of-band ZEUS_TICKET_TRUST_COMMIT is required",
+  "packet_created": false,
+  "closure_requested": false
+}

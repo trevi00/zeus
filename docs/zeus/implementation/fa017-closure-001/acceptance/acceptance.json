@@ -1,0 +1,63 @@
+{
+  "solution_commit": "2b890f9fafa86fe20ae9ff03819444272eaaa6e6",
+  "environment_ref": "sha256:7eb93af21b01a394bb1995755c045878bf97165027a0c42e7140689faf46787c",
+  "criteria": [
+    {
+      "index": 0,
+      "criterion_hash": "07cb358322e2069d72d918b9548de87bc76c87c25af897c774cab6f8b204fd07",
+      "outcome": "passed",
+      "evidence_refs": [
+        "sha256:60d95f431075ae50454d376b3fdb5799b2b07b2b58f48db99a16860ea211d512"
+      ]
+    },
+    {
+      "index": 1,
+      "criterion_hash": "1b86c9c252dea5a0fcbda2c1a4c300d8a6d87b7c434b08fd4afb40454116bba1",
+      "outcome": "passed",
+      "evidence_refs": [
+        "sha256:04043a40d9f359c9c2a6006abc8f3196a5867197928a4dcce7c9583b58b31bc5"
+      ]
+    },
+    {
+      "index": 2,
+      "criterion_hash": "45ab097596eebb1397cb548a195044687a2c7ab2c563dc0c8547d3b9ae998156",
+      "outcome": "passed",
+      "evidence_refs": [
+        "sha256:2813b64a0c8bf93e725967c3d603d5538b87ff4c15deddea7bcde5ae64c8cd41"
+      ]
+    },
+    {
+      "index": 3,
+      "criterion_hash": "f91503b7825ed0f745f7cfa7b0975fbc56e0a646ac75452b8571f3827328a8a7",
+      "outcome": "passed",
+      "evidence_refs": [
+        "sha256:1ae8247881208e84e20819d6a20ca3dee34e783a3275786049a900759875d190"
+      ]
+    },
+    {
+      "index": 4,
+      "criterion_hash": "15c6d884b40e10fe06a5f27737bab42ed17f70026a51982f318bd8973a552291",
+      "outcome": "passed",
+      "evidence_refs": [
+        "sha256:fb3cb23a6cc7176d64da202dbb3cd7d5aa4a590481982af1800f843b252d7cc5"
+      ]
+    },
+    {
+      "index": 5,
+      "criterion_hash": "446d43164f38e3232f6b28b3175d0add26d89b0d3e3a00c8992d07bcc1672ed8",
+      "outcome": "passed",
+      "evidence_refs": [
+        "sha256:db84f15c86e15c8cd005bdf7e6f1a8ca27a4bad4bc3861a9d28e6886e75432ea"
+      ]
+    },
+    {
+      "index": 6,
+      "criterion_hash": "407472b89409ff0383674b93ac5e3411b9e35cff193be310d0bd7ad24371eb69",
+      "outcome": "passed",
+      "evidence_refs": [
+        "sha256:b4705ccb4857cfa342ca4e5b014fa8efee4923300238b0acb443eeeca873dcbb"
+      ]
+    }
+  ],
+  "reason": "FA-017 bounded contract verification complete; review explicit time/fixture/fencing limitations in all seven observations before external human acceptance. No all-Zeus or production approval."
+}

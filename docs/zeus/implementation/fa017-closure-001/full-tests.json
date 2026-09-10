@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "-q"
+  ],
+  "started_at": "2026-09-10T02:27:51.463950+00:00",
+  "finished_at": "2026-09-10T02:31:16.971798+00:00",
+  "exit_code": 0,
+  "seconds": 205.50784449999992,
+  "log_sha256": "bdfc71c984086ea299136a4cdf9dc9701941adef342b0700db5c982662ea3382",
+  "native_receipts": {
+    "native-processes\\nested.json": "8ae11a47dc04b0a35a678bc37e087be812b10222104427daa5149215d31647bc",
+    "native-processes\\shared.json": "8d3a956eb7eed99a58f89e631399bfe6f6131c617e57e21757096b7d19c5b464"
+  }
+}

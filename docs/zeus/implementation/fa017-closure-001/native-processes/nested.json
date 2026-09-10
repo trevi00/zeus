@@ -1,0 +1,716 @@
+{
+  "scope": "Real PG and child processes; explicit extension-state and equal-time fixtures; executor fencing, not tenant authentication or model/human E2E",
+  "nested": true,
+  "observations": [
+    {
+      "operation": "claim",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+        "agent": "worker:github",
+        "error": null,
+        "result": null,
+        "status": "running",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:04.768944+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:04.807494+00:00",
+        "generation": 1,
+        "input_hash": "753bf2319e9d69e5f9953aa9a120ba2fad14e5c861e8ac5d5c4a08b7d3dab463",
+        "lease_owner": "first-owner",
+        "lease_until": "2026-09-10T02:38:05.184427+00:00",
+        "heartbeat_at": "2026-09-10T02:28:04.807494+00:00",
+        "retrospective": {
+          "ref": "fixture:b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "seen": 3,
+          "target": 5
+        },
+        "project_context": {
+          "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d"
+        },
+        "retry_budget": {
+          "max_attempts": 3,
+          "bound_at": "2026-09-10T02:28:05.183688+00:00",
+          "version": 1,
+          "origin": "first_claim"
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "45e17eaf-93c3-48db-8756-da26fb1408fd",
+          "wall": "2026-09-10T02:28:05.184441+00:00",
+          "monotonic": 28513.9477413,
+          "lease_seconds": 599.999986,
+          "deadline_remaining": null
+        }
+      }
+    },
+    {
+      "operation": "claim",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "47ccf06c-05a9-49ee-afb2-b7efa05c2717",
+        "agent": "worker:implementation",
+        "error": null,
+        "result": null,
+        "status": "running",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:implementation",
+            "sender": "lead:improvement",
+            "recipient": "worker:implementation"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "implement",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:04.794597+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "47ccf06c-05a9-49ee-afb2-b7efa05c2717",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:04.807494+00:00",
+        "generation": 1,
+        "input_hash": "46a8f362f9a1d0bc8878f2bef80f51d6b9f3d82879f4c43dff811ce92f23781c",
+        "lease_owner": "other-owner",
+        "lease_until": "2026-09-10T02:38:05.561566+00:00",
+        "heartbeat_at": "2026-09-10T02:28:04.807494+00:00",
+        "retrospective": {
+          "ref": "fixture:47ccf06c-05a9-49ee-afb2-b7efa05c2717",
+          "seen": 3,
+          "target": 5
+        },
+        "project_context": {
+          "id": "47ccf06c-05a9-49ee-afb2-b7efa05c2717",
+          "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d"
+        },
+        "retry_budget": {
+          "max_attempts": 3,
+          "bound_at": "2026-09-10T02:28:05.560968+00:00",
+          "version": 1,
+          "origin": "first_claim"
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "bcece071-d85e-439f-b3c3-7ac440037bf2",
+          "wall": "2026-09-10T02:28:05.561579+00:00",
+          "monotonic": 28514.3248787,
+          "lease_seconds": 599.999987,
+          "deadline_remaining": null
+        }
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "accepted": true
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "accepted": true
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": null,
+        "status": "retry",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:04.768944+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:04.807494+00:00",
+        "generation": 1,
+        "input_hash": "753bf2319e9d69e5f9953aa9a120ba2fad14e5c861e8ac5d5c4a08b7d3dab463",
+        "lease_owner": null,
+        "lease_until": null,
+        "heartbeat_at": "2026-09-10T02:28:04.807494+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:05.183688+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "wall": "2026-09-10T02:28:05.966221+00:00",
+          "domain": "1d09e712-7aea-4031-85a0-6c706ec59851",
+          "version": 1,
+          "monotonic": 28514.7295214,
+          "lease_seconds": 599.99998,
+          "deadline_remaining": null
+        },
+        "project_context": {
+          "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "attempt": 1,
+            "status": "failed",
+            "at": "2026-09-10T02:28:08.800951+00:00",
+            "error": "explicit failure"
+          }
+        ],
+        "failure": null,
+        "failure_receipt": "3f0044ac4f9761fad350d363e5bb454995feb32baa9eb45ecc249fb75364d1a8"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": null,
+        "status": "retry",
+        "attempt": 1,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:04.768944+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:04.807494+00:00",
+        "generation": 1,
+        "input_hash": "753bf2319e9d69e5f9953aa9a120ba2fad14e5c861e8ac5d5c4a08b7d3dab463",
+        "lease_owner": null,
+        "lease_until": null,
+        "heartbeat_at": "2026-09-10T02:28:04.807494+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:05.183688+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "wall": "2026-09-10T02:28:05.966221+00:00",
+          "domain": "1d09e712-7aea-4031-85a0-6c706ec59851",
+          "version": 1,
+          "monotonic": 28514.7295214,
+          "lease_seconds": 599.99998,
+          "deadline_remaining": null
+        },
+        "failure_receipt": "3f0044ac4f9761fad350d363e5bb454995feb32baa9eb45ecc249fb75364d1a8",
+        "project_context": {
+          "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-10T02:28:08.800951+00:00",
+            "error": "explicit failure",
+            "status": "failed",
+            "attempt": 1
+          }
+        ]
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale failure retry after execution changed"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale failure retry after execution changed"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale failure retry after execution changed"
+      }
+    },
+    {
+      "operation": "claim",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": null,
+        "status": "running",
+        "attempt": 2,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:04.768944+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:04.807494+00:00",
+        "generation": 2,
+        "input_hash": "753bf2319e9d69e5f9953aa9a120ba2fad14e5c861e8ac5d5c4a08b7d3dab463",
+        "lease_owner": "restarted-owner",
+        "lease_until": "2026-09-10T02:38:10.835735+00:00",
+        "heartbeat_at": "2026-09-10T02:28:04.807494+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:05.183688+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "6be299b7-975b-4bac-9c6f-f4e0d84e2e60",
+          "wall": "2026-09-10T02:28:10.835754+00:00",
+          "monotonic": 28519.5990544,
+          "lease_seconds": 599.999981,
+          "deadline_remaining": null
+        },
+        "failure_receipt": "3f0044ac4f9761fad350d363e5bb454995feb32baa9eb45ecc249fb75364d1a8",
+        "project_context": {
+          "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-10T02:28:08.800951+00:00",
+            "error": "explicit failure",
+            "status": "failed",
+            "attempt": 1
+          }
+        ]
+      }
+    },
+    {
+      "operation": "complete",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": {
+          "summary": "explicit process completion"
+        },
+        "status": "succeeded",
+        "attempt": 2,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:04.768944+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:04.807494+00:00",
+        "generation": 2,
+        "input_hash": "753bf2319e9d69e5f9953aa9a120ba2fad14e5c861e8ac5d5c4a08b7d3dab463",
+        "lease_owner": "restarted-owner",
+        "lease_until": "2026-09-10T02:38:10.835735+00:00",
+        "heartbeat_at": "2026-09-10T02:28:04.807494+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:05.183688+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "wall": "2026-09-10T02:28:10.835754+00:00",
+          "domain": "6be299b7-975b-4bac-9c6f-f4e0d84e2e60",
+          "version": 1,
+          "monotonic": 28519.5990544,
+          "lease_seconds": 599.999981,
+          "deadline_remaining": null
+        },
+        "failure_receipt": "3f0044ac4f9761fad350d363e5bb454995feb32baa9eb45ecc249fb75364d1a8",
+        "project_context": {
+          "id": "b0b37fe5-9892-4fa0-becb-374b3fa31037",
+          "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-10T02:28:08.800951+00:00",
+            "error": "explicit failure",
+            "status": "failed",
+            "attempt": 1
+          },
+          {
+            "attempt": 2,
+            "status": "succeeded",
+            "at": "2026-09-10T02:28:11.212687+00:00",
+            "error": null
+          }
+        ],
+        "completed_at": "2026-09-10T02:28:11.212699+00:00"
+      }
+    },
+    {
+      "operation": "claim",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "e5ff452e-7d5c-4b16-aba7-6ca4bcbaba46",
+        "agent": "worker:github",
+        "error": null,
+        "result": null,
+        "status": "running",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:04.781705+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "e5ff452e-7d5c-4b16-aba7-6ca4bcbaba46",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:04.807494+00:00",
+        "generation": 1,
+        "input_hash": "f5d7b161e979e293a8d57d84cc0cdc24b0337c2a836e84d8be0ebb3573ac1442",
+        "lease_owner": "next-owner",
+        "lease_until": "2026-09-10T02:38:11.605879+00:00",
+        "heartbeat_at": "2026-09-10T02:28:04.807494+00:00",
+        "retrospective": {
+          "ref": "fixture:e5ff452e-7d5c-4b16-aba7-6ca4bcbaba46",
+          "seen": 3,
+          "target": 5
+        },
+        "project_context": {
+          "id": "e5ff452e-7d5c-4b16-aba7-6ca4bcbaba46",
+          "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-rudtn\\pytest-2979\\test_native_shared_paths_tied_1\\shared project \uac80\uc99d\\nested project"
+        },
+        "retry_budget": {
+          "max_attempts": 3,
+          "bound_at": "2026-09-10T02:28:11.605240+00:00",
+          "version": 1,
+          "origin": "first_claim"
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "2806efcf-8c37-4e44-b808-af80ee6bbbaa",
+          "wall": "2026-09-10T02:28:11.605892+00:00",
+          "monotonic": 28520.3691917,
+          "lease_seconds": 599.999987,
+          "deadline_remaining": null
+        }
+      }
+    }
+  ]
+}

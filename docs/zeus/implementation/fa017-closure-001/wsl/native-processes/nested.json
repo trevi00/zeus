@@ -1,0 +1,716 @@
+{
+  "scope": "Real PG and child processes; explicit extension-state and equal-time fixtures; executor fencing, not tenant authentication or model/human E2E",
+  "nested": true,
+  "observations": [
+    {
+      "operation": "claim",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+        "agent": "worker:github",
+        "error": null,
+        "result": null,
+        "status": "running",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:21.636591+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:21.660966+00:00",
+        "generation": 1,
+        "input_hash": "af00dbeb88cf29238bb1819e36ca51eb0b780e92767e4d220a1eec651fc0f237",
+        "lease_owner": "first-owner",
+        "lease_until": "2026-09-10T02:38:21.797644+00:00",
+        "heartbeat_at": "2026-09-10T02:28:21.660966+00:00",
+        "retrospective": {
+          "ref": "fixture:5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "seen": 3,
+          "target": 5
+        },
+        "project_context": {
+          "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d"
+        },
+        "retry_budget": {
+          "max_attempts": 3,
+          "bound_at": "2026-09-10T02:28:21.797168+00:00",
+          "version": 1,
+          "origin": "first_claim"
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "20e4b2e9-4217-4f78-87be-3f16835b9f58",
+          "wall": "2026-09-10T02:28:21.797659+00:00",
+          "monotonic": 11536.631341121,
+          "lease_seconds": 599.999985,
+          "deadline_remaining": null
+        }
+      }
+    },
+    {
+      "operation": "claim",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "f5833c7f-2e1c-4768-ba7d-e66e77e6a4e1",
+        "agent": "worker:implementation",
+        "error": null,
+        "result": null,
+        "status": "running",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:implementation",
+            "sender": "lead:improvement",
+            "recipient": "worker:implementation"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "implement",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:21.652622+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "f5833c7f-2e1c-4768-ba7d-e66e77e6a4e1",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:21.660966+00:00",
+        "generation": 1,
+        "input_hash": "fc38dc60a0a06b3fa9c0b6c16a19b0819a1343587a89990818bbd0e4e7a562bf",
+        "lease_owner": "other-owner",
+        "lease_until": "2026-09-10T02:38:21.959995+00:00",
+        "heartbeat_at": "2026-09-10T02:28:21.660966+00:00",
+        "retrospective": {
+          "ref": "fixture:f5833c7f-2e1c-4768-ba7d-e66e77e6a4e1",
+          "seen": 3,
+          "target": 5
+        },
+        "project_context": {
+          "id": "f5833c7f-2e1c-4768-ba7d-e66e77e6a4e1",
+          "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d"
+        },
+        "retry_budget": {
+          "max_attempts": 3,
+          "bound_at": "2026-09-10T02:28:21.959561+00:00",
+          "version": 1,
+          "origin": "first_claim"
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "dc1d0b8a-c7a6-4087-98c5-29da6d5ef90d",
+          "wall": "2026-09-10T02:28:21.960009+00:00",
+          "monotonic": 11536.793690919,
+          "lease_seconds": 599.999986,
+          "deadline_remaining": null
+        }
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "accepted": true
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "accepted": true
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "heartbeat",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale or expired task execution"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": null,
+        "status": "retry",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:21.636591+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:21.660966+00:00",
+        "generation": 1,
+        "input_hash": "af00dbeb88cf29238bb1819e36ca51eb0b780e92767e4d220a1eec651fc0f237",
+        "lease_owner": null,
+        "lease_until": null,
+        "heartbeat_at": "2026-09-10T02:28:21.660966+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:21.797168+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "wall": "2026-09-10T02:28:22.124373+00:00",
+          "domain": "64d2101f-b61e-40be-b6ad-8f9609538071",
+          "version": 1,
+          "monotonic": 11536.958054752,
+          "lease_seconds": 599.999985,
+          "deadline_remaining": null
+        },
+        "project_context": {
+          "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "attempt": 1,
+            "status": "failed",
+            "at": "2026-09-10T02:28:23.331398+00:00",
+            "error": "explicit failure"
+          }
+        ],
+        "failure": null,
+        "failure_receipt": "fe2ccd782c648a1ba5963ffa9d38b47c1580b671a68b7eb55bd79946d78a08f2"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": null,
+        "status": "retry",
+        "attempt": 1,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:21.636591+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:21.660966+00:00",
+        "generation": 1,
+        "input_hash": "af00dbeb88cf29238bb1819e36ca51eb0b780e92767e4d220a1eec651fc0f237",
+        "lease_owner": null,
+        "lease_until": null,
+        "heartbeat_at": "2026-09-10T02:28:21.660966+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:21.797168+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "wall": "2026-09-10T02:28:22.124373+00:00",
+          "domain": "64d2101f-b61e-40be-b6ad-8f9609538071",
+          "version": 1,
+          "monotonic": 11536.958054752,
+          "lease_seconds": 599.999985,
+          "deadline_remaining": null
+        },
+        "failure_receipt": "fe2ccd782c648a1ba5963ffa9d38b47c1580b671a68b7eb55bd79946d78a08f2",
+        "project_context": {
+          "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-10T02:28:23.331398+00:00",
+            "error": "explicit failure",
+            "status": "failed",
+            "attempt": 1
+          }
+        ]
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale failure retry after execution changed"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale failure retry after execution changed"
+      }
+    },
+    {
+      "operation": "fail",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "rejected": "Stale failure retry after execution changed"
+      }
+    },
+    {
+      "operation": "claim",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": null,
+        "status": "running",
+        "attempt": 2,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:21.636591+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:21.660966+00:00",
+        "generation": 2,
+        "input_hash": "af00dbeb88cf29238bb1819e36ca51eb0b780e92767e4d220a1eec651fc0f237",
+        "lease_owner": "restarted-owner",
+        "lease_until": "2026-09-10T02:38:24.241356+00:00",
+        "heartbeat_at": "2026-09-10T02:28:21.660966+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:21.797168+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "9f7241d9-b349-4637-9097-d0ecd24cbb37",
+          "wall": "2026-09-10T02:28:24.241367+00:00",
+          "monotonic": 11539.075048721,
+          "lease_seconds": 599.999989,
+          "deadline_remaining": null
+        },
+        "failure_receipt": "fe2ccd782c648a1ba5963ffa9d38b47c1580b671a68b7eb55bd79946d78a08f2",
+        "project_context": {
+          "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-10T02:28:23.331398+00:00",
+            "error": "explicit failure",
+            "status": "failed",
+            "attempt": 1
+          }
+        ]
+      }
+    },
+    {
+      "operation": "complete",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d",
+      "exit_code": 0,
+      "result": {
+        "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+        "agent": "worker:github",
+        "error": "explicit failure",
+        "result": {
+          "summary": "explicit process completion"
+        },
+        "status": "succeeded",
+        "attempt": 2,
+        "failure": null,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:21.636591+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:21.660966+00:00",
+        "generation": 2,
+        "input_hash": "af00dbeb88cf29238bb1819e36ca51eb0b780e92767e4d220a1eec651fc0f237",
+        "lease_owner": "restarted-owner",
+        "lease_until": "2026-09-10T02:38:24.241356+00:00",
+        "heartbeat_at": "2026-09-10T02:28:21.660966+00:00",
+        "retry_budget": {
+          "origin": "first_claim",
+          "version": 1,
+          "bound_at": "2026-09-10T02:28:21.797168+00:00",
+          "max_attempts": 3
+        },
+        "retrospective": {
+          "ref": "fixture:5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "seen": 3,
+          "target": 5
+        },
+        "execution_clock": {
+          "wall": "2026-09-10T02:28:24.241367+00:00",
+          "domain": "9f7241d9-b349-4637-9097-d0ecd24cbb37",
+          "version": 1,
+          "monotonic": 11539.075048721,
+          "lease_seconds": 599.999989,
+          "deadline_remaining": null
+        },
+        "failure_receipt": "fe2ccd782c648a1ba5963ffa9d38b47c1580b671a68b7eb55bd79946d78a08f2",
+        "project_context": {
+          "id": "5e4bcc5e-cc5f-4664-8050-1a641d54acae",
+          "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d"
+        },
+        "attempt_outcomes": [
+          {
+            "at": "2026-09-10T02:28:23.331398+00:00",
+            "error": "explicit failure",
+            "status": "failed",
+            "attempt": 1
+          },
+          {
+            "attempt": 2,
+            "status": "succeeded",
+            "at": "2026-09-10T02:28:24.432781+00:00",
+            "error": null
+          }
+        ],
+        "completed_at": "2026-09-10T02:28:24.432791+00:00"
+      }
+    },
+    {
+      "operation": "claim",
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project",
+      "exit_code": 0,
+      "result": {
+        "id": "99cdec84-508a-4cbb-8a88-d69418adc84f",
+        "agent": "worker:github",
+        "error": null,
+        "result": null,
+        "status": "running",
+        "attempt": 1,
+        "message": {
+          "how": {
+            "constraints": [],
+            "context_ref": null,
+            "result_schema": "six-w.v1",
+            "acceptance_criteria": [
+              "Preserve normal behavior"
+            ]
+          },
+          "who": {
+            "owner": "worker:github",
+            "sender": "lead:research",
+            "recipient": "worker:github"
+          },
+          "why": {
+            "objective": "Improve harness reliability from verified evidence",
+            "evidence_refs": []
+          },
+          "type": "task.assign",
+          "what": {
+            "action": "research",
+            "details": {
+              "objective": "fixture"
+            }
+          },
+          "when": {
+            "after": [],
+            "deadline": null,
+            "created_at": "2026-09-10T02:28:21.644660+00:00"
+          },
+          "where": {
+            "revision": "bootstrap",
+            "repository": "codex-harness",
+            "environment": "local",
+            "allowed_paths": []
+          },
+          "message_id": "99cdec84-508a-4cbb-8a88-d69418adc84f",
+          "causation_id": null,
+          "correlation_id": "test",
+          "schema_version": "1.0"
+        },
+        "created_at": "2026-09-10T02:28:21.660966+00:00",
+        "generation": 1,
+        "input_hash": "fb8a5f9078ff9555bbdfc250ad51925b418d75d3ff89729a47be2adc6fa471ac",
+        "lease_owner": "next-owner",
+        "lease_until": "2026-09-10T02:38:24.675555+00:00",
+        "heartbeat_at": "2026-09-10T02:28:21.660966+00:00",
+        "retrospective": {
+          "ref": "fixture:99cdec84-508a-4cbb-8a88-d69418adc84f",
+          "seen": 3,
+          "target": 5
+        },
+        "project_context": {
+          "id": "99cdec84-508a-4cbb-8a88-d69418adc84f",
+          "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp/pytest-of-rudtn/pytest-1/test_native_shared_paths_tied_1/shared project \uac80\uc99d/nested project"
+        },
+        "retry_budget": {
+          "max_attempts": 3,
+          "bound_at": "2026-09-10T02:28:24.674993+00:00",
+          "version": 1,
+          "origin": "first_claim"
+        },
+        "execution_clock": {
+          "version": 1,
+          "domain": "85977dfc-ecc5-454f-9ae9-3e387b85d67b",
+          "wall": "2026-09-10T02:28:24.675626+00:00",
+          "monotonic": 11539.509311861,
+          "lease_seconds": 599.999929,
+          "deadline_remaining": null
+        }
+      }
+    }
+  ]
+}

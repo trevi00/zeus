@@ -1,0 +1,31 @@
+{
+  "revision": "5e22ddddbaa32ec1632f8fc0505d53e39da9a05f",
+  "scope": "Direct production application calls with in-memory store; not native E2E",
+  "results": [
+    {
+      "field": "agent",
+      "value": "worker:implementation",
+      "outcome": "accepted"
+    },
+    {
+      "field": "actor",
+      "value": "lead:implementation",
+      "outcome": "accepted"
+    },
+    {
+      "field": "generation",
+      "value": true,
+      "outcome": "rejected"
+    },
+    {
+      "field": "attempt",
+      "value": true,
+      "outcome": "rejected"
+    },
+    {
+      "field": "recovery_sequence",
+      "value": 9,
+      "outcome": "accepted"
+    }
+  ]
+}

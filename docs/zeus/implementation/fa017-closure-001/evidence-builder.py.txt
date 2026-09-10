@@ -1,0 +1,156 @@
+"""Build current measured criterion observations; never enroll or sign an approver."""
+import hashlib
+import json
+import os
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+from codex_harness.application.tickets import Tickets
+from codex_harness.bootstrap import build
+from codex_harness.domain.model import canonical, digest
+from codex_harness.domain.ticket_lifecycle import validate_evidence
+
+root = Path.cwd()
+out = root / 'docs/zeus/implementation/fa017-closure-001'
+dest = out / 'acceptance'
+dest.mkdir(exist_ok=True)
+revision = '2b890f9fafa86fe20ae9ff03819444272eaaa6e6'
+assert subprocess.check_output(['git', 'merge-base', revision, 'HEAD'], text=True).strip() == revision
+assert subprocess.check_output(['git', 'ls-remote', 'origin', 'refs/heads/main'], text=True).split()[0] == revision
+assert not subprocess.check_output(['git', 'diff', revision, '--', 'src', 'tests', 'uv.lock'])
+s = build()
+ticket = Tickets(s.store, s.org).get('ZEUS-3875a025c20d')
+assert ticket['revision'] == 1 and ticket['status'] == 'open'
+full = json.loads((out / 'full-tests.json').read_text('utf-8'))
+target = json.loads((out / 'target-tests.json').read_text('utf-8'))
+wsl = json.loads((out / 'wsl/receipt.json').read_text('utf-8'))
+ci_path = root / 'docs/zeus/ci/34429521115.json'
+ci = json.loads(ci_path.read_text('utf-8'))
+assert full['exit_code'] == target['exit_code'] == 0
+assert wsl['status'] == 'passed' and wsl['revision'] == ci['headSha'] == revision
+assert ci['conclusion'] == 'success' and len(ci['jobs']) == 5
+assert all(j['conclusion'] == 'success' for j in ci['jobs'])
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+for name, receipt in [('full', full), ('target', target)]:
+    assert sha(out / (name + '-tests.log')) == receipt['log_sha256']
+for name, expected in target['native_receipts'].items():
+    assert sha(out / name) == expected
+for stage in wsl['stages']:
+    assert stage['exit_code'] == 0
+    for stream in ('stdout', 'stderr'):
+        item = stage[stream]
+        path = out / 'wsl' / item['file']
+        assert sha(path) == item['sha256'] and path.stat().st_size == item['bytes']
+for name, expected in wsl['native_process_receipts'].items():
+    assert sha(out / 'wsl' / name) == expected
+for job in ci['jobs']:
+    assert sha(out / 'ci-34429521115' / (str(job['databaseId']) + '.log')) == job['raw_log_sha256']
+
+bindings = {'ticket_id': ticket['id'], 'revision': ticket['revision'],
+            'content_hash': ticket['content_hash'], 'solution_commit': revision}
+now = datetime.now(timezone.utc).isoformat()
+sources = ['full-tests.json', 'full-tests.log', 'target-tests.json', 'target-tests.log',
+           'wsl/receipt.json', 'wsl/pytest.stdout', 'wsl/postgres-retry-tests.stdout']
+sources += [str(p.relative_to(out)).replace('\\', '/') for p in (out/'native-processes').glob('*.json')]
+sources += [str(p.relative_to(out)).replace('\\', '/') for p in (out/'wsl/native-processes').glob('*.json')]
+sources += [str(p.relative_to(out)).replace('\\', '/') for p in out.glob('kill-matrix-*.json')
+            if p.stat().st_mtime >= datetime.fromisoformat(target['started_at']).timestamp()]
+sources += [str(p.relative_to(out)).replace('\\', '/') for p in (out/'wsl').glob('kill-matrix-*.json')]
+source_refs = [{'path': 'docs/zeus/implementation/fa017-closure-001/' + name,
+                'sha256': sha(out/name)} for name in sources]
+source_refs.append({'path': 'docs/zeus/ci/34429521115.json', 'sha256': sha(ci_path)})
+observations = [
+    ('tests/test_execution_output.py',
+     'Native child processes with empty, malformed JSON and missing-required-field explicit inputs '
+     'preserve exact raw output/schema, task message/input hash, attempt progression and extension fields. '
+     'Project/retrospective 3/5 fields are explicit preservation fixtures, not a production retrospective feature.'),
+    ('tests/test_retry_state.py; tests/test_execution_identity.py; tests/test_execution_rejections.py',
+     'Repeated failure has one receipt/outcome/notice; altered actor, agent and recovery sequence are rejected. '
+     'Typed fields, original receipt hash and task/decision shapes are checked. Retry/recovery generations '
+     'and budgets survive processes; stale executor reconciliation retains explicit rejection receipts.'),
+    ('tests/test_execution_notices.py; tests/test_task_failure_atomicity.py; tests/test_execution_output.py',
+     'Real PostgreSQL write rejection rolls back state/receipt/outbox with no success stdout. Native '
+     'PG/Redis child kills cover before commit, after commit, after publish and after consume; '
+     'two deliveries produce one informational receiver effect with pending-message reclaim.'),
+    ('tests/test_execution_identity.py',
+     'Native child processes with two same-agent tasks and a distinct live executor use shared/nested '
+     'UTF-8 paths and explicitly tied creation/heartbeat/lease timestamps. Claims select by identity; '
+     'foreign identities cannot heartbeat or replay failures, and sibling task records remain unchanged. '
+     'Executor-owner fencing is not authenticated tenant authorization.'),
+    ('tests/test_execution_time.py; docs/contracts.md#inv-execution-time-001',
+     'Finite/timezone/type comparison and persisted discontinuity containment/explicit repair are verified. '
+     'Actual process restart rejects late completion and heartbeat after real deadline passage; actual '
+     'PG lock wait does not become a clock jump. Process-domain monotonic vs durable UTC contract is explicit. '
+     'No actual OS clock-step, suspend/VM-resume or multi-host measurement occurred. Modified stored pins '
+     'and pure clock inputs are fixtures. UTC continuity across restart is an assumption; not every '
+     'offline clock change can be detected. This bounded assessment is visible for human acceptance.'),
+    ('tests/test_execution_recovery.py; tests/test_decision_recovery.py',
+     'Explicit recovery retains previous state/cause and artifact evidence, changes generation and '
+     'recovery sequence under CAS, preserves bounded attempts/deadlines and rejects old receipt replay. '
+     'Native recovery CLI prepare/apply/replay and subsequent process restart are covered. An operator '
+     'label in these fixtures is not a cryptographic human approval.'),
+    ('Windows local full/PG target; native WSL; CI 34429521115',
+     'Exact solution revision passes native Windows and WSL process/files/PG checks and five Linux/Windows '
+     'CI jobs including actual service integration. UTF-8/shared/nested paths, process termination/restart '
+     'and real PG locking are observed. Skips are not counted as executed acceptance; no model execution '
+     'or physical human scenario acceptance is inferred from exit status or reviewer self-report.')]
+common = {'observer': 'Codex consolidation of archived runner measurements', 'sources': source_refs,
+          'human_acceptance_granted': False, 'ci_url': ci['url'],
+          'count_scope': 'windows_* are local Windows observations; CI counts remain in the CI receipt',
+          'source_roots': {'windows_native': 'native-processes/', 'wsl_native': 'wsl/native-processes/'},
+          'counts': {'windows_full': '911 passed / 299 skipped', 'windows_target': '323 passed / 1 skipped',
+                     'wsl_full': '917 passed / 293 skipped', 'wsl_target': '323 passed / 1 skipped'}}
+imports = []
+criteria = []
+for index, (tests, observation) in enumerate(observations):
+    observed_at = target['finished_at'] if index < 6 else max(j['completedAt'] for j in ci['jobs'])
+    detail = dict(common)
+    if index < 6:
+        # Keep this target-time observation free of later full/CI measurements.
+        detail.pop('ci_url')
+        detail['sources'] = [r for r in source_refs if '/ci/' not in r['path']
+                             and not Path(r['path']).name.startswith('full-tests.')]
+        detail['counts'] = {k: v for k, v in common['counts'].items() if k != 'windows_full'}
+    document = {**bindings, 'kind': 'ticket-criterion-evidence-v1', 'observed_at': observed_at,
+                'criterion_index': index, 'outcome': 'passed',
+                'details': {**detail, 'tests': tests, 'observation': observation,
+                            'assessment_scope': 'Automated contract observation; requires human review and approval'}}
+    validate_evidence(document, {**bindings, 'issued_at': now})
+    path = dest / f'criterion-{index + 1}.json'
+    path.write_text(canonical(document), 'utf-8')
+    r = subprocess.run(['uv', 'run', 'zeus', 'ticket', 'evidence', ticket['id'], '--file', str(path)],
+                       capture_output=True, check=True)
+    imported = json.loads(r.stdout)
+    assert imported['authority'] == 'unverified_observation_only'
+    assert imported['ref'] == 'sha256:' + digest(document)
+    imports.append({'file': path.name, 'ref': imported['ref'], 'observed_at': observed_at})
+    criteria.append({'index': index, 'criterion_hash': digest(ticket['content']['acceptance_criteria'][index]),
+                     'outcome': 'passed', 'evidence_refs': [imported['ref']]})
+environment = {**bindings, 'kind': 'ticket-environment-v1',
+    'observed_at': max(j['completedAt'] for j in ci['jobs']),
+    'details': {**common, 'wsl_platform': wsl['platform'],
+                'ci_jobs': [{k: j[k] for k in ('name', 'completedAt', 'conclusion')} for j in ci['jobs']],
+                'lockfile_sha256': wsl['lock_after'], 'production_deployment': False}}
+validate_evidence(environment, {**bindings, 'issued_at': now}, environment=True)
+path = dest / 'environment.json'
+path.write_text(canonical(environment), 'utf-8')
+r = subprocess.run(['uv', 'run', 'zeus', 'ticket', 'evidence', ticket['id'], '--file', str(path)],
+                   capture_output=True, check=True)
+imported = json.loads(r.stdout)
+assert imported['authority'] == 'unverified_observation_only'
+imports.append({'file': path.name, 'ref': imported['ref'], 'observed_at': environment['observed_at']})
+acceptance = {'solution_commit': revision, 'environment_ref': imported['ref'], 'criteria': criteria,
+    'reason': 'FA-017 bounded contract verification complete; review explicit time/fixture/fencing limitations '
+              'in all seven observations before external human acceptance. No all-Zeus or production approval.'}
+(dest/'acceptance.json').write_text(json.dumps(acceptance, indent=2)+'\n', 'utf-8')
+(dest/'imports.json').write_text(json.dumps({'imports': imports, 'imported_at': now,
+    'authority': 'unverified_observation_only', 'ticket_status': 'open',
+    'trust_anchor_configured_in_current_process': bool(os.environ.get('ZEUS_TICKET_TRUST_COMMIT')),
+    'signing_packet_prepared': False, 'human_acceptance_granted': False}, indent=2)+'\n', 'utf-8')
+(out/'evidence-builder.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'criterion_documents': len(criteria), 'imported_documents': len(imports),
+                  'closure_requested': False, 'human_acceptance_granted': False}))

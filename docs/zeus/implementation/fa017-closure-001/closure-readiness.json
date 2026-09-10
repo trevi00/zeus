@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-09-10T02:36:12.713301+00:00",
+  "solution_commit": "2b890f9fafa86fe20ae9ff03819444272eaaa6e6",
+  "code_blockers": [],
+  "ci_jobs_passed": 5,
+  "criterion_observations_imported": 7,
+  "environment_observations_imported": 1,
+  "trust_anchor_configured_in_current_process": false,
+  "acceptance_input_prepared": true,
+  "signing_packet_prepared": false,
+  "human_acceptance_claimed": false,
+  "remaining": [
+    "Externally enrolled human approver policy",
+    "Evidence age recheck and exact signing packet preparation",
+    "Human review/signature followed by local close and GitHub sync"
+  ],
+  "unmeasured_operating_conditions": [
+    "Actual OS clock step",
+    "Suspend/VM resume",
+    "Multi-host time continuity"
+  ]
+}

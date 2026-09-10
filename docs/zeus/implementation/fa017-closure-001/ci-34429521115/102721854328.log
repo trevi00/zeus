@@ -1,0 +1,380 @@
+﻿2026-09-10T02:27:36.4444536Z Current runner version: '2.337.0'
+2026-09-10T02:27:36.4471989Z ##[group]Runner Image Provisioner
+2026-09-10T02:27:36.4472868Z Hosted Compute Agent
+2026-09-10T02:27:36.4473565Z Version: 20260828.587
+2026-09-10T02:27:36.4474208Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-10T02:27:36.4474912Z Build Date: 2026-08-28T16:44:25Z
+2026-09-10T02:27:36.4475693Z Worker ID: {af44c651-25d1-4c57-b9e6-b9e5222afae9}
+2026-09-10T02:27:36.4476633Z Azure Region: eastus
+2026-09-10T02:27:36.4477255Z ##[endgroup]
+2026-09-10T02:27:36.4478795Z ##[group]Operating System
+2026-09-10T02:27:36.4479424Z Ubuntu
+2026-09-10T02:27:36.4480044Z 24.04.4
+2026-09-10T02:27:36.4480564Z LTS
+2026-09-10T02:27:36.4481149Z ##[endgroup]
+2026-09-10T02:27:36.4481710Z ##[group]Runner Image
+2026-09-10T02:27:36.4482332Z Image: ubuntu-24.04
+2026-09-10T02:27:36.4482947Z Version: 20260831.293.1
+2026-09-10T02:27:36.4484177Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260831.293/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-10T02:27:36.4486459Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260831.293
+2026-09-10T02:27:36.4487460Z ##[endgroup]
+2026-09-10T02:27:36.4488672Z ##[group]GITHUB_TOKEN Permissions
+2026-09-10T02:27:36.4490922Z Contents: read
+2026-09-10T02:27:36.4491693Z Metadata: read
+2026-09-10T02:27:36.4492292Z ##[endgroup]
+2026-09-10T02:27:36.4494562Z Secret source: Actions
+2026-09-10T02:27:36.4495529Z Cache mode: write
+2026-09-10T02:27:36.4496982Z Prepare workflow directory
+2026-09-10T02:27:36.4850459Z Prepare all required actions
+2026-09-10T02:27:36.4902007Z Getting action download info
+2026-09-10T02:27:36.6838733Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-10T02:27:36.7961057Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-09-10T02:27:36.9974300Z Complete job name: test (ubuntu-latest, 3.14)
+2026-09-10T02:27:37.0834708Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T02:27:37.0844061Z ##[group]Run actions/checkout@v4
+2026-09-10T02:27:37.0844848Z with:
+2026-09-10T02:27:37.0845282Z   fetch-depth: 0
+2026-09-10T02:27:37.0845742Z   repository: trevi00/zeus
+2026-09-10T02:27:37.0850161Z   token: ***
+2026-09-10T02:27:37.0850614Z   ssh-strict: true
+2026-09-10T02:27:37.0851053Z   ssh-user: git
+2026-09-10T02:27:37.0851500Z   persist-credentials: true
+2026-09-10T02:27:37.0851982Z   clean: true
+2026-09-10T02:27:37.0852421Z   sparse-checkout-cone-mode: true
+2026-09-10T02:27:37.0852936Z   fetch-tags: false
+2026-09-10T02:27:37.0853375Z   show-progress: true
+2026-09-10T02:27:37.0853810Z   lfs: false
+2026-09-10T02:27:37.0854263Z   submodules: false
+2026-09-10T02:27:37.0854702Z   set-safe-directory: true
+2026-09-10T02:27:37.0855203Z   allow-unsafe-pr-checkout: false
+2026-09-10T02:27:37.0856034Z ##[endgroup]
+2026-09-10T02:27:37.1964396Z Syncing repository: trevi00/zeus
+2026-09-10T02:27:37.1967027Z ##[group]Getting Git version info
+2026-09-10T02:27:37.1967853Z Working directory is '/home/runner/work/zeus/zeus'
+2026-09-10T02:27:37.1969249Z [command]/usr/bin/git version
+2026-09-10T02:27:37.2074827Z git version 2.55.0
+2026-09-10T02:27:37.2112411Z ##[endgroup]
+2026-09-10T02:27:37.2128121Z Temporarily overriding HOME='/home/runner/work/_temp/4257db6a-a501-4c61-b99a-0e0237b446db' before making global git config changes
+2026-09-10T02:27:37.2130736Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T02:27:37.2132837Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/zeus/zeus
+2026-09-10T02:27:37.2192148Z Deleting the contents of '/home/runner/work/zeus/zeus'
+2026-09-10T02:27:37.2202324Z ##[group]Initializing the repository
+2026-09-10T02:27:37.2204263Z [command]/usr/bin/git init /home/runner/work/zeus/zeus
+2026-09-10T02:27:37.2351527Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-10T02:27:37.2353303Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-10T02:27:37.2354889Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-10T02:27:37.2356097Z hint: call:
+2026-09-10T02:27:37.2356954Z hint:
+2026-09-10T02:27:37.2357755Z hint: 	git config --global init.defaultBranch <name>
+2026-09-10T02:27:37.2358813Z hint:
+2026-09-10T02:27:37.2359843Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-10T02:27:37.2361359Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-10T02:27:37.2362561Z hint:
+2026-09-10T02:27:37.2363298Z hint: 	git branch -m <name>
+2026-09-10T02:27:37.2364187Z hint:
+2026-09-10T02:27:37.2365247Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-10T02:27:37.2367070Z Initialized empty Git repository in /home/runner/work/zeus/zeus/.git/
+2026-09-10T02:27:37.2369786Z [command]/usr/bin/git remote add origin https://github.com/trevi00/zeus
+2026-09-10T02:27:37.2433634Z ##[endgroup]
+2026-09-10T02:27:37.2434935Z ##[group]Disabling automatic garbage collection
+2026-09-10T02:27:37.2438189Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-10T02:27:37.2472545Z ##[endgroup]
+2026-09-10T02:27:37.2473677Z ##[group]Setting up auth
+2026-09-10T02:27:37.2481328Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T02:27:37.2521478Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-10T02:27:37.2942065Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T02:27:37.2981156Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-10T02:27:37.3217389Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T02:27:37.3256184Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-10T02:27:37.3491816Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-10T02:27:37.3533950Z ##[endgroup]
+2026-09-10T02:27:37.3534901Z ##[group]Fetching the repository
+2026-09-10T02:27:37.3544617Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-09-10T02:27:38.1333828Z From https://github.com/trevi00/zeus
+2026-09-10T02:27:38.1340370Z  * [new branch]      main       -> origin/main
+2026-09-10T02:27:38.1347620Z [command]/usr/bin/git branch --list --remote origin/main
+2026-09-10T02:27:38.1378970Z   origin/main
+2026-09-10T02:27:38.1390690Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-09-10T02:27:38.1418866Z 2b890f9fafa86fe20ae9ff03819444272eaaa6e6
+2026-09-10T02:27:38.1426770Z ##[endgroup]
+2026-09-10T02:27:38.1429445Z ##[group]Determining the checkout info
+2026-09-10T02:27:38.1432154Z ##[endgroup]
+2026-09-10T02:27:38.1434745Z [command]/usr/bin/git sparse-checkout disable
+2026-09-10T02:27:38.1501579Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-10T02:27:38.1538003Z ##[group]Checking out the ref
+2026-09-10T02:27:38.1541441Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-09-10T02:27:38.4015051Z Switched to a new branch 'main'
+2026-09-10T02:27:38.4022031Z branch 'main' set up to track 'origin/main'.
+2026-09-10T02:27:38.4037858Z ##[endgroup]
+2026-09-10T02:27:38.4091889Z [command]/usr/bin/git log -1 --format=%H
+2026-09-10T02:27:38.4124310Z 2b890f9fafa86fe20ae9ff03819444272eaaa6e6
+2026-09-10T02:27:38.4406994Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T02:27:38.4409012Z ##[group]Run actions/setup-python@v5
+2026-09-10T02:27:38.4409326Z with:
+2026-09-10T02:27:38.4409583Z   python-version: 3.14
+2026-09-10T02:27:38.4409853Z   check-latest: false
+2026-09-10T02:27:38.4412688Z   token: ***
+2026-09-10T02:27:38.4412958Z   update-environment: true
+2026-09-10T02:27:38.4413272Z   allow-prereleases: false
+2026-09-10T02:27:38.4413549Z   freethreaded: false
+2026-09-10T02:27:38.4413807Z ##[endgroup]
+2026-09-10T02:27:38.5829329Z ##[group]Installed versions
+2026-09-10T02:27:38.6048254Z (node:2187) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-10T02:27:38.6064245Z Successfully set up CPython (3.14.7)
+2026-09-10T02:27:38.6066537Z ##[endgroup]
+2026-09-10T02:27:38.6085582Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-10T02:27:38.6144397Z ##[group]Run python -m pip install uv==0.12.2
+2026-09-10T02:27:38.6144961Z [36;1mpython -m pip install uv==0.12.2[0m
+2026-09-10T02:27:38.6304371Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:27:38.6305072Z env:
+2026-09-10T02:27:38.6305604Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:38.6306651Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:27:38.6307487Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:38.6308209Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:38.6308938Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:38.6309668Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:27:38.6310345Z ##[endgroup]
+2026-09-10T02:27:41.4171240Z Collecting uv==0.12.2
+2026-09-10T02:27:41.4706706Z   Downloading uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+2026-09-10T02:27:41.4911044Z Downloading uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (22.3 MB)
+2026-09-10T02:27:41.6654414Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 22.3/22.3 MB 144.0 MB/s  0:00:00
+2026-09-10T02:27:41.8233737Z Installing collected packages: uv
+2026-09-10T02:27:42.0712309Z Successfully installed uv-0.12.2
+2026-09-10T02:27:42.1470916Z ##[group]Run uv sync --frozen
+2026-09-10T02:27:42.1471259Z [36;1muv sync --frozen[0m
+2026-09-10T02:27:42.1509969Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:27:42.1510250Z env:
+2026-09-10T02:27:42.1510537Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:42.1510999Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:27:42.1511435Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:42.1511868Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:42.1512265Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:42.1512685Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:27:42.1513010Z ##[endgroup]
+2026-09-10T02:27:42.2333708Z Using CPython 3.14.7 interpreter at: /opt/hostedtoolcache/Python/3.14.7/x64/bin/python3
+2026-09-10T02:27:42.2334583Z Creating virtual environment at: .venv
+2026-09-10T02:27:42.2559555Z    Building zeus-harness @ file:///home/runner/work/zeus/zeus
+2026-09-10T02:27:42.3403507Z Downloading hf-xet (4.3MiB)
+2026-09-10T02:27:42.3404638Z Downloading pygments (1.2MiB)
+2026-09-10T02:27:42.3413409Z Downloading psycopg-binary (5.0MiB)
+2026-09-10T02:27:42.3415274Z Downloading pillow (6.6MiB)
+2026-09-10T02:27:42.3416678Z Downloading numpy (15.9MiB)
+2026-09-10T02:27:42.3427321Z Downloading tokenizers (3.2MiB)
+2026-09-10T02:27:42.3444802Z Downloading ruff (9.8MiB)
+2026-09-10T02:27:42.3451012Z Downloading onnxruntime (22.1MiB)
+2026-09-10T02:27:42.7770525Z  Downloaded tokenizers
+2026-09-10T02:27:42.8254654Z  Downloaded hf-xet
+2026-09-10T02:27:42.9717690Z  Downloaded psycopg-binary
+2026-09-10T02:27:43.0087974Z  Downloaded ruff
+2026-09-10T02:27:43.0867815Z  Downloaded pillow
+2026-09-10T02:27:43.1329068Z  Downloaded pygments
+2026-09-10T02:27:43.1671349Z  Downloaded onnxruntime
+2026-09-10T02:27:43.3854364Z       Built zeus-harness @ file:///home/runner/work/zeus/zeus
+2026-09-10T02:27:43.3990250Z  Downloaded numpy
+2026-09-10T02:27:43.3993410Z Prepared 55 packages in 1.16s
+2026-09-10T02:27:43.4439554Z Installed 55 packages in 44ms
+2026-09-10T02:27:43.4440255Z  + anyio==4.15.1
+2026-09-10T02:27:43.4440626Z  + arrow==1.4.0
+2026-09-10T02:27:43.4440962Z  + attrs==26.1.0
+2026-09-10T02:27:43.4441323Z  + certifi==2026.7.22
+2026-09-10T02:27:43.4441706Z  + charset-normalizer==3.5.1
+2026-09-10T02:27:43.4442394Z  + click==8.5.0
+2026-09-10T02:27:43.4442716Z  + fastembed==0.8.0
+2026-09-10T02:27:43.4443099Z  + filelock==3.32.5
+2026-09-10T02:27:43.4443465Z  + flatbuffers==25.12.19
+2026-09-10T02:27:43.4443878Z  + fqdn==1.5.1
+2026-09-10T02:27:43.4444225Z  + fsspec==2026.7.0
+2026-09-10T02:27:43.4444570Z  + h11==0.16.0
+2026-09-10T02:27:43.4444922Z  + hf-xet==1.6.0
+2026-09-10T02:27:43.4445281Z  + httpcore==1.0.9
+2026-09-10T02:27:43.4445881Z  + httpx==0.28.1
+2026-09-10T02:27:43.4446921Z  + huggingface-hub==1.30.0
+2026-09-10T02:27:43.4447360Z  + idna==3.19
+2026-09-10T02:27:43.4447726Z  + iniconfig==2.3.0
+2026-09-10T02:27:43.4448154Z  + isoduration==20.11.0
+2026-09-10T02:27:43.4448680Z  + jsonpointer==3.1.1
+2026-09-10T02:27:43.4450230Z  + jsonschema==4.26.0
+2026-09-10T02:27:43.4450665Z  + jsonschema-specifications==2025.9.1
+2026-09-10T02:27:43.4451147Z  + loguru==0.7.3
+2026-09-10T02:27:43.4451476Z  + mmh3==5.3.0
+2026-09-10T02:27:43.4451801Z  + numpy==2.5.3
+2026-09-10T02:27:43.4452150Z  + onnxruntime==1.29.0
+2026-09-10T02:27:43.4452549Z  + packaging==26.3
+2026-09-10T02:27:43.4452904Z  + pillow==12.3.0
+2026-09-10T02:27:43.4453262Z  + pluggy==1.6.0
+2026-09-10T02:27:43.4453608Z  + protobuf==7.36.1
+2026-09-10T02:27:43.4453955Z  + psycopg==3.3.5
+2026-09-10T02:27:43.4454326Z  + psycopg-binary==3.3.5
+2026-09-10T02:27:43.4454767Z  + py-rust-stemmers==0.1.8
+2026-09-10T02:27:43.4455170Z  + pygments==2.21.0
+2026-09-10T02:27:43.4455522Z  + pytest==9.1.1
+2026-09-10T02:27:43.4455898Z  + python-dateutil==2.9.0.post0
+2026-09-10T02:27:43.4456583Z  + pyyaml==6.0.3
+2026-09-10T02:27:43.4456922Z  + redis==6.4.0
+2026-09-10T02:27:43.4457297Z  + referencing==0.37.0
+2026-09-10T02:27:43.4458063Z  + requests==2.34.2
+2026-09-10T02:27:43.4458490Z  + rfc3339-validator==0.1.4
+2026-09-10T02:27:43.4458913Z  + rfc3987==1.3.8
+2026-09-10T02:27:43.4459281Z  + rpds-py==2026.6.3
+2026-09-10T02:27:43.4459678Z  + ruff==0.16.6
+2026-09-10T02:27:43.4460022Z  + six==1.17.0
+2026-09-10T02:27:43.4460372Z  + tokenizers==0.23.2
+2026-09-10T02:27:43.4460752Z  + tqdm==4.70.0
+2026-09-10T02:27:43.4461097Z  + tree-sitter==0.25.2
+2026-09-10T02:27:43.4461510Z  + tree-sitter-python==0.25.0
+2026-09-10T02:27:43.4461984Z  + typing-extensions==4.16.0
+2026-09-10T02:27:43.4462402Z  + tzdata==2026.3
+2026-09-10T02:27:43.4462772Z  + uri-template==1.3.0
+2026-09-10T02:27:43.4463162Z  + urllib3==2.7.0
+2026-09-10T02:27:43.4463551Z  + webcolors==25.10.0
+2026-09-10T02:27:43.4464628Z  + zeus-harness==0.2.0 (from file:///home/runner/work/zeus/zeus)
+2026-09-10T02:27:43.4605155Z ##[group]Run uv run ruff check .
+2026-09-10T02:27:43.4605482Z [36;1muv run ruff check .[0m
+2026-09-10T02:27:43.4643320Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:27:43.4643577Z env:
+2026-09-10T02:27:43.4643845Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.4644296Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:27:43.4644753Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.4645132Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.4645517Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.4646112Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:27:43.4646925Z ##[endgroup]
+2026-09-10T02:27:43.6000019Z All checks passed!
+2026-09-10T02:27:43.6052271Z ##[group]Run uv run pytest -q
+2026-09-10T02:27:43.6052595Z [36;1muv run pytest -q[0m
+2026-09-10T02:27:43.6091274Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:27:43.6091548Z env:
+2026-09-10T02:27:43.6091829Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.6092280Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:27:43.6092713Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.6093091Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.6093464Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:27:43.6093842Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:27:43.6094176Z ##[endgroup]
+2026-09-10T02:27:50.0648879Z .......................................................................s [  5%]
+2026-09-10T02:27:50.2923084Z ............ssssssssssss..ss....ssss.s.s..ss.s.s.s.s.s.ss.s.s....s.s.s.s [ 11%]
+2026-09-10T02:27:50.4378421Z .s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.sss...s..s.s..................... [ 17%]
+2026-09-10T02:27:50.6606730Z .....ssssssss.s.s......ssssss........ssssssss.s.s.s.s.ss.s...sss.s..ss.. [ 23%]
+2026-09-10T02:27:50.8624231Z ..ssss.s.s.s.s.s.s.s.s.s.s.s.ss...s.s.s........s.s.s.s.s.s.s.s.sss...... [ 29%]
+2026-09-10T02:27:51.7670127Z ..........................s.s.s.s.s..ss.s.s.s.s.s.s.s.s.s.s.s.s.s..ss.s. [ 35%]
+2026-09-10T02:27:52.4421811Z s.ssssssssssssssssssssssssss............................................ [ 41%]
+2026-09-10T02:27:55.0496006Z .........................................................ssssss.s.s.s.s. [ 47%]
+2026-09-10T02:27:58.0673910Z s.s.s................................................................... [ 53%]
+2026-09-10T02:28:01.3031322Z ....................................................s.s.s....s..s....... [ 59%]
+2026-09-10T02:28:07.0970732Z ....................................................................s.s. [ 65%]
+2026-09-10T02:28:07.2693637Z s.........sssssssss.....sssss.s.ss.s.s.s....ssss..ss.s.................. [ 71%]
+2026-09-10T02:28:10.5271321Z .....................ssssss.............................s............... [ 77%]
+2026-09-10T02:28:16.9532385Z ...............s.s.s.s.s................................................ [ 83%]
+2026-09-10T02:28:19.3039476Z ......s........ssssssss.....sssss.s.s.s.s.s.s..ss.......sssssss.s.s.s.s. [ 89%]
+2026-09-10T02:28:20.3354039Z s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.s.........................s........... [ 95%]
+2026-09-10T02:28:21.3574196Z ....ss....................................................               [100%]
+2026-09-10T02:28:21.3575477Z 917 passed, 293 skipped in 35.63s
+2026-09-10T02:28:21.6240343Z ##[group]Run uv build
+2026-09-10T02:28:21.6240608Z [36;1muv build[0m
+2026-09-10T02:28:21.6276869Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:28:21.6277128Z env:
+2026-09-10T02:28:21.6277389Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:21.6277818Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:28:21.6278232Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:21.6278613Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:21.6279007Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:21.6279389Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:28:21.6279730Z ##[endgroup]
+2026-09-10T02:28:21.6468366Z Building source distribution...
+2026-09-10T02:28:24.0618953Z Building wheel from source distribution...
+2026-09-10T02:28:24.5471328Z Successfully built dist/zeus_harness-0.2.0.tar.gz
+2026-09-10T02:28:24.5472664Z Successfully built dist/zeus_harness-0.2.0-py3-none-any.whl
+2026-09-10T02:28:24.5530450Z ##[group]Run uv run harness-supervisor --help
+2026-09-10T02:28:24.5530846Z [36;1muv run harness-supervisor --help[0m
+2026-09-10T02:28:24.5567983Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:28:24.5568229Z env:
+2026-09-10T02:28:24.5568495Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.5568933Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:28:24.5569377Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.5569764Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.5570138Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.5570515Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:28:24.5570841Z ##[endgroup]
+2026-09-10T02:28:24.8954096Z usage: harness-supervisor [-h] [--once] [--research] [--releases]
+2026-09-10T02:28:24.8954719Z                           [--repository REPOSITORY]
+2026-09-10T02:28:24.8955077Z 
+2026-09-10T02:28:24.8955180Z options:
+2026-09-10T02:28:24.8955530Z   -h, --help            show this help message and exit
+2026-09-10T02:28:24.8955930Z   --once
+2026-09-10T02:28:24.8956494Z   --research
+2026-09-10T02:28:24.8956764Z   --releases
+2026-09-10T02:28:24.8957025Z   --repository REPOSITORY
+2026-09-10T02:28:24.9593957Z ##[group]Run uv run zeus --version
+2026-09-10T02:28:24.9594296Z [36;1muv run zeus --version[0m
+2026-09-10T02:28:24.9631783Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:28:24.9632041Z env:
+2026-09-10T02:28:24.9632312Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.9632797Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:28:24.9633236Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.9633617Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.9633996Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:24.9634374Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:28:24.9634699Z ##[endgroup]
+2026-09-10T02:28:25.3044986Z Zeus 0.2.0
+2026-09-10T02:28:25.3681287Z ##[group]Run uv run python -m zeus ticket --help
+2026-09-10T02:28:25.3681711Z [36;1muv run python -m zeus ticket --help[0m
+2026-09-10T02:28:25.3719265Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:28:25.3719528Z env:
+2026-09-10T02:28:25.3719805Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.3720255Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:28:25.3720676Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.3721057Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.3721433Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.3721806Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:28:25.3722132Z ##[endgroup]
+2026-09-10T02:28:25.7005646Z usage: zeus ticket [-h]
+2026-09-10T02:28:25.7007109Z                    {list,create,show,export,update,review,dispatch,sync,pull,evidence,prepare-close,close,reopen,review-close} ...
+2026-09-10T02:28:25.7008001Z 
+2026-09-10T02:28:25.7008224Z positional arguments:
+2026-09-10T02:28:25.7009088Z   {list,create,show,export,update,review,dispatch,sync,pull,evidence,prepare-close,close,reopen,review-close}
+2026-09-10T02:28:25.7009893Z 
+2026-09-10T02:28:25.7010008Z options:
+2026-09-10T02:28:25.7010363Z   -h, --help            show this help message and exit
+2026-09-10T02:28:25.7678623Z ##[group]Run uv run zeus-monitor --help
+2026-09-10T02:28:25.7678993Z [36;1muv run zeus-monitor --help[0m
+2026-09-10T02:28:25.7715836Z shell: /usr/bin/bash -e {0}
+2026-09-10T02:28:25.7716083Z env:
+2026-09-10T02:28:25.7716627Z   pythonLocation: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.7717080Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib/pkgconfig
+2026-09-10T02:28:25.7717512Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.7717887Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.7718265Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.14.7/x64
+2026-09-10T02:28:25.7718876Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.14.7/x64/lib
+2026-09-10T02:28:25.7719206Z ##[endgroup]
+2026-09-10T02:28:25.9067675Z usage: zeus-monitor [-h] [--once] [--repository REPOSITORY] [--port PORT]
+2026-09-10T02:28:25.9068374Z                     {collect,web}
+2026-09-10T02:28:25.9068631Z 
+2026-09-10T02:28:25.9068838Z positional arguments:
+2026-09-10T02:28:25.9069175Z   {collect,web}
+2026-09-10T02:28:25.9069531Z 
+2026-09-10T02:28:25.9069657Z options:
+2026-09-10T02:28:25.9070012Z   -h, --help            show this help message and exit
+2026-09-10T02:28:25.9070456Z   --once
+2026-09-10T02:28:25.9070737Z   --repository REPOSITORY
+2026-09-10T02:28:25.9071083Z   --port PORT
+2026-09-10T02:28:25.9351516Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T02:28:25.9352787Z Post job cleanup.
+2026-09-10T02:28:26.0595064Z (node:9129) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-10T02:28:26.0596819Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-10T02:28:26.0784921Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T02:28:26.0786451Z Post job cleanup.
+2026-09-10T02:28:26.1756102Z [command]/usr/bin/git version
+2026-09-10T02:28:26.1804546Z git version 2.55.0
+2026-09-10T02:28:26.1851050Z Temporarily overriding HOME='/home/runner/work/_temp/6731e41b-f1a1-45a0-b2e5-1811b6135281' before making global git config changes
+2026-09-10T02:28:26.1852145Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T02:28:26.1861316Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/zeus/zeus
+2026-09-10T02:28:26.1902502Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T02:28:26.1942390Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-10T02:28:26.2231692Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T02:28:26.2265648Z http.https://github.com/.extraheader
+2026-09-10T02:28:26.2280537Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-10T02:28:26.2330066Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-10T02:28:26.2638073Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T02:28:26.2690137Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-10T02:28:26.3113377Z Cleaning up orphan processes
+2026-09-10T02:28:26.3440263Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

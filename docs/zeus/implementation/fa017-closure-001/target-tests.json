@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "pytest",
+    "-q",
+    "tests/test_execution_identity.py",
+    "tests/test_retry_state.py",
+    "tests/test_execution_time.py",
+    "tests/test_execution_output.py",
+    "tests/test_execution_rejections.py",
+    "tests/test_task_failure_atomicity.py",
+    "tests/test_execution_recovery.py",
+    "tests/test_decision_recovery.py",
+    "tests/test_execution_notices.py"
+  ],
+  "started_at": "2026-09-10T02:27:51.495051+00:00",
+  "finished_at": "2026-09-10T02:29:16.685062+00:00",
+  "exit_code": 0,
+  "seconds": 85.19000749999759,
+  "log_sha256": "fe119bed0b0d817f2fd2f1e68c527b4e041b4b9607d9b623e72e90b4a2a45cf9",
+  "native_receipts": {
+    "native-processes\\nested.json": "8ae11a47dc04b0a35a678bc37e087be812b10222104427daa5149215d31647bc",
+    "native-processes\\shared.json": "8d3a956eb7eed99a58f89e631399bfe6f6131c617e57e21757096b7d19c5b464"
+  }
+}

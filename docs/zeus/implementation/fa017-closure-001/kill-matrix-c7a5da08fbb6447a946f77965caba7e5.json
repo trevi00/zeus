@@ -1,0 +1,40 @@
+{
+  "processes": [
+    {
+      "pid": 8628,
+      "exit_code": 1,
+      "boundary": "before_commit"
+    },
+    {
+      "pid": 12688,
+      "exit_code": 1,
+      "boundary": "after_commit"
+    },
+    {
+      "pid": 27300,
+      "exit_code": 1,
+      "boundary": "after_publish"
+    },
+    {
+      "pid": 22912,
+      "exit_code": 1,
+      "boundary": "after_consume"
+    }
+  ],
+  "scope": "Real PG/Redis and killed child processes, no model execution",
+  "redis_copies": 2,
+  "receiver_effects": 1,
+  "task_id": "669d26f8-3836-455a-9f15-2187b2a56599",
+  "notice_id": "791978dc67d54b0e3afdecede833e08a6043183b7bb1928de9289414663bfada",
+  "stream_entries": [
+    {
+      "entry_id": "1789007002281-0",
+      "message_id": "791978dc67d54b0e3afdecede833e08a6043183b7bb1928de9289414663bfada"
+    },
+    {
+      "entry_id": "1789007002377-0",
+      "message_id": "791978dc67d54b0e3afdecede833e08a6043183b7bb1928de9289414663bfada"
+    }
+  ],
+  "reclaimed_from": "doomed-consumer"
+}

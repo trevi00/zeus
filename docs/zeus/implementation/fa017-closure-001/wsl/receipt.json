@@ -1,0 +1,320 @@
+{
+  "revision": "2b890f9fafa86fe20ae9ff03819444272eaaa6e6",
+  "root": "/tmp/zeus-ticket-wsl-7x19yi6f",
+  "runner_pid": 311,
+  "status": "passed",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python": "3.14.4",
+  "environment": {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/tmp/zeus-ticket-wsl-7x19yi6f/home",
+    "TMPDIR": "/tmp/zeus-ticket-wsl-7x19yi6f/tmp",
+    "LANG": "C.UTF-8",
+    "PYTHONIOENCODING": "utf-8",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "core.hooksPath",
+    "GIT_CONFIG_VALUE_0": "/dev/null",
+    "UV_CACHE_DIR": "/tmp/zeus-ticket-wsl-7x19yi6f/cache",
+    "UV_PROJECT_ENVIRONMENT": "/tmp/zeus-ticket-wsl-7x19yi6f/venv",
+    "UV_PYTHON": "/usr/bin/python3",
+    "UV_PYTHON_DOWNLOADS": "never"
+  },
+  "stages": [
+    {
+      "name": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-local",
+        "/mnt/c/Users/rudtn/zeus",
+        "/tmp/zeus-ticket-wsl-7x19yi6f/repo"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f",
+      "started_at": "2026-09-10T02:27:33.932259+00:00",
+      "pid": 420,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:27:36.602386+00:00",
+      "stdout": {
+        "file": "clone.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "clone.stderr",
+        "sha256": "00648f3e1657cc82930f77dcf5da982a10a1b1e3a654d59f371aca933154a21e",
+        "bytes": 53
+      }
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "2b890f9fafa86fe20ae9ff03819444272eaaa6e6"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:27:36.610447+00:00",
+      "pid": 445,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:27:36.729248+00:00",
+      "stdout": {
+        "file": "checkout.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "checkout.stderr",
+        "sha256": "482c9a3b6c2e5e437db71ef727d59e4a5152fc0b68b9e09058e0652ffa102f70",
+        "bytes": 87
+      }
+    },
+    {
+      "name": "uv-version",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "--version"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:27:39.189812+00:00",
+      "pid": 458,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:27:39.199825+00:00",
+      "stdout": {
+        "file": "uv-version.stdout",
+        "sha256": "6a44d4c958923e8814b792113aa09af992fdbf283c562ee99ce52efb1ac874e2",
+        "bytes": 37
+      },
+      "stderr": {
+        "file": "uv-version.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "sync",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "sync",
+        "--frozen"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:27:39.207018+00:00",
+      "pid": 459,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:27:47.179572+00:00",
+      "stdout": {
+        "file": "sync.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "sync.stderr",
+        "sha256": "b41bd4a2a9bf8dbc9bb3cba7c1b8dd9569574831c18d47b8520c0b0dc5fc1160",
+        "bytes": 1913
+      }
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "run",
+        "--frozen",
+        "ruff",
+        "check",
+        "."
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:27:47.187469+00:00",
+      "pid": 538,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:27:47.298653+00:00",
+      "stdout": {
+        "file": "ruff.stdout",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "bytes": 19
+      },
+      "stderr": {
+        "file": "ruff.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "pytest",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-q",
+        "-ra"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:27:47.306655+00:00",
+      "pid": 567,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:28:15.041719+00:00",
+      "stdout": {
+        "file": "pytest.stdout",
+        "sha256": "a9f1684f708753e9690c4860e701f3d285ef5f976894f6a4a71e48e6b2d4dc85",
+        "bytes": 13913
+      },
+      "stderr": {
+        "file": "pytest.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "postgres-retry-tests",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "run",
+        "--frozen",
+        "pytest",
+        "-q",
+        "tests/test_execution_identity.py",
+        "tests/test_execution_output.py",
+        "tests/test_retry_state.py",
+        "tests/test_execution_time.py",
+        "tests/test_execution_recovery.py",
+        "tests/test_decision_recovery.py",
+        "tests/test_execution_notices.py",
+        "tests/test_task_failure_atomicity.py",
+        "tests/test_execution_rejections.py"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:28:15.052230+00:00",
+      "pid": 7358,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:29:05.175052+00:00",
+      "stdout": {
+        "file": "postgres-retry-tests.stdout",
+        "sha256": "4eba4014b53b7663414b858b1571a6393590ffa3cc8c46197b2b64c4afa36b4f",
+        "bytes": 432
+      },
+      "stderr": {
+        "file": "postgres-retry-tests.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "build",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "build"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:29:05.184100+00:00",
+      "pid": 7444,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:29:07.368093+00:00",
+      "stdout": {
+        "file": "build.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "build.stderr",
+        "sha256": "1de0d6e1d0f3c2eb6754831f8aa82ef4abf4c948d54c51194f21c3b12f8ccc95",
+        "bytes": 185
+      }
+    },
+    {
+      "name": "flush-help",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "run",
+        "--frozen",
+        "zeus",
+        "flush",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:29:07.378269+00:00",
+      "pid": 7471,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:29:07.682271+00:00",
+      "stdout": {
+        "file": "flush-help.stdout",
+        "sha256": "a75134c3d5207f908af8d5b46adeea83b87d2683cf66fb646823396a8da170a6",
+        "bytes": 79
+      },
+      "stderr": {
+        "file": "flush-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "inspect-help",
+      "argv": [
+        "/tmp/zeus-ticket-wsl-7x19yi6f/uv",
+        "run",
+        "--frozen",
+        "zeus",
+        "inspect",
+        "--help"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:29:07.691277+00:00",
+      "pid": 7475,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:29:07.990648+00:00",
+      "stdout": {
+        "file": "inspect-help.stdout",
+        "sha256": "068919f458fe8e6d2d79dbab41f36d4d9c0932cd42b9f667e5e6832ca5eac6d2",
+        "bytes": 706
+      },
+      "stderr": {
+        "file": "inspect-help.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "final-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/tmp/zeus-ticket-wsl-7x19yi6f/repo",
+      "started_at": "2026-09-10T02:29:07.999402+00:00",
+      "pid": 7479,
+      "exit_code": 0,
+      "finished_at": "2026-09-10T02:29:08.132961+00:00",
+      "stdout": {
+        "file": "final-status.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "file": "final-status.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "scope": "Native WSL full ordinary suite and real PostgreSQL identity fencing, retry/deadline/write-rejection and PG/Redis delivery process tests; no model execution",
+  "started_at": "2026-09-10T02:27:33.928015+00:00",
+  "uv": {
+    "version": "0.12.2",
+    "wheel_sha256": "3a8d93d1fe019561b70494a8e1332492afb5f14dadc33d5239569d0964164d10",
+    "binary_sha256": "72c5f455cd0e9793910f6a1db255de37b610a36a8db858afa3c72e34668e23e2",
+    "url": "https://files.pythonhosted.org/packages/a7/fe/a87be2a492440945e745b0dc81aef7fea9730d8194af88d854b7641f5ddf/uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+  },
+  "lock_before": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "postgres_scope": "Actual isolated PostgreSQL schemas and child processes in native WSL; connection credentials excluded from receipt",
+  "lock_after": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "native_process_receipts": {
+    "native-processes/nested.json": "db36c8a213479c8db524b2efde40a83df4682e7d207ed4c0b727eeccb3e497e9",
+    "native-processes/shared.json": "09a8e4777efd4be13b3f3defdc7792ea8370bef7d880ee1abc40e8501a877638"
+  },
+  "runner_sha256": "43756de9b3c18d9d2c0e783753335c07e3a7e2f93449289d17bd57e3ba1729af",
+  "finished_at": "2026-09-10T02:29:08.158070+00:00"
+}
