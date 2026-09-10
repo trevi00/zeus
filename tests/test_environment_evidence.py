@@ -78,12 +78,14 @@ class FakeShell:
             self.counters['commands'] += 500
             return f"run_id:abcdef0123456789\r\ntotal_commands_processed:{self.counters['commands']}\r\n"
         if key == 'pytest:full':
+            self.dotenv_seen = (self.tmp_path / '.env').read_text(encoding='utf-8')
+            dsn = self.dotenv_seen.split('HARNESS_DATABASE_URL=')[1].splitlines()[0]
             junit = next(a for a in argv if a.startswith('--junitxml='))[len('--junitxml='):]
             Path(junit).parent.mkdir(parents=True, exist_ok=True)
             Path(junit).write_text('<testsuites><testsuite><testcase classname="tests.test_a" name="t1" file="tests/test_a.py"/>'
                                    '<testcase classname="tests.test_a" name="t2" file="tests/test_a.py"><skipped/></testcase>'
                                    '<testcase classname="tests.test_b" name="t3" file="tests/test_b.py"/></testsuite></testsuites>', encoding='utf-8')
-            return '..s\n2 passed, 1 skipped in 1.0s\n'
+            return f'..s\nE   AssertionError: assert {dsn} == other\n2 passed, 1 skipped in 1.0s\n'
         if key == 'pytest:docker':
             return '..\n2 passed in 1.0s\n'
         if argv[:3] == ['uv', 'run', 'ruff']:
@@ -97,6 +99,7 @@ def run(tmp_path, monkeypatch, **shell_options):
     monkeypatch.setenv('ZEUS_DATABASE_URL', 'postgresql://someone:secret@10.0.0.9:5432/other')
     monkeypatch.setenv('HARNESS_REDIS_URL', 'redis://10.0.0.9:6379/0')
     (tmp_path / 'compose.yaml').write_text('services: {}\n', encoding='utf-8')
+    (tmp_path / '.env').write_text('ORIGINAL=1\n', encoding='utf-8')
     (tmp_path / 'uv.lock').write_text('lock\n', encoding='utf-8')
     (tmp_path / 'pyproject.toml').write_text('[project]\n', encoding='utf-8')
     shell = FakeShell(tmp_path, **shell_options)
@@ -111,14 +114,24 @@ def test_a_passing_run_binds_services_inputs_and_isolates_the_environment(tmp_pa
     # Source binding: tracked and untracked changes are listed, and the execution inputs are digested.
     assert receipt['tracked_changes'] == [' M src/x.py'] and receipt['untracked'] == ['scratch.txt']
     assert set(receipt['inputs']) == {'runner', 'compose', 'uv.lock', 'pyproject.toml', 'override'} and all(v.startswith('sha256:') for v in receipt['inputs'].values())
-    # The tests ran with both alias families pinned to this run's stack and nothing inherited from the parent.
+    # The tests ran with nothing inherited from the parent; the stack was pinned through the repository .env
+    # (the CI mechanism), which is restored afterwards.
     pytest_env = next(c['env'] for c in shell.calls if c['argv'][:2] == ['uv', 'run'] and 'pytest' in c['argv'])
-    assert pytest_env['ZEUS_DATABASE_URL'] == pytest_env['HARNESS_DATABASE_URL'] and '127.0.0.1:61001' in pytest_env['ZEUS_DATABASE_URL']
-    assert pytest_env['ZEUS_REDIS_URL'] == 'redis://127.0.0.1:61002/0' == pytest_env['HARNESS_REDIS_URL']
-    assert '10.0.0.9' not in json.dumps(pytest_env) and pytest_env['ZEUS_REDIS_NAMESPACE'] == receipt['compose_project']
+    injected = {k for k in pytest_env if k.startswith(('ZEUS_', 'HARNESS_', 'POSTGRES_', 'COMPOSE_'))}
+    assert injected <= {'HARNESS_INTEGRATION', 'ZEUS_TEST_DOCKER'}, 'only the run flags; no inherited or injected service variable'
+    assert '10.0.0.9' not in json.dumps(pytest_env)
+    dotenv_at_run = shell.dotenv_seen
+    assert 'HARNESS_DATABASE_URL=postgresql://harness:' in dotenv_at_run and '@127.0.0.1:61001/harness' in dotenv_at_run
+    assert 'HARNESS_REDIS_URL=redis://127.0.0.1:61002/0' in dotenv_at_run and f"ZEUS_REDIS_NAMESPACE={receipt['compose_project']}" in dotenv_at_run
+    assert (tmp_path / '.env').read_text(encoding='utf-8') == 'ORIGINAL=1\n', 'the previous .env is back'
     stack = receipt['phases']['stack_up']
     assert stack['database_url'] == 'postgresql://harness:***@127.0.0.1:61001/harness' and 'ZEUS_DATABASE_URL' in stack['dropped_inherited']
-    assert '***' in stack['database_url'] and 'secret' not in json.dumps(receipt)
+    assert stack['pinning']['dotenv_run_sha256'].startswith('sha256:') and any('harness:***@' in line for line in stack['pinning']['dotenv_run'])
+    assert receipt['phases']['teardown']['dotenv'] == 'restored to its previous content'
+    # The per-run password is scrubbed from logs even when a test prints the DSN.
+    log = (tmp_path / 'out' / 'host-a-full-suite-integration.log').read_text(encoding='utf-8')
+    assert 'harness:***@127.0.0.1:61001' in log and 'secret' not in json.dumps(receipt)
+    assert not any(len(token) == 32 and all(c in '0123456789abcdef' for c in token) for token in log.replace('@', ' ').replace(':', ' ').split())
     # Service identity was observed before and after, is the same, and the counters of this stack moved.
     assert receipt['phases']['identity_before']['postgres']['system_identifier'] == '7412345678901234567'
     assert receipt['phases']['identity_stable']['same_services'] is True and receipt['phases']['identity_stable']['traffic'] == {'postgres_xact_commit': 50, 'redis_commands': 500}

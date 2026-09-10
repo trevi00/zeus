@@ -2,10 +2,11 @@
 
 One run = one host at one Git head. The run creates its own compose project (a fresh unique name,
 refused if anything already carries that name), publishes the services on ephemeral loopback ports
-(so nothing that already listens on the fixed 55432/56379 ports is touched), pins both the ZEUS_ and
-HARNESS_ aliases of the database, Redis and Redis namespace settings to that stack in an isolated
-environment (every inherited ZEUS_*/HARNESS_*/POSTGRES_*/COMPOSE_* variable is dropped; repository and
-runtime settings are left to the tests themselves), records the
+(so nothing that already listens on the fixed 55432/56379 ports is touched), pins the database, Redis
+and namespace settings to that stack through the repository .env (the way CI does) while running the
+tests in an environment stripped of every inherited ZEUS_*/HARNESS_*/POSTGRES_*/COMPOSE_* variable, so
+nothing can point them elsewhere and the tests that manage their own .env or variables still can;
+the previous .env is restored at teardown. It records the
 identity of the services the tests will talk to (PostgreSQL system identifier and container id, Redis
 run_id and container id) before and after the run together with their traffic counters, runs the same
 commands CI runs, and tears down only the resources it created. Every phase is recorded as it ended:
@@ -161,15 +162,27 @@ class EvidenceRun:
         self.services = endpoints
         dsn = f"postgresql://harness:{self.password}@127.0.0.1:{endpoints['postgres']['host_port']}/harness"
         redis = f"redis://127.0.0.1:{endpoints['redis']['host_port']}/0"
-        # Only the services are pinned. Repository and runtime settings stay unset so the tests that
-        # resolve them from their own cwd or environment (configuration, supervisor) see their own values.
+        # The services are pinned the way CI pins them: through the repository's .env, which settings()
+        # reads whenever the process environment carries no ZEUS_/HARNESS_ value. The tests therefore run
+        # in an environment stripped of every inherited ZEUS_*/HARNESS_*/POSTGRES_*/COMPOSE_* variable
+        # (nothing can point them elsewhere) while the tests that write their own .env or set their own
+        # variables (configuration, supervisor) keep working. The previous .env is restored at teardown.
         base = {k: v for k, v in os.environ.items() if not k.startswith(INHERITED_PREFIXES)}
-        self.env = {**base, 'PYTHONIOENCODING': 'utf-8', 'ZEUS_DATABASE_URL': dsn, 'HARNESS_DATABASE_URL': dsn,
-                    'ZEUS_REDIS_URL': redis, 'HARNESS_REDIS_URL': redis, 'ZEUS_REDIS_NAMESPACE': self.project,
-                    'HARNESS_REDIS_NAMESPACE': self.project}
+        self.env = {**base, 'PYTHONIOENCODING': 'utf-8'}
+        dotenv = self.root / '.env'
+        self.dotenv_before = dotenv.read_bytes() if dotenv.exists() else None
+        content = (f'POSTGRES_PASSWORD={self.password}\nHARNESS_DATABASE_URL={dsn}\nHARNESS_REDIS_URL={redis}\n'
+                   f'COMPOSE_PROJECT_NAME={self.project}\nZEUS_REDIS_NAMESPACE={self.project}\n')
+        dotenv.write_text(content, encoding='utf-8', newline='\n')
         return self.phase('stack_up', {'seconds': up['seconds'], 'services': endpoints, 'database_url': redact(dsn), 'redis_url': redis,
                                        'dropped_inherited': sorted(k for k in os.environ if k.startswith(INHERITED_PREFIXES)),
-                                       'pinned': sorted(k for k in self.env if k.startswith(('ZEUS_', 'HARNESS_')))}, True)
+                                       'pinning': {'mechanism': 'repository .env (settings() reads it when no ZEUS_/HARNESS_ variable is set)',
+                                                   'dotenv_before_sha256': digest_text(self.dotenv_before.decode('utf-8', 'replace')) if self.dotenv_before is not None else None,
+                                                   'dotenv_run_sha256': digest_text(content), 'dotenv_run': self.scrub(content).splitlines()}}, True)
+
+    def scrub(self, text):
+        """The per-run database password never reaches a log or the receipt."""
+        return text.replace(self.password, '***')
 
     def identity(self, name):
         """Who the tests are talking to: identifiers that survive the run, and counters that must move during it."""
@@ -201,6 +214,7 @@ class EvidenceRun:
         all_ok = True
         for name, argv, extra in plan:
             result = self.sh(argv, env={**self.env, **extra})
+            result['stdout'], result['stderr'] = self.scrub(result['stdout']), self.scrub(result['stderr'])
             log = self.out / f'{self.label}-{name}.log'
             log.write_text(result['stdout'] + ('\n--- stderr ---\n' + result['stderr'] if result['stderr'] else ''), encoding='utf-8', errors='replace')
             lines = [line for line in result['stdout'].splitlines() if line.strip()]
@@ -228,13 +242,22 @@ class EvidenceRun:
                                               'note': 'the tests ran with both aliases pinned to this stack; the counters of this stack moved'}, ok)
 
     def teardown(self):
+        dotenv = self.root / '.env'
+        restored = None
+        if hasattr(self, 'dotenv_before'):
+            if self.dotenv_before is None:
+                dotenv.unlink(missing_ok=True)
+                restored = 'removed (there was no .env before the run)'
+            else:
+                dotenv.write_bytes(self.dotenv_before)
+                restored = 'restored to its previous content'
         down = self.compose('down', '--volumes', '--remove-orphans', timeout=600)
         leftovers = self.sh(['docker', 'ps', '-a', '--filter', f'label=com.docker.compose.project={self.project}', '-q'], timeout=60)
         volumes = self.sh(['docker', 'volume', 'ls', '--filter', f'label=com.docker.compose.project={self.project}', '-q'], timeout=60)
         remaining = leftovers['stdout'].split() + volumes['stdout'].split()
         ok = down['returncode'] == 0 and not down['error'] and not remaining
         return self.phase('teardown', {'exit_code': down['returncode'], 'error': down['error'], 'stderr_tail': down['stderr'].strip().splitlines()[-4:],
-                                       'remaining': remaining, 'scope': f'only compose project {self.project}'}, ok)
+                                       'remaining': remaining, 'scope': f'only compose project {self.project}', 'dotenv': restored}, ok)
 
     # ---- driver
     def execute(self):

@@ -13,10 +13,15 @@
 - **실패는 실패로 남는다**: preflight·claim·stack_up·identity_before·steps·identity_after·identity_stable·teardown 8단계가 모두 `ok`일 때만
   `passed=true`이고 그 외에는 프로세스가 1로 종료합니다. 단계 timeout·실행 오류는 `timed_out`/`error`로 기록되며, teardown 실패는 앞서 모은
   단계 증거를 지우지 않습니다.
-- **시험 대상과 컨테이너의 결속**: 부모 환경의 `ZEUS_*`/`HARNESS_*`/`POSTGRES_*`/`COMPOSE_*`를 모두 버린 격리 환경에서 두 alias 계열
-  (`ZEUS_DATABASE_URL`=`HARNESS_DATABASE_URL`, `*_REDIS_URL`, `*_REDIS_NAMESPACE`)을 이 실행의 스택으로 고정합니다(저장소·런타임 경로는
-  테스트 자신이 정하도록 비워 둡니다 — 1차 재실행에서 이를 고정했다가 configuration/supervisor 검사 4건이 실패해 고쳤습니다). 실행 전후로 PG `system_identifier`·컨테이너 id, Redis `run_id`·컨테이너 id를 읽어 동일함을, PG `xact_commit`과 Redis
-  `total_commands_processed`가 실행 중 증가했음을 확인합니다(`identity_stable`). DB URL은 비밀번호를 가린 채 기록합니다.
+- **시험 대상과 컨테이너의 결속**: 시험은 부모 환경의 `ZEUS_*`/`HARNESS_*`/`POSTGRES_*`/`COMPOSE_*`를 모두 버린 환경에서 실행되고, 스택은
+  CI와 같은 방식 — 저장소 `.env`(`HARNESS_DATABASE_URL`, `HARNESS_REDIS_URL`, `ZEUS_REDIS_NAMESPACE`) — 로 고정됩니다. `settings()`는 환경에
+  ZEUS_/HARNESS_ 값이 없을 때 `.env`를 읽으므로 다른 곳을 가리킬 변수가 없고, 자기 `.env`나 변수를 스스로 두는 검사(configuration,
+  supervisor)는 그대로 동작합니다. 이전 `.env`는 teardown에서 복원되며 전후 digest를 기록합니다. (시행착오: 1차 재실행은 `*_REPOSITORY`/
+  `*_RUNTIME_DIR`까지 환경변수로 고정해 configuration/supervisor 검사 4건이 실패했고, 2차는 DB·Redis를 환경변수로 고정해 명시 저장소의
+  `.env`를 읽는 검사 1건이 실패했습니다 — 둘 다 러너가 `passed=false`·exit 1로 기록했고 `attempt-1`, `attempt-2` 디렉터리에 그대로 둡니다.)
+  실행 전후로 PG `system_identifier`·컨테이너 id, Redis `run_id`·컨테이너 id를 읽어 동일함을, PG `xact_commit`과 Redis
+  `total_commands_processed`가 실행 중 증가했음을 확인합니다(`identity_stable`). 실행별 임의 DB 비밀번호는 영수증에서 가려지고 로그에서도
+  치환됩니다(attempt-2 로그에 한 번 노출된 값은 사후 치환했으며, 그 컨테이너는 이미 제거됐습니다).
 - **실행 소스 결속**: git head, 추적 변경·미추적 파일 목록, `git diff` digest, 러너·compose.yaml·override·uv.lock·pyproject.toml의 sha256을
   영수증에 넣습니다. 전체 스위트는 `--junitxml`로 실행해 **테스트 파일별 passed/skipped/failed** 계수(`per_file`)를 영수증에 담습니다.
 - 러너 자체는 `tests/test_environment_evidence.py`가 fake shell로 검토 반례 각각(기존 프로젝트 거절, setup/identity 실패, 단계 timeout·실패,
