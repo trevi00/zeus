@@ -1,0 +1,11 @@
+{
+  "scope": "Actual process/service interruption only; NOT host sleep/reboot/VM resume/clock step",
+  "observed_at": "2026-09-10T03:46:57.842346+00:00",
+  "unconfirmed_exit": 1,
+  "rollback_verified": true,
+  "original_port": "49858",
+  "restored_port": "49871",
+  "storage": "Dedicated VerificationServices named database volume",
+  "retained_container_id": "158213fb62c2d320bfeb0ab3c7ba70d7e27babdc88474bfe2e632cd891e76878",
+  "endpoint_scope": "Fixture rediscovery, not production automatic repair"
+}

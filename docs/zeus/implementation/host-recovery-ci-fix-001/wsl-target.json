@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "wsl",
+    "-d",
+    "Ubuntu",
+    "--",
+    "env",
+    "HARNESS_INTEGRATION=1",
+    "ZEUS_TEST_DOCKER=1",
+    "ZEUS_HOST_TEST_EVIDENCE=/mnt/c/Users/rudtn/zeus/docs/zeus/implementation/host-recovery-ci-fix-001/wsl-native",
+    "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_host_interruption.py"
+  ],
+  "started_at": "2026-09-10T03:48:11.565265+00:00",
+  "finished_at": "2026-09-10T03:48:59.924550+00:00",
+  "seconds": 48.359306899998046,
+  "exit_code": 0,
+  "raw_sha256": "e4d8c192d9f4e223dbefae608f8af776d0d1ca0c0318d223ab0424b0ff4110a4",
+  "source_sha256": {
+    "tests\\test_host_interruption.py": "c2587d141b02bda72ce0e1eefb75c0bfca37d0adddd9a7caef78d04b20453514",
+    "scripts\\host_cycle.py": "cf8186a06e9e6c2f1b2d58d43c8e1ab7c49f8677bf496a2f002b2abc4d185be4"
+  },
+  "runtime_provenance": "persistent-wsl-runtime.json; application unchanged from source revision there",
+  "scope": "Actual native Linux worker and Docker service interruptions from Ubuntu; NOT host sleep/reboot"
+}

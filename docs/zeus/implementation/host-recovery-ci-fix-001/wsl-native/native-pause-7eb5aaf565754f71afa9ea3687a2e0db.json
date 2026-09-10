@@ -1,0 +1,10 @@
+{
+  "scope": "Actual process/service interruption only; NOT host sleep/reboot/VM resume/clock step",
+  "observed_at": "2026-09-10T03:48:18.726587+00:00",
+  "platform": "linux",
+  "worker_pid": 5043,
+  "native_thread": 5043,
+  "deadline": "2026-09-10T03:48:18.204976+00:00",
+  "observed_disposition": "deadline_exceeded",
+  "result_committed": false
+}

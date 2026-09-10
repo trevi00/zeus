@@ -1,0 +1,9 @@
+**No objection to the substance — `up -d --no-recreate --wait postgres` is the right minimal fix.** It reuses the exact flag path the fixture already exercises (`verification.py:65`), and `--no-recreate` + container-ID equality is a *stronger* claim than `start` gave you: it proves restart-not-recreate, so the named `database` volume and rollback semantics stay meaningful. Two corrections, both in `tests/test_host_interruption.py`:
+
+1. **Drop `--wait-timeout 60`.** It's a second version-sensitive flag of the same class that just broke you; `_command`'s `timeout=150` (`verification.py:42`) already bounds the call, and 60 is below it anyway, so it buys nothing while re-exposing the failure mode.
+
+2. **Don't put the identity assertion inside `finally`.** Both call sites (lines 222–227, 256–258) are cleanup blocks; an `AssertionError` raised there replaces the primary failure and destroys the diagnostic. Capture the stopped ID via `ps --all --quiet postgres` before/inside the block, restart and `refresh_test_endpoint` in `finally`, then assert `restarted_id == stopped_id` in the test body alongside the existing post-restart checks (line 228 onward). `test_postgres_outage_cannot_extend_durable_deadline` has no post-`finally` gap before line 259 — assert immediately after the block there.
+
+Minor: fold `container_id` into the `evidence()` payloads (lines 235, 268) so the non-recreation observation is retained, not just asserted.
+
+Also note `_command` raises with only `args[0]` (`verification.py:44`), discarding stderr — that's why "unknown flag" cost a CI round-trip. Out of scope here, but worth a separate ticket.

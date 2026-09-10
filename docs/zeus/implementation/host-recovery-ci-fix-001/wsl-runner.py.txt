@@ -1,0 +1,12 @@
+﻿import hashlib,json,os,subprocess,time
+from pathlib import Path
+from datetime import datetime,timezone
+out=Path('docs/zeus/implementation/host-recovery-ci-fix-001')
+interpreter=json.loads((Path('docs/zeus/implementation/host-recovery-001/persistent-wsl-runtime.json')).read_text('utf-8'))['python']
+argv=['wsl','-d','Ubuntu','--','env','HARNESS_INTEGRATION=1','ZEUS_TEST_DOCKER=1','ZEUS_HOST_TEST_EVIDENCE=/mnt/c/Users/rudtn/zeus/docs/zeus/implementation/host-recovery-ci-fix-001/wsl-native',interpreter,'-m','pytest','-q','tests/test_host_interruption.py']
+start=time.monotonic();started=datetime.now(timezone.utc).isoformat()
+r=subprocess.run(argv,capture_output=True)
+raw=r.stdout+r.stderr;(out/'wsl-target.log').write_bytes(raw)
+receipt={'argv':argv,'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'seconds':time.monotonic()-start,'exit_code':r.returncode,'raw_sha256':hashlib.sha256(raw).hexdigest(),'source_sha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path('tests/test_host_interruption.py'),Path('scripts/host_cycle.py')]},'runtime_provenance':'persistent-wsl-runtime.json; application unchanged from source revision there','scope':'Actual native Linux worker and Docker service interruptions from Ubuntu; NOT host sleep/reboot'}
+(out/'wsl-target.json').write_text(json.dumps(receipt,indent=2)+'\n','utf-8')
+print(raw.decode('utf-8',errors='replace')[-2000:]);raise SystemExit(r.returncode)

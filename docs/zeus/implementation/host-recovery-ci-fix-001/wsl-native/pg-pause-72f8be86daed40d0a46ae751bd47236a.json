@@ -1,0 +1,8 @@
+{
+  "scope": "Actual process/service interruption only; NOT host sleep/reboot/VM resume/clock step",
+  "observed_at": "2026-09-10T03:48:39.982964+00:00",
+  "pause_seconds": 12,
+  "initial_exit": 1,
+  "retry_exit": 0,
+  "false_clock_events": 0
+}

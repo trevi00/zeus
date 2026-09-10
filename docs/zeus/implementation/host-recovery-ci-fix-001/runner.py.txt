@@ -1,0 +1,12 @@
+﻿import json,os,subprocess,sys,time,hashlib
+from pathlib import Path
+from datetime import datetime,timezone
+out=Path('docs/zeus/implementation/host-recovery-ci-fix-001');out.mkdir(exist_ok=True);mode=sys.argv[1]
+env=dict(os.environ,PYTHONIOENCODING='utf-8');args=['uv','run','python','-m','pytest','-q']
+if mode=='target':
+ args+=['tests/test_host_interruption.py','tests/test_execution_time.py','tests/test_execution_rejections.py']
+ env.update(HARNESS_INTEGRATION='1',ZEUS_TEST_DOCKER='1',ZEUS_HOST_TEST_EVIDENCE=str(out.resolve()/'native-verified'))
+started=datetime.now(timezone.utc).isoformat();start=time.monotonic();r=subprocess.run(args,capture_output=True,env=env)
+raw=r.stdout+r.stderr;(out/(mode+'-tests.log')).write_bytes(raw)
+(out/(mode+'-tests.json')).write_text(json.dumps({'argv':args,'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':r.returncode,'seconds':time.monotonic()-start,'raw_sha256':hashlib.sha256(raw).hexdigest()},indent=2)+'\n','utf-8')
+print(raw.decode('utf-8',errors='replace')[-2000:]);raise SystemExit(r.returncode)
