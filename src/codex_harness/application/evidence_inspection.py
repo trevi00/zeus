@@ -28,16 +28,22 @@ class EvidenceInspections:
                 'base': candidate.get('base'), 'tree': candidate.get('tree'), 'workspace': str(cwd)}
 
     def inspect(self, task, candidate, claims, cwd):
-        """Run the inspection and commit it; one row per (execution, revision, claims)."""
+        """Run the inspection and commit it; one row per (execution, revision, claims, policy, host)."""
         bound = self.binding(task, candidate, cwd)
-        key = digest(['evidence-inspection-v1', bound, list(claims)])
+        # The policy and the host that decide the result are part of the identity: a stricter policy or
+        # another environment never reads back an older all_checked (review, PR #54).
+        identity = self.inspector.identity()
+        require(isinstance(identity, dict) and type(identity.get('policy_hash')) is str and identity['policy_hash']
+                and isinstance(identity.get('environment'), list), 'Inspector identity requires policy_hash and environment')
+        key = digest(['evidence-inspection-v2', bound, identity, list(claims)])
         with self.store.transaction() as tx:
             existing = tx.get(BUCKET, key)
         if existing is not None:
             return existing
         report = self.inspector.inspect(list(claims), cwd, bound)
         counts = denominator(report['findings'])
-        row = {'id': key, 'binding': bound, 'policy_hash': report['policy_hash'], 'context': report['context'],
+        require(report['policy_hash'] == identity['policy_hash'], 'Inspector reported a different policy than its identity')
+        row = {'id': key, 'binding': bound, 'policy_hash': report['policy_hash'], 'inspector': identity, 'context': report['context'],
                'claims': list(claims), 'findings': report['findings'], 'denominator': counts,
                'verdict': verdict(report['findings']), 'recorded_at': utcnow(),
                'authority': 'deterministic inspection of claims; not historical truth, semantic review or human acceptance'}
@@ -58,9 +64,13 @@ class EvidenceInspections:
                 raise ContractError('Evidence inspection could not be recorded: ' + notice['reason']) from exc
         return row
 
-    def require_all_checked(self, tx, inspection_id):
+    def require_all_checked(self, tx, inspection_id, *, policy_hash=None, binding=None):
+        """The consumer names the policy (and optionally the execution) it requires; a row for another is refused."""
         row = tx.get(BUCKET, inspection_id)
         require(row is not None, 'Evidence inspection missing')
+        require(policy_hash is None or row['policy_hash'] == policy_hash, 'Evidence inspection was made under another policy')
+        require(binding is None or all(row['binding'].get(k) == v for k, v in binding.items()),
+                'Evidence inspection is bound to another execution or revision')
         require(row['verdict'] == 'all_checked', 'Evidence inspection is ' + row['verdict'] + ': '
                 + ', '.join(f"{state}={count}" for state, count in row['denominator'].items() if count and state != 'claims'))
         return row

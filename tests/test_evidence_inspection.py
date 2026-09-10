@@ -189,8 +189,35 @@ def test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failur
     assert checked['verdict'] == 'all_checked' and checked['id'] != row['id']
     with store.transaction() as tx:
         assert inspections.require_all_checked(tx, checked['id'])['id'] == checked['id']
+        assert inspections.require_all_checked(tx, checked['id'], policy_hash=checked['policy_hash'],
+                                               binding={'task_id': lease['id'], 'source_revision': 'c' * 40})['id'] == checked['id']
+        with pytest.raises(ContractError, match='another policy'):
+            inspections.require_all_checked(tx, checked['id'], policy_hash='f' * 64)
+        with pytest.raises(ContractError, match='another execution or revision'):
+            inspections.require_all_checked(tx, checked['id'], binding={'source_revision': 'e' * 40})
         with pytest.raises(ContractError, match='missing'):
             inspections.require_all_checked(tx, 'nope')
+    # Review counterexample (PR #54): a stricter policy for the same execution, revision and claims must
+    # inspect again instead of reading back the old all_checked row.
+    stricter = EvidenceInspections(store, inspector(tmp_path, replays_per_claim=1, allowed_argv_prefixes=[['definitely-not-an-executable-zeus']]))
+    again = stricter.inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
+    assert again['id'] != checked['id'] and again['verdict'] == 'incomplete' and again['policy_hash'] != checked['policy_hash']
+    assert again['denominator']['not_checked'] == 1 and again['inspector']['policy_hash'] == again['policy_hash']
+    assert set(again['inspector']) == {'policy_hash', 'environment', 'platform', 'python'}
+    with store.transaction() as tx:
+        with pytest.raises(ContractError, match='Evidence inspection is incomplete'):
+            stricter.require_all_checked(tx, again['id'])
+        assert inspections.require_all_checked(tx, checked['id'])['policy_hash'] == checked['policy_hash'], 'the old row still exists, under its own policy'
+
+    class OtherHost:
+        def __init__(self, inner):
+            self.inner, self.policy = inner, inner.policy
+        def identity(self):
+            return {**self.inner.identity(), 'platform': 'fixture-other-host'}
+        def inspect(self, claims, cwd, binding):
+            return self.inner.inspect(claims, cwd, binding)
+    elsewhere = EvidenceInspections(store, OtherHost(inspector(tmp_path, replays_per_claim=1))).inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
+    assert elsewhere['id'] != checked['id'] and elsewhere['inspector']['platform'] == 'fixture-other-host'
     with pytest.raises(ContractError, match='typed execution lease'):
         inspections.inspect({'id': lease['id']}, candidate, [], workspace)
     with pytest.raises(ContractError, match='candidate revision'):

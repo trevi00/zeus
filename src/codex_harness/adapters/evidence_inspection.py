@@ -10,6 +10,7 @@ recorded property of the output, never a replacement of it.
 import hashlib
 import json
 import os
+import platform
 import subprocess
 import sys
 import threading
@@ -175,6 +176,11 @@ class EvidenceInspector:
         state, cause = classify_replays(runs, claim['expected_exit'])
         return {'state': state, 'cause': cause, 'runs': runs, 'replay_argv': list(claim['argv']),
                 'argv_identical': True}
+
+    def identity(self):
+        """What decides an inspection result besides the claims and the execution: the policy and the host."""
+        return {'policy_hash': self.policy['policy_hash'], 'environment': sorted(replay_environment()),
+                'platform': platform.platform(), 'python': platform.python_version()}
 
     def inspect(self, claims, cwd, binding):
         """Inspect every claim in one explicit context; the budget is enforced, never assumed."""
