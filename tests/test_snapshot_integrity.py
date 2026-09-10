@@ -85,9 +85,34 @@ def test_confirmed_snapshot_is_strict_and_the_denominator_is_complete():
     # A retraction of an id that no lesson declares dangles; the snapshot is invalid.
     dangling = verify_snapshot({**good(), 'experience/retractions.jsonl': line(schema_version=2, id='r1', retracts='ghost')}, MANIFEST)
     assert dangling['status'] == 'invalid' and dangling['dangling_references'][0]['value'] == 'ghost'
+    # A reference that is not text is invalid, not skipped (review, PR #61).
+    typed = verify_snapshot({**good(), 'experience/retractions.jsonl': line(schema_version=2, id='r1', retracts=['l1'])}, MANIFEST)
+    assert typed['status'] == 'invalid' and typed['dangling_references'][0]['problem'] == 'reference must be text'
+    assert 'parsed' not in typed['files']['experience/retractions.jsonl'], 'validated records are consumed, not reported'
     extra = verify_snapshot({**good(), 'stray.txt': b'x'}, MANIFEST)
     assert extra['status'] == 'valid' and extra['denominator']['extra_files'] == ['stray.txt']
     assert set(FILE_STATES) >= {'valid', 'empty', 'missing', 'unreadable', 'corrupt', 'version_mismatch'}
+
+
+def test_json_documents_resolve_references_whatever_their_layout():
+    # Review counterexample (PR #61): the reference pass re-parsed line by line, so a pretty-printed
+    # document with a dangling parent passed while the compact form failed.
+    manifest = {'version': 1, 'required': {
+        'lessons.jsonl': {'kind': 'jsonl', 'schema_version': 1},
+        'graduation.json': {'kind': 'json', 'schema_version': 1, 'required_fields': ['schema_version', 'id', 'parent'],
+                            'references': {'parent': 'lessons.jsonl'}}}}
+    lessons = line(schema_version=1, id='l1')
+    for layout in (json.dumps({'schema_version': 1, 'id': 'g', 'parent': 'ghost'}),
+                   json.dumps({'schema_version': 1, 'id': 'g', 'parent': 'ghost'}, indent=2),
+                   json.dumps({'schema_version': 1, 'id': 'g', 'parent': 'ghost'}, indent=2).replace('\n', '\r\n')):
+        report = verify_snapshot({'lessons.jsonl': lessons, 'graduation.json': layout.encode('utf-8')}, manifest)
+        assert report['status'] == 'invalid' and report['denominator']['dangling_references'] == 1, layout
+        assert report['dangling_references'] == [{'file': 'graduation.json', 'line': 1, 'field': 'parent', 'target': 'lessons.jsonl',
+                                                  'value': 'ghost', 'problem': 'no such id'}]
+    resolved = verify_snapshot({'lessons.jsonl': lessons, 'graduation.json': json.dumps({'schema_version': 1, 'id': 'g', 'parent': 'l1'}, indent=2).encode()}, manifest)
+    assert resolved['status'] == 'valid' and resolved['denominator']['dangling_references'] == 0
+    nested = verify_snapshot({'lessons.jsonl': lessons, 'graduation.json': json.dumps({'schema_version': 1, 'id': 'g', 'parent': {'id': 'l1'}}).encode()}, manifest)
+    assert nested['status'] == 'invalid' and nested['dangling_references'][0]['problem'] == 'reference must be text'
 
 
 def test_torn_tail_is_tolerated_live_and_refused_confirmed():

@@ -77,14 +77,16 @@ def verify_file(name, data, spec, mode):
     """One file against its manifest entry: state, counts and the ids it declares."""
     require(mode in MODES, 'Unknown verification mode')
     if data is None:
-        return {'name': name, 'state': 'missing', 'lines': 0, 'records': 0, 'corrupt': 0, 'ids': [], 'errors': ['file absent']}
+        return {'name': name, 'state': 'missing', 'lines': 0, 'records': 0, 'corrupt': 0, 'ids': [], 'errors': ['file absent'], 'parsed': []}
     if isinstance(data, Exception):
         return {'name': name, 'state': 'unreadable', 'lines': 0, 'records': 0, 'corrupt': 0, 'ids': [],
-                'errors': [type(data).__name__ + ': ' + str(data)[:200]]}
+                'errors': [type(data).__name__ + ': ' + str(data)[:200]], 'parsed': []}
     require(isinstance(data, bytes), 'Snapshot file content must be bytes')
     if len(data) > MAX_FILE_BYTES:
-        return {'name': name, 'state': 'corrupt', 'lines': 0, 'records': 0, 'corrupt': 0, 'ids': [], 'errors': ['exceeds size cap']}
-    result = {'name': name, 'state': 'valid', 'lines': 0, 'records': 0, 'corrupt': 0, 'ids': [], 'errors': [], 'bytes': len(data)}
+        return {'name': name, 'state': 'corrupt', 'lines': 0, 'records': 0, 'corrupt': 0, 'ids': [], 'errors': ['exceeds size cap'], 'parsed': []}
+    # `parsed` holds the exact records that were validated; the reference check reuses them, so a
+    # pretty-printed document and a compact one are checked identically (review, PR #61).
+    result = {'name': name, 'state': 'valid', 'lines': 0, 'records': 0, 'corrupt': 0, 'ids': [], 'errors': [], 'bytes': len(data), 'parsed': []}
     if not data.strip():
         result['state'] = 'empty' if spec['allow_empty'] else 'corrupt'
         result['errors'] = [] if spec['allow_empty'] else ['empty file where records are required']
@@ -98,7 +100,7 @@ def verify_file(name, data, spec, mode):
         if error:
             state = 'version_mismatch' if 'schema_version' in error and 'is not' in error else 'corrupt'
             return {**result, 'state': state, 'lines': 1, 'errors': [error]}
-        return {**result, 'lines': 1, 'records': 1, 'ids': [record['id']] if 'id' in record else []}
+        return {**result, 'lines': 1, 'records': 1, 'ids': [record['id']] if 'id' in record else [], 'parsed': [(1, record)]}
     lines = data.split(b'\n')
     torn = lines[-1] != b''  # no final newline: the last line may be a live append in progress
     complete = lines[:-1] if torn else lines[:-1]
@@ -120,6 +122,7 @@ def verify_file(name, data, spec, mode):
                 result['state'] = 'version_mismatch'
             continue
         result['records'] += 1
+        result['parsed'].append((number, record))
         if 'id' in record:
             result['ids'].append(record['id'])
     if torn:
@@ -149,21 +152,21 @@ def verify_snapshot(files, manifest, mode='confirmed'):
     dangling = []
     for name, spec in manifest['required'].items():
         report = reports[name]
-        data = files.get(name)
-        if not spec['references'] or not isinstance(data, bytes) or report['state'] not in {'valid', 'torn_tail'}:
+        parsed = report.pop('parsed')
+        if not spec['references']:
             continue
-        for number, raw in enumerate(data.split(b'\n'), start=1):
-            if not raw.strip():
-                continue
-            try:
-                record = json.loads(raw.decode('utf-8'))
-            except (ValueError, UnicodeDecodeError):
-                continue
-            if not isinstance(record, dict):
-                continue
+        # References are resolved over the validated records themselves, whatever the file's
+        # layout; a reference that is not text is invalid, never skipped (review, PR #61).
+        for number, record in parsed:
             for field, target in spec['references'].items():
-                if field in record and record[field] not in ids.get(target, set()):
-                    dangling.append({'file': name, 'line': number, 'field': field, 'target': target, 'value': record[field]})
+                if field not in record:
+                    continue
+                value = record[field]
+                if type(value) is not str:
+                    dangling.append({'file': name, 'line': number, 'field': field, 'target': target, 'value': repr(value)[:80],
+                                     'problem': 'reference must be text'})
+                elif value not in ids.get(target, set()):
+                    dangling.append({'file': name, 'line': number, 'field': field, 'target': target, 'value': value, 'problem': 'no such id'})
     extra = sorted(set(files) - set(manifest['required']))
     denominator = {'files_required': len(manifest['required']), 'files_present': sum(files.get(n) is not None and not isinstance(files.get(n), Exception) for n in manifest['required']),
                    'files_valid': sum(r['state'] == 'valid' for r in reports.values()),
