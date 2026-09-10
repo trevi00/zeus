@@ -159,7 +159,9 @@ class DockerSourceRunner:
             ref = self.artifacts.put(canonical(document), 'host-isolated-source-execution')['ref']
         return ExecutionReceipt(source, digest(configuration), command,
             'docker-networkless-readonly-source-inert-links-no-credentials', status, ref,
-            'harness:host-docker-source-runner-v1', blocked)
+            'harness:host-docker-source-runner-v1', blocked,
+            passed=bool(verdict.get('passed')) and status == 0 and not blocked,
+            outcome=verdict.get('outcome') or verdict['category'])
 
     def run_one(self, workflow):
         queue = SourceExecutions(workflow)

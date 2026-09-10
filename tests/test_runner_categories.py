@@ -7,6 +7,7 @@ re-run in the original environment after an isolation exception.
 """
 import os
 import subprocess
+from dataclasses import replace
 
 import pytest
 from test_research_audits import audit  # noqa: F401
@@ -84,6 +85,45 @@ def test_runner_receipts_carry_category_denominator_and_attempt(audit, tmp_path,
     receipt, doc = seen['skipped']
     assert receipt.exit_status == 0 and doc['verdict']['mode'] == 'pytest' and doc['verdict']['outcome'] == 'empty_check'
     assert not receipt.inspection_blocked, 'an executed-but-empty pytest run is not blocked; it is simply not a pass'
+    # Review counterexample (PR #58): the receipt itself carries the verdict, so consumers cannot mistake it.
+    assert receipt.passed is False and receipt.outcome == 'empty_check' and not receipt.successful
+    assert seen['ok'][0].passed is True and seen['ok'][0].successful and seen['ok'][0].outcome == 'executed'
+    assert seen['empty'][0].passed is False and seen['stderr_fail'][0].passed is False
+    assert seen['timeout'][0].outcome == 'timeout' and seen['runner'][0].outcome == 'runner_error'
+    with pytest.raises(ContractError, match='cannot be passed'):
+        replace(seen['runner'][0], passed=True).validate()
+
+
+@pytest.mark.parametrize('failure', ['all_skip', 'empty_output', 'stderr_only'])
+def test_research_approval_refuses_receipts_that_executed_but_did_not_pass(audit, failure):  # noqa: F811
+    # Review counterexample (PR #58): rc=0 with "3 skipped" gave exit_status=0 / inspection_blocked=False, the only
+    # two values the approval consumer read. The consumer now reads the runner's verdict from the receipt.
+    from test_research_audits import (
+        FixtureRunner,
+        activate_fixture,
+        complete_fixture_audit,
+        lease_review,
+    )
+
+    from codex_harness.domain.research import IndependentReview
+    service, record, source, _, _ = audit
+    activate_fixture(service)
+    proposal = complete_fixture_audit(service, record, source)
+    service.propose(record['id'], proposal)
+    task = lease_review(service, 'lead:research')
+    service.runner = FixtureRunner(service.artifacts, passed=False, outcome={'all_skip': 'empty_check', 'empty_output': 'executed',
+                                                                              'stderr_only': 'executed'}[failure])
+    receipt = service.execute(task, record['id'], ['fixture-not-passing-inspection'])
+    with service.store.transaction() as tx:
+        stored = tx.get('research_receipts', receipt['id'])['receipt']
+    assert stored['exit_status'] == 0 and not stored['inspection_blocked'] and stored['passed'] is False
+    review = IndependentReview(task['input']['binding'], 'lead:research', receipt['id'], True,
+                               'license', 'deps', 'sre', 'architecture', 'graph')
+    with pytest.raises(ContractError, match='Inspection did not pass'):
+        service.review(task, review)
+    assert service.review(task, replace(review, accepted=False))['status'] == 'inspection-blocked'
+    with service.store.transaction() as tx:
+        assert not tx.scan('research_approvals')
 
 
 def test_isolation_failures_are_unavailable_and_never_rerun_on_the_host(audit, tmp_path, monkeypatch):  # noqa: F811
