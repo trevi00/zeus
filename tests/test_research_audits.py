@@ -619,6 +619,20 @@ def test_observed_assets_are_a_separate_completeness_ledger(audit):
                 observed('x', sha='zz')]:
         with pytest.raises(ContractError):
             service.observe_assets(record['id'], [bad])
+    # Review counterexample (PR #43): an open partition question must keep the completion verdict and
+    # the proposal gate in agreement.
+    with service.store.transaction() as tx:
+        partition = tx.scan('research_partitions')[0]
+        partition['open_questions'] = ['Which runtime consumes this path?']
+        tx.put('research_partitions', partition['partition_id'], partition)
+    questioned = service.coverage(record['id'])
+    assert not questioned['whole_analysis_complete'] and questioned['open_questions'] == ['Which runtime consumes this path?']
+    with pytest.raises(ContractError, match='Open audit questions remain'):
+        service.propose(record['id'], proposal)
+    with service.store.transaction() as tx:
+        partition['open_questions'] = []
+        tx.put('research_partitions', partition['partition_id'], partition)
+    assert service.coverage(record['id'])['whole_analysis_complete']
     service.propose(record['id'], proposal)
     approve_fixture(service, 'lead:research')
     approve_fixture(service, 'conductor')

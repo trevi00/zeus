@@ -271,15 +271,20 @@ class ResearchAudits:
             observed = self._observed(tx, audit)
             remaining_paths = sorted(set(p['path'] for p in audit['inventory']) - paths)
             remaining_subsystems = sorted(set(audit['subsystems']) - subsystems)
+            # The completion verdict shares the proposal gate's denominators (review counterexample,
+            # PR #43): open partition questions keep the analysis incomplete on every read path.
+            open_questions = sorted(q for p in tx.scan('research_partitions') if p['audit_id'] == audit_id
+                                    for q in p['open_questions'])
             return {'reviewed_paths': len(paths),
                     'remaining_paths': remaining_paths,
                     'remaining_subsystems': remaining_subsystems,
                     'observed_assets': observed,
+                    'open_questions': open_questions,
                     'whole_analysis_complete': not remaining_paths and not remaining_subsystems
-                    and observed['pending'] == 0,
+                    and observed['pending'] == 0 and not open_questions,
                     'adoption_eligible': self._eligible(tx, audit),
-                    'reason': 'Eligibility requires complete coverage, dispositioned observed assets '
-                              'and current independent approvals'}
+                    'reason': 'Eligibility requires complete coverage, dispositioned observed assets, '
+                              'no open partition questions and current independent approvals'}
 
     def propose(self, audit_id, proposal: AdaptationProposal):
         proposal = parse_record({'version': 1, 'kind': 'AdaptationProposal', 'record': asdict(proposal)})
