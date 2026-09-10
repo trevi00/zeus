@@ -11,7 +11,6 @@ from uuid import uuid4
 from codex_harness.adapters.app_server import AppServer
 from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector
-from codex_harness.adapters.execution_output import evidence_json, persist_result
 from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context

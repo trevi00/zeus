@@ -92,6 +92,25 @@ def test_declared_dialect_is_the_validating_dialect():
                    'properties': {'x': {'$ref': '#/$defs/row'}}},
                   {'type': 'array', 'items': {'$schema': 'https://json-schema.org/draft/2020-12/schema', 'type': 'integer'}}):
         assert 'nested-dialect' in completed_output('[1]', where)['structural']['schema']['configuration_error'], 'even the same dialect: root only'
+    # Review counterexample (PR #55, round 3): a $ref into annotation data executed a schema the preflight never saw.
+    smuggled_ref = {'type': 'object', 'examples': [{'$schema': 'http://json-schema.org/draft-07/schema#', 'type': 'array', 'prefixItems': [{'type': 'integer'}]}],
+                    'properties': {'x': {'$ref': '#/examples/0'}}}
+    via_ref = completed_output('{"x": ["not-an-integer"]}', smuggled_ref)
+    assert via_ref['answer'] is None and 'reference-into-annotation' in via_ref['structural']['schema']['configuration_error']
+    for target in ('#/default', '#/examples/0/prefixItems/0'):
+        bad = {'type': 'object', 'default': {'type': 'integer'}, 'examples': [{'prefixItems': [{'type': 'integer'}]}],
+               'properties': {'x': {'$ref': target}}}
+        assert 'reference-into-annotation' in completed_output('{"x": 1}', bad)['structural']['schema']['configuration_error'], target
+    external = {'type': 'object', 'properties': {'x': {'$ref': 'https://example.invalid/schema.json'}}}
+    assert 'unsupported-reference' in completed_output('{"x": 1}', external)['structural']['schema']['configuration_error']
+    dangling = {'type': 'object', 'properties': {'x': {'$ref': '#/$defs/missing'}}}
+    assert 'Unresolved' in completed_output('{"x": 1}', dangling)['structural']['schema']['configuration_error']
+    # Every active reference is vetted, not only the ones under `version`; cycles are walked once and validate.
+    recursive = {'type': 'object', 'properties': {'root': {'$ref': '#/$defs/node'}},
+                 '$defs': {'node': {'type': 'object', 'properties': {'value': {'type': 'integer'}, 'next': {'$ref': '#/$defs/node'}},
+                                    'additionalProperties': False}}}
+    assert completed_output('{"root": {"value": 1, "next": {"value": 2}}}', recursive)['answer']['root']['next']['value'] == 2
+    assert completed_output('{"root": {"value": "no"}}', recursive)['failure']['output_reason'] == 'schema_mismatch'
     # An annotation payload that merely contains a "$schema" key is data, not a schema.
     annotated = {'type': 'object', 'properties': {'x': {'type': 'integer', 'default': 1, 'examples': [{'$schema': 'data'}]}}}
     assert completed_output('{"x": 2}', annotated)['answer'] == {'x': 2}

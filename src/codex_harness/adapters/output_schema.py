@@ -101,15 +101,28 @@ def preflight(schema):
             if missing and not isinstance(node.get("patternProperties"), dict):
                 _refuse("codex-output-schema-required-undeclared", path,
                         "required names not declared under a closed object: " + ", ".join(missing), schema_hash)
-        ref = node.get("$ref", "")
-        if version and ref.startswith("#/"):
+        if "$ref" in node:
+            # Every active reference is resolved and its target walked as a schema, cycle-safe through
+            # `visited`, under the same local-pointer scope the validator uses. A reference that leaves
+            # the document or lands in annotation data (examples, default, ...) is refused: a target the
+            # preflight cannot vet is a check that never runs (review, PR #55).
+            ref = node["$ref"]
+            if not isinstance(ref, str) or not (ref == "#" or ref.startswith("#/")):
+                _refuse("codex-output-schema-unsupported-reference", path,
+                        f"only local JSON-pointer references are supported, not {ref!r}", schema_hash)
+            parts = [part.replace("~1", "/").replace("~0", "~") for part in ref[2:].split("/")] if ref != "#" else []
+            if any(part in ANNOTATIONS for part in parts):
+                _refuse("codex-output-schema-reference-into-annotation", path,
+                        f"{ref} points into annotation data, which is never validated", schema_hash)
             target = schema
             try:
-                for part in ref[2:].split("/"):
-                    target = target[part.replace("~1", "/").replace("~0", "~")]
-            except (KeyError, TypeError):
+                for part in parts:
+                    target = target[int(part)] if isinstance(target, list) else target[part]
+            except (KeyError, TypeError, ValueError, IndexError):
                 raise ContractError(f"Unresolved outputSchema reference at {path}: {ref}") from None
-            walk(target, path + f"->$ref({ref})", True, depth + 1)
+            if not isinstance(target, dict):
+                _refuse("codex-output-schema-unsupported-reference", path, f"{ref} does not name a schema object", schema_hash)
+            walk(target, path + f"->$ref({ref})", version, depth + 1)
         for key in sorted(node):
             value = node[key]
             child_path = path + f"[{json.dumps(key)}]"
