@@ -1,0 +1,7 @@
+{
+  "scope": "Actual process/service interruption only; NOT host sleep/reboot/VM resume/clock step",
+  "observed_at": "2026-09-10T03:38:13.681805+00:00",
+  "missing_probe_table_rejected": true,
+  "public_canary_unchanged": true,
+  "schema_removed": true
+}

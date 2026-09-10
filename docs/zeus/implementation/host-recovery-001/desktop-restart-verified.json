@@ -1,0 +1,109 @@
+{
+  "at": "2026-09-10T03:35:16.106827+00:00",
+  "data_equals_verified_backup": true,
+  "snapshot": {
+    "tables": {
+      "notice_baseline_612986ad34d449d28f5c8669ba81534b.documents": {
+        "rows": 2,
+        "sha256": "d17d8b7a2d4c68873363dfbe85e13e40eada33658d8b281645fae1cf9af0c725"
+      },
+      "notice_baseline_612986ad34d449d28f5c8669ba81534b.knowledge_edges": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "notice_baseline_612986ad34d449d28f5c8669ba81534b.knowledge_nodes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "outbox_live_37930b58a2ed44d89b87bfdab29a1ce4.documents": {
+        "rows": 22,
+        "sha256": "2d6b5186146fd1b5acb0433d4306b86fa4d12531b750c2e62168edb96fb49676"
+      },
+      "outbox_live_37930b58a2ed44d89b87bfdab29a1ce4.knowledge_edges": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "outbox_live_37930b58a2ed44d89b87bfdab29a1ce4.knowledge_nodes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "public.documents": {
+        "rows": 224,
+        "sha256": "b0805e3eb93665d52917d0cb2e6a18c02ab9761300a9f0e2c7091e882ba6300e"
+      },
+      "public.knowledge_edges": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "public.knowledge_nodes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "retry_live_48c5611cfd0d4871947fe309bd581a71.documents": {
+        "rows": 3,
+        "sha256": "0a390e408b2d3dd063019179aed56e82bd09103b611c513c6973a14cd0ba5ece"
+      },
+      "retry_live_48c5611cfd0d4871947fe309bd581a71.knowledge_edges": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "retry_live_48c5611cfd0d4871947fe309bd581a71.knowledge_nodes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "retry_live_dd693984161f4229af5457297f64736c.documents": {
+        "rows": 1,
+        "sha256": "9691a4c5e4e63b602cf178ee79be0d7bcea5d35f1f4e8cd9ba5ea8b202b179b9"
+      },
+      "retry_live_dd693984161f4229af5457297f64736c.knowledge_edges": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "retry_live_dd693984161f4229af5457297f64736c.knowledge_nodes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "ticket_live_10fa6da78a9a417d958b2cba6f39e243.documents": {
+        "rows": 26,
+        "sha256": "382bb8918b772fc096f2ec99af695a5a7ef5f07f61e459ac45cfa0fc648fd247"
+      },
+      "ticket_live_10fa6da78a9a417d958b2cba6f39e243.knowledge_edges": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "ticket_live_10fa6da78a9a417d958b2cba6f39e243.knowledge_nodes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "sequences": []
+  },
+  "container_id": "8edc43367c090cdea3ce5685c9b252bf36992ee754ed389631db94d6ac5173e5",
+  "started_at": "2026-09-10T03:29:31.796964375Z",
+  "health": "healthy",
+  "port_bindings": {
+    "5432/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "63556"
+      }
+    ]
+  },
+  "restart_policy": {
+    "Name": "unless-stopped",
+    "MaximumRetryCount": 0
+  },
+  "volumes": [
+    "zeus-ticket-ledger-data"
+  ],
+  "settings": {
+    "AutoStart": true,
+    "IntegratedWslDistros": [
+      "Ubuntu"
+    ],
+    "EnableIntegrationWithDefaultWslDistro": true,
+    "WslEngineEnabled": null
+  },
+  "ubuntu_docker_cli_connected": true,
+  "scope": "Actual Docker Desktop stop/start; NOT Windows restart or sleep"
+}

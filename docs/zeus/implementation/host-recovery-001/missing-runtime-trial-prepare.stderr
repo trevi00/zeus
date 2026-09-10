@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "C:\Users\rudtn\zeus\scripts\host_cycle.py", line 312, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\rudtn\zeus\scripts\host_cycle.py", line 307, in main
+    result = execute(args)
+  File "C:\Users\rudtn\zeus\scripts\host_cycle.py", line 270, in execute
+    return prepare(args.wsl_python)
+  File "C:\Users\rudtn\zeus\scripts\host_cycle.py", line 173, in prepare
+    raise RuntimeError(key+' worker not ready; inspect private '+key+'.stderr')
+RuntimeError: wsl worker not ready; inspect private wsl.stderr

@@ -1,0 +1,102 @@
+{
+  "scope": "Real Windows/WSL workers, unchanged-boot rejection and explicit cancellation; NO actual reboot",
+  "operations": [
+    {
+      "operation": "prepare",
+      "result": {
+        "status": "armed_waiting_for_actual_windows_restart",
+        "run": "f8a5cd03d4f54722a86a31a93f7320db",
+        "worker_states": {
+          "windows": {
+            "pid": 7468,
+            "wall": "2026-09-10T03:34:20.452382+00:00",
+            "monotonic": 32489.215685,
+            "status": "heartbeating",
+            "task_id": "28e551b1-64a9-4e67-813d-bc724e83b8ed",
+            "generation": 1,
+            "platform": "win32",
+            "runtime_hash": "0a048aef9cc331ad7642000c00d0e926bfcf05e5a236713879663a422bdb24da"
+          },
+          "wsl": {
+            "pid": 726,
+            "wall": "2026-09-10T03:34:20.858957+00:00",
+            "monotonic": 15495.878140606,
+            "status": "heartbeating",
+            "task_id": "7fd8f6df-3adb-4d8d-a6b5-b6dc5e8be738",
+            "generation": 1,
+            "platform": "linux",
+            "runtime_hash": "0a048aef9cc331ad7642000c00d0e926bfcf05e5a236713879663a422bdb24da"
+          }
+        },
+        "automatic_restart_requested": false,
+        "proof_of_restart": false
+      }
+    },
+    {
+      "operation": "verify",
+      "result": {
+        "status": "waiting_for_actual_windows_restart",
+        "proof_of_restart": false,
+        "run": "f8a5cd03d4f54722a86a31a93f7320db",
+        "reason": "Windows boot marker unchanged; no workflow writes performed"
+      }
+    },
+    {
+      "operation": "cancel",
+      "result": {
+        "state": {
+          "version": 1,
+          "run": "f8a5cd03d4f54722a86a31a93f7320db",
+          "schema": "host_probe_f8a5cd03d4f54722a86a31a93f7320db",
+          "prepared_at": "2026-09-10T03:34:19.901714+00:00",
+          "before": {
+            "windows_boot": "2026-09-09T18:32:51.5000000Z",
+            "wsl_boot": "0468f1e6-8039-4ea7-b3d1-222597bcf5fe",
+            "wall": "2026-09-10T03:34:19.901423+00:00",
+            "process_monotonic": 32488.664734,
+            "container_id": "8edc43367c090cdea3ce5685c9b252bf36992ee754ed389631db94d6ac5173e5",
+            "container_started_at": "2026-09-10T03:29:31.796964375Z",
+            "container_running": true,
+            "container_health": "healthy",
+            "container_restart_policy": {
+              "Name": "unless-stopped",
+              "MaximumRetryCount": 0
+            },
+            "docker_desktop_autostart": true,
+            "port_bindings": {
+              "5432/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "63556"
+                }
+              ]
+            },
+            "volumes": [
+              "zeus-ticket-ledger-data"
+            ]
+          },
+          "runtime_hash": "0a048aef9cc331ad7642000c00d0e926bfcf05e5a236713879663a422bdb24da",
+          "probe_sha256": "cf8186a06e9e6c2f1b2d58d43c8e1ab7c49f8677bf496a2f002b2abc4d185be4",
+          "source_commit": "d37559ce556be51261841769b9bf305c08e6ff16",
+          "scope": "Actual Windows restart observation; NOT sleep or clock-step acceptance",
+          "wsl_python": "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/venv/bin/python"
+        },
+        "verified": false,
+        "workers": {
+          "windows": {
+            "pid": 7468,
+            "wall": "2026-09-10T03:34:24.467802+00:00",
+            "status": "stopped",
+            "reason": "stop marker or three-hour lifetime reached"
+          },
+          "wsl": {
+            "pid": 726,
+            "wall": "2026-09-10T03:34:22.865093+00:00",
+            "status": "stopped",
+            "reason": "stop marker or three-hour lifetime reached"
+          }
+        }
+      }
+    }
+  ]
+}

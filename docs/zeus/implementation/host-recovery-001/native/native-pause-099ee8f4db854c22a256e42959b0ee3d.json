@@ -1,0 +1,10 @@
+{
+  "scope": "Actual process/service interruption only; NOT host sleep/reboot/VM resume/clock step",
+  "observed_at": "2026-09-10T03:01:12.746134+00:00",
+  "platform": "win32",
+  "worker_pid": 14428,
+  "native_thread": 24704,
+  "deadline": "2026-09-10T03:01:12.103812+00:00",
+  "observed_disposition": "deadline_exceeded",
+  "result_committed": false
+}

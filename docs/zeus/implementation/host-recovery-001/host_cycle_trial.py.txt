@@ -1,0 +1,14 @@
+﻿import json,subprocess
+from pathlib import Path
+out=Path('docs/zeus/implementation/host-recovery-001')
+python=json.loads((out/'persistent-wsl-runtime.json').read_text('utf-8'))['python']
+results=[]
+for args in (['prepare','--wsl-python',python], ['verify'], ['cancel']):
+ r=subprocess.run(['uv','run','python','scripts/host_cycle.py',*args],capture_output=True)
+ (out/('trial-'+args[0]+'.stdout')).write_bytes(r.stdout)
+ (out/('trial-'+args[0]+'.stderr')).write_bytes(r.stderr)
+ assert r.returncode==0, r.stderr.decode('utf-8',errors='replace')
+ value=json.loads(r.stdout);results.append({'operation':args[0],'result':value})
+ if args[0]=='verify':assert value['status']=='waiting_for_actual_windows_restart' and value['proof_of_restart'] is False
+ print(json.dumps({'operation':args[0],'status':value.get('status','completed')}),flush=True)
+(out/'trial-receipt.json').write_text(json.dumps({'scope':'Real Windows/WSL workers, unchanged-boot rejection and explicit cancellation; NO actual reboot','operations':results},indent=2)+'\n','utf-8')

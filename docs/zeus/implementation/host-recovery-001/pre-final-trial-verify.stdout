@@ -1,0 +1,1 @@
+{"status": "waiting_for_actual_windows_restart", "proof_of_restart": false, "run": "0caf4c2cd38f4fbebbf0be94c2b23296", "reason": "Windows boot marker unchanged; no workflow writes performed"}

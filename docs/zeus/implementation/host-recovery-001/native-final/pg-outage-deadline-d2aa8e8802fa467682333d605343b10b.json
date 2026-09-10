@@ -1,0 +1,9 @@
+{
+  "scope": "Actual process/service interruption only; NOT host sleep/reboot/VM resume/clock step",
+  "observed_at": "2026-09-10T03:13:11.703472+00:00",
+  "unavailable_exit": 1,
+  "after_restart_exit": 0,
+  "result_committed": false,
+  "deadline": "2026-09-10T03:13:06.496554+00:00",
+  "disposition": "deadline_exceeded"
+}

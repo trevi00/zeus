@@ -1,0 +1,48 @@
+import hashlib
+import io
+import json
+import os
+import subprocess
+import urllib.request
+import zipfile
+from pathlib import Path
+from uuid import uuid4
+
+source=Path('/mnt/c/Users/rudtn/zeus')
+out=source/'docs/zeus/implementation/host-recovery-001'
+root=Path.home()/'.local/share/zeus/host-runtime'/uuid4().hex
+root.mkdir(parents=True)
+repo=root/'repo'
+revision=subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()
+env={'PATH':'/usr/local/bin:/usr/bin:/bin','HOME':str(root/'home'),'LANG':'C.UTF-8',
+     'UV_PROJECT_ENVIRONMENT':str(root/'venv'),'UV_CACHE_DIR':str(root/'cache'),
+     'UV_PYTHON':'/usr/bin/python3','UV_PYTHON_DOWNLOADS':'never',
+     'GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null'}
+(root/'home').mkdir()
+receipt={'root':str(root),'revision':revision,'scope':'Persistent WSL application runtime; no host reboot proof','stages':[]}
+
+def run(name,args):
+    r=subprocess.run(args,capture_output=True,cwd=root,env=env,timeout=180)
+    (out/('runtime-'+name+'.stdout')).write_bytes(r.stdout)
+    (out/('runtime-'+name+'.stderr')).write_bytes(r.stderr)
+    receipt['stages'].append({'name':name,'argv':args,'exit_code':r.returncode,
+        'stdout_sha256':hashlib.sha256(r.stdout).hexdigest(),'stderr_sha256':hashlib.sha256(r.stderr).hexdigest()})
+    assert r.returncode==0,name+' failed'
+
+run('clone',['git','clone','--no-local',str(source),str(repo)])
+run('checkout',['git','-C',str(repo),'checkout','--detach',revision])
+metadata=json.loads(urllib.request.urlopen('https://pypi.org/pypi/uv/0.12.2/json',timeout=30).read())
+item=next(r for r in metadata['urls'] if r['filename']=='uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl')
+wheel=urllib.request.urlopen(item['url'],timeout=60).read()
+assert hashlib.sha256(wheel).hexdigest()==item['digests']['sha256']
+with zipfile.ZipFile(io.BytesIO(wheel)) as archive:
+    uvdata=archive.read(next(n for n in archive.namelist() if n.endswith('/scripts/uv')))
+uv=root/'uv';uv.write_bytes(uvdata);uv.chmod(0o755)
+run('sync',[str(uv),'sync','--frozen','--project',str(repo)])
+python=root/'venv/bin/python'
+assert python.exists()
+run('import',[str(python),'-c','import codex_harness,psycopg,filelock; print(codex_harness.__file__)'])
+receipt.update(python=str(python),uv_wheel_sha256=hashlib.sha256(wheel).hexdigest(),
+               lock_sha256=hashlib.sha256((repo/'uv.lock').read_bytes()).hexdigest(),status='ready')
+(out/'persistent-wsl-runtime.json').write_text(json.dumps(receipt,indent=2)+'\n','utf-8')
+print(json.dumps({'status':'ready','python':str(python),'revision':revision}))

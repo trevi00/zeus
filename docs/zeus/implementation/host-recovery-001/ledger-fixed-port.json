@@ -1,0 +1,26 @@
+{
+  "original_container_id": "d19d810d84c528f83a3926d6daef476ef0c034a3b02ae353f5d94d86d3c03f39",
+  "replacement_container_id": "8edc43367c090cdea3ce5685c9b252bf36992ee754ed389631db94d6ac5173e5",
+  "image_id": "sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f",
+  "address": "127.0.0.1:63556",
+  "fixed_binding": {
+    "5432/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "63556"
+      }
+    ]
+  },
+  "restart_policy": {
+    "Name": "unless-stopped",
+    "MaximumRetryCount": 0
+  },
+  "rollback_container": "zeus-ticket-ledger-before-fixed-port-d19d810d84",
+  "rollback_stopped": true,
+  "start_cycles_verified": 2,
+  "same_data_and_sequences": true,
+  "same_image_env_pgdata": true,
+  "named_volume": "zeus-ticket-ledger-data",
+  "completed_at": "2026-09-10T03:06:12.676187+00:00",
+  "scope": "Actual isolated ledger container repair; not PC reboot proof"
+}

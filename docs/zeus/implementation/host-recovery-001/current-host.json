@@ -1,0 +1,21 @@
+{
+  "windows_boot": "2026-09-09T18:32:51.5000000Z",
+  "wsl_boot": "0468f1e6-8039-4ea7-b3d1-222597bcf5fe",
+  "wall": "2026-09-10T03:12:54.753334+00:00",
+  "process_monotonic": 31203.5166434,
+  "container_id": "8edc43367c090cdea3ce5685c9b252bf36992ee754ed389631db94d6ac5173e5",
+  "container_started_at": "2026-09-10T03:06:11.291182776Z",
+  "container_running": true,
+  "container_health": "healthy",
+  "port_bindings": {
+    "5432/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "63556"
+      }
+    ]
+  },
+  "volumes": [
+    "zeus-ticket-ledger-data"
+  ]
+}

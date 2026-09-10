@@ -1,0 +1,24 @@
+{
+  "changed": {
+    "AutoStart": {
+      "before": false,
+      "after": true
+    },
+    "EnableIntegrationWithDefaultWslDistro": {
+      "before": null,
+      "after": true
+    },
+    "IntegratedWslDistros": {
+      "before": null,
+      "after": [
+        "Ubuntu"
+      ]
+    },
+    "WslEngineEnabled": {
+      "before": null,
+      "after": true
+    }
+  },
+  "private_backup": ".runtime\\host-ledger-repair\\docker-settings-before.json",
+  "scope": "Current-PC startup and Ubuntu integration; other settings retained"
+}

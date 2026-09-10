@@ -1,0 +1,15 @@
+﻿import json,subprocess,time
+from pathlib import Path
+settings=Path.home()/'AppData/Roaming/Docker/settings-store.json'
+backup=Path('.runtime/host-ledger-repair/docker-settings-before.json')
+assert not backup.exists()
+before=settings.read_bytes();backup.write_bytes(before)
+names=subprocess.check_output(['docker','ps','--format','{{.Names}}'],text=True).splitlines()
+assert names==['zeus-ticket-ledger'], 'Another running container appeared; leave Desktop running'
+subprocess.run(['docker','desktop','stop','--timeout','90'],check=True)
+current=json.loads(settings.read_text('utf-8'));after=dict(current)
+after.update(AutoStart=True,EnableIntegrationWithDefaultWslDistro=True,IntegratedWslDistros=['Ubuntu'],WslEngineEnabled=True)
+settings.write_text(json.dumps(after,indent=2)+'\n','utf-8')
+subprocess.run(['docker','desktop','start','--timeout','120'],check=True)
+Path('docs/zeus/implementation/host-recovery-001/docker-settings-change.json').write_text(json.dumps({'changed':{k:{'before':current.get(k),'after':after[k]} for k in ('AutoStart','EnableIntegrationWithDefaultWslDistro','IntegratedWslDistros','WslEngineEnabled')},'private_backup':str(backup),'scope':'Current-PC startup and Ubuntu integration; other settings retained'},indent=2)+'\n','utf-8')
+print('Docker Desktop restarted with backed-up startup/integration settings.')

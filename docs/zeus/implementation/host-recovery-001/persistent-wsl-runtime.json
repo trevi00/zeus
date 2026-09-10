@@ -1,0 +1,62 @@
+{
+  "root": "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb",
+  "revision": "d37559ce556be51261841769b9bf305c08e6ff16",
+  "scope": "Persistent WSL application runtime; no host reboot proof",
+  "stages": [
+    {
+      "name": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-local",
+        "/mnt/c/Users/rudtn/zeus",
+        "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/repo"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "44159301d0b4266b8aaaf289f81637fbf1b7ffc7725b857022c6f89cf9595eac"
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "-C",
+        "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/repo",
+        "checkout",
+        "--detach",
+        "d37559ce556be51261841769b9bf305c08e6ff16"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f5a7375417868a6c0ec9f237cb03a0f24e5efa7b514c095d1720997b8e7d3250"
+    },
+    {
+      "name": "sync",
+      "argv": [
+        "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/uv",
+        "sync",
+        "--frozen",
+        "--project",
+        "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/repo"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e96ed4edb870bb3d78af265daab62edea0e740f77e389b15643dd8d90109e029"
+    },
+    {
+      "name": "import",
+      "argv": [
+        "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/venv/bin/python",
+        "-c",
+        "import codex_harness,psycopg,filelock; print(codex_harness.__file__)"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "876042c09590d0b55640ab36ab894d0db27cd6f271b3df484d5e9298b26acb37",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "python": "/home/rudtn/.local/share/zeus/host-runtime/d99bfb78392546568b13b7a8bd6b3aeb/venv/bin/python",
+  "uv_wheel_sha256": "3a8d93d1fe019561b70494a8e1332492afb5f14dadc33d5239569d0964164d10",
+  "lock_sha256": "48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+  "status": "ready"
+}

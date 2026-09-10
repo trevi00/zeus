@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Final read-only review <=550 words of scripts/host_cycle.py + tests/test_host_interruption.py and host-recovery-001/trial-receipt.json, ledger-after-cutover.json. Root addressed critical schema fallback: search_path only private schema, relation checks; actual disposable DB test drops private documents and requires UndefinedTable/public canary unchanged. All controller commands serialized; prepare failures stop workers/drop own schema; cancel waits then drops; missing state graceful; timeoutdiagnostic explicit. Existing completion retains lease_owner (read Workflow.complete, earlier hypothetical was false); unreclaimable state returns inconclusive. Checkpoint now write-once/skip reconcile, compare generation; reconcile itself already deterministic. Host result renamed verified_windows_boot_transition with restart_vs_power_on_classified:false, requestedoperatoraction Restart. WSL boot remains conjoined with Windows boot, never independent proof. Real two-worker prepare/unchanged-host verify/cancel trial passed on currenthost using persistent WSL runtime, normalized loaded Python/JSON/SQL package hashes match; old /tmp venv missing was discovered and replaced. Migration database model stores tasks/leases/outbox in documents JSON buckets (not SQLtables); zero sequences confirmed query, all table hashes aftercutover match restore. Oldcontainer is configrollback; private dump is databackup. No actual host reboot/sleep/clockstep claimed. Point out any concrete blocker before arming for real user restart; no fresh wishlist or assumptions about WSL NAT/.NET/pools."
+  ],
+  "returncode": 0,
+  "duration_seconds": 146.31068897247314,
+  "stdout_sha256": "977ff777cf91492ff6289577ef925b2b607fc979f72feb10b2006818b5cd87be",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "f7cb0dde-6722-4e29-bfa6-e371f25580ca",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 22,
+    "cache_creation_input_tokens": 39153,
+    "cache_read_input_tokens": 298580,
+    "output_tokens": 10110,
+    "output_tokens_details": {
+      "thinking_tokens": 6929
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 39153,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 2874,
+        "cache_read_input_tokens": 41425,
+        "cache_creation_input_tokens": 2563,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2563
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.795032,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1257,
+      "outputTokens": 19,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0013520000000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 22,
+      "outputTokens": 10110,
+      "cacheReadInputTokens": 298580,
+      "cacheCreationInputTokens": 39153,
+      "webSearchRequests": 0,
+      "costUSD": 0.7936799999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 6929,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

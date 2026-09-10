@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "started_at": "2026-09-10T03:12:24.131259+00:00",
+  "finished_at": "2026-09-10T03:15:34.383640+00:00",
+  "exit_code": 0,
+  "seconds": 190.2523771999986,
+  "raw_sha256": "3daf817e320c2ff5c2c6f5c252613c865fcaa24fa0f533f9e785ce9f8ee04767"
+}

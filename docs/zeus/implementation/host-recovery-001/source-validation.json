@@ -1,0 +1,10 @@
+{
+  "files": {
+    "scripts\\host_cycle.py": "cf8186a06e9e6c2f1b2d58d43c8e1ab7c49f8677bf496a2f002b2abc4d185be4",
+    "tests\\test_host_interruption.py": "649f69495d0089a4b1a389df7f08137041eb53483b6b1f066141876814c02017",
+    ".github\\workflows\\validation.yml": "af9b50d432d596ad870614f848e8df831f26c39614ba6c7c7e3f6a44d2920a85"
+  },
+  "normalization": "CRLF to LF for cross-platform source identity",
+  "runtime_source_unchanged_since": "2b890f9fafa86fe20ae9ff03819444272eaaa6e6",
+  "ruff": "uv run ruff check . passed"
+}

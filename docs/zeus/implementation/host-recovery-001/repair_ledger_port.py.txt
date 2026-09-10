@@ -1,0 +1,189 @@
+"""One-machine reversible ledger repair. Private files contain credentials/backups."""
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+import psycopg
+from psycopg import sql
+from psycopg.conninfo import conninfo_to_dict, make_conninfo
+
+from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.verification import VerificationServices
+from codex_harness.bootstrap import database_url
+from codex_harness.domain.model import canonical
+
+root = Path.cwd().resolve()
+private = root/'.runtime/host-ledger-repair'
+private.mkdir(exist_ok=True)
+assert private.resolve().parent == root/'.runtime' and not private.is_symlink()
+out = root/'docs/zeus/implementation/host-recovery-001'
+name = 'zeus-ticket-ledger'
+
+def docker(*args, input=None):
+    r = subprocess.run(['docker', *args], input=input, capture_output=True, timeout=120)
+    if r.returncode:
+        raise RuntimeError('Docker operation failed: '+args[0])
+    return r.stdout
+
+def inspect(identity):
+    return json.loads(docker('inspect', identity))[0]
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def snapshot(conn):
+    conn.execute("SET TIME ZONE 'UTC'")
+    conn.execute("SET DateStyle TO 'ISO, MDY'")
+    tables = {}
+    names = conn.execute("SELECT schemaname,tablename FROM pg_tables WHERE schemaname NOT IN "
+                         "('pg_catalog','information_schema') ORDER BY 1,2").fetchall()
+    for schema, table in names:
+        values = conn.execute(sql.SQL('SELECT to_jsonb(t) FROM {}.{} t').format(
+            sql.Identifier(schema), sql.Identifier(table))).fetchall()
+        bodies = sorted(canonical(row[0]) for row in values)
+        tables[schema+'.'+table] = {'rows': len(bodies), 'sha256': sha(canonical(bodies).encode())}
+    sequences = conn.execute('SELECT schemaname,sequencename,last_value FROM pg_sequences ORDER BY 1,2').fetchall()
+    return {'tables': tables, 'sequences': sequences}
+
+def save(path, value):
+    path.write_text(json.dumps(value, indent=2)+'\n', 'utf-8')
+
+if sys.argv[1] == 'prepare':
+    assert not (private/'state.json').exists(), 'Existing repair state must be inspected, not overwritten'
+    original = inspect(name)
+    assert original['HostConfig']['NetworkMode'] in {'default', 'bridge'}
+    assert not original['HostConfig']['Privileged']
+    assert original['Config']['Labels'] == {'zeus.purpose': 'local-ticket-ledger'}
+    assert len(original['Mounts']) == 1
+    assert original['Mounts'][0]['Name'] == 'zeus-ticket-ledger-data'
+    save(private/'original-inspect.json', original)
+    dsn = database_url()
+    info = conninfo_to_dict(dsn)
+    assert info['host'] == '127.0.0.1'
+    assert original['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort'] == info['port']
+    with psycopg.connect(dsn) as conn:
+        conn.execute("SET lock_timeout = '5s'")
+        conn.execute('SELECT pg_advisory_xact_lock(734219)')
+        before = snapshot(conn)
+        dump = docker('exec', name, 'pg_dump', '-U', info['user'], '-d', info['dbname'], '-Fc')
+        globals_dump = docker('exec', name, 'pg_dumpall', '-U', info['user'], '--globals-only')
+        (private/'database.dump').write_bytes(dump)
+        (private/'globals.sql').write_bytes(globals_dump)
+        services = VerificationServices(private/'restore', FileArtifacts(private/'artifacts'))
+        with services as endpoints:
+            restore_id = services._command('ps', '-q', 'postgres')
+            assert inspect(restore_id)['Image'] == original['Image'], 'Restore must use identical image'
+            docker('exec', '-i', restore_id, 'pg_restore', '-U', 'zeus', '-d', 'zeus',
+                   '--no-owner', '--exit-on-error', input=dump)
+            with psycopg.connect(endpoints['database_url']) as restored:
+                after = snapshot(restored)
+            assert before == after, 'Restored data/sequence digest differs'
+        assert before == snapshot(conn), 'Unexpected writes during locked backup'
+    state = {'container_id': original['Id'], 'image_id': original['Image'], 'dsn': dsn,
+             'snapshot': before, 'port': info['port'], 'backup_sha256': sha(dump),
+             'globals_sha256': sha(globals_dump), 'prepared_at': datetime.now(timezone.utc).isoformat()}
+    save(private/'state.json', state)
+    save(out/'ledger-backup-verified.json', {k: v for k, v in state.items() if k != 'dsn'} |
+         {'restore_verified': True, 'roles_scope': 'Globals archived privately; same-volume migration retains roles',
+          'original_running': inspect(name)['State']['Running']})
+    print('Backup restored into separate named volume; canonical table/sequence digests match.', flush=True)
+elif sys.argv[1] == 'apply':
+    state = json.loads((private/'state.json').read_text('utf-8'))
+    original = json.loads((private/'original-inspect.json').read_text('utf-8'))
+    assert inspect(name)['Id'] == state['container_id']
+    assert sha((private/'database.dump').read_bytes()) == state['backup_sha256']
+    backup_name = name+'-before-fixed-port-'+state['container_id'][:10]
+    env_path = private/'container.env'
+    assert all('\n' not in item and '\r' not in item for item in original['Config']['Env'])
+    env_path.write_text('\n'.join(original['Config']['Env'])+'\n', 'utf-8')
+    conf = original['Config']
+    assert len(conf['Entrypoint']) == 1 and conf['Healthcheck']['Test'][0] == 'CMD-SHELL'
+    mount = original['Mounts'][0]
+    args = ['create', '--name', name, '--restart', 'unless-stopped', '--env-file', str(env_path),
+            '--publish', '127.0.0.1:'+state['port']+':5432', '--mount',
+            'type=volume,src='+mount['Name']+',dst='+mount['Destination'],
+            '--entrypoint', conf['Entrypoint'][0], '--stop-signal', conf['StopSignal']]
+    for key, value in conf['Labels'].items():
+        args += ['--label', key+'='+value]
+    args += ['--health-cmd', conf['Healthcheck']['Test'][1]]
+    for key, option in [('Interval','--health-interval'), ('Timeout','--health-timeout'),
+                        ('StartPeriod','--health-start-period')]:
+        if conf['Healthcheck'].get(key):
+            args += [option, str(conf['Healthcheck'][key])+'ns']
+    args += ['--health-retries', str(conf['Healthcheck']['Retries']), original['Image'], *conf['Cmd']]
+    conn = psycopg.connect(state['dsn'], autocommit=True)
+    conn.execute("SET lock_timeout = '5s'")
+    conn.execute('SELECT pg_advisory_lock(734219)')
+    assert snapshot(conn) == state['snapshot'], 'Data changed since verified backup; prepare new backup first'
+    renamed, created = False, False
+    try:
+        docker('stop', '--time', '30', name)
+        assert not inspect(name)['State']['Running']
+        conn.close()
+        docker('rename', name, backup_name)
+        renamed = True
+        new_id = docker(*args).decode().strip()
+        created = True
+        for cycle in range(2):
+            docker('start', name)
+            limit = time.monotonic()+60
+            while inspect(name)['State'].get('Health',{}).get('Status') != 'healthy':
+                if time.monotonic() >= limit:
+                    raise RuntimeError('Replacement health deadline exceeded')
+                time.sleep(.5)
+            current = inspect(name)
+            assert current['HostConfig']['PortBindings']['5432/tcp'] == [
+                {'HostIp':'127.0.0.1','HostPort':state['port']}]
+            assert current['Image'] == original['Image']
+            assert current['Config']['Env'] == conf['Env']
+            assert current['Mounts'][0]['Name'] == mount['Name']
+            with psycopg.connect(state['dsn']) as check:
+                assert snapshot(check) == state['snapshot']
+            if cycle == 0:
+                docker('stop', '--time', '30', name)
+        save(out/'ledger-fixed-port.json', {'original_container_id': original['Id'],
+            'replacement_container_id': new_id, 'image_id': current['Image'],
+            'address': '127.0.0.1:'+state['port'], 'fixed_binding': current['HostConfig']['PortBindings'],
+            'restart_policy': current['HostConfig']['RestartPolicy'], 'rollback_container': backup_name,
+            'rollback_stopped': not inspect(backup_name)['State']['Running'], 'start_cycles_verified':2,
+            'same_data_and_sequences':True, 'same_image_env_pgdata':True, 'named_volume':mount['Name'],
+            'completed_at':datetime.now(timezone.utc).isoformat(), 'scope':'Actual isolated ledger container repair; not PC reboot proof'})
+        print('Ledger address/data verified across two starts; original container retained stopped.', flush=True)
+    except BaseException:
+        conn.close()
+        if created:
+            docker('stop', '--time', '30', name)
+            docker('rm', name)  # Never delete the shared volume.
+        if renamed:
+            docker('rename', backup_name, name)
+        docker('start', name)
+        current = inspect(name)
+        port = current['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort']
+        if port != state['port']:
+            replacement_dsn = make_conninfo(state['dsn'], port=port)
+            save(private/'rollback-connection.json', {'database_url': replacement_dsn, 'port': port})
+            assert '"' not in replacement_dsn and '\n' not in replacement_dsn
+            env_file = root/'.env'
+            original_env = env_file.read_bytes()
+            (private/'env-before-rollback').write_bytes(original_env)
+            lines = original_env.decode('utf-8-sig').splitlines()
+            changed = 0
+            for index, line in enumerate(lines):
+                key = line.partition('=')[0].strip()
+                if key in {'ZEUS_DATABASE_URL', 'HARNESS_DATABASE_URL'}:
+                    lines[index] = key+'="'+replacement_dsn+'"'
+                    changed += 1
+            assert changed, 'Rollback connection file requires operator inspection'
+            pending = root/'.env.host-recovery.tmp'
+            pending.write_text('\n'.join(lines)+'\n', 'utf-8')
+            pending.replace(env_file)
+        raise
+    finally:
+        conn.close()
+else:
+    raise SystemExit('Use prepare or apply')

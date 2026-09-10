@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_host_interruption.py",
+    "tests/test_execution_time.py",
+    "tests/test_execution_rejections.py"
+  ],
+  "started_at": "2026-09-10T03:34:24.723177+00:00",
+  "finished_at": "2026-09-10T03:35:35.523476+00:00",
+  "exit_code": 0,
+  "seconds": 70.80029700000159,
+  "raw_sha256": "1f9d4fd46eac26abd5de5ec7b500463f41293ca465ac4270af8ae38828c6ddc3"
+}
