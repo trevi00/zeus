@@ -9,7 +9,11 @@ from typing import Any, Sequence
 from codex_harness.domain.model import require
 
 
-def split_list_field(value: str) -> list[str]:
+def split_list_field(value) -> list[str]:
+    if isinstance(value, list):
+        # Already parsed by the YAML loader; only quote stripping remains for legacy spellings.
+        return [token for token in (str(item).strip().strip('"\'') for item in value) if token]
+    require(isinstance(value, str), 'Skill list field must be a string or list of strings')
     s = value.strip()
     if not s:
         return []

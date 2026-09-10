@@ -31,17 +31,18 @@ def unique_mapping(loader, node):
 UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
 
 
-def load_yaml(text):
-    require(len(text.encode('utf-8')) <= 65536, 'Project profile exceeds size limit')
+def load_yaml(text, label='Project profile'):
+    """Bounded string-only YAML (no tags, no implicit typing, unique keys); shared by lesson import."""
+    require(len(text.encode('utf-8')) <= 65536, label + ' exceeds size limit')
     try:
         value = yaml.load(text, Loader=UniqueLoader)
     except (yaml.YAMLError, RecursionError) as exc:
-        raise ContractError('Invalid project YAML') from exc
+        raise ContractError('Invalid ' + label + ' YAML') from exc
     pending, count = [(value, 0)], 0
     while pending:
         node, depth = pending.pop()
         count += 1
-        require(count <= 4096 and depth <= 64, 'Project YAML expansion exceeds limit')
+        require(count <= 4096 and depth <= 64, label + ' YAML expansion exceeds limit')
         children = node.values() if isinstance(node, dict) else node if isinstance(node, list) else ()
         pending.extend((child, depth + 1) for child in children)
     return value

@@ -130,3 +130,69 @@ def test_frontmatter_requires_a_bare_closing_fence():
     with pytest.raises(ContractError, match='fence'):
         frontmatter('---\nkeywords: test\n---not-a-fence\nbody')
     assert frontmatter('---\nkeywords: test\n---\nBODY') == ({'keywords': 'test'}, 'BODY')
+
+
+def test_inline_comments_never_enter_matcher_values():
+    # FA-011: the upstream template copied with its inline comments must route, not corrupt.
+    from codex_harness.adapters.skill_routing import frontmatter
+    meta, body = frontmatter('---\nkeywords: [alpha, "beta gamma"]   # 매칭 키워드\n'
+                             'intent: 구현해 # 의도\nmin_score: 2  # 전문 본문 임계\n'
+                             'quality_axes_enforced: true   # 검사 opt-in\npaths:\n'
+                             'description: "routing # not a comment"\n---\nBODY')
+    assert meta == {'keywords': ['alpha', 'beta gamma'], 'intent': '구현해', 'min_score': '2',
+                    'quality_axes_enforced': 'true', 'paths': '', 'description': 'routing # not a comment'}
+    assert body == 'BODY'
+    assert score_skill(meta, 'alpha 구현해', set(), {}) == (True, 2, ['intent:구현해', 'kw:alpha'])
+    assert score_skill(meta, 'beta gamma', set(), {})[1] == 1
+
+
+@pytest.mark.parametrize('text, message', [
+    ('---\nkeywords:\n  nested: value\n---\nB', 'Unsupported skill frontmatter value'),
+    ('---\nkeywords: [a, [b]]\n---\nB', 'lists hold strings only'),
+    ('---\nkeywords: a\nkeywords: b\n---\nB', 'Duplicate'),
+    ('---\nkeywords: [safe]\n"keywords ": [overridden]\n---\nB', 'Duplicate skill frontmatter key after normalization'),
+    ('---\n" keywords": [first]\nkeywords: [second]\n---\nB', 'Duplicate skill frontmatter key after normalization'),
+    ('---\nkeywords: !!python/object/apply:os.system [x]\n---\nB', 'Unsupported YAML tag'),
+    ('---\n- just\n- a list\n---\nB', 'must be a mapping'),
+    ('---\nkeywords: [unclosed\n---\nB', 'Invalid Skill frontmatter YAML'),
+])
+def test_malformed_skill_metadata_fails_explicitly(text, message):
+    from codex_harness.adapters.skill_routing import frontmatter
+    with pytest.raises(ContractError, match=message):
+        frontmatter(text)
+
+
+def test_quoted_padded_key_cannot_override_the_matcher_input():
+    # The collision is refused before any matcher sees it (review counterexample, PR #44).
+    from codex_harness.adapters.skill_routing import frontmatter
+    with pytest.raises(ContractError, match='after normalization'):
+        frontmatter('---\nkeywords: [safe]\n"keywords ": [overridden]\n---\nBODY')
+    meta, _ = frontmatter('---\n"keywords ": [padded]\n---\nBODY')
+    assert meta == {'keywords': ['padded']}, 'a lone padded key still normalizes'
+    assert score_skill(meta, 'padded', set(), {})[1] == 1
+
+
+def test_routing_summary_reports_inspected_count_so_zero_matches_are_not_unchecked(tmp_path):
+    from codex_harness.adapters.skill_routing import route_skills
+    from codex_harness.domain.model import ContextItem
+
+    class EmptyGit:
+        def _git(self, *args, **kwargs):
+            return ''
+
+    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
+    sources = {'one': '---\nkeywords: [alpha]  # comment\n---\nONE', 'two': '---\nkeywords: zeta\n---\nTWO',
+               'legacy': 'LEGACY'}
+    items, records = [], []
+    for name, source in sources.items():
+        record = artifacts.put(source, 'fixture')
+        path = f'.harness/skills/_common/{name}.md'
+        records.append({'path': path, 'content_ref': record['ref'], 'file': str(tmp_path / name),
+                        'revision': 'a' * 40, 'pipeline_boost': 0})
+        items.append(ContextItem('project-skill:' + path, source, record['ref'], 'a' * 40, 15))
+    _, summary = route_skills(EmptyGit(), artifacts, str(tmp_path), 'a' * 40, 'alpha', items, records)
+    assert (summary['inspected'], summary['matched'], summary['legacy']) == (2, 1, 1)
+    _, none = route_skills(EmptyGit(), artifacts, str(tmp_path), 'a' * 40, 'nothing', items, records)
+    assert (none['inspected'], none['matched']) == (2, 0), 'zero matches out of two inspected, not zero of zero'
+    _, empty = route_skills(EmptyGit(), artifacts, str(tmp_path), 'a' * 40, 'alpha', [], [])
+    assert (empty['inspected'], empty['matched']) == (0, 0)
