@@ -15,6 +15,13 @@ from codex_harness.domain.skill_history import (
 )
 
 DIMENSIONS = ('intent', 'path', 'kw', 'pat')
+# FA-012: what an observation can prove, stated per target instead of one blended "precision".
+DELIVERY_TIERS = ('full', 'pointer', 'external_pointer', 'unmatched', 'legacy')
+MEASUREMENT_TARGETS = {
+    'raw_match': 'top entries exist: the skill matched or was boosted at compile time',
+    'rank': 'score order among matched candidates for one objective',
+    'body_arrival': 'delivered tier per observation: full body, pointer, external pointer or unknown',
+    'behavior': 'not measured by telemetry; requires actual model output and human acceptance'}
 
 
 def duration_seconds(value):
@@ -41,6 +48,7 @@ def audit_history(events, *, min_samples=MIN_SAMPLES, cutoff=None):
     require(cutoff is None or (isinstance(cutoff, (int, float)) and not isinstance(cutoff, bool)
                               and math.isfinite(cutoff)), 'Invalid time cutoff')
     scores, base_scores, boosted, dimensions, overall = {}, {}, Counter(), {}, Counter()
+    delivery, rank_first = {}, Counter()
     invocations = unknown_dates = invalid_entries = 0
     for event in events[-MAX_EVENTS:]:
         if not isinstance(event, dict):
@@ -55,12 +63,18 @@ def audit_history(events, *, min_samples=MIN_SAMPLES, cutoff=None):
         if not isinstance(entries, list):
             invalid_entries += 1
             continue
-        for entry in entries:
-            if not valid_record(entry):
-                invalid_entries += 1
-                continue
+        valid = [entry for entry in entries if valid_record(entry)]
+        invalid_entries += len(entries) - len(valid)
+        if valid:
+            best = max(entry['score'] for entry in valid)
+            for entry in valid:
+                if entry['score'] == best:
+                    rank_first[(entry['path'], entry['content_ref'])] += 1
+        for entry in valid:
             identity = (entry['path'], entry['content_ref'])
             scores.setdefault(identity, []).append(entry['score'])
+            tier = entry.get('tier')
+            delivery.setdefault(identity, Counter())[tier if tier in DELIVERY_TIERS else 'unknown'] += 1
             base = entry.get('base_score')
             if isinstance(base, int) and not isinstance(base, bool) and 0 <= base <= entry['score']:
                 base_scores.setdefault(identity, []).append(base)
@@ -86,6 +100,10 @@ def audit_history(events, *, min_samples=MIN_SAMPLES, cutoff=None):
         record['base_score_profile'] = ({'count': len(base), 'min': min(base),
             'median': median(base), 'max': max(base), 'boosted_count': boosted[identity]} if base else None)
         record['missing_base_scores'] = count - len(base)
+        # Counts per target, never a blended ratio: matched n times, ranked first m times,
+        # full body delivered k times (unknown = observations recorded before tiers existed).
+        record['rank_first_count'] = rank_first[identity]
+        record['delivery'] = {tier: delivery[identity].get(tier, 0) for tier in (*DELIVERY_TIERS, 'unknown')}
         if is_candidate(count, rate, middle, min_samples):
             candidates.append({**record, 'reason': f'fires {count}x but {round(rate * 100)}% are thin '
                 f'(score<={THIN_SCORE_CEILING}, never full-body); median {middle}. Narrow the '
@@ -95,4 +113,5 @@ def audit_history(events, *, min_samples=MIN_SAMPLES, cutoff=None):
     return {'invocations': invocations, 'skills': sorted(skills, key=order),
             'false_positive_candidates': sorted(candidates, key=order), 'dim_weight': dict(overall),
             'unknown_timestamp_events': unknown_dates, 'invalid_entries': invalid_entries,
-            'max_events': MAX_EVENTS, 'min_samples': min_samples, 'read_only': True}
+            'max_events': MAX_EVENTS, 'min_samples': min_samples, 'read_only': True,
+            'measurement_targets': dict(MEASUREMENT_TARGETS)}

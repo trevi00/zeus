@@ -86,8 +86,11 @@ def _prepare_history(store, artifacts, project, agent, task, objective, selectio
                 'history_ref': receipt['ref']}))
         annotated.append(item)
     top = sorted(records, key=lambda r: (-r['score'], r['path']))[:TOP_MATCHES]
+    # FA-012: the observation carries the delivered tier and rendered body hash next to the score,
+    # so audits can separate raw match, rank and body arrival instead of inferring delivery from top5.
     event = {'id': event_id, 'manifest_ref': selection['manifest_ref'],
-             'top': [{**{key: r[key] for key in ('path', 'content_ref', 'score', 'base_score', 'body_chars') if key in r},
+             'top': [{**{key: r[key] for key in ('path', 'content_ref', 'score', 'base_score', 'body_chars',
+                                                 'tier', 'rendered_hash') if key in r},
                       'dimensions': r.get('dimensions', [])}
                      for r in top], 'kind': 'compiled_skill_selection'}
     return annotated, (history, project_key, event)

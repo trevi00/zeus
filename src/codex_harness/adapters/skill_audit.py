@@ -36,6 +36,10 @@ def render_text(report):
                 lines.append(f"  base score median: {base['median']}; boosted observations: "
                              f"{base['boosted_count']}/{base['count']}; "
                              f"missing base scores: {row['missing_base_scores']}")
+            delivered = row['delivery']
+            lines.append(f"  ranked first: {row['rank_first_count']}/{row['count']}; delivered full body: "
+                         f"{delivered['full']}, pointer: {delivered['pointer'] + delivered['external_pointer']}, "
+                         f"tier unknown: {delivered['unknown']} (match != delivery != behavior)")
         lines.append('dimension weight (counts of matching signals, not score contributions):')
         weights = report['dim_weight']
         total = sum(weights.values()) or 1

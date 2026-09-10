@@ -1,6 +1,6 @@
 """Bounded hot history, permanent small deduplication ledger, transactional writes."""
 from codex_harness.domain.model import digest, require, utcnow
-from codex_harness.domain.skill_audit import audit_history
+from codex_harness.domain.skill_audit import DELIVERY_TIERS, audit_history
 from codex_harness.domain.skill_history import MAX_EVENTS, TOP_MATCHES, assess_history
 
 
@@ -39,6 +39,11 @@ class SkillHistory:
             require(isinstance(item.get('dimensions', []), list)
                     and all(isinstance(dim, str) for dim in item.get('dimensions', [])),
                     'Invalid skill dimensions')
+            if 'tier' in item:
+                require(item['tier'] in DELIVERY_TIERS, 'Invalid skill delivery tier')
+            if 'rendered_hash' in item:
+                require(isinstance(item['rendered_hash'], str) and bool(item['rendered_hash']),
+                        'Invalid rendered body hash')
         require(len({(r['path'], r['content_ref']) for r in event['top']}) == len(event['top']),
                 'Duplicate skill identity in observation')
         # INV-SKILL-HISTORY-001: richer passive diagnostics do not create a new
