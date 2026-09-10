@@ -91,7 +91,9 @@ Zeus incident, hook, review or release state. Independent occurrences are recomp
 evidence tokens that identify one incident each; cumulative counters (`ledger:PASS xN`) and
 note locations (`repair-notes:*`) count zero, so a record without identities stays
 `upstream_occurrences_unverified`. Re-import of identical bytes changes nothing; different
-bytes of the same path are separate versions. Claims live in their own bucket and do not
+bytes of the same path are separate versions. The acquisition basis (observed bytes, pinned
+commit) is separate from the content claim: the same bytes seen on another basis add an
+acquisition to the existing claim, never a version or an occurrence. Claims live in their own bucket and do not
 participate in INV-RECURRENCE-001 counting.
 
 # INV-SKILL-IMPORT-001

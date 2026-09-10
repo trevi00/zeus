@@ -17,7 +17,9 @@ Zeus는 그 값을 승인·자격·재발 횟수로 승계하면 안 됩니다. 
   `upstream_occurrences_unverified`입니다.
 - `application/experience.py`: `experience_claims` 버킷에 추가 전용 기록. ID = (규칙 버전, source, path,
   바이트 SHA-256)이라 같은 바이트 재수입은 무변경, 같은 경로의 다른 바이트(pinned/observed)는 별개
-  버전이며 수입 순서(`sequence`)로 정렬합니다. 같은 ID에 다른 내용은 거부합니다.
+  버전이며 수입 순서(`sequence`)로 정렬합니다. 같은 ID에 다른 내용은 거부합니다. 취득 근거(observed/pinned,
+  revision)는 콘텐츠 claim과 분리해 `acquisitions`에 누적합니다: 같은 바이트를 observed→pinned A→pinned B로
+  다시 수집하면 claim 하나에 근거 3건이 남고 버전·occurrence는 늘지 않습니다(PR #36 검토 반례).
 - `adapters/experience.py`: 명시한 파일/디렉터리만 읽고(홈 자동 스캔 없음) 원본 바이트를 아티팩트에
   보관한 뒤 기록합니다. frontmatter YAML은 기존 `project_skills.load_yaml`(문자열 전용·태그 금지·
   중복 키 거부·크기/전개 상한)을 재사용합니다. `--dry-run`은 DB·아티팩트 쓰기가 없습니다.
@@ -41,7 +43,7 @@ uv run python -m codex_harness.adapters.experience <lessons-dir> --basis pinned 
 - `tests/test_experience.py`(11 검사): 상류 값 원문 보존과 0 재계산, 식별 토큰 중복 1회 계수, 중첩
   `restatement_suspects`·여러 줄 인용 스칼라 보존, 잘못된 입력 9종 명시 거부(frontmatter 없음, 스칼라
   evidence, 빈 토큰, 중복 키, 리스트 루트, `!!python` 태그, 깨진 YAML, 비UTF-8, 256KiB 초과), basis/경로
-  검증, 버전 분리와 멱등 재수입, 같은 ID 다른 내용 거부, **수입 25건 뒤 `record_incident` 1건이 hook을
+  검증, 버전 분리와 멱등 재수입, 같은 ID 다른 내용 거부, 같은 바이트의 근거 전환 누적(버전·계수 불변), **수입 25건 뒤 `record_incident` 1건이 hook을
   만들지 않음**, CLI dry-run 무쓰기와 주입 store 수입.
 - Windows 전체 회귀: 아래 표. Linux는 이 PR의 CI(ubuntu 매트릭스)로 확인하며 기록 시점에는 미실행입니다.
 
