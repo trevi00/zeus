@@ -1,0 +1,131 @@
+{
+  "python": "3.12.14 (main, Aug 14 2026, 15:40:22) [MSC v.1944 64 bit (AMD64)]",
+  "os": "Windows-11-10.0.26200-SP0",
+  "scope": "Real Workflow on MemoryStore and a throwaway PostgreSQL schema; weakened variants are probe-only patches, not shipped code.",
+  "variants": {
+    "current": {
+      "memory": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
+          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
+          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        }
+      },
+      "postgres": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
+          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
+          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        },
+        "schema": "probe_9987b2c7885d4289b16aa7a7b707a004"
+      }
+    },
+    "owner_blind": {
+      "memory": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
+          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
+          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        }
+      },
+      "postgres": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
+          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
+          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        },
+        "schema": "probe_b9339b6130294525965378a0707400dc"
+      }
+    },
+    "generation_blind": {
+      "memory": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
+          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
+          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        }
+      },
+      "postgres": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
+          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
+          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        },
+        "schema": "probe_8d9111e72b5045aea44d92ef2cdc2376"
+      }
+    },
+    "no_fence": {
+      "memory": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "accepted",
+          "claim_of_recreated_row_with_reused_owner": "accepted with generation 1 attempt 1",
+          "old_first_holder_after_recreation": "accepted",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        }
+      },
+      "postgres": {
+        "expired_holder": {
+          "reclaimed_generation": 2,
+          "stale_heartbeat": "rejected: Stale or expired task execution",
+          "stale_complete": "rejected: Stale or expired task execution",
+          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
+        },
+        "recreated_row": {
+          "resubmit_after_purge": "accepted",
+          "claim_of_recreated_row_with_reused_owner": "accepted with generation 1 attempt 1",
+          "old_first_holder_after_recreation": "accepted",
+          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
+        },
+        "schema": "probe_047e3bc5d93944fdaafd0baec6694cbe"
+      }
+    }
+  }
+}
