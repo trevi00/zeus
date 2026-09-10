@@ -75,6 +75,40 @@ def progress_occurrence(event: dict):
     return None
 
 
+PROGRESS_EVENTS = {"item/completed", "thread/tokenUsage/updated"}
+
+
+def progress_event_shape(event) -> str | None:
+    """Name what is wrong with a runtime event before anything reads into it; None means well-formed.
+
+    Review counterexample (PR #49): `method=[]` raised inside set membership and `item="garbage"`
+    advanced the sequence. A progress event is a dict whose method is text, whose params is a dict,
+    and whose per-method payload has the identifiers the reader will use.
+    """
+    if not isinstance(event, dict):
+        return "event is not an object"
+    method = event.get("method")
+    if not isinstance(method, str) or not method:
+        return "method is not text"
+    params = event.get("params", {})
+    if not isinstance(params, dict):
+        return "params is not an object"
+    if method == "item/completed":
+        item = params.get("item")
+        if not isinstance(item, dict):
+            return "item is not an object"
+        if not isinstance(item.get("id"), str) or not item["id"]:
+            return "item.id missing"
+        if not isinstance(item.get("type"), str) or not item["type"]:
+            return "item.type missing"
+        if "status" in item and not isinstance(item["status"], str):
+            return "item.status is not text"
+    elif method == "thread/tokenUsage/updated":
+        if not isinstance(params.get("tokenUsage"), dict):
+            return "tokenUsage is not an object"
+    return None
+
+
 def progress_event_id(event: dict, receipt_ref: str) -> str:
     """Unique per delivered event: runtime item identity when present, else the retained bytes."""
     params = event.get("params") if isinstance(event.get("params"), dict) else {}
@@ -261,13 +295,15 @@ class Executor:
                 if event is None:
                     return
                 # FA-016: a malformed runtime event is retained as evidence and counted, never
-                # dropped, and never allowed to overwrite the well-formed progress state.
-                malformed = not isinstance(event, dict) or not isinstance(event.get("params", {}), dict)
-                if malformed or event.get("method") in {"item/completed", "thread/tokenUsage/updated"}:
+                # dropped, and never allowed to overwrite the well-formed progress state. The shape
+                # is checked before any field is read (review, PR #49).
+                defect = progress_event_shape(event)
+                malformed = defect is not None
+                if malformed or event["method"] in PROGRESS_EVENTS:
                     with self.service.store.transaction() as tx:
                         prior = tx.get("execution_progress", key) or {}
                     receipt = self.artifacts.put(evidence_json({"event": event if not malformed else repr(event),
-                                                                "malformed": malformed,
+                                                                "malformed": malformed, "defect": defect,
                                                                 "previous": prior.get("last_record") if matches(prior) else None}),
                                                  "runtime-event:" + key)
                     with self.service.store.transaction() as tx:
@@ -282,6 +318,8 @@ class Executor:
                             previous["malformed_events"] = previous.get("malformed_events", 0) + 1
                             previous.setdefault("malformed_recent", [])
                             previous["malformed_recent"] = (previous["malformed_recent"] + [receipt["ref"]])[-6:]
+                            previous.setdefault("malformed_defects", {})
+                            previous["malformed_defects"][defect] = previous["malformed_defects"].get(defect, 0) + 1
                             tx.put("execution_progress", key, previous)
                             return
                         # Occurrence time comes from the event itself; collection time is ours.

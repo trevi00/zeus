@@ -10,6 +10,7 @@ from codex_harness.adapters.executor import (
     IMPLEMENTATION,
     Executor,
     progress_event_id,
+    progress_event_shape,
     progress_occurrence,
 )
 from codex_harness.adapters.git import GitWorkspace
@@ -69,9 +70,18 @@ def test_progress_records_generation_sequence_identity_and_two_clocks(project, m
     workflow = executor.workflow
     workflow.submit(assignment())
     lease = workflow.claim('worker:implementation', 'owner')
+    nested_garbage = [  # review counterexamples (PR #49): corruption below the top level
+        {'method': [], 'params': {}},
+        {'method': 'item/completed', 'params': {'item': 'garbage'}},
+        {'method': 'item/completed', 'params': {'item': {'type': 'commandExecution', 'status': 'completed'}}},
+        {'method': 'item/completed', 'params': {'item': {'id': 'no-type', 'status': 'completed'}}},
+        {'method': 'item/completed', 'params': {'item': {'id': 'x', 'type': 'commandExecution', 'status': 7}}},
+        {'method': 'thread/tokenUsage/updated', 'params': {'tokenUsage': 'lots'}},
+        {'params': {'item': {'id': 'no-method', 'type': 'commandExecution'}}},
+    ]
     events = [completed('exec-1', 1_788_751_585_964), {'method': 'thread/tokenUsage/updated',
               'params': {'tokenUsage': {'last': {'totalTokens': 10}, 'modelContextWindow': 100}}},
-              'not-json shard', {'method': 'item/completed', 'params': 'garbage'},
+              'not-json shard', {'method': 'item/completed', 'params': 'garbage'}, *nested_garbage,
               completed('exec-2'), {'method': 'turn/started', 'params': {}}]
     prompts = []
     monkeypatch.setattr('codex_harness.adapters.executor.AppServer', runtime_factory(events, prompts))
@@ -80,10 +90,14 @@ def test_progress_records_generation_sequence_identity_and_two_clocks(project, m
         progress = tx.get('execution_progress', lease['id'])
     assert progress['generation'] == lease['generation'] == 1 and progress['attempt'] == lease['attempt'] == 1
     assert progress['sequence'] == 3, 'two completions and one usage update; malformed and ignored events add none'
-    assert progress['malformed_events'] == 2 and len(progress['malformed_recent']) == 2
+    assert progress['malformed_events'] == 9 and len(progress['malformed_recent']) == 6, 'nested corruption is counted, never advanced'
+    assert progress['malformed_defects'] == {'event is not an object': 1, 'params is not an object': 1, 'method is not text': 2,
+                                             'item is not an object': 1, 'item.id missing': 1, 'item.type missing': 1,
+                                             'item.status is not text': 1, 'tokenUsage is not an object': 1}
     for ref in progress['malformed_recent']:
         retained = artifacts.document(ref)
-        assert retained['malformed'] and retained['event'] in {"'not-json shard'", str({'method': 'item/completed', 'params': 'garbage'})}
+        assert retained['malformed'] and retained['defect'] and retained['event'].startswith(('{', "'"))
+    assert all(progress_event_shape(e) is None for e in (completed('ok'), {'method': 'turn/started', 'params': {}}, {'method': 'x'}))
     assert progress['last_completed'] == {'id': 'exec-2', 'type': 'commandExecution', 'status': 'completed',
                                           'evidence': progress['last_record'], 'sequence': 3, 'occurred_at': None}
     assert progress['event_id'] == 'item/completed:exec-2:completed'
