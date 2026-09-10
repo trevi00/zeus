@@ -1,0 +1,385 @@
+[
+  {
+    "files": [
+      {
+        "path": "README.md",
+        "additions": 2,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/contracts.md",
+        "additions": 13,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/zeus/implementation/encoding-contract-001/README.md",
+        "additions": 63,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/encoding-contract-001/baseline.json",
+        "additions": 122,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/encoding-contract-001/probe.py",
+        "additions": 65,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/encoding-contract-001/windows-probe.json",
+        "additions": 158,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/adapters/commands.py",
+        "additions": 13,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/codex_harness/adapters/hooks.py",
+        "additions": 4,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/codex_harness/adapters/verification.py",
+        "additions": 4,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_native_hooks.py",
+        "additions": 19,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_python_channel.py",
+        "additions": 40,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "tests/test_verification.py",
+        "additions": 5,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      }
+    ],
+    "headRefOid": "741cc1d441c7a6335768cad618c47a1c9393ac12",
+    "mergeCommit": {
+      "oid": "57e5ea4dd5f4ae1be2e2608f0ed412fa1505da5c"
+    },
+    "number": 35,
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/35"
+  },
+  {
+    "files": [
+      {
+        "path": "docs/contracts.md",
+        "additions": 14,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/zeus/implementation/experience-claims-001/README.md",
+        "additions": 64,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/experience-claims-001/observed-lessons-receipt.json",
+        "additions": 322,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/experience-claims-001/probe.py",
+        "additions": 49,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/adapters/experience.py",
+        "additions": 119,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/adapters/project_skills.py",
+        "additions": 5,
+        "deletions": 4,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/codex_harness/application/experience.py",
+        "additions": 57,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/domain/experience.py",
+        "additions": 109,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "tests/test_experience.py",
+        "additions": 214,
+        "deletions": 0,
+        "changeType": "ADDED"
+      }
+    ],
+    "headRefOid": "620029f9e561fb77fbcc22f6a5817e054b8773bb",
+    "mergeCommit": {
+      "oid": "1954c3f66f506367f1ff11d886842aa77fa4aabf"
+    },
+    "number": 36,
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/36"
+  },
+  {
+    "files": [
+      {
+        "path": "docs/contracts.md",
+        "additions": 8,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/zeus/implementation/execution-fence-001/README.md",
+        "additions": 68,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/execution-fence-001/probe.py",
+        "additions": 140,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/execution-fence-001/receipt.json",
+        "additions": 131,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/adapters/executor.py",
+        "additions": 6,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/codex_harness/application/execution_fence.py",
+        "additions": 47,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/application/execution_recovery.py",
+        "additions": 2,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/codex_harness/application/release_queue.py",
+        "additions": 12,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/codex_harness/application/workflow.py",
+        "additions": 13,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_decision_recovery.py",
+        "additions": 3,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_execution_fence.py",
+        "additions": 233,
+        "deletions": 0,
+        "changeType": "ADDED"
+      }
+    ],
+    "headRefOid": "16c05c2f4748b4cc54717496b5e4c0305b30387e",
+    "mergeCommit": {
+      "oid": "317287496c8066fdc62e19a23f9c3d40e5d4664e"
+    },
+    "number": 37,
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/37"
+  },
+  {
+    "files": [
+      {
+        "path": "docs/contracts.md",
+        "additions": 12,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/zeus/implementation/idempotency-races-001/README.md",
+        "additions": 59,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/idempotency-races-001/postgres-processes.json",
+        "additions": 103,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "docs/zeus/implementation/idempotency-races-001/unlocked-control.json",
+        "additions": 30,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "tests/test_idempotency_races.py",
+        "additions": 203,
+        "deletions": 0,
+        "changeType": "ADDED"
+      }
+    ],
+    "headRefOid": "dc083caa73a2f4a1b0b64a5105208307ddec783d",
+    "mergeCommit": {
+      "oid": "ba9d48d303cc17b4e3bba6ee660fb35fcff33074"
+    },
+    "number": 38,
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/38"
+  },
+  {
+    "files": [
+      {
+        "path": "docs/contracts.md",
+        "additions": 2,
+        "deletions": 2,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/zeus/implementation/latest-verdict-001/README.md",
+        "additions": 67,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/application/audit_gate.py",
+        "additions": 7,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "src/codex_harness/application/research.py",
+        "additions": 28,
+        "deletions": 4,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_research_audits.py",
+        "additions": 96,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      }
+    ],
+    "headRefOid": "fd45154f13f2674a483ca9593bf35e7542894b46",
+    "mergeCommit": {
+      "oid": "6b6a56d7970c33d1a33c01333093837e4f525bed"
+    },
+    "number": 39,
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/39"
+  },
+  {
+    "files": [
+      {
+        "path": "docs/contracts.md",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/zeus/implementation/integrity-unknown-001/README.md",
+        "additions": 58,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/adapters/maintenance.py",
+        "additions": 14,
+        "deletions": 3,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_maintenance.py",
+        "additions": 55,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_sdd.py",
+        "additions": 23,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      }
+    ],
+    "headRefOid": "fdbf905e3ad7fe00d163326d991a88629fd7dfb3",
+    "mergeCommit": {
+      "oid": "20def282f80fdfa39679539dc80ae2ef9ad5a7c4"
+    },
+    "number": 40,
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/40"
+  },
+  {
+    "files": [
+      {
+        "path": "docs/contracts.md",
+        "additions": 1,
+        "deletions": 1,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "docs/zeus/implementation/stack-routing-001/README.md",
+        "additions": 55,
+        "deletions": 0,
+        "changeType": "ADDED"
+      },
+      {
+        "path": "src/codex_harness/domain/project_skills.py",
+        "additions": 9,
+        "deletions": 3,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "tests/test_project_skills.py",
+        "additions": 43,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      }
+    ],
+    "headRefOid": "278b724d0870398abfdabe8727996de174d5b576",
+    "mergeCommit": {
+      "oid": "97b0410ef21d8e80253c24e7f4c190a26d49a24a"
+    },
+    "number": 41,
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/41"
+  }
+]

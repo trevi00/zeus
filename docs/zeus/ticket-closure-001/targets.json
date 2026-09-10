@@ -1,0 +1,24 @@
+{
+  "exit": 0,
+  "seconds": 203.40732510000817,
+  "head": "03aafd2f8dad31ab5b5c852f052de5d8887da884",
+  "files": [
+    "tests/test_decision_recovery.py",
+    "tests/test_execution_fence.py",
+    "tests/test_experience.py",
+    "tests/test_idempotency_races.py",
+    "tests/test_maintenance.py",
+    "tests/test_native_hooks.py",
+    "tests/test_outbox.py",
+    "tests/test_project_skills.py",
+    "tests/test_python_channel.py",
+    "tests/test_research_audits.py",
+    "tests/test_sdd.py",
+    "tests/test_skill_routing.py",
+    "tests/test_ticket_lifecycle.py",
+    "tests/test_verification.py",
+    "tests/test_workflow.py"
+  ],
+  "sha256": "b4faa8f80f2abfc2457061420d4b50881e1a5983e760b2d42e9ad876f0c86933",
+  "postgres_enabled": true
+}

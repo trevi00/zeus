@@ -1,0 +1,716 @@
+[
+  {
+    "issue": 2,
+    "ticket_id": "ZEUS-ba0de9a2623e",
+    "packet_ref": "sha256:500f0e68d24af56b6908abec9aae899e979e5257493c1f9717122a85d8e67466",
+    "event": {
+      "at": "2026-09-10T16:10:06.388611+00:00",
+      "id": "3fb82e9482dccaa5f12f77e4ed3039c68ddb1b8f427be5a93c0b4e966120dee7",
+      "kind": "closed",
+      "reason": "Code defect #2 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:87874909a4dc52ef22ae7ef12013b94ed5188df39a9e29cadf09618618fdd736",
+      "ticket_id": "ZEUS-ba0de9a2623e",
+      "packet_ref": "sha256:500f0e68d24af56b6908abec9aae899e979e5257493c1f9717122a85d8e67466",
+      "request_id": null,
+      "content_hash": "de5847118e33e021cf8dc62f560d6ec57888ad49ef9895b8b7e918eedabf6489",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.278494+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:500f0e68d24af56b6908abec9aae899e979e5257493c1f9717122a85d8e67466",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:1d179fc973dc080836f61082a26fdc105e40d33962ccf2054ba8b27a5ea9eee7"
+        }
+      ],
+      "verified_at": "2026-09-10T16:10:06.363559+00:00"
+    },
+    "projection": {
+      "id": "66906c67d845e890e4974cfde5a734dd280a567bd08216a2e807d4ba87a2b73f",
+      "ticket_id": "ZEUS-ba0de9a2623e",
+      "repository": "trevi00/zeus",
+      "number": 2,
+      "url": "https://github.com/trevi00/zeus/issues/2",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "de5847118e33e021cf8dc62f560d6ec57888ad49ef9895b8b7e918eedabf6489",
+      "attempted_content_hash": "de5847118e33e021cf8dc62f560d6ec57888ad49ef9895b8b7e918eedabf6489",
+      "body_hash": "31a9eee7af24e9e119962de5d187697933740f394c013a554c1ccf56c5eed46c",
+      "title_hash": "a965c06c99189c2946a412d18bf9093de2bb92831c6848f948801c37eaaed3be",
+      "observed_body_hash": "31a9eee7af24e9e119962de5d187697933740f394c013a554c1ccf56c5eed46c",
+      "observed_title_hash": "a965c06c99189c2946a412d18bf9093de2bb92831c6848f948801c37eaaed3be",
+      "title": "[FA-001] Windows Python 자식 출력 인코딩 계약 누락",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "3fb82e9482dccaa5f12f77e4ed3039c68ddb1b8f427be5a93c0b4e966120dee7",
+      "observation_ref": "sha256:3c4593fcaa547122eb4f4388c0e529ac13bffd0ef7678a9da822dedbedfa085f",
+      "observation_id": "18ca15f8429e774fd8350fd2cc0e666b3aed682c47e302d3fdc0924bb15047e0",
+      "at": "2026-09-10T16:10:09.516546+00:00",
+      "review_ids": [
+        "bcc519293674e3806a608fcf3462b8eb98e068823221ec2a0e4b5aa72069f9bb"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "3fb82e9482dccaa5f12f77e4ed3039c68ddb1b8f427be5a93c0b4e966120dee7"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "64f1819ab015ea34337f26c4d0d9d3fb7d1d2a79e8c8e3aaaeb219a536d2188f",
+      "ticket_id": "ZEUS-ba0de9a2623e",
+      "repository": "trevi00/zeus",
+      "number": 2,
+      "url": "https://github.com/trevi00/zeus/issues/2",
+      "state": "CLOSED",
+      "title": "[FA-001] Windows Python 자식 출력 인코딩 계약 누락",
+      "purpose": "pull",
+      "evidence_ref": "sha256:de294dee4d9f7e12acc544dd7a2d1fa8d60501a0f8b0e8f8975aa13a6597be4a",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:10:37.551710+00:00",
+      "first_seen": "2026-09-10T16:10:11.681744+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 3,
+    "ticket_id": "ZEUS-7fcc5f0308e7",
+    "packet_ref": "sha256:23cf9bd20edc05d3326a2ebdabb6511dd13eab1d6acedb83fbc0b765a0d82156",
+    "event": {
+      "at": "2026-09-10T16:10:57.129538+00:00",
+      "id": "00ca4fcd2a34a9e83c30e5be37727e24c8af37317d746d5e7432c51ec517c23d",
+      "kind": "closed",
+      "reason": "Code defect #3 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:961e9571ad7dbcf9a0aad1443665f89a0019fef19037451576493678ea5eb8ae",
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "packet_ref": "sha256:23cf9bd20edc05d3326a2ebdabb6511dd13eab1d6acedb83fbc0b765a0d82156",
+      "request_id": null,
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.302423+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:23cf9bd20edc05d3326a2ebdabb6511dd13eab1d6acedb83fbc0b765a0d82156",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:4ad7dee12f654a438a9dd5e689468055b6bd0f5e5a314576d668a369c2d3ab14"
+        }
+      ],
+      "verified_at": "2026-09-10T16:10:57.107394+00:00"
+    },
+    "projection": {
+      "id": "585ca10b95f1ca1089293d0ee63d05256366ab8b656b18166e45fa399715e17e",
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "repository": "trevi00/zeus",
+      "number": 3,
+      "url": "https://github.com/trevi00/zeus/issues/3",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "attempted_content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "body_hash": "73f2b01d888499c9ad52a27b9f2d4947d41829e72e0fb7109e957a02fda05de3",
+      "title_hash": "ce80e20fc6e3d327ac6bd78a926bb65b9171c69064448cc1e1c90fdd1713891c",
+      "observed_body_hash": "73f2b01d888499c9ad52a27b9f2d4947d41829e72e0fb7109e957a02fda05de3",
+      "observed_title_hash": "ce80e20fc6e3d327ac6bd78a926bb65b9171c69064448cc1e1c90fdd1713891c",
+      "title": "[FA-002] 경험 수집 횟수와 독립 검증 횟수 혼동",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "00ca4fcd2a34a9e83c30e5be37727e24c8af37317d746d5e7432c51ec517c23d",
+      "observation_ref": "sha256:fb934f7c3718bd28b09b3f15c6ec6bcb5a3af3b9f9baf3f28052b8cdfdf5565b",
+      "observation_id": "e3271a7e6fde07d2dbc75bc5e27d2ecf110a09631f41e0b9afec27790f9b4613",
+      "at": "2026-09-10T16:11:00.459354+00:00",
+      "review_ids": [
+        "a3f2c19639df47919021819d29c58b5f86a2e7cc2bd6a16d16efeaf84a448360",
+        "f34b42c55a69f1364f9cb63aad38871f47f3d46807730313d219bcf318ae26ee"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "00ca4fcd2a34a9e83c30e5be37727e24c8af37317d746d5e7432c51ec517c23d"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "344c9d8300660fb889fa0320346d48e0813f3165700dd7c21dc2e6ed9c4d07b4",
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "repository": "trevi00/zeus",
+      "number": 3,
+      "url": "https://github.com/trevi00/zeus/issues/3",
+      "state": "CLOSED",
+      "title": "[FA-002] 경험 수집 횟수와 독립 검증 횟수 혼동",
+      "purpose": "pull",
+      "evidence_ref": "sha256:55aaea8c2bc881cea839361955b4b3f87f836efcedadbabe476d36667f647e12",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:11:02.710833+00:00",
+      "first_seen": "2026-09-10T16:11:02.710833+00:00",
+      "sequence": 5
+    }
+  },
+  {
+    "issue": 4,
+    "ticket_id": "ZEUS-429c533aab0e",
+    "packet_ref": "sha256:8a536bb9744578ea1fa94812b9af87b4eae61d05b4a445901ff7a9cd48364722",
+    "event": {
+      "at": "2026-09-10T16:11:03.277402+00:00",
+      "id": "d227f231e901512ae58455e0ca9ad211d3ab5eb948dc6dda6b920843afed0091",
+      "kind": "closed",
+      "reason": "Code defect #4 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:0e882425d3b84206d768931273fc96f9ceceb4875e02ff243adb711c137a5726",
+      "ticket_id": "ZEUS-429c533aab0e",
+      "packet_ref": "sha256:8a536bb9744578ea1fa94812b9af87b4eae61d05b4a445901ff7a9cd48364722",
+      "request_id": null,
+      "content_hash": "bf381dd399a25485b371966035badf6d4b6e2c16be74429a8fcdfcf0342f5c4a",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.314743+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:8a536bb9744578ea1fa94812b9af87b4eae61d05b4a445901ff7a9cd48364722",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:fa74d2ab40266b3cfee04aac001ea9b0098b2f92a396a5aeaf012c57500af5bf"
+        }
+      ],
+      "verified_at": "2026-09-10T16:11:03.256216+00:00"
+    },
+    "projection": {
+      "id": "d6ec27b67129ed20219f2111a996cd01046734947b02bb56ae4d088e6cbdf0f3",
+      "ticket_id": "ZEUS-429c533aab0e",
+      "repository": "trevi00/zeus",
+      "number": 4,
+      "url": "https://github.com/trevi00/zeus/issues/4",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "bf381dd399a25485b371966035badf6d4b6e2c16be74429a8fcdfcf0342f5c4a",
+      "attempted_content_hash": "bf381dd399a25485b371966035badf6d4b6e2c16be74429a8fcdfcf0342f5c4a",
+      "body_hash": "d618bc81b43b4955ac5053f5a88125d329cdedd9a9de2eb0d9b1fdd09f8664cc",
+      "title_hash": "2778ca645b7528b4fa41a336d65614202d3d2a3f1a69494a835a78bed97bbd88",
+      "observed_body_hash": "d618bc81b43b4955ac5053f5a88125d329cdedd9a9de2eb0d9b1fdd09f8664cc",
+      "observed_title_hash": "2778ca645b7528b4fa41a336d65614202d3d2a3f1a69494a835a78bed97bbd88",
+      "title": "[FA-003] lease epoch 재사용으로 이전 소유자 권한 부활",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "d227f231e901512ae58455e0ca9ad211d3ab5eb948dc6dda6b920843afed0091",
+      "observation_ref": "sha256:b6ce6b61f831d0d30578af0b5d63ec72dc6ddf57482a22037530df9d0411181a",
+      "observation_id": "4e625118d94be85c9d6d4dba517393e81d46537994b0a1e47bbf6528401bf091",
+      "at": "2026-09-10T16:11:06.738024+00:00",
+      "review_ids": [
+        "ef82b56ae17e5eb4329594486845a8fe265726bb6b21b39f3805fe194b5c001b",
+        "f500d9d1fdfeda25a6bb81b3d0e4e7e9c342228c4129ac8cba8ddd4b4c4eefba"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "d227f231e901512ae58455e0ca9ad211d3ab5eb948dc6dda6b920843afed0091"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "65adf0b8b7526a92a27d81df7f4a33c8e4609298f9f2aa9c41f8d38651b367bf",
+      "ticket_id": "ZEUS-429c533aab0e",
+      "repository": "trevi00/zeus",
+      "number": 4,
+      "url": "https://github.com/trevi00/zeus/issues/4",
+      "state": "CLOSED",
+      "title": "[FA-003] lease epoch 재사용으로 이전 소유자 권한 부활",
+      "purpose": "pull",
+      "evidence_ref": "sha256:2e1f7602e70eb09d2c8fdef1ea296a2a16724b6f1760879713bfc4db0f612123",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:11:08.931088+00:00",
+      "first_seen": "2026-09-10T16:11:08.931088+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 5,
+    "ticket_id": "ZEUS-6d62d42d9333",
+    "packet_ref": "sha256:5756ff9cf52cda7a38fb84a1cb69100b366d3352aece75e453b94b3fbdbff795",
+    "event": {
+      "at": "2026-09-10T16:11:09.482850+00:00",
+      "id": "8be2b1b67abf21c6421f9ffa7c063d563f12bc354ae4c7b32b221594228107dd",
+      "kind": "closed",
+      "reason": "Code defect #5 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:ad924d46a7e68ccdb331ccc99e0d882bf7d611fa9e16dc1f5db4be1066ba17dc",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "packet_ref": "sha256:5756ff9cf52cda7a38fb84a1cb69100b366d3352aece75e453b94b3fbdbff795",
+      "request_id": null,
+      "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.326569+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:5756ff9cf52cda7a38fb84a1cb69100b366d3352aece75e453b94b3fbdbff795",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:b013f625ebefbbba98cc6bd716b8ee6e0d1f1a21c57ffe5ac873c969a53ebc00"
+        }
+      ],
+      "verified_at": "2026-09-10T16:11:09.462371+00:00"
+    },
+    "projection": {
+      "id": "0bf747cf0fb8e608613565ac45a06418988799f61768db10cd823b61cd786174",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "repository": "trevi00/zeus",
+      "number": 5,
+      "url": "https://github.com/trevi00/zeus/issues/5",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "attempted_content_hash": "d79d036bae3cb77fe95cf0485b67ff8f8ddd1ff1b5621cd47a115d6f3bdec081",
+      "body_hash": "9c0c593a0165ec811c0d73da774c22a05424d8a3eec4fcf4e6945bce497bda15",
+      "title_hash": "2dbd644b65e6e6d58a504816adf8e60232240b5e8d40479b8fdd72899d9951c0",
+      "observed_body_hash": "9c0c593a0165ec811c0d73da774c22a05424d8a3eec4fcf4e6945bce497bda15",
+      "observed_title_hash": "2dbd644b65e6e6d58a504816adf8e60232240b5e8d40479b8fdd72899d9951c0",
+      "title": "[FA-004] 중복 방지 검사와 기록 사이 동시 실행 경쟁",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "8be2b1b67abf21c6421f9ffa7c063d563f12bc354ae4c7b32b221594228107dd",
+      "observation_ref": "sha256:cc3bf9a0f5c99298b3965d23e999df2ef634064f1a445bf79914c28bc25326e7",
+      "observation_id": "df836b3305ca605cdde5e7b19f5f41f0557c8fb700a8fa3010a52deb5a378798",
+      "at": "2026-09-10T16:11:12.567851+00:00",
+      "review_ids": [
+        "27cc968e8840103e72a9c492ec4a6fcf944d9a9f8fb12c1e7bd5811a3057c131",
+        "28af6f639a36436fe21a4c9c67844cb74875e8708a5376e0ef3d7b80876651e2",
+        "2b4606aff7a2999ed1bdf6dbeaff1012b0049747f6048ccec144c0880265097b",
+        "4645989bd809b415e5438e7cc50fba5ee50f60021b387458094e8bb3ebbc5ccc",
+        "6214697c5fd93c1c8e2780fcc085f143589a9ee4190f9892c0bef229ad1753c7"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "8be2b1b67abf21c6421f9ffa7c063d563f12bc354ae4c7b32b221594228107dd"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "b11effccf0d983c711bb99cb860829831b806397c7c5b04d37ac91bc1d0ebab4",
+      "ticket_id": "ZEUS-6d62d42d9333",
+      "repository": "trevi00/zeus",
+      "number": 5,
+      "url": "https://github.com/trevi00/zeus/issues/5",
+      "state": "CLOSED",
+      "title": "[FA-004] 중복 방지 검사와 기록 사이 동시 실행 경쟁",
+      "purpose": "pull",
+      "evidence_ref": "sha256:6eec103bd0586b9c274671b2ee70ee6fbf42a1be382f14b3f212e18350085a03",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:11:14.856944+00:00",
+      "first_seen": "2026-09-10T16:11:14.856944+00:00",
+      "sequence": 5
+    }
+  },
+  {
+    "issue": 6,
+    "ticket_id": "ZEUS-f550e11eb0c4",
+    "packet_ref": "sha256:c68a3775375eb63ffe0fdf81f338fb9e6ee19ad58532394fe2ec8f76b56f0d6f",
+    "event": {
+      "at": "2026-09-10T16:11:15.445035+00:00",
+      "id": "d14c561f3b53ace1dd60d2eba98137c1aa0103bc1a5ff921c89a4b3941ab09cf",
+      "kind": "closed",
+      "reason": "Code defect #6 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:8b5fe9f763db69e55f98a69347d03f967f5193a4e9beeb6b08b6702319f935b8",
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "packet_ref": "sha256:c68a3775375eb63ffe0fdf81f338fb9e6ee19ad58532394fe2ec8f76b56f0d6f",
+      "request_id": null,
+      "content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.358673+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:c68a3775375eb63ffe0fdf81f338fb9e6ee19ad58532394fe2ec8f76b56f0d6f",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:abd08f5b7ca89710bfdf4fbafc59c4cccda5040436c108085c690f75ff30a75e"
+        }
+      ],
+      "verified_at": "2026-09-10T16:11:15.423710+00:00"
+    },
+    "projection": {
+      "id": "1973e58fc98ea656a9fac5b3caf3bbff637e92cc827220581949b6a7deed1309",
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "repository": "trevi00/zeus",
+      "number": 6,
+      "url": "https://github.com/trevi00/zeus/issues/6",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "attempted_content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "body_hash": "a818d4ff1368f66c110dfc9f54057a90dfce0936aee3e9202c0f527c26798dc2",
+      "title_hash": "c10c1aedb839d73073df52732704d0ceb3d5c109fa6d77dc358ca0093aac74cb",
+      "observed_body_hash": "a818d4ff1368f66c110dfc9f54057a90dfce0936aee3e9202c0f527c26798dc2",
+      "observed_title_hash": "c10c1aedb839d73073df52732704d0ceb3d5c109fa6d77dc358ca0093aac74cb",
+      "title": "[FA-005] PASS 이후 ERROR를 완료 helper가 무시",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "d14c561f3b53ace1dd60d2eba98137c1aa0103bc1a5ff921c89a4b3941ab09cf",
+      "observation_ref": "sha256:ab50c4bb9230922de67629b69f2b26718cef350ea42944460e5045921c923b16",
+      "observation_id": "c16ff72ff1cdba9dce444cee85a148365a4096fa386beefa840c336c25c6086c",
+      "at": "2026-09-10T16:11:18.612043+00:00",
+      "review_ids": [
+        "3d8aec71be619fa6e6d86f891e7c53b58c7e3c448ceb86b6fe138a3dc2ed7559",
+        "d79c8e80e18556e9248e3afca1a3ec4f84e63ec0958289db12ec0cf79c67f299",
+        "e60b2cde189425f442df4746ba4cdf568cf5d6cbe24f85139cdf3df68a5af069"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "d14c561f3b53ace1dd60d2eba98137c1aa0103bc1a5ff921c89a4b3941ab09cf"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "e874a098f2a0d066a8dd00cdeb51e39d3473118af07917ae6291328c6f45c640",
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "repository": "trevi00/zeus",
+      "number": 6,
+      "url": "https://github.com/trevi00/zeus/issues/6",
+      "state": "CLOSED",
+      "title": "[FA-005] PASS 이후 ERROR를 완료 helper가 무시",
+      "purpose": "pull",
+      "evidence_ref": "sha256:945f2e9f7e18c10e6aebc0908fbe5dfdd449f3314f036e0913b82a1b3ff0ad09",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:11:20.829696+00:00",
+      "first_seen": "2026-09-10T16:11:20.829696+00:00",
+      "sequence": 5
+    }
+  },
+  {
+    "issue": 7,
+    "ticket_id": "ZEUS-fb340b746179",
+    "packet_ref": "sha256:e6ab54756ebd14d56e6d021f3c56eb27dd22a765cb8768247331ef64e96f7fa3",
+    "event": {
+      "at": "2026-09-10T16:11:21.389006+00:00",
+      "id": "229c4b5d094969b0a76d73269e351e880e8a6a3c2c87015cb058f02c47ab3503",
+      "kind": "closed",
+      "reason": "Code defect #7 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:7d00286606a04f400d5afae4fe87e9d18de0649509a6f173ef94a0374ef0d975",
+      "ticket_id": "ZEUS-fb340b746179",
+      "packet_ref": "sha256:e6ab54756ebd14d56e6d021f3c56eb27dd22a765cb8768247331ef64e96f7fa3",
+      "request_id": null,
+      "content_hash": "fe13dceb48b66cab295ef14143d4dcb51309927689de35a29cedea26e4f27a0b",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.369749+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:e6ab54756ebd14d56e6d021f3c56eb27dd22a765cb8768247331ef64e96f7fa3",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:502f26d1407707dcc3fe664b2e527612ae551c80f91abb8791c42e4078c7a914"
+        }
+      ],
+      "verified_at": "2026-09-10T16:11:21.366148+00:00"
+    },
+    "projection": {
+      "id": "0986e55f83754fb6d06d349f590d91c8e5fa11eea1800718d2943066a96439a8",
+      "ticket_id": "ZEUS-fb340b746179",
+      "repository": "trevi00/zeus",
+      "number": 7,
+      "url": "https://github.com/trevi00/zeus/issues/7",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "fe13dceb48b66cab295ef14143d4dcb51309927689de35a29cedea26e4f27a0b",
+      "attempted_content_hash": "fe13dceb48b66cab295ef14143d4dcb51309927689de35a29cedea26e4f27a0b",
+      "body_hash": "c62dc4675d85a0b9b91322b6fc7730a42f430a56c4bdcab5dc1857fba4a5b5f4",
+      "title_hash": "bedca17406505a612164e0c288c4472966222028b5bef29328d07fd9db4620d7",
+      "observed_body_hash": "c62dc4675d85a0b9b91322b6fc7730a42f430a56c4bdcab5dc1857fba4a5b5f4",
+      "observed_title_hash": "bedca17406505a612164e0c288c4472966222028b5bef29328d07fd9db4620d7",
+      "title": "[FA-006] malformed 알림이 전체 릴레이 중단",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "229c4b5d094969b0a76d73269e351e880e8a6a3c2c87015cb058f02c47ab3503",
+      "observation_ref": "sha256:f45ca925d2a74ea1788f281bbb8f96c30700f5c4da17f39bc0d30d69d888066b",
+      "observation_id": "4672d1309fb953dcc5551f81f5292f80e410187cc2647a85e1c346f05a064239",
+      "at": "2026-09-10T16:11:24.411389+00:00",
+      "review_ids": [
+        "109d97af3b9b540fd5edac1802f1b76ed605bf7cae0d62b37e45e16c153ee9ab",
+        "77ce07907c6cb138de85b7c487a0bf8aaebba81d70a68ce04a661b4043657af7"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "229c4b5d094969b0a76d73269e351e880e8a6a3c2c87015cb058f02c47ab3503"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "21e273c9cc630cb9e8d8161055cc459fa2776530ec7641ee2fb7f2e409f20675",
+      "ticket_id": "ZEUS-fb340b746179",
+      "repository": "trevi00/zeus",
+      "number": 7,
+      "url": "https://github.com/trevi00/zeus/issues/7",
+      "state": "CLOSED",
+      "title": "[FA-006] malformed 알림이 전체 릴레이 중단",
+      "purpose": "pull",
+      "evidence_ref": "sha256:1c24079c2bcdad1f73f1f2ea4bd7bf3320818d5d4bacd5e1506f1824b7b7b7e6",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:11:26.776898+00:00",
+      "first_seen": "2026-09-10T16:11:26.776898+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 8,
+    "ticket_id": "ZEUS-2dd28a919f60",
+    "packet_ref": "sha256:34f46b6078a255ec76da2f6198250690b68d4043a12e004fda076f28d9029946",
+    "event": {
+      "at": "2026-09-10T16:11:27.345042+00:00",
+      "id": "ac13bcbb2c414261f6dae48a7ae36f90568104afb9fc814ee73a8e9b0fca881f",
+      "kind": "closed",
+      "reason": "Code defect #8 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:0f20273806a59b88bfcdc8c2d463328b5233d2db8fe64e074b6917d205446e8b",
+      "ticket_id": "ZEUS-2dd28a919f60",
+      "packet_ref": "sha256:34f46b6078a255ec76da2f6198250690b68d4043a12e004fda076f28d9029946",
+      "request_id": null,
+      "content_hash": "0410a002eeda06a6a48a9528af315a94c9928690a996653f3b6534aa9d640124",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.398617+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:34f46b6078a255ec76da2f6198250690b68d4043a12e004fda076f28d9029946",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:026d980367a9fa44d4a52fd0743211881913b58d90075f802d7066262fbe0df5"
+        }
+      ],
+      "verified_at": "2026-09-10T16:11:27.323266+00:00"
+    },
+    "projection": {
+      "id": "a03861da2b3ff220dd6b75cd47744f20f96b59a3c973966700992c15fd9c8a04",
+      "ticket_id": "ZEUS-2dd28a919f60",
+      "repository": "trevi00/zeus",
+      "number": 8,
+      "url": "https://github.com/trevi00/zeus/issues/8",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "0410a002eeda06a6a48a9528af315a94c9928690a996653f3b6534aa9d640124",
+      "attempted_content_hash": "0410a002eeda06a6a48a9528af315a94c9928690a996653f3b6534aa9d640124",
+      "body_hash": "3c3ec3e2e35b49377e2e8a680a6228b622e99d584fb58515ede3471d3c464b54",
+      "title_hash": "17164f3f5c1d07177a3f5e20c456e8b6a88d1d7452b2049f5ef725ba6e26dee6",
+      "observed_body_hash": "3c3ec3e2e35b49377e2e8a680a6228b622e99d584fb58515ede3471d3c464b54",
+      "observed_title_hash": "17164f3f5c1d07177a3f5e20c456e8b6a88d1d7452b2049f5ef725ba6e26dee6",
+      "title": "[FA-007] 신규 compaction sidecar로 봉인 파손 판정 강등",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "ac13bcbb2c414261f6dae48a7ae36f90568104afb9fc814ee73a8e9b0fca881f",
+      "observation_ref": "sha256:672f7a492126491e8b12eae3b1961c59f1548b0ee842b7f224ca0fc0a42ed25c",
+      "observation_id": "c48edd4d4f254bf6bee32954840dfaebc983057f2e39ed2bb9b3445d219b70a8",
+      "at": "2026-09-10T16:11:30.516900+00:00",
+      "review_ids": [
+        "d118c21c54f86d180f2f32ac42c3486cedf296e80432934171c928cac51db177"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "ac13bcbb2c414261f6dae48a7ae36f90568104afb9fc814ee73a8e9b0fca881f"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "55956bfc8594ba3ab0e527c12170559a05a00b91913ce46b059a0fa8554c9beb",
+      "ticket_id": "ZEUS-2dd28a919f60",
+      "repository": "trevi00/zeus",
+      "number": 8,
+      "url": "https://github.com/trevi00/zeus/issues/8",
+      "state": "CLOSED",
+      "title": "[FA-007] 신규 compaction sidecar로 봉인 파손 판정 강등",
+      "purpose": "pull",
+      "evidence_ref": "sha256:510314cdf93a3961b606a6fa7ee6b70132a7584a53d0cc3678fa22dc5c0887e2",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:11:32.706626+00:00",
+      "first_seen": "2026-09-10T16:11:32.706626+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 9,
+    "ticket_id": "ZEUS-4e7e2e2b01a9",
+    "packet_ref": "sha256:aaa85f2d8673362b5fc4c4c02b745bed997d176d21662a2bdf3a953beb860ae5",
+    "event": {
+      "at": "2026-09-10T16:11:33.240899+00:00",
+      "id": "ce432f440000101df7f886a7cbfc9921ecbae8f632c2a2f156df0ff4d0b3775e",
+      "kind": "closed",
+      "reason": "Code defect #9 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+      "revision": 1,
+      "sequence": 1,
+      "proof_ref": "sha256:0f3d93c5d93c1afef0a0ea5b4fab758488b81713fb02678b5fb0da9b6a063aab",
+      "ticket_id": "ZEUS-4e7e2e2b01a9",
+      "packet_ref": "sha256:aaa85f2d8673362b5fc4c4c02b745bed997d176d21662a2bdf3a953beb860ae5",
+      "request_id": null,
+      "content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
+      "from_sequence": 0,
+      "previous_event": null,
+      "previous_status": "open",
+      "previous_updated_at": "2026-09-09T02:59:34.422477+00:00"
+    },
+    "proof": {
+      "attestation_scope": "configured_key_authority_only",
+      "packet_ref": "sha256:aaa85f2d8673362b5fc4c4c02b745bed997d176d21662a2bdf3a953beb860ae5",
+      "physical_human_presence_verified": false,
+      "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+      "required_human_signers": [],
+      "required_signers": [
+        "zeus-code-closure"
+      ],
+      "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+      "signatures": [
+        {
+          "principal": "zeus-code-closure",
+          "public_key_hash": "e1c11ef47ffa81bc9fa7a5089ef6d8bf5b491b7d634670fefa4cf6ef9665378d",
+          "role": "automation",
+          "signature_ref": "sha256:4ce55a4b47939f0d4b06d0b51484daf8475e00c0033f5068ebb17b6d3d715b87"
+        }
+      ],
+      "verified_at": "2026-09-10T16:11:33.218983+00:00"
+    },
+    "projection": {
+      "id": "3fd8c3f1d7d0a082928172ad96b0b6ab4d8f41c8a69ee9d1e4a593efc0844eaa",
+      "ticket_id": "ZEUS-4e7e2e2b01a9",
+      "repository": "trevi00/zeus",
+      "number": 9,
+      "url": "https://github.com/trevi00/zeus/issues/9",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
+      "attempted_content_hash": "671f169b6f7ea4faa939dbb64586221ae224cd695b5fc08f1b209a83ef50f7dd",
+      "body_hash": "3fc324b08075e4e8118922fc0133c9485b164e650c07cf69c08e8bb47c084242",
+      "title_hash": "a46ea8080ca6c50c50ee7c2b0437347e24b8375686a465568af32c0a0486c136",
+      "observed_body_hash": "3fc324b08075e4e8118922fc0133c9485b164e650c07cf69c08e8bb47c084242",
+      "observed_title_hash": "a46ea8080ca6c50c50ee7c2b0437347e24b8375686a465568af32c0a0486c136",
+      "title": "[FA-008] 기술 스택 템플릿과 실제 라우터 불일치",
+      "desired_state": "CLOSED",
+      "observed_state": "CLOSED",
+      "lifecycle_sequence": 1,
+      "lifecycle_event": "ce432f440000101df7f886a7cbfc9921ecbae8f632c2a2f156df0ff4d0b3775e",
+      "observation_ref": "sha256:2c5ea59e136dcd9168897be9432492d7d1a042b3f80753eca2f0d6239780024c",
+      "observation_id": "e2f7171e0baf92de9d067db0359ee409df9a62d573322298589379997dd7b8b7",
+      "at": "2026-09-10T16:11:36.588466+00:00",
+      "review_ids": [
+        "2be436abcaf4330e1db3925457a27d61ab41bdb7019dc4b8c436d16977f4bd22",
+        "e5f223fd7c192be7d213530e0ce6548a4264bf7203c3c0d2c877897167920736"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": "ce432f440000101df7f886a7cbfc9921ecbae8f632c2a2f156df0ff4d0b3775e"
+    },
+    "local_status": "closed",
+    "comment_readback": {
+      "id": "e7500cfe87ec08f3f1e808c4c53086ee36aeaaaac71dcd38b17070ea767cd238",
+      "ticket_id": "ZEUS-4e7e2e2b01a9",
+      "repository": "trevi00/zeus",
+      "number": 9,
+      "url": "https://github.com/trevi00/zeus/issues/9",
+      "state": "CLOSED",
+      "title": "[FA-008] 기술 스택 템플릿과 실제 라우터 불일치",
+      "purpose": "pull",
+      "evidence_ref": "sha256:d735bf1063f6393c749380babfd29ab9a72674bf8863b7b27e1dafe8fcfd6ead",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:11:39.040476+00:00",
+      "first_seen": "2026-09-10T16:11:39.040476+00:00",
+      "sequence": 3
+    }
+  }
+]

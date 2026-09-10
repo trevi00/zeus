@@ -1,0 +1,390 @@
+{
+  "criteria": [
+    {
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "revision": 1,
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "solution_commit": "896d2ab81bbd7913f68095df562a4f4fc6327bd1",
+      "observed_at": "2026-09-10T16:10:56.637389+00:00",
+      "kind": "ticket-criterion-evidence-v1",
+      "criterion_index": 0,
+      "outcome": "passed",
+      "details": {
+        "review_scope": "Acquisition provenance observed/pinned A/pinned B remains distinct without inflating independent occurrence counts.",
+        "review_file": "docs/zeus/reviews/claude-work-002/36-review.md",
+        "review_file_sha256": "c718d9228aaf2027f7c265ee4162cb4792148d96a17660258641718af2b36917",
+        "source_references": [
+          "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/trace.md",
+          "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/analysis.json"
+        ],
+        "current_targets": {
+          "exit": 0,
+          "seconds": 203.40732510000817,
+          "head": "03aafd2f8dad31ab5b5c852f052de5d8887da884",
+          "files": [
+            "tests/test_decision_recovery.py",
+            "tests/test_execution_fence.py",
+            "tests/test_experience.py",
+            "tests/test_idempotency_races.py",
+            "tests/test_maintenance.py",
+            "tests/test_native_hooks.py",
+            "tests/test_outbox.py",
+            "tests/test_project_skills.py",
+            "tests/test_python_channel.py",
+            "tests/test_research_audits.py",
+            "tests/test_sdd.py",
+            "tests/test_skill_routing.py",
+            "tests/test_ticket_lifecycle.py",
+            "tests/test_verification.py",
+            "tests/test_workflow.py"
+          ],
+          "sha256": "b4faa8f80f2abfc2457061420d4b50881e1a5983e760b2d42e9ad876f0c86933",
+          "postgres_enabled": true
+        },
+        "ci_head": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+        "target_skips": "7 skipped: explicit disposable Docker tests and POSIX process-group fixture; not counted as passes. Remote integration runs disposable Docker; Ubuntu jobs cover POSIX.",
+        "ci_checks": [
+          {
+            "name": "test (ubuntu-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088935"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066622"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088704"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066703"
+          },
+          {
+            "name": "test (windows-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945089007"
+          },
+          {
+            "name": "test (windows-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066652"
+          },
+          {
+            "name": "test (windows-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088880"
+          },
+          {
+            "name": "test (windows-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066535"
+          },
+          {
+            "name": "integration",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088522"
+          },
+          {
+            "name": "integration",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066418"
+          }
+        ],
+        "observation": "Current review of pinned source, prior independent receipts, fresh targeted execution and CI; prior runs are not re-timestamped.",
+        "authority": "automation evidence attestation only; no physical human, live model, device or deployment acceptance",
+        "criterion": "주장의 출처와 현재 재현 범위를 확인하고 미검증을 명시한다.",
+        "assessment": "Source and bounded adoption findings are traced; limitations retained."
+      }
+    },
+    {
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "revision": 1,
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "solution_commit": "896d2ab81bbd7913f68095df562a4f4fc6327bd1",
+      "observed_at": "2026-09-10T16:10:56.637389+00:00",
+      "kind": "ticket-criterion-evidence-v1",
+      "criterion_index": 1,
+      "outcome": "passed",
+      "details": {
+        "review_scope": "Acquisition provenance observed/pinned A/pinned B remains distinct without inflating independent occurrence counts.",
+        "review_file": "docs/zeus/reviews/claude-work-002/36-review.md",
+        "review_file_sha256": "c718d9228aaf2027f7c265ee4162cb4792148d96a17660258641718af2b36917",
+        "source_references": [
+          "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/trace.md",
+          "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/analysis.json"
+        ],
+        "current_targets": {
+          "exit": 0,
+          "seconds": 203.40732510000817,
+          "head": "03aafd2f8dad31ab5b5c852f052de5d8887da884",
+          "files": [
+            "tests/test_decision_recovery.py",
+            "tests/test_execution_fence.py",
+            "tests/test_experience.py",
+            "tests/test_idempotency_races.py",
+            "tests/test_maintenance.py",
+            "tests/test_native_hooks.py",
+            "tests/test_outbox.py",
+            "tests/test_project_skills.py",
+            "tests/test_python_channel.py",
+            "tests/test_research_audits.py",
+            "tests/test_sdd.py",
+            "tests/test_skill_routing.py",
+            "tests/test_ticket_lifecycle.py",
+            "tests/test_verification.py",
+            "tests/test_workflow.py"
+          ],
+          "sha256": "b4faa8f80f2abfc2457061420d4b50881e1a5983e760b2d42e9ad876f0c86933",
+          "postgres_enabled": true
+        },
+        "ci_head": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+        "target_skips": "7 skipped: explicit disposable Docker tests and POSIX process-group fixture; not counted as passes. Remote integration runs disposable Docker; Ubuntu jobs cover POSIX.",
+        "ci_checks": [
+          {
+            "name": "test (ubuntu-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088935"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066622"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088704"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066703"
+          },
+          {
+            "name": "test (windows-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945089007"
+          },
+          {
+            "name": "test (windows-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066652"
+          },
+          {
+            "name": "test (windows-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088880"
+          },
+          {
+            "name": "test (windows-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066535"
+          },
+          {
+            "name": "integration",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088522"
+          },
+          {
+            "name": "integration",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066418"
+          }
+        ],
+        "observation": "Current review of pinned source, prior independent receipts, fresh targeted execution and CI; prior runs are not re-timestamped.",
+        "authority": "automation evidence attestation only; no physical human, live model, device or deployment acceptance",
+        "criterion": "Codex·Claude 검토의 합의/이견을 같은 티켓 버전과 증거에 연결한다.",
+        "assessment": "Claude implementation/review and Codex independent verdict are linked to this unchanged ticket revision."
+      }
+    },
+    {
+      "ticket_id": "ZEUS-7fcc5f0308e7",
+      "revision": 1,
+      "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+      "solution_commit": "896d2ab81bbd7913f68095df562a4f4fc6327bd1",
+      "observed_at": "2026-09-10T16:10:56.637389+00:00",
+      "kind": "ticket-criterion-evidence-v1",
+      "criterion_index": 2,
+      "outcome": "passed",
+      "details": {
+        "review_scope": "Acquisition provenance observed/pinned A/pinned B remains distinct without inflating independent occurrence counts.",
+        "review_file": "docs/zeus/reviews/claude-work-002/36-review.md",
+        "review_file_sha256": "c718d9228aaf2027f7c265ee4162cb4792148d96a17660258641718af2b36917",
+        "source_references": [
+          "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/trace.md",
+          "https://github.com/trevi00/zeus/blob/fc4855b9cf55d53a1420fa6c047514191b6623e6/docs/full-analysis/harness-experience/analysis.json"
+        ],
+        "current_targets": {
+          "exit": 0,
+          "seconds": 203.40732510000817,
+          "head": "03aafd2f8dad31ab5b5c852f052de5d8887da884",
+          "files": [
+            "tests/test_decision_recovery.py",
+            "tests/test_execution_fence.py",
+            "tests/test_experience.py",
+            "tests/test_idempotency_races.py",
+            "tests/test_maintenance.py",
+            "tests/test_native_hooks.py",
+            "tests/test_outbox.py",
+            "tests/test_project_skills.py",
+            "tests/test_python_channel.py",
+            "tests/test_research_audits.py",
+            "tests/test_sdd.py",
+            "tests/test_skill_routing.py",
+            "tests/test_ticket_lifecycle.py",
+            "tests/test_verification.py",
+            "tests/test_workflow.py"
+          ],
+          "sha256": "b4faa8f80f2abfc2457061420d4b50881e1a5983e760b2d42e9ad876f0c86933",
+          "postgres_enabled": true
+        },
+        "ci_head": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+        "target_skips": "7 skipped: explicit disposable Docker tests and POSIX process-group fixture; not counted as passes. Remote integration runs disposable Docker; Ubuntu jobs cover POSIX.",
+        "ci_checks": [
+          {
+            "name": "test (ubuntu-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088935"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066622"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088704"
+          },
+          {
+            "name": "test (ubuntu-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066703"
+          },
+          {
+            "name": "test (windows-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945089007"
+          },
+          {
+            "name": "test (windows-latest, 3.12)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066652"
+          },
+          {
+            "name": "test (windows-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088880"
+          },
+          {
+            "name": "test (windows-latest, 3.14)",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066535"
+          },
+          {
+            "name": "integration",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499117406/job/102945088522"
+          },
+          {
+            "name": "integration",
+            "conclusion": "SUCCESS",
+            "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34499111467/job/102945066418"
+          }
+        ],
+        "observation": "Current review of pinned source, prior independent receipts, fresh targeted execution and CI; prior runs are not re-timestamped.",
+        "authority": "automation evidence attestation only; no physical human, live model, device or deployment acceptance",
+        "criterion": "변경을 적용하면 기존 정상 동작과 실패 대조군, Windows/Linux 해당 경로를 검증한다.",
+        "assessment": "Fresh Windows/PG target suite and Windows/Linux integration CI pass; original negative controls and scope limits are retained."
+      }
+    }
+  ],
+  "environment": {
+    "ticket_id": "ZEUS-7fcc5f0308e7",
+    "revision": 1,
+    "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+    "solution_commit": "896d2ab81bbd7913f68095df562a4f4fc6327bd1",
+    "observed_at": "2026-09-10T16:10:56.637389+00:00",
+    "kind": "ticket-environment-v1",
+    "details": {
+      "local": "Windows PowerShell; real isolated PostgreSQL targets",
+      "remote": "GitHub Windows/Ubuntu matrix and PostgreSQL/Redis integration",
+      "tests": {
+        "exit": 0,
+        "seconds": 203.40732510000817,
+        "head": "03aafd2f8dad31ab5b5c852f052de5d8887da884",
+        "files": [
+          "tests/test_decision_recovery.py",
+          "tests/test_execution_fence.py",
+          "tests/test_experience.py",
+          "tests/test_idempotency_races.py",
+          "tests/test_maintenance.py",
+          "tests/test_native_hooks.py",
+          "tests/test_outbox.py",
+          "tests/test_project_skills.py",
+          "tests/test_python_channel.py",
+          "tests/test_research_audits.py",
+          "tests/test_sdd.py",
+          "tests/test_skill_routing.py",
+          "tests/test_ticket_lifecycle.py",
+          "tests/test_verification.py",
+          "tests/test_workflow.py"
+        ],
+        "sha256": "b4faa8f80f2abfc2457061420d4b50881e1a5983e760b2d42e9ad876f0c86933",
+        "postgres_enabled": true
+      },
+      "ci_head": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+      "no_host_reboot": true,
+      "human_acceptance": false
+    }
+  },
+  "packet": {
+    "solution_commit": "896d2ab81bbd7913f68095df562a4f4fc6327bd1",
+    "criteria": [
+      {
+        "index": 0,
+        "criterion_hash": "203580ec9518da07ea1b56a4796815c9d92a0831b7d96d627b3a3d58a8a30d40",
+        "outcome": "passed",
+        "evidence_refs": [
+          "sha256:8345288798f2e515536ede5a4a7a265d03599b3dffaea9312a27a634ffdb3c0a"
+        ]
+      },
+      {
+        "index": 1,
+        "criterion_hash": "9218b412c8f93487988ed4e5a4a7d747d0ffa05370e3fd8a861ba174853e2b77",
+        "outcome": "passed",
+        "evidence_refs": [
+          "sha256:6ec4a9550082cdee08192316885439d7176a75d345a1ddb75ffb6177c166a11d"
+        ]
+      },
+      {
+        "index": 2,
+        "criterion_hash": "990c4a718d41b9659b145fe4ead52c38cf3c13dbe0aa2486be077fbfc4006143",
+        "outcome": "passed",
+        "evidence_refs": [
+          "sha256:4851b143ccb8445ebc15445bb3b488b25f1d463aceacfc72b17a1c863468916a"
+        ]
+      }
+    ],
+    "environment_ref": "sha256:14d45edddb7b90feb14fecc9b910be52ee193114661077800426e21e8c61def7",
+    "reason": "Code defect #3 resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.",
+    "version": 1,
+    "ticket_id": "ZEUS-7fcc5f0308e7",
+    "revision": 1,
+    "content_hash": "638a48fde60abc1a6f17aa813527a14d1122e858dc32c2d1cf6f14a42ff0b98c",
+    "sequence": 0,
+    "expected_status": "open",
+    "criteria_hash": "c214e2b59b33c86bcedd2c7ac5166d37308f50782d1c4d5b4a928fe13e64ddaa",
+    "issued_at": "2026-09-10T16:10:56.759846+00:00",
+    "expires_at": "2026-09-10T17:10:56.759846+00:00",
+    "policy_commit": "8dfc6025b9f77c104991a8cc526a656e327b72f4",
+    "policy_hash": "e0727955d5327520211a03974393ed6909d548f1951ba56de8eb9c9c3e120053",
+    "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval"
+  },
+  "signature": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgu+paEPSw81aYlPZay8RFpZluIV\n3Dy5Ukj+5nFEepvK0AAAAUemV1cy10aWNrZXQtY2xvc2UtdjEAAAAAAAAABnNoYTUxMgAA\nAFMAAAALc3NoLWVkMjU1MTkAAABAjOyZQQ3y6htFercsmR7yLqmNs69IvuRV04suPpb8pP\nnQrLVw3xboRc7/IL5ke1GR9IGb99X3/AAa56+i5UvnAg==\n-----END SSH SIGNATURE-----\n"
+}

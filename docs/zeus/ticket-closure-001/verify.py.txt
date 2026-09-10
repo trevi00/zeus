@@ -1,0 +1,18 @@
+﻿import json,subprocess,os,time,hashlib,sys
+from pathlib import Path
+from codex_harness.bootstrap import database_url,build
+sys.stdout.reconfigure(encoding='utf-8')
+b=Path('.runtime/ticket-closure-001');files={'tests/test_outbox.py','tests/test_ticket_lifecycle.py','tests/test_workflow.py','tests/test_sdd.py','tests/test_experience.py','tests/test_idempotency_races.py','tests/test_skill_routing.py','tests/test_project_skills.py'}
+rows=[]
+for n in range(35,42):
+ r=json.loads(subprocess.check_output(['gh','pr','view',str(n),'--repo','trevi00/zeus','--json','number,state,headRefOid,mergeCommit,files,url'],text=True,encoding='utf-8'));assert r['state']=='MERGED';rows.append(r)
+ files.update(f['path'] for f in r['files'] if f['path'].startswith('tests/') and f['path'].endswith('.py') and Path(f['path']).exists())
+(b/'prs.json').write_text(json.dumps(rows,indent=2),'utf-8')
+with build().store.transaction() as tx:
+ assert tx.get('ticket_trust_anchors','deployment') is None,'Existing trust anchor must not be replaced'
+env=dict(os.environ,HARNESS_INTEGRATION='1',HARNESS_DATABASE_URL=database_url(),ZEUS_DATABASE_URL=database_url(),PYTHONIOENCODING='utf-8')
+argv=[sys.executable,'-m','pytest','-q',*sorted(files)]
+t=time.monotonic();p=subprocess.run(argv,capture_output=True,env=env);raw=p.stdout+p.stderr
+(b/'targets.log').write_bytes(raw)
+(b/'targets.json').write_text(json.dumps({'exit':p.returncode,'seconds':time.monotonic()-t,'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'files':sorted(files),'sha256':hashlib.sha256(raw).hexdigest(),'postgres_enabled':True},indent=2),'utf-8')
+print(p.returncode,raw.decode('utf-8',errors='replace')[-1200:],flush=True)

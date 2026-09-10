@@ -1,0 +1,82 @@
+import json,subprocess,sys,os,hashlib
+from pathlib import Path
+from datetime import datetime,timezone
+from codex_harness.bootstrap import build,organization
+from codex_harness.application.tickets import Tickets
+from codex_harness.adapters.ticket_cli import build_lifecycle
+from codex_harness.adapters.github_tickets import GitHubTickets
+from codex_harness.domain.model import canonical,digest
+
+sys.stdout.reconfigure(encoding='utf-8')
+B=Path('.runtime/ticket-closure-001');D=Path('docs/zeus/ticket-closure-001');D.mkdir(parents=True,exist_ok=True)
+tests=json.loads((B/'targets.json').read_text('utf-8'));assert tests['exit']==0
+ci=json.loads((B/'policy-ci.json').read_text('utf-8'));assert len(ci['statusCheckRollup'])==10 and all(c['conclusion']=='SUCCESS' for c in ci['statusCheckRollup'])
+service=build();tickets=Tickets(service.store,organization());life=build_lifecycle(tickets)
+policy=life.authority.policy();assert policy['definition']['required_human_signers']==[] and policy['enrolled']['zeus-code-closure']['role']=='automation'
+projector=GitHubTickets(tickets,life.artifacts,life)
+old=json.loads(Path('.runtime/issue-closure-comments/ledger.json').read_text('utf-8'))
+mapping={g['number']:r['id'] for r in old for g in r['github'] if g['repository']=='trevi00/zeus'}
+reviews={2:'docs/zeus/reviews/pr35-001/review.md',3:'docs/zeus/reviews/claude-work-002/36-review.md',
+4:'docs/zeus/reviews/pr-revisions-001/37-review.md',5:'docs/zeus/reviews/claude-work-002/38-review.md',
+6:'docs/zeus/reviews/claude-work-002/39-review.md',7:'docs/zeus/implementation/outbox-isolation-001/README.md',
+8:'docs/zeus/reviews/pr36-44-001/40-review.md',9:'docs/zeus/reviews/pr36-44-001/41-review.md'}
+findings={2:'UTF-8 child stdin/stdout/stderr is preserved; cp949 negative control fails. Parent environment is not mutated.',
+3:'Acquisition provenance observed/pinned A/pinned B remains distinct without inflating independent occurrence counts.',
+4:'Durable generation fence rejects restored stale task heartbeat/complete/fail; whole-database rollback is not claimed.',
+5:'Real PG multi-process ready/rendezvous controls demonstrate serialized deduplication and unlocked negative control.',
+6:'Latest integrity/error state cannot be hidden by an earlier completion/PASS record; evidence states are preserved.',
+7:'Malformed outbox records are quarantined individually; valid messages continue, retry and lost-ack evidence is preserved.',
+8:'Missing evidence references are reported distinctly from complete/healthy; corrupt refs are rejected, not silently healed.',
+9:'Stack YAML parsing, major-version normalization, nested skill discovery and deterministic selection agree with consumers.'}
+solution=json.loads((B/'policy-merge.json').read_text('utf-8'))['mergeCommit']['oid']
+results=json.loads((B/'closures.json').read_text('utf-8')) if (B/'closures.json').exists() else []
+for n in range(2,10):
+ if any(r['issue']==n for r in results):continue
+ t=tickets.get(mapping[n]);assert t['revision']==1 and len(t['content']['acceptance_criteria'])==3
+ assert t['content_hash']==next(r['content_hash'] for r in old if r['id']==t['id']), 'Criteria changed since source review'
+ if t['status']=='closed':
+  packet_ref=life.verify_closed(t)['packet_ref']
+  packet=life.artifacts.document(packet_ref)
+ else:
+  assert t['status']=='open'
+  now=datetime.now(timezone.utc).isoformat()
+  base={'ticket_id':t['id'],'revision':t['revision'],'content_hash':t['content_hash'],'solution_commit':solution,'observed_at':now}
+  source_refs=t['content']['evidence_refs']
+  common={'review_scope':findings[n],'review_file':reviews[n],'review_file_sha256':hashlib.sha256(Path(reviews[n]).read_bytes()).hexdigest(),
+          'source_references':source_refs,'current_targets':tests,'ci_head':ci['headRefOid'],
+          'target_skips':'7 skipped: explicit disposable Docker tests and POSIX process-group fixture; not counted as passes. Remote integration runs disposable Docker; Ubuntu jobs cover POSIX.',
+          'ci_checks':[{k:c[k] for k in ['name','conclusion','detailsUrl']} for c in ci['statusCheckRollup']],
+          'observation':'Current review of pinned source, prior independent receipts, fresh targeted execution and CI; prior runs are not re-timestamped.',
+          'authority':'automation evidence attestation only; no physical human, live model, device or deployment acceptance'}
+  criteria=[];documents=[]
+  for i,text in enumerate(t['content']['acceptance_criteria']):
+   document={**base,'kind':'ticket-criterion-evidence-v1','criterion_index':i,'outcome':'passed',
+             'details':{**common,'criterion':text,'assessment':['Source and bounded adoption findings are traced; limitations retained.',
+              'Claude implementation/review and Codex independent verdict are linked to this unchanged ticket revision.',
+              'Fresh Windows/PG target suite and Windows/Linux integration CI pass; original negative controls and scope limits are retained.'][i]}}
+   ref=life.artifacts.put(canonical(document),'code-closure-criterion')['ref'];documents.append(document)
+   criteria.append({'index':i,'criterion_hash':digest(text),'outcome':'passed','evidence_refs':[ref]})
+  environment={**base,'kind':'ticket-environment-v1','details':{'local':'Windows PowerShell; real isolated PostgreSQL targets','remote':'GitHub Windows/Ubuntu matrix and PostgreSQL/Redis integration','tests':tests,'ci_head':ci['headRefOid'],'no_host_reboot':True,'human_acceptance':False}}
+  env_ref=life.artifacts.put(canonical(environment),'code-closure-environment')['ref']
+  reason=f'Code defect #{n} resolved and existing three acceptance criteria reviewed. Automation-only closure, not deployment or human acceptance.'
+  prepared=life.prepare(t['id'],{'solution_commit':solution,'criteria':criteria,'environment_ref':env_ref,'reason':reason})
+  packet_ref=prepared['packet_ref'];packet=prepared['packet']
+  f=B/f'{n}-{packet_ref[7:]}-packet.json';f.write_text(prepared['signing_payload'],'utf-8')
+  subprocess.run(['ssh-keygen','-Y','sign','-f','C:/Users/rudtn/.zeus/operator-keys/code-closure-ed25519','-n','zeus-ticket-close-v1',str(f)],check=True,capture_output=True)
+  sig=Path(str(f)+'.sig').read_text('utf-8')
+  signature_ref=life.artifacts.put(sig,'operator-automation-closure-signature')['ref']
+  life.close(packet_ref,[{'principal':'zeus-code-closure','signature_ref':signature_ref}])
+  (D/f'{n}-evidence.json').write_text(json.dumps({'criteria':documents,'environment':environment,'packet':packet,'signature':sig},ensure_ascii=False,indent=2),'utf-8')
+ projection=projector.sync(t['id'],'trevi00/zeus',expected_revision=t['revision'])
+ assert projection['observed_state']=='CLOSED' and projection['number']==n
+ final=tickets.get(t['id']);assert final['status']=='closed';event=life.verify_closed(final)
+ result={'issue':n,'ticket_id':t['id'],'packet_ref':packet_ref,'event':event,'proof':life.artifacts.document(event['proof_ref']),'projection':projection,'local_status':final['status']}
+ results.append(result);(B/'closures.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),'utf-8')
+ body=f'종료 완료 — 기존 개정 1의 3개 인수 기준을 출처·Claude/Codex 검토·현재 Windows/Linux 및 PostgreSQL 검증에 결속했습니다.\n\n{findings[n]}\n\n로컬 원장 CLOSED 및 GitHub CLOSED readback 확인. 자동화 서명이며 사람 인수·운영 배포 승인을 의미하지 않습니다.\n\n해결 commit: `{solution}`\n종료 packet: `{packet_ref}`\n[종료 증거](https://github.com/trevi00/zeus/tree/main/docs/zeus/ticket-closure-001)'
+ f=B/f'{n}-comment.md';f.write_text(body,'utf-8')
+ subprocess.run(['gh','issue','comment',str(n),'--repo','trevi00/zeus','--body-file',str(f)],check=True,capture_output=True)
+ observation=projector.pull(t['id'],'trevi00/zeus')
+ assert any(c['body'].replace('\r\n','\n').strip()==body.strip() for c in life.artifacts.document(observation['evidence_ref'])['comments'])
+ result['comment_readback']=observation
+ (B/'closures.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),'utf-8')
+ print(n,'local CLOSED, GitHub CLOSED, signature and readback verified',flush=True)
