@@ -22,6 +22,22 @@ def require_unused(tx, bucket, row_id):
     require(current(tx, bucket, row_id) is None, 'Execution identity was used before; rows are never recreated')
 
 
+def require_current(tx, bucket, row_id, generation, owner=None):
+    """Every write by an existing handle checks the row against the durable fence, not only claims.
+
+    A row restored to an older running generation while the fence has moved on (partial restore,
+    manual repair) must not re-arm the old holder. A legacy row without a fence passes; a corrupted
+    fence fails closed.
+    """
+    fence = current(tx, bucket, row_id)
+    if fence is None:
+        return
+    require(type(fence.get('generation')) is int and fence['generation'] == generation,
+            'Execution row is behind its durable fence')
+    require(fence.get('owner') is None or owner is None or fence['owner'] == owner,
+            'Execution owner differs from the durable fence')
+
+
 def advance(tx, bucket, row_id, generation, owner=None):
     require(type(generation) is int and generation > 0, 'Fence generation must be a positive integer')
     fence = current(tx, bucket, row_id)

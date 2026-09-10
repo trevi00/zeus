@@ -14,6 +14,7 @@ from codex_harness.application.execution_budget import (
     retry_limit,
 )
 from codex_harness.application.execution_fence import advance as advance_fence
+from codex_harness.application.execution_fence import require_current as require_current_fence
 from codex_harness.application.execution_fence import require_unused as require_unused_fence
 from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.execution_time import (
@@ -203,6 +204,9 @@ class Workflow:
         require(current is not None and current["status"] == "running"
                 and self._same_execution(current, task),
                 "Stale or expired task execution")
+        # INV-EXECUTION-IDENTITY-001: the row itself is checked against the durable fence on every
+        # write, so a row restored to an older running generation cannot re-arm its old holder.
+        require_current_fence(tx, bucket, current["id"], current.get("generation"), current.get("lease_owner"))
         require(active(current, bucket, now), "Stale or expired task execution")
         observe_domain(tx, current, bucket, now)
         return current

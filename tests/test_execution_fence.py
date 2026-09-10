@@ -93,6 +93,73 @@ def test_recreated_task_row_cannot_reissue_generation(backend, request):
         w.heartbeat(lease)
 
 
+@pytest.mark.parametrize('backend', ['memory', 'postgres'])
+def test_row_restored_behind_the_fence_cannot_re_arm_its_old_holder(backend, request):
+    # Review counterexample (PR #37): claim gen1 -> cancel (fence 2) -> restore only the task row to
+    # running/gen1 -> the old handle must still be refused on heartbeat, complete and fail.
+    store = backend_store(backend, request)
+    w = Workflow(store, organization())
+    task = w.submit(assignment())
+    lease = w.claim('worker:implementation', 'owner', lease_seconds=300)
+    with store.transaction() as tx:
+        running_row = tx.get('tasks', task['id'])
+    w.cancel(task['id'], 'conductor', 'operator stop')
+    with store.transaction() as tx:
+        assert tx.get('execution_fences', 'tasks:' + task['id'])['generation'] == 2
+        tx.put('tasks', task['id'], running_row)  # partial restore of the row only
+        before = tx.records()
+    for action in (lambda: w.heartbeat(lease), lambda: w.complete(lease, {'summary': 'restored'}),
+                   lambda: w.fail(lease, 'restored failure')):
+        with pytest.raises(ContractError, match='behind its durable fence'):
+            action()
+    with store.transaction() as tx:
+        assert tx.records() == before
+        assert tx.get('tasks', task['id'])['status'] == 'running', 'the restored row is left for the operator'
+    # Same generation but a different owner than the fence recorded is refused as well.
+    with store.transaction() as tx:
+        tx.put('execution_fences', 'tasks:' + task['id'], {'id': 'tasks:' + task['id'], 'bucket': 'tasks',
+               'row_id': task['id'], 'generation': 1, 'owner': 'someone-else'})
+    with pytest.raises(ContractError, match='owner differs from the durable fence'):
+        w.heartbeat(lease)
+    # A fence that matches the row again lets the legitimate holder continue.
+    with store.transaction() as tx:
+        tx.put('execution_fences', 'tasks:' + task['id'], {'id': 'tasks:' + task['id'], 'bucket': 'tasks',
+               'row_id': task['id'], 'generation': 1, 'owner': 'owner'})
+    w.heartbeat(lease)
+    assert w.complete(lease, {'summary': 'legitimate'})['status'] == 'succeeded'
+
+
+def test_decision_and_release_rows_behind_the_fence_are_refused():
+    store = MemoryStore()
+    w = Workflow(store, organization())
+    task = w.submit(assignment())
+    lease = w.claim('worker:implementation', 'owner')
+    decision = {**lease, '_bucket': 'decisions_pending'}
+    with store.transaction() as tx:
+        tx.put('decisions_pending', task['id'], {k: v for k, v in decision.items() if k != '_bucket'})
+        tx.put('execution_fences', 'decisions_pending:' + task['id'], {'id': 'x', 'bucket': 'decisions_pending',
+               'row_id': task['id'], 'generation': 3, 'owner': None})
+    with pytest.raises(ContractError, match='behind its durable fence'):
+        w.heartbeat(decision)
+    queue = ReleaseQueue(store)
+    t0 = datetime.now(timezone.utc)
+    with store.transaction() as tx:
+        tx.put('release_queue', 'r1', {'id': 'r1', 'status': 'queued', 'at': t0.isoformat()})
+    claim = queue.claim(now=t0)
+    with store.transaction() as tx:
+        tx.put('execution_fences', 'release_queue:r1', {'id': 'y', 'bucket': 'release_queue', 'row_id': 'r1',
+               'generation': 2, 'owner': claim['owner']})
+    with pytest.raises(ContractError, match='behind its durable fence'):
+        queue.heartbeat(claim, now=t0)
+    legacy_store = MemoryStore()
+    legacy = Workflow(legacy_store, organization())
+    legacy_task = legacy.submit(assignment())
+    legacy_lease = legacy.claim('worker:implementation', 'owner')
+    with legacy_store.transaction() as tx:
+        del legacy_store.data['execution_fences', 'tasks:' + legacy_task['id']]
+    legacy.heartbeat(legacy_lease)  # rows written before fences existed keep working
+
+
 def test_cancel_and_corrupted_fence_fail_closed():
     store = MemoryStore()
     w = Workflow(store, organization())

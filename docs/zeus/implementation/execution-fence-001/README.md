@@ -24,6 +24,11 @@ Zeus는 이미 PostgreSQL 트랜잭션 안에서 `id·generation·attempt·lease
 - `Workflow.claim`·`Executor.decide_one`·`ReleaseQueue.claim`: generation을 올리기 전 `advance`. 후퇴하면
   그 행만 `ExecutionGenerationRegressed`로 차단(`block_execution`, release queue는 `failed`+사유)하고 다른
   작업은 계속 서빙합니다. `Workflow.cancel`·`ExecutionRecovery`의 generation 증가도 fence를 통과합니다.
+- **검토 반례 반영(PR #37 P1)**: 새 claim의 `advance`만으로는 기존 handle의 쓰기를 막지 못했습니다 — 행만 과거
+  running/gen1로 복원하면 옛 handle의 heartbeat/complete가 통과했습니다(Codex가 실제 PG에서 재현). 이제 `_owned`
+  (tasks·decisions)와 `ReleaseQueue._owned`가 **모든 쓰기**에서 현재 행의 generation·owner를 durable fence와 같은
+  트랜잭션에서 대조합니다(`execution_fence.require_current`). fence가 없는 레거시 행은 통과, fence 손상은 fail-closed,
+  fence보다 뒤처진 행·다른 owner는 거부합니다.
 - `docs/contracts.md`: `INV-EXECUTION-IDENTITY-001`에 내구 fence 문단 추가. 파일 lease는 이식하지 않습니다.
 
 기존 행(fence 없는 레거시)은 첫 claim에서 fence를 만들며 동작이 바뀌지 않습니다. PG를 예전 덤프로 복원하면
@@ -50,7 +55,7 @@ fence도 함께 되돌아가므로 거짓 거부는 없고, 그 경우의 보호
 
 | 항목 | 결과 |
 |---|---|
-| `tests/test_execution_fence.py` memory+postgres (`HARNESS_INTEGRATION=1`) | 8 passed |
+| `tests/test_execution_fence.py` memory+postgres (`HARNESS_INTEGRATION=1`) | 8 passed → 검토 반례 추가 후 11 passed (`test_row_restored_behind_the_fence_cannot_re_arm_its_old_holder[memory\|postgres]`, `test_decision_and_release_rows_behind_the_fence_are_refused`) |
 | Windows 전체 `uv run pytest -q` (Python 3.12.14, PG 변형 skip) | 922 passed, 308 skipped (173s) |
 | `uv run ruff check .` | 통과 |
 

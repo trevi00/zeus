@@ -167,7 +167,9 @@ token in the trusted local runtime, not an authenticated tenant principal.
 Generations advance only through the durable `execution_fences` ledger, which outlives the
 task, decision or release-queue row: a recreated row, a regressed generation or a corrupted
 fence is blocked instead of re-armed, and a fenced task identity cannot be resubmitted from
-generation 0. Row or process existence is never execution identity, and the upstream file
+generation 0. Every write by an existing handle re-checks the current row's generation and
+owner against the fence in the same transaction, so a row restored behind the fence cannot
+re-arm its old holder; rows that predate the ledger pass, a corrupted fence fails closed. Row or process existence is never execution identity, and the upstream file
 lease is not ported.
 
 ## INV-EXECUTION-TIME-001

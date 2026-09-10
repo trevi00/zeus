@@ -45,8 +45,11 @@ def resume(recovery, row, operation='resume'):
 
 
 def lease(executor, row):
+    from codex_harness.application.execution_fence import advance as advance_fence
     with executor.service.store.transaction() as tx:
         current = tx.get('decisions_pending', row['id'])
+        # A fixture claim advances the durable fence exactly as Executor.decide_one does.
+        advance_fence(tx, 'decisions_pending', row['id'], current['generation'] + 1, 'fixture-owner')
         current.update(status='running', attempt=current['attempt'] + 1, generation=current['generation'] + 1,
                        lease_owner='fixture-owner', lease_until=(datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat())
         tx.put('decisions_pending', row['id'], current)

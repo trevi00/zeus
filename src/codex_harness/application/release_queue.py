@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from codex_harness.application.execution_fence import advance as advance_fence
+from codex_harness.application.execution_fence import require_current as require_current_fence
 from codex_harness.application.tickets import ticket_binding
 from codex_harness.domain.model import ContractError, require
 from codex_harness.domain.policy import POLICY
@@ -69,6 +70,7 @@ class ReleaseQueue:
                 and lock.get("owner") == claim["owner"]
                 and datetime.fromisoformat(row["lease_until"]) > now,
                 "Stale release controller")
+        require_current_fence(tx, "release_queue", row["id"], row.get("generation"), row.get("owner"))
         return row
 
     def heartbeat(self, claim, now=None):
