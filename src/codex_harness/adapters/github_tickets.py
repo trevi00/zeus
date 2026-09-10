@@ -51,6 +51,10 @@ class GitHubTickets:
         with self.store.transaction() as tx:
             previous = tx.get("ticket_remote_observations", identity) or {}
             observation["first_seen"] = previous.get("first_seen", observation["at"])
+            # Order is assigned here, not by the wall clock: two observations made within one clock
+            # tick (common on Windows under load) must still read back in the order they were made.
+            observation["sequence"] = previous.get("sequence") or 1 + max(
+                (row.get("sequence", 0) for row in tx.scan("ticket_remote_observations") if row["ticket_id"] == ticket_id), default=0)
             tx.put("ticket_remote_observations", observation["id"], observation)
         return observation
 

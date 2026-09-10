@@ -141,6 +141,9 @@ GitHub synchronization is explicit and outward. A preview never calls GitHub. Pe
 hashes and uncertain creation intents survive failures. Uncertain creation without a matching
 remote receipt cannot create another issue. External body changes block overwrites; comments
 and remote state are collected as observations, never imported as local authority.
+Observations of one ticket read back in the order they were recorded, by a sequence assigned
+in the ledger transaction; the wall clock never decides that order, so two observations made
+within one clock tick cannot swap.
 
 ## INV-VERIFICATION-001
 
