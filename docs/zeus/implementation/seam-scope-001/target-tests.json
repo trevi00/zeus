@@ -1,0 +1,28 @@
+{
+  "scope": "FA-028 target tests: scope coverage, copy identity, view liveness and gate under required scopes, extractor scope declaration",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_seam_scope.py tests/test_seam_view.py tests/test_seam_contracts.py",
+  "started_at": "2026-09-10T09:46:41.344313+00:00",
+  "finished_at": "2026-09-10T09:46:42.511394+00:00",
+  "exit_code": 0,
+  "summary": [
+    "18 passed in 0.70s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "negative_controls": [
+    {
+      "control": "unverified scopes counted as checked",
+      "result": "scope tests fail"
+    },
+    {
+      "control": "scope-incomplete OK is live and passes the gate",
+      "result": "view/scope tests fail"
+    },
+    {
+      "control": "shared values keyed by tag only (no type identity)",
+      "result": "view test fails"
+    }
+  ],
+  "stacked_on": "fix/fa-027-seam-view",
+  "not_claimed": "No extractor or checker covers envelope, rpc, response_types, error_mapping, storage, execution or human_scenario; those scopes stay unverified until real parsers and runtime checks exist."
+}

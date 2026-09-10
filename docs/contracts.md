@@ -424,6 +424,20 @@ not a policy. The SDD gate report keeps separate denominators for declared scena
 observations, runner-executed scenarios, verified assertions and human acceptance; imported
 claims, generated skeletons and marker removal never count as executed or accepted.
 
+## INV-SEAM-SCOPE-001
+
+A seam check names what it can see. Every observation declares its covered check scopes (an
+extractor states them; an unknown observation covers nothing), and an approved comparison
+policy names the scopes the specification requires — member names, types and tags, envelope,
+RPC, response types, error mapping, storage, execution, human scenario. A comparison reports,
+per required scope, whether both sides covered it and the policy compared it; OK speaks only
+for the checked scopes, every other required scope is unverified, and an OK with unverified
+required scopes is not live and never passes a gate. Byte identity of the source blobs and
+equality on the checked scopes are recorded as separate facts; neither implies the other. A
+shared literal value links contracts only through its type-and-tag identity and is a
+coincidence of declarations, never causal message delivery. Every observed contract appears in
+the view, including those no recorded comparison names, which are marked undeclared.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

@@ -21,6 +21,11 @@ TRANSFORM_KEYS = {'identity': {'version', 'kind'},
                   'value_map': {'version', 'kind', 'value_map'},
                   'affix': {'version', 'kind', 'strip_prefix', 'strip_suffix', 'add_prefix', 'add_suffix'}}
 POLICY_VERSION = 1
+# What a check can cover. An extractor declares which of these it actually observed; a policy says
+# which an approved spec requires. Anything required but not covered is unverified, never OK.
+CHECK_SCOPES = ('member_names', 'member_types', 'member_tags', 'envelope', 'rpc', 'response_types',
+                'error_mapping', 'storage', 'execution', 'human_scenario')
+COMPARE_SCOPES = {'name': 'member_names', 'type': 'member_types', 'tag': 'member_tags'}
 
 
 def contract_identity(stack, package, name):
@@ -82,6 +87,9 @@ def parse_observation(document):
     """A typed extraction result. Fidelity is a claim about the extractor, denominators say what it saw."""
     require(isinstance(document, dict) and set(document) >= {'identity', 'kind', 'members', 'fidelity', 'denominator', 'source'},
             'Seam observation requires identity, kind, members, fidelity, denominator, source')
+    covered = document.get('covered_scopes', [])
+    require(isinstance(covered, list) and all(s in CHECK_SCOPES for s in covered) and len(set(covered)) == len(covered),
+            'covered_scopes must list distinct check scopes')
     identity = document['identity']
     require(isinstance(identity, dict) and contract_identity(identity.get('stack'), identity.get('package'),
                                                              identity.get('name'))['id'] == identity.get('id'),
@@ -108,14 +116,53 @@ def parse_observation(document):
 
 
 def parse_policy(policy):
-    require(isinstance(policy, dict) and set(policy) == {'version', 'direction', 'require_fidelity', 'compare'},
-            'Comparison policy requires version, direction, require_fidelity, compare')
+    require(isinstance(policy, dict) and {'version', 'direction', 'require_fidelity', 'compare'} <= set(policy)
+            <= {'version', 'direction', 'require_fidelity', 'compare', 'required_scopes'},
+            'Comparison policy requires version, direction, require_fidelity, compare (and optional required_scopes)')
+    required_scopes = policy.get('required_scopes', ['member_names'])
+    require(isinstance(required_scopes, list) and required_scopes and all(s in CHECK_SCOPES for s in required_scopes)
+            and len(set(required_scopes)) == len(required_scopes), 'required_scopes must list distinct check scopes')
     require(policy['version'] == POLICY_VERSION and type(policy['version']) is int, 'Unknown comparison policy version')
     require(policy['direction'] in DIRECTIONS, 'Unknown comparison direction')
     require(policy['require_fidelity'] == 'HIGH', 'Only HIGH fidelity may be compared; lower fidelity is BLOCKED')
     require(isinstance(policy['compare'], list) and 'name' in policy['compare']
             and set(policy['compare']) <= {'name', 'type', 'tag'}, 'compare keys must include name and only name/type/tag')
-    return {**policy, 'policy_hash': digest(policy)}
+    return {**policy, 'required_scopes': sorted(required_scopes), 'policy_hash': digest(policy)}
+
+
+def covered_scopes_of(observation):
+    """Declared coverage, or what the members themselves carry when the extractor did not declare it."""
+    declared = observation.get('covered_scopes')
+    if declared:
+        return list(declared)
+    members = observation.get('members') or []
+    if not members:
+        return []
+    scopes = ['member_names']
+    if all('type' in m for m in members):
+        scopes.append('member_types')
+    if all('tag' in m for m in members):
+        scopes.append('member_tags')
+    return scopes
+
+
+def scope_coverage(producer, consumer, policy):
+    """Which required scopes this comparison really checked: both sides must have covered them and
+    the policy must compare them; everything else is unverified, never OK."""
+    compared = {COMPARE_SCOPES[key] for key in policy['compare']}
+    both = set(covered_scopes_of(producer)) & set(covered_scopes_of(consumer))
+    checked = sorted(scope for scope in policy['required_scopes'] if scope in both and scope in compared)
+    unverified = sorted(scope for scope in policy['required_scopes'] if scope not in checked)
+    return {'required': list(policy['required_scopes']), 'checked': checked, 'unverified': unverified,
+            'complete': not unverified,
+            'note': 'OK speaks only for checked scopes; an unverified scope is not agreement'}
+
+
+def copy_identity(producer, consumer):
+    """A byte-identical copy and equality on the checked scopes are different facts."""
+    same_blob = producer['source']['blob_sha'] == consumer['source']['blob_sha']
+    return {'same_blob': same_blob, 'producer_blob': producer['source']['blob_sha'], 'consumer_blob': consumer['source']['blob_sha'],
+            'note': 'same_blob is file byte identity; verdict OK is equality on the checked scopes only'}
 
 
 def compare(producer, consumer, transform, policy):
@@ -123,7 +170,8 @@ def compare(producer, consumer, transform, policy):
     producer, consumer, policy = parse_observation(producer), parse_observation(consumer), parse_policy(policy)
     base = {'policy_version': policy['version'], 'policy_hash': policy['policy_hash'], 'direction': policy['direction'],
             'compared_keys': list(policy['compare']), 'producer': producer['identity']['id'], 'consumer': consumer['identity']['id'],
-            'authority': 'advisory', 'blocking_eligible': False}
+            'authority': 'advisory', 'blocking_eligible': False,
+            'scope_coverage': scope_coverage(producer, consumer, policy), 'copy': copy_identity(producer, consumer)}
     for side, observation in (('producer', producer), ('consumer', consumer)):
         if observation['fidelity'] != policy['require_fidelity']:
             return {**base, 'verdict': 'BLOCKED', 'reason': f'{side} fidelity is {observation["fidelity"]}, policy requires HIGH',
@@ -148,6 +196,7 @@ def compare(producer, consumer, transform, policy):
         drift = bool(producer_only or consumer_only or changed)
     return {**base, 'verdict': 'DRIFT' if drift else 'OK', 'transform': effective, 'producer_only': producer_only,
             'consumer_only': consumer_only, 'changed': changed,
+            'equivalent_on_checked_scopes': not drift and not producer_only and not consumer_only and not changed,
             'denominators': {'producer': producer['denominator'], 'consumer': consumer['denominator']},
             'note': 'name/type/tag agreement is textual; it is not compiler, serialization or product compatibility'}
 
@@ -167,7 +216,7 @@ def unknown_observation(identity, kind, source, state, reason):
     require(state in {'read_error', 'decoding_error', 'unsupported_syntax', 'unsupported_stack', 'truncated', 'missing_source'},
             'Unknown observation state')
     return {'identity': identity, 'kind': kind, 'members': [], 'fidelity': 'UNKNOWN', 'state': state, 'reason': reason,
-            'denominator': {'symbols_found': 0, 'unresolved': 0}, 'source': source}
+            'denominator': {'symbols_found': 0, 'unresolved': 0}, 'source': source, 'covered_scopes': []}
 
 
 class SeamError(ContractError):

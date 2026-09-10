@@ -102,7 +102,9 @@ def _python_enums(data, package, revision, path):
             'fidelity': 'HIGH' if found and not unresolved else ('LOW' if found else 'UNKNOWN'),
             'denominator': {'symbols_found': found, 'unresolved': unresolved},
             'source': {**source, 'span': _span(data, offsets, node), 'base_resolution': 'by name only; imports not followed',
-                       'unsupported_syntax': unsupported}}))
+                       'unsupported_syntax': unsupported},
+            # This extractor sees literal member names, their Python types and literal values; nothing else.
+            'covered_scopes': ['member_names', 'member_types', 'member_tags']}))
     return observations
 
 
