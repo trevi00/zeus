@@ -67,7 +67,14 @@ class Case:
         row['execution_ref'] = ref
         return row
 
-    def reviewer_run(self, reviewer, task, *, succeed=True):
+    @staticmethod
+    def evaluated(task, *, spec=SPEC, scenarios=None, verdict='approved'):
+        """What a reviewer execution's own output states: which execution it judged, and what it found."""
+        return {'target': {'task_id': task['id'], 'generation': task['generation'], 'attempt': task['attempt']},
+                'spec_revision': spec, 'verdict': verdict,
+                'scenarios': scenarios or {'expected': list(SCENARIOS), 'passed': list(SCENARIOS), 'excluded': []}}
+
+    def reviewer_run(self, reviewer, task, *, succeed=True, evaluated=None):
         """A reviewer execution is the reviewer's own task in the ledger, with its own execution artifact."""
         self.evaluations += 1
         parent = organization().actor(reviewer).parent
@@ -76,17 +83,23 @@ class Case:
         workflow.submit(message)
         review_task = workflow.claim(reviewer, 'reviewer-owner-' + str(self.evaluations))
         assert review_task is not None, 'the reviewer must be free to take the evaluation'
-        ref = self.artifacts.put(canonical({'task_id': review_task['id'], 'attempt': review_task['attempt'], 'answer': {'evaluated': task['id']}}),
+        ref = self.artifacts.put(canonical({'task_id': review_task['id'], 'attempt': review_task['attempt'],
+                                            'answer': {'evaluated': evaluated or self.evaluated(task)}}),
                                  'execution:' + review_task['id'])['ref']
         if succeed:
             workflow.complete(review_task, {'summary': 'evaluated', 'execution_ref': ref})
+        else:  # the run ended without success and is terminal, so the reviewer stays free for later evaluations
+            workflow.cancel(review_task['id'], 'conductor', 'fixture: reviewer run abandoned')
         return ref
 
-    def evaluation(self, task=None, *, reviewer=REVIEWER, kind='model', spec=SPEC, scenarios=SCENARIOS, reviewer_ran=True, **over):
+    def evaluation(self, task=None, *, reviewer=REVIEWER, kind='model', spec=SPEC, scenarios=SCENARIOS, reviewer_ran=True,
+                    evaluated=None, execution_ref=None, **over):
         task = task or self.task
+        if execution_ref is None and reviewer_ran:
+            execution_ref = self.reviewer_run(reviewer, task, evaluated=evaluated or self.evaluated(task, spec=spec))
         document = {'kind': EVALUATION_KIND, 'task_id': task['id'], 'attempt': task['attempt'], 'spec_revision': spec,
                     'scenarios': list(scenarios), 'reviewer': {'actor': reviewer, 'kind': kind},
-                    'execution_ref': self.reviewer_run(reviewer, task) if reviewer_ran else None, **over}
+                    'execution_ref': execution_ref, **over}
         return self.artifacts.put(canonical(document), 'evaluation:' + task['id'])['ref']
 
     def verdict(self, task=None, *, execution_ref=None, evaluation=None, reviewer=REVIEWER, kind='model', spec=SPEC, **over):
@@ -94,7 +107,10 @@ class Case:
         target = {'task_id': task['id'], 'generation': task['generation'], 'attempt': task['attempt']}
         execution_ref = execution_ref or self.execution_for(task)
         reviewer = reviewer if isinstance(reviewer, dict) else {'actor': reviewer, 'kind': kind}
-        evaluation = evaluation or self.evaluation(task, reviewer=reviewer['actor'], kind=reviewer['kind'], spec=spec)
+        if evaluation is None:
+            # The reviewer execution produces what the verdict records: same target, spec, scenarios and verdict.
+            produced = self.evaluated(task, spec=spec, scenarios=over.get('scenarios'), verdict=over.get('verdict', 'approved'))
+            evaluation = self.evaluation(task, reviewer=reviewer['actor'], kind=reviewer['kind'], spec=spec, evaluated=produced)
         base = {'schema_version': 1, 'event': 'completion.verdict', 'verdict': 'approved', 'target': target,
                 'spec_revision': spec, 'evaluation_artifact': evaluation,
                 'runner_receipt': {'id': execution_ref, 'digest': execution_ref[7:], **target},
@@ -260,7 +276,7 @@ def test_scenario_denominator_is_explicit(backend, request, tmp_path):
     excluded = {'expected': SCENARIOS, 'passed': ['login'],
                 'excluded': [{'id': 'checkout', 'approved_by': 'human:owner', 'revision': OTHER_SPEC,
                               'reason': 'payment sandbox unavailable this round'}]}
-    case.record(case.verdict(execution_ref=done['execution_ref'], evaluation=evaluation, scenarios=excluded))
+    case.record(case.verdict(execution_ref=done['execution_ref'], scenarios=excluded))
     report = case.inspect()
     assert report['state'] == 'authoritative' and report['latest']['complete']
 
@@ -348,6 +364,27 @@ def test_authority_needs_real_evidence_an_independent_reviewer_and_the_approved_
                                                  'execution_ref': fourth.reviewer_run(REVIEWER, fourth.task, succeed=False)}), 'fixture')['ref']
     fourth.record(fourth.verdict(execution_ref=fourth_execution, evaluation=unfinished))
     assert fourth.inspect()['state'] == 'reviewer_unbound', 'a reviewer run that never succeeded verifies nothing'
+    # Round 3 (review 004): the reviewer execution's own output must be the evaluation of this execution.
+    unrelated = Case(store, tmp_path / 'unrelated')
+    elsewhere = fourth.reviewer_run(REVIEWER, unrelated.task, evaluated=fourth.evaluated(unrelated.task))
+    fourth.record(fourth.verdict(execution_ref=fourth_execution, evaluation=fourth.evaluation(execution_ref=elsewhere)))
+    report = fourth.inspect(expected_scenarios=SCENARIOS)
+    assert report['state'] == 'reviewer_unbound' and 'did not evaluate this execution' in report['reason']
+    with pytest.raises(ContractError, match='No completion authority: reviewer_unbound'):
+        fourth.authority.require_authority(fourth.task['id'], spec_revision=SPEC, evaluation_artifact=fourth.last_artifact, expected_scenarios=SCENARIOS)
+    # An explicit rejection by the reviewer execution can never be recorded as an approval.
+    rejected_run = fourth.evaluation(evaluated=fourth.evaluated(fourth.task, verdict='iterate'))
+    fourth.record(fourth.verdict(execution_ref=fourth_execution, evaluation=rejected_run))
+    assert fourth.inspect(expected_scenarios=SCENARIOS)['state'] == 'verdict_mismatch'
+    fourth.record(fourth.verdict(execution_ref=fourth_execution, evaluation=rejected_run, verdict='iterate'))
+    assert fourth.inspect()['state'] == 'not_approved', 'recorded as what it was: a rejection'
+    # Scenario results the reviewer did not produce cannot be recorded either.
+    half = fourth.evaluation(evaluated=fourth.evaluated(fourth.task, scenarios={'expected': SCENARIOS, 'passed': ['login'], 'excluded': []}))
+    fourth.record(fourth.verdict(execution_ref=fourth_execution, evaluation=half))
+    assert fourth.inspect()['state'] == 'verdict_mismatch'
+    other_spec_run = fourth.evaluation(evaluated=fourth.evaluated(fourth.task, spec=OTHER_SPEC))
+    fourth.record(fourth.verdict(execution_ref=fourth_execution, evaluation=other_spec_run))
+    assert fourth.inspect()['state'] == 'reviewer_unbound'
     fourth.record(fourth.verdict(execution_ref=fourth_execution, reviewer=OTHER_REVIEWER, kind='human'))
     assert fourth.inspect()['state'] == 'authoritative'
     # The consumer may also name the scenarios its approved spec expects; they must agree with the artifact and the verdict.
@@ -396,5 +433,5 @@ def test_every_named_state_is_reachable():
     # The classification is the contract; a state that no test reaches is a state no consumer can trust.
     reached = {'unreadable', 'no_ledger', 'corrupt', 'partially_corrupt', 'rejected_only', 'not_evaluated',
                'stale', 'not_approved', 'incomplete', 'not_succeeded', 'receipt_unbound', 'artifact_missing',
-               'artifact_unbound', 'reviewer_unbound', 'scenario_mismatch', 'authoritative'}
+               'artifact_unbound', 'reviewer_unbound', 'scenario_mismatch', 'verdict_mismatch', 'authoritative'}
     assert reached == set(STATES)

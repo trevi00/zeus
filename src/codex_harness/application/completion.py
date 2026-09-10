@@ -16,7 +16,7 @@ REJECTIONS = 'completion_rejections'
 RECORD_ONLY = ('sequence', 'recorded_at')
 STATES = ('unreadable', 'no_ledger', 'corrupt', 'partially_corrupt', 'rejected_only', 'not_evaluated',
           'stale', 'not_approved', 'incomplete', 'not_succeeded', 'receipt_unbound', 'artifact_missing',
-          'artifact_unbound', 'reviewer_unbound', 'scenario_mismatch', 'authoritative')
+          'artifact_unbound', 'reviewer_unbound', 'scenario_mismatch', 'verdict_mismatch', 'authoritative')
 EVALUATION_KIND = 'completion-evaluation'
 
 
@@ -177,6 +177,20 @@ class CompletionAuthority:
                     and review_result.get('execution_ref') == review_ref, 'reviewer execution is not a succeeded task of the reviewer')
         except Exception as exc:
             return {'state': 'reviewer_unbound', 'reason': 'no verified reviewer execution: ' + (str(exc)[:120] or type(exc).__name__)}
+        # The reviewer execution's own recorded output must be the evaluation of this execution (review,
+        # PR #50, round 3): a reviewer task that judged something else, linked from a caller-made document,
+        # binds nothing; and the recorded verdict must be what that execution produced, so an explicit
+        # rejection can never be recorded as an approval.
+        evaluated = review.get('answer', {}).get('evaluated') if isinstance(review.get('answer'), dict) else None
+        if not isinstance(evaluated, dict) or evaluated.get('target') != target or evaluated.get('spec_revision') != last['spec_revision']:
+            return {'state': 'reviewer_unbound', 'reason': 'reviewer execution did not evaluate this execution and spec revision'}
+        produced = evaluated.get('scenarios') if isinstance(evaluated.get('scenarios'), dict) else {}
+        same_scenarios = (sorted(set(produced.get('expected') or [])) == sorted(set(last['scenarios']['expected']))
+                          and sorted(set(produced.get('passed') or [])) == sorted(set(last['scenarios']['passed']))
+                          and sorted(e.get('id') for e in (produced.get('excluded') or []) if isinstance(e, dict))
+                          == sorted(e['id'] for e in last['scenarios']['excluded']))
+        if evaluated.get('verdict') != last['verdict'] or not same_scenarios:
+            return {'state': 'verdict_mismatch', 'reason': 'recorded verdict or scenario results differ from what the reviewer execution produced'}
         return None
 
     def require_authority(self, task_id, *, spec_revision, evaluation_artifact, expected_scenarios=None):
