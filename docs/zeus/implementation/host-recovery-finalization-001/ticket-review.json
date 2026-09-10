@@ -1,0 +1,49 @@
+{
+  "review": {
+    "ticket_id": "ZEUS-3875a025c20d",
+    "revision": 2,
+    "content_hash": "4091d05365edc2a55821edd05798927537ee01304ffdc24efae2403a9a0f38b9",
+    "claimed_reviewer": "Codex final current-PC slice verification",
+    "claimed_provider": "OpenAI",
+    "verdict": "changes_requested",
+    "summary": "Final current-PC slice: source 0c66a678acc6653f553a62bf2a6b1f7de205bad7 passed all 5 CI jobs in run 34434703972. Compose 2.38.2 main integration: 1208 passed, 8 skipped; dedicated Docker suite: 15 passed, 1 skipped. Earlier run 34434173814 failed two restart cases because Compose start --wait was unsupported. Corrected to up --no-recreate --wait and retained-container-ID assertions, reviewed by actual local Claude. Corrected local Windows full: 911 passed, 305 skipped; targeted: 66 passed; native Ubuntu: 6 passed. Windows and Ubuntu heartbeat workers are now armed for operator Windows Restart, run f5414aeab9c24c8cbd8c306ec8dce6df. Unchanged boot remains waiting, not pass. Restart within three hours, then return for verification. No actual Windows reboot, sleep/resume, standalone WSL interruption or isolated OS clock-step acceptance yet. Issue 18 remains OPEN at revision 2. Signing alone cannot replace missing measurements. Full reference absorption remains incomplete.",
+    "evidence_refs": [
+      "https://github.com/trevi00/zeus/actions/runs/34434703972",
+      "https://github.com/trevi00/zeus/blob/14d7dec48fc47d974a7ad9f447108aa2745226eb/docs/zeus/implementation/host-recovery-ci-fix-001/README.md",
+      "https://github.com/trevi00/zeus/blob/14d7dec48fc47d974a7ad9f447108aa2745226eb/docs/zeus/implementation/host-recovery-001/README.md"
+    ],
+    "authority": "advisory_only",
+    "id": "fba46945e5f5827fd619da2368c9c60dc041f112669d23ca03368b9d7a7e1982",
+    "at": "2026-09-10T03:55:43.116026+00:00"
+  },
+  "projection": {
+    "id": "414dbcc04b3e439da9cf6fd98e68550b718936bb0d6dbb6d325b7eb5051cbf92",
+    "ticket_id": "ZEUS-3875a025c20d",
+    "repository": "trevi00/zeus",
+    "number": 18,
+    "url": "https://github.com/trevi00/zeus/issues/18",
+    "attempted_revision": 2,
+    "synced_revision": 2,
+    "content_hash": "4091d05365edc2a55821edd05798927537ee01304ffdc24efae2403a9a0f38b9",
+    "attempted_content_hash": "4091d05365edc2a55821edd05798927537ee01304ffdc24efae2403a9a0f38b9",
+    "body_hash": "9881d1a99a2799ce190799f92a5e7ac6b82df6da62929fa28a4f052362efd7fe",
+    "title_hash": "3d1c4d18898336b21d293988a24cd44732ec01ec91e941a4140c142da3ffc40f",
+    "observed_body_hash": "9881d1a99a2799ce190799f92a5e7ac6b82df6da62929fa28a4f052362efd7fe",
+    "observed_title_hash": "3d1c4d18898336b21d293988a24cd44732ec01ec91e941a4140c142da3ffc40f",
+    "title": "[FA-017] \uccab \uc7ac\uc2dc\ub3c4 \ud6c4 \uc791\uc5c5 \uc7ac\uac1c \ub204\ub77d\u00b7\ud68c\uace0 \uc0c1\ud0dc \uc720\uc2e4 \ubc29\uc9c0",
+    "desired_state": "OPEN",
+    "observed_state": "OPEN",
+    "lifecycle_sequence": 0,
+    "lifecycle_event": null,
+    "observation_ref": "sha256:373736f9097168fbc052d6da6586220a528c93bf5a55d1952092aa1435a664d6",
+    "observation_id": "13de49427cd4665fb73e3cf66cdefdb1d4640e99c90ea068bd6d3f250770a4f4",
+    "at": "2026-09-10T03:55:46.076928+00:00",
+    "review_ids": [
+      "19d68354008ae309c939887689337983975cb7b135885d6d9e4f725a908a84a4",
+      "fba46945e5f5827fd619da2368c9c60dc041f112669d23ca03368b9d7a7e1982"
+    ],
+    "status": "synced",
+    "projected_lifecycle_event": null
+  },
+  "github_body_verified": true
+}

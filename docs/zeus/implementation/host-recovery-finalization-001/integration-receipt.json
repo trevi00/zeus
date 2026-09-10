@@ -1,0 +1,10 @@
+{
+  "job": 102737250524,
+  "raw_sha256": "6b0a5dec0a3f780f43dbe7ce52b9e06368039b3385650c8957556af2bb195016",
+  "result_lines": [
+    "2026-09-10T03:48:15.4299544Z Docker Compose version v2.38.2",
+    "2026-09-10T03:48:25.7788869Z All checks passed!",
+    "2026-09-10T03:50:16.2874851Z 1208 passed, 8 skipped in 109.44s (0:01:49)",
+    "2026-09-10T03:50:54.5500098Z 15 passed, 1 skipped in 37.75s"
+  ]
+}
