@@ -70,3 +70,19 @@ covering 28 child process executions, including four deliberate write rejections
 Earlier target receipts are retained as superseded observations. The source
 manifest records local Windows file bytes; checkout line endings may differ on
 Linux. Skipped tests are not represented as completed acceptance.
+
+Native WSL at source commit `d3fa8ede326b8aaa5087a47c8f5601075f8494d6`
+passed all 11 recorded stages: full suite 893 passed / 267 skipped; real
+PostgreSQL target 125 passed; Ruff, build and CLI checks passed. The clone stayed
+clean and its lockfile unchanged. Eight native-process receipts and all captured
+stream hashes/byte lengths verified. The temporary connection bootstrap was
+consumed and removed, and no database credentials were found in the evidence.
+The exact runner and results are under `wsl/`.
+
+CI [34426923949](https://github.com/trevi00/zeus/actions/runs/34426923949)
+passed all five jobs at the same source commit: Windows Python 3.12/3.14 each
+888 passed / 272 skipped; Linux Python 3.12/3.14 each 893 passed / 267 skipped;
+integration 1157 passed / 3 skipped, plus 10 Docker verification tests passed.
+Raw job streams and their byte hashes are archived in `ci-34426923949/` and
+`../../ci/34426923949.json`. This completes this output-recovery milestone;
+the broader FA-017 acceptance and production/human approval remain open.
