@@ -157,6 +157,47 @@ def test_isolation_failure_stops_the_runner_before_any_test_check(tmp_path, monk
     assert 'isolation' in runner.artifacts.document(result['evidence'])['stage']
 
 
+@pytest.mark.parametrize('body', ['returns', 'raises'])
+def test_verification_services_are_entered_once_and_always_exited(tmp_path, monkeypatch, body):
+    # Review counterexample (PR #57): services.__enter__() followed by `with services` entered twice;
+    # the second entry failed on mkdir and the first stack was never torn down.
+    runner, release, root = candidate_runner(tmp_path)
+    with runner.service.store.transaction() as tx:
+        record = tx.get('releases', release['id'])
+        record.update(status='reviewed', checks={})
+        tx.put('releases', release['id'], record)
+    events = []
+
+    class Counting:
+        def __init__(self, directory, artifacts):
+            events.append(('init', directory.name))
+        def __enter__(self):
+            events.append(('enter',))
+            assert events.count(('enter',)) == 1, 'entered twice'
+            return {'database_url': 'postgresql://fixture/isolated', 'redis_url': 'redis://fixture/0'}
+        def __exit__(self, kind, value, tb):
+            events.append(('exit', kind.__name__ if kind else None))
+            return False
+
+    def fake_check(argv, cwd=None, timeout=None, env=None, expected_revision=None):
+        if argv[:2] == ['uv', 'sync']:
+            return {'passed': True, 'evidence': 'fixture:install', 'outcome': 'executed', 'binding': {}}
+        if body == 'raises':
+            raise RuntimeError('fixture: test runner exploded inside the services context')
+        return {'passed': False, 'evidence': 'fixture:tests', 'outcome': 'executed', 'reason': 'fixture failure', 'binding': {}}
+
+    monkeypatch.setattr(runner, '_check', fake_check)
+    monkeypatch.setattr('codex_harness.adapters.deployment.VerificationServices', Counting)
+    if body == 'raises':
+        with pytest.raises(RuntimeError, match='exploded'):
+            runner.run(release['id'])
+        assert events[1:] == [('enter',), ('exit', 'RuntimeError')]
+    else:
+        result = runner.run(release['id'])
+        assert result['status'] in {'rejected', 'retry'} and events[1:] == [('enter',), ('exit', None)]
+    assert events[0] == ('init', 'verification') and events.count(('enter',)) == 1
+
+
 def test_timeout_receipt_keeps_the_binding(tmp_path, monkeypatch):
     runner, adapter, root = runner_with_real_git(tmp_path)
     head = adapter._git('rev-parse', 'HEAD')

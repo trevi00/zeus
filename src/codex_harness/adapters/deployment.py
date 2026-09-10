@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import tempfile
+from contextlib import ExitStack
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -145,16 +146,19 @@ class ReleaseRunner:
         if not install["passed"]:
             return self._reject_remaining(release, {}, install)
         python = Path(path) / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+        # The services context is entered exactly once (review, PR #57: a second __enter__ re-created
+        # the compose directory and left the first stack running). Entry failure is its own receipt;
+        # once entered, the stack is always exited, whether the body returns or raises.
+        stack = ExitStack()
         try:
-            services = VerificationServices(runtime_dir() / "verification", self.artifacts)
-            endpoints = services.__enter__()
+            endpoints = stack.enter_context(VerificationServices(runtime_dir() / "verification", self.artifacts))
         except Exception as exc:
             # INV-CHECK-001: a runner that cannot isolate stops; nothing downstream is a pass.
             receipt = self.artifacts.put(canonical({"stage": "verification_isolation", "error": type(exc).__name__ + ": " + str(exc)[:500]}),
                                          "canary-failure")
             return self._reject_remaining(release, {}, {"passed": False, "evidence": receipt["ref"],
                                                         "outcome": "observation_error", "reason": "verification isolation unavailable"})
-        with services:
+        with stack:
             test_env = verification_environment(endpoints)
             incumbent_env = {**test_env, "PYTHONPATH": str(Path(incumbent) / "tests")}
             tests = self._check([str(python), "-m", "pytest", str(Path(incumbent) / "tests"),
