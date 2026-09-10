@@ -11,9 +11,8 @@ import time
 from collections import deque
 from pathlib import Path
 
-from jsonschema import validate
-
 from codex_harness.adapters.codex import resolve_codex
+from codex_harness.adapters.execution_output import completed_output
 from codex_harness.adapters.output_schema import preflight
 from codex_harness.domain.model import ContractError, canonical, require
 from codex_harness.domain.policy import POLICY
@@ -238,14 +237,17 @@ class AppServer:
                         and error.get("codexErrorInfo") == "usageLimitExceeded"):
                     return {"answer": None, "events": events, "thread_id": thread_id,
                             "turn_id": turn_id, "usage": usage, "rotate": False,
-                            "interrupted": False,
+                            "interrupted": False, "model_answer_text": answer_text,
                             "failure": {"cause": "codex-provider-usage-limit-exceeded",
                                         "provider_error": error}}
                 require(status in {"completed", "interrupted"},
                         f"Codex turn failed: {params['turn'].get('error')}")
                 if status == "completed":
-                    answer = json.loads(answer_text)
-                    validate(answer, schema)
+                    output = completed_output(answer_text, schema)
+                    if output.get('failure'):
+                        return {**output, 'events': events, 'thread_id': thread_id, 'turn_id': turn_id,
+                                'usage': usage, 'rotate': rotate, 'interrupted': False, 'requested_model': model}
+                    answer = output['answer']
                 else:
                     answer = None
                 return {"answer": answer, "events": events, "thread_id": thread_id,

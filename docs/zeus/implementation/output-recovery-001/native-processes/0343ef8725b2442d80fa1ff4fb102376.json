@@ -1,0 +1,37 @@
+{
+  "scope": "Actual child processes, UTF-8 files, PG and artifacts; explicit fault inputs, no model/provider run",
+  "reason": "empty",
+  "processes": [
+    {
+      "pid": 5104,
+      "operation": "reject",
+      "exit_code": 1
+    },
+    {
+      "pid": 23956,
+      "operation": "fail",
+      "exit_code": 0,
+      "task_id": "f9338b6e-628c-4a1f-967f-3161f99dc7cc",
+      "attempt": 1,
+      "status": "retry"
+    },
+    {
+      "pid": 4744,
+      "operation": "fail",
+      "exit_code": 0,
+      "task_id": "f9338b6e-628c-4a1f-967f-3161f99dc7cc",
+      "attempt": 1,
+      "status": "retry"
+    },
+    {
+      "pid": 26016,
+      "operation": "claim",
+      "exit_code": 0,
+      "task_id": "f9338b6e-628c-4a1f-967f-3161f99dc7cc",
+      "attempt": 2,
+      "status": "running"
+    }
+  ],
+  "preservation_verified": true,
+  "failure_receipts": 1
+}

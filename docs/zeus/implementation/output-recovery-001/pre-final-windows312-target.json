@@ -1,0 +1,1 @@
+{"argv": ["uv", "run", "--isolated", "--python", "3.12", "--frozen", "pytest", "-q", "tests/test_execution_output.py", "tests/test_app_server.py", "tests/test_usage_limit.py"], "exit_code": 0, "seconds": 14.857032700001582}

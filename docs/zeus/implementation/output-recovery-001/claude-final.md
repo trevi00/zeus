@@ -1,0 +1,9 @@
+## Verdict: the three blockers are closed; no new blockers found.
+
+**1. Lossless escaping (`execution_output.py:11`).** `canonical(value).encode('utf-8', errors='backslashreplace').decode('utf-8')` is an identity on any string UTF-8 can encode, so normal CJK/emoji bodies keep their byte length *and* their content address. Only unpaired surrogates — the exact code units that raised — expand to `\uXXXX`. Because `canonical` already escapes `\` as `\\`, the substitution is unambiguous and re-parses to the original surrogate, which is what `test_execution_output.py:74` relies on. Resolution regressions 1 and 2 are genuinely retired, not merely mitigated; `test_...read_budget` (`:40-47`) pins both the address and the 131072 `artifacts.text` read that `execution_recovery.py:115` performs.
+
+**2. Interrupted path (regression 3).** `executor.py:198` and `:201-202` now derive both the artifact body and the `ContextItem` hash from the same `evidence_json` bytes, so `hashlib.sha256(body.encode('utf-8'))` can no longer raise. The new two-turn test drives a real surrogate through `item/completed` → observer artifact → checkpoint (generation 2) → recovery packet → successful second turn. That is the path the doc said was untested.
+
+**3. Deduped `model_answer_text` (`app_server.py:253-255`).** Only the failure (`:248`), provider-failure (`:240`) and blocked (`:186`) results carry it, and every consumer I found reads it solely on those branches. `persist_result:65`'s unguarded `result['turn_id']` stays safe for the same reason — all three failure-producing branches supply it. Shape now varies by branch; worth a comment, not a fix.
+
+**4.** `output_schema` accompanies `schema_hash` in the artifact only, never in the PG `failure` payload. Correct scoping.

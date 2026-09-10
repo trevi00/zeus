@@ -10,6 +10,7 @@ from uuid import uuid4
 
 from codex_harness.adapters.app_server import AppServer
 from codex_harness.adapters.embeddings import LocalEmbeddings
+from codex_harness.adapters.execution_output import evidence_json, persist_result
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.skill_history import prepare_history, project_identity, record_history
@@ -27,7 +28,6 @@ from codex_harness.application.workflow import Workflow
 from codex_harness.domain.model import (
     ContextItem,
     ContractError,
-    ExecutionFailure,
     canonical,
     compile_context,
     digest,
@@ -195,10 +195,11 @@ class Executor:
             # passes the same compiler. History stays available by immutable handle.
             recovery_refs, recovery_items = {}, []
             for name, value in recovery.items():
-                body = canonical(value)
+                body = evidence_json(value)
                 receipt = self.artifacts.put(body, "recovery:" + key + ":" + name)
                 recovery_refs[name] = artifact_reader_handle(self.artifacts.root, receipt["ref"])
-                recovery_items.append(ContextItem(receipt["ref"], body, receipt["ref"], digest(value), 20))
+                recovery_items.append(ContextItem(receipt["ref"], body, receipt["ref"],
+                                                   hashlib.sha256(body.encode('utf-8')).hexdigest(), 20))
             packet = compile_context(agent, key, self.workflow.snapshot(),
                 {**required, 'project_skills': {**skill_selection,
                     'included': skill_selection['selected'], 'omitted': skill_selection['selected']},
@@ -238,7 +239,7 @@ class Executor:
                 if event.get("method") in {"item/completed", "thread/tokenUsage/updated"}:
                     with self.service.store.transaction() as tx:
                         prior = tx.get("execution_progress", key) or {}
-                    receipt = self.artifacts.put(canonical({"event": event, "previous": prior.get("last_record") if matches(prior) else None}),
+                    receipt = self.artifacts.put(evidence_json({"event": event, "previous": prior.get("last_record") if matches(prior) else None}),
                                                  "runtime-event:" + key)
                     with self.service.store.transaction() as tx:
                         if lease:
@@ -280,17 +281,8 @@ class Executor:
             result["model_selection"] = selection.receipt()
             if history_recording:
                 result['skill_history_recording'] = history_recording
-            if result.get("failure"):
-                result.update(task_id=key, attempt=lease.get("attempt") if lease else None,
-                              basis_revision=basis_revision, context_ref=context_ref["ref"])
-            evidence_ref = self.artifacts.put(canonical(result), "execution:" + key)
-            if result.get("failure") and not result.get("inspection_blocked"):
-                failure = {**result["failure"], "scope": agent + "/codex-turn",
-                           "execution_ref": evidence_ref["ref"],
-                           "task_id": key, "attempt": lease.get("attempt") if lease else None,
-                           "thread_id": result["thread_id"], "turn_id": result["turn_id"],
-                           "basis_revision": basis_revision, "context_ref": context_ref["ref"]}
-                raise ExecutionFailure(failure["cause"], failure)
+            evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,
+                                          basis_revision=basis_revision, context_ref=context_ref['ref'])
             graph = ({"code": self.knowledge.index_python(cwd),
                       "runtime": self.knowledge.project_runtime(self.service.store, self.service.org)}
                      if self.knowledge and result["rotate"] else None)

@@ -1,0 +1,17 @@
+## Implementation review — output-recovery-001
+
+**Design alignment:** the three design blockers are addressed. `turn_id` is present on the new failure return (`app_server.py:248`), so `persist_result` reading `result['turn_id']` (`execution_output.py:59`) can't `KeyError`; the existing `failure` shape is reused verbatim rather than adding a third variant; `inspection_blocked` is explicitly excluded from the raise so `blocked_result`'s missing `turn_id` is never touched. Retryability of the new `codex-output-*` causes is asserted through the native test's `status == 'retry'`, satisfying design item 3.
+
+### Blockers
+
+**1. Raw-text encoding can crash the durable write — same failure mode being fixed.** `completed_output` classifies a lone surrogate as `invalid_json` by round-tripping `answer` through `.encode('utf-8')` (`execution_output.py:33`), but `model_answer_text` keeps the raw string (`:42`). `persist_result` then calls `canonical(result)` (`ensure_ascii=False`) and `FileArtifacts._put` does `body.encode("utf-8")` → `UnicodeEncodeError`. That raises at `executor.py:283`, **outside** the `try/except` at 271, so no artifact, no `ExecutionFailure`, no checkpoint — precisely the original bug, now reachable via the very input the validator claims to handle. The test parametrization proves detection (`test_execution_output.py:27`) but never routes that input through persistence: the transport and native cases only use `''`, `'{'`, `'{}'` (`:39`, `:74`). This is reachable in production — a JSON-RPC `agentMessage` containing `\ud800` decodes to a lone surrogate in Python. Fix by sanitizing at the boundary (e.g. store `errors='surrogatepass'`/escaped text, or a `text_encoding: 'lossy'` marker) and extending both the transport and native parametrizations to include it.
+
+**2. Original-failure compatibility is asymmetric on `model_answer_text`.** The usage-limit return (`app_server.py:238`) and the success/interrupted return (`:253`) still omit it, while the new branch supplies it. `persist_result` tolerates the absence, so this is not a crash — but any consumer reading `body['model_answer_text']` from an `execution:{key}` artifact must treat it as optional, and the tests only assert it on the new path. Worth normalizing now, since it's one key.
+
+**3. `rotate` is hardcoded `False` on the output-failure return**, discarding an observed context-threshold signal. Benign today because `persist_result` raises before `executor.py:287` reads it, but it's a silent divergence from the success return.
+
+### Non-blocking
+
+- **Deterministic replay holds** for the reason it should: the persisted body (`task_id`, `attempt`, `basis_revision`, `context_ref`, raw text) carries no timestamp, so content-addressing yields the same `execution_ref` across both `fail` processes, and `execution_failures == 1` proves fence idempotency rather than accidental dedup. The rejection-trigger case correctly asserts the task row is byte-identical to the lease and that `outbox` is empty — that is a genuine rollback proof, not a mocked one.
+- **`persist_result` mutates the caller's dict** (`:52`); harmless on current paths, but the `failure and inspection_blocked` combination is a dead branch that adds `task_id`/`attempt` without raising.
+- The design's `{}`-under-a-permissive-schema gap (missing `required` → downstream `KeyError` on `accepted`/`scope`) is untouched. Declining to invent a business failure for `{"summary":""}` is correct and distinct from that gap; it should not be treated as closing it.

@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+    "-p",
+    "--safe-mode",
+    "--strict-mcp-config",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-mode",
+    "dontAsk",
+    "--effort",
+    "medium",
+    "--output-format",
+    "json",
+    "Read-only resolution review <=300 words against claude-implementation.md. Root fixed raw surrogate persistence using lossless ensure_ascii=True evidence_json for BOTH execution_progress event artifacts (observer runs before result handling) and persist_result artifacts; raw result still roundtrips same code units. Native tests now transport explicit lone-surrogate input through JSON-escaped UTF8 file and actual PG/processes, including PG rejection then replay. Executor unit wiring now invokes real progress observer and asserts same raw text in progress and failure artifacts, with cleanup failure both on/off. Successful/interrupted/usage-limit outputs now carry model_answer_text; new failure preserves observed rotate, with dedicated unit test. Schema-valid empty fields/permissive schema remain schema meaning: production stages define required fields, no arbitrary semantic verdict added. Review concrete regressions introduced by this fix and output boundary scope; no execute/edit."
+  ],
+  "returncode": 0,
+  "duration_seconds": 136.81978583335876,
+  "stdout_sha256": "930d1c23717bbab34aadcc020e5f7775d4f0a76aa999a34b746f92235f35e492",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Actual Zeus execution recovery design review; no execution",
+  "session_id": "b3004d1a-f345-49b5-b343-8e136a715a4c",
+  "is_error": false,
+  "usage": {
+    "input_tokens": 24,
+    "cache_creation_input_tokens": 29667,
+    "cache_read_input_tokens": 249962,
+    "output_tokens": 8382,
+    "output_tokens_details": {
+      "thinking_tokens": 5562
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 29667,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 1713,
+        "cache_read_input_tokens": 33727,
+        "cache_creation_input_tokens": 775,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 775
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.6324960000000001,
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1095,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.001175,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 24,
+      "outputTokens": 8382,
+      "cacheReadInputTokens": 249962,
+      "cacheCreationInputTokens": 29667,
+      "webSearchRequests": 0,
+      "costUSD": 0.6313210000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 5562,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  }
+}

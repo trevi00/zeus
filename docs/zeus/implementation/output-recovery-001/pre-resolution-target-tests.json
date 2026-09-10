@@ -1,0 +1,1 @@
+{"argv": ["uv", "run", "pytest", "-q", "tests/test_execution_output.py", "tests/test_app_server.py", "tests/test_usage_limit.py", "tests/test_task_failure_atomicity.py", "tests/test_execution_rejections.py"], "exit_code": 0, "seconds": 17.56110980000085, "scope": "Actual PG and native explicit-input child processes; transport reconstructions are unit fixtures"}
