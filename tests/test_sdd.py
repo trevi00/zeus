@@ -20,7 +20,7 @@ from codex_harness.adapters.sdd import (
 from codex_harness.application.sdd import SDD
 from codex_harness.application.tickets import Tickets
 from codex_harness.bootstrap import organization
-from codex_harness.domain.model import ContractError
+from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.model_routing import select_model
 from codex_harness.domain.sdd import (
     ENVIRONMENT_FIELDS,
@@ -181,6 +181,78 @@ def test_replay_export_refuses_unknown_target_financial_flows_and_missing_bindin
     spec["scenarios"][0]["bindings"].pop()
     with pytest.raises(ContractError, match="Every oracle"):
         replay_source(spec)
+
+
+def replay_ready_spec(then_texts=None, value_texts=None):
+    spec = spec_data()
+    spec["target"].update(kind="android", app_id="contract.test", build_hash="a" * 64)
+    for req in spec["requirements"]:
+        req["risk"] = "normal"
+    spec["scenarios"] = spec["scenarios"][:1]
+    spec["requirements"] = spec["requirements"][:1]
+    scenario = spec["scenarios"][0]
+    scenario["requirement_ids"] = [spec["requirements"][0]["id"]]
+    if then_texts is not None:
+        scenario["then"] = then_texts
+    values = value_texts or scenario["then"]
+    scenario["bindings"] = [{"operation": "assert_text", "selector": {"strategy": "id", "value": "contract:id/label"},
+                             "value": values[i], "oracle_index": i, "source_ref": "unverified-contract-input"}
+                            for i in range(len(scenario["then"]))]
+    scenario["bindings"].insert(0, {"operation": "tap", "selector": {"strategy": "accessibility id", "value": "go"},
+                                    "value": None, "oracle_index": None, "source_ref": "unverified-contract-input"})
+    return spec
+
+
+def test_replay_attributes_every_assertion_to_its_oracle_and_requirements_at_runtime():
+    # FA-014: no xfail/skeleton, no truncation, and hostile text survives as Python literals.
+    hostile = ['첫 번째 기대 """docstring""" \\ backslash', "second 'quote' \"double\" line\nbreak\ttab",
+               "x" * 400 + " end"]
+    spec = replay_ready_spec(then_texts=hostile, value_texts=["a\"b", "c'd\n", "e\\f"])
+    source = replay_source(spec)
+    tree = ast.parse(source)
+    assert not any(token in source for token in ("xfail", "skip(", "NotImplementedError", "pass  #"))
+    constants = {node.targets[0].id: ast.literal_eval(node.value) for node in tree.body
+                 if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)}
+    scenario = spec["scenarios"][0]
+    assert constants["SPEC_HASH"] == digest(validate_spec(spec))
+    assert constants["ORACLES"] == {scenario["id"]: {"requirement_ids": scenario["requirement_ids"], "oracles": hostile}}
+    attributions, expected_values = [], []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.With):
+            call = node.items[0].context_expr
+            assert isinstance(call, ast.Call) and call.func.attr == "subTest"
+            attributions.append(ast.literal_eval(call.keywords[0].value))
+        if isinstance(node, ast.Call) and getattr(node.func, "id", None) == "exact_text":
+            expected_values.append(ast.literal_eval(node.args[1]))
+    assert attributions == [{"scenario": scenario["id"], "oracle": i, "requirement_ids": scenario["requirement_ids"],
+                             "expected": text} for i, text in enumerate(hostile)]
+    assert expected_values == ["a\"b", "c'd\n", "e\\f"]
+    assert len(attributions[2]["expected"]) == 404, "acceptance text is never truncated"
+    tap_line = next(line for line in source.splitlines() if "element.click()" in line)
+    assert not tap_line.startswith("            "), "actions carry no oracle attribution"
+
+
+def test_gwt_must_be_lists_never_one_line_strings():
+    spec = spec_data()
+    spec["scenarios"][0]["then"] = "Given x When y Then z"
+    with pytest.raises(ContractError, match="Missing or excessive then"):
+        validate_spec(spec)
+    spec = spec_data()
+    spec["scenarios"][0]["given"] = ["", "ok"]
+    with pytest.raises(ContractError, match="Invalid given"):
+        validate_spec(spec)
+
+
+def test_replay_export_is_idempotent_and_never_overwrites_a_different_draft(tmp_path):
+    source = replay_source(replay_ready_spec())
+    target = tmp_path / "draft.py.review"
+    first = write_export(target, source, kind="replay")
+    assert write_export(target, source, kind="replay") == first
+    with pytest.raises(ContractError, match="different content"):
+        write_export(target, source + "\n# edited", kind="replay")
+    assert target.read_text("utf-8") == source
+    with pytest.raises(ContractError, match="py.review"):
+        write_export(tmp_path / "test_draft.py", source, kind="replay")
 
 
 def test_offline_cli_review_runs_without_database_access(tmp_path):
