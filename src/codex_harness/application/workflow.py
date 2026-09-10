@@ -97,7 +97,18 @@ class Workflow:
             live = running(tx, self.org, requested_now)
             if len(live) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in live):
                 return None
-            for task in sorted(tx.scan("tasks"), key=lambda t: (t["created_at"], t["id"])):
+            candidates = []
+            for row in tx.scan('tasks'):
+                if row.get('status') not in {'queued', 'running', 'retry'}:
+                    continue
+                try:
+                    created = deadline_time(row.get('created_at'))
+                    require(created is not None, 'Creation time required')
+                except ContractError:
+                    block_execution(tx, row, 'tasks', 'InvalidExecutionOrder', aware_time(requested_now), self.org)
+                    continue
+                candidates.append((created, row['id'], row))
+            for _, _, task in sorted(candidates, key=lambda item: item[:2]):
                 if task["agent"] != agent or task["status"] not in {"queued", "running", "retry"}:
                     continue
                 now = aware_time(requested_now)
@@ -307,6 +318,9 @@ class Workflow:
             if receipt:
                 current = tx.get(bucket, task["id"])
                 require(receipt["request"] == request and current
+                        # INV-EXECUTION-IDENTITY-001: retry state cleared the lease;
+                        # the checked receipt retains its original owner, not new authority.
+                        and self._same_execution({**current, 'lease_owner': receipt['request']['owner']}, task)
                         and current.get("failure_receipt") == identity
                         and current["generation"] == task["generation"] and current["attempt"] == task["attempt"]
                         and current["status"] == receipt["status"]

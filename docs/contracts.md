@@ -142,6 +142,33 @@ removed. PostgreSQL and Redis use a unique Compose project, localhost-only rando
 dedicated storage, without production mounts. Teardown runs on success and failure; stale
 cleanup requires matching generated definitions. This isolates service state, not arbitrary
 candidate code from the host. Actual execution and infrastructure observation errors remain distinct.
+## INV-EXECUTION-IDENTITY-001
+
+Task selection uses agent and explicit task identity, with UTC creation time and
+task id as a deterministic tie-break. A filesystem cwd or heartbeat recency never
+selects a task. Malformed scheduling metadata is contained per row. Both new
+effects and failure receipt redelivery compare typed task/generation/attempt,
+executor owner, agent/actor and recovery sequence. An executor owner is a fencing
+token in the trusted local runtime, not an authenticated tenant principal.
+
+## INV-EXECUTION-TIME-001
+
+Timezone-aware UTC deadlines survive restart. Monotonic elapsed time is compared
+only inside its recorded process domain and can shorten, never replenish, that
+domain's remaining deadline. Foreign/legacy domains use UTC with a recorded domain
+observation; they cannot establish elapsed time or detect all offline clock changes.
+Observed backwards UTC or same-domain wall/monotonic divergence greater than five
+seconds blocks the execution and records its observation and notice. Invalid time
+values also block; deadline expiry records expiration. Resumption requires explicit
+bounded recovery with cause and evidence. The five-second tolerance also bounds
+the optional injected scheduling time; normal execution samples host time.
+
+This contract assumes usable UTC across restarts. OS clock-step, suspend/VM-resume
+and multi-host time behavior are unmeasured operating conditions, not certified by
+pure clock-input tests or modified stored observations. Their absence must remain
+explicit in acceptance evidence. This does not authorize changing the user's host
+clock or claim trusted elapsed-time continuity across offline clock changes.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions.

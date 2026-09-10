@@ -270,6 +270,8 @@
                       "InvalidExecutionClock",
                       "InvalidExecutionDeadline",
                       "InvalidExecutionLease",
+                      "InvalidExecutionOrder",
+                      "InvalidExecutionState",
                       "InvalidRetryBudget",
                       "RecoveryContextChanged",
                       "UnverifiedLegacyRetryBudget",

@@ -139,6 +139,9 @@ def running(tx, org, now=None):
     live = []
     for bucket in ('tasks', 'decisions_pending'):
         for row in tx.scan(bucket):
+            if not isinstance(row.get('status'), str) or not row['status']:
+                contain_with_notice(tx, org, row, bucket, 'InvalidExecutionState', aware_time(now))
+                continue
             if row['status'] != 'running':
                 continue
             observed_now = aware_time(now)
