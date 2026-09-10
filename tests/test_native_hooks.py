@@ -41,6 +41,25 @@ def native_candidate(tmp_path, request):
     return service, adapter, spec, hook_id
 
 
+def test_canary_channel_carries_non_locale_text_both_ways(native_candidate, tmp_path):
+    # INV-ENCODING-001: an actual hook child echoes text outside the Windows console code page.
+    service, adapter, spec, hook_id = native_candidate
+    script = tmp_path / 'echo_hook.py'
+    script.write_text('import json, sys\n'
+                      'data = json.loads(sys.stdin.read())\n'
+                      'print(json.dumps({"encoding": sys.stdout.encoding, "echo": data["text"]}, '
+                      'ensure_ascii=False))\n', encoding='utf-8')
+    adapter.materialize = lambda hook: script
+    cases = {kind: [{'input': {'text': '검증 — 완료'}, 'output': {'encoding': 'utf-8', 'echo': '검증 — 완료'},
+                     'exit_code': 0}] for kind in ('reproduction', 'normal_case')}
+    with service.store.transaction() as tx:
+        tx.put('hook_cases', hook_id, {'id': hook_id, 'revision': 'fixture-revision', 'cases': cases})
+    checks = adapter.canary(hook_id)
+    assert all(check['passed'] for check in checks.values()), checks
+    evidence = json.loads(adapter.artifacts.text(checks['reproduction']['evidence'], 100_000))
+    assert evidence[0]['output'] == cases['reproduction'][0]['output'] and evidence[0]['stderr'] == ''
+
+
 def test_native_activation_gates_canary_and_rollback_exclusion(native_candidate):
     service, adapter, spec, hook_id = native_candidate
     assert adapter.configuration() == {}

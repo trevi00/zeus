@@ -142,6 +142,19 @@ removed. PostgreSQL and Redis use a unique Compose project, localhost-only rando
 dedicated storage, without production mounts. Teardown runs on success and failure; stale
 cleanup requires matching generated definitions. This isolates service state, not arbitrary
 candidate code from the host. Actual execution and infrastructure observation errors remain distinct.
+
+## INV-ENCODING-001
+
+Python children that Zeus launches over its machine channel (release pytest, native hook
+canaries) receive `PYTHONIOENCODING=utf-8`, so their stdin/stdout/stderr match the parent's
+UTF-8 decoder in both directions. The parent decoder alone is not the contract: without the
+binding a Windows child follows the console code page and either crashes on non-representable
+text or returns exit 0 with corrupted bytes. The binding covers Python stdio only; it does not
+set `PYTHONUTF8`, and does not change the locale of non-Python programs, user terminals or
+containers. Tests keep the unbound child as a failure control. Measured through actual child
+processes on the current Windows host and Linux CI; direct Windows console-host output and
+in-container Python remain outside this measurement.
+
 ## INV-EXECUTION-IDENTITY-001
 
 Task selection uses agent and explicit task identity, with UTC creation time and

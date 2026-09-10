@@ -13,13 +13,16 @@ def test_verification_environment_cannot_inherit_production_endpoints():
     env = verification_environment({"database_url": "isolated-db", "redis_url": "isolated-redis"},
         {"ZEUS_DATABASE_URL": "production", "HARNESS_DATABASE_URL": "production",
          "ZEUS_REPOSITORY": "production-path", "PYTHONPATH": "production-python",
-         "GH_TOKEN": "secret", "PATH": "executables", "SYSTEMROOT": "windows"})
+         "GH_TOKEN": "secret", "PATH": "executables", "SYSTEMROOT": "windows",
+         "PYTHONIOENCODING": "cp949", "PYTHONUTF8": "0"})
     assert env["HARNESS_DATABASE_URL"] == "isolated-db"
     assert env["HARNESS_REDIS_URL"] == "isolated-redis"
     assert env["HARNESS_INTEGRATION"] == "1"
     assert env["PATH"] == "executables" and env["SYSTEMROOT"] == "windows"
     assert not any(k.startswith("ZEUS_") for k in env)
-    assert not {"GH_TOKEN", "PYTHONPATH"} & env.keys()
+    assert not {"GH_TOKEN", "PYTHONPATH", "PYTHONUTF8"} & env.keys()
+    # INV-ENCODING-001: the release pytest channel is bound regardless of the operator's locale.
+    assert env["PYTHONIOENCODING"] == "utf-8"
 
 
 @pytest.mark.parametrize("failure", [None, "up", "port", "tests"])
