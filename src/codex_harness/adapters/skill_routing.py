@@ -34,6 +34,9 @@ def frontmatter(text):
     meta = {}
     for key, value in (loaded or {}).items():
         require(isinstance(key, str) and key.strip(), 'Invalid skill frontmatter key')
+        # Review counterexample (PR #44): `keywords` and `"keywords "` are distinct YAML keys but
+        # collapse after normalization; the collision is refused instead of silently overwriting.
+        require(key.strip() not in meta, 'Duplicate skill frontmatter key after normalization')
         if isinstance(value, list):
             require(all(isinstance(item, str) for item in value), 'Skill frontmatter lists hold strings only')
             meta[key.strip()] = [item.strip() for item in value if item.strip()]

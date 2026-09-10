@@ -76,8 +76,8 @@ reference evidence survives advisory truncation via immutable handles, and non-s
 guidance never inflates selected/included/omitted skill counters.
 
 Skill metadata is parsed by the bounded string-only YAML loader: inline comments never
-enter matcher values, inline lists become string lists, and nested, tagged, duplicated or
-non-mapping metadata fails explicitly rather than being routed. Routing summaries state
+enter matcher values, inline lists become string lists, and nested, tagged, duplicated (also after key
+normalization) or non-mapping metadata fails explicitly rather than being routed. Routing summaries state
 how many skills were inspected next to matched/full/pointer/legacy counts together with the
 policy, objective and admission-model identity, so zero matches are never read as
 "checked and clean" when nothing was inspected.

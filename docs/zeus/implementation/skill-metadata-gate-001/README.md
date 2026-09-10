@@ -26,6 +26,9 @@
   `threshold_definition`·`policy`(정책), `admission_model`(코드 버전), 매니페스트의 `revision`과 함께 검사 범위·개수·
   입력·정책·코드 식별이 한 레코드에 묶입니다. 메타데이터 오류는 skip이 아니라 명시 실패입니다(INV-SKILL-001).
 - `adapters/project_skills.load_yaml(text, label)`: 오류 메시지 라벨 인자(FA-002 PR과 같은 변경).
+- **검토 반례 반영(PR #44 P2)**: `keywords: [safe]`와 `"keywords ": [overridden]`는 YAML에선 다른 키였다가 `strip()` 뒤 같은
+  키가 되어 조용히 덮어썼습니다. 이제 정규화 뒤 중복을 `Duplicate skill frontmatter key after normalization`으로 거부합니다
+  (`test_quoted_padded_key_cannot_override_the_matcher_input`, 말형 6종→8종).
 - `docs/contracts.md`: `INV-SKILL-001`에 파서·요약 규칙 문단 추가.
 
 ## 재현과 검증

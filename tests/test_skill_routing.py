@@ -150,6 +150,8 @@ def test_inline_comments_never_enter_matcher_values():
     ('---\nkeywords:\n  nested: value\n---\nB', 'Unsupported skill frontmatter value'),
     ('---\nkeywords: [a, [b]]\n---\nB', 'lists hold strings only'),
     ('---\nkeywords: a\nkeywords: b\n---\nB', 'Duplicate'),
+    ('---\nkeywords: [safe]\n"keywords ": [overridden]\n---\nB', 'Duplicate skill frontmatter key after normalization'),
+    ('---\n" keywords": [first]\nkeywords: [second]\n---\nB', 'Duplicate skill frontmatter key after normalization'),
     ('---\nkeywords: !!python/object/apply:os.system [x]\n---\nB', 'Unsupported YAML tag'),
     ('---\n- just\n- a list\n---\nB', 'must be a mapping'),
     ('---\nkeywords: [unclosed\n---\nB', 'Invalid Skill frontmatter YAML'),
@@ -158,6 +160,16 @@ def test_malformed_skill_metadata_fails_explicitly(text, message):
     from codex_harness.adapters.skill_routing import frontmatter
     with pytest.raises(ContractError, match=message):
         frontmatter(text)
+
+
+def test_quoted_padded_key_cannot_override_the_matcher_input():
+    # The collision is refused before any matcher sees it (review counterexample, PR #44).
+    from codex_harness.adapters.skill_routing import frontmatter
+    with pytest.raises(ContractError, match='after normalization'):
+        frontmatter('---\nkeywords: [safe]\n"keywords ": [overridden]\n---\nBODY')
+    meta, _ = frontmatter('---\n"keywords ": [padded]\n---\nBODY')
+    assert meta == {'keywords': ['padded']}, 'a lone padded key still normalizes'
+    assert score_skill(meta, 'padded', set(), {})[1] == 1
 
 
 def test_routing_summary_reports_inspected_count_so_zero_matches_are_not_unchecked(tmp_path):
