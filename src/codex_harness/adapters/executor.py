@@ -347,8 +347,6 @@ class Executor:
                                                           "sequence": previous["sequence"], "occurred_at": occurred}
                         tx.put("execution_progress", key, previous)
 
-            # INV-BREAKER-001: admission is a committed, generation-fenced transition, taken per call.
-            admission = self.breaker.admit(breaker_key('codex-app-server', workload), lease) if lease else None
             started = time.monotonic()
             result = None
             timeout = time_limit
@@ -361,7 +359,11 @@ class Executor:
             reservation = (self.invocations.reserve(lease, request=request, budget_seconds=timeout, stage=stage,
                                                     guard=lambda tx: self.workflow._owned(tx, lease))
                            if lease else None)
+            admission = None
             try:
+                # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
+                # probe slot; breaker refusal must release the invocation reservation.
+                admission = self.breaker.admit(breaker_key('codex-app-server', workload), lease) if lease else None
                 with AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration()) as runtime:
                     result = runtime.run(prompt, cwd, schema, timeout,
                                          on_event=observe, read_only=read_only, on_tick=lambda: observe(None),
