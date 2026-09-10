@@ -165,13 +165,31 @@ class ExecutionReceipt:
     runner_id: str
     inspection_blocked: bool = False
     version: int = 1
+    # The runner's own verdict travels with the receipt (review, PR #58): an exit 0 with no output, an
+    # all-skip pytest run or diagnostics-only stderr is executed but not passed, and every consumer
+    # that grants approval reads `passed`, never exit_status alone.
+    passed: bool = False
+    outcome: str = 'unclassified'
 
     def validate(self):
         self.source.validate()
         require(self.version == 1 and self.environment_revision and self.command
                 and self.isolation and self.runner_id, 'Incomplete execution receipt')
+        require(type(self.passed) is bool and type(self.outcome) is str and self.outcome, 'Execution receipt requires its verdict')
+        require(not (self.passed and (self.exit_status != 0 or self.inspection_blocked)),
+                'A blocked or non-zero execution cannot be passed')
         require(type(self.exit_status) is int, 'Invalid execution status')
         reference(self.output_ref)
+
+    @property
+    def successful(self):
+        return self.passed and self.exit_status == 0 and not self.inspection_blocked
+
+
+def receipt_successful(record):
+    """Approval consumers read the runner's verdict; a stored receipt without one is not a pass."""
+    return (isinstance(record, dict) and record.get('passed') is True and record.get('exit_status') == 0
+            and not record.get('inspection_blocked'))
 
 
 @dataclass(frozen=True)

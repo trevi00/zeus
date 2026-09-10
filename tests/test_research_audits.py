@@ -366,14 +366,17 @@ def test_checkpoint_history_retains_transitive_evidence(audit):
 
 class FixtureRunner:
     """Injected fixture receipts; these are not actual isolated or Codex verification."""
-    def __init__(self, artifacts, blocked=False):
+    def __init__(self, artifacts, blocked=False, passed=None, outcome=None):
         self.artifacts, self.blocked = artifacts, blocked
+        self.passed = (not blocked) if passed is None else passed
+        self.outcome = outcome or ('isolation_unavailable' if blocked else 'executed')
 
     def execute(self, source, command):
         from codex_harness.domain.research import ExecutionReceipt
         output = self.artifacts.put('fixture inspection output', 'test-fixture')['ref']
         return ExecutionReceipt(source, 'fixture-env', command, 'fixture-isolation',
-                                125 if self.blocked else 0, output, 'fixture-runner', self.blocked)
+                                125 if self.blocked else 0, output, 'fixture-runner', self.blocked,
+                                passed=self.passed, outcome=self.outcome)
 
     def execute_assigned(self, source, command, task, workflow):
         return self.execute(source, command)

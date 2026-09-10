@@ -11,6 +11,7 @@ from pathlib import Path
 
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.source_verification import GitSourceVerifier
+from codex_harness.domain.check_results import classify_isolated_run
 from codex_harness.domain.model import canonical, digest, require
 from codex_harness.domain.policy import POLICY
 from codex_harness.domain.research import ExecutionReceipt, InventoryEntry, SourceIdentity
@@ -107,7 +108,7 @@ class AuditRunner:
             return ExecutionReceipt(source, digest({'runner': 'inert-source-reader-v2',
                 'max_bytes': POLICY.source_read_bytes, 'max_lines': POLICY.source_read_lines}), command,
                                     'inert-objects-no-code-execution', 0, ref,
-                                    'harness:inert-source-reader-v2', False)
+                                    'harness:inert-source-reader-v2', False, passed=True, outcome='read')
         # INV-RESEARCH-003: never mount the active harness, credentials or artifact store.
         # Symlinks and gitlinks remain inert files; commands cannot follow upstream links.
         with tempfile.TemporaryDirectory(prefix='inspection-', dir=self.root) as directory:
@@ -137,6 +138,10 @@ class AuditRunner:
                 output, status = {'argv': argv, 'error': str(exc)}, 125
             blocked = status != 0 and ('bwrap:' in canonical(output) or status == 125)
             ref = self.artifacts.put(canonical(output), 'isolated-inspection')['ref']
+            verdict = classify_isolated_run(stage='run' if 'error' not in output else 'spawn', exit_status=status if 'error' not in output else None,
+                                            stdout=output.get('stdout', ''), stderr=output.get('stderr', ''), command=list(command),
+                                            error=output.get('error'))
             return ExecutionReceipt(source, digest({'runner': 'bubblewrap-v1', 'platform': platform.uname()}),
                 command, 'bubblewrap-unshare-all-readonly-source-inert-links', status, ref,
-                'harness:isolated-source-runner-v1', blocked)
+                'harness:isolated-source-runner-v1', blocked,
+                passed=bool(verdict.get('passed')) and status == 0 and not blocked, outcome=verdict.get('outcome') or verdict['category'])
