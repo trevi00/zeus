@@ -6,11 +6,22 @@ import tempfile
 from pathlib import Path
 
 from codex_harness.adapters.commands import run_process
-from codex_harness.domain.model import require
+from codex_harness.domain.model import digest, require
 
 
 class GitCommandError(RuntimeError):
     """Transport/tool failure, distinct from a violated candidate contract."""
+
+
+GITHUB_REMOTE = re.compile(r"(?:(?:https?://|ssh://git@|git@)(?:www\.)?github\.com[:/])?"
+                           r"(?P<owner>[A-Za-z0-9][A-Za-z0-9-]{0,38})/(?P<repo>[A-Za-z0-9_.-]{1,100}?)(?:\.git)?/?\Z")
+
+
+def canonical_remote(remote: str) -> str:
+    """One identity per GitHub repository, whatever spelling configured it (slug, https, ssh, .git)."""
+    match = isinstance(remote, str) and GITHUB_REMOTE.fullmatch(remote.strip())
+    require(bool(match), "Unsupported remote target; use a GitHub owner/repo slug or URL")
+    return "github:" + match.group("owner").lower() + "/" + match.group("repo").lower()
 
 
 class GitWorkspace:
@@ -26,6 +37,26 @@ class GitWorkspace:
             raise GitCommandError("Git operation failed (" + (args[0] if args else '')
                 + ", cwd=" + str(cwd or self.repository) + "): " + result.stderr[-2000:])
         return result.stdout.strip() if strip else result.stdout
+
+    def target_identity(self) -> str:
+        """Canonical target: the GitHub repository, or this exact local repository (its Git common
+        directory, re-read from Git on every call). A clone or copy is a different target (PR #48)."""
+        if self.remote:
+            return canonical_remote(self.remote)
+        common = Path(self._git("rev-parse", "--path-format=absolute", "--git-common-dir")).resolve()
+        return "local:" + common.as_posix()
+
+    def require_target(self, candidate: dict) -> str:
+        """A candidate captured for one repository never merges or publishes into another.
+
+        Candidates recorded before FA-015 carry no `repository`; they pass as `legacy_unverified`,
+        an explicit exception to the target guarantee, never as a verified target.
+        """
+        recorded = candidate.get("repository")
+        if recorded is None:
+            return "legacy_unverified"
+        require(recorded == self.target_identity(), "Candidate target repository changed since review")
+        return "verified"
 
     def prepare(self, task_id: str, base: str = "HEAD") -> dict:
         require(bool(re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", task_id)), "Invalid workspace ID")
@@ -61,8 +92,13 @@ class GitWorkspace:
         require(revision != workspace["base"], "Task produced no code change")
         require(not self._git("status", "--porcelain", cwd=path), "Candidate workspace is dirty")
         self._git("fetch", path, "HEAD:refs/heads/" + workspace["branch"])
+        # INV-RELEASE-001 (FA-015): the reviewed identity names its canonical target repository and
+        # the exact patch (base -> revision) next to the preimage base and postimage tree.
         candidate = {**workspace, "revision": revision,
-                     "tree": self._git("rev-parse", "HEAD^{tree}", cwd=path), "author": "worker:implementation"}
+                     "tree": self._git("rev-parse", "HEAD^{tree}", cwd=path), "author": "worker:implementation",
+                     "repository": self.target_identity(),
+                     "diff_hash": digest(self._git("diff", "--no-ext-diff", workspace["base"], revision, "--",
+                                                   cwd=path))}
         manifests = [name for name in self._git("diff", "--name-only", workspace["base"], revision, cwd=path).splitlines()
                      if name.startswith("harness_hooks/") and name.endswith(".json")]
         require(len(manifests) <= 1, "Split independent hook updates into separate candidates")
@@ -107,6 +143,7 @@ class GitWorkspace:
 
     def publish(self, candidate: dict, title: str, body: str) -> dict:
         require(bool(self.remote), "GitHub repository must be configured")
+        self.require_target(candidate)
         require(bool(re.fullmatch(r"[\w.-]+/[\w.-]+", self.remote)), "Invalid GitHub repository")
         branch = candidate["branch"]
         self._git("push", "https://github.com/" + self.remote + ".git",
@@ -140,8 +177,12 @@ class GitWorkspace:
         return result.returncode == 0
 
     def merge(self, candidate: dict) -> dict:
+        target = self.require_target(candidate)
         require(self._git("rev-parse", candidate["revision"] + "^{tree}") == candidate["tree"],
                 "Candidate tree changed")
+        if candidate.get("diff_hash"):
+            require(digest(self._git("diff", "--no-ext-diff", candidate["base"], candidate["revision"], "--"))
+                    == candidate["diff_hash"], "Candidate patch changed")
         if self.remote:
             result = run_process(["gh", "pr", "merge", candidate["branch"], "--repo", self.remote,
                                   "--merge", "--match-head-commit", candidate["revision"]], timeout=120)
@@ -153,8 +194,8 @@ class GitWorkspace:
                     "Merged tree differs from reviewed candidate")
             self._git("merge", "--ff-only", merged_revision)
             return {"merged": True, "revision": candidate["revision"], "merged_revision": merged_revision,
-                    "transport": "github"}
+                    "transport": "github", "target": target}
         require(not self._git("status", "--porcelain"), "Main worktree is dirty")
         require(self._git("rev-parse", "HEAD") == candidate["base"], "Main changed; rebase and review again")
         self._git("merge", "--ff-only", candidate["revision"])
-        return {"merged": True, "revision": candidate["revision"], "transport": "local"}
+        return {"merged": True, "revision": candidate["revision"], "transport": "local", "target": target}
