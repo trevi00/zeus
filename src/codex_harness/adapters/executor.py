@@ -10,6 +10,7 @@ from uuid import uuid4
 
 from codex_harness.adapters.app_server import AppServer
 from codex_harness.adapters.embeddings import LocalEmbeddings
+from codex_harness.adapters.evidence_inspection import EvidenceInspector
 from codex_harness.adapters.execution_output import evidence_json, persist_result
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context
@@ -20,6 +21,7 @@ from codex_harness.adapters.skill_history import (
     record_history,
 )
 from codex_harness.application.breaker import Breaker, breaker_key, result_of, result_of_exception
+from codex_harness.application.evidence_inspection import EvidenceInspections
 from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.execution_time import (
     ExecutionTimeError,
@@ -147,6 +149,7 @@ class Executor:
         self.workflow = Workflow(service.store, service.org)
         self.invocations = InvocationLedger(service.store)
         self.breaker = Breaker(service.store)
+        self.evidence = EvidenceInspections(service.store, EvidenceInspector(artifacts))
         self.releases = Releases(service.store, service.org)
         self.audit_execution = None
         if audit_runner is not None:
@@ -528,6 +531,9 @@ class Executor:
                 if result["candidate"].get("hook_id"):
                     NativeHooks(self.service, self.git, self.artifacts).candidate(result["candidate"]["hook_id"], result["candidate"])
                 result["origin"] = details
+                # INV-EVIDENCE-001: the worker's test claims are inspected in the workspace they came from;
+                # a claim is never authority, an uninspected claim is never success.
+                result["evidence_inspection"] = self._inspect_evidence(task, result, workspace["path"])
             elif action == "rebase":
                 heartbeat()
                 candidate = self.git.rebase(task["id"], details["candidate"], details["new_base"])
@@ -540,6 +546,16 @@ class Executor:
             return self.workflow.complete(task, result, commands)
         except Exception as exc:
             return self._fail_task(task, agent, exc)
+
+    def _inspect_evidence(self, task, result, workspace_path):
+        claims = result.get("tests") if isinstance(result.get("tests"), list) else []
+        try:
+            row = self.evidence.inspect(task, result["candidate"], claims, workspace_path)
+        except Exception as exc:
+            # Never a success: the inspection did not complete or was not recorded.
+            return {"verdict": "inspection_error", "cause": type(exc).__name__ + ": " + str(exc)[:300],
+                    "claims": len(claims)}
+        return {"inspection_id": row["id"], "verdict": row["verdict"], "denominator": row["denominator"]}
 
     def _lost_execution(self, lease, error, rejection_error=None):
         # INV-SESSION-001: a stale executor cannot publish failure or diagnosis.
