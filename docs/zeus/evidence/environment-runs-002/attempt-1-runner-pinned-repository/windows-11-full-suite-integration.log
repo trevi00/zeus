@@ -1,0 +1,108 @@
+........................................................................ [  4%]
+...............FF..F.................................................... [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+..s..................................................................... [ 29%]
+........................................................................ [ 34%]
+....................................sssss............................... [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+.......................s................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+...............................F........................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+................................s................s....s....s....s....s.. [ 99%]
+..s...........                                                           [100%]
+================================== FAILURES ===================================
+_______ test_explicit_repository_resolves_config_from_another_directory _______
+
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_explicit_repository_resol0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018123F26180>
+
+    def test_explicit_repository_resolves_config_from_another_directory(tmp_path, monkeypatch):
+        root = tmp_path / "한글 path"
+        root.mkdir()
+        (root / ".env").write_text(
+            'export HARNESS_DATABASE_URL="postgresql://user:pass@localhost/db" # local\n'
+            "HARNESS_REDIS_URL='redis://localhost:123/1'\nHARNESS_RUNTIME_DIR=state\n",
+            encoding="utf-8-sig")
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("HARNESS_REPOSITORY", str(root))
+        for name in ("HARNESS_DATABASE_URL", "HARNESS_REDIS_URL", "HARNESS_RUNTIME_DIR"):
+            monkeypatch.delenv(name, raising=False)
+>       assert repository_root() == root
+E       AssertionError: assert WindowsPath('C:/Users/rudtn/zeus-pr/main-evidence') == WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_explicit_repository_resol0/한글 path')
+E        +  where WindowsPath('C:/Users/rudtn/zeus-pr/main-evidence') = repository_root()
+
+C:\Users\rudtn\zeus-pr\main-evidence\tests\test_configuration.py:28: AssertionError
+_____ test_auth_uses_codex_home_without_userprofile_and_explicit_override _____
+
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_auth_uses_codex_home_with0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018123F27320>
+
+    def test_auth_uses_codex_home_without_userprofile_and_explicit_override(tmp_path, monkeypatch):
+        monkeypatch.setenv("HARNESS_REPOSITORY", str(tmp_path))
+        monkeypatch.delenv("HARNESS_CODEX_AUTH", raising=False)
+        monkeypatch.delenv("USERPROFILE", raising=False)
+        monkeypatch.setenv("CODEX_HOME", str(tmp_path / "codex 한글"))
+        assert codex_auth() == tmp_path / "codex 한글/auth.json"
+        monkeypatch.setenv("HARNESS_CODEX_AUTH", "secrets/auth.json")
+>       assert codex_auth() == tmp_path / "secrets/auth.json"
+E       AssertionError: assert WindowsPath('C:/Users/rudtn/zeus-pr/main-evidence/secrets/auth.json') == (WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_auth_uses_codex_home_with0') / 'secrets/auth.json')
+E        +  where WindowsPath('C:/Users/rudtn/zeus-pr/main-evidence/secrets/auth.json') = codex_auth()
+
+tests\test_configuration.py:45: AssertionError
+___________________ test_runtime_paths_resolve_at_call_time ___________________
+
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_runtime_paths_resolve_at_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018123F26510>
+
+    def test_runtime_paths_resolve_at_call_time(tmp_path, monkeypatch):
+        for name in ("first", "second"):
+            monkeypatch.setenv("HARNESS_REPOSITORY", str(tmp_path / name))
+            monkeypatch.delenv("HARNESS_RUNTIME_DIR", raising=False)
+>           assert runtime_dir() == Path(tmp_path / name / ".runtime")
+E           AssertionError: assert WindowsPath('C:/Users/rudtn/zeus-pr/main-evidence/docs/zeus/evidence/environment-runs-002/windows-11-runtime') == WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_runtime_paths_resolve_at_0/first/.runtime')
+E            +  where WindowsPath('C:/Users/rudtn/zeus-pr/main-evidence/docs/zeus/evidence/environment-runs-002/windows-11-runtime') = runtime_dir()
+E            +  and   WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_runtime_paths_resolve_at_0/first/.runtime') = Path(((WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_runtime_paths_resolve_at_0') / 'first') / '.runtime'))
+
+tests\test_configuration.py:71: AssertionError
+_________ test_once_reports_failure_to_scheduler_and_resolves_runtime _________
+
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_once_reports_failure_to_s0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000181249F8CE0>
+capsys = <_pytest.capture.CaptureFixture object at 0x00000181249F8380>
+
+    def test_once_reports_failure_to_scheduler_and_resolves_runtime(tmp_path, monkeypatch, capsys):
+        monkeypatch.setenv("HARNESS_REPOSITORY", str(tmp_path))
+        monkeypatch.setenv("HARNESS_RUNTIME_DIR", "state")
+        monkeypatch.setattr(sys, "argv", ["harness-supervisor", "--once"])
+        monkeypatch.setattr(supervisor, "release_thread", None)
+        monkeypatch.setattr(supervisor, "source_thread", None)
+    
+        def failed(*args):
+            raise RuntimeError("fixture unavailable service")
+    
+        monkeypatch.setattr(supervisor, "tick", failed)
+        with pytest.raises(SystemExit) as error:
+            supervisor.main()
+        assert error.value.code == 1
+        assert "fixture unavailable service" in capsys.readouterr().out
+>       assert (tmp_path / "state").is_dir()
+E       AssertionError: assert False
+E        +  where False = is_dir()
+E        +    where is_dir = (WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3371/test_once_reports_failure_to_s0') / 'state').is_dir
+
+tests\test_supervisor.py:27: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_configuration.py::test_explicit_repository_resolves_config_from_another_directory
+FAILED tests/test_configuration.py::test_auth_uses_codex_home_without_userprofile_and_explicit_override
+FAILED tests/test_configuration.py::test_runtime_paths_resolve_at_call_time
+FAILED tests/test_supervisor.py::test_once_reports_failure_to_scheduler_and_resolves_runtime
+4 failed, 1436 passed, 14 skipped in 411.43s (0:06:51)

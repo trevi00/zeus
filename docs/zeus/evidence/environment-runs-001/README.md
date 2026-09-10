@@ -1,10 +1,20 @@
 # 호스트별 실제 실행 증거 — Windows 11과 WSL Ubuntu에서 실제 PostgreSQL·Redis로 전체 검증
 
 2026-09-11. main `e2e3235` 를 두 호스트에서 각각 체크아웃해, CI와 같은 명령을 **실제 PostgreSQL(pgvector pg17)·Redis(7.4)** 일회용
-Docker 스택 위에서 실행했습니다. 지금까지 Windows 로컬 검증은 PG 검사를 skip하거나(전체 스위트) Redis가 없어 integration 검사가
-실패한 상태였고(`test_integration.py` 19 failed / 19 errors), Linux 실행은 GitHub Actions 결과뿐이었습니다. 이 기록은 그 두 공백을
-이 PC에서 직접 메운 것입니다. 러너는 [`scripts/environment_evidence.py`](../../../../scripts/environment_evidence.py)이며 영수증과
-전체 로그를 이 디렉터리에 둡니다.
+Docker 스택 위에서 실행했습니다. 이 PR 전에도 호스트별 실제 PG·Redis 실행 기록은 있었습니다 —
+[outbox-isolation-001](../../implementation/outbox-isolation-001/README.md)은 Windows에서 실제 PG·Redis로 대상 검사 58개 통과와 별도
+WSL Ubuntu checkout의 742 passed / 146 skipped 를 기록했고, 이후 FA 기록들은 PG 격리 스키마 검사를 포함했습니다. 이 기록이 **추가**하는
+것은 현재 main에서 두 호스트 모두 **전체 스위트를 integration 모드(PG+Redis)로** 실행한 결과와 일회용 Docker 검사(PG 일시정지·재시작·
+중단)입니다. 제가 이전에 "Windows 로컬은 Redis가 없어 integration 파일이 실패했다"고 적은 것은 제 세션의 실행 방식(라이브 원장 PG만
+연결, Redis 미기동)을 말한 것이지 저장소 전체의 상태가 아니었습니다.
+
+**이 디렉터리의 영수증은 러너 1차 버전(`567d75b`)의 출력이며 원본 그대로 둡니다.** 검토([PR #69 review](https://github.com/trevi00/zeus/pull/69#pullrequestreview-5169858678))에서
+그 러너의 한계가 확인됐습니다: 임의 `--project` 이름으로 기존 compose 자산을 `down --volumes` 할 수 있었고, setup/teardown/timeout
+실패에도 `passed=true`를 쓸 수 있었으며, 부모 환경의 `ZEUS_*/HARNESS_*`를 상속해 시험이 다른 DB·Redis를 쓰면서 영수증은 새 컨테이너를
+적을 수 있었고, `--untracked-files=no`라 당시 미추적이던 러너 자체가 영수증에 결속되지 않았습니다. 이 실행의 부모 환경에는
+`ZEUS_*`/`HARNESS_*` 변수가 없었고(같은 셸에서 사후 확인) 시험은 worktree의 `.env`(`harness setup`이 만든 55432/56379)를 읽었으므로 새
+스택을 썼을 것으로 판단하지만, **그 결속을 영수증 자체가 증명하지는 않습니다.** 수정된 러너와 결속된 재실행은
+[environment-runs-002](../environment-runs-002/README.md)에 있습니다.
 
 ## 무엇을 실행했나
 

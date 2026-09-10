@@ -3,8 +3,9 @@
 One run = one host at one Git head. The run creates its own compose project (a fresh unique name,
 refused if anything already carries that name), publishes the services on ephemeral loopback ports
 (so nothing that already listens on the fixed 55432/56379 ports is touched), pins both the ZEUS_ and
-HARNESS_ aliases of the database, Redis, repository and runtime settings to that stack in an isolated
-environment (every inherited ZEUS_*/HARNESS_*/POSTGRES_*/COMPOSE_* variable is dropped), records the
+HARNESS_ aliases of the database, Redis and Redis namespace settings to that stack in an isolated
+environment (every inherited ZEUS_*/HARNESS_*/POSTGRES_*/COMPOSE_* variable is dropped; repository and
+runtime settings are left to the tests themselves), records the
 identity of the services the tests will talk to (PostgreSQL system identifier and container id, Redis
 run_id and container id) before and after the run together with their traffic counters, runs the same
 commands CI runs, and tears down only the resources it created. Every phase is recorded as it ended:
@@ -160,11 +161,11 @@ class EvidenceRun:
         self.services = endpoints
         dsn = f"postgresql://harness:{self.password}@127.0.0.1:{endpoints['postgres']['host_port']}/harness"
         redis = f"redis://127.0.0.1:{endpoints['redis']['host_port']}/0"
-        runtime = self.out / f'{self.label}-runtime'
+        # Only the services are pinned. Repository and runtime settings stay unset so the tests that
+        # resolve them from their own cwd or environment (configuration, supervisor) see their own values.
         base = {k: v for k, v in os.environ.items() if not k.startswith(INHERITED_PREFIXES)}
         self.env = {**base, 'PYTHONIOENCODING': 'utf-8', 'ZEUS_DATABASE_URL': dsn, 'HARNESS_DATABASE_URL': dsn,
-                    'ZEUS_REDIS_URL': redis, 'HARNESS_REDIS_URL': redis, 'ZEUS_REPOSITORY': str(self.root), 'HARNESS_REPOSITORY': str(self.root),
-                    'ZEUS_RUNTIME_DIR': str(runtime), 'HARNESS_RUNTIME_DIR': str(runtime), 'ZEUS_REDIS_NAMESPACE': self.project,
+                    'ZEUS_REDIS_URL': redis, 'HARNESS_REDIS_URL': redis, 'ZEUS_REDIS_NAMESPACE': self.project,
                     'HARNESS_REDIS_NAMESPACE': self.project}
         return self.phase('stack_up', {'seconds': up['seconds'], 'services': endpoints, 'database_url': redact(dsn), 'redis_url': redis,
                                        'dropped_inherited': sorted(k for k in os.environ if k.startswith(INHERITED_PREFIXES)),
