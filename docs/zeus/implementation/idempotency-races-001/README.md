@@ -24,8 +24,13 @@
 ## 재현과 검증
 
 - `tests/test_idempotency_races.py`: 이 PC의 PostgreSQL 원장 컨테이너에 일회용 스키마를 만들고, 연산마다
-  **인터프리터 4개**를 파일 게이트로 동시에 출발시킵니다. 상류 프로브의 barrier와 같은 위치에 "트랜잭션 안
-  읽기 직후 0.4초 정지"를 넣어 모든 racer가 쓰기 전에 읽도록 강제합니다.
+  **인터프리터 4개**를 동시에 출발시킵니다. 각 자식은 import를 마치고 `ready-<i>` 표식을 쓴 뒤 게이트를 기다리고,
+  부모는 표식 4개를 모두 확인한 뒤에만 게이트를 엽니다(고정 sleep 없음). 상류 프로브의 barrier와 같은 위치에
+  "트랜잭션 안 읽기 직후 0.4초 정지"를 둡니다. 실패 대조군은 여기에 더해 읽기 직후 `read-<i>` 표식으로
+  **rendezvous**해 4개 모두 읽기를 마친 뒤에야 쓰기로 진행하므로 교차는 스케줄러가 아니라 검사가 고정합니다
+  (advisory lock 경로에는 이 장벽을 넣지 않습니다 — 넣으면 lock 안에서 서로를 기다려 교착합니다). 시작 실패·
+  assertion·timeout 어느 경우에도 `finally`에서 남은 자식을 모두 회수합니다(PR #38 검토 반례: 자식 하나의
+  시작을 2.5초 늦추면 고정 sleep 방식은 대조군이 `[1,1,1,4]`가 됨).
   - 기본 store(advisory lock): 같은 원인의 서로 다른 occurrence 4건 → occurrences `1,2,3,4`, `hook_created`
     정확히 1회, hooks 1·outbox 1·incidents 4. 같은 task.assign 4회 제출 → 4개 결과 동일, task 1개. 같은
     agent claim 4회 → 정확히 1개만 lease. → `postgres-processes.json`
@@ -47,7 +52,7 @@
 
 ## 남은 범위
 
-- 정지 0.4초는 결정론적 교차를 위한 프로브 입력이며 실제 부하에서의 경쟁 빈도를 측정한 것은 아닙니다.
+- 정지 0.4초와 rendezvous는 결정론적 교차를 위한 프로브 입력이며 실제 부하에서의 경쟁 빈도를 측정한 것은 아닙니다.
 - 외부 시스템 자체의 중복(예: GitHub가 같은 head에 PR을 두 번 만드는 경우)은 그 시스템의 제약에 의존하며
   Zeus는 재발견으로만 대응합니다. Codex 실행 자체는 at-least-once이고 attempt·증거로 계수됩니다.
 - 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
