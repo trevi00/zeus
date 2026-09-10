@@ -252,6 +252,27 @@ its own event and consumes nothing; a consumed or revoked approval certifies not
 issued, consumed, revoked, expired, missing and corrupt are distinct states. The approval
 never writes the active definition and never authorizes routing, graduation or deployment.
 
+## INV-BREAKER-001
+
+Provider admission is a committed, generation-fenced state transition in the control-plane
+store, never a boolean from a file. A breaker is keyed by typed lowercase provider and scope
+tokens hashed together (aliases and path-like parts are refused, not folded). Admission
+returns a token naming the generation, policy revision, task, attempt and time it was granted
+under, and only a committed transaction can return one: a store that cannot write admits
+nothing. An open breaker refuses until its cooldown elapses; half-open holds exactly one probe
+reservation bound to its holder with a TTL, an expired reservation is reclaimed under a new
+generation, and a result reported against any other generation is recorded as stale and
+changes nothing, so an old holder never closes or opens the slot a new holder owns. Unknown
+results (interrupted, cancelled, unproven) release the slot without a verdict; only provider
+failures and transport deaths count as failures, and malformed output is not a provider
+failure. Failure history folds over unique events ordered by time inside the window, so
+duplicates and input order cannot change the count. Policy is validated on read and on write
+(integer-not-bool counts, finite positive durations, threshold within retained history, probe
+TTL within the window, Git or explicit unversioned revision) and a written policy is applied
+only when it reads back equal. Missing, corrupt and unreadable state are distinct from a new
+breaker and none of them is quietly closed; corruption records a notice and requires repair. A
+closed breaker admits calls and authorizes nothing else: not acceptance, graduation or deployment.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
