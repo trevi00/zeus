@@ -287,11 +287,12 @@ class Executor:
                         # Occurrence time comes from the event itself; collection time is ours.
                         # They are kept apart so replay never reorders by the merge moment.
                         occurred = progress_occurrence(event)
+                        collected = utcnow()  # one clock read: `at` and `collected_at` are the same moment
                         previous["sequence"] = previous.get("sequence", 0) + 1
                         previous["recent"] = (previous["recent"] + [receipt["ref"]])[-6:]
                         previous["last_record"] = receipt["ref"]
-                        previous.update(agent=agent, context_ref=context_ref["ref"], at=utcnow(),
-                                        collected_at=utcnow(), occurred_at=occurred,
+                        previous.update(agent=agent, context_ref=context_ref["ref"], at=collected,
+                                        collected_at=collected, occurred_at=occurred,
                                         event_id=progress_event_id(event, receipt["ref"]),
                                         generation=lease.get("generation") if lease else None,
                                         attempt=lease.get("attempt") if lease else None,
