@@ -15,7 +15,8 @@ BUCKET = 'completion_verdicts'
 REJECTIONS = 'completion_rejections'
 RECORD_ONLY = ('sequence', 'recorded_at')
 STATES = ('unreadable', 'no_ledger', 'corrupt', 'partially_corrupt', 'rejected_only', 'not_evaluated',
-          'stale', 'not_approved', 'incomplete', 'not_succeeded', 'authoritative')
+          'stale', 'not_approved', 'incomplete', 'not_succeeded', 'receipt_unbound', 'artifact_missing',
+          'reviewer_unbound', 'scenario_mismatch', 'authoritative')
 
 
 def _excerpt(record):
@@ -30,8 +31,12 @@ def _task_of(record):
 
 
 class CompletionAuthority:
-    def __init__(self, store):
-        self.store = store
+    def __init__(self, store, artifacts=None, org=None):
+        # Authority needs more than a well-formed record (review, PR #50): the runner receipt must be
+        # the execution evidence the task itself recorded and exist as an immutable artifact, the
+        # evaluation artifact must exist, the reviewer must be an independent organization actor, and
+        # the scenario denominator must be the one the consumer's approved spec names.
+        self.store, self.artifacts, self.org = store, artifacts, org
 
     def record(self, record, now=None):
         try:
@@ -63,7 +68,7 @@ class CompletionAuthority:
             tx.put(BUCKET, verdict['id'], {**verdict, 'sequence': sequence, 'recorded_at': utcnow()})
         return {'id': verdict['id'], 'changed': True, 'sequence': sequence}
 
-    def inspect(self, task_id, *, spec_revision, evaluation_artifact):
+    def inspect(self, task_id, *, spec_revision, evaluation_artifact, expected_scenarios=None):
         """Classify the ledger for one task; every state except `authoritative` grants nothing."""
         require(type(task_id) is str and bool(task_id), 'Task identity required')
         try:
@@ -110,9 +115,37 @@ class CompletionAuthority:
             return {**report, 'state': 'incomplete', 'reason': 'scenario denominator not fully dispositioned'}
         if task.get('status') != 'succeeded':
             return {**report, 'state': 'not_succeeded', 'reason': 'execution has not reported success'}
+        unbound = self._provenance(task, last, expected_scenarios)
+        if unbound:
+            return {**report, **unbound}
         return {**report, 'state': 'authoritative', 'authority': True}
 
-    def require_authority(self, task_id, *, spec_revision, evaluation_artifact):
-        report = self.inspect(task_id, spec_revision=spec_revision, evaluation_artifact=evaluation_artifact)
+    def _provenance(self, task, last, expected_scenarios):
+        """Values inside one JSON document prove nothing about each other; check them against their sources."""
+        receipt = last['runner_receipt']
+        result = task.get('result') if isinstance(task.get('result'), dict) else {}
+        execution_ref = result.get('execution_ref')
+        if type(execution_ref) is not str or receipt['id'] != execution_ref or 'sha256:' + receipt['digest'] != execution_ref:
+            return {'state': 'receipt_unbound', 'reason': 'runner_receipt is not the execution evidence the task recorded'}
+        if self.artifacts is None:
+            return {'state': 'artifact_missing', 'reason': 'no artifact store to verify the receipt and evaluation artifact'}
+        for ref in (execution_ref, last['evaluation_artifact']):
+            try:
+                self.artifacts.inspect(ref)
+            except Exception as exc:
+                return {'state': 'artifact_missing', 'reason': ref + ': ' + type(exc).__name__}
+        reviewer = last['reviewer']['actor']
+        if self.org is None or reviewer not in self.org.agents or reviewer == task.get('agent'):
+            return {'state': 'reviewer_unbound', 'reason': 'reviewer is not an independent organization actor'}
+        if expected_scenarios is not None:
+            require(isinstance(expected_scenarios, list) and all(type(s) is str for s in expected_scenarios),
+                    'expected_scenarios must be scenario names')
+            if sorted(set(expected_scenarios)) != sorted(set(last['scenarios']['expected'])):
+                return {'state': 'scenario_mismatch', 'reason': 'verdict denominator differs from the approved spec scenarios'}
+        return None
+
+    def require_authority(self, task_id, *, spec_revision, evaluation_artifact, expected_scenarios=None):
+        report = self.inspect(task_id, spec_revision=spec_revision, evaluation_artifact=evaluation_artifact,
+                              expected_scenarios=expected_scenarios)
         require(report['authority'], 'No completion authority: ' + report['state'])
         return report
