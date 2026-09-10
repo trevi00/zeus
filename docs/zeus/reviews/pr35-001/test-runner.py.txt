@@ -1,0 +1,11 @@
+﻿import subprocess,json,time,hashlib
+from pathlib import Path
+from datetime import datetime,timezone
+root=Path('C:/Users/rudtn/zeus-pr35-review')
+out=Path('C:/Users/rudtn/zeus/.runtime/pr35-review');out.mkdir(exist_ok=True)
+for name,args in [('ruff',['uv','run','ruff','check','.']),('target',['uv','run','python','-m','pytest','-q','tests/test_python_channel.py','tests/test_verification.py','tests/test_native_hooks.py']),('full',['uv','run','python','-m','pytest','-q'])]:
+ start=time.monotonic();at=datetime.now(timezone.utc).isoformat();r=subprocess.run(args,cwd=root,capture_output=True)
+ raw=r.stdout+r.stderr;(out/(name+'.log')).write_bytes(raw)
+ (out/(name+'.json')).write_text(json.dumps({'source_commit':'741cc1d441c7a6335768cad618c47a1c9393ac12','argv':args,'started_at':at,'seconds':time.monotonic()-start,'exit_code':r.returncode,'raw_sha256':hashlib.sha256(raw).hexdigest()},indent=2)+'\n','utf-8')
+ print(name, r.returncode, raw.decode('utf-8',errors='replace')[-220:],flush=True)
+ if r.returncode:raise SystemExit(r.returncode)

@@ -1,0 +1,14 @@
+{
+  "source_commit": "741cc1d441c7a6335768cad618c47a1c9393ac12",
+  "argv": [
+    "uv",
+    "run",
+    "ruff",
+    "check",
+    "."
+  ],
+  "started_at": "2026-09-10T04:08:52.218822+00:00",
+  "seconds": 0.37471390000428073,
+  "exit_code": 0,
+  "raw_sha256": "eda3dbb36994cb2010f98c0b43fd89acbcf6ee7a60cd03f18eb171c6c9ffdb9f"
+}

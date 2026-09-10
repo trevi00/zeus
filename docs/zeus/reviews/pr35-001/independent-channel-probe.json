@@ -1,0 +1,46 @@
+{
+  "baseline": {
+    "module": "C:\\Users\\rudtn\\zeus\\src\\codex_harness\\adapters\\commands.py",
+    "source_sha256": "ffe87ad175292af2efdaa0dc15aa090fe10fada06e143d8ce8e335ae802e88cb",
+    "results": {
+      "unbound": {
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nUnicodeDecodeError: 'cp949' codec can't decode byte 0x80 in position 2: illegal multibyte sequence\n",
+        "all_channels_match": false
+      },
+      "release": {
+        "exit_code": 0,
+        "stdout": "\uac80\uc99d \u2014 \uc644\ub8cc\n",
+        "stderr": "\ufffd\\udc80\ufffd\\udc9d \\udce2\\udc80\\udc94 \\udcec\ufffd\ufffd\ufffd\\udc8c\n",
+        "all_channels_match": false
+      }
+    }
+  },
+  "candidate": {
+    "module": "C:\\Users\\rudtn\\zeus-pr35-review\\src\\codex_harness\\adapters\\commands.py",
+    "source_sha256": "82200f42fd48962545232654b2132757130bdd7afeb916e220bd8546e63dcd71",
+    "results": {
+      "unbound": {
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nUnicodeDecodeError: 'cp949' codec can't decode byte 0x80 in position 2: illegal multibyte sequence\n",
+        "all_channels_match": false
+      },
+      "release": {
+        "exit_code": 0,
+        "stdout": "\uac80\uc99d \u2014 \uc644\ub8cc\n",
+        "stderr": "\uac80\uc99d \u2014 \uc644\ub8cc\n",
+        "all_channels_match": true
+      },
+      "helper": {
+        "exit_code": 0,
+        "stdout": "\uac80\uc99d \u2014 \uc644\ub8cc\n",
+        "stderr": "\uac80\uc99d \u2014 \uc644\ub8cc\n",
+        "all_channels_match": true
+      }
+    }
+  },
+  "candidate_revision": "741cc1d441c7a6335768cad618c47a1c9393ac12",
+  "scope": "Real child stdin/stdout/stderr; no release deployment or host restart"
+}

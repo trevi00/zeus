@@ -1,0 +1,44 @@
+import hashlib
+import json
+import os
+import subprocess
+from pathlib import Path
+
+candidate = Path('C:/Users/rudtn/zeus-pr35-review')
+baseline = Path('C:/Users/rudtn/zeus')
+out = baseline/'.runtime/pr35-review'
+python = candidate/'.venv/Scripts/python.exe'
+code = r'''
+import hashlib,json,os,sys
+from pathlib import Path
+from codex_harness.adapters import commands,verification
+text='\uac80\uc99d \u2014 \uc644\ub8cc'
+base=dict(os.environ,PYTHONIOENCODING='cp949',PYTHONUTF8='0')
+child=[sys.executable,'-X','utf8=0','-c',
+       'import sys; s=sys.stdin.read(); print(s); print(s,file=sys.stderr)']
+environments={'unbound':base,'release':verification.verification_environment(
+    {'database_url':'unused-test-endpoint','redis_url':'unused-test-endpoint'},base)}
+if hasattr(commands,'python_channel_environment'):
+    environments['helper']=commands.python_channel_environment(base)
+results={}
+for name,env in environments.items():
+    r=commands.run_process(child,input_text=text,env=env)
+    results[name]={'exit_code':r.returncode,'stdout':r.stdout,'stderr':r.stderr,
+        'all_channels_match':r.returncode==0 and r.stdout==text+'\n' and r.stderr==text+'\n'}
+print(json.dumps({'module':commands.__file__, 'source_sha256':hashlib.sha256(
+    Path(commands.__file__).read_bytes()).hexdigest(),'results':results}))
+'''
+receipt = {}
+for name, root in [('baseline', baseline), ('candidate', candidate)]:
+    env = dict(os.environ, PYTHONPATH=str(root/'src'))
+    result = subprocess.run([str(python), '-c', code], cwd=root, env=env,
+                            capture_output=True, check=True)
+    receipt[name] = json.loads(result.stdout)
+assert not receipt['baseline']['results']['release']['all_channels_match']
+assert not receipt['candidate']['results']['unbound']['all_channels_match']
+for name in ('release', 'helper'):
+    assert receipt['candidate']['results'][name]['all_channels_match']
+receipt['candidate_revision'] = '741cc1d441c7a6335768cad618c47a1c9393ac12'
+receipt['scope'] = 'Real child stdin/stdout/stderr; no release deployment or host restart'
+(out/'independent-channel-probe.json').write_text(json.dumps(receipt, indent=2)+'\n', encoding='utf-8')
+print('Baseline fails; candidate release/helper preserve stdin, stdout and stderr; unbound control fails.')

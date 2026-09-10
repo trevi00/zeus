@@ -1,0 +1,15 @@
+{
+  "source_commit": "741cc1d441c7a6335768cad618c47a1c9393ac12",
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "started_at": "2026-09-10T04:08:57.332070+00:00",
+  "seconds": 202.04134270000213,
+  "exit_code": 0,
+  "raw_sha256": "170716d07d3d2fccaba5dd44516e0d8c388d7c15377fd99038833a8ea0e3ee01"
+}

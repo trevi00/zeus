@@ -1,0 +1,18 @@
+{
+  "source_commit": "741cc1d441c7a6335768cad618c47a1c9393ac12",
+  "argv": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_python_channel.py",
+    "tests/test_verification.py",
+    "tests/test_native_hooks.py"
+  ],
+  "started_at": "2026-09-10T04:08:52.593967+00:00",
+  "seconds": 4.737288299998909,
+  "exit_code": 0,
+  "raw_sha256": "a513b36c2bcbe9878dfa4ed9cac50046170886c6086de2f7b35e11eead594d99"
+}
