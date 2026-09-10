@@ -19,6 +19,7 @@ from codex_harness.adapters.skill_history import (
     project_identity,
     record_history,
 )
+from codex_harness.application.breaker import Breaker, breaker_key, result_of, result_of_exception
 from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.execution_time import (
     ExecutionTimeError,
@@ -145,6 +146,7 @@ class Executor:
         self.knowledge, self.research, self.release_runner = knowledge, research, release_runner
         self.workflow = Workflow(service.store, service.org)
         self.invocations = InvocationLedger(service.store)
+        self.breaker = Breaker(service.store)
         self.releases = Releases(service.store, service.org)
         self.audit_execution = None
         if audit_runner is not None:
@@ -345,6 +347,8 @@ class Executor:
                                                           "sequence": previous["sequence"], "occurred_at": occurred}
                         tx.put("execution_progress", key, previous)
 
+            # INV-BREAKER-001: admission is a committed, generation-fenced transition, taken per call.
+            admission = self.breaker.admit(breaker_key('codex-app-server', workload), lease) if lease else None
             started = time.monotonic()
             result = None
             timeout = time_limit
@@ -366,6 +370,8 @@ class Executor:
                 if result is None or not (result.get("inspection_blocked") or result.get("failure")):
                     if reservation is not None:
                         self.invocations.abandon(reservation['id'], 'exception:' + type(exc).__name__)
+                    if admission is not None:
+                        self.breaker.report(admission, result_of_exception(exc))
                     raise
                 # INV-RELEASE-001 / INV-SESSION-001: cleanup cannot erase a known
                 # blocked result before its artifact and fenced checkpoint are saved.
@@ -380,6 +386,11 @@ class Executor:
             if reservation is not None:
                 self.invocations.settle(reservation['id'], outcome=result['invocation']['outcome'],
                                         usage=result['invocation']['usage'])
+            if admission is not None:
+                verdict = result_of(result)
+                result['breaker'] = {**self.breaker.report(admission, verdict), 'verdict': verdict,
+                                     'key': admission['key'], 'admitted_generation': admission['generation'],
+                                     'probe': admission['probe'], 'policy_revision': admission['policy_revision']}
             if history_recording:
                 result['skill_history_recording'] = history_recording
             evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,

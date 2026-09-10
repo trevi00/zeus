@@ -1,0 +1,32 @@
+{
+  "scope": "FA-020 target tests on MemoryStore and an isolated PostgreSQL schema (HARNESS_INTEGRATION=1)",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_breaker.py tests/test_execution_output.py tests/test_executor_research.py tests/test_model_routing.py tests/test_context_recovery.py",
+  "started_at": "2026-09-10T06:24:16.021141+00:00",
+  "finished_at": "2026-09-10T06:24:34.089375+00:00",
+  "exit_code": 0,
+  "summary": [
+    "90 passed in 17.62s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "report() applies a result whose token generation differs from the current one",
+      "result": "2 failed (test_single_probe_slot_is_fenced_by_generation[memory|postgres]), 12 passed"
+    },
+    {
+      "control": "fold_failures() keeps input order and duplicates",
+      "result": "1 failed (test_failure_history_folds_over_unique_events_by_time_not_input_order), 13 passed"
+    },
+    {
+      "control": "policy integers accept bool (isinstance instead of type is int)",
+      "result": "3 failed (policy read, state validation, policy write), 11 passed"
+    },
+    {
+      "control": "executor never admits through the breaker",
+      "result": "1 failed (test_executor_admits_per_call_and_refuses_while_open), 13 passed"
+    }
+  ],
+  "not_claimed": "No real model call, child-process kill, restart or clock change; the transport is the protocol replay fixture and outage is an explicit ContractError fixture. Holder liveness is not probed; TTL is durable time only."
+}
