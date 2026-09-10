@@ -215,6 +215,13 @@ owner against the fence in the same transaction, so a row restored behind the fe
 re-arm its old holder; rows that predate the ledger pass, a corrupted fence fails closed. Row or process existence is never execution identity, and the upstream file
 lease is not ported.
 
+Execution progress records are written only under the current lease and carry the task
+generation and attempt, a per-record sequence, a unique event identity, and the event's
+own occurrence time separately from the collection time (absent occurrence time stays
+null); a stale generation cannot write progress, and a malformed runtime event is retained
+as evidence and counted instead of being dropped or allowed to overwrite the last
+well-formed state.
+
 ## INV-EXECUTION-TIME-001
 
 Timezone-aware UTC deadlines survive restart. Monotonic elapsed time is compared

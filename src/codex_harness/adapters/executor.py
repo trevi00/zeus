@@ -65,6 +65,25 @@ DIAGNOSIS = object_schema({"confirmed": {"type": "boolean"}, "root_cause": TEXT,
                           "scope": TEXT, "reason": TEXT})
 
 
+def progress_occurrence(event: dict):
+    """The event's own UTC occurrence time, or None; the collection moment never stands in for it."""
+    params = event.get("params") if isinstance(event.get("params"), dict) else {}
+    item = params.get("item") if isinstance(params.get("item"), dict) else {}
+    for candidate in (params.get("completedAtMs"), item.get("completedAtMs"), event.get("emittedAtMs")):
+        if type(candidate) is int and 0 < candidate < 10**14:
+            return datetime.fromtimestamp(candidate / 1000, tz=timezone.utc).isoformat()
+    return None
+
+
+def progress_event_id(event: dict, receipt_ref: str) -> str:
+    """Unique per delivered event: runtime item identity when present, else the retained bytes."""
+    params = event.get("params") if isinstance(event.get("params"), dict) else {}
+    item = params.get("item") if isinstance(params.get("item"), dict) else {}
+    if isinstance(item.get("id"), str) and item["id"]:
+        return f"{event.get('method')}:{item['id']}:{item.get('status')}"
+    return f"{event.get('method')}:{receipt_ref}"
+
+
 def artifact_reader_handle(root, reference: str) -> dict:
     """Describe one exact-ref reader invocation without shell command interpolation."""
     return {
@@ -241,10 +260,15 @@ class Executor:
                     last_beat = time.monotonic()
                 if event is None:
                     return
-                if event.get("method") in {"item/completed", "thread/tokenUsage/updated"}:
+                # FA-016: a malformed runtime event is retained as evidence and counted, never
+                # dropped, and never allowed to overwrite the well-formed progress state.
+                malformed = not isinstance(event, dict) or not isinstance(event.get("params", {}), dict)
+                if malformed or event.get("method") in {"item/completed", "thread/tokenUsage/updated"}:
                     with self.service.store.transaction() as tx:
                         prior = tx.get("execution_progress", key) or {}
-                    receipt = self.artifacts.put(evidence_json({"event": event, "previous": prior.get("last_record") if matches(prior) else None}),
+                    receipt = self.artifacts.put(evidence_json({"event": event if not malformed else repr(event),
+                                                                "malformed": malformed,
+                                                                "previous": prior.get("last_record") if matches(prior) else None}),
                                                  "runtime-event:" + key)
                     with self.service.store.transaction() as tx:
                         if lease:
@@ -254,14 +278,29 @@ class Executor:
                             previous = {"id": key, "recent": []}
                         if context_bound:
                             previous["research_binding"] = binding
+                        if malformed:
+                            previous["malformed_events"] = previous.get("malformed_events", 0) + 1
+                            previous.setdefault("malformed_recent", [])
+                            previous["malformed_recent"] = (previous["malformed_recent"] + [receipt["ref"]])[-6:]
+                            tx.put("execution_progress", key, previous)
+                            return
+                        # Occurrence time comes from the event itself; collection time is ours.
+                        # They are kept apart so replay never reorders by the merge moment.
+                        occurred = progress_occurrence(event)
+                        previous["sequence"] = previous.get("sequence", 0) + 1
                         previous["recent"] = (previous["recent"] + [receipt["ref"]])[-6:]
                         previous["last_record"] = receipt["ref"]
                         previous.update(agent=agent, context_ref=context_ref["ref"], at=utcnow(),
+                                        collected_at=utcnow(), occurred_at=occurred,
+                                        event_id=progress_event_id(event, receipt["ref"]),
+                                        generation=lease.get("generation") if lease else None,
+                                        attempt=lease.get("attempt") if lease else None,
                                         last_event=event.get("method"), worktree=cwd)
                         item = event.get("params", {}).get("item")
-                        if item:
-                            previous["last_completed"] = {"id": item["id"], "type": item["type"],
-                                                          "status": item.get("status"), "evidence": receipt["ref"]}
+                        if isinstance(item, dict) and isinstance(item.get("id"), str):
+                            previous["last_completed"] = {"id": item["id"], "type": item.get("type"),
+                                                          "status": item.get("status"), "evidence": receipt["ref"],
+                                                          "sequence": previous["sequence"], "occurred_at": occurred}
                         tx.put("execution_progress", key, previous)
 
             started = time.monotonic()
