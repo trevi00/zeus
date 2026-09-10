@@ -365,10 +365,21 @@ class ResearchAudits:
             self.artifacts.inspect(receipt['receipt']['output_ref'])
             successful = receipt['receipt']['exit_status'] == 0 and not receipt['receipt']['inspection_blocked']
             require(successful or not review.accepted, 'Inspection-blocked review cannot approve')
+            key = digest(asdict(review))
+            # INV-RESEARCH-004: reviews are ordered per binding and actor; the latest one is the verdict.
+            siblings = [r for r in tx.scan('research_reviews')
+                        if r['review']['binding'] == review.binding and r['review']['actor'] == review.actor
+                        and digest(r['review']) != key]
             record = {'audit_id': data['audit_id'], 'review': asdict(review),
-                      'status': 'reviewed' if successful else 'inspection-blocked'}
-            tx.put('research_reviews', digest(asdict(review)), record)
+                      'status': 'reviewed' if successful else 'inspection-blocked',
+                      'sequence': 1 + max((r.get('sequence', 0) for r in siblings), default=0), 'at': utcnow()}
+            tx.put('research_reviews', key, record)
             if not review.accepted:
+                approval = tx.get('research_approvals', review.binding)
+                if approval is not None and approval.get('status', 'approved') == 'approved':
+                    # A rejection after approval revokes it; an earlier PASS never outranks a later verdict.
+                    tx.put('research_approvals', review.binding, {**approval, 'status': 'revoked',
+                           'revoked_by': key, 'revoked_at': record['at']})
                 return record
             if review.actor == 'lead:research':
                 self._queue_review(tx, data['audit_id'], data['proposal'], review.binding, 'conductor')
@@ -380,8 +391,11 @@ class ResearchAudits:
                            if r['review']['binding'] == review.binding and r['review']['accepted']]
                 approval = {'audit_id': data['audit_id'], 'binding': review.binding,
                             'proposal': data['proposal'],
-                            'reviews': [digest(r['review']) for r in reviews]}
-
+                            'reviews': [digest(r['review']) for r in reviews], 'status': 'approved'}
+                previous = tx.get('research_approvals', review.binding)
+                if previous is not None and previous.get('status') == 'revoked':
+                    approval['revocations'] = previous.get('revocations', []) + [
+                        {k: previous[k] for k in ('revoked_by', 'revoked_at')}]
                 tx.put('research_approvals', review.binding, approval)
             return record
 
