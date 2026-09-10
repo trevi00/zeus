@@ -1,0 +1,24 @@
+{
+  "run": "f5414aeab9c24c8cbd8c306ec8dce6df",
+  "cancellation": {
+    "at": "2026-09-10T04:03:46.985514+00:00",
+    "reason": "operator cancelled; schema removed; no boot proof"
+  },
+  "reason": "User declined Windows restart; preparation cancelled, not accepted",
+  "workers": {
+    "windows": {
+      "pid": 10400,
+      "wall": "2026-09-10T04:03:46.760491+00:00",
+      "status": "stopped",
+      "reason": "stop marker or three-hour lifetime reached"
+    },
+    "wsl": {
+      "pid": 6277,
+      "wall": "2026-09-10T04:03:46.902726+00:00",
+      "status": "stopped",
+      "reason": "stop marker or three-hour lifetime reached"
+    }
+  },
+  "probe_schema_removed": true,
+  "proof_of_boot_transition": false
+}

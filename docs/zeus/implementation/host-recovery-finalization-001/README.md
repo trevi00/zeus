@@ -1,5 +1,11 @@
 # Current-PC recovery handoff
 
+Current disposition: the user declined Windows restart. The prepared observation
+was cancelled; both workers stopped and the private probe schema was removed
+(cancelled.json). The earlier armed.json is historical preparation evidence.
+There is no current restart deadline or requested operator action. Actual host
+boot recovery remains unmeasured, not accepted.
+
 The tested source is 0c66a678acc6653f553a62bf2a6b1f7de205bad7. It fixes the
 Compose compatibility failure from c651ac4 without weakening the interruption
 checks. Application source and scripts/host_cycle.py remain unchanged.
@@ -16,10 +22,11 @@ Corrected local measurements are in ../host-recovery-ci-fix-001/: Windows full
 
 armed.json is preparation evidence only. It starts Windows and Ubuntu heartbeat
 workers on an isolated schema of the current real ledger and does not initiate
-or prove any host restart. Save work and use Windows Restart within three hours
-of preparation, then run `uv run python scripts/host_cycle.py verify` from the
-Zeus repository. Let verification finish; retries use the existing bounded attempt
-budget. If the preparation expired, inspect it before cancelling and preparing again.
+or prove any host restart. If the user elects to test restart later, create a fresh
+preparation first; the cancelled run must not be verified. The later procedure is
+Windows Restart within three hours of that fresh preparation, followed by
+`uv run python scripts/host_cycle.py verify` from the Zeus repository. Let verification
+finish; retries use the existing bounded attempt budget.
 
 The current ticket is revision 2 and remains OPEN. Actual Windows boot recovery,
 PC sleep/resume, WSL interruption recovery and isolated real OS clock-step
