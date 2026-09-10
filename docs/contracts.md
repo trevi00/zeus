@@ -406,6 +406,26 @@ Windows/Linux/WSL install, upgrade, interrupted-recovery and data-preservation r
 scenarios and the human acceptance they require are not performed by this contract, and no
 document count, quality score or gate table substitutes for them.
 
+## INV-EVIDENCE-001
+
+A worker's evidence claim is typed (a file with optional content hash and line range, or a
+command with its expected exit status); free text is at most a command claim of expected exit
+zero. Inspection yields exactly one of checked, not_checked, missing, unknown, error,
+replay_failed, flake_pattern or verified_mismatch, always with a cause; there is no CLEAN, a
+directory or an unrelated file is not evidence, a permission or stat error is unknown, and an
+inspection whose claims were not all checked is incomplete. File checks and command replays
+share one explicit context: the workspace the claims came from, the candidate source revision,
+the policy hash and a minimal recorded environment; nothing is ever resolved against the
+inspector's own cwd. A model-written command is never authority: only an argv prefix listed in
+the Git-defined evidence policy is replayed, in a bounded child (finite positive per-command
+deadline within an aggregate budget, claim count and output byte caps, process-tree
+termination recorded), and identical replays that disagree are a flake pattern. Raw stdout and
+stderr bytes are archived byte-for-byte with their hashes; a decoding problem is a recorded
+property of the output, never a replacement. Inspections are ledger rows bound to task,
+generation, attempt, owner and revision; a recording failure is a notice, never a success; and
+a checked inspection is deterministic evidence, never historical truth, semantic review, human
+acceptance, SDD acceptance or model qualification.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

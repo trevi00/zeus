@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "replay": {
+    "allowed_argv_prefixes": [
+      ["python", "-m", "pytest"],
+      ["uv", "run", "python", "-m", "pytest"],
+      ["uv", "run", "pytest"],
+      ["ruff", "check"],
+      ["uv", "run", "ruff", "check"],
+      ["python", "-m", "ruff", "check"]
+    ],
+    "per_command_seconds": 300,
+    "total_seconds": 900,
+    "max_claims": 32,
+    "max_output_bytes": 65536,
+    "replays_per_claim": 2
+  },
+  "files": {
+    "max_bytes": 8388608
+  }
+}

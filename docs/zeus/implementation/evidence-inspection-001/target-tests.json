@@ -1,0 +1,32 @@
+{
+  "scope": "FA-022 target tests: real child-process replays, MemoryStore + isolated PostgreSQL ledger, executor implement path on a real Git clone (HARNESS_INTEGRATION=1)",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_evidence_inspection.py tests/test_ticket_execution.py tests/test_model_routing.py tests/test_skill_guidance.py tests/test_workflow.py tests/test_execution_output.py tests/test_executor_research.py",
+  "started_at": "2026-09-10T06:45:48.213830+00:00",
+  "finished_at": "2026-09-10T06:46:05.073235+00:00",
+  "exit_code": 0,
+  "summary": [
+    "133 passed, 6 skipped in 16.40s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "authorized() grants every command",
+      "result": "5 failed (policy, replay, ledger x2, executor), 3 passed"
+    },
+    {
+      "control": "file claims resolved against the inspector cwd instead of the workspace",
+      "result": "1 failed (workspace-cwd test), 7 passed"
+    },
+    {
+      "control": "verdict() counts not_checked as checked",
+      "result": "3 failed (ledger x2, executor), 5 passed"
+    },
+    {
+      "control": "invalid output bytes replaced instead of preserved",
+      "result": "1 failed (raw-bytes test), 7 passed"
+    }
+  ],
+  "not_claimed": "Replays run as bounded children in the workspace, not in a capability-isolated container; Linux/WSL process-tree, encoding and path behaviour were not measured. A checked claim is deterministic evidence, not historical truth, semantic review or human acceptance."
+}
