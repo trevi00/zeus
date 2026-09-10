@@ -1,0 +1,7 @@
+[
+  {
+    "exit": 0,
+    "stdout": "{\"pr\": 63, \"scope\": \"synthetic inputs through production functions; no actual model/human acceptance\", \"status\": \"parse_error\", \"checked\": [], \"unchecked\": [\"observed_at\"], \"unscanned_field_forwarded\": false}\n",
+    "stderr": ""
+  }
+]

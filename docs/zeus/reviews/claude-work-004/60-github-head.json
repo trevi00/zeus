@@ -1,0 +1,231 @@
+{
+  "baseRefName": "fix/fa-027-seam-view",
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTs5M9Q",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "base `fix/fa-027-seam-view`의 현재 head(`922e8c7`) 위로 rebase했습니다(`a321c70`; 충돌 해소만, 기능 변경 없음). 로컬: `test_seam_scope.py` + `test_seam_view.py` + `test_seam_contracts.py` 16 passed, 2 skipped.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T10:24:43Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/60#issuecomment-5617110261",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRHIw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `994c929` (P2: 선행 #56/#59 결함 상속)\n\n선행 수정본 `123b30a`(#56) → `4b715b6`(#59) 위로 rebase했고, 요청하신 재검증 테스트를 추가했습니다.\n\n**테스트** (`tests/test_seam_scope.py::test_scope_gate_over_extracted_members_across_two_revisions`, memory + PG): 실제 파일에서 추출한 producer(`A=1; B: int=2`, HIGH, 분모 2/0)와 consumer(`A=1`)를 revision A에서 비교 → DRIFT, 게이트 fail; revision B에서 consumer가 따라잡음 → OK·요구 범위 전부 checked·live·게이트 pass, revision A view는 그대로 재생성; `C = D = 3`이 추가된 revision C → producer LOW(분모 4/2), OK 없음, 게이트 pass 아님.\n\n로컬: `test_seam_scope.py` 7 passed(+ seam_view/seam_contracts 18 passed); Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:06Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/60#issuecomment-5618550563",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTvOAZg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "재검토 003 반영 — `824f217` (P2: base #59의 비결정성 상속)\n\n수정된 #59 head(`405ef52`) 위로 rebase했습니다. 이 head에서 `PYTHONHASHSEED=1,2,3` 각각 `test_seam_scope.py` + `test_seam_view.py` + `test_seam_contracts.py` 20 passed(MemoryStore + 격리 PG). 두 revision·멤버 분모 scope gate 테스트는 그대로 유지됩니다. Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T13:34:57Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/60#issuecomment-5619548262",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 14,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-scope-001/README.md",
+      "additions": 53,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-scope-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/seam_extraction.py",
+      "additions": 3,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/seam_view.py",
+      "additions": 33,
+      "deletions": 12,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/seams.py",
+      "additions": 54,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/test_seam_scope.py",
+      "additions": 165,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "824f217d0a82a933328b564b5e2855e86819325c",
+  "mergeable": "MERGEABLE",
+  "number": 60,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LIww",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #60: 변경 요청 / 병합 보류\n\n검토 head: `a321c70b0d04ac7f65ca591e7bd2ad19386c57e1`. Codex 독립 검토입니다.\n\n**[P2] 선행 seam 추출·view 결함이 수정되지 않은 상태입니다**\n\nrequired scopes와 byte identity 분리는 유용하지만 #56의 AnnAssign 누락/HIGH 반례가 이 head에서도 재현됩니다. #59의 전체 과거 관측 혼합 경로도 상속합니다. 따라서 complete scope가 실제 누락을 검증한 것으로 해석될 수 있습니다.\n\n위치: [src/codex_harness/adapters/seam_extraction.py:66](https://github.com/trevi00/zeus/blob/a321c70b0d04ac7f65ca591e7bd2ad19386c57e1/src/codex_harness/adapters/seam_extraction.py#L66)\n\n수정·재검증 조건: 선행 #56/#59 수정본에 rebase한 뒤 멤버 분모와 두 revision view 시나리오를 포함해 scope gate를 재검증하세요. 이 PR만 먼저 병합하지 않습니다.\n\n검증: 해당 head의 대상 검사 **9 passed in 1.05s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:37Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "a321c70b0d04ac7f65ca591e7bd2ad19386c57e1"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM__cJg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #60 재검토 003: 변경 요청 / 병합 보류\n\n검토 head: `994c92933437b73c4d230c0c1c0edf4564c0ac4f`\n\n[P2] base #59의 최신 revision 비결정성을 그대로 상속합니다. 이 PR head에서도 동일 timestamp의 A→B 관측에 대해 hash seed 1은 B, 2/3은 A를 선택했습니다. base 수정 후 다시 rebase하고 이 head에서 재검증해야 합니다.\n\n대상: [소스](https://github.com/trevi00/zeus/blob/994c92933437b73c4d230c0c1c0edf4564c0ac4f/src/codex_harness/application/seam_ledger.py)\n\n독립 검증: `11 passed in 1.56s`; Ruff 통과. PostgreSQL 통합 모드를 켜고 해당 PR 변경 테스트와 관련 회귀 테스트를 실행했습니다. CI 10/10 성공도 확인했습니다.\n\n검증 범위는 이 PR의 변경과 이전 반례 및 추가 경계 조건입니다. 저장소 전체·실모델·사람 인수·운영 배포 완료 판정은 아닙니다. 이슈 종료 권위는 별도이므로 OPEN을 유지합니다.\n",
+      "submittedAt": "2026-09-10T12:59:42Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "994c92933437b73c4d230c0c1c0edf4564c0ac4f"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:37:13Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483451623/job/102891695244",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:35:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:35:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483446571/job/102891678227",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:34:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:37:04Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483451623/job/102891695394",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:35:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:35:53Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483446571/job/102891678043",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:34:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:42:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483451623/job/102891695505",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:36:05Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:41:47Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483446571/job/102891677866",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:34:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:42:52Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483451623/job/102891695449",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:36:15Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:41:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483446571/job/102891678124",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:34:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:39:03Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483451623/job/102891694952",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:35:21Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:38:33Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483446571/job/102891678201",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:34:57Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 55, \"scope\": \"synthetic fixtures through production functions; not model or human acceptance\", \"answer\": {\"x\": [\"not-an-integer\"]}, \"structural\": {\"checks\": {\"text\": \"checked\", \"json\": \"checked\", \"finite\": \"checked\", \"schema\": \"checked\"}, \"schema\": {\"schema_hash\": \"sha256:45bfb6e7d0856c0f12bdee7accd2c8535168bcc32fce67afb25937cb35657d43\", \"dialect\": \"https://json-schema.org/draft/2020-12/schema\", \"validator\": \"jsonschema.Draft202012Validator\", \"subset_version\": 1, \"keywords\": [\"$ref\", \"examples\", \"properties\", \"type\"], \"checks\": [\"json_encodable\", \"object_root\", \"draft2020_metaschema\", \"supported_keywords\", \"typed_constants\", \"required_declared\", \"depth_bound\", \"size_bound\"], \"max_depth\": 2, \"format\": \"annotation only: `format` is never asserted (no format checker is installed)\", \"bytes\": 177}, \"note\": \"checked means the named check ran and passed; unchecked means it never ran\"}}\n",
+  "stderr": ""
+}

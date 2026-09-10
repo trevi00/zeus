@@ -1,0 +1,38 @@
+[
+  {
+    "pr": 54,
+    "headRefOid": "0fa5601ce66bd8a30620828081cf0d3391663e62",
+    "mergeCommit": {
+      "oid": "bddaef25203bc9ed325613255875a6d43d17f36d"
+    },
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/54"
+  },
+  {
+    "pr": 59,
+    "headRefOid": "405ef52e5bd642a22edddcc9c6864189441a1685",
+    "mergeCommit": {
+      "oid": "02493acdc6edacf5a2c93bdd08f1509a4250ad21"
+    },
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/59"
+  },
+  {
+    "pr": 60,
+    "headRefOid": "824f217d0a82a933328b564b5e2855e86819325c",
+    "mergeCommit": {
+      "oid": "67ffd16471784ae11610b115c160a02558015cc8"
+    },
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/60"
+  },
+  {
+    "pr": 63,
+    "headRefOid": "dcda79c236852ed9e8bc704121900a27ebe5597d",
+    "mergeCommit": {
+      "oid": "feeba74c26f22eab98fa933208ff343369523ab2"
+    },
+    "state": "MERGED",
+    "url": "https://github.com/trevi00/zeus/pull/63"
+  }
+]

@@ -1,0 +1,18 @@
+﻿from pathlib import Path
+p=Path('.runtime/claude-work-review-004/previous_probes.py')
+s=Path('.runtime/claude-work-review-003/probes.py').read_text('utf-8').replace('zeus-review3-','zeus-review4-')
+s=s.replace("assert second['verdict']=='all_checked' and actual['findings'][0]['state']=='verified_mismatch'", "assert second['verdict']=='incomplete' and actual['findings'][0]['state']=='verified_mismatch' and identity!=ins.identity()")
+s=s.replace("result['input']['observed_at']==record['observed_at']", "result.get('input',{}).get('observed_at')==record['observed_at']")
+s=s.replace("assert result['status']=='ready' and out['unscanned_field_forwarded'] and not result['unchecked_fields']", "assert result['status']=='parse_error' and not out['unscanned_field_forwarded']")
+p.write_text(s,'utf-8')
+import subprocess,json,os
+for n in [54,59,60,63]:
+ rows=[]
+ for seed in ([1,2,3] if n in [59,60] else [1]):
+  env=dict(os.environ,PYTHONHASHSEED=str(seed))
+  r=subprocess.run([f'C:/Users/rudtn/zeus-review4-{n}/.venv/Scripts/python.exe',str(p.resolve()),str(n)],env=env,capture_output=True,text=True,encoding='utf-8')
+  rows.append({'exit':r.returncode,'stdout':r.stdout,'stderr':r.stderr})
+  assert r.returncode==0,(n,r.stderr)
+  if n in [59,60]: assert json.loads(r.stdout)['selected_revision']=='b'*40
+ Path(f'.runtime/claude-work-review-004/{n}-probe.json').write_text(json.dumps(rows,indent=2),'utf-8')
+ print(n,'previous counterexample refused/correct',flush=True)

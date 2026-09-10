@@ -1,0 +1,29 @@
+import os,sys,json,subprocess,time,hashlib
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+from codex_harness.bootstrap import database_url
+sys.stdout.reconfigure(encoding='utf-8')
+out=Path('.runtime/claude-work-review-004').resolve()
+env=dict(os.environ,HARNESS_INTEGRATION='1',HARNESS_DATABASE_URL=database_url(),ZEUS_DATABASE_URL=database_url(),PYTHONIOENCODING='utf-8')
+env.pop('VIRTUAL_ENV',None)
+rows=[json.loads(p.read_text('utf-8')) for p in sorted(out.glob('*.json')) if p.stem.isdigit()]
+for row in rows:
+    n=row['number']; path=Path(f'C:/Users/rudtn/zeus-review4-{n}')
+    if not path.exists(): subprocess.run(['git','worktree','add','--quiet','--detach',str(path),row['headRefOid']],check=True,capture_output=True)
+    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=path,text=True).strip()==row['headRefOid']
+def run(row):
+    n=row['number'];path=Path(f'C:/Users/rudtn/zeus-review4-{n}')
+    sync=subprocess.run(['uv','sync','--frozen'],cwd=path,env=env,capture_output=True);assert sync.returncode==0
+    files=[f['path'] for f in row['files'] if f['path'].startswith('tests/') and f['path'].endswith('.py')]
+    extra={36:['tests/test_experience.py'],38:['tests/test_idempotency_races.py'],45:['tests/test_skill_routing.py'],46:['tests/test_sdd.py'],48:['tests/test_release_recovery.py'],49:['tests/test_execution_output.py'],51:['tests/test_project_skills.py'],52:['tests/test_execution_identity.py'],55:['tests/test_execution_output.py'],62:['tests/test_maintenance.py']}
+    files=sorted(set(files+extra.get(n,[])+['tests/test_architecture.py']))
+    files=[f for f in files if (path/f).exists()]
+    start=time.monotonic()
+    r=subprocess.run([str(path/'.venv/Scripts/python.exe'),'-m','pytest','-q',*files],cwd=path,env=env,capture_output=True)
+    raw=r.stdout+r.stderr;(out/f'{n}-tests.log').write_bytes(raw)
+    lint=subprocess.run([str(path/'.venv/Scripts/ruff.exe'),'check','.'],cwd=path,env=env,capture_output=True)
+    (out/f'{n}-ruff.log').write_bytes(lint.stdout+lint.stderr)
+    receipt={'head':row['headRefOid'],'files':files,'exit_code':r.returncode,'ruff_exit_code':lint.returncode,'seconds':time.monotonic()-start,'log_sha256':hashlib.sha256(raw).hexdigest(),'postgres_enabled':True}
+    (out/f'{n}-tests.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
+    print(n,'test',r.returncode,'ruff',lint.returncode,raw.decode('utf-8',errors='replace')[-250:],flush=True)
+with ThreadPoolExecutor(max_workers=3) as pool: list(pool.map(run,rows))

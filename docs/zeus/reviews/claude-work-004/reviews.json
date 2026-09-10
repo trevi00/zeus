@@ -1,0 +1,38 @@
+[
+  {
+    "pr": 50,
+    "head": "ffe395a135a9b772831af6f6b4c0c1db80052840",
+    "accepted": false,
+    "finding": "[P1] reviewer의 succeeded task를 확인하지만 그 실행이 현재 target/spec/평가 결과를 검토했는지는 확인하지 않습니다. 실제 Workflow로 다른 작업(unrelated-task-never-this-target)을 검토한 reviewer task를 완료시키고, 호출자가 만든 현재 작업의 evaluation artifact에 그 execution_ref를 연결했습니다. expected_scenarios까지 명시했는데 require_authority가 authority=true를 반환했습니다. reviewer execution의 검증된 출력에서 대상 task/generation/attempt/spec, 시나리오 결과 및 판정을 도출·검증해야 합니다. 임의 evaluation 문서에서 일방적으로 참조하는 것만으로는 결속이 아닙니다. 현재 실행을 대상으로 한 명시적 거절 결과도 승인으로 바꿀 수 없는 회귀 테스트가 필요합니다."
+  },
+  {
+    "pr": 54,
+    "head": "0fa5601ce66bd8a30620828081cf0d3391663e62",
+    "accepted": true,
+    "finding": "환경변수 값 digest가 cache identity에 포함되고 동일 snapshot을 replay에 전달하는 것을 확인했습니다. LANG=review-pass → review-fail 반례에서 이전 all_checked를 재사용하지 않고 incomplete/verified_mismatch를 반환했습니다. 도구 정보는 Python 버전·구현·실행 경로 digest 범위이며 모든 외부 실행 파일의 바이너리 지문 검증을 의미하지 않습니다."
+  },
+  {
+    "pr": 55,
+    "head": "bc807478232963d2664839b411c225f92eca7ccf",
+    "accepted": false,
+    "finding": "[P1] 실제 schema 위치의 중첩 $schema는 거부하지만 $ref 대상이 annotation 데이터이면 검증을 우회합니다. examples[0]에 draft-07 $schema + prefixItems(integer)를 넣고 properties.x.$ref=\"#/examples/0\"으로 참조하면 x=[\"not-an-integer\"]를 checked로 승인하고 receipt에는 2020-12를 기록합니다. 일반 annotation 데이터는 그대로 허용하되 참조되어 실행되는 schema에는 동일한 preflight를 적용하거나 annotation/외부/지원하지 않는 참조 대상을 명시적으로 거부해야 합니다. 모든 활성 $ref를 순환 안전하게 해석하고 동일한 resolution 범위를 validator에도 적용해야 합니다."
+  },
+  {
+    "pr": 59,
+    "head": "405ef52e5bd642a22edddcc9c6864189441a1685",
+    "accepted": true,
+    "finding": "트랜잭션 내 observation sequence를 부여해 기본 view의 최신 revision을 결정합니다. A→B 관측의 timestamp를 동일하게 둔 이전 반례를 PYTHONHASHSEED=1,2,3으로 재실행했고 모두 B를 선택했습니다. 기존 sequence 없는 행은 timestamp/id로 결정되므로 잃어버린 과거 기록 순서를 복구하는 것은 아닙니다."
+  },
+  {
+    "pr": 60,
+    "head": "824f217d0a82a933328b564b5e2855e86819325c",
+    "accepted": true,
+    "finding": "수정된 #59를 상속하는 이 head에서도 timestamp 동률 반례를 seed 1,2,3으로 실행해 모두 B를 선택함을 확인했습니다. scope 제한 기능을 함께 통합 검증합니다."
+  },
+  {
+    "pr": 63,
+    "head": "dcda79c236852ed9e8bc704121900a27ebe5597d",
+    "accepted": true,
+    "finding": "observed_at의 timezone 포함 ISO 8601 파싱·정규화와 session_id의 문자열 검증·해시 전달을 확인했습니다. password=UNSCANNED_SENTINEL을 observed_at에 넣은 이전 반례는 parse_error로 거부되며 모델 입력이 만들어지지 않습니다."
+  }
+]

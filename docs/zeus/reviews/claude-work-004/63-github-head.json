@@ -1,0 +1,216 @@
+{
+  "baseRefName": "main",
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRKRg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `0235421` (P1: 허용 필드에서 제외한 본문이 모델 입력에 남음)\n\n**변경**\n- `domain/profile_privacy.py`: `parse_policy`가 `content, project_path, kind`가 빠진 fields를 **정책 단계에서 명시적으로 거절**합니다(이 셋 없이는 범위·동의 검사가 불가능). `minimize`의 입력은 정책 fields의 대응 필드(`content`, `project_ref`, `kind`, `session_ref`(해시), `observed_at`)만 담고, 정책이 이름하지 않은 필드는 어떤 형태로도 입력에 들어가지 않습니다.\n- `application/profile_flow.py`: `retention.temporary=none`이면 scratch에 쓰지 않고 입력은 반환값(`input_records`)에만 존재하며 원장 행에는 남지 않습니다.\n\n**테스트**: `fields={kind}` 정책 거절(메시지에 누락 필드), 확장 정책은 session_ref 해시 포함·원문 없음, temporary=none 실행은 번들 None·디렉터리 없음·원장에 텍스트 없음.\n\nmain(`66076cc`) 위로 rebase. 로컬: 7 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:10Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/63#issuecomment-5618551366",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTvOBxw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "재검토 003 반영 — `dcda79c` (P1: observed_at 문자열이 검사 없이 모델 입력으로 전달)\n\n**변경** (`domain/profile_privacy.py` `minimize`): `observed_at`은 timezone이 있는 ISO 8601 timestamp로 **파싱·정규화**되어야 하며(`Z` 허용), 아니면 `parse_error`(unchecked_fields `['observed_at']`, 입력 없음). `session_id`는 비어 있지 않은 문자열이어야 하고 해시로만 전달됩니다. 둘 다 `checked_fields`에 기록됩니다. 정책이 이름하지 않으면 유효한 값이라도 입력에 들어가지 않습니다.\n\n**테스트**: `observed_at=\"password=UNSCANNED_SENTINEL\"`, naive timestamp, \"yesterday\", 정수, None → 모두 `parse_error`, 원장/결과에 sentinel 없음; `2026-09-10T00:00:00Z` → `+00:00`으로 정규화; 빈 session_id 거절.\n\nmain(`457928c`) 위로 rebase. 로컬: 7 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T13:34:59Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/63#issuecomment-5619548615",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 36,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/profile-privacy-001/README.md",
+      "additions": 75,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/profile-privacy-001/target-tests.json",
+      "additions": 36,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/profile_scratch.py",
+      "additions": 91,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/application/profile_flow.py",
+      "additions": 106,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/profile_privacy.py",
+      "additions": 250,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_profile_privacy.py",
+      "additions": 239,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "dcda79c236852ed9e8bc704121900a27ebe5597d",
+  "mergeable": "MERGEABLE",
+  "number": 63,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LMeQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #63: 변경 요청 / 병합 보류\n\n검토 head: `6c5734010044125e07db98523f22723b121453eb`. Codex 독립 검토입니다.\n\n**[P1] 허용 필드에서 제외한 본문이 모델 입력에 남습니다**\n\npolicy.fields={kind:...}로 설정해도 minimize는 content와 project_ref를 input에 항상 넣습니다. 실제 결과가 dropped_fields=[content,project_path]라고 하면서 그 content를 그대로 반환합니다. synthetic sentinel로 확인했으며 실제 사용자 대화나 비밀은 사용하지 않았습니다.\n\n위치: [src/codex_harness/domain/profile_privacy.py:165](https://github.com/trevi00/zeus/blob/6c5734010044125e07db98523f22723b121453eb/src/codex_harness/domain/profile_privacy.py#L165)\n\n수정·재검증 조건: 모델 입력을 승인한 fields로 실제 제한하고 필수 필드 조합이면 정책 단계에서 명시적으로 거절하세요. temporary=none 정책도 scratch write와 일치하도록 검사해야 합니다.\n\n검증: 해당 head의 대상 검사 **11 passed in 0.72s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:44Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "6c5734010044125e07db98523f22723b121453eb"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM__eHw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #63 재검토 003: 변경 요청 / 병합 보류\n\n검토 head: `0235421248867cf0a47b71bbb0f25447e529a7e5`\n\n[P1] 새 observed_at 매핑이 privacy scan을 우회합니다. observed_at=\"password=UNSCANNED_SENTINEL\"이 model input으로 그대로 전달되지만 ready/unchecked=[]이고 checked는 content/project_path/kind뿐입니다. timestamp를 타입 검증·정규화하고 전달되는 모든 텍스트를 검사하거나 잘못된 형태를 거부해야 합니다.\n\n대상: [소스](https://github.com/trevi00/zeus/blob/0235421248867cf0a47b71bbb0f25447e529a7e5/src/codex_harness/domain/profile_privacy.py)\n\n독립 검증: `11 passed in 0.99s`; Ruff 통과. PostgreSQL 통합 모드를 켜고 해당 PR 변경 테스트와 관련 회귀 테스트를 실행했습니다. CI 10/10 성공도 확인했습니다.\n\n검증 범위는 이 PR의 변경과 이전 반례 및 추가 경계 조건입니다. 저장소 전체·실모델·사람 인수·운영 배포 완료 판정은 아닙니다. 이슈 종료 권위는 별도이므로 OPEN을 유지합니다.\n",
+      "submittedAt": "2026-09-10T12:59:44Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "0235421248867cf0a47b71bbb0f25447e529a7e5"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:36:37Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483421538/job/102891591374",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:35:33Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:34:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483415262/job/102891571138",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:36:12Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483421538/job/102891591353",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:35:04Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:35:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483415262/job/102891570987",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:41:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483421538/job/102891591401",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:34:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:40:00Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483415262/job/102891571228",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:52Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:41:05Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483421538/job/102891591264",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:35:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:40:11Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483415262/job/102891571140",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:38:55Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483421538/job/102891591007",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:35:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:37:33Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483415262/job/102891570915",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:33:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ]
+}

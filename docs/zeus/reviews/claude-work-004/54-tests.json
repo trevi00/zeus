@@ -1,0 +1,12 @@
+{
+  "head": "0fa5601ce66bd8a30620828081cf0d3391663e62",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_evidence_inspection.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 19.631783999997424,
+  "log_sha256": "7a005bda64d805f04f5b939f6a682df226428313cfcf5818719839964499298e",
+  "postgres_enabled": true
+}

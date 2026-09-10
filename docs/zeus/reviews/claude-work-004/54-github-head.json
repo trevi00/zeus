@@ -1,0 +1,228 @@
+{
+  "baseRefName": "main",
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRAmw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `b1d8d40` (P1: 정책 변경 뒤에도 과거 all_checked 캐시 반환)\n\n**변경**\n- `adapters/evidence_inspection.py`: `EvidenceInspector.identity()` = {policy_hash, environment(허용 env 이름), platform, python}.\n- `application/evidence_inspection.py`: 원장 키가 `['evidence-inspection-v2', binding, inspector.identity(), claims]`이고 행에 `inspector`를 저장합니다. inspector가 보고한 policy_hash가 identity와 다르면 거절. `require_all_checked(tx, id, *, policy_hash=None, binding=None)`가 소비자가 요구하는 정책·결속을 검증합니다.\n\n**테스트**: 같은 실행·revision·claims를 명령을 금지한 정책으로 다시 검사 → 새 행, `incomplete`, 다른 policy_hash; 다른 platform identity → 다른 행; `require_all_checked`에 다른 policy_hash/revision → 거절.\n\nmain(`66076cc`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 8 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:58Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/54#issuecomment-5618548891",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTvN8VA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "재검토 003 반영 — `0fa5601` (P1: 캐시 identity가 환경변수 이름만 포함)\n\n**변경**\n- `adapters/evidence_inspection.py`: `snapshot()`이 환경을 한 번 캡처해 `{identity, environment}`를 돌려줍니다. identity = policy_hash + `environment_names` + **`environment_digest`(값의 digest)** + tool{python 버전, executable digest, implementation} + platform. `inspect(..., environment=snapshot)`과 `inspect_command(..., environment)`는 **그 snapshot 값으로만** replay합니다.\n- `application/evidence_inspection.py`: 키 `['evidence-inspection-v3', binding, identity, claims]`; snapshot의 environment를 inspect에 넘기고, 보고된 `context.environment_digest`가 identity와 다르면 거절.\n\n**테스트**: `LANG=review-pass`일 때만 exit 0인 실제 Python replay → all_checked; `LANG=review-fail`로 바꾸면 새 행·`incomplete`(같은 names, 다른 digest), 캐시는 실패 결과를 유지; inspector에 snapshot을 직접 넘기면 os.environ과 무관하게 그 값으로 실행됨을 확인.\n\nmain(`457928c`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 8 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T13:34:53Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/54#issuecomment-5619547220",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 20,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/evidence-inspection-001/README.md",
+      "additions": 73,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/evidence-inspection-001/target-tests.json",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/evidence_inspection.py",
+      "additions": 223,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "additions": 16,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/application/evidence_inspection.py",
+      "additions": 82,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/evidence.py",
+      "additions": 136,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/resources/evidence-policy.json",
+      "additions": 21,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_evidence_inspection.py",
+      "additions": 325,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "0fa5601ce66bd8a30620828081cf0d3391663e62",
+  "mergeable": "MERGEABLE",
+  "number": 54,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LBqA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #54: 변경 요청 / 병합 보류\n\n검토 head: `b2f36cb29430c37e8435c5f90479f3cd758ef1f4`. Codex 독립 검토입니다.\n\n**[P1] 정책 변경 뒤에도 과거 all_checked 캐시가 반환됩니다**\n\n허용된 실제 Python child replay를 검사한 다음 같은 task/revision/claims에 해당 명령을 금지한 정책으로 다시 검사하면 기존 all_checked와 옛 policy_hash가 반환됩니다. 새 inspector를 직접 실행하면 not_checked입니다. cache key에 정책이 없습니다.\n\n위치: [src/codex_harness/application/evidence_inspection.py:33](https://github.com/trevi00/zeus/blob/b2f36cb29430c37e8435c5f90479f3cd758ef1f4/src/codex_harness/application/evidence_inspection.py#L33)\n\n수정·재검증 조건: 정규화한 policy hash와 결과를 결정하는 실행 환경을 identity에 포함하고 require_all_checked에서도 소비 시 요구하는 binding을 검증하세요. 정책 강화/환경 변경 음성 검사를 추가하세요.\n\n검증: 해당 head의 대상 검사 **12 passed in 7.64s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:23Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "b2f36cb29430c37e8435c5f90479f3cd758ef1f4"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM__XHQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #54 재검토 003: 변경 요청 / 병합 보류\n\n검토 head: `b1d8d4092a9d2426827d98894931bd419922f8e7`\n\n[P1] 캐시 identity가 환경변수 이름만 포함합니다. 실제 Python replay를 LANG=review-pass에서 통과시킨 뒤 LANG=review-fail로 변경하면 캐시는 all_checked를 반환하지만 새 inspector는 verified_mismatch입니다. replay에 사용한 유효 환경의 값 및 도구 identity를 안전한 digest로 결합하고 같은 snapshot을 실행에 사용해야 합니다.\n\n대상: [소스](https://github.com/trevi00/zeus/blob/b1d8d4092a9d2426827d98894931bd419922f8e7/src/codex_harness/adapters/evidence_inspection.py)\n\n독립 검증: `12 passed in 8.75s`; Ruff 통과. PostgreSQL 통합 모드를 켜고 해당 PR 변경 테스트와 관련 회귀 테스트를 실행했습니다. CI 10/10 성공도 확인했습니다.\n\n검증 범위는 이 PR의 변경과 이전 반례 및 추가 경계 조건입니다. 저장소 전체·실모델·사람 인수·운영 배포 완료 판정은 아닙니다. 이슈 종료 권위는 별도이므로 OPEN을 유지합니다.\n",
+      "submittedAt": "2026-09-10T12:59:36Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "b1d8d4092a9d2426827d98894931bd419922f8e7"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:34:50Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483408728/job/102891549840",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:34:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483403284/job/102891530609",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:44Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:34:57Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483408728/job/102891549534",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:47Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:34:57Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483403284/job/102891531100",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:45Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:39:52Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483408728/job/102891549397",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:47Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:40:37Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483403284/job/102891530976",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:43Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:39:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483408728/job/102891549379",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:40:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483403284/job/102891530937",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:44Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:37:18Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483408728/job/102891549230",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:33:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:37:21Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483403284/job/102891530875",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:33:44Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+# PR #60 재검토 004: 수용 / 병합 완료
+
+검토 head: `824f217d0a82a933328b564b5e2855e86819325c`
+
+수정된 #59를 상속하는 이 head에서도 timestamp 동률 반례를 seed 1,2,3으로 실행해 모두 B를 선택함을 확인했습니다. scope 제한 기능을 함께 통합 검증합니다.
+
+대상: [소스](https://github.com/trevi00/zeus/blob/824f217d0a82a933328b564b5e2855e86819325c/src/codex_harness/application/seam_ledger.py)
+
+독립 대상 테스트: `11 passed in 1.36s`, Ruff 통과. 최초 확인 시 CI 10/10 SUCCESS였습니다. 실 PostgreSQL 모드로 대상 테스트를 실행했으며 모든 테스트가 DB를 사용하는 것은 아닙니다. #59/#60의 전체 seam 테스트는 통합 검증에도 포함합니다.
+
+반례 코드와 결과는 [검토 보고서](https://github.com/trevi00/zeus/tree/main/docs/zeus/reviews/claude-work-004)에 보존합니다. 합성 fixture를 통한 소스 동작 검증이며 실모델·사람 인수·운영 완료 판정이 아닙니다. 연결 이슈의 종료 증거는 별도로 충족해야 합니다.
+
+[통합 PR #66](https://github.com/trevi00/zeus/pull/66)에서 원래 커밋 이력을 보존해 병합했습니다. 결합된 전체 테스트, PostgreSQL 영향 범위 테스트 및 CI 10/10 통과 후 검증 tree와 병합 tree의 일치를 확인했습니다.

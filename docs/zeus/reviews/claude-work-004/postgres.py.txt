@@ -1,0 +1,13 @@
+﻿import os,json,subprocess,time,hashlib
+from pathlib import Path
+from codex_harness.bootstrap import database_url
+b=Path('.runtime/claude-work-review-004');r=Path('C:/Users/rudtn/zeus-review4-integration')
+files={'tests/test_seam_view.py','tests/test_seam_scope.py','tests/test_seam_contracts.py'}
+for n in [54,59,60,63]:files.update(json.loads((b/f'{n}-tests.json').read_text('utf-8'))['files'])
+env=dict(os.environ,HARNESS_INTEGRATION='1',HARNESS_DATABASE_URL=database_url(),ZEUS_DATABASE_URL=database_url(),PYTHONIOENCODING='utf-8')
+argv=[str(r/'.venv/Scripts/python.exe'),'-m','pytest','-q',*sorted(files)]
+t=time.monotonic();p=subprocess.run(argv,cwd=r,env=env,capture_output=True);raw=p.stdout+p.stderr
+(b/'corrected-postgres.log').write_bytes(raw)
+receipt={'check':'postgres-targets','exit':p.returncode,'seconds':time.monotonic()-t,'sha256':hashlib.sha256(raw).hexdigest(),'postgres_enabled':True,'argv':argv}
+(b/'corrected-postgres.json').write_text(json.dumps(receipt,indent=2),'utf-8')
+print(p.returncode,raw.decode('utf-8',errors='replace')[-1200:],flush=True)

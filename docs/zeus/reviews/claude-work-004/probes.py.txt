@@ -1,0 +1,31 @@
+import json,sys,tempfile
+from pathlib import Path
+n=int(sys.argv[1]);root=Path(f'C:/Users/rudtn/zeus-review4-{n}')
+sys.path[:0]=[str(root/'src'),str(root/'tests')]
+out={'pr':n,'scope':'synthetic fixtures through production functions; not model or human acceptance'}
+if n==50:
+    from test_completion_authority import Case,REVIEWER,SPEC,SCENARIOS,EVALUATION_KIND
+    from codex_harness.adapters.store import MemoryStore
+    from codex_harness.domain.model import canonical
+    with tempfile.TemporaryDirectory() as d:
+        c=Case(MemoryStore(),Path(d));c.finish()
+        unrelated=c.reviewer_run(REVIEWER,{'id':'unrelated-task-never-this-target'})
+        doc={'kind':EVALUATION_KIND,'task_id':c.task['id'],'attempt':c.task['attempt'],'spec_revision':SPEC,
+             'scenarios':SCENARIOS,'reviewer':{'actor':REVIEWER,'kind':'model'},'execution_ref':unrelated}
+        evaluation=c.artifacts.put(canonical(doc),'caller-evaluation')['ref']
+        c.record(c.verdict(evaluation=evaluation))
+        result=c.authority.require_authority(c.task['id'],spec_revision=SPEC,evaluation_artifact=evaluation,expected_scenarios=SCENARIOS)
+        out.update(authority=result['authority'],reviewer_answer=c.artifacts.document(unrelated)['answer'],target=c.task['id'])
+        assert result['authority']
+elif n==55:
+    from codex_harness.adapters.execution_output import completed_output
+    from codex_harness.domain.model import ContractError
+    bad={'$schema':'http://json-schema.org/draft-07/schema#','type':'array','prefixItems':[{'type':'integer'}]}
+    direct={'type':'object','properties':{'x':bad}}
+    try:completed_output('{"x":["not-an-integer"]}',direct)
+    except ContractError:out['old_direct_dialect_refused']=True
+    schema={'type':'object','examples':[bad],'properties':{'x':{'$ref':'#/examples/0'}}}
+    result=completed_output('{"x":["not-an-integer"]}',schema)
+    out.update(answer=result['answer'],structural=result['structural'])
+    assert result['answer'] is not None
+print(json.dumps(out,ensure_ascii=False))

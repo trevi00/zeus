@@ -1,0 +1,57 @@
+import sys,json,tempfile,os,copy
+from pathlib import Path
+n=int(sys.argv[1]);root=Path(f'C:/Users/rudtn/zeus-review4-{n}')
+sys.path[:0]=[str(root/'src'),str(root/'tests')]
+from codex_harness.adapters.store import MemoryStore
+from codex_harness.domain.model import canonical
+out={'pr':n,'scope':'synthetic inputs through production functions; no actual model/human acceptance'}
+if n==50:
+    from test_completion_authority import running_task,authority_for,finish,verdict,SPEC,ARTIFACT
+    with tempfile.TemporaryDirectory() as d:
+        store=MemoryStore();w,t=running_task(store);a=authority_for(store,Path(d));finish(w,t)
+        record=verdict(t,reviewer={'actor':'conductor','kind':'human'},scenarios={'expected':['login'],'passed':['login'],'excluded':[]})
+        a.record(record)
+        report=a.require_authority(t['id'],spec_revision=SPEC,evaluation_artifact=ARTIFACT)
+        out.update(authority=report['authority'],state=report['state'],human_provider_calls=0,artifacts_contain_only_fixture_labels=True,expected_spec_scenarios_not_supplied=True)
+        assert report['authority']
+elif n==54:
+    from test_evidence_inspection import policy,command
+    from codex_harness.adapters.artifacts import FileArtifacts
+    from codex_harness.adapters.evidence_inspection import EvidenceInspector
+    from codex_harness.application.evidence_inspection import EvidenceInspections
+    with tempfile.TemporaryDirectory() as d:
+        ins=EvidenceInspector(FileArtifacts(Path(d)/'artifacts'),policy());ledger=EvidenceInspections(MemoryStore(),ins)
+        task={'id':'task','generation':1,'attempt':1};candidate={'revision':'a'*40}
+        claims=[command('import os,sys; sys.exit(0 if os.environ.get("LANG")=="review-pass" else 1)')]
+        os.environ['LANG']='review-pass';first=ledger.inspect(task,candidate,claims,d);identity=ins.identity()
+        os.environ['LANG']='review-fail';second=ledger.inspect(task,candidate,claims,d);actual=ins.inspect(claims,d,{})
+        out.update(first=first['verdict'],cached_after_environment_change=second['verdict'],identity_unchanged=identity==ins.identity(),fresh_state=actual['findings'][0]['state'])
+        assert second['verdict']=='incomplete' and actual['findings'][0]['state']=='verified_mismatch' and identity!=ins.identity()
+elif n==55:
+    from codex_harness.adapters.execution_output import completed_output
+    schema={'type':'object','properties':{'x':{'$schema':'http://json-schema.org/draft-07/schema#','type':'array','prefixItems':[{'type':'integer'}]}}}
+    result=completed_output('{"x":["not-an-integer"]}',schema)
+    out.update(answer=result['answer'],schema_check=result['structural']['checks']['schema'],receipt_dialect=result['structural']['schema']['dialect'])
+    assert result['answer'] is not None
+elif n in (59,60):
+    from codex_harness.adapters.seam_extraction import extract
+    from codex_harness.application.seam_ledger import SeamLedger,OBSERVATIONS
+    with tempfile.TemporaryDirectory() as d:
+        ledger=SeamLedger(MemoryStore());path=Path(d,'e.py')
+        for rev,value in [('a'*40,1),('b'*40,2)]:
+            path.write_text(f'from enum import Enum\nclass A(Enum):\n    X={value}\n')
+            ledger.record_observation(extract('python',d,'e.py',revision=rev)[0],binding={'revision':rev})
+        with ledger.store.transaction() as tx:
+            for row in tx.scan(OBSERVATIONS):
+                row['recorded_at']='2026-09-10T00:00:00+00:00';tx.put(OBSERVATIONS,row['id'],row)
+        view=ledger.view({'version':1,'fail_on':['DRIFT'],'required_seams':['required']})
+        out.update(hashseed=os.environ.get('PYTHONHASHSEED'),selected_revision=view['view']['receipt']['revision'],expected_latest='b'*40)
+elif n==63:
+    from test_profile_privacy import POLICY,consent,PROJECT_WIN
+    from codex_harness.domain.profile_privacy import minimize,parse_consent
+    policy=copy.deepcopy(POLICY);policy['fields']['observed_at']='observation time'
+    record={'content':'ordinary','project_path':PROJECT_WIN,'kind':'user_message','observed_at':'password=UNSCANNED_SENTINEL'}
+    result=minimize(record,policy,parse_consent(consent(policy),policy))
+    out.update(status=result['status'],checked=result['checked_fields'],unchecked=result['unchecked_fields'],unscanned_field_forwarded=result.get('input',{}).get('observed_at')==record['observed_at'])
+    assert result['status']=='parse_error' and not out['unscanned_field_forwarded']
+print(json.dumps(out))

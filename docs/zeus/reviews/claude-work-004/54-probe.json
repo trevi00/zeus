@@ -1,0 +1,7 @@
+[
+  {
+    "exit": 0,
+    "stdout": "{\"pr\": 54, \"scope\": \"synthetic inputs through production functions; no actual model/human acceptance\", \"first\": \"all_checked\", \"cached_after_environment_change\": \"incomplete\", \"identity_unchanged\": false, \"fresh_state\": \"verified_mismatch\"}\n",
+    "stderr": ""
+  }
+]

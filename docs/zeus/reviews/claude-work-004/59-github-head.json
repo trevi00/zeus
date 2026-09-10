@@ -1,0 +1,774 @@
+{
+  "baseRefName": "fix/fa-024-seam-contracts",
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRF9g",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `4b715b6` (P2: 두 번째 revision이 누적되면 view 불가)\n\n**변경** (`application/seam_ledger.py`): `view(policy, *, revision=None, comparison_ids=None)` — 관측은 그 revision에 기록된 행만, 비교는 그 행들 사이의 것(또는 명시 id; revision 밖이면 거절)만 사용합니다. revision을 안 주면 가장 최근 기록 revision을 쓰고 영수증에 `revision`, `revisions_recorded`, `observation_rows`, `comparison_rows`를 적습니다.\n\n**테스트**: 같은 계약을 revision A·B로 기록 → 최신 view는 B(드리프트 해소, pass), `revision=A` view는 이전 행 그대로 재생성, 명시 comparison_ids, revision 밖 비교 거절, 미지 id 거절, 관측 없음 거절; 관측 6행 보존.\n\n선행 #56 수정본(`123b30a`) 위로 rebase. 로컬(MemoryStore + 격리 PG): `test_seam_view.py` + `test_seam_contracts.py` 13 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:05Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/59#issuecomment-5618550262",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTvN--Q",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "재검토 003 반영 — `405ef52` (P2: 동일 timestamp에서 최신 revision이 hash seed에 의존)\n\n**변경** (`application/seam_ledger.py`): `record_observation`이 트랜잭션 안에서 단조 증가 `sequence`를 부여하고, `view`의 최신 revision 선택은 `(sequence, recorded_at, id)`의 최대값으로 결정합니다. 명시 `revision=`은 그대로.\n\n**테스트**: `utcnow`를 상수로 고정해 A→B를 같은 timestamp로 기록(sequence 1..4) → 3회 반복 모두 B; `revisions_recorded == [A, B]`. 로컬 실행을 `PYTHONHASHSEED=1,2,3`으로 각각 돌려 13 passed(seam_view + seam_contracts) 확인.\n\nmain(`457928c`, #56 병합 포함) 위로 rebase. Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T13:34:56Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/59#issuecomment-5619547897",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 153,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/breaker-admission-001/README.md",
+      "additions": 80,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/breaker-admission-001/target-tests.json",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/check-binding-001/README.md",
+      "additions": 55,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/check-binding-001/target-tests.json",
+      "additions": 27,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/gate-verdicts-001/README.md",
+      "additions": 77,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/invocation-ledger-001/README.md",
+      "additions": 72,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/invocation-ledger-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/migration-precheck-001/README.md",
+      "additions": 68,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/migration-precheck-001/target-tests.json",
+      "additions": 36,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/progress-event-identity-001/README.md",
+      "additions": 51,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/runner-categories-001/README.md",
+      "additions": 51,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/runner-categories-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-view-001/README.md",
+      "additions": 57,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-view-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/snapshot-integrity-001/README.md",
+      "additions": 59,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/snapshot-integrity-001/target-tests.json",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/46-github-head.json",
+      "additions": 206,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/46-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/46-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/46-tests.json",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/46-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/49-github-head.json",
+      "additions": 230,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/49-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/49-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/49-tests.json",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/49-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/50-github-head.json",
+      "additions": 182,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/50-probe.json",
+      "additions": 7,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/50-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/50-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/50-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/50-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/51-github-head.json",
+      "additions": 188,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/51-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/51-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/51-tests.json",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/51-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/52-github-head.json",
+      "additions": 188,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/52-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/52-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/52-tests.json",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/52-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/54-github-head.json",
+      "additions": 200,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/54-probe.json",
+      "additions": 7,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/54-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/54-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/54-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/54-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/55-github-head.json",
+      "additions": 188,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/55-probe.json",
+      "additions": 7,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/55-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/55-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/55-tests.json",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/55-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/56-github-head.json",
+      "additions": 188,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/56-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/56-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/56-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/56-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/57-docker.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/57-github-head.json",
+      "additions": 182,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/57-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/57-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/57-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/57-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/58-github-head.json",
+      "additions": 221,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/58-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/58-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/58-tests.json",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/58-tests.log",
+      "additions": 3,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/59-github-head.json",
+      "additions": 188,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/59-probe.json",
+      "additions": 17,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/59-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/59-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/59-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/59-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/60-github-head.json",
+      "additions": 203,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/60-probe.json",
+      "additions": 17,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/60-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/60-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/60-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/60-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/61-github-head.json",
+      "additions": 182,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/61-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/61-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/61-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/61-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/62-github-head.json",
+      "additions": 206,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/62-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/62-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/62-tests.json",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/62-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/63-github-head.json",
+      "additions": 188,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/63-probe.json",
+      "additions": 7,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/63-review.md",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/63-ruff.log",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/63-tests.json",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/63-tests.log",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/reviews/claude-work-003/README.md",
+      "additions": 53,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "405ef52e5bd642a22edddcc9c6864189441a1685",
+  "mergeable": "MERGEABLE",
+  "number": 59,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LHlw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #59: 변경 요청 / 병합 보류\n\n검토 head: `922e8c76152b4e1ad3ff59c447bb7f413f9ce92d`. Codex 독립 검토입니다.\n\n**[P2] 두 번째 소스 revision이 누적되면 seam view를 만들 수 없습니다**\n\n같은 enum의 revision A와 B를 정상 record_observation으로 기록한 뒤 view를 부르면 서로 다른 sources 오류입니다. append-only 원장의 모든 과거 관측/비교를 한 view에 전달하므로 일반적인 반복 개발만으로 영구 실패합니다.\n\n위치: [src/codex_harness/application/seam_ledger.py:100](https://github.com/trevi00/zeus/blob/922e8c76152b4e1ad3ff59c447bb7f413f9ce92d/src/codex_harness/application/seam_ledger.py#L100)\n\n수정·재검증 조건: view 입력을 명시적 release/revision/observation ID로 한정하고 comparison이 참조한 정확한 관측을 선택하세요. 과거 기록 보존과 최신/과거 view 재생성을 함께 검사해야 합니다.\n\n검증: 해당 head의 대상 검사 **10 passed in 1.42s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:35Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "922e8c76152b4e1ad3ff59c447bb7f413f9ce92d"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM__Z3A",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #59 재검토 003: 변경 요청 / 병합 보류\n\n검토 head: `4b715b643eb49e49d0f3cf83e20dd1e10f45b942`\n\n[P2] 같은 recorded_at을 가진 A→B revision에서 기본 view가 set 순서에 의존합니다. PYTHONHASHSEED=1은 B, 2/3은 과거 A를 선택했습니다. 트랜잭션 내 단조 증가 순서 등으로 최신 revision 선택을 결정하거나 명시 revision을 필수화해야 합니다.\n\n대상: [소스](https://github.com/trevi00/zeus/blob/4b715b643eb49e49d0f3cf83e20dd1e10f45b942/src/codex_harness/application/seam_ledger.py)\n\n독립 검증: `10 passed in 1.94s`; Ruff 통과. PostgreSQL 통합 모드를 켜고 해당 PR 변경 테스트와 관련 회귀 테스트를 실행했습니다. CI 10/10 성공도 확인했습니다.\n\n검증 범위는 이 PR의 변경과 이전 반례 및 추가 경계 조건입니다. 저장소 전체·실모델·사람 인수·운영 배포 완료 판정은 아닙니다. 이슈 종료 권위는 별도이므로 OPEN을 유지합니다.\n",
+      "submittedAt": "2026-09-10T12:59:40Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "4b715b643eb49e49d0f3cf83e20dd1e10f45b942"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:36:21Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483417027/job/102891577012",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:35:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:34:59Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483411644/job/102891559485",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:49Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:36:03Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483417027/job/102891577052",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:34:57Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:34:53Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483411644/job/102891560149",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:48Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:41:01Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483417027/job/102891576981",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:34:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:39:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483411644/job/102891559455",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T13:33:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:41:37Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483417027/job/102891576985",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:34:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:40:01Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483411644/job/102891559375",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T13:33:49Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:38:23Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483417027/job/102891576654",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:34:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T13:37:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34483411644/job/102891559112",
+      "name": "integration",
+      "startedAt": "2026-09-10T13:33:48Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ]
+}
