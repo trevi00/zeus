@@ -492,6 +492,24 @@ its owner to resume, and a tampered bundle is preserved and not used. Every run 
 its source revision and environment. None of this is a user acceptance, a privacy
 qualification or a deployment.
 
+## INV-OUTPUT-001
+
+Structured output is validated against a declared, versioned subset of JSON Schema draft
+2020-12: every keyword a schema uses must be in the supported subset, so a misspelled or
+unsupported keyword is refused at preflight as a configuration-owner error instead of a
+check that silently never runs; enum and const require an explicit type; a closed object
+cannot require names it does not declare; nesting depth and encoded size are bounded; and
+numeric bounds are finite. Preflight returns a receipt (schema hash, dialect, subset
+version, keywords seen, checks run) and every output validation result carries a structural
+block naming each check as checked, failed, unchecked or configuration_error, so "ok"
+always says what was checked. Failures are owned: an agent output defect (`agent_output`)
+is never the same finding as a malformed schema (`configuration`), and a valid-looking
+answer under a refused schema is not accepted. Runner-observed tool use (completed command,
+file-change and MCP items from the transport) is recorded beside any self-reported tool
+list, with the comparison stated; a self-report never certifies the presence or absence of
+tool use. Zeus keeps no lexical, filename or boilerplate grade; structural validity and
+observed tool use are evidence for review, never SDD acceptance or model qualification.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
