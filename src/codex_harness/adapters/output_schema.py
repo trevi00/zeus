@@ -63,6 +63,23 @@ def preflight(schema):
         path = "$" + "".join(f"[{json.dumps(p)}]" for p in exc.path)
         raise ContractError(f"Malformed outputSchema at {path}: {exc.message}; {schema_hash}") from exc
 
+    # INV-OUTPUT-001: schema locations are structural, not names. A definition named
+    # "description" is a schema; the description annotation itself is data.
+    schema_nodes = set()
+    pending = [schema]
+    while pending:
+        node = pending.pop()
+        if not isinstance(node, dict) or id(node) in schema_nodes:
+            continue
+        schema_nodes.add(id(node))
+        for key in ('properties', 'patternProperties', '$defs', 'definitions', 'dependentSchemas'):
+            pending.extend(node.get(key, {}).values())
+        for key in ('anyOf', 'allOf', 'oneOf', 'prefixItems'):
+            pending.extend(node.get(key, []))
+        for key in ('items', 'contains', 'additionalProperties', 'unevaluatedProperties',
+                    'unevaluatedItems', 'propertyNames', 'not', 'if', 'then', 'else'):
+            pending.append(node.get(key))
+
     visited = set()
     keywords = set()
     deepest = [0]
@@ -111,9 +128,6 @@ def preflight(schema):
                 _refuse("codex-output-schema-unsupported-reference", path,
                         f"only local JSON-pointer references are supported, not {ref!r}", schema_hash)
             parts = [part.replace("~1", "/").replace("~0", "~") for part in ref[2:].split("/")] if ref != "#" else []
-            if any(part in ANNOTATIONS for part in parts):
-                _refuse("codex-output-schema-reference-into-annotation", path,
-                        f"{ref} points into annotation data, which is never validated", schema_hash)
             target = schema
             try:
                 for part in parts:
@@ -122,6 +136,9 @@ def preflight(schema):
                 raise ContractError(f"Unresolved outputSchema reference at {path}: {ref}") from None
             if not isinstance(target, dict):
                 _refuse("codex-output-schema-unsupported-reference", path, f"{ref} does not name a schema object", schema_hash)
+            if id(target) not in schema_nodes:
+                _refuse("codex-output-schema-reference-into-annotation", path,
+                        f"{ref} points into data rather than a schema location", schema_hash)
             walk(target, path + f"->$ref({ref})", version, depth + 1)
         for key in sorted(node):
             value = node[key]

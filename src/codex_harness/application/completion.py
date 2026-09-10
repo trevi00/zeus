@@ -184,11 +184,17 @@ class CompletionAuthority:
         evaluated = review.get('answer', {}).get('evaluated') if isinstance(review.get('answer'), dict) else None
         if not isinstance(evaluated, dict) or evaluated.get('target') != target or evaluated.get('spec_revision') != last['spec_revision']:
             return {'state': 'reviewer_unbound', 'reason': 'reviewer execution did not evaluate this execution and spec revision'}
-        produced = evaluated.get('scenarios') if isinstance(evaluated.get('scenarios'), dict) else {}
-        same_scenarios = (sorted(set(produced.get('expected') or [])) == sorted(set(last['scenarios']['expected']))
-                          and sorted(set(produced.get('passed') or [])) == sorted(set(last['scenarios']['passed']))
-                          and sorted(e.get('id') for e in (produced.get('excluded') or []) if isinstance(e, dict))
-                          == sorted(e['id'] for e in last['scenarios']['excluded']))
+        try:
+            produced = parse_verdict({**{key: last[key] for key in KEYS},
+                                      'target': evaluated['target'], 'verdict': evaluated.get('verdict'),
+                                      'scenarios': evaluated.get('scenarios')})['scenarios']
+        except ContractError:
+            return {'state': 'verdict_mismatch', 'reason': 'reviewer output does not carry valid scenario results'}
+        # INV-COMPLETION-001: exclusions include their approval provenance, not only scenario ids.
+        same_scenarios = (sorted(produced['expected']) == sorted(last['scenarios']['expected'])
+                          and sorted(produced['passed']) == sorted(last['scenarios']['passed'])
+                          and sorted(produced['excluded'], key=lambda e: e['id'])
+                          == sorted(last['scenarios']['excluded'], key=lambda e: e['id']))
         if evaluated.get('verdict') != last['verdict'] or not same_scenarios:
             return {'state': 'verdict_mismatch', 'reason': 'recorded verdict or scenario results differ from what the reviewer execution produced'}
         return None
