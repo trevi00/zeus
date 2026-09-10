@@ -155,6 +155,18 @@ containers. Tests keep the unbound child as a failure control. Measured through 
 processes on the current Windows host and Linux CI; direct Windows console-host output and
 in-container Python remain outside this measurement.
 
+## INV-IDEMPOTENCY-001
+
+Same-key deduplication reads and writes inside one store transaction, serialized by the
+control-plane advisory lock (PostgreSQL) or the store lock (memory); no check-then-append
+across transactions. Receipts are keyed by durable identity (message, request, failure or
+recovery digest) and a redelivery returns the recorded result or is rejected when its content
+differs. External side effects follow one of two shapes: intent committed before the call and
+a receipt committed after it, where an intent without a receipt is pending and never treated
+as done (outbox attempts); or reconciliation from the external system's own state (GitHub PR by
+head revision, merge uncertainty as `blocked_remote`, image by digest). A lost acknowledgement
+therefore repeats or blocks explicitly; it never silently completes or duplicates.
+
 ## INV-EXECUTION-IDENTITY-001
 
 Task selection uses agent and explicit task identity, with UTC creation time and
