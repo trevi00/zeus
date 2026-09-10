@@ -679,6 +679,30 @@ def test_later_rejecting_review_revokes_approval(audit, rejecting_actor):
         service.workflow.submit(message)
 
 
+def test_replaying_an_old_acceptance_never_overturns_a_later_rejection(audit):
+    # Review counterexample (PR #39): PASS -> REJECT -> replay of the identical PASS object.
+    service, record, source, _, _ = audit
+    activate_fixture(service)
+    proposal = complete_fixture_audit(service, record, source)
+    service.propose(record['id'], proposal)
+    tasks = {actor: approve_fixture(service, actor) for actor in ('lead:research', 'conductor')}
+    task, review = tasks['conductor']
+    with service.store.transaction() as tx:
+        original = tx.get('research_reviews', digest(asdict(review)))
+    rejection = service.review(task, replace(review, accepted=False))
+    assert rejection['sequence'] == 2 and not service.coverage(record['id'])['adoption_eligible']
+    replayed = service.review(task, review)
+    assert replayed == original and replayed['sequence'] == 1, 'redelivery keeps its original order'
+    assert not service.coverage(record['id'])['adoption_eligible']
+    with service.store.transaction() as tx:
+        assert tx.get('research_approvals', review.binding)['status'] == 'revoked'
+        assert len([r for r in tx.scan('research_reviews') if r['review']['actor'] == 'conductor']) == 2
+    # Re-approval needs a new review execution (new receipt), which then outranks the rejection.
+    receipt = service.execute(task, task['input']['audit_id'], ['fixture-independent-inspection', 'again'])
+    fresh = service.review(task, replace(review, execution_id=receipt['id']))
+    assert fresh['sequence'] == 3 and service.coverage(record['id'])['adoption_eligible']
+
+
 def test_rejection_then_acceptance_orders_by_sequence_not_existence(audit):
     from codex_harness.domain.research import IndependentReview
     service, record, source, _, _ = audit

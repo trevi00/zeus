@@ -32,6 +32,9 @@ Zeus는 이벤트 fold 대신 행마다 현재 status를 저장하므로 대부�
 - `application/audit_gate.py::require_adoption`: `status != approved`면 거부하고, 승인에 묶인 각 actor에 대해
   같은 binding의 **최신 리뷰**(sequence, at)가 accepted인지 다시 검사합니다. 상태 플래그가 유실돼도 최신
   리뷰 규칙만으로 거부됩니다. 레거시 승인(status 없음)은 approved로 읽되 최신 리뷰 규칙은 동일 적용됩니다.
+- **검토 반례 반영(PR #39 P1)**: 승인 → 거절(seq 2) 뒤 **같은 승인 리뷰 객체를 재전송**하면 같은 digest 레코드가 seq 3으로
+  덮여 최신 거절이 뒤집혔습니다. 이제 이미 기록된 review digest의 재전송은 멱등(원래 sequence·시각 유지, 승인 상태 불변)
+  이고, 재승인은 새 inspection 영수증(새 execution_id)에 결속된 새 리뷰로만 가능합니다.
 - `docs/contracts.md`: `INV-RESEARCH-004`에 "리뷰는 binding·actor별로 순서가 있고 승인 뒤 거절은 승인을 철회하며
   최신 리뷰가 판정" 문장 추가.
 
@@ -44,11 +47,13 @@ Zeus는 이벤트 fold 대신 행마다 현재 status를 저장하므로 대부�
 - `::test_rejection_then_acceptance_orders_by_sequence_not_existence`: 거절(seq 1) → 승인(seq 2)은 채택 가능,
   그 뒤 lead의 거절은 다시 철회 — 존재가 아니라 순서가 판정입니다.
 - 음성 대조: `research.py`/`audit_gate.py`를 수정 전으로 되돌리면 위 3건이 실패함을 확인했습니다.
-- 기존 `test_research_audits.py` 69건은 그대로 통과합니다(총 72 passed).
+- `::test_replaying_an_old_acceptance_never_overturns_a_later_rejection`: PASS → REJECT → 동일 PASS 재전송은 원래 seq 1
+  레코드를 그대로 돌려주고 승인은 revoked 유지; 새 영수증의 새 리뷰(seq 3)만 재승인.
+- 기존 `test_research_audits.py` 69건은 그대로 통과합니다(총 73 passed).
 
 | 항목 | 결과 |
 |---|---|
-| `tests/test_research_audits.py` | 72 passed |
+| `tests/test_research_audits.py` | 73 passed |
 | Windows 전체 `uv run pytest -q` (Python 3.12.14) | 920 passed, 305 skipped (164s) |
 | `uv run ruff check .` | 통과 |
 

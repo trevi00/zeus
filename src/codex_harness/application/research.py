@@ -366,10 +366,14 @@ class ResearchAudits:
             successful = receipt['receipt']['exit_status'] == 0 and not receipt['receipt']['inspection_blocked']
             require(successful or not review.accepted, 'Inspection-blocked review cannot approve')
             key = digest(asdict(review))
+            existing = tx.get('research_reviews', key)
+            if existing is not None:
+                # Redelivery of an already recorded review is idempotent: it keeps its original
+                # sequence and time and never reorders a later rejection (review counterexample, PR #39).
+                return existing
             # INV-RESEARCH-004: reviews are ordered per binding and actor; the latest one is the verdict.
             siblings = [r for r in tx.scan('research_reviews')
-                        if r['review']['binding'] == review.binding and r['review']['actor'] == review.actor
-                        and digest(r['review']) != key]
+                        if r['review']['binding'] == review.binding and r['review']['actor'] == review.actor]
             record = {'audit_id': data['audit_id'], 'review': asdict(review),
                       'status': 'reviewed' if successful else 'inspection-blocked',
                       'sequence': 1 + max((r.get('sequence', 0) for r in siblings), default=0), 'at': utcnow()}
