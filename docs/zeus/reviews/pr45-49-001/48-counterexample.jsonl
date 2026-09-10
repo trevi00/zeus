@@ -1,0 +1,1 @@
+﻿{"scope": "two actual isolated local Git repositories, no GitHub mutation", "target_identity": "local", "different_repository": true, "merged_into_second": {"merged": true, "revision": "c7bbe58565115b5ff68b9a185856103f941fb22a", "transport": "local"}, "second_file_exists": true}

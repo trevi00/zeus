@@ -1,0 +1,485 @@
+﻿diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..ef3c3ab 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -187,3 +187,4 @@ clock or claim trusted elapsed-time continuity across offline clock changes.
+ - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions.
+ - INV-ORACLE-001: Imported observations and structural coverage cannot populate approved expected outcomes, certify real-device execution, authenticate human QA, or authorize a release. Gaps remain visible. Eight-stage reports are preparation only until actual providers are implemented.
+ - INV-SDD-002: SDD journals retain ordered, hash-linked events; duplicate imports/proposals are idempotent and transitions use compare-and-swap. Notifications are local records, not external messages. Model transfer candidates never change routing authority.
++- INV-GATE-001: Every gate verdict names one fixed statement, its stage, run, cycle and the definition hash it judged, with the runner receipt and process exit status or the reviewer's actor and authority level; a non-zero exit is never PASS and an unauthenticated reviewer claim never settles a statement. All consumers use one fold: the planned statements are the denominator (`not_run` is a state, never an omission), verdicts for another run, cycle or definition are foreign, the latest live verdict wins, ERROR withdraws validity rather than leaving an earlier PASS, PARTIAL stays pending, and a retraction removes exactly one named verdict so that the fold of a compacted view equals the fold of the full view.
+diff --git a/docs/zeus/implementation/gate-verdicts-001/README.md b/docs/zeus/implementation/gate-verdicts-001/README.md
+new file mode 100644
+index 0000000..b6b67b6
+--- /dev/null
++++ b/docs/zeus/implementation/gate-verdicts-001/README.md
+@@ -0,0 +1,60 @@
++# 게이트 판정의 문장 귀속·PARTIAL·철회 — 하나의 fold
++
++기존 FA-013 / GitHub [#14](https://github.com/trevi00/zeus/issues/14) / `ZEUS-fb2ab61807b4` 개정 1의 구현입니다.
++상류 harness에서 judge/residual CLI는 문장별 판정을 쓰지만 `_external_verdict`는 stage+mode 최신값만 소비했고,
++PARTIAL은 gate_runner/residual에서 대기인 반면 tick은 None만 대기로 분류했으며, retraction 필터와 외부 판정 소비,
++컴팩션 뒤 render 원본, ERROR 뒤 completed 유지, 종료 코드 무시, 빈 검사 모집단이 갈렸습니다
++([판정 소비 공동 검토](../../../full-analysis/harness-gate-consumer-joint/resolution.md)). 교차검토 합의는 "고정 문장 ID와
++run/cycle·정의·산출물·환경에 판정을 결속하고 해당 판정만 소비, 공통 미종결 상태, 모든 소비의 동일 view와 replay 등가,
++ERROR의 유효성 철회, 종료 상태 검증, 계획한 필수 검사 분모"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## Zeus 상태와 변경
++
++Zeus SDD는 8단계 보고서가 전부 `blocked`이고 `advance`는 blocked만 기록했습니다. 판정을 문장 단위로 받는 계약 자체가
++없었으므로 위 불일치는 "아직 없음"이었고, 이번에 계약과 소비 경로를 만들었습니다.
++
++- `domain/gate_verdicts.py`(신규, 표준 라이브러리만):
++  - `GateVerdict(statement_id, stage, run_id, cycle, definition_hash, artifact_hash, environment_hash, verdict, origin,
++    receipt_ref, exit_status, actor, authority, sequence, retracts)`. `runner_receipt`는 불변 영수증 참조와 프로세스 종료
++    코드를 요구하고 **0이 아닌 종료는 PASS일 수 없음**; `reviewer_decision`은 actor와 authority
++    (`authenticated_provider | unauthenticated_claim`)를 요구하며 **미인증 주장은 문장을 종결하지 못함**(pending).
++    `RETRACT`는 같은 문장의 살아 있는 판정 하나만 지목하고 actor를 남깁니다.
++  - `fold_verdicts(verdicts, statements, run_id, cycle)`: 계획한 문장→정의 해시 맵이 **분모**라 판정 없는 문장은
++    `not_run`으로 남고, 다른 run/cycle/정의의 판정은 `foreign`으로 세고 무시하며, 철회된 판정은 제거하고, 문장별 최신
++    판정이 이깁니다. ERROR→`error`(이전 PASS 철회), PARTIAL→`pending`, FAIL/REJECT→`failed`, PASS→`passed`.
++    `complete`는 모든 문장이 passed일 때만.
++  - `compact()`: 철회 쌍을 제거한 view. 테스트로 `fold(compact(events)) == fold(events)`를 고정합니다(replay 등가).
++- `application/sdd.py`:
++  - `statement_definitions(row, stage)`: 단계 검사 이름을 spec_hash에 결속한 정의 해시(스펙 개정이 바뀌면 이전 판정은 foreign).
++  - `record_gate_verdict(iteration_id, document)`: run_id=반복 ID, cycle=스펙 revision, sequence=저널 순번, 정의 해시는
++    서비스가 채웁니다(호출자가 다른 정의를 주장할 수 없음). 영수증은 아티팩트에서 검사하고 해시 체인 이벤트
++    `gate_verdict_recorded`로 남깁니다. `authenticated_provider`는 결정 제공자가 설정된 경우에만 허용됩니다(현재 없음).
++  - `status()`에 단계별 `gates`(fold) 추가, `request_advance()`는 같은 fold를 소비해 문장별 상태로 차단 사유를 씁니다.
++    사람 인증 제공자가 없으므로 `human_*` 문장은 통과할 수 없고 전이는 여전히 blocked이지만, 이제 **무엇이 not_run/
++    pending/error인지** 기록합니다.
++- `docs/contracts.md`: `INV-GATE-001` 추가.
++
++## 재현과 검증
++
++- `tests/test_gate_verdicts.py`: 문장 귀속과 분모(`not_run`), 다른 run/cycle/정의의 foreign 계수, ERROR의 PASS 철회·
++  PARTIAL 대기·최신 우선, 철회와 컴팩션 fold 동일성·잘못된 철회 거부·중복 순번 거부, 종료 코드/영수증/리뷰어 권한 규칙,
++  알 수 없는 필드(`human_approved`) 거부; 애플리케이션: 실제 스펙 등록 → 판정 기록 → `status.gates` → `advance`가
++  문장별 사유로 차단 → 뒤늦은 ERROR가 모든 읽기 경로에서 PASS를 철회 → 미인증 리뷰 주장은 pending, 인증 권한은 제공자
++  없이는 거부, 단계 밖 문장·비0 종료 PASS·없는 영수증·잘못된 철회 거부.
++- 기존 `test_sdd.py`(PG 검사 제외) 통과. 저널 해시 체인 검사(FA-007)는 판정 이벤트에도 그대로 적용됩니다.
++- 음성 대조: `application/sdd.py`를 수정 전으로 되돌리면 애플리케이션 검사가 실패합니다.
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_gate_verdicts.py` + `test_sdd.py` + `test_architecture.py` | 18 passed, 6 skipped(PG) |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 923 passed, 305 skipped (200s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 이 계약은 **판정의 기록과 소비**입니다. 실제 8단계 전이, 인증된 사람 결정 제공자, 러너가 영수증과 함께 판정을 자동
++  기록하는 경로, 알파/라이브 배포 결속은 별도 구현이며 전이는 여전히 blocked입니다(교차검토: "blocked만 계속 반환하는
++  것은 목표 달성이 아니다").
++- 시도·재개방의 수명과 예산(한도·재시도 항목), 면제(waiver)의 별도 검증은 이번 계약에 없습니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/application/sdd.py b/src/codex_harness/application/sdd.py
+index 06f3cb6..fca5292 100644
+--- a/src/codex_harness/application/sdd.py
++++ b/src/codex_harness/application/sdd.py
+@@ -1,5 +1,8 @@
+ """Versioned SDD work and evidence preparation, without impersonating human acceptance."""
++from dataclasses import asdict
++
+ from codex_harness.application.tickets import ticket_binding
++from codex_harness.domain.gate_verdicts import fold_verdicts, parse_verdict
+ from codex_harness.domain.model import canonical, digest, require, utcnow
+ from codex_harness.domain.sdd import (
+     STAGES,
+@@ -12,8 +15,50 @@
+ 
+ 
+ class SDD:
+-    def __init__(self, store, artifacts):
++    def __init__(self, store, artifacts, human_provider=None):
+         self.store, self.artifacts = store, artifacts
++        # INV-ORACLE-001: without an authenticated decision provider, no verdict can carry that authority.
++        self.human_provider = human_provider
++
++    @staticmethod
++    def statement_definitions(row, stage):
++        """INV-GATE-001: each stage check is a fixed statement bound to the spec revision it judges."""
++        checks = next(checks for key, _, _, checks in STAGES if key == stage)
++        return {name: digest({'stage': stage, 'statement': name, 'spec_hash': row['spec_hash']}) for name in checks}
++
++    @staticmethod
++    def _gate_verdicts(tx, row):
++        return [event['details']['verdict'] for event in tx.scan('sdd_events')
++                if event['iteration_id'] == row['id'] and event['kind'] == 'gate_verdict_recorded']
++
++    def _gates(self, tx, row):
++        verdicts = self._gate_verdicts(tx, row)
++        return {stage: fold_verdicts(verdicts, self.statement_definitions(row, stage), row['id'], row['revision'])
++                for stage, _, _, _ in STAGES}
++
++    def record_gate_verdict(self, iteration_id, document):
++        require(isinstance(document, dict), 'Gate verdict document required')
++        require(document.get('authority') != 'authenticated_provider' or self.human_provider is not None,
++                'Authenticated human authority requires a configured decision provider')
++        with self.store.transaction() as tx:
++            row = tx.get('sdd_iterations', iteration_id)
++            require(row, 'SDD iteration not found')
++            self._current(tx, row)
++            stage = document.get('stage')
++            require(any(key == stage for key, _, _, _ in STAGES), 'Unknown SDD stage')
++            definitions = self.statement_definitions(row, stage)
++            require(document.get('statement_id') in definitions, 'Statement is not part of this stage')
++            verdict = parse_verdict({**document, 'run_id': row['id'], 'cycle': row['revision'],
++                                     'sequence': row['sequence'] + 1,
++                                     'definition_hash': definitions[document['statement_id']]})
++            if verdict.receipt_ref:
++                self.artifacts.inspect(verdict.receipt_ref)
++            if verdict.retracts is not None:
++                fold_verdicts(self._gate_verdicts(tx, row) + [asdict(verdict)], definitions, row['id'], row['revision'])
++            event = self._append(tx, row, 'gate_verdict_recorded',
++                                 [verdict.receipt_ref] if verdict.receipt_ref else [], verdict=asdict(verdict))
++            return {'sequence': event['sequence'], 'verdict': asdict(verdict),
++                    'gate': self._gates(tx, row)[stage], 'release_authorized': False}
+ 
+     def _spec(self, row):
+         spec = self.artifacts.document(row["spec_ref"])
+@@ -97,9 +142,10 @@ def status(self, iteration_id):
+             superseded = not ticket or ticket["revision"] != row["zeus_ticket"]["revision"]
+             head = tx.get("sdd_spec_heads", row["spec_id"])
+             spec_superseded = not head or head["iteration_id"] != iteration_id
++            gates = self._gates(tx, row)
+         return {**row, "status": "superseded_ticket" if superseded else "superseded_spec" if spec_superseded else row["status"],
+                 "spec": spec, "report": gate_report(spec, runs), "observations": runs,
+-                "notifications": notices, "events": events}
++                "notifications": notices, "events": events, "gates": gates}
+ 
+     def observe(self, iteration_id, environment, events, source_name):
+         validate_environment(environment)
+@@ -162,10 +208,16 @@ def request_advance(self, iteration_id, expected_sequence):
+             require(row and row["sequence"] == expected_sequence, "Stale SDD transition")
+             self._current(tx, row)
+             report = gate_report(self._spec(row))
+-            self._append(tx, row, "transition_blocked", stage=row["stage"], reason=report["next_action"])
+-            self._notify(tx, row, "transition_blocked", report["next_action"])
++            gate = self._gates(tx, row)[row["stage"]]
++            # INV-GATE-001: the transition consumes the shared fold, statement by statement.
++            unsettled = sorted(name for name, state in gate["statements"].items() if state["state"] != "passed")
++            reason = (report["next_action"] if not unsettled else
++                      "Stage statements not passed: " + ", ".join(f"{name}={gate['statements'][name]['state']}"
++                                                                    for name in unsettled))
++            self._append(tx, row, "transition_blocked", stage=row["stage"], reason=reason, gate=gate)
++            self._notify(tx, row, "transition_blocked", reason)
+             return {"status": "blocked", "stage": row["stage"], "sequence": row["sequence"],
+-                    "reason": report["next_action"], "release_authorized": False}
++                    "reason": reason, "gate": gate, "release_authorized": False}
+ 
+     def record_transfer(self, iteration_id, record):
+         keys = {"task_family", "contract_hash", "guardrail_hash", "toolchain_hash", "source_model", "target_model", "evidence_refs"}
+diff --git a/src/codex_harness/domain/gate_verdicts.py b/src/codex_harness/domain/gate_verdicts.py
+new file mode 100644
+index 0000000..22c8aa5
+--- /dev/null
++++ b/src/codex_harness/domain/gate_verdicts.py
+@@ -0,0 +1,143 @@
++"""Statement-attributed gate verdicts and one shared fold (INV-GATE-001).
++
++Upstream consumers read the latest stage+mode verdict while judges wrote per-statement verdicts,
++treated PARTIAL as done in one place and pending in another, folded retractions in some readers
++but not others, and ignored process exit codes. Here every verdict names its statement, run,
++cycle and definition; every consumer uses this fold; and a retraction removes exactly one verdict.
++"""
++import re
++from dataclasses import asdict, dataclass
++
++from codex_harness.domain.model import require
++
++VERDICTS = ('PASS', 'FAIL', 'ERROR', 'PARTIAL', 'REJECT')
++ORIGINS = ('runner_receipt', 'reviewer_decision')
++AUTHORITIES = ('authenticated_provider', 'unauthenticated_claim')
++STATES = ('passed', 'failed', 'error', 'pending', 'not_run')
++HASH = re.compile(r'[0-9a-f]{64}\Z')
++REFERENCE = re.compile(r'sha256:[0-9a-f]{64}\Z')
++IDENTIFIER = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.:/-]{0,199}\Z')
++
++
++@dataclass(frozen=True)
++class GateVerdict:
++    statement_id: str
++    stage: str
++    run_id: str
++    cycle: int
++    definition_hash: str
++    artifact_hash: str | None
++    environment_hash: str | None
++    verdict: str
++    origin: str
++    receipt_ref: str | None
++    exit_status: int | None
++    actor: str | None
++    authority: str | None
++    sequence: int
++    retracts: int | None = None
++
++    def validate(self):
++        for name in ('statement_id', 'stage', 'run_id'):
++            require(isinstance(getattr(self, name), str) and IDENTIFIER.fullmatch(getattr(self, name)),
++                    'Invalid gate ' + name)
++        require(type(self.cycle) is int and self.cycle >= 0, 'Invalid gate cycle')
++        require(type(self.sequence) is int and self.sequence > 0, 'Invalid gate verdict sequence')
++        require(isinstance(self.definition_hash, str) and HASH.fullmatch(self.definition_hash),
++                'Gate verdict requires its definition hash')
++        for name in ('artifact_hash', 'environment_hash'):
++            value = getattr(self, name)
++            require(value is None or (isinstance(value, str) and HASH.fullmatch(value)), 'Invalid gate ' + name)
++        require(self.origin in ORIGINS, 'Unknown gate verdict origin')
++        if self.retracts is not None:
++            require(type(self.retracts) is int and 0 < self.retracts < self.sequence, 'Invalid retraction target')
++            require(self.verdict == 'RETRACT' and self.receipt_ref is None and self.exit_status is None
++                    and isinstance(self.actor, str) and self.actor.strip(),
++                    'A retraction names its actor and carries no verdict of its own')
++            return
++        require(self.verdict in VERDICTS, 'Unknown gate verdict')
++        if self.origin == 'runner_receipt':
++            require(isinstance(self.receipt_ref, str) and REFERENCE.fullmatch(self.receipt_ref),
++                    'Runner verdict requires an immutable receipt')
++            require(type(self.exit_status) is int and not isinstance(self.exit_status, bool),
++                    'Runner verdict requires the process exit status')
++            require(self.verdict != 'PASS' or self.exit_status == 0, 'A non-zero exit cannot be PASS')
++            require(self.actor is None and self.authority is None, 'Runner verdicts carry no reviewer identity')
++        else:
++            require(isinstance(self.actor, str) and self.actor.strip(), 'Reviewer verdict requires an actor')
++            require(self.authority in AUTHORITIES, 'Reviewer verdict requires its authority level')
++            require(self.receipt_ref is None or REFERENCE.fullmatch(self.receipt_ref), 'Invalid reviewer receipt')
++            require(self.exit_status is None, 'Reviewer verdicts have no process exit')
++
++    @property
++    def state(self):
++        if self.origin == 'reviewer_decision' and self.authority != 'authenticated_provider':
++            return 'pending'  # an unauthenticated claim never settles a statement
++        return {'PASS': 'passed', 'FAIL': 'failed', 'REJECT': 'failed', 'ERROR': 'error',
++                'PARTIAL': 'pending'}[self.verdict]
++
++
++def parse_verdict(document):
++    require(isinstance(document, dict) and set(document) <= {f for f in GateVerdict.__dataclass_fields__},
++            'Unknown gate verdict fields')
++    fields = {name: document.get(name) for name in GateVerdict.__dataclass_fields__}
++    fields.setdefault('retracts', None)
++    verdict = GateVerdict(**fields)
++    verdict.validate()
++    return verdict
++
++
++def fold_verdicts(verdicts, statements, run_id, cycle):
++    """One deterministic view: the latest live verdict per required statement of this run and cycle.
++
++    `statements` maps every planned statement to its current definition hash; that mapping is the
++    denominator, so a statement nobody judged is `not_run`, never absent. Verdicts for other runs,
++    cycles or definitions are counted as foreign and ignored. A retraction removes its target;
++    ERROR withdraws validity instead of leaving an earlier PASS in place; PARTIAL stays pending.
++    """
++    require(isinstance(statements, dict) and statements and all(
++        isinstance(k, str) and isinstance(v, str) and HASH.fullmatch(v) for k, v in statements.items()),
++        'Statement denominator with definition hashes required')
++    parsed = [v if isinstance(v, GateVerdict) else parse_verdict(v) for v in verdicts]
++    for verdict in parsed:
++        verdict.validate()
++    sequences = [v.sequence for v in parsed]
++    require(len(sequences) == len(set(sequences)), 'Duplicate gate verdict sequence')
++    by_sequence = {v.sequence: v for v in parsed}
++    retracted = set()
++    for verdict in parsed:
++        if verdict.retracts is not None:
++            target = by_sequence.get(verdict.retracts)
++            require(target is not None and target.statement_id == verdict.statement_id
++                    and target.retracts is None, 'Retraction must name a live verdict of the same statement')
++            retracted.add(verdict.retracts)
++    latest, foreign, ignored = {}, 0, []
++    for verdict in sorted(parsed, key=lambda v: v.sequence):
++        if verdict.retracts is not None or verdict.sequence in retracted:
++            continue
++        expected = statements.get(verdict.statement_id)
++        if (expected is None or verdict.definition_hash != expected or verdict.run_id != run_id
++                or verdict.cycle != cycle):
++            foreign += 1
++            ignored.append(verdict.sequence)
++            continue
++        latest[verdict.statement_id] = verdict
++    states = {}
++    for statement in statements:
++        verdict = latest.get(statement)
++        states[statement] = {'state': verdict.state if verdict else 'not_run',
++                             'verdict': verdict.verdict if verdict else None,
++                             'sequence': verdict.sequence if verdict else None,
++                             'origin': verdict.origin if verdict else None}
++    counts = {state: sum(row['state'] == state for row in states.values()) for state in STATES}
++    return {'run_id': run_id, 'cycle': cycle, 'statements': states, 'counts': counts,
++            'denominator': len(statements), 'complete': counts['passed'] == len(statements),
++            'foreign_verdicts': foreign, 'ignored_sequences': ignored,
++            'retracted_sequences': sorted(retracted)}
++
++
++def compact(verdicts):
++    """Drop retraction pairs; the fold of the compacted view must equal the fold of the full view."""
++    parsed = [v if isinstance(v, GateVerdict) else parse_verdict(v) for v in verdicts]
++    retracted = {v.retracts for v in parsed if v.retracts is not None}
++    return [asdict(v) for v in parsed if v.retracts is None and v.sequence not in retracted]
+diff --git a/tests/test_gate_verdicts.py b/tests/test_gate_verdicts.py
+new file mode 100644
+index 0000000..1af4f5e
+--- /dev/null
++++ b/tests/test_gate_verdicts.py
+@@ -0,0 +1,158 @@
++"""INV-GATE-001: statement-attributed verdicts consumed through one fold."""
++import json
++from dataclasses import asdict, replace
++
++import pytest
++from test_sdd import SOURCE, spec_data
++
++from codex_harness.adapters.artifacts import FileArtifacts
++from codex_harness.adapters.store import MemoryStore
++from codex_harness.application.sdd import SDD
++from codex_harness.application.tickets import Tickets
++from codex_harness.bootstrap import organization
++from codex_harness.domain.gate_verdicts import GateVerdict, compact, fold_verdicts, parse_verdict
++from codex_harness.domain.model import ContractError
++
++DEFINITION = {'a': 'a' * 64, 'b': 'b' * 64}
++RECEIPT = 'sha256:' + 'c' * 64
++
++
++def runner(statement, verdict, sequence, exit_status=0, **changes):
++    fields = dict(statement_id=statement, stage='self_verification', run_id='run-1', cycle=1,
++                  definition_hash=DEFINITION[statement], artifact_hash=None, environment_hash=None,
++                  verdict=verdict, origin='runner_receipt', receipt_ref=RECEIPT, exit_status=exit_status,
++                  actor=None, authority=None, sequence=sequence)
++    fields.update(changes)
++    return GateVerdict(**fields)
++
++
++def reviewer(statement, verdict, sequence, authority='authenticated_provider', **changes):
++    defaults = dict(exit_status=None, receipt_ref=None, origin='reviewer_decision', actor='qa-lead',
++                    authority=authority)
++    return runner(statement, verdict, sequence, **{**defaults, **changes})
++
++
++def retraction(statement, target, sequence):
++    return runner(statement, 'RETRACT', sequence, exit_status=None, receipt_ref=None, actor='operator',
++                  retracts=target)
++
++
++def test_fold_attributes_by_statement_and_keeps_planned_denominator():
++    fold = fold_verdicts([runner('a', 'PASS', 1)], DEFINITION, 'run-1', 1)
++    assert fold['statements']['a']['state'] == 'passed' and fold['statements']['b']['state'] == 'not_run'
++    assert fold['counts'] == {'passed': 1, 'failed': 0, 'error': 0, 'pending': 0, 'not_run': 1}
++    assert not fold['complete'] and fold['denominator'] == 2
++    both = fold_verdicts([runner('a', 'PASS', 1), runner('b', 'PASS', 2)], DEFINITION, 'run-1', 1)
++    assert both['complete']
++
++
++def test_foreign_run_cycle_or_definition_is_counted_not_consumed():
++    verdicts = [runner('a', 'PASS', 1, run_id='run-0'), runner('a', 'PASS', 2, cycle=0),
++                runner('a', 'PASS', 3, definition_hash='d' * 64), runner('b', 'FAIL', 4)]
++    fold = fold_verdicts(verdicts, DEFINITION, 'run-1', 1)
++    assert fold['statements']['a']['state'] == 'not_run' and fold['foreign_verdicts'] == 3
++    assert fold['ignored_sequences'] == [1, 2, 3] and fold['statements']['b']['state'] == 'failed'
++
++
++def test_error_withdraws_pass_partial_stays_pending_and_latest_wins():
++    fold = fold_verdicts([runner('a', 'PASS', 1), runner('a', 'ERROR', 2, exit_status=3)], DEFINITION, 'run-1', 1)
++    assert fold['statements']['a'] == {'state': 'error', 'verdict': 'ERROR', 'sequence': 2, 'origin': 'runner_receipt'}
++    fold = fold_verdicts([runner('a', 'FAIL', 1, exit_status=1), runner('a', 'PARTIAL', 2)], DEFINITION, 'run-1', 1)
++    assert fold['statements']['a']['state'] == 'pending'
++    fold = fold_verdicts([runner('a', 'PARTIAL', 1), runner('a', 'PASS', 2)], DEFINITION, 'run-1', 1)
++    assert fold['statements']['a']['state'] == 'passed'
++
++
++def test_retraction_removes_one_verdict_and_compaction_folds_identically():
++    full = [runner('a', 'PASS', 1), runner('b', 'PASS', 2), retraction('a', 1, 3), runner('a', 'FAIL', 4, exit_status=2)]
++    fold = fold_verdicts(full, DEFINITION, 'run-1', 1)
++    assert fold['statements']['a']['state'] == 'failed' and fold['retracted_sequences'] == [1]
++    assert fold_verdicts(compact(full), DEFINITION, 'run-1', 1)['statements'] == fold['statements']
++    only_retracted = [runner('a', 'PASS', 1), retraction('a', 1, 2)]
++    assert fold_verdicts(only_retracted, DEFINITION, 'run-1', 1)['statements']['a']['state'] == 'not_run'
++    with pytest.raises(ContractError, match='live verdict of the same statement'):
++        fold_verdicts([runner('a', 'PASS', 1), retraction('b', 1, 2)], DEFINITION, 'run-1', 1)
++    with pytest.raises(ContractError, match='live verdict'):
++        fold_verdicts([runner('a', 'PASS', 1), retraction('a', 1, 2), retraction('a', 2, 3)], DEFINITION, 'run-1', 1)
++    with pytest.raises(ContractError, match='Duplicate gate verdict sequence'):
++        fold_verdicts([runner('a', 'PASS', 1), runner('b', 'PASS', 1)], DEFINITION, 'run-1', 1)
++
++
++def test_exit_status_and_reviewer_authority_are_part_of_the_verdict():
++    with pytest.raises(ContractError, match='non-zero exit cannot be PASS'):
++        runner('a', 'PASS', 1, exit_status=1).validate()
++    with pytest.raises(ContractError, match='process exit status'):
++        runner('a', 'PASS', 1, exit_status=None).validate()
++    with pytest.raises(ContractError, match='immutable receipt'):
++        runner('a', 'PASS', 1, receipt_ref=None).validate()
++    claim = reviewer('a', 'PASS', 1, authority='unauthenticated_claim')
++    assert fold_verdicts([claim], DEFINITION, 'run-1', 1)['statements']['a']['state'] == 'pending'
++    assert fold_verdicts([reviewer('a', 'PASS', 1)], DEFINITION, 'run-1', 1)['statements']['a']['state'] == 'passed'
++    with pytest.raises(ContractError, match='requires an actor'):
++        reviewer('a', 'PASS', 1, actor=None).validate()
++    with pytest.raises(ContractError, match='Unknown gate verdict'):
++        runner('a', 'MAYBE', 1).validate()
++    with pytest.raises(ContractError, match='Unknown gate verdict fields'):
++        parse_verdict({**asdict(runner('a', 'PASS', 1)), 'human_approved': True})
++    assert parse_verdict(asdict(runner('a', 'PASS', 1))) == runner('a', 'PASS', 1)
++    with pytest.raises(ContractError, match='definition hash'):
++        fold_verdicts([], {'a': 'not-a-hash'}, 'run-1', 1)
++
++
++def registered_iteration(tmp_path):
++    store = MemoryStore()
++    tickets = Tickets(store, organization())
++    ticket = tickets.create({'title': 'Gate contract', 'problem': 'Statement attribution', 'impact': 'Stale PASS',
++                             'rollback': 'Keep prior snapshot', 'evidence_refs': ['contract-test-input'],
++                             'scope': ['sdd'], 'acceptance_criteria': ['Latest statement verdict'],
++                             'verification': ['Memory store integration']})
++    service = SDD(store, FileArtifacts(tmp_path / 'artifacts'))
++    row = service.register(spec_data(), ticket['id'], 1, SOURCE)
++    return service, row
++
++
++def test_iteration_records_verdicts_in_the_journal_and_advance_consumes_the_fold(tmp_path):
++    service, row = registered_iteration(tmp_path)
++    receipt = service.artifacts.put('runner output', 'fixture')['ref']
++    stage = row['stage']
++    definitions = service.statement_definitions(row, stage)
++    statement = sorted(definitions)[0]
++    document = {'statement_id': statement, 'stage': stage, 'artifact_hash': None, 'environment_hash': None,
++                'verdict': 'PASS', 'origin': 'runner_receipt', 'receipt_ref': receipt, 'exit_status': 0,
++                'actor': None, 'authority': None}
++    first = service.record_gate_verdict(row['id'], document)
++    assert first['verdict']['definition_hash'] == definitions[statement] and first['verdict']['run_id'] == row['id']
++    assert first['gate']['statements'][statement]['state'] == 'passed' and not first['release_authorized']
++    status = service.status(row['id'])
++    assert status['gates'][stage]['statements'][statement]['state'] == 'passed'
++    assert status['gates'][stage]['counts']['not_run'] == len(definitions) - 1
++    assert json.dumps(status['gates'])  # the fold is plain data for the review view
++    blocked = service.request_advance(row['id'], status['sequence'])
++    assert blocked['status'] == 'blocked' and 'not passed' in blocked['reason'] and statement not in blocked['reason']
++    # A later ERROR for the same statement withdraws the PASS on every read path.
++    service.record_gate_verdict(row['id'], {**document, 'verdict': 'ERROR', 'exit_status': 2})
++    assert service.status(row['id'])['gates'][stage]['statements'][statement]['state'] == 'error'
++    later = service.request_advance(row['id'], service.status(row['id'])['sequence'])
++    assert f'{statement}=error' in later['reason']
++    # Unauthenticated reviewer claims and unknown statements never settle anything.
++    claim = {**document, 'origin': 'reviewer_decision', 'receipt_ref': None, 'exit_status': None,
++             'actor': 'someone', 'authority': 'unauthenticated_claim', 'verdict': 'PASS'}
++    assert service.record_gate_verdict(row['id'], claim)['gate']['statements'][statement]['state'] == 'pending'
++    with pytest.raises(ContractError, match='configured decision provider'):
++        service.record_gate_verdict(row['id'], {**claim, 'authority': 'authenticated_provider'})
++    with pytest.raises(ContractError, match='not part of this stage'):
++        service.record_gate_verdict(row['id'], {**document, 'statement_id': 'human_approved'})
++    with pytest.raises(ContractError, match='non-zero exit'):
++        service.record_gate_verdict(row['id'], {**document, 'exit_status': 1})
++    with pytest.raises((ContractError, FileNotFoundError, ValueError)):
++        service.record_gate_verdict(row['id'], {**document, 'receipt_ref': 'sha256:' + 'f' * 64})
++    with pytest.raises(ContractError, match='live verdict'):
++        # Sequence 1 is the spec registration event, not a verdict of this statement.
++        service.record_gate_verdict(row['id'], {**document, 'verdict': 'RETRACT', 'receipt_ref': None,
++                                                'exit_status': None, 'actor': 'operator', 'retracts': 1})
++    with pytest.raises(ContractError, match='retraction target'):
++        service.record_gate_verdict(row['id'], {**document, 'verdict': 'RETRACT', 'receipt_ref': None,
++                                                'exit_status': None, 'actor': 'operator', 'retracts': 99})
++    events = service.status(row['id'])['events']
++    assert [e['kind'] for e in events][-3:] == ['gate_verdict_recorded', 'transition_blocked', 'gate_verdict_recorded']
++    assert replace(parse_verdict(events[-1]['details']['verdict']), sequence=1).sequence == 1

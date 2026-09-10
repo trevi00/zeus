@@ -1,0 +1,288 @@
+﻿diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..c1a1a9d 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -164,6 +164,13 @@ effects and failure receipt redelivery compare typed task/generation/attempt,
+ executor owner, agent/actor and recovery sequence. An executor owner is a fencing
+ token in the trusted local runtime, not an authenticated tenant principal.
+ 
++Execution progress records are written only under the current lease and carry the task
++generation and attempt, a per-record sequence, a unique event identity, and the event's
++own occurrence time separately from the collection time (absent occurrence time stays
++null); a stale generation cannot write progress, and a malformed runtime event is retained
++as evidence and counted instead of being dropped or allowed to overwrite the last
++well-formed state.
++
+ ## INV-EXECUTION-TIME-001
+ 
+ Timezone-aware UTC deadlines survive restart. Monotonic elapsed time is compared
+diff --git a/docs/zeus/implementation/progress-event-identity-001/README.md b/docs/zeus/implementation/progress-event-identity-001/README.md
+new file mode 100644
+index 0000000..875c7b8
+--- /dev/null
++++ b/docs/zeus/implementation/progress-event-identity-001/README.md
+@@ -0,0 +1,51 @@
++# 실행 진행 기록의 세대·순서·두 시각·손상 원문 보존
++
++기존 FA-016 / GitHub [#17](https://github.com/trevi00/zeus/issues/17) / `ZEUS-e36daeb984c1` 개정 1의 구현입니다.
++고정 Baldrix engine001의 pane 로그 병합기를 격리 실행하면 gen2 running 정본에 과거 gen1 exited shard를 병합했을 때 최종
++상태가 gen1 exited로 **역행**했고, 병합기는 원래 발생 시각을 버리고 병합 시각을 부여해 replay가 timestamp 기준으로 상태를
++덮었습니다. `not-json`만 있는 shard는 병합 0건으로 보고되고 **삭제**돼 조사할 손상 원문이 사라졌습니다
++([engine-001 공동 검토](../../../full-analysis/baldrix-engine-001/resolution.md), [관측 stdout](../../../full-analysis/baldrix-engine-001/components-UTC0.stdout.txt)).
++교차검토 합의는 "Zeus PG runtime 원장에 task/attempt/pane generation과 고유 event ID, 발생 순서, 발생 시각과 수집 시각을
++분리해 결속"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## Zeus 상태와 변경
++
++Zeus의 실행 진행 기록(`execution_progress`)은 lease 소유 검사 아래에서만 쓰여 이전 세대의 실행자가 덮어쓸 수는 없었지만,
++레코드에 세대·시도·순번이 없었고 시각은 수집 시각(`at`) 하나뿐이었으며, 런타임 이벤트가 dict가 아니면 `event.get`에서
++예외로 실행이 끊겼습니다(원문 보존 없음).
++
++- `adapters/executor.py` `observe()`:
++  - 레코드에 `generation`/`attempt`(현재 lease), 레코드별 `sequence`(단조 증가), `event_id`(런타임 item 신원 또는 보관
++    바이트 참조), `occurred_at`(이벤트 자체의 `completedAtMs`/`emittedAtMs`, 없으면 **null** — 수집 시각으로 대체하지
++    않음), `collected_at`을 기록합니다. `last_completed`에도 `sequence`와 `occurred_at`을 넣습니다.
++  - dict가 아니거나 `params`가 매핑이 아닌 이벤트는 원문(repr)을 `runtime-event` 아티팩트로 보관하고 `malformed_events`
++    카운트와 `malformed_recent` 참조에 남기며, 정상 상태(`sequence`, `last_completed`)는 건드리지 않습니다.
++  - 모듈 함수 `progress_occurrence`, `progress_event_id`로 규칙을 분리했습니다.
++- `docs/contracts.md`: `INV-EXECUTION-IDENTITY-001`에 진행 기록 결속 문단 추가.
++
++## 재현과 검증
++
++- `tests/test_execution_progress.py::test_progress_records_generation_sequence_identity_and_two_clocks`: fixture 런타임이
++  완료 이벤트(발생 시각 포함), 토큰 사용량, 문자열 shard, `params: 'garbage'` 이벤트, 발생 시각 없는 완료, 무관 이벤트를
++  순서대로 보내면 — `generation=1/attempt=1`, `sequence=3`(손상·무관 이벤트는 순번을 올리지 않음), 손상 2건은 원문 보관과
++  카운트, 마지막 완료의 `occurred_at=None`, 첫 이벤트의 발생 시각은 ms 값에서 UTC로 복원.
++- `::test_stale_generation_cannot_write_progress_and_replay_keeps_order`: 세대 2가 발생 시각이 역순인 두 이벤트를 기록하면
++  도착 순서가 `sequence`이고 더 이른 발생 시각은 데이터로 남음; 만료된 세대 1 lease로 실행하면 `Stale or expired`로
++  거부되고 진행 기록은 바이트 단위로 불변.
++- 기존 `test_project_skills`·`test_execution_output`·`test_context_recovery` 통과.
++- 음성 대조: `executor.py`를 수정 전으로 되돌리면 두 검사가 실패합니다(문자열 shard에서 AttributeError).
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_execution_progress.py` + 실행자 관련 3개 모듈 | 54 passed, 8 skipped |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 919 passed, 305 skipped (187s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 이는 실행자 프로세스 안의 진행 기록입니다. 여러 pane/프로세스의 로그를 하나로 병합하는 상류 형태의 병합기는 Zeus에 없고
++  만들지 않았습니다; 모든 진행은 lease 아래 단일 작성자입니다.
++- 실제 Codex 앱 서버 이벤트의 시각 필드 이름(`completedAtMs`, `emittedAtMs`)은 기존 훅 매니페스트 fixture에서 관측한 것이며
++  운영 버전 변화는 별도 확인 대상입니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/adapters/executor.py b/src/codex_harness/adapters/executor.py
+index 30c42b0..bd69e8a 100644
+--- a/src/codex_harness/adapters/executor.py
++++ b/src/codex_harness/adapters/executor.py
+@@ -60,6 +60,25 @@ def object_schema(properties: dict) -> dict:
+                           "scope": TEXT, "reason": TEXT})
+ 
+ 
++def progress_occurrence(event: dict):
++    """The event's own UTC occurrence time, or None; the collection moment never stands in for it."""
++    params = event.get("params") if isinstance(event.get("params"), dict) else {}
++    item = params.get("item") if isinstance(params.get("item"), dict) else {}
++    for candidate in (params.get("completedAtMs"), item.get("completedAtMs"), event.get("emittedAtMs")):
++        if type(candidate) is int and 0 < candidate < 10**14:
++            return datetime.fromtimestamp(candidate / 1000, tz=timezone.utc).isoformat()
++    return None
++
++
++def progress_event_id(event: dict, receipt_ref: str) -> str:
++    """Unique per delivered event: runtime item identity when present, else the retained bytes."""
++    params = event.get("params") if isinstance(event.get("params"), dict) else {}
++    item = params.get("item") if isinstance(params.get("item"), dict) else {}
++    if isinstance(item.get("id"), str) and item["id"]:
++        return f"{event.get('method')}:{item['id']}:{item.get('status')}"
++    return f"{event.get('method')}:{receipt_ref}"
++
++
+ def artifact_reader_handle(root, reference: str) -> dict:
+     """Describe one exact-ref reader invocation without shell command interpolation."""
+     return {
+@@ -236,10 +255,15 @@ def observe(event):
+                     last_beat = time.monotonic()
+                 if event is None:
+                     return
+-                if event.get("method") in {"item/completed", "thread/tokenUsage/updated"}:
++                # FA-016: a malformed runtime event is retained as evidence and counted, never
++                # dropped, and never allowed to overwrite the well-formed progress state.
++                malformed = not isinstance(event, dict) or not isinstance(event.get("params", {}), dict)
++                if malformed or event.get("method") in {"item/completed", "thread/tokenUsage/updated"}:
+                     with self.service.store.transaction() as tx:
+                         prior = tx.get("execution_progress", key) or {}
+-                    receipt = self.artifacts.put(evidence_json({"event": event, "previous": prior.get("last_record") if matches(prior) else None}),
++                    receipt = self.artifacts.put(evidence_json({"event": event if not malformed else repr(event),
++                                                                "malformed": malformed,
++                                                                "previous": prior.get("last_record") if matches(prior) else None}),
+                                                  "runtime-event:" + key)
+                     with self.service.store.transaction() as tx:
+                         if lease:
+@@ -249,14 +273,29 @@ def observe(event):
+                             previous = {"id": key, "recent": []}
+                         if context_bound:
+                             previous["research_binding"] = binding
++                        if malformed:
++                            previous["malformed_events"] = previous.get("malformed_events", 0) + 1
++                            previous.setdefault("malformed_recent", [])
++                            previous["malformed_recent"] = (previous["malformed_recent"] + [receipt["ref"]])[-6:]
++                            tx.put("execution_progress", key, previous)
++                            return
++                        # Occurrence time comes from the event itself; collection time is ours.
++                        # They are kept apart so replay never reorders by the merge moment.
++                        occurred = progress_occurrence(event)
++                        previous["sequence"] = previous.get("sequence", 0) + 1
+                         previous["recent"] = (previous["recent"] + [receipt["ref"]])[-6:]
+                         previous["last_record"] = receipt["ref"]
+                         previous.update(agent=agent, context_ref=context_ref["ref"], at=utcnow(),
++                                        collected_at=utcnow(), occurred_at=occurred,
++                                        event_id=progress_event_id(event, receipt["ref"]),
++                                        generation=lease.get("generation") if lease else None,
++                                        attempt=lease.get("attempt") if lease else None,
+                                         last_event=event.get("method"), worktree=cwd)
+                         item = event.get("params", {}).get("item")
+-                        if item:
+-                            previous["last_completed"] = {"id": item["id"], "type": item["type"],
+-                                                          "status": item.get("status"), "evidence": receipt["ref"]}
++                        if isinstance(item, dict) and isinstance(item.get("id"), str):
++                            previous["last_completed"] = {"id": item["id"], "type": item.get("type"),
++                                                          "status": item.get("status"), "evidence": receipt["ref"],
++                                                          "sequence": previous["sequence"], "occurred_at": occurred}
+                         tx.put("execution_progress", key, previous)
+ 
+             started = time.monotonic()
+diff --git a/tests/test_execution_progress.py b/tests/test_execution_progress.py
+new file mode 100644
+index 0000000..0d12831
+--- /dev/null
++++ b/tests/test_execution_progress.py
+@@ -0,0 +1,126 @@
++"""FA-016: progress records bind generation, sequence, event identity and occurrence vs collection time."""
++import json
++import time
++
++import pytest
++from test_workflow import assignment
++
++from codex_harness.adapters.artifacts import FileArtifacts
++from codex_harness.adapters.executor import (
++    IMPLEMENTATION,
++    Executor,
++    progress_event_id,
++    progress_occurrence,
++)
++from codex_harness.adapters.git import GitWorkspace
++from codex_harness.adapters.project_skills import initialize
++from codex_harness.adapters.store import MemoryStore
++from codex_harness.application.service import Harness
++from codex_harness.bootstrap import organization
++from codex_harness.domain.model import ContractError
++
++
++@pytest.fixture
++def project(tmp_path):
++    root = tmp_path / 'project'
++    root.mkdir()
++    git = GitWorkspace(str(root), str(tmp_path / 'workspaces'))
++    git._git('init', '-q')
++    git._git('config', 'user.name', 'Fixture')
++    git._git('config', 'user.email', 'fixture@example.invalid')
++    initialize(root, 'stack: {language: python}')
++    git._git('add', '.')
++    git._git('commit', '-qm', 'project definition')
++    return root, git, FileArtifacts(str(tmp_path / 'artifacts'))
++
++
++def completed(item_id, at_ms=None, status='completed'):
++    params = {'item': {'id': item_id, 'type': 'commandExecution', 'status': status}}
++    if at_ms is not None:
++        params['completedAtMs'] = at_ms
++    return {'method': 'item/completed', 'params': params}
++
++
++def runtime_factory(events, prompts):
++    class Runtime:
++        def __init__(self, **kwargs):
++            pass
++
++        def __enter__(self):
++            return self
++
++        def __exit__(self, *args):
++            pass
++
++        def run(self, prompt, *args, **kwargs):
++            prompts.append(json.loads(prompt))
++            for event in events:
++                kwargs['on_event'](event)
++            return {'answer': {'summary': 'fixture', 'tests': []}, 'thread_id': 'fixture',
++                    'usage': {}, 'rotate': False, 'interrupted': False, 'events': []}
++    return Runtime
++
++
++def test_progress_records_generation_sequence_identity_and_two_clocks(project, monkeypatch):
++    root, git, artifacts = project
++    store = MemoryStore()
++    service = Harness(store, organization())
++    executor = Executor(service, git, artifacts)
++    workflow = executor.workflow
++    workflow.submit(assignment())
++    lease = workflow.claim('worker:implementation', 'owner')
++    events = [completed('exec-1', 1_788_751_585_964), {'method': 'thread/tokenUsage/updated',
++              'params': {'tokenUsage': {'last': {'totalTokens': 10}, 'modelContextWindow': 100}}},
++              'not-json shard', {'method': 'item/completed', 'params': 'garbage'},
++              completed('exec-2'), {'method': 'turn/started', 'params': {}}]
++    prompts = []
++    monkeypatch.setattr('codex_harness.adapters.executor.AppServer', runtime_factory(events, prompts))
++    executor._run('worker:implementation', lease['id'], 'Record progress', {}, str(root), IMPLEMENTATION, lease=lease)
++    with store.transaction() as tx:
++        progress = tx.get('execution_progress', lease['id'])
++    assert progress['generation'] == lease['generation'] == 1 and progress['attempt'] == lease['attempt'] == 1
++    assert progress['sequence'] == 3, 'two completions and one usage update; malformed and ignored events add none'
++    assert progress['malformed_events'] == 2 and len(progress['malformed_recent']) == 2
++    for ref in progress['malformed_recent']:
++        retained = artifacts.document(ref)
++        assert retained['malformed'] and retained['event'] in {"'not-json shard'", str({'method': 'item/completed', 'params': 'garbage'})}
++    assert progress['last_completed'] == {'id': 'exec-2', 'type': 'commandExecution', 'status': 'completed',
++                                          'evidence': progress['last_record'], 'sequence': 3, 'occurred_at': None}
++    assert progress['event_id'] == 'item/completed:exec-2:completed'
++    assert progress['occurred_at'] is None and progress['collected_at'] == progress['at']
++    first = artifacts.document(progress['recent'][0])
++    assert first['event']['params']['item']['id'] == 'exec-1'
++    assert progress_occurrence(first['event']) == '2026-09-07T03:26:25.964000+00:00'
++    assert progress_occurrence(completed('x')) is None and progress_occurrence({'emittedAtMs': -5}) is None
++    assert progress_event_id({'method': 'm', 'params': {}}, 'sha256:abc') == 'm:sha256:abc'
++
++
++def test_stale_generation_cannot_write_progress_and_replay_keeps_order(project, monkeypatch):
++    root, git, artifacts = project
++    store = MemoryStore()
++    service = Harness(store, organization())
++    executor = Executor(service, git, artifacts)
++    workflow = executor.workflow
++    workflow.submit(assignment())
++    stale = workflow.claim('worker:implementation', 'first-owner', lease_seconds=1)
++    time.sleep(1.2)
++    current = workflow.claim('worker:implementation', 'second-owner', lease_seconds=60)
++    assert current['generation'] == 2
++    prompts = []
++    monkeypatch.setattr('codex_harness.adapters.executor.AppServer',
++                        runtime_factory([completed('new-1', 1_788_751_585_000), completed('new-2', 1_788_751_584_000)], prompts))
++    executor._run('worker:implementation', current['id'], 'Current generation', {}, str(root), IMPLEMENTATION, lease=current)
++    with store.transaction() as tx:
++        before = tx.get('execution_progress', current['id'])
++    assert before['generation'] == 2 and before['sequence'] == 2
++    # Arrival order defines the sequence; new-2's earlier occurrence time is kept as data, never reordered.
++    assert before['last_completed']['id'] == 'new-2' and before['last_completed']['sequence'] == 2
++    assert before['occurred_at'] == '2026-09-07T03:26:24+00:00'
++    assert [artifacts.document(ref)['event']['params']['item']['id'] for ref in before['recent']] == ['new-1', 'new-2']
++    monkeypatch.setattr('codex_harness.adapters.executor.AppServer',
++                        runtime_factory([completed('old-1', 1_788_751_580_000)], prompts))
++    with pytest.raises(ContractError, match='Stale or expired'):
++        executor._run('worker:implementation', stale['id'], 'Stale generation', {}, str(root), IMPLEMENTATION, lease=stale)
++    with store.transaction() as tx:
++        after = tx.get('execution_progress', current['id'])
++    assert after == before, 'a stale generation never rewrites progress'

@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus-pr-review-47\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_sdd.py",
+    "tests/test_architecture.py"
+  ],
+  "head": "e102d462886a9809a49a4efb38378545411dd86a",
+  "exit_code": 0,
+  "seconds": 4.98787469999661,
+  "raw_sha256": "9c0c2c1b11c70f3b6aecacbbe2be8cd3eb1d2ee50e188da0a204e9a308d4ab4f",
+  "real_postgres": true
+}

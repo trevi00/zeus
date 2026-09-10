@@ -1,0 +1,202 @@
+﻿diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..af60bba 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -184,6 +184,6 @@ clock or claim trusted elapsed-time continuity across offline clock changes.
+ 
+ # SDD preparation contracts
+ 
+-- INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions.
++- INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
+ - INV-ORACLE-001: Imported observations and structural coverage cannot populate approved expected outcomes, certify real-device execution, authenticate human QA, or authorize a release. Gaps remain visible. Eight-stage reports are preparation only until actual providers are implemented.
+ - INV-SDD-002: SDD journals retain ordered, hash-linked events; duplicate imports/proposals are idempotent and transitions use compare-and-swap. Notifications are local records, not external messages. Model transfer candidates never change routing authority.
+diff --git a/docs/zeus/implementation/spec-replay-attribution-001/README.md b/docs/zeus/implementation/spec-replay-attribution-001/README.md
+new file mode 100644
+index 0000000..47f1c8a
+--- /dev/null
++++ b/docs/zeus/implementation/spec-replay-attribution-001/README.md
+@@ -0,0 +1,47 @@
++# 스펙 → 인수 초안: 문장 귀속·리터럴 임베딩·덮어쓰기 경계
++
++기존 FA-014 / GitHub [#15](https://github.com/trevi00/zeus/issues/15) / `ZEUS-f5a496e41ac2` 개정 1의 구현입니다.
++상류 usecase 템플릿과 lint는 한 줄 Given/When/Then을 허용하지만 testgen은 개행 구문을 요구했고, 생성된 pytest는
++`xfail(strict=False)`+`NotImplementedError` 골격이라 행동 oracle이 없었으며, AC 귀속·120자 절단·문자열 escaping·재생성
++덮어쓰기 경계가 있었습니다([판정 소비·SDD 생성 공동 검토](../../../full-analysis/harness-gate-consumer-joint/resolution.md)
++"스펙→테스트" 행, [engine-extractors review](../../../full-analysis/harness-engine-extractors/review.md)). 루트 검토는 부분적
++사람 인수가 이슈 개수로 전부 통과가 되면 안 된다는 점을 덧붙였습니다. 교차검토 합의는 "공통 구조화 시나리오, 안정
++ID/원본 revision, 사람 oracle, 실환경 실행 receipt를 분리·연결"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## Zeus 상태와 변경
++
++Zeus SDD는 이미 구조화 스펙(Given/When/Then은 문장 리스트, 안정 ID, 은퇴 ID 보존, 스펙 해시 결속)과 명시 selector·
++oracle 바인딩이 있을 때만 Appium 초안을 생성하며, 초안은 `.py.review`로만 쓰고 골격/xfail을 만들지 않습니다. 남아 있던
++틈은 **귀속**이었습니다: 생성된 단언은 어느 시나리오의 몇 번째 oracle, 어느 요구사항을 검사하는지 실행 시점에 알 수
++없었고, 스펙 텍스트의 임베딩과 절단 여부는 테스트로 고정돼 있지 않았습니다.
++
++- `adapters/sdd.replay_source`: 모듈 상수 `SPEC_HASH`, `ORACLES = {scenario_id: {requirement_ids, oracles}}`를
++  생성하고, 모든 `assert_*` 바인딩을 `with self.subTest(scenario=…, oracle=i, requirement_ids=[…], expected=…)`로
++  감쌉니다. 실패는 unittest가 시나리오·oracle 인덱스·요구사항 ID로 보고합니다. 액션(tap/input)은 귀속을 갖지 않습니다.
++  스펙 텍스트는 전부 `repr()` 리터럴로만 들어가며 절단하지 않습니다.
++- `docs/contracts.md`: `INV-SDD-001`에 GWT 리스트 규칙·초안 귀속·리터럴·무골격·덮어쓰기 금지 문장 추가.
++
++## 재현과 검증
++
++- `tests/test_sdd.py::test_replay_attributes_every_assertion_to_its_oracle_and_requirements_at_runtime`: 삼중 따옴표·
++  역슬래시·개행·탭·따옴표가 섞인 oracle 텍스트와 값, 404자 문장으로 초안을 생성해 `ast.parse`한 뒤 `SPEC_HASH`/`ORACLES`
++  상수와 각 `subTest` 인자·`exact_text` 기대값을 `ast.literal_eval`로 복원해 원문과 동일함을 확인. `xfail`/`skip(`/
++  `NotImplementedError` 없음, 긴 문장 무절단, 액션 줄은 귀속 블록 밖.
++- `::test_gwt_must_be_lists_never_one_line_strings`: 한 줄 문자열 `then`과 빈 문장은 스펙 검증에서 거부.
++- `::test_replay_export_is_idempotent_and_never_overwrites_a_different_draft`: 같은 내용 재출력은 동일 결과, 다른 내용은
++  거부하고 원본 유지, `.py.review` 확장자 강제.
++- 기존 `test_sdd.py` 통과(PG 검사 제외). 음성 대조: `adapters/sdd.py`를 수정 전으로 되돌리면 귀속 검사가 실패합니다.
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_sdd.py` + `test_architecture.py` | 15 passed, 6 skipped(PG) |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 920 passed, 305 skipped (192s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 초안은 여전히 **미실행 코드**이며 실기기 실행 receipt·사람 인수와 연결되지 않습니다. 실행 결과를 FA-013의 게이트 판정
++  (`runner_receipt`, 문장 귀속)으로 기록하는 경로는 후속입니다.
++- 다중 시나리오 replay(시나리오별 초기화 통합), web/WebView 컨텍스트, 금융 흐름은 기존대로 생성 차단입니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/adapters/sdd.py b/src/codex_harness/adapters/sdd.py
+index 9adb3fd..ecb8ffe 100644
+--- a/src/codex_harness/adapters/sdd.py
++++ b/src/codex_harness/adapters/sdd.py
+@@ -158,21 +158,35 @@ def replay_source(spec):
+         "        self.driver = webdriver.Remote(os.environ['ZEUS_APPIUM_URL'], options=options)",
+         "        self.addCleanup(self.driver.quit)", "",
+     ]
++    # FA-014: every generated check is attributed at runtime to its scenario, oracle index and
++    # requirement IDs (subTest), so a failure maps back to the acceptance criterion it exercised.
++    # All spec text enters the source as Python literals (repr), never as raw code or comments.
++    oracles = {scenario["id"]: {"requirement_ids": list(scenario["requirement_ids"]),
++                                "oracles": list(scenario["then"])} for scenario in active}
++    position = lines.index("class SpecReplay(unittest.TestCase):")
++    lines[position:position] = ["SPEC_HASH = " + repr(digest(spec)), "ORACLES = " + repr(oracles), ""]
+     for index, scenario in enumerate(active, 1):
+         lines += ["    def test_" + str(index).zfill(4) + "_" + digest(scenario["id"])[:16] + "(self):",
+                   "        " + repr("Scenario " + scenario["id"] + ": " + scenario["title"])]
+         for binding in scenario["bindings"]:
+             locator = (binding["selector"]["strategy"], binding["selector"]["value"])
+-            lines.append("        element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(" + repr(locator) + "))")
+             operation = binding["operation"]
++            indent = "        "
++            if operation.startswith("assert_"):
++                attribution = {"scenario": scenario["id"], "oracle": binding["oracle_index"],
++                               "requirement_ids": list(scenario["requirement_ids"]),
++                               "expected": scenario["then"][binding["oracle_index"]]}
++                lines.append(indent + "with self.subTest(**" + repr(attribution) + "):")
++                indent += "    "
++            lines.append(indent + "element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(" + repr(locator) + "))")
+             if operation == "tap":
+-                lines.append("        element.click()")
++                lines.append(indent + "element.click()")
+             elif operation == "input":
+-                lines += ["        element.clear()", "        element.send_keys(os.environ[" + repr(binding["value"]) + "])"]
++                lines += [indent + "element.clear()", indent + "element.send_keys(os.environ[" + repr(binding["value"]) + "])"]
+             elif operation == "assert_visible":
+-                lines.append("        self.assertTrue(element.is_displayed())")
++                lines.append(indent + "self.assertTrue(element.is_displayed())")
+             else:
+-                lines.append("        WebDriverWait(self.driver, 20).until(exact_text(" + repr(locator) + ", " + repr(binding["value"]) + "))")
++                lines.append(indent + "WebDriverWait(self.driver, 20).until(exact_text(" + repr(locator) + ", " + repr(binding["value"]) + "))")
+         lines.append("")
+     lines += ["if __name__ == '__main__':", "    unittest.main()", ""]
+     return "\n".join(lines)
+diff --git a/tests/test_sdd.py b/tests/test_sdd.py
+index ffab004..acad544 100644
+--- a/tests/test_sdd.py
++++ b/tests/test_sdd.py
+@@ -20,7 +20,7 @@
+ from codex_harness.application.sdd import SDD
+ from codex_harness.application.tickets import Tickets
+ from codex_harness.bootstrap import organization
+-from codex_harness.domain.model import ContractError
++from codex_harness.domain.model import ContractError, digest
+ from codex_harness.domain.model_routing import select_model
+ from codex_harness.domain.sdd import (
+     ENVIRONMENT_FIELDS,
+@@ -183,6 +183,78 @@ def test_replay_export_refuses_unknown_target_financial_flows_and_missing_bindin
+         replay_source(spec)
+ 
+ 
++def replay_ready_spec(then_texts=None, value_texts=None):
++    spec = spec_data()
++    spec["target"].update(kind="android", app_id="contract.test", build_hash="a" * 64)
++    for req in spec["requirements"]:
++        req["risk"] = "normal"
++    spec["scenarios"] = spec["scenarios"][:1]
++    spec["requirements"] = spec["requirements"][:1]
++    scenario = spec["scenarios"][0]
++    scenario["requirement_ids"] = [spec["requirements"][0]["id"]]
++    if then_texts is not None:
++        scenario["then"] = then_texts
++    values = value_texts or scenario["then"]
++    scenario["bindings"] = [{"operation": "assert_text", "selector": {"strategy": "id", "value": "contract:id/label"},
++                             "value": values[i], "oracle_index": i, "source_ref": "unverified-contract-input"}
++                            for i in range(len(scenario["then"]))]
++    scenario["bindings"].insert(0, {"operation": "tap", "selector": {"strategy": "accessibility id", "value": "go"},
++                                    "value": None, "oracle_index": None, "source_ref": "unverified-contract-input"})
++    return spec
++
++
++def test_replay_attributes_every_assertion_to_its_oracle_and_requirements_at_runtime():
++    # FA-014: no xfail/skeleton, no truncation, and hostile text survives as Python literals.
++    hostile = ['첫 번째 기대 """docstring""" \\ backslash', "second 'quote' \"double\" line\nbreak\ttab",
++               "x" * 400 + " end"]
++    spec = replay_ready_spec(then_texts=hostile, value_texts=["a\"b", "c'd\n", "e\\f"])
++    source = replay_source(spec)
++    tree = ast.parse(source)
++    assert not any(token in source for token in ("xfail", "skip(", "NotImplementedError", "pass  #"))
++    constants = {node.targets[0].id: ast.literal_eval(node.value) for node in tree.body
++                 if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)}
++    scenario = spec["scenarios"][0]
++    assert constants["SPEC_HASH"] == digest(validate_spec(spec))
++    assert constants["ORACLES"] == {scenario["id"]: {"requirement_ids": scenario["requirement_ids"], "oracles": hostile}}
++    attributions, expected_values = [], []
++    for node in ast.walk(tree):
++        if isinstance(node, ast.With):
++            call = node.items[0].context_expr
++            assert isinstance(call, ast.Call) and call.func.attr == "subTest"
++            attributions.append(ast.literal_eval(call.keywords[0].value))
++        if isinstance(node, ast.Call) and getattr(node.func, "id", None) == "exact_text":
++            expected_values.append(ast.literal_eval(node.args[1]))
++    assert attributions == [{"scenario": scenario["id"], "oracle": i, "requirement_ids": scenario["requirement_ids"],
++                             "expected": text} for i, text in enumerate(hostile)]
++    assert expected_values == ["a\"b", "c'd\n", "e\\f"]
++    assert len(attributions[2]["expected"]) == 404, "acceptance text is never truncated"
++    tap_line = next(line for line in source.splitlines() if "element.click()" in line)
++    assert not tap_line.startswith("            "), "actions carry no oracle attribution"
++
++
++def test_gwt_must_be_lists_never_one_line_strings():
++    spec = spec_data()
++    spec["scenarios"][0]["then"] = "Given x When y Then z"
++    with pytest.raises(ContractError, match="Missing or excessive then"):
++        validate_spec(spec)
++    spec = spec_data()
++    spec["scenarios"][0]["given"] = ["", "ok"]
++    with pytest.raises(ContractError, match="Invalid given"):
++        validate_spec(spec)
++
++
++def test_replay_export_is_idempotent_and_never_overwrites_a_different_draft(tmp_path):
++    source = replay_source(replay_ready_spec())
++    target = tmp_path / "draft.py.review"
++    first = write_export(target, source, kind="replay")
++    assert write_export(target, source, kind="replay") == first
++    with pytest.raises(ContractError, match="different content"):
++        write_export(target, source + "\n# edited", kind="replay")
++    assert target.read_text("utf-8") == source
++    with pytest.raises(ContractError, match="py.review"):
++        write_export(tmp_path / "test_draft.py", source, kind="replay")
++
++
+ def test_offline_cli_review_runs_without_database_access(tmp_path):
+     result = subprocess.run([sys.executable, "-m", "zeus", "sdd", "view", str(SPEC),
+                              "--output", str(tmp_path / "review.html")], cwd=ROOT,

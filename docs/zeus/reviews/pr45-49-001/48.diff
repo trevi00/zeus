@@ -1,0 +1,268 @@
+﻿diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..bd22ab0 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -6,7 +6,7 @@
+ | INV-RECURRENCE-001 | Two independent occurrences with the same confirmed cause/scope require a hook. Redelivery is not recurrence. Active-hook recurrence requires a version update while preserving the previous verified version. |
+ | INV-CONTEXT-001 | Required role, goal, acceptance, policy and provenance are never silently truncated. UTF-8 bytes are a conservative composition budget, distinct from measured tokens. External evidence is bounded data. |
+ | INV-ARTIFACT-001 | Artifact queries address one exact SHA-256 reference under one explicit store root, validate the retained bytes, and emit a deterministic JSON projection whose complete successful stdout is within the requested character limit. JSON pointers follow RFC 6901; paging and search expose explicit continuation cursors. The limit bounds reader output, not arbitrary tool or provider usage. |
+-| INV-RELEASE-001 | Exact commit/tree and incumbent policy bind lead review, conductor review, incumbent tests and actual CLI canaries. Failed checks cannot promote. Changed commits require new approvals. |
++| INV-RELEASE-001 | Exact commit/tree and incumbent policy bind lead review, conductor review, incumbent tests and actual CLI canaries. Failed checks cannot promote. Changed commits require new approvals. A captured candidate also names its canonical target repository and the hash of the exact base→revision patch beside the preimage base and postimage tree; the runner re-derives the patch and the merge/publish path re-checks the target, so a drifted patch or a reconfigured repository can never consume a review granted for another. |
+ | INV-MODEL-001 | Unqualified tasks run on Astra. Difficulty, model answers and narrow transfer pilots cannot authorize Sol/Terra production routing; versioned task qualification and enforced transfer gates are required. |
+ | INV-SESSION-001 | Current context at 70% requests safe-point handoff. Checkpoint generation and execution lease fence stale writers. Busy agents do not hibernate; identity survives replacement. |
+ | INV-GRAPH-001 | Git owns definitions; PostgreSQL owns runtime facts. Graph/vectors are versioned derived views. Unchanged symbols retain IDs; stale evidence cannot enter commit-bound review. |
+diff --git a/docs/zeus/implementation/candidate-target-binding-001/README.md b/docs/zeus/implementation/candidate-target-binding-001/README.md
+new file mode 100644
+index 0000000..060bc48
+--- /dev/null
++++ b/docs/zeus/implementation/candidate-target-binding-001/README.md
+@@ -0,0 +1,52 @@
++# 후보 적용 계약: 대상 저장소·패치 해시·preimage/postimage 결속
++
++기존 FA-015 / GitHub [#16](https://github.com/trevi00/zeus/issues/16) / `ZEUS-39d3d0633060` 개정 1의 구현입니다.
++Baldrix CLI005 공동 검토에서 writeback token은 proposal ID와 preimage 해시만 묶고 검토한 patch hash·정규 target
++identity를 묶지 않았고, consume은 read/check/unlink를 직렬화하지 않은 채 unlink 오류를 삼켰으며, rollback은 감사된
++대상 집합과 sidecar 선언·preimage 일치를 요구하지 않았습니다([CLI-005 공동 검토](../../../full-analysis/baldrix-cli-005/resolution.md)).
++교차검토 합의는 "개선 제안 적용 계약에 immutable proposal/patch/revision/환경/정규 대상 ID와 preimage/postimage 해시를
++결속"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## Zeus 상태와 변경
++
++Zeus의 적용 단위는 파일 writeback이 아니라 Git 후보(`revision`·`base`·`tree`)의 검토·검증·병합·승격입니다. 이미 리뷰는
++revision에, 검증은 revision+policy hash에, 승격 intent는 candidate 해시·이미지·remote에, 배포 포인터는 CAS에 결속되고
++병합 전후 tree를 확인합니다. 남아 있던 틈 둘:
++
++1. 후보 자체가 **대상 저장소**를 갖지 않아, 리뷰와 승격 사이에 `HARNESS_GITHUB_REPO`가 바뀌면 같은 revision의 리뷰가 다른
++   저장소로 소비될 수 있었습니다(승격 intent는 그 시점의 remote만 기록).
++2. **패치 내용**은 commit 해시에 암묵적으로만 묶여 있었고, 런너의 `inspect`가 다시 계산한 diff는 tree 비교에만 쓰였습니다.
++
++- `adapters/git.capture()`: 후보에 `repository`(설정된 GitHub slug, 없으면 `local`)와 `diff_hash`(base→revision diff의
++  SHA-256)를 넣습니다. 이 값은 후보 identity(`digest(candidate)`)에 포함되어 리뷰·검증·승격 intent가 함께 결속됩니다.
++- `git.merge()`/`git.publish()`: `require_target` — 다른 저장소용 후보는 거부. `merge`는 diff 해시도 재계산해 비교.
++- `deployment.ReleaseRunner._run`: `inspect`의 diff 해시가 후보의 `diff_hash`와 다르면 `Candidate patch mismatch`;
++  후보 저장소가 현재 remote와 다르면 검사·카나리아 전에 거부. `_promote`도 같은 검사를 수행합니다.
++- 필드가 없는 기존 후보(FA-015 이전 캡처)는 그대로 처리됩니다(호환).
++- `docs/contracts.md`: `INV-RELEASE-001`에 문장 추가.
++
++## 재현과 검증
++
++- `tests/test_git_workspace.py::test_capture_binds_target_repository_and_patch_hash_and_merge_rechecks_them`: 실제 Git
++  저장소에서 캡처한 후보가 `repository=local`·`diff_hash=digest(inspect.diff)`를 갖고, remote가 설정된 어댑터의 merge/publish는
++  거부, 변조된 diff_hash는 `Candidate patch changed`, 거부 경로는 main을 건드리지 않음, 레거시 후보는 병합 가능.
++- `tests/test_release_runner.py::test_runner_refuses_reviewed_candidate_whose_patch_or_target_drifted[patch|repository]`:
++  두 리뷰가 승인된 release라도 diff 해시 불일치 / 저장소 불일치면 검사 실행 전에 거부하고 release는 `reviewed`로, intent·
++  배포 포인터는 생성되지 않음.
++- 기존 `test_release_recovery`의 원격 시나리오 두 건은 remote를 캡처 **전**에 설정하도록 fixture를 고쳤습니다(캡처 후 remote
++  변경은 이제 정확히 거부되는 drift입니다).
++- 음성 대조: `git.py`·`deployment.py`를 수정 전으로 되돌리면 신규 검사가 실패합니다.
++
++| 항목 | 결과 |
++|---|---|
++| git workspace + release 5개 모듈 + ticket execution | 47 passed, 31 skipped(PG/integration) |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 920 passed, 305 skipped (169s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 상류의 단일 소비 토큰(consume의 read/check/unlink 직렬화)은 Zeus에 대응물이 없습니다 — 승격 intent는 PG 트랜잭션 안의
++  CAS로 한 번만 만들어집니다(FA-004 계약). 다중 파일 부분 변경은 Git commit 단위라 발생하지 않습니다.
++- rollback은 `INV-RECOVERY-001`의 외부 컨트롤러·known-good 이미지 경로이며 이번 변경 밖입니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/adapters/deployment.py b/src/codex_harness/adapters/deployment.py
+index b4c7ff1..284092c 100644
+--- a/src/codex_harness/adapters/deployment.py
++++ b/src/codex_harness/adapters/deployment.py
+@@ -100,6 +100,12 @@ def _run(self, release_id: str) -> dict:
+             return {"status": "rebasing", "task_id": request["message_id"]}
+         inspected = self.git.inspect(candidate["revision"], candidate["base"])
+         require(inspected["tree"] == candidate["tree"], "Candidate tree mismatch")
++        # FA-015: the reviewed patch and target repository are re-derived, never trusted from the record.
++        if candidate.get("diff_hash"):
++            require(digest(inspected["diff"]) == candidate["diff_hash"], "Candidate patch mismatch")
++        if candidate.get("repository") is not None:
++            require(candidate["repository"] == (getattr(self.git, "remote", None) or "local"),
++                    "Candidate target repository changed since review")
+         incumbent = self.git.review_workspace(candidate["base"], "evaluator-" + release_id[:16])
+         path = self.git.review_workspace(candidate["revision"], "canary-" + release_id[:16])
+         # Fresh candidate venv; test definitions are taken from the incumbent commit.
+@@ -152,6 +158,9 @@ def _run(self, release_id: str) -> dict:
+     def _promote(self, release, active, image):
+         release_id, candidate, checks = release["id"], release["candidate"], release["checks"]
+         self.fence()
++        if candidate.get("repository") is not None:
++            require(candidate["repository"] == (getattr(self.git, "remote", None) or "local"),
++                    "Candidate target repository changed since review")
+         with self.service.store.transaction() as tx:
+             ticket_binding(tx, candidate)
+             intent = tx.get("promotion_intents", release_id)
+diff --git a/src/codex_harness/adapters/git.py b/src/codex_harness/adapters/git.py
+index 501f9eb..8aeec95 100644
+--- a/src/codex_harness/adapters/git.py
++++ b/src/codex_harness/adapters/git.py
+@@ -6,7 +6,7 @@
+ from pathlib import Path
+ 
+ from codex_harness.adapters.commands import run_process
+-from codex_harness.domain.model import require
++from codex_harness.domain.model import digest, require
+ 
+ 
+ class GitCommandError(RuntimeError):
+@@ -27,6 +27,15 @@ def _git(self, *args: str, cwd: str | None = None, strip: bool = True) -> str:
+                 + ", cwd=" + str(cwd or self.repository) + "): " + result.stderr[-2000:])
+         return result.stdout.strip() if strip else result.stdout
+ 
++    def target_identity(self) -> str:
++        return self.remote or "local"
++
++    def require_target(self, candidate: dict) -> None:
++        """A candidate captured for one repository never merges or publishes into another."""
++        recorded = candidate.get("repository")
++        require(recorded is None or recorded == self.target_identity(),
++                "Candidate target repository changed since review")
++
+     def prepare(self, task_id: str, base: str = "HEAD") -> dict:
+         require(bool(re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", task_id)), "Invalid workspace ID")
+         path = self.workspaces / task_id
+@@ -61,8 +70,13 @@ def capture(self, workspace: dict) -> dict:
+         require(revision != workspace["base"], "Task produced no code change")
+         require(not self._git("status", "--porcelain", cwd=path), "Candidate workspace is dirty")
+         self._git("fetch", path, "HEAD:refs/heads/" + workspace["branch"])
++        # INV-RELEASE-001 (FA-015): the reviewed identity names its canonical target repository and
++        # the exact patch (base -> revision) next to the preimage base and postimage tree.
+         candidate = {**workspace, "revision": revision,
+-                     "tree": self._git("rev-parse", "HEAD^{tree}", cwd=path), "author": "worker:implementation"}
++                     "tree": self._git("rev-parse", "HEAD^{tree}", cwd=path), "author": "worker:implementation",
++                     "repository": self.target_identity(),
++                     "diff_hash": digest(self._git("diff", "--no-ext-diff", workspace["base"], revision, "--",
++                                                   cwd=path))}
+         manifests = [name for name in self._git("diff", "--name-only", workspace["base"], revision, cwd=path).splitlines()
+                      if name.startswith("harness_hooks/") and name.endswith(".json")]
+         require(len(manifests) <= 1, "Split independent hook updates into separate candidates")
+@@ -107,6 +121,7 @@ def review_workspace(self, revision: str, review_id: str) -> str:
+ 
+     def publish(self, candidate: dict, title: str, body: str) -> dict:
+         require(bool(self.remote), "GitHub repository must be configured")
++        self.require_target(candidate)
+         require(bool(re.fullmatch(r"[\w.-]+/[\w.-]+", self.remote)), "Invalid GitHub repository")
+         branch = candidate["branch"]
+         self._git("push", "https://github.com/" + self.remote + ".git",
+@@ -140,8 +155,12 @@ def is_ancestor(self, revision: str, descendant: str) -> bool:
+         return result.returncode == 0
+ 
+     def merge(self, candidate: dict) -> dict:
++        self.require_target(candidate)
+         require(self._git("rev-parse", candidate["revision"] + "^{tree}") == candidate["tree"],
+                 "Candidate tree changed")
++        if candidate.get("diff_hash"):
++            require(digest(self._git("diff", "--no-ext-diff", candidate["base"], candidate["revision"], "--"))
++                    == candidate["diff_hash"], "Candidate patch changed")
+         if self.remote:
+             result = run_process(["gh", "pr", "merge", candidate["branch"], "--repo", self.remote,
+                                   "--merge", "--match-head-commit", candidate["revision"]], timeout=120)
+diff --git a/tests/test_git_workspace.py b/tests/test_git_workspace.py
+index 82db8a8..ef40f06 100644
+--- a/tests/test_git_workspace.py
++++ b/tests/test_git_workspace.py
+@@ -39,6 +39,28 @@ def test_candidate_isolation_commit_capture_and_exact_merge(tmp_path):
+     assert (root / "change.txt").read_text() == "review me"
+ 
+ 
++def test_capture_binds_target_repository_and_patch_hash_and_merge_rechecks_them(tmp_path):
++    # FA-015: the reviewed identity carries base (preimage), tree (postimage), patch and target.
++    from codex_harness.domain.model import digest
++    root = repository(tmp_path)
++    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"))
++    workspace = adapter.prepare("task-one", "HEAD")
++    (Path(workspace["path"]) / "change.txt").write_text("review me", encoding="utf-8")
++    candidate = adapter.capture(workspace)
++    assert candidate["repository"] == "local"
++    assert candidate["diff_hash"] == digest(adapter.inspect(candidate["revision"], candidate["base"])["diff"])
++    remote_adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"), remote="owner/repo")
++    with pytest.raises(ContractError, match="target repository changed"):
++        remote_adapter.merge(candidate)
++    with pytest.raises(ContractError, match="target repository changed"):
++        remote_adapter.publish({**candidate, "branch": "harness/task-one"}, "t", "b")
++    with pytest.raises(ContractError, match="Candidate patch changed"):
++        adapter.merge({**candidate, "diff_hash": "0" * 64})
++    assert not (root / "change.txt").exists(), "no rejected path touched main"
++    legacy = {k: v for k, v in candidate.items() if k not in {"repository", "diff_hash"}}
++    assert adapter.merge(legacy)["merged"], "pre-FA-015 candidates stay mergeable"
++
++
+ def test_main_advance_invalidates_previous_merge_approval(tmp_path):
+     root = repository(tmp_path)
+     adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"))
+diff --git a/tests/test_release_recovery.py b/tests/test_release_recovery.py
+index edf292c..d7808d0 100644
+--- a/tests/test_release_recovery.py
++++ b/tests/test_release_recovery.py
+@@ -14,9 +14,10 @@
+ from codex_harness.domain.policy import POLICY
+ 
+ 
+-def candidate_runner(tmp_path, store=None):
++def candidate_runner(tmp_path, store=None, remote=None):
+     root = repository(tmp_path)
+-    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"))
++    # The target repository is part of the captured identity (FA-015), so it is fixed before capture.
++    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"), remote=remote)
+     workspace = adapter.prepare("candidate-task")
+     from pathlib import Path
+     (Path(workspace["path"]) / "change.txt").write_text("candidate", encoding="utf-8")
+@@ -116,8 +117,7 @@ def test_recovery_blocks_unrelated_head_and_unproven_remote_effect(tmp_path, mon
+ 
+ 
+ def test_remote_publication_interruption_is_explicitly_blocked(tmp_path, monkeypatch):
+-    runner, release, _ = candidate_runner(tmp_path)
+-    runner.git.remote = "fixture/repository"
++    runner, release, _ = candidate_runner(tmp_path, remote="fixture/repository")
+     calls = []
+ 
+     def interrupted(*args):
+@@ -132,8 +132,7 @@ def interrupted(*args):
+ 
+ 
+ def test_remote_merge_before_receipt_remains_explicitly_blocked(tmp_path, monkeypatch):
+-    runner, release, root = candidate_runner(tmp_path)
+-    runner.git.remote = "fixture/repository"
++    runner, release, root = candidate_runner(tmp_path, remote="fixture/repository")
+     monkeypatch.setattr(runner.git, "publish", lambda *a: None)
+     calls = []
+     def merge(candidate):
+diff --git a/tests/test_release_runner.py b/tests/test_release_runner.py
+index a185e09..2f94230 100644
+--- a/tests/test_release_runner.py
++++ b/tests/test_release_runner.py
+@@ -51,6 +51,30 @@ def check(argv, *args, **kwargs):
+         assert not tx.scan("deployment")
+ 
+ 
++@pytest.mark.parametrize("drift", ["patch", "repository"])
++def test_runner_refuses_reviewed_candidate_whose_patch_or_target_drifted(tmp_path, monkeypatch, drift,
++                                                                          fake_verification_services):
++    from codex_harness.domain.model import ContractError, digest
++    service = Harness(MemoryStore(), organization())
++    git = SimpleNamespace(repository=tmp_path, remote="fixture/repo", _git=lambda *args: "base",
++                          inspect=lambda *args: {"tree": "tree", "diff": "reviewed diff"},
++                          review_workspace=lambda *args: str(tmp_path))
++    artifacts = FileArtifacts(tmp_path / "artifacts")
++    runner = ReleaseRunner(service, git, artifacts, str(tmp_path / "unused-auth"))
++    candidate = {"revision": "candidate", "base": "base", "tree": "tree", "author": "worker:implementation",
++                 "repository": "fixture/repo" if drift == "patch" else "other/repo",
++                 "diff_hash": digest("tampered diff" if drift == "patch" else "reviewed diff")}
++    release = runner.releases.propose(candidate, {"checks": ["tests", "cli_start", "cli_file_task"]})
++    for actor in ("lead:improvement", "conductor"):
++        runner.releases.review(release["id"], actor, "candidate", True, "fixture:review")
++    monkeypatch.setattr(runner, "_check", lambda *a, **k: pytest.fail("checks ran for a drifted candidate"))
++    with pytest.raises(ContractError, match="patch mismatch" if drift == "patch" else "target repository changed"):
++        runner.run(release["id"])
++    with service.store.transaction() as tx:
++        assert tx.get("releases", release["id"])["status"] == "reviewed"
++        assert not tx.scan("promotion_intents") and not tx.scan("deployment")
++
++
+ def test_verified_retry_rebases_before_remote_side_effects(tmp_path, monkeypatch):
+     service = Harness(MemoryStore(), organization())
+ 

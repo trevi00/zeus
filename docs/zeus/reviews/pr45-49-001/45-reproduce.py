@@ -1,0 +1,24 @@
+import json, sys, tempfile
+from pathlib import Path
+sys.path[:0] = ['C:/Users/rudtn/zeus-pr-review-45/src', 'C:/Users/rudtn/zeus-pr-review-45/tests']
+from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.store import MemoryStore
+from codex_harness.adapters.skill_history import prepare_history, record_history
+from codex_harness.domain.model import ContextItem, compile_context
+from codex_harness.domain.model import canonical
+from codex_harness.application.skill_history import SkillHistory
+with tempfile.TemporaryDirectory() as d:
+    store, artifacts = MemoryStore(), FileArtifacts(Path(d))
+    body = 'BODY ' * 10000
+    ref = artifacts.put(body, 'fixture')['ref']
+    manifest = artifacts.put(canonical({'skills':[{'path':'python/a.md','content_ref':ref,'score':10,'base_score':10,'tier':'full','rendered_hash':'a'*64,'body_chars':len(body)}]}), 'fixture')['ref']
+    selection = {'manifest_ref':manifest}
+    items, obs = prepare_history(store, artifacts, 'fixture-project', 'worker:implementation', 'task', 'objective', selection,
+        [ContextItem('project-skill:python/a.md', body, ref, 'a'*64, 1)])
+    packet = compile_context('worker:implementation', 'task', 'fixture-snapshot',
+        dict(role='implementation',objective='test',acceptance_criteria=['explicit omission'],policy='fixture'), items, 28000, 6000)
+    record_history(obs, artifacts.put(packet.render(),'fixture-context')['ref'])
+    with store.transaction() as tx:
+        events = tx.scan('skill_history')[0]['events']
+    from codex_harness.domain.skill_audit import audit_history
+    print(json.dumps({'scope':'controlled real compiler and ledger, no model execution','included_ids':[i['id'] for i in packet.evidence], 'reported_delivery':audit_history(events)['skills'][0]['delivery']}))
