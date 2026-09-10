@@ -298,6 +298,26 @@ only when it reads back equal. Missing, corrupt and unreadable state are distinc
 breaker and none of them is quietly closed; corruption records a notice and requires repair. A
 closed breaker admits calls and authorizes nothing else: not acceptance, graduation or deployment.
 
+## INV-SEAM-001
+
+A seam contract observation is typed: a qualified identity (stack, package, name — the same
+short name in another package is another contract, never dropped), a kind, members with name,
+type, tag and byte span into the exact blob, a fidelity claim, a denominator (symbols found,
+unresolved) and a source identity (path, blob hash, revision, parser). HIGH fidelity cannot
+coexist with unresolved members; an extractor that could not read, decode, parse, or does not
+support a stack returns an UNKNOWN observation with a named state, never a regex HIGH. Spans
+are computed on the original bytes with no comment stripping or renumbering. Discovery sorts
+before it caps and counts what it omitted; discovery and parse denominators are separate. A
+transform is a closed schema (unknown options are refused, never ignored) whose effective
+mapping is computed over the whole input set including passthrough values; any collision or
+empty target is NEEDS_TRANSFORM, and a declared non-identity that changes nothing is reported
+as effectively identity rather than trusted as a mapping. Comparison is directional under a
+versioned policy that names the compared keys; fidelity below HIGH is BLOCKED; agreement on
+names, types and tags is textual and is not compiler, serialization or product compatibility.
+A comparison is advisory; only a reviewer, under a Git policy revision and with a reason, makes
+a DRIFT blocking-eligible. An imported ledger keeps every prior valid record, reports each
+corrupt line, and a partial audit never presents itself as complete or current.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
