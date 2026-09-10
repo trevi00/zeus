@@ -40,7 +40,7 @@ uv run python -m codex_harness.adapters.observed_assets AUDIT_ID manifest.json [
   처분 후 완료 True와 제안 통과; 후퇴 거부와 history 보존; 추적 경로 등록 거부; basis/state/경로/해시 불량 거부;
   승인 뒤 새 관측 자산 등록 시 `adoption_eligible` False.
 - `tests/test_observed_assets_cli.py`: 매니페스트 dry-run 무쓰기, 실제 등록, 잘못된 매니페스트 종료 코드.
-- 기존 `test_research_audits`·`test_output_schema`(스키마 kind 추가)·`test_architecture` 통과.
+- 기존 `test_research_audits`·`test_output_schema`(동결 스키마 불변 확인)·`test_architecture` 통과.
 - 음성 대조: `application/research.py`·`audit_gate.py`를 수정 전으로 되돌리면 신규 검사가 실패합니다.
 
 | 항목 | 결과 |
