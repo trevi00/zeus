@@ -1,0 +1,32 @@
+{
+  "scope": "FA-024 target tests: real Python ast extraction on real files, typed transforms/comparison, ledger on MemoryStore + isolated PostgreSQL (HARNESS_INTEGRATION=1)",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_seam_contracts.py tests/test_architecture.py",
+  "started_at": "2026-09-10T06:59:50.752342+00:00",
+  "finished_at": "2026-09-10T06:59:51.847927+00:00",
+  "exit_code": 0,
+  "summary": [
+    "11 passed in 0.65s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "collisions counted only among mapped keys (passthrough ignored)",
+      "result": "transform and comparison tests fail"
+    },
+    {
+      "control": "unknown transform options ignored",
+      "result": "transform test fails"
+    },
+    {
+      "control": "LOW fidelity compared as if HIGH",
+      "result": "comparison test fails"
+    },
+    {
+      "control": "corrupt ledger lines skipped",
+      "result": "import test fails"
+    }
+  ],
+  "not_claimed": "Only Python top-level enums with literal values are extracted; Java/Dart/Proto and message kinds are unsupported (UNKNOWN). Textual agreement is not compiler, serialization or product compatibility; no human scenario acceptance, no Linux/WSL run."
+}
