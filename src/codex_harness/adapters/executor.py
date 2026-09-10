@@ -11,7 +11,7 @@ from uuid import uuid4
 from codex_harness.adapters.app_server import AppServer
 from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector
-from codex_harness.adapters.execution_output import evidence_json, persist_result
+from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.skill_history import (
@@ -396,6 +396,7 @@ class Executor:
                 result['breaker'] = {**self.breaker.report(admission, verdict), 'verdict': verdict,
                                      'key': admission['key'], 'admitted_generation': admission['generation'],
                                      'probe': admission['probe'], 'policy_revision': admission['policy_revision']}
+            result['tool_usage'] = tool_usage(result)  # INV-OUTPUT-001: observed, beside any self-report
             if history_recording:
                 result['skill_history_recording'] = history_recording
             evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,

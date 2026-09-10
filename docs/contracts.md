@@ -511,6 +511,23 @@ and reason; an empty scenario denominator is incomplete. Missing ledger, corrupt
 corrupt rows, an unreadable store, rejection-only and not-evaluated are distinct states and
 none of them grants authority; no cold-start path waives evaluation. Dispatch does not consult
 this ledger yet; consumers opt in explicitly.
+## INV-OUTPUT-001
+
+Structured output is validated against a declared, versioned subset of JSON Schema draft
+2020-12: every keyword a schema uses must be in the supported subset, so a misspelled or
+unsupported keyword is refused at preflight as a configuration-owner error instead of a
+check that silently never runs; enum and const require an explicit type; a closed object
+cannot require names it does not declare; nesting depth and encoded size are bounded; and
+numeric bounds are finite. Preflight returns a receipt (schema hash, dialect, subset
+version, keywords seen, checks run) and every output validation result carries a structural
+block naming each check as checked, failed, unchecked or configuration_error, so "ok"
+always says what was checked. Failures are owned: an agent output defect (`agent_output`)
+is never the same finding as a malformed schema (`configuration`), and a valid-looking
+answer under a refused schema is not accepted. Runner-observed tool use (completed command,
+file-change and MCP items from the transport) is recorded beside any self-reported tool
+list, with the comparison stated; a self-report never certifies the presence or absence of
+tool use. Zeus keeps no lexical, filename or boilerplate grade; structural validity and
+observed tool use are evidence for review, never SDD acceptance or model qualification.
 
 # SDD preparation contracts
 

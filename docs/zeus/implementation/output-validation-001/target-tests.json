@@ -1,0 +1,37 @@
+{
+  "scope": "FA-023 target tests: schema preflight subset, structural receipts, failure ownership, observed tool use, executor evidence",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_output_validation.py tests/test_output_schema.py tests/test_execution_output.py tests/test_app_server.py tests/test_executor_research.py tests/test_context_recovery.py",
+  "started_at": "2026-09-10T06:52:39.613292+00:00",
+  "finished_at": "2026-09-10T06:52:43.751143+00:00",
+  "exit_code": 0,
+  "summary": [
+    "118 passed, 8 skipped in 3.69s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "jsonschema_probe": {
+    "enum [1] vs True": "reject",
+    "type integer vs True": "reject",
+    "additionalProperties false without properties, extra key": "reject",
+    "unknown keyword": "accept (now refused by preflight)"
+  },
+  "negative_controls": [
+    {
+      "control": "unknown keywords accepted at preflight",
+      "result": "2 failed (keyword test, ownership test), 67 passed"
+    },
+    {
+      "control": "enum without type accepted",
+      "result": "1 failed (keyword test), 68 passed"
+    },
+    {
+      "control": "configuration errors owned by the agent",
+      "result": "1 failed (ownership test), 68 passed"
+    },
+    {
+      "control": "started items counted as observed tool use",
+      "result": "1 failed (tool-use test), 68 passed"
+    }
+  ],
+  "not_claimed": "No lexical, filename or boilerplate grading exists in Zeus and none was added; no human scenario acceptance, model qualification or Windows/Linux/WSL path/encoding runs."
+}
