@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "scope": "trevi00/zeus: code-defect closure; automation attestation only; no human or deployment approval",
+  "signers": [
+    {
+      "principal": "zeus-code-closure",
+      "role": "automation",
+      "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILvqWhD0sPNWmJT2WsvERaWZbiFdw8uVJI/uZxRHqbyt",
+      "valid_after": "2026-09-10T15:52:36.829278+00:00",
+      "valid_before": "2026-12-09T15:57:36.829278+00:00"
+    }
+  ],
+  "required_signers": [
+    "zeus-code-closure"
+  ],
+  "required_human_signers": [],
+  "revoked": [],
+  "max_evidence_age_seconds": 86400
+}
