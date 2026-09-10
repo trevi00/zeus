@@ -1,0 +1,221 @@
+{
+  "baseRefName": "fix/fa-025-check-binding",
+  "body": "Refs #27 (FA-026). Closure is a separate step; the GitHub issue stays OPEN.\n**Stacked on #57 (FA-025)** for `classify_test_run`; the base is `fix/fa-025-check-binding` so the diff shows only this change. Retarget to `main` once #57 merges.\n\n## Problem\nThe upstream runner accepted an empty rc 0 script and a stderr FAIL marker as passes, misclassified a pytest assertion message as a missing dependency, replaced a failed pytest with a weaker manual main, and could re-run in the original environment after an isolation exception. Zeus's isolated runner (networkless, read-only, cap-drop, tmpfs scratch, in-container timeout, byte-verified sources) had no host-rerun path, but its receipt carried only an exit code and a `blocked` flag — isolation failures and a command exiting 125 looked alike, rc 0 with no output or stderr-only diagnostics were indistinguishable, and pytest commands had no denominator.\n\n## Change (bounded)\n- `domain/check_results.py`: `classify_isolated_run(stage, exit_status, stdout, stderr, command, client_timeout, error)` — `materialize`/`spawn` failures → `isolation_unavailable` (`substitute_execution: False`); docker-client timeout → `client_timeout`; in-container 124/137 → `timeout`; 125/126/127 → `runner_error`; executed commands pass only with exit 0 and observable stdout (empty output or stderr-only diagnostics are named failures); pytest commands are judged by their parsed denominator, so an assertion message is never a missing dependency.\n- `adapters/source_execution.py`: `execute()` tracks the stage the attempt ended in, distinguishes a client `TimeoutExpired` (the uniquely named container is still removed), and writes `verdict`, `command`, `attempt` (request/owner/task/generation/release, passed from `run_one`), `runner_mode` and stdout/stderr SHA-256 into the receipt artifact; `inspection_blocked` is now \"category is not executed\". The frozen `ExecutionReceipt` dataclass is unchanged.\n- `docs/contracts.md`: INV-RUNNER-001. Record: `docs/zeus/implementation/runner-categories-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_runner_categories.py` (3 tests): classification for every stage/exit/output shape (including the assertion-message pytest failure staying a failure); receipts for ok / empty / stderr-only / 137 / 125 / all-skipped pytest with attempt, digests and runner mode; **a real spawn failure with docker removed from PATH** → `isolation_unavailable` at `spawn` with no host rerun, a byte-mismatched manifest → `materialize` with zero containers run, and a client timeout → `client_timeout` plus `docker rm -f`.\n- `test_research_audits.py` (existing runner tests) + `test_check_binding.py`: 78 passed. Negative controls: exit 0 passes whatever the output → 2 fail; runner exits treated as the command's verdict → 2 fail; isolation failure reported as an executed run → 1 fails.\n- Windows full suite on FA-025 `0bc83b5`: 958 passed, 310 skipped. `ruff check` clean.\n\n## Not claimed\nNo real Docker container run, Linux/WSL process-tree or scratch-permission measurement (the docker processes in the receipt tests are fixtures; the spawn failure is real). Human SDD scenarios and Astra→Sol→Terra qualification are not consumers of these receipts.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTs5MCA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "CI 반영 — `ffe49ca` (Windows 3.12/3.14 `test_isolation_failures_are_unavailable_and_never_rerun_on_the_host` 실패)\n\n**원인**: CI Windows 러너는 PATH를 비워도 bare `docker`를 PATH 밖에서 찾아 실제로 실행했고, exit 125가 `runner_error`로 분류됐습니다(로컬에는 docker가 없어 통과).\n\n**변경** (`adapters/source_execution.py`): `DockerSourceRunner(root, artifacts, docker='docker')` — 러너 실행 파일이 명시 인자입니다. 테스트는 존재하지 않는 경로를 넘겨 Linux/Windows 모두에서 실제 spawn 실패(`FileNotFoundError`)를 관측합니다. 기본값과 supervisor 배선은 그대로입니다.\n\n또한 base `fix/fa-025-check-binding`의 amend(`f6acba2`) 위로 rebase했습니다(충돌 해소, 기능 변경 없음). 로컬: `test_runner_categories.py` + `test_research_audits.py` + `test_release_health.py` 89 passed.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T10:24:42Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/58#issuecomment-5617110024",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuREzA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `3743caf` (P1: 새 실행 판정의 실패가 승인 소비자에 전달되지 않음)\n\n**변경**\n- `domain/research.py`: `ExecutionReceipt`에 `passed: bool`, `outcome: str` 추가(검증: blocked/비0 exit이면 passed 불가), `successful` 속성, `receipt_successful(record)`.\n- `adapters/source_execution.py` / `adapters/audit_runner.py`: 모든 러너가 `classify_isolated_run` 결과로 `passed`/`outcome`을 채웁니다(inert reader는 passed/read).\n- `application/research.py`: checkpoint의 receipt 검증과 review 승인이 `receipt_successful`을 읽습니다 — all-skip·빈 출력·stderr-only는 `Inspection did not pass (empty_check)`로 승인 거절.\n\n**테스트**: `test_research_approval_refuses_receipts_that_executed_but_did_not_pass[all_skip|empty_output|stderr_only]` — exit 0·blocked False·passed False인 receipt로 accepted=True 리뷰 → 거절, 거절 리뷰만 기록, approvals 없음; Docker 러너의 `skipped` receipt는 `passed False / outcome empty_check`.\n\n선행 #57 수정본(`ced216f`) 위로 rebase. 로컬: `test_runner_categories.py` + `test_research_audits.py` + `test_check_binding.py` 87 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:04Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/58#issuecomment-5618549964",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 14,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/runner-categories-001/README.md",
+      "additions": 51,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/runner-categories-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/audit_runner.py",
+      "additions": 7,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/adapters/source_execution.py",
+      "additions": 45,
+      "deletions": 12,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/application/research.py",
+      "additions": 6,
+      "deletions": 4,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/check_results.py",
+      "additions": 39,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/research.py",
+      "additions": 18,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/test_research_audits.py",
+      "additions": 5,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/test_runner_categories.py",
+      "additions": 170,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "3743cafc5ba4e875c62ea2c6b90960e79e6517da",
+  "number": 58,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LGZA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #58: 변경 요청 / 병합 보류\n\n검토 head: `ffe49cac4e3e757e71c618b8fa281703616ab58f`. Codex 독립 검토입니다.\n\n**[P1] 새 실행 판정의 실패가 기존 승인 소비자에 전달되지 않습니다**\n\npytest stdout=\"3 skipped in 0.02s\", rc=0이면 새 classifier는 passed=false/empty_check입니다. 그러나 category=executed라 receipt는 exit_status=0, inspection_blocked=false입니다. Research의 승인 조건은 이 두 값만 보므로 성공으로 취급합니다. 선행 #57도 배포 검증 이중 진입 문제가 있습니다.\n\n위치: [src/codex_harness/adapters/source_execution.py:139](https://github.com/trevi00/zeus/blob/ffe49cac4e3e757e71c618b8fa281703616ab58f/src/codex_harness/adapters/source_execution.py#L139)\n\n수정·재검증 조건: passed/outcome을 ExecutionReceipt 및 승인 소비자까지 결속하세요. all-skip·빈 출력·stderr-only의 실제 runner→receipt→Research 승인 거부 통합 검사가 필요합니다.\n\n검증: 해당 head의 대상 검사 **7 passed in 5.95s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:33Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "ffe49cac4e3e757e71c618b8fa281703616ab58f"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:22:54Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475632620/job/102865570871",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:21:52Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:38Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475628917/job/102870265370",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:17:43Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:22Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475632620/job/102865571029",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:22:22Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:38Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475628917/job/102870218532",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:15:40Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:28:11Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475632620/job/102865570857",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:22:11Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475628917/job/102870217965",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:15:19Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:22:33Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475632620/job/102865570874",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:17:48Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:10Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475628917/job/102870218705",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:18:02Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475632620/job/102865570600",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:17:29Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:33:09Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475628917/job/102870216262",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:29:49Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: name isolated runs by stage, exit and output instead of exit status alone (FA-026)"
+}

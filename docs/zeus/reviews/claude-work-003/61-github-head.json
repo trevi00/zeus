@@ -1,0 +1,182 @@
+{
+  "baseRefName": "main",
+  "body": "## Summary\n\nRefs #31 (FA-030). Closure is a separate step; the GitHub issue stays OPEN.\n\nThe upstream snapshot status CLI dropped broken and non-object JSONL lines, treated a missing file or a malformed graduation document as an empty state, never required `schema_version`/`id`, returned rc0 in 6 of 7 isolated runs, and its CI could skip the snapshot job by path filter.\n\n- `domain/snapshot_integrity.py` (stdlib only): `parse_manifest` (closed; kind jsonl/json, schema_version, required_fields, references to required files, allow_empty), `verify_file` (states `valid / empty / missing / unreadable / corrupt / version_mismatch`; every JSONL line is checked and corruption is **counted, never dropped**; a torn tail is tolerated only in `live` mode and is corrupt in `confirmed` mode), `verify_snapshot` (per-file reports, dangling references, full denominator, snapshot hash; `valid` only when every required file is valid/empty and nothing dangles), `required_checks` (path policy → obliged checks; unmapped changes are named; \"no check required\" is never a passed check).\n- `application/snapshot_imports.py`: `SnapshotImports.import_snapshot(files, manifest, binding, mode)` archives the exact bytes as artifacts, binds source/tool revision (40-hex or `unversioned`) and environment, records invalid snapshots as failures with `importable: False`; `require_valid` refuses with the problem counts.\n- `docs/contracts.md`: `INV-SNAPSHOT-001`.\n- Record: `docs/zeus/implementation/snapshot-integrity-001/` (README + `target-tests.json` with 4 negative controls).\n\n## Verification\n\n| Item | Result |\n|---|---|\n| `tests/test_snapshot_integrity.py` + `test_architecture.py` (HARNESS_INTEGRATION=1, MemoryStore + isolated PostgreSQL schema) | 10 passed |\n| Full Windows suite (Python 3.12, PG tests skipped; on main `1488468`) | 955 passed, 311 skipped |\n| `uv run ruff check .` | passed |\n| Negative controls (corrupt lines dropped / missing treated as empty / torn tail accepted in confirmed mode / dangling references ignored) | each makes the target tests fail |\n\n## Not claimed\n\nNo real snapshot producer is wired to this check; no Windows/Linux/WSL install, update or recovery run; `required_checks` is a policy function and Zeus CI itself is unchanged (it has no path filters; `[skip ci]` commits carry no check result).\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRIOQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `638f277` (P1: pretty-printed JSON의 dangling reference 통과)\n\n**변경** (`domain/snapshot_integrity.py`): `verify_file`이 검증한 레코드 집합(`parsed`: (line, record))을 돌려주고 `verify_snapshot`의 참조 검사가 **그 집합 위에서** 돕니다 — json/jsonl 구분 없이 레이아웃과 무관. 참조 값이 문자열이 아니면 `problem: reference must be text`로 명시 invalid, 없는 id는 `no such id`. `parsed`는 리포트에서 소비되어 남지 않습니다.\n\n**테스트**: 같은 dangling parent를 compact / indent=2 / CRLF indent 세 레이아웃으로 → 모두 invalid·dangling 1; 해소되면 valid; 중첩 객체 참조·리스트 참조 → `reference must be text`.\n\nmain(`66076cc`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 7 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:08Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/61#issuecomment-5618550841",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 20,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/snapshot-integrity-001/README.md",
+      "additions": 59,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/snapshot-integrity-001/target-tests.json",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/application/snapshot_imports.py",
+      "additions": 61,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/snapshot_integrity.py",
+      "additions": 208,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_snapshot_integrity.py",
+      "additions": 170,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "638f2776d1e44f0668df17f089ed7e238b004923",
+  "number": 61,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LJ6Q",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #61: 변경 요청 / 병합 보류\n\n검토 head: `b7c301cf6f7de1133d2ee1be12354f0ad829a703`. Codex 독립 검토입니다.\n\n**[P1] pretty-printed JSON의 dangling reference가 통과합니다**\n\nkind=json 파일은 문서 단위로 유효성 검사하지만 참조 검사는 모든 형식에 대해 줄 단위 json.loads를 합니다. 존재하지 않는 parent를 가진 같은 JSON이 compact에서는 invalid, indent=2에서는 valid/dangling_references=0입니다.\n\n위치: [src/codex_harness/domain/snapshot_integrity.py:155](https://github.com/trevi00/zeus/blob/b7c301cf6f7de1133d2ee1be12354f0ad829a703/src/codex_harness/domain/snapshot_integrity.py#L155)\n\n수정·재검증 조건: 검증한 parsed record 집합을 참조 검사에 재사용하고 json/jsonl을 구분하세요. 중첩/비문자 reference는 예외 누락 대신 명시적 invalid로 처리하는 검사도 필요합니다.\n\n검증: 해당 head의 대상 검사 **10 passed in 0.99s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:39Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "b7c301cf6f7de1133d2ee1be12354f0ad829a703"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:22:28Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475411848/job/102864872366",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:21:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:15Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475407141/job/102864857085",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:19:14Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475411848/job/102864872315",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:20:05Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:13Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475407141/job/102864857032",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:18Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:40Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475411848/job/102864872346",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:21:10Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:22:20Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475407141/job/102864856895",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:16:35Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:30Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475411848/job/102864872393",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:20:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:21Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475407141/job/102864857008",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:02Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475411848/job/102864871907",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:17:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:10Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475407141/job/102864856712",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:17:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "[FA-030] Verify confirmed snapshots strictly with a full denominator and bind imports to revisions"
+}

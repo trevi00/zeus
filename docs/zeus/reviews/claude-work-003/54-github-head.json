@@ -1,0 +1,200 @@
+{
+  "baseRefName": "main",
+  "body": "Refs #23 (FA-022). Closure is a separate step; the GitHub issue stays OPEN.\n\n## Problem\nThe upstream observer returned CLEAN for directories, empty evidence, passed-without-replay and permission errors; confirmed fabrication for a file it resolved against its own cwd; executed the command the model wrote into its own envelope (it wrote a scratch file and returned CLEAN); and crashed on invalid UTF-8 output or a NUL path. In Zeus a worker's `tests` claims were free text nobody inspected.\n\n## Change (bounded)\n- `resources/evidence-policy.json`: Git-defined replay policy — authorized argv prefixes (`python -m pytest`, `uv run … pytest`, `ruff check` families), per-command and aggregate deadlines, claim/output-byte/replay-count caps, file size cap.\n- `domain/evidence.py` (stdlib only): closed policy schema (finite, positive, capped bounds; bool refused); typed claims (file with optional sha256 and 1-based range, relative and inside the workspace — NUL, absolute, drive and `..` refused; command with argv and expected exit; free text is tokenized with host-shell rules into an expected-exit-0 command claim); `authorized()` by exact prefix only; `classify_replays()` (failure → `replay_failed`, disagreeing identical replays → `flake_pattern`, else `checked`/`verified_mismatch`); `denominator()`/`verdict()` (`all_checked`/`incomplete`/`no_claims` — there is no CLEAN).\n- `adapters/evidence_inspection.py`: file checks resolve under the workspace only (`error` on escape, `missing` for absent files and directories, `unknown` on permission/stat errors, `verified_mismatch` on hash/range disagreement, presence-only stated when no hash was claimed); command replays run only for policy prefixes, as bounded children with a minimal recorded environment, explicit cwd, finite deadline within an aggregate budget, output byte cap, process-tree termination on timeout (recorded as `terminated`); executable-missing/permission/spawn errors become `replay_failed` causes; raw stdout/stderr bytes are archived byte-for-byte with SHA-256 and a decoding property (invalid UTF-8 is recorded, never replaced).\n- `application/evidence_inspection.py`: ledger rows bound to task/generation/attempt/owner, candidate revision/base/tree, workspace and policy hash; idempotent per input; a recording failure writes a notice and raises — never a success; `require_all_checked()` for consumers.\n- `adapters/executor.py`: the `implement` result's `tests` claims are inspected in the workspace they came from; `result['evidence_inspection']` carries the inspection id, verdict and denominator, or `inspection_error` when the inspection itself failed.\n- `docs/contracts.md`: INV-EVIDENCE-001. Record: `docs/zeus/implementation/evidence-inspection-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_evidence_inspection.py` (8 tests; every replay is a real child process; ledger on MemoryStore + isolated PostgreSQL): policy/claim schema refusals (7 policies, 14 claims); the packaged policy authorizes neither `rm` nor `python -c`; file checks against the workspace where a same-named file exists only under the inspector's cwd (→ `missing`), directory (→ `missing`), hash/range mismatch, `..` escape (→ `error`); command replays: exit 0 `checked` (two identical replays), exit 3 `verified_mismatch`, **invalid UTF-8 output preserved byte-for-byte** (`decoding: invalid_utf8`, archived `b\"ok\\xff\\xfe\"` with its hash), missing executable `replay_failed`, a command whose exit flips between replays `flake_pattern`, `rm -rf /` `not_checked` without execution, 10,000-byte output truncated at the 4,096 cap; a 30 s sleep terminated at a 1 s deadline with `terminated` recorded, claim and aggregate budgets → `not_checked` with causes; ledger binding, idempotency, `require_all_checked` refusing `incomplete` with its denominator, typed lease/revision required; a store whose write fails → notice + exception, no row; executor: a real Git-clone workspace where a fixture runtime claims `python -c …` and `rm -rf build` → the first replayed and `checked`, the second `not_checked`, verdict `incomplete`, row bound to the task and candidate revision.\n- Existing executor/workflow suites with the wiring: 133 passed. Negative controls: every command authorized → 5 fail; file claims resolved against the inspector cwd → 1 fails; `not_checked` counted as checked → 3 fail; invalid bytes replaced instead of preserved → 1 fails.\n- Windows full suite on origin/main `1488468`: 957 passed, 311 skipped. `ruff check` clean.\n\n## Not claimed\nReplays are bounded children in the workspace, not capability-isolated containers (hence the narrow policy prefixes); Linux/WSL process-tree, encoding and path behaviour were not measured. A `checked` claim is deterministic evidence — not historical truth, semantic review, human acceptance, SDD acceptance or model qualification. Wiring the verdict into release/promotion consumers is a separate step.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRAmw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `b1d8d40` (P1: 정책 변경 뒤에도 과거 all_checked 캐시 반환)\n\n**변경**\n- `adapters/evidence_inspection.py`: `EvidenceInspector.identity()` = {policy_hash, environment(허용 env 이름), platform, python}.\n- `application/evidence_inspection.py`: 원장 키가 `['evidence-inspection-v2', binding, inspector.identity(), claims]`이고 행에 `inspector`를 저장합니다. inspector가 보고한 policy_hash가 identity와 다르면 거절. `require_all_checked(tx, id, *, policy_hash=None, binding=None)`가 소비자가 요구하는 정책·결속을 검증합니다.\n\n**테스트**: 같은 실행·revision·claims를 명령을 금지한 정책으로 다시 검사 → 새 행, `incomplete`, 다른 policy_hash; 다른 platform identity → 다른 행; `require_all_checked`에 다른 policy_hash/revision → 거절.\n\nmain(`66076cc`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 8 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:58Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/54#issuecomment-5618548891",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 20,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/evidence-inspection-001/README.md",
+      "additions": 73,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/evidence-inspection-001/target-tests.json",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/evidence_inspection.py",
+      "additions": 210,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "additions": 16,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/application/evidence_inspection.py",
+      "additions": 76,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/evidence.py",
+      "additions": 136,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/resources/evidence-policy.json",
+      "additions": 21,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_evidence_inspection.py",
+      "additions": 308,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "b1d8d4092a9d2426827d98894931bd419922f8e7",
+  "number": 54,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LBqA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #54: 변경 요청 / 병합 보류\n\n검토 head: `b2f36cb29430c37e8435c5f90479f3cd758ef1f4`. Codex 독립 검토입니다.\n\n**[P1] 정책 변경 뒤에도 과거 all_checked 캐시가 반환됩니다**\n\n허용된 실제 Python child replay를 검사한 다음 같은 task/revision/claims에 해당 명령을 금지한 정책으로 다시 검사하면 기존 all_checked와 옛 policy_hash가 반환됩니다. 새 inspector를 직접 실행하면 not_checked입니다. cache key에 정책이 없습니다.\n\n위치: [src/codex_harness/application/evidence_inspection.py:33](https://github.com/trevi00/zeus/blob/b2f36cb29430c37e8435c5f90479f3cd758ef1f4/src/codex_harness/application/evidence_inspection.py#L33)\n\n수정·재검증 조건: 정규화한 policy hash와 결과를 결정하는 실행 환경을 identity에 포함하고 require_all_checked에서도 소비 시 요구하는 binding을 검증하세요. 정책 강화/환경 변경 음성 검사를 추가하세요.\n\n검증: 해당 head의 대상 검사 **12 passed in 7.64s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:23Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "b2f36cb29430c37e8435c5f90479f3cd758ef1f4"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:24Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475394040/job/102864815619",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:15:27Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:30Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475390030/job/102864803571",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:15:14Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:11Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475394040/job/102864815947",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:18:11Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475390030/job/102864803723",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:16:52Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475394040/job/102864815730",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:17:33Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:53Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475390030/job/102864803853",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:16:27Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:24:59Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475394040/job/102864815880",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:20:07Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:22:13Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475390030/job/102864803644",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:16:15Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:54Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475394040/job/102864815861",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:20:36Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475390030/job/102864803364",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:13:13Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: inspect implementation evidence claims with named states and policy-bound replay (FA-022)"
+}

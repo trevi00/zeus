@@ -1,0 +1,230 @@
+{
+  "baseRefName": "main",
+  "body": "## FA-016 / ZEUS-e36daeb984c1 revision 1 — Refs #17\n\n### Defect (upstream, agreed in cross-review)\nIsolated execution of the Baldrix engine-001 pane-log merger: merging a past gen1 `exited` shard into a gen2 `running` state left the final state gen1 `exited`; the merger dropped original timestamps and stamped the merge time, so replay overwrote state by timestamp; a shard containing only `not-json` was reported as 0 merged and **deleted**. Consensus: bind task/attempt/pane generation, unique event IDs, occurrence order, and occurrence vs collection time in the PG runtime ledger.\n\n### Zeus\nProgress writes were already fenced by the current lease (an older generation cannot write), but `execution_progress` rows had no generation/attempt/sequence, only a collection time (`at`), and a non-dict runtime event raised inside `observe()` with no evidence retained.\n- `adapters/executor.py` `observe()`: records `generation`/`attempt` (current lease), a monotonic `sequence`, `event_id` (runtime item identity or retained bytes), `occurred_at` from the event's own `completedAtMs`/`emittedAtMs` (**null when absent**), and `collected_at`; `last_completed` carries `sequence`/`occurred_at`. Malformed events (non-dict, or non-mapping `params`) are retained as `runtime-event` artifacts, counted in `malformed_events`/`malformed_recent`, and never touch the well-formed state. Helpers `progress_occurrence`, `progress_event_id`.\n- `docs/contracts.md` (`INV-EXECUTION-IDENTITY-001`), `docs/zeus/implementation/progress-event-identity-001/README.md`.\n\n### Verification\n| | Result |\n|---|---|\n| `test_progress_records_generation_sequence_identity_and_two_clocks`: fixture runtime emits completion (with ms time), token usage, a string shard, a `params: 'garbage'` event, a completion without time, an unrelated event → gen/attempt 1, `sequence` 3 (malformed/unrelated add none), 2 malformed retained + counted, last completion `occurred_at=None`, first event's time restored from ms | pass |\n| `test_stale_generation_cannot_write_progress_and_replay_keeps_order`: gen2 records two events with reversed occurrence times → arrival order is the sequence and the earlier time is kept as data; an expired gen1 lease is refused (`Stale or expired`) and the progress row is byte-identical | pass |\n| Negative control: revert `executor.py` to `origin/main` | the module cannot even be collected (helpers absent) |\n| `test_execution_progress` + `test_project_skills` + `test_execution_output` + `test_context_recovery` | 54 passed, 8 skipped |\n| Windows full `uv run pytest -q` (Python 3.12.14) / `ruff check` | 919 passed, 305 skipped / clean |\n| Linux path | this PR's ubuntu CI matrix |\n\n### Not claimed\nThis is the executor-process progress record; Zeus has no multi-pane merger and none is added (single writer under the lease). The Codex app-server event time field names come from the hook manifest fixtures observed in this repository; changes in the operational version are a separate check. Issue closure follows the ledger acceptance path (#30) and is a separate step after this PR; the GitHub issue stays OPEN until that acceptance.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTp4JcQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `27ac254` (P2: CI 실패, 두 번 읽은 시계 값의 완전 일치 요구)\n\n**변경** (`adapters/executor.py` `observe()`)\n- `at`와 `collected_at`은 같은 수집 순간을 뜻하는 호환 필드이므로 시계를 한 번만 읽어(`collected = utcnow()`) 두 필드에 같은 값을 씁니다. `occurred_at`(이벤트 자체의 시각)은 그대로 분리돼 있습니다.\n- 테스트의 `collected_at == at` 계약은 유지합니다(같은 순간 = 같은 값).\n\n**검증**: `tests/test_execution_progress.py` 2 passed(실제 PG). 전체 스위트(Windows, PG 검사 skip): 918 passed, 305 skipped, 1 failed — 실패 1건은 이전 PR #45 본문에도 적어 둔 `test_github_tickets.py::test_external_title_change_is_preserved_and_invalidates_synced_status[memory]`의 간헐 실패(제목 문자열이 cp949로 깨져 비교되는 인코딩 경합)로, 단독 재실행에서 통과했고 이 변경과 무관합니다. CI 매트릭스(Ubuntu/Windows/integration)는 이 푸시의 런으로 확인 부탁드립니다. 이슈 #17은 열린 채로 둡니다.\n",
+      "createdAt": "2026-09-10T06:03:30Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/49#issuecomment-5613947249",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTs5O1Q",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "main(`1488468`) 위로 rebase했습니다(`f055faf`). 충돌은 `docs/contracts.md`의 INV-EXECUTION-FENCE 단락 옆에 이 PR의 진행 기록 단락을 추가하는 위치뿐이며 두 단락을 모두 유지했습니다. 기능 변경 없음. 로컬: `test_execution_progress.py` + `test_architecture.py` 6 passed.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T10:24:45Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/49#issuecomment-5617110741",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuQ8Nw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `10b024e` (P2: 중첩 event shape 미검증)\n\n**변경** (`adapters/executor.py`): `progress_event_shape(event)`가 어떤 필드도 읽기 전에 모양을 이름 짓습니다 — dict 여부, `method` 문자열, `params` 객체, `item/completed`면 `item` 객체 + `id`/`type` 문자열(+`status` 문자열), `thread/tokenUsage/updated`면 `tokenUsage` 객체. 결함이 있으면 원문·결함명을 아티팩트로 보존하고 `malformed_events`/`malformed_defects[결함]`만 올리며 sequence·last_completed는 바뀌지 않습니다. `method=[]`는 더 이상 TypeError로 실행을 끊지 않습니다.\n\n**테스트** (`tests/test_execution_progress.py`): `method=[]`, `item=\"garbage\"`, id 누락, type 누락, status 비문자열, `tokenUsage=\"lots\"`, method 누락 7종을 실제 Executor 관측 경로에 공급 → `malformed_events=9`, 결함별 계수, `sequence=3` 그대로.\n\nmain(`66076cc`) 위로 rebase. 로컬: `test_execution_progress.py` 2 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:52Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/49#issuecomment-5618547767",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 7,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/progress-event-identity-001/README.md",
+      "additions": 51,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "additions": 84,
+      "deletions": 6,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/test_execution_progress.py",
+      "additions": 140,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "10b024ea9983da4ce34027dd29e37f0c10d24862",
+  "number": 49,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM778PQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "Codex 독립 검토 — **변경 요청 / 병합 보류**\r\n\r\n대상 `5165ca38b0cd5eed0cef82dd9388203086f4048e`\r\n\r\n[P2] 손상 이벤트를 보존한다는 새 계약이 dict 내부의 손상에는 적용되지 않습니다.\r\n\r\n`adapters/executor.py:observe`의 malformed 검사는 최상위 dict/params dict만 검사합니다. 정상 완료 다음 `{'method': [], 'params': {}}`를 실제 Executor 관측 경로에 주면 집합 membership에서 TypeError로 실행이 중단되고 malformed_events=0입니다. `{'method':'item/completed','params':{'item':'garbage'}}`는 오히려 정상으로 취급해 sequence를 1→2로 올리고 malformed_events=0을 유지합니다.\r\n\r\n요청: method 타입과 처리할 이벤트별 item/tokenUsage 구조를 사용 전에 검증하고 손상 입력은 원문·카운트에 보관하되 정상 progress를 바꾸지 않도록 하세요. 위 두 입력과 누락 id/type 등 중첩 손상 회귀가 필요합니다. 재현은 fixture 이벤트 공급원을 실제 Executor/원장에 연결한 계약 검증이며 실제 Codex 앱 서버 측정이 아닙니다.\r\n\r\n독립 관련 검사: `61 passed in 30.45s` (실제 PostgreSQL 사용이 필요한 검사에는 현재 로컬 PG 연결). 제출 검사가 통과해도 위 반례는 미포함입니다.\r\n\r\n동일 GitHub 계정의 PR에는 공식 Request changes가 불가능하므로 COMMENT review로 판정을 남깁니다. 이슈 종료나 인수 승인으로 해석하지 않습니다.\r\n",
+      "submittedAt": "2026-09-10T05:36:48Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "5165ca38b0cd5eed0cef82dd9388203086f4048e"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM78URg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "Codex 추가 검토 — **[P2] CI 실패: 두 번 읽은 시계 값의 완전 일치를 요구함**\n\n대상 `5165ca38b0cd5eed0cef82dd9388203086f4048e`.\n\n실제 [PR CI run 34441283803](https://github.com/trevi00/zeus/actions/runs/34441283803)에서 Ubuntu 3.12/3.14, Windows 3.14, integration이 실패했습니다. `tests/test_execution_progress.py:90`의 `collected_at == at` 검사입니다. 예: integration에서 `05:30:35.629090`과 `05:30:35.629087`로 3µs 차이입니다.\n\n`observe()`는 `at=utcnow(), collected_at=utcnow()`로 따로 호출합니다. 같은 수집 순간을 나타내는 호환 필드라면 한 번 읽은 값을 두 필드에 쓰고, 다른 의미라면 테스트를 그 계약에 맞춰야 합니다. Windows 3.12의 독립 관련 검사 61 passed는 이 CI 실패를 상쇄하지 않습니다. OS 시계를 변경하거나 재부팅할 필요가 없는 코드 문제입니다.\n",
+      "submittedAt": "2026-09-10T05:37:58Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "5165ca38b0cd5eed0cef82dd9388203086f4048e"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_K8nA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #49: 변경 요청 / 병합 보류\n\n검토 head: `f055fafdcf15774655dae16e6fde42edb3007adb`. Codex 독립 검토입니다.\n\n**[P2] 중첩 event shape가 아직 검증되지 않습니다**\n\n실제 Executor/원장에 fixture transport event를 공급하면 method=[]가 TypeError로 실행을 끊습니다. item=\"garbage\"는 sequence를 증가시키고 malformed_events=0으로 기록됩니다. 실제 모델 실행 증거는 아닙니다. clock 수정은 통과했지만 이전 지적의 malformed 경로는 그대로입니다.\n\n위치: [src/codex_harness/adapters/executor.py:248](https://github.com/trevi00/zeus/blob/f055fafdcf15774655dae16e6fde42edb3007adb/src/codex_harness/adapters/executor.py#L248)\n\n수정·재검증 조건: method 문자열, params/item 객체와 event별 필수 식별자를 먼저 검증하고 malformed 이벤트가 progress를 전진시키지 않도록 하세요.\n\n검증: 해당 head의 대상 검사 **40 passed in 19.34s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:14Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "f055fafdcf15774655dae16e6fde42edb3007adb"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:17Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475376643/job/102864762222",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:03Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:00Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373439/job/102864752383",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:04Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475376643/job/102864762323",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:05Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:01Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373439/job/102864752364",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:09Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475376643/job/102864763177",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:03Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:17Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373439/job/102864752370",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:04Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:56Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475376643/job/102864762188",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:03Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373439/job/102864752510",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:13Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475376643/job/102864762007",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:12:03Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:21Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373439/job/102864752225",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:12:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: bind execution progress to generation, sequence and two clocks"
+}

@@ -1,0 +1,188 @@
+{
+  "baseRefName": "main",
+  "body": "Refs #20 (FA-019). Closure is a separate step; the GitHub issue stays OPEN.\n\n## Problem\nThe upstream providers dropped request fields their CLI path did not use (`max_tokens`, `temperature`), returned the requested model label as the responding model, treated rc0 empty stdout as a normal answer, read absent usage as zero, returned registry instances without any backend and never read the declared `call_budget_sec`.\n\n## Change (bounded)\n- `domain/invocation.py` (stdlib only): per-transport support matrix + `parse_request()` — unknown options and unsupported-but-present options (`system`, `temperature`, `max_output_tokens`, `response_format` on `app_server`) are refused **before execution** with their names, never dropped; invalid types/values refused. `availability(probe)` never yields model readiness or qualification. `classify_result()` names what was observed (`accepted`, `empty_answer`, `invalid_output`, `tool_only`, `interrupted`, `inspection_blocked`, `provider_failure`); `usage_record()` keeps absent usage `unknown` (never 0), names the source event and basis, separates `requested_model` from the transport-reported `confirmed_model` (unknown when unreported) and hashes the raw event stream (surrogates preserved).\n- `application/invocation_ledger.py`: `InvocationLedger.reserve()` takes one reservation per invocation of an attempt in the transaction that re-proves ownership (`Workflow._owned`), allows one open reservation per attempt, refuses when open reservations reach `POLICY.max_active_executions`, and closes a previous attempt's never-settled reservation as `unsettled_unknown`. `settle()` is idempotent and refuses conflicting or source-less usage; `abandon()` closes with unknown usage; `summary()` keeps unknown out of measured sums.\n- `adapters/executor.py`: `parse_request` → `reserve` before the transport call; `abandon` when the transport raises; `result['invocation']` (request, outcome, usage, reservation) goes into the execution evidence and the reservation is settled from it.\n- `docs/contracts.md`: INV-INVOCATION-001. Record: `docs/zeus/implementation/invocation-ledger-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_invocation_ledger.py` (11 tests; ledger tests on MemoryStore + isolated PostgreSQL): support-matrix refusals, probe ≠ readiness, 7 outcome classes with the real protocol replay fixture, unknown/`total`/`last_only` usage, transport-reported model only, ownership-bound reservation (stale owner refused in the same transaction, no row), single open reservation per attempt, capacity refusal then admission after settlement, per-stage invocation index, idempotent/conflicting settlement, expired-lease retry closing the old reservation as unknown, 8 concurrent reservers → exactly one row, executor reserve-during-call/settle-after and abandon-on-exception.\n- Existing executor suites (`test_execution_output`, `test_executor_research`, `test_model_routing`, `test_context_recovery`) with the wiring: 87 passed.\n- Negative controls: unknown usage read as 0 → 1 test fails; capacity check disabled → 2 fail; executor never reserves → 2 fail.\n- Windows full suite on origin/main `1488468`: 957 passed, 313 skipped, 1 failed — the unrelated intermittent `test_github_tickets…manual_close[memory]` (cp949 decoding race; passes alone).\n\n## Not claimed\nNo real Codex app-server or model call, no Windows/Linux/WSL install/Unicode/path/termination run, no SDK retry measurement, no vendor option/model-ID verification. `confirmed_model` stays unknown until the transport reports it. Astra→Sol→Terra qualification is a consumer of this accounting, not part of this change; INV-MODEL-001 is unchanged.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuQ-kQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `1ea2558` (P1: 취소된 작업의 예약이 용량을 영구 점유)\n\n**변경** (`application/invocation_ledger.py`): 모든 `reserve`(및 명시 `reclaim()`)가 `_reclaim_dead`를 먼저 실행합니다 — 열린 예약마다 해당 task row를 읽어 같은 generation/attempt·`running`·같은 lease_owner·**lease 미만료**일 때만 살아 있는 것으로 보고, 아니면 `unsettled_unknown`(usage unknown, reason `execution_cancelled` / `execution_failed` / `execution_lease_expired` / `execution_superseded` / `execution_missing`)으로 닫습니다.\n\n**테스트** (`tests/test_invocation_ledger.py`): capacity=1에서 A 예약 → cancel / 재시도 소진 최종 실패 / lease 만료(실측 1.3s) 세 경우 모두 B의 reserve가 성공하고 A는 `unsettled_unknown`·usage unknown; summary의 unknown 계수 보존.\n\nmain(`66076cc`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 17 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:55Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/51#issuecomment-5618548369",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 18,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/invocation-ledger-001/README.md",
+      "additions": 72,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/invocation-ledger-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "additions": 21,
+      "deletions": 3,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/application/invocation_ledger.py",
+      "additions": 135,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/invocation.py",
+      "additions": 128,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_invocation_ledger.py",
+      "additions": 287,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "1ea2558306c49f75ccc3c5a7e67066c194eb2c13",
+  "number": 51,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_K-_g",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #51: 변경 요청 / 병합 보류\n\n검토 head: `820d35358eb56f86e41da5689c83f5fba985f8f9`. Codex 독립 검토입니다.\n\n**[P1] 취소된 작업의 예약이 다른 작업의 실행 용량을 영구 점유합니다**\n\ncapacity=1에서 작업 A를 reserve하고 worker 중단 후 Workflow.cancel을 적용하면 예약은 reserved로 남습니다. 다른 작업 B의 reserve는 계속 capacity 오류가 납니다. 정리는 같은 task의 다음 attempt에만 있어 재시도 없는 취소/최종 실패에는 도달하지 않습니다.\n\n위치: [src/codex_harness/application/invocation_ledger.py:53](https://github.com/trevi00/zeus/blob/820d35358eb56f86e41da5689c83f5fba985f8f9/src/codex_harness/application/invocation_ledger.py#L53)\n\n수정·재검증 조건: 현재 실행의 생존/종료를 fence와 함께 확인하는 복구 경로를 추가하세요. 중단→취소/최종 실패→다른 작업 admission을 실측하고 usage는 unknown으로 보존해야 합니다.\n\n검증: 해당 head의 대상 검사 **44 passed in 12.30s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:19Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "820d35358eb56f86e41da5689c83f5fba985f8f9"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:49Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384044/job/102864785436",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:15Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475380835/job/102864775701",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:14:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384044/job/102864785476",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:13:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:12:59Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475380835/job/102864775863",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:05Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:27Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384044/job/102864785351",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:00Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475380835/job/102864775632",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384044/job/102864785398",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:13:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:57Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475380835/job/102864775765",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:06Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:39Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384044/job/102864785185",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:12:07Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:27Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475380835/job/102864775250",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:12:05Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: type model invocations, reserve each attempt and settle from measured usage (FA-019)"
+}

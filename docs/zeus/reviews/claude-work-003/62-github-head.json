@@ -1,0 +1,206 @@
+{
+  "baseRefName": "main",
+  "body": "## Summary\n\nRefs #32 (FA-031). Closure is a separate step; the GitHub issue stays OPEN.\n\nThe upstream Flyway collision checker compared only the first number of a version, overwrote earlier modules' vendor lists, exited 0 after an arithmetic error on `V08`, reported an unreadable folder as success and never listed the colliding files. Zeus itself applied a single `001.sql` with no version, checksum, history or tool identity.\n\n- `domain/migrations.py` (stdlib only): pinned `zeus-sql-migrator@1` with the filename contract `V?<n>(.<n>|_<n>)*(__<description>)?.sql`; `parse_version` normalizes to integer components (`V01`=`V1`=`001`=`V1.0`, `V1_2`=`V1.2`, `V08` is 8, `V1.10`>`V1.9`) and **refuses unsupported names by name** (never skipped); `parse_config` (module/vendor/path/required/allow_empty, target vendor, expected tables); `classify_location` (found / empty / missing / unreadable / unknown; missing and unreadable are never empty; unknown is never approval); `evaluate` yields **four separate results** — filenames (per module/vendor, duplicates list every colliding file), parity (single vendor is not applicable, an unobserved required vendor is unknown), content (empty / oversized / undecodable files named), history (per module: modified applied version, applied version without a file, out-of-order new version; foreign modules listed, not judged) — plus the live schema; `apply_allowed` only when every result is ok/not_applicable.\n- `adapters/migrations.py`: `discover` on the real filesystem with exact error names; `Migrator.precheck` (read-only under the control-plane lock); `Migrator.apply` re-reads the history under the lock, refuses on any non-ok result, applies pending versions in normalized order and records `schema_migrations(module, version, checksum, name, tool, applied_at, applied_by)` in the same transaction, then verifies expected tables; a failing statement leaves no history row and no partial schema. `python -m codex_harness.adapters.migrations precheck|apply` runs as a child process printing one JSON document (exit 1 refused, 2 error).\n- `application/migration_receipts.py`: `MigrationReceipts.record` binds operation, argv, config digest, root, source revision, environment, exact stdout/stderr bytes (artifacts), exit code and times; outcomes completed / refused / error / unparseable; `require_approved` admits only a completed, allowing precheck of the pinned tool bound to the same revision and environment.\n- `PostgresStore.migrate()` now goes through the migrator with the packaged `resources/migrations.json` (module `core`, vendor `postgres`) and records `001`; `init-db` reports applied/already_applied/tool.\n- `docs/contracts.md`: `INV-MIGRATION-001`. Record: `docs/zeus/implementation/migration-precheck-001/` (README + `target-tests.json` with 5 negative controls).\n\n## Verification\n\n| Item | Result |\n|---|---|\n| `tests/test_migration_precheck.py` + `test_architecture.py` (HARNESS_INTEGRATION=1, isolated PostgreSQL schema, real files, two concurrent child processes) | 10 passed |\n| `test_host_interruption.py` + `test_execution_fence.py` with the new `migrate()` (HARNESS_INTEGRATION=1) | 22 passed, 5 skipped (together with the above) |\n| `tests/test_integration.py` (HARNESS_INTEGRATION=1, no Redis) | 19 failed, 7 passed, 19 errors — identical to the FA-030 branch on main; all Redis connection refusals |\n| Full Windows suite (Python 3.12, PG tests skipped; on main `1488468`) | see README table |\n| `uv run ruff check .` | passed |\n| Negative controls (first-number-only comparison / unsupported names skipped / unreadable folder as found / modified applied version accepted / apply without the lock) | each makes the target tests fail |\n\n## Not claimed\n\nNo Flyway engine run (Flyway is not adopted; the normalization contract is checked against this tool's own apply order); no Windows/Linux/WSL install, upgrade, interrupted recovery or data-preservation run; no money scenario or human acceptance. Windows ACL permission denial was observed only through a file-instead-of-directory error. The history table is new in this PR; on an existing DB the next `migrate()` re-executes the idempotent `001.sql` once and records it.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRJPA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `9ea8f8a` (P2: 다른 config의 precheck 결과 수용)\n\n**변경**\n- `adapters/migrations.py`: plan/receipt에 `root`(절대 경로)를 담습니다.\n- `application/migration_receipts.py`: `record`가 stdout 문서의 `operation`과 plan/receipt의 `config_hash`·`root`를 제출 binding과 비교해 다르면 `outcome=binding_mismatch`, `binding_mismatches=[...]`로 기록(승인 불가). `require_approved(tx, id, *, source_revision, environment, config_hash, root)` — 소비자가 적용하려는 config·root를 명시해야 하고 mismatch 행은 거절.\n\n**테스트**: 다른 config_hash로 제출한 receipt → `binding_mismatch['config_hash']`, 승인 거절; 다른 root → `['root']`; operation 불일치 → `['operation']`; 소비 시 다른 config/root 거절.\n\nmain(`66076cc`) 위로 rebase. 로컬(격리 PG + 자식 프로세스): 6 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:09Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/62#issuecomment-5618551100",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 38,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/migration-precheck-001/README.md",
+      "additions": 68,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/migration-precheck-001/target-tests.json",
+      "additions": 36,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/migrations.py",
+      "additions": 181,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/store.py",
+      "additions": 9,
+      "deletions": 8,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/application/migration_receipts.py",
+      "additions": 91,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/cli.py",
+      "additions": 2,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/migrations.py",
+      "additions": 210,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/resources/migrations.json",
+      "additions": 17,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_migration_precheck.py",
+      "additions": 250,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "9ea8f8a28b66129f559e3ca57d79c184f224b3b4",
+  "number": 62,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LLAg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #62: 변경 요청 / 병합 보류\n\n검토 head: `571e6cef57df4b817f634fa53d1cfe1db48234c9`. Codex 독립 검토입니다.\n\n**[P2] 다른 config의 precheck 결과를 적용 허용 증적으로 수용합니다**\n\nrun.config_hash=A, 실제 stdout.plan.config_hash=B인 receipt를 record한 뒤 require_approved하면 통과합니다. source_revision/environment/tool 비교만으로 어떤 migration config를 검사했는지는 결속되지 않습니다.\n\n위치: [src/codex_harness/application/migration_receipts.py:53](https://github.com/trevi00/zeus/blob/571e6cef57df4b817f634fa53d1cfe1db48234c9/src/codex_harness/application/migration_receipts.py#L53)\n\n수정·재검증 조건: stdout의 operation/config_hash와 제출 binding을 비교하고 소비 시 expected config/root/tool을 요구하세요. 다른 config/root의 성공 receipt 재사용은 거절되어야 합니다.\n\n검증: 해당 head의 대상 검사 **14 passed in 8.12s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:41Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "571e6cef57df4b817f634fa53d1cfe1db48234c9"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:47Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475415020/job/102864882033",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:20:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475410886/job/102864869207",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:20:49Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:22:07Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475415020/job/102864882169",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:21:02Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:52Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475410886/job/102864869200",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:24Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475415020/job/102864881685",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:19:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:24Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475410886/job/102864869171",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:20:18Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:51Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475415020/job/102864881990",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:20:54Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:51Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475410886/job/102864869280",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:20:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:24:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475415020/job/102864881968",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:20:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:22:38Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475410886/job/102864868878",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:19:19Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "[FA-031] Pin the migration tool, identify every location and keep applied versions immutable"
+}

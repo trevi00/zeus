@@ -1,0 +1,182 @@
+{
+  "baseRefName": "main",
+  "body": "Refs #26 (FA-025). Closure is a separate step; the GitHub issue stays OPEN.\n\n## Problem\nThe upstream installer overwrote existing hooks, reported success while placing hooks in a directory `core.hooksPath` never reads, failed in linked worktrees, and its generated pre-push checked the working tree instead of the pushed ref; a missing coverage input was SKIP with rc 0, empty counters were 100 %, and zero-check runs were passes. Zeus installs no Git hooks, but its release checks recorded only argv/exit/stdout/stderr — not which tree they ran against — and a pytest run passed on exit 0 even when everything was skipped; a verification-isolation failure propagated as an exception.\n\n## Change (bounded)\n- `domain/check_results.py` (stdlib only): `pytest_summary()` (final summary line, `no tests ran`, unparsed flag), `classify_test_run()` (executed tests > 0 and no failures/errors → pass; nothing executed → `empty_check`; no summary → `unstructured_output`; the denominator outranks a zero exit), `is_test_run()`, `bind_revision()`.\n- `adapters/deployment.py`: `_check(..., expected_revision)` observes the workspace before running (`git rev-parse HEAD`, `git status --porcelain`) and writes a `binding` (cwd, expected revision, observed HEAD, dirty, env keys, reason) into every receipt; a mismatched or dirty tree is `revision_mismatch` without execution; an unobservable tree is `observation_error`; pytest invocations carry `denominator` and are judged by it. `_run` passes the candidate revision to install, incumbent tests, candidate tests and the docker build, and stops with a `verification_isolation` receipt (`retry`, release stays `reviewed`, no checks) when `VerificationServices` cannot be entered. Timeout/OSError receipts keep the binding.\n- `docs/contracts.md`: INV-CHECK-001 (also records that Zeus installs no Git hooks). Record: `docs/zeus/implementation/check-binding-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_check_binding.py` (5 tests; real child processes in real Git review workspaces, real pytest runs): summary parsing and classification (all-skipped exit 0 → `empty_check`, no tests ran, all deselected, failures, exit 0 with a failing summary, unparseable output, xfail); a `python -c` check bound to the workspace HEAD (executed, receipt carries the binding), the same command under another expected revision → `revision_mismatch` without execution, a dirty tree at the right HEAD → `revision_mismatch`, a non-Git directory → `observation_error`, no declared revision → legacy shape; real pytest: a skip-only commit → exit 0 but `empty_check` (skipped 1 / passed 0), a real test → pass with denominator, the old workspace checked as the new candidate → `revision_mismatch`, a failing test → failed 1; isolation failure → install ran, `retry` with `verification observation unavailable`, release stays reviewed with no checks; a 1-second timeout → `observation_error` with the observed HEAD in the receipt.\n- Release suites (5 files) with the change: 52 passed (the existing `test_install_timeout_retains_review_and_can_retry` still passes: its fake git cannot observe HEAD, which is now `observation_error` → retry). Negative controls: nothing-executed passes on exit 0 → 2 fail; revision mismatch ignored → 2 fail; isolation failure not caught → 1 fails.\n- Windows full suite on origin/main `1488468`: 955 passed, 310 skipped. `ruff check` clean.\n\n## Not claimed\nGit hook installation (hooksPath, linked worktrees, push refs) does not apply to Zeus; docker build/run checks remain exit-code based (denominators apply to pytest checks only); no Linux/WSL run, no renderer/build artefacts, no human SDD acceptance.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRD2Q",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `ced216f` (P1: 검증 서비스 이중 __enter__)\n\n**변경** (`adapters/deployment.py`): `ExitStack`으로 `VerificationServices`를 **정확히 한 번** 진입합니다. 진입 실패는 기존과 같이 `verification_isolation` 영수증 + retry; 진입 뒤에는 본문이 return하든 raise하든 `with stack:`이 종료를 보장합니다.\n\n**테스트** (`tests/test_check_binding.py`): enter/exit를 세는 서비스 double로 본문 정상 종료·본문 예외 두 경우 모두 `enter 1회 → exit 1회`(예외 시 exc type 전달)를 확인; 이중 진입이면 double이 즉시 실패합니다. 실제 Docker compose 스택 재실측은 이 환경(Docker 없음)에서 하지 않았습니다.\n\nmain(`66076cc`) 위로 rebase. 로컬: `test_check_binding.py` + `test_release_health.py` 23 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:02Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/57#issuecomment-5618549721",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 16,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/check-binding-001/README.md",
+      "additions": 55,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/check-binding-001/target-tests.json",
+      "additions": 27,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/deployment.py",
+      "additions": 58,
+      "deletions": 11,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/check_results.py",
+      "additions": 66,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_check_binding.py",
+      "additions": 208,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "ced216f841fc6f428c5fee0f6e40aa17158f1a01",
+  "number": 57,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LFYQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #57: 변경 요청 / 병합 보류\n\n검토 head: `f6acba25b9379328ab32bec522a1072b3745653c`. Codex 독립 검토입니다.\n\n**[P1] 검증 서비스의 이중 __enter__로 배포 검사가 실패합니다**\n\nendpoints=services.__enter__() 후 with services가 다시 __enter__를 호출합니다. 실제 임시 PostgreSQL/Redis Docker stack에서 첫 진입은 성공, 두 번째는 directory.mkdir의 FileExistsError로 실패했습니다. 두 번째 with 진입 실패는 __exit__를 호출하지 않아 stack도 남습니다. 검수 중 만든 stack은 직접 정상 정리했습니다.\n\n위치: [src/codex_harness/adapters/deployment.py:151](https://github.com/trevi00/zeus/blob/f6acba25b9379328ab32bec522a1072b3745653c/src/codex_harness/adapters/deployment.py#L151)\n\n수정·재검증 조건: 컨텍스트는 정확히 한 번 진입하고 진입 실패와 본문 실패의 cleanup을 모두 검증하세요. 실제 _run의 서비스 시작→incumbent/candidate test→종료까지 재실측해야 합니다.\n\n검증: 해당 head의 대상 검사 **9 passed in 7.83s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:31Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "f6acba25b9379328ab32bec522a1072b3745653c"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475408876/job/102864862617",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:19:44Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475402863/job/102864842524",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:18:28Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:14:09Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475408876/job/102864862477",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:13:04Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:14:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475402863/job/102864842434",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:13:19Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:42Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475408876/job/102864862677",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:19:34Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:27:12Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475402863/job/102864842801",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:17:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:17Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475408876/job/102864862232",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:13:52Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475402863/job/102864842780",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:17:45Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:26Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475408876/job/102864862501",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:15:17Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475402863/job/102864842284",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:13:02Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: bind release checks to the tree they ran against and pass test runs only by denominator (FA-025)"
+}

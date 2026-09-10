@@ -1,0 +1,188 @@
+{
+  "baseRefName": "main",
+  "body": "Refs #25 (FA-024). Closure is a separate step; the GitHub issue stays OPEN.\n\n## Problem\nThe upstream seam registry returned OK when a partial value map or a prefix strip collapsed two distinct values, ignored unknown affix options (a no-op affix bypassed the identity guard), gave HIGH fidelity to Java/Dart/Proto extractions that dropped or misattributed members, compared enums by tag:name so a type change was invisible, dropped a second package's same short name, computed spans after comment stripping, and lost a prior DRIFT when the ledger's last line was corrupt. Zeus had no seam/contract extraction at all.\n\n## Change (bounded, greenfield)\n- `domain/seams.py` (stdlib only): `contract_identity(stack, package, name)`; closed transform schemas (identity / value_map / affix — unknown options refused) and `effective_transform()` computed over the **whole input set including passthrough values**, naming collisions, empty targets and declared-vs-effective mismatch; `parse_observation()` (members with name/type/tag/byte span, HIGH fidelity impossible with unresolved members, source path/blob hash/revision/parser); `parse_policy()`/`compare()` — directional (producer→consumer, consumer→producer, both), typed (name required, type/tag optional), BLOCKED below HIGH, NEEDS_TRANSFORM on collisions, advisory with `blocking_eligible: False` and a note that textual agreement is not compiler/serialization/product compatibility; `audit_records()` for imported ledgers.\n- `adapters/seam_extraction.py`: one real extractor — Python top-level `Enum`/`IntEnum`/`StrEnum`/`Flag`/`IntFlag` via `ast`, literal int/str members only (calls and expressions are unresolved → LOW), byte spans into the exact on-disk blob (no comment stripping or renumbering), blob hash + revision + parser version; read/decoding/syntax failures, oversize (no partial read), missing files and unsupported stacks are named UNKNOWN observations, never HIGH. `discover()` sorts before it caps and counts what it omitted.\n- `application/seam_ledger.py`: observations (one row per blob/parser/revision, binding revision must match), comparisons (idempotent rows), `approve_blocking()` (reviewer + 40-hex policy revision + reason, DRIFT only), `import_jsonl()` (valid and corrupt lines both kept; audit is `partial` when any line is corrupt).\n- `docs/contracts.md`: INV-SEAM-001. Record: `docs/zeus/implementation/seam-contracts-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_seam_contracts.py` (7 tests; extraction on real files with the real parser; ledger on MemoryStore + isolated PostgreSQL): partial value-map collision with a passthrough value and prefix-strip collapse are collisions (upstream: OK); unknown affix option refused; no-op reported; identity differs by package; HIGH+unresolved refused; directional DRIFT, NEEDS_TRANSFORM on collision, OK after a distinct rename, **type change visible when `type` is compared and invisible under a name-only policy (stated as the weaker policy)**, LOW/UNKNOWN BLOCKED with denominators; Python extraction with docstring and comments keeps `PAID = 2`'s byte span equal to the on-disk blob (CRLF on Windows), keeps a one-character member, excludes `_private`, counts a call value as unresolved (LOW), separates same-named enums in two packages, and names syntax error / invalid UTF-8 / missing file / >2 MiB / Java stack as UNKNOWN states; discovery sorted-then-capped with `omitted`; ledger idempotency, revision binding, reviewer-only blocking approval on DRIFT only; an imported ledger with a truncated tail and an unknown verdict keeps the earlier DRIFT and reports `partial` with the corrupt line numbers.\n- Negative controls: collisions counted only among mapped keys → 4 fail; unknown transform options ignored → 1 fails; LOW compared as HIGH → 1 fails; corrupt ledger lines skipped → 1 fails.\n- Windows full suite on origin/main `1488468`: 955 passed, 311 skipped, 1 failed — the unrelated intermittent `test_execution_fence…reissue_generation[memory]` (1-second lease timing; passes alone). `ruff check` clean.\n\n## Not claimed\nOnly Python top-level enums with literal values are extracted; Java/Dart/Proto and message kinds are `unsupported_stack` (adding one requires a real parser-based extractor and a registry entry). Name/type/tag agreement is textual, not compiler, serialization or product compatibility; no human-reviewed scenario evidence, no Linux/WSL run; the blocking approval validates the policy revision's format, not its existence.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRCng",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `123b30a` (P1: AnnAssign 멤버 누락을 HIGH로 표시)\n\n**변경** (`adapters/seam_extraction.py`): `NAME: annotation = literal`은 멤버; `A = B = 1`, `A, B = 1, 2` 같은 다중 대상은 이름마다 unresolved 후보로 계수하고 `source.unsupported_syntax`에 열거(버리지 않음); 값 없는 annotation·docstring·메서드·`_private`은 멤버 아님. base 해석 범위는 모듈 docstring과 `source.base_resolution=\"by name only; imports not followed\"`에 명시.\n\n**테스트**: `class Annotated(Enum): A=1; B: int=2; C: int; D = E = 3; F, G = 4, 5; def label` → members [A, B], `symbols_found 6 / unresolved 4`, fidelity LOW, unsupported_syntax [[D,E],[F,G]]; annotation만 있는 enum은 HIGH.\n\nmain(`66076cc`) 위로 rebase. 로컬: 6 passed, 1 skipped; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:00Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/56#issuecomment-5618549406",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 20,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-contracts-001/README.md",
+      "additions": 69,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-contracts-001/target-tests.json",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/seam_extraction.py",
+      "additions": 147,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/application/seam_ledger.py",
+      "additions": 93,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/seams.py",
+      "additions": 174,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_seam_contracts.py",
+      "additions": 240,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "123b30a07467c0fced12026aaf0820ad00798863",
+  "number": 56,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LEQQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #56: 변경 요청 / 병합 보류\n\n검토 head: `9ba590b1d7891048244a208fdd27ded92dd4df6c`. Codex 독립 검토입니다.\n\n**[P1] Python enum 멤버 누락을 HIGH로 표시합니다**\n\n실제 파일의 class Status(Enum): A=1; B: int=2를 추출하면 A만 남고 fidelity=HIGH, symbols_found=1, unresolved=0입니다. B도 실제 enum 멤버인데 AnnAssign을 조용히 건너뜁니다.\n\n위치: [src/codex_harness/adapters/seam_extraction.py:66](https://github.com/trevi00/zeus/blob/9ba590b1d7891048244a208fdd27ded92dd4df6c/src/codex_harness/adapters/seam_extraction.py#L66)\n\n수정·재검증 조건: AnnAssign 등 지원할 syntax를 추출하고 미지원 멤버 후보는 분모/unresolved에 포함하세요. 이름이 Enum인 일반 class를 enum으로 오인하는 import/base 해석 범위도 명시해야 합니다.\n\n검증: 해당 head의 대상 검사 **11 passed in 1.00s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:28Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "9ba590b1d7891048244a208fdd27ded92dd4df6c"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:42Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475404087/job/102870239656",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:18:45Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:33Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475399348/job/102864831125",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:18:41Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:25Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475404087/job/102870249111",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:15:26Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:33Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475399348/job/102864831109",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:35Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:13Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475404087/job/102870210873",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:19:35Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475399348/job/102864831066",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:16:19Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:27Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475404087/job/102870210578",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:20:15Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:06Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475399348/job/102864831179",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:20:25Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:32:53Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475404087/job/102870208665",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:29:47Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:17Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475399348/job/102864830878",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:13:03Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: type seam contracts with qualified identity, honest denominators and validated transforms (FA-024)"
+}

@@ -47,3 +47,7 @@
 검토 범위는 15개 수정 PR과 결합 동작입니다. 기존 로컬 full-analysis 미커밋 산출물은 보존했으며 그 전체 의미 분석을 완료했다고 주장하지 않습니다. 로컬 티켓 review와 GitHub Issues에는 PR 수용 여부 및 남은 조건을 동기화합니다. 이슈 종료에는 별도의 신뢰된 closure evidence가 필요하므로 기존 33개 이슈는 OPEN으로 유지합니다. 재부팅·host interruption 운영 실측도 이번 검증에 포함하지 않습니다.
 
 원본 stdout, 고정 head, CI, 게시 readback 및 sync receipt를 이 디렉터리에 보존합니다. 합성 반례를 실모델/사람 인수로 해석하면 안 됩니다.
+
+15건 모두 PR 리뷰 게시 후 commit/body readback을 검증했고, 로컬 advisory review와 연결 GitHub Issues 동기화를 완료했습니다(`github-reviews.json`, `ticket-sync.json`). 기존 33개 이슈는 모두 OPEN이고 보류 6개 PR의 head도 검토한 값과 일치합니다(`final-open-state.json`). 이 환경의 `ZEUS_TICKET_TRUST_COMMIT`은 설정되지 않았으며 검수자가 새 종료 권위를 임의로 만들지 않았습니다.
+
+병합 전 CI 10/10 성공 및 병합 tree 일치는 확인했습니다. 병합 후 main에 자동 시작된 [CI](https://github.com/trevi00/zeus/actions/runs/34480807476)는 별도 실행이며, 이 보고서 게시 시점의 상태는 `merged-main-ci.json`에 기록합니다. 뒤이은 문서 전용 커밋은 `[skip ci]`입니다.

@@ -1,0 +1,188 @@
+{
+  "baseRefName": "fix/fa-024-seam-contracts",
+  "body": "Refs #28 (FA-027). Closure is a separate step; the GitHub issue stays OPEN.\n**Stacked on #56 (FA-024)**; the base is `fix/fa-024-seam-contracts` so the diff shows only this change. Retarget to `main` once #56 merges.\n\n## Problem\nThe upstream example fleet's graph flattened declared, extracted and observed facts into one `LIVE` label that meant \"matched and not BLOCKED\" — never message delivery — dropped producer/consumer roles, drift direction, fidelity, transforms and BLOCKED status, drew an absent fixture as participating edges, accepted `--fail-on TYPO` (everything passed) and an empty declared seam list (0/0 success), and duplicated coverage claims between a banner and the view.\n\n## Change (bounded)\n- `domain/seam_view.py` (stdlib only): `parse_gate_policy()` — `fail_on` is a closed vocabulary (DRIFT, NEEDS_TRANSFORM, BLOCKED; a typo, `OK`, an empty list or a repeat is refused) and `required_seams` must be non-empty; `build_view()` — nodes carry provenance (`observed` / `extracted_partial` / `unavailable` / `declared_only`), edges keep producer/consumer roles, direction, verdict, both fidelities, the effective transform, collisions, member deltas and the comparison id; `live` is reserved for an OK comparison between two HIGH observations; seams the policy requires but nobody compared stay visible as `declared_only`; nodes and edges are sorted so equal inputs in any order give byte-equal output, and the view carries a generation receipt (generator, inputs hash, view hash, `derived: True`); `gate()` passes only when every required seam is present and OK, fails on a listed verdict, and is otherwise undecided (a BLOCKED or missing required seam never passes).\n- `application/seam_ledger.py`: `view(policy)` projects the recorded rows into a `seam_views` row keyed by the inputs hash (a regenerated view that differs from the stored one for identical inputs is refused); derived, never a ledger.\n- `domain/sdd.py`: `gate_report` gains `denominators` (declared scenarios, imported observations, runner-executed scenarios, verified assertions, human acceptance — the last three honestly zero until real paths exist).\n- `docs/contracts.md`: INV-SEAM-VIEW-001. Record: `docs/zeus/implementation/seam-view-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_seam_view.py` (6 tests; ledger on MemoryStore + isolated PostgreSQL): policy refusals; provenance per node, roles/direction/producer-only kept on a DRIFT edge, `live` only on the OK edge, BLOCKED edge with both fidelities, `declared_only` ghost edge; gate `fail` on the drifted seam with missing/undecided lists and 4/3/1 denominators; **a BLOCKED required seam under `fail_on: [DRIFT]` is undecided** (upstream accepted it) and `fail` under `fail_on: [BLOCKED]`; pass only with all required OK; reversed input order gives an identical view and hash, a changed input changes both hashes, conflicting comparisons for one seam are refused; ledger view rows are derived and regenerable; SDD denominators.\n- With `test_seam_contracts.py` and `test_sdd.py`: 33 passed. Negative controls: open fail-on vocabulary → 1 fails; `live` meaning \"not BLOCKED\" → 1 fails; gate passing whenever nothing is in fail_on → 1 fails.\n- Windows full suite on FA-024 `9ba590b`: 961 passed, 312 skipped. `ruff check` clean.\n\n## Not claimed\nThe view is a JSON structure; there is no HTML/graph renderer. No Windows/Linux/WSL newline/path runs. Human E2E acceptance of user/failure/money scenarios and Astra→Sol→Terra qualification are not consumers of the view; the SDD executed/assertion/acceptance denominators stay zero until real runner and human paths exist.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRF9g",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `4b715b6` (P2: 두 번째 revision이 누적되면 view 불가)\n\n**변경** (`application/seam_ledger.py`): `view(policy, *, revision=None, comparison_ids=None)` — 관측은 그 revision에 기록된 행만, 비교는 그 행들 사이의 것(또는 명시 id; revision 밖이면 거절)만 사용합니다. revision을 안 주면 가장 최근 기록 revision을 쓰고 영수증에 `revision`, `revisions_recorded`, `observation_rows`, `comparison_rows`를 적습니다.\n\n**테스트**: 같은 계약을 revision A·B로 기록 → 최신 view는 B(드리프트 해소, pass), `revision=A` view는 이전 행 그대로 재생성, 명시 comparison_ids, revision 밖 비교 거절, 미지 id 거절, 관측 없음 거절; 관측 6행 보존.\n\n선행 #56 수정본(`123b30a`) 위로 rebase. 로컬(MemoryStore + 격리 PG): `test_seam_view.py` + `test_seam_contracts.py` 13 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:05Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/59#issuecomment-5618550262",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 18,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-view-001/README.md",
+      "additions": 57,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-view-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/application/seam_ledger.py",
+      "additions": 47,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/sdd.py",
+      "additions": 7,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/seam_view.py",
+      "additions": 126,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_seam_view.py",
+      "additions": 159,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "4b715b643eb49e49d0f3cf83e20dd1e10f45b942",
+  "number": 59,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LHlw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #59: 변경 요청 / 병합 보류\n\n검토 head: `922e8c76152b4e1ad3ff59c447bb7f413f9ce92d`. Codex 독립 검토입니다.\n\n**[P2] 두 번째 소스 revision이 누적되면 seam view를 만들 수 없습니다**\n\n같은 enum의 revision A와 B를 정상 record_observation으로 기록한 뒤 view를 부르면 서로 다른 sources 오류입니다. append-only 원장의 모든 과거 관측/비교를 한 view에 전달하므로 일반적인 반복 개발만으로 영구 실패합니다.\n\n위치: [src/codex_harness/application/seam_ledger.py:100](https://github.com/trevi00/zeus/blob/922e8c76152b4e1ad3ff59c447bb7f413f9ce92d/src/codex_harness/application/seam_ledger.py#L100)\n\n수정·재검증 조건: view 입력을 명시적 release/revision/observation ID로 한정하고 comparison이 참조한 정확한 관측을 선택하세요. 과거 기록 보존과 최신/과거 view 재생성을 함께 검사해야 합니다.\n\n검증: 해당 head의 대상 검사 **10 passed in 1.42s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:35Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "922e8c76152b4e1ad3ff59c447bb7f413f9ce92d"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475480183/job/102865089738",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:16:40Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475474186/job/102865071071",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:17:58Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:22Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475480183/job/102865089692",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:26Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475474186/job/102865071129",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:14:11Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:50Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475480183/job/102865089639",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:15:19Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:28:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475474186/job/102865071272",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:21:49Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:43Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475480183/job/102865089748",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:13:09Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:27:16Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475474186/job/102865071036",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:21:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:41Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475480183/job/102865089304",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:13:58Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:00Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475474186/job/102865070866",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:17:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "feat: derive a seam view with provenance and roles and gate it on a closed vocabulary (FA-027)"
+}

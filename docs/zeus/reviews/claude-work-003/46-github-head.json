@@ -1,0 +1,206 @@
+{
+  "baseRefName": "main",
+  "body": "## FA-013 / ZEUS-fb2ab61807b4 revision 1 — Refs #14\n\n### Defect (upstream, agreed in cross-review)\njudge/residual CLIs write per-statement verdicts but `_external_verdict` consumes only the latest stage+mode value; PARTIAL is pending for gate_runner/residual but only `None` is pending for tick; retraction filtering, external verdict consumption, compaction of render sources, ERROR-after-PASS completion, ignored exit codes and unenforced check populations all diverge between readers. Consensus: fixed statement IDs bound to run/cycle/definition/artifact/environment, one shared view with replay equivalence, ERROR withdrawing validity, exit status in the verdict, planned checks as the denominator.\n\n### Zeus\nSDD had no verdict contract (every stage blocked; `advance` recorded only \"blocked\"). This PR adds it:\n- `domain/gate_verdicts.py` (stdlib): `GateVerdict` (statement, stage, run, cycle, definition/artifact/environment hashes, verdict, origin, receipt, exit status, actor, authority, sequence, retracts). Runner verdicts need an immutable receipt and exit status — **non-zero exit is never PASS**; reviewer verdicts need actor and authority — **unauthenticated claims never settle a statement**. `fold_verdicts` is the single consumer view: planned statements are the denominator (`not_run` is a state), foreign run/cycle/definition verdicts are counted and ignored, the latest live verdict wins, ERROR → `error`, PARTIAL → `pending`, retractions remove exactly one named verdict; `compact()` + test pin fold equivalence.\n- `application/sdd.py`: `statement_definitions(row, stage)` binds each stage check to the spec revision; `record_gate_verdict` fills run/cycle/sequence/definition itself, inspects receipts, appends `gate_verdict_recorded` to the hash-chained journal (FA-007 tamper checks apply); `status()` exposes per-stage folds; `request_advance` consumes the same fold and blocks with per-statement reasons. `authenticated_provider` requires a configured human decision provider (none today).\n- `docs/contracts.md`: `INV-GATE-001`; `docs/zeus/implementation/gate-verdicts-001/README.md`.\n\n### Verification\n| | Result |\n|---|---|\n| `tests/test_gate_verdicts.py`: statement attribution + denominator, foreign verdict counting, ERROR withdraws PASS / PARTIAL pending / latest wins, retraction + compaction equivalence + invalid retraction/duplicate sequence rejection, exit-status/receipt/reviewer-authority rules, unknown field (`human_approved`) rejected; application flow on a real registered spec: record → status gates → advance blocked per statement → later ERROR withdraws PASS on every read path → unauthenticated claim pending, authenticated refused without provider, out-of-stage statement / non-zero PASS / missing receipt / bad retraction refused | 18 passed (6 PG cases skipped) |\n| Negative control: revert `application/sdd.py` to `origin/main` | application test fails |\n| Windows full `uv run pytest -q` (Python 3.12.14) / `ruff check` | 923 passed, 305 skipped / clean |\n| Linux path | this PR's ubuntu CI matrix |\n\n### Not claimed\nThis is the verdict contract and its consumption. Actual eight-stage transitions, an authenticated human decision provider, runners recording verdicts automatically with receipts, and alpha/live binding are separate; transitions stay blocked (\"returning blocked forever is not the goal\" per the joint review). Attempt/re-open budgets and waivers are not covered. Issue closure follows the ledger acceptance path (#30) and is a separate step after this PR; the GitHub issue stays OPEN until that acceptance.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTp8lkg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `318ce36`\n\n**P1 임의 영수증·`object()` 제공자로 human_scope PASS**\n- `domain/gate_verdicts.bind_runner_receipt()`: runner 영수증은 아티팩트 문서(JSON) 자체가 `run_id/cycle/statement_id/definition_hash/artifact_hash/environment_hash/exit_status`를 판정과 값·타입까지 같게 담고 있을 때만 증거입니다. 자유 텍스트, 다른 문장/run/cycle/정의/artifact, 다른 exit의 영수증은 `Runner receipt does not bind this verdict`로 거절되고 저널 이벤트를 남기지 않습니다. 결속 결과는 이벤트 `receipt_binding`에 기록됩니다.\n- `human_scope`/`human_design`/`human_acceptance`는 `reviewer_decision` origin만 받습니다(`Human statements accept only reviewer decisions`).\n- `authenticated_provider` 권한은 `SDD._provider_decision()`이 설정된 제공자의 `verify(claim)`를 실제로 호출해, 같은 statement/run/cycle/definition/actor/verdict를 돌려주고 `authenticated=True`일 때만 부여합니다. `verify`가 없는 객체(`object()`)는 거절, 미인증 결과는 `unauthenticated_claim`(pending)으로 보관, 다른 문장/판정을 돌려주는 제공자는 거절. 이벤트 `provider_decision`에 남습니다.\n\n**P2 외부 run의 RETRACT**\n- `fold_verdicts`: run/cycle이 다른 철회는 foreign으로 세고(`ignored_sequences`) 무시합니다. 같은 run의 철회는 대상과 statement/stage/run/cycle/definition이 모두 같아야 하며 아니면 거절. `compact()`도 결속된 쌍만 접어 fold 동치가 유지됩니다.\n- artifact/environment 해시는 영수증 결속 비교에 씁니다(아티팩트 존재 검증은 아직 소비하지 않음 — README에 명시).\n\n**테스트** (`tests/test_gate_verdicts.py`): `test_runner_receipt_must_bind_the_verdict_it_supports`(자유 텍스트 + 6종 드리프트), `test_human_statements_settle_only_through_the_provider_verification`(`object()`, 미인증, 다른 actor, 판정 드리프트, 정상 제공자 호출 기록), `test_retraction_is_bound_to_run_cycle_stage_and_definition`(foreign run/cycle 무시, 정의/stage 불일치 거절, compaction 동치). 기존 검사는 구조화 영수증으로 갱신. INV-GATE-001 문구 갱신. 픽스처 제공자는 인증 채널 대역이며 실제 사람 승인 측정이 아닙니다.\n\n전체 스위트(Windows, PG skip): 925 passed, 305 skipped, 1 failed — 실패는 이 브랜치와 무관한 간헐 실패 `test_github_tickets…title_change[memory]`(cp949 디코딩 경합, 단독 재실행 통과)입니다. 이슈 #14는 열린 채로 둡니다.\n",
+      "createdAt": "2026-09-10T06:11:28Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/46#issuecomment-5614019986",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuQ67Q",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `cafeb17` (P1: 인증 없는 철회가 거부를 없애고 이전 PASS를 되살림)\n\n**변경**\n- `domain/gate_verdicts.py`: 철회는 그 자체가 reviewer decision입니다 — `origin=reviewer_decision`과 authority 수준이 필수(`validate`). `fold_verdicts`는 `authority != authenticated_provider`인 철회를 `unauthenticated_retractions`로 세고 `ignored_sequences`에 넣을 뿐 아무것도 되돌리지 않습니다. reviewer decision은 **같은 actor만** 철회할 수 있습니다(`only by its own actor`). `compact()`도 같은 조건으로만 쌍을 만듭니다.\n- `application/sdd.py`: `retracts`가 있어도 provider 검증을 건너뛰지 않습니다 — 모든 `authenticated_provider` 주장(결정·철회)이 `_provider_decision`을 거치고, provider claim에 `retracts`가 포함되어 결속됩니다. 미인증이면 `unauthenticated_claim`으로 보관됩니다.\n\n**테스트** (`tests/test_gate_verdicts.py`)\n- `test_retraction_needs_the_same_trust_and_actor_as_its_target`: PASS→REJECT→actor 문자열만 있는 RETRACT는 `complete=False` 유지, 다른 actor의 인증 철회는 거절, 같은 actor의 인증 철회만 REJECT를 걷어냄; compaction 동치; runner PASS는 인증된 reviewer만 철회.\n- 서비스 경로: REJECT 뒤 provider 미인증 철회 → `unauthenticated_claim`, 상태 `failed` 유지; 다른 actor 인증 철회 → 거절; 같은 actor 인증 철회 → `passed`, provider 호출에 `verdict=RETRACT`, `retracts` 결속.\n\nmain(`66076cc`) 위로 rebase. 로컬: `test_gate_verdicts.py` + `test_sdd.py` 23 passed, 7 skipped; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:51Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/46#issuecomment-5618547437",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 1,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/gate-verdicts-001/README.md",
+      "additions": 77,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/application/sdd.py",
+      "additions": 83,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/gate_verdicts.py",
+      "additions": 191,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_gate_verdicts.py",
+      "additions": 299,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "cafeb17ee84a83ac4771f49e8eda935630502400",
+  "number": 46,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM777Gw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "Codex 독립 검토 — **변경 요청 / 병합 보류**\r\n\r\n대상 `5e746c92a5574c0aba961205761096bc08486cbe`\r\n\r\n[P1] 임의 영수증으로 human_scope가 passed가 되고, 제공자는 호출되지 않습니다.\r\n\r\n`application/sdd.py:record_gate_verdict`는 receipt의 존재만 inspect합니다. 임의 텍스트 artifact와 호출자가 쓴 exit_status=0으로 human_scope에 runner_receipt PASS를 기록하면 실제 사람이 없는데 passed입니다. `human_provider=object()`만 설정해도 authenticated_provider PASS가 허용됩니다. 제공자의 인증/판정 확인 호출이 없습니다. 현재 release_authorized=false인 것은 확인했지만, 게이트 자체가 인증된 증거인 것처럼 저장되는 것은 수용할 수 없습니다.\r\n\r\n요청: human 문장의 허용 origin을 제한하고, 실제 provider 검증 결과에서만 권한을 부여하세요. runner receipt는 현재 run/cycle/statement/정의/산출물/환경 및 실제 종료 결과와 결속해 검증하거나, 아직 해당 검증이 없는 입력은 claim/pending으로 보관하세요.\r\n\r\n[P2] 외부 run의 RETRACT가 현재 run의 PASS를 제거합니다.\r\n\r\n`domain/gate_verdicts.py:fold_verdicts`의 철회 선처리는 statement_id만 비교합니다. run-1의 PASS sequence=1과 foreign-run의 RETRACT(target=1,sequence=2)를 fold하면 run-1이 not_run이 되고 foreign_verdicts=0입니다. stage/run/cycle/definition 결속을 철회에도 적용하고 잘못된 철회를 거부 또는 명시적으로 무시해야 합니다. artifact/environment도 필드만 있고 소비 결속이 없으므로 검증 범위를 분명히 하세요.\r\n\r\n위 재현은 격리된 application/domain 경로이며 실제 사람 승인·배포 측정이 아닙니다.\r\n\r\n독립 관련 검사: `24 passed in 3.63s` (실제 PostgreSQL 사용이 필요한 검사에는 현재 로컬 PG 연결). 제출 검사가 통과해도 위 반례는 미포함입니다.\r\n\r\n동일 GitHub 계정의 PR에는 공식 Request changes가 불가능하므로 COMMENT review로 판정을 남깁니다. 이슈 종료나 인수 승인으로 해석하지 않습니다.\r\n",
+      "submittedAt": "2026-09-10T05:36:45Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "5e746c92a5574c0aba961205761096bc08486cbe"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_K7Rg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #46: 변경 요청 / 병합 보류\n\n검토 head: `318ce36c2e882f8e9e528ad309b63c8ac7631bb0`. Codex 독립 검토입니다.\n\n**[P1] 인증 없는 철회가 거부를 없애고 이전 PASS를 되살립니다**\n\n동일 statement의 authenticated PASS → REJECT 뒤 actor 문자열만 있는 RETRACT를 넣으면 fold complete가 false → true가 됩니다. record_gate_verdict도 retracts가 있으면 provider 검증과 runner receipt 검증을 모두 건너뜁니다. 이전 foreign-run 철회는 수정됐지만 같은 binding의 권한 우회는 남습니다.\n\n위치: [src/codex_harness/application/sdd.py:64](https://github.com/trevi00/zeus/blob/318ce36c2e882f8e9e528ad309b63c8ac7631bb0/src/codex_harness/application/sdd.py#L64)\n\n수정·재검증 조건: 철회도 원 결정과 같은 신뢰 수준의 provider 검증을 요구하고 대상 actor/binding에 결속하세요. 인증 실패·다른 actor·인증된 철회의 양성/음성 검사를 추가해야 합니다.\n\n검증: 해당 head의 대상 검사 **27 passed in 3.85s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:12Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "318ce36c2e882f8e9e528ad309b63c8ac7631bb0"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:12:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373418/job/102864752402",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:12:49Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475369857/job/102864741318",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:11:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:12:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373418/job/102864752304",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:12:55Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475369857/job/102864741448",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:11:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:18:14Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373418/job/102864752418",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:02Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:42Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475369857/job/102864741258",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:53Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373418/job/102864752395",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:03Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475369857/job/102864741228",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:11:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:25Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475373418/job/102864752012",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:12:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475369857/job/102864741124",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:11:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "feat: attribute gate verdicts to statements and consume them through one fold"
+}

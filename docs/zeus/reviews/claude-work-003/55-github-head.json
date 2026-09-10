@@ -1,0 +1,188 @@
+{
+  "baseRefName": "main",
+  "body": "Refs #24 (FA-023). Closure is a separate step; the GitHub issue stays OPEN.\n\n## Problem\nThe upstream validators reported structural \"ok\" when no check ran, accepted unknown keywords silently, passed NaN bounds, let a lexical CLEAN coexist with read errors, called two unrelated files a consensus and folded schema-owner errors into agent failures. Zeus validates with `jsonschema` (bool/int enums, closed objects and `required` already behave — measured in this PR), but a misspelled keyword was a check that silently never ran, results did not say what was checked, configuration errors were not distinguished from agent defects, and tool use existed only as self-report.\n\n## Change (bounded)\n- `adapters/output_schema.py`: an explicit `SUPPORTED_KEYWORDS` subset of Draft 2020-12 (subset v1) — any other keyword is refused at preflight with its path (`codex-output-schema-unsupported-keyword`); `enum` requires an explicit `type` like `const`; a closed object cannot `required` names it does not declare; depth (32) and encoded size (256 KiB) are bounded; non-finite numbers are refused; annotations (`examples`, `description`, …) are not walked as schemas. `preflight()` now returns a receipt (`schema_hash`, `dialect`, `subset_version`, `keywords`, `checks`, `max_depth`, `bytes`). Existing messages, paths and hash binding are unchanged.\n- `adapters/execution_output.completed_output()`: every result carries `structural.checks` (`text`/`json`/`finite`/`schema` as checked / failed / unchecked / configuration_error) and the preflight receipt; a schema the subset refuses is `failure.owner = 'configuration'` (`codex-output-schema-configuration`) and a valid-looking answer under it is not accepted; agent defects are `owner = 'agent_output'` (existing causes and `output_reason` kept).\n- `adapters/execution_output.tool_usage()`: runner-observed command/file-change/MCP items from transport `item/completed` events recorded beside any self-reported `tool_calls`, with `comparison` (`not_declared` / `consistent` / `differs`); the executor puts it in every execution evidence record.\n- `docs/contracts.md`: INV-OUTPUT-001 (also states that Zeus keeps no lexical, filename or boilerplate grade). Record: `docs/zeus/implementation/output-validation-001/` (README + receipt with negative controls and the jsonschema probe).\n\n## Verification\n- `tests/test_output_validation.py` (5 tests): all eight schemas Zeus sends are inside the subset and get receipts; `requried` (top level) and `minLenght` (nested path) refused, enum without type refused, undeclared required refused, depth 33 refused, NaN minimum refused, `examples` not walked; check states for ok / mismatch / broken JSON / misconfigured schema (owner `configuration`, answer None, JSON still checked) / empty / NaN; observed tool use counts completed items only, ignores started items and non-events, and reports `not_declared` / `consistent` / `differs`; executor evidence carries one observed `commandExecution` from a real protocol replay.\n- Existing output/app-server/executor suites: 126 passed with the change. Negative controls: unknown keywords accepted → 2 fail; enum without type accepted → 1 fails; configuration errors owned by the agent → 1 fails; started items counted as observed → 1 fails.\n- Windows full suite on origin/main `1488468`: 955 passed, 310 skipped. `ruff check` clean.\n\n## Not claimed\nThe subset is the explicit list of keywords Zeus sends, not a full JSON Schema implementation (new keywords require a list change and a subset version bump). No lexical/consensus/boilerplate signals exist or were added; structural validity and observed tool use are review evidence, never SDD acceptance or Astra/Sol/Terra qualification; no Windows/Linux/WSL path/encoding runs.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRBpQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `5fbb7a4` (P1: 선언 dialect와 검증 dialect 불일치)\n\n**변경**\n- `adapters/output_schema.py`: `$schema`가 있으면 2020-12 URI만 허용(그 외는 configuration error로 거절). preflight 영수증에 `validator=jsonschema.Draft202012Validator`, `format=\"annotation only: never asserted\"` 명시.\n- `adapters/execution_output.py`: `Draft202012Validator(schema, format_checker=None).validate(...)`로 영수증과 같은 dialect로 검증. `tool_usage`는 `params=None`/누락을 방어.\n\n**테스트**: draft-07 선언 + prefixItems → configuration error(owner configuration); 2020-12 선언 → `[\"not-an-integer\"]` 거절, `[3]` 수용; `format: date-time` 위반 값은 통과하고 영수증이 annotation-only를 말함; `params=None` 이벤트는 tool item도 crash도 아님.\n\nmain(`66076cc`) 위로 rebase. 로컬: 6 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:59Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/55#issuecomment-5618549157",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 18,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/output-validation-001/README.md",
+      "additions": 63,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/output-validation-001/target-tests.json",
+      "additions": 37,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/execution_output.py",
+      "additions": 72,
+      "deletions": 15,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "additions": 2,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/adapters/output_schema.py",
+      "additions": 70,
+      "deletions": 6,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/test_output_validation.py",
+      "additions": 159,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "5fbb7a4b4797f556d622a3e4043b11ed66d74ef4",
+  "number": 55,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LDDw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #55: 변경 요청 / 병합 보류\n\n검토 head: `fc35ed0dcd9d3a9af31ddb712761b614d88055c6`. Codex 독립 검토입니다.\n\n**[P1] 선언한 JSON Schema dialect와 실제 검증 dialect가 다릅니다**\n\nschema에 $schema=draft-07, type=array, prefixItems=[{type:integer}]를 주고 [\"not-an-integer\"]를 검사하면 answer가 수용되고 schema=checked입니다. preflight 영수증은 2020-12를 주장하지만 jsonschema.validate가 draft-07을 선택해 prefixItems를 무시합니다.\n\n위치: [src/codex_harness/adapters/execution_output.py:64](https://github.com/trevi00/zeus/blob/fc35ed0dcd9d3a9af31ddb712761b614d88055c6/src/codex_harness/adapters/execution_output.py#L64)\n\n수정·재검증 조건: 지원 dialect를 2020-12로 고정하거나 다른 선언을 거절하고 실제 validator와 영수증을 일치시키세요. 지원 목록의 format도 assertion인지 annotation인지 명시해야 합니다. tool_usage의 params=None 방어도 추가 검토 대상입니다.\n\n검증: 해당 head의 대상 검사 **43 passed in 16.98s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:26Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "fc35ed0dcd9d3a9af31ddb712761b614d88055c6"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:30Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475401650/job/102864838419",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:16:32Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:56Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475395635/job/102864819913",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:57Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:22Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475401650/job/102864838487",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:18:16Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:52Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475395635/job/102864820135",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:13:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:24:18Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475401650/job/102864838497",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:17:44Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:47Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475395635/job/102864820028",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:15:11Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:24:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475401650/job/102864838664",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:14Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:04Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475395635/job/102864820183",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:14:04Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:54Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475401650/job/102864838318",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:17:37Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475395635/job/102864820166",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:16:26Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: validate structured output against a declared schema subset with receipts and owned failures (FA-023)"
+}

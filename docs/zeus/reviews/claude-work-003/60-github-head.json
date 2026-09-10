@@ -1,0 +1,203 @@
+{
+  "baseRefName": "fix/fa-027-seam-view",
+  "body": "Refs #29 (FA-028). Closure is a separate step; the GitHub issue stays OPEN.\n**Stacked on #59 (FA-027) → #56 (FA-024)**; the base is `fix/fa-027-seam-view` so the diff shows only this change. Retarget once the base merges.\n\n## Problem\nThe upstream seam check compared enum `tag:name` only, so a proto money-field type change and an RPC rename kept HIGH/OK; Dart response `errorCode` `String?`/`int?` and null-serialization differences were outside its scope; and proto copies with different packages, options, services and responses were described as identical. A narrow check's OK was read as whole-contract compatibility.\n\n## Change (bounded)\n- `domain/seams.py`: `CHECK_SCOPES` (member names/types/tags, envelope, rpc, response types, error mapping, storage, execution, human scenario). Observations declare `covered_scopes` (validated; derived from the members' own fields when an extractor did not declare; UNKNOWN covers nothing). Policies take `required_scopes` (default `member_names`). `scope_coverage()` reports, per required scope, whether both sides covered it **and** the policy compared it — `checked` vs `unverified` with `complete`. `compare()` results carry `scope_coverage`, `copy` (`same_blob` byte identity) and `equivalent_on_checked_scopes`; OK speaks only for the checked scopes.\n- `adapters/seam_extraction.py`: the Python enum extractor declares `[member_names, member_types, member_tags]`.\n- `domain/seam_view.py`: every observation is a node (those no comparison names are `undeclared: True`); edges carry `scope_coverage` and `copy`; `live` requires OK between two HIGH observations **on every required scope**; the gate treats a scope-incomplete OK as `OK_unverified_scopes` (undecided, never pass); `shared_values` link contracts by `type:tag` identity only, with the note that a shared literal is a coincidence of declarations, never causal delivery.\n- `docs/contracts.md`: INV-SEAM-SCOPE-001. Record: `docs/zeus/implementation/seam-scope-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_seam_scope.py` (5 tests): policy/observation scope validation; the same two enums are a complete OK under the default policy but leave `response_types` and `rpc` unverified (`complete: False`) when the spec requires them; a names-only policy cannot claim `member_types`; an UNKNOWN peer checks nothing and is BLOCKED; same blob + same members vs different blob + same members vs same blob claimed + different types are three distinct outcomes; in the view an OK under an rpc-requiring spec is not live and leaves the gate undecided, a fully covered OK is live and passes, an uncompared observation stays as an undeclared node, and `HEARTBEAT` shared across two contracts is linked as `str:HEARTBEAT`; the extractor declares its scopes and an unsupported stack covers none.\n- With `test_seam_view.py` and `test_seam_contracts.py`: 18 passed. Negative controls: unverified scopes counted as checked → 2 fail; scope-incomplete OK live and passing → 1 fails; shared values keyed by tag only → 1 fails.\n- Windows full suite on FA-027 `9ad77e3`: 966 passed, 312 skipped. `ruff check` clean.\n\n## Not claimed\nNo extractor or checker yet covers envelope, rpc, response types, error mapping, storage, execution or human scenarios — this change makes those scopes honestly unverified when a spec requires them; proto/Dart parsers and runtime checks are separate work. Human-defined error/money scenarios and Astra→Sol→Terra qualification are not consumers of these results.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTs5M9Q",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "base `fix/fa-027-seam-view`의 현재 head(`922e8c7`) 위로 rebase했습니다(`a321c70`; 충돌 해소만, 기능 변경 없음). 로컬: `test_seam_scope.py` + `test_seam_view.py` + `test_seam_contracts.py` 16 passed, 2 skipped.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T10:24:43Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/60#issuecomment-5617110261",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuRHIw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `994c929` (P2: 선행 #56/#59 결함 상속)\n\n선행 수정본 `123b30a`(#56) → `4b715b6`(#59) 위로 rebase했고, 요청하신 재검증 테스트를 추가했습니다.\n\n**테스트** (`tests/test_seam_scope.py::test_scope_gate_over_extracted_members_across_two_revisions`, memory + PG): 실제 파일에서 추출한 producer(`A=1; B: int=2`, HIGH, 분모 2/0)와 consumer(`A=1`)를 revision A에서 비교 → DRIFT, 게이트 fail; revision B에서 consumer가 따라잡음 → OK·요구 범위 전부 checked·live·게이트 pass, revision A view는 그대로 재생성; `C = D = 3`이 추가된 revision C → producer LOW(분모 4/2), OK 없음, 게이트 pass 아님.\n\n로컬: `test_seam_scope.py` 7 passed(+ seam_view/seam_contracts 18 passed); Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:18:06Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/60#issuecomment-5618550563",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 14,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-scope-001/README.md",
+      "additions": 53,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/seam-scope-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/seam_extraction.py",
+      "additions": 3,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/seam_view.py",
+      "additions": 33,
+      "deletions": 12,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/domain/seams.py",
+      "additions": 54,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/test_seam_scope.py",
+      "additions": 165,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "994c92933437b73c4d230c0c1c0edf4564c0ac4f",
+  "number": 60,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LIww",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #60: 변경 요청 / 병합 보류\n\n검토 head: `a321c70b0d04ac7f65ca591e7bd2ad19386c57e1`. Codex 독립 검토입니다.\n\n**[P2] 선행 seam 추출·view 결함이 수정되지 않은 상태입니다**\n\nrequired scopes와 byte identity 분리는 유용하지만 #56의 AnnAssign 누락/HIGH 반례가 이 head에서도 재현됩니다. #59의 전체 과거 관측 혼합 경로도 상속합니다. 따라서 complete scope가 실제 누락을 검증한 것으로 해석될 수 있습니다.\n\n위치: [src/codex_harness/adapters/seam_extraction.py:66](https://github.com/trevi00/zeus/blob/a321c70b0d04ac7f65ca591e7bd2ad19386c57e1/src/codex_harness/adapters/seam_extraction.py#L66)\n\n수정·재검증 조건: 선행 #56/#59 수정본에 rebase한 뒤 멤버 분모와 두 revision view 시나리오를 포함해 scope gate를 재검증하세요. 이 PR만 먼저 병합하지 않습니다.\n\n검증: 해당 head의 대상 검사 **9 passed in 1.05s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:37Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "a321c70b0d04ac7f65ca591e7bd2ad19386c57e1"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475781861/job/102866052116",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:22:40Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:28Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475776207/job/102866033692",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:22:35Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:23:31Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475781861/job/102866052201",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:22:30Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:20:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475776207/job/102866033476",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:50Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:42Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475781861/job/102866052041",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:20:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:49Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475776207/job/102866033657",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:20:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:26:57Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475781861/job/102866052150",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:09Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475776207/job/102866033578",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:19:25Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:21:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475781861/job/102866051664",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:18:19Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:25:31Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475776207/job/102866033659",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:22:14Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "feat: limit seam OK to the checked scopes and separate byte identity from checked equality (FA-028)"
+}

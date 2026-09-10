@@ -1,0 +1,188 @@
+{
+  "baseRefName": "main",
+  "body": "Refs #21 (FA-020). Closure is a separate step; the GitHub issue stays OPEN.\n\n## Problem\nThe upstream composite breaker returned an admission bool bound to no owner or generation, kept admitting twice while its state file could not be written, let an old holder's success close a slot another holder had reclaimed, folded failure histories in input order (duplicates and sibling order changed the verdict), composed file paths from aliases, and accepted booleans as thresholds while the effective value stayed at the default.\n\n## Change (bounded)\n- `domain/breaker.py` (stdlib only): `parse_policy()` (closed schema; `type is int` counts so bool is refused; finite positive durations; threshold ≤ retained history; probe TTL ≤ window; Git or explicit `unversioned` revision; policy hash), `breaker_key()` (typed lowercase provider/scope tokens hashed together — aliases, slashes and paths are refused, never folded), `parse_state()` (corrupt records are refused), `fold_failures()` (unique events by time inside the window), `decide()` (pure: admit / refuse / probe / reclaim).\n- `application/breaker.py`: `Breaker.admit()` grants a token only through a committed store transition (a failing commit admits nothing); half-open holds exactly one TTL-bound probe reservation; an expired reservation is reclaimed under a new generation; `report()` applies a result only to the generation it was admitted under and records anything else as `stale_result`; unknown results release the slot without a verdict; only `codex-provider-*` failures and transport deaths count; `inspect()` names `missing` / `corrupt` / `unreadable` distinctly and states the breaker's authority is admission only; `update_policy()` validates on write and applies only when it reads back equal; corruption records a notice and requires repair.\n- `adapters/executor.py`: admission per call before the transport, result reported from what the transport actually returned, `result['breaker']` in the execution evidence; an open breaker never reaches the transport.\n- `docs/contracts.md`: INV-BREAKER-001. Record: `docs/zeus/implementation/breaker-admission-001/` (README + receipt with negative controls).\n\n## Verification\n- `tests/test_breaker.py` (13 tests; store tests on MemoryStore + isolated PostgreSQL): policy validation matrix (13 bad inputs), key identity, order/duplicate-independent folding, 12 corrupt state shapes, decision boundaries (cooldown 119/120 s, TTL 299/300 s), the full probe lifecycle with a **stale success from the reclaimed holder that changes nothing**, 8 concurrent holders → one probe, a commit-failing store admitting nothing and leaving state unchanged, missing/corrupt/unreadable classification with a single repair notice, real-PG corruption via `UPDATE documents`, policy write read-back, result mapping, and executor wiring (two transport deaths open the breaker; the third call is refused before the transport; a healthy call records success with its admitted generation).\n- Existing executor suites with the wiring: 90 passed. Negative controls: stale generation applied → 2 fail; input-order folding → 1 fail; bool accepted as int → 3 fail; executor never admits → 1 fail.\n- Windows full suite on origin/main `1488468`: 961 passed, 313 skipped. `ruff check` clean.\n\n## Not claimed\nNo real model call, child-process kill, restart or clock change on Windows/Linux/WSL; holder liveness is not probed (TTL is durable time; lease expiry, TTL and result arrival are separate recorded events). Git-defined policy files and authenticated policy change history are outside this change (`update_policy` validates, stores and reads back a given revision). A closed breaker authorizes nothing beyond admission.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2\n",
+  "closingIssuesReferences": [],
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuQ_jQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `5556a3f` (P2: 만료된 half-open probe의 성공이 breaker를 닫음)\n\n**변경** (`application/breaker.py`): admission token에 `owner`를 담고, `_report`의 probe 경로가 현재 `reservation`과 token의 task/generation/attempt/owner 및 `expires_at`을 비교합니다 — 해제(`probe_released`)·다른 holder(`probe_other_holder`)·만료(`probe_expired`)면 `stale_result` 이벤트만 남기고 `applied=False`.\n\n**테스트** (`tests/test_breaker.py`): 같은 generation에서 TTL이 지난 뒤의 success → `probe_expired`, 상태 half_open 유지; owner를 바꾼 token → `probe_other_holder`; unknown으로 해제된 뒤의 success → `probe_released`.\n\nmain(`66076cc`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 14 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:57Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/52#issuecomment-5618548621",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 21,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/breaker-admission-001/README.md",
+      "additions": 80,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/breaker-admission-001/target-tests.json",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "src/codex_harness/application/breaker.py",
+      "additions": 222,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/breaker.py",
+      "additions": 127,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_breaker.py",
+      "additions": 321,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "5556a3f6b64e515f1e180ec204aeaa8aa2cd65ad",
+  "number": 52,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_LALg",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #52: 변경 요청 / 병합 보류\n\n검토 head: `ae0f373a6b47d9622a90dfce99fb359b506cbfe9`. Codex 독립 검토입니다.\n\n**[P2] 만료된 half-open probe의 성공 보고가 breaker를 닫습니다**\n\nprobe TTL 2초로 예약 후 만료 시각을 지난 now에서 success를 report하면 applied=true, state=closed가 됩니다. 현재 검증은 generation만 비교하며 slot 소유자, 만료, 소비 여부를 재확인하지 않습니다. 호스트 시계는 바꾸지 않고 명시적 now 입력으로 재현했습니다.\n\n위치: [src/codex_harness/application/breaker.py:129](https://github.com/trevi00/zeus/blob/ae0f373a6b47d9622a90dfce99fb359b506cbfe9/src/codex_harness/application/breaker.py#L129)\n\n수정·재검증 조건: report 트랜잭션에서 현재 reservation과 token의 task/generation/attempt/owner 및 만료를 비교하세요. 만료·unknown으로 해제된 token의 후속 성공은 무효로 처리해야 합니다.\n\n검증: 해당 head의 대상 검사 **68 passed in 26.73s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:21Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "ae0f373a6b47d9622a90dfce99fb359b506cbfe9"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:13Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475388769/job/102864799486",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:15:23Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:07Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384258/job/102864785904",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T12:12:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:17:22Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475388769/job/102864799517",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:16:10Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:13:10Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384258/job/102864786188",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T12:12:09Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:12Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475388769/job/102864799448",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:13:17Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:19:45Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384258/job/102864786195",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T12:13:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:24:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475388769/job/102864799583",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:16:35Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:24:04Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384258/job/102864786236",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T12:18:01Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:16:33Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475388769/job/102864799210",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:13:10Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T12:15:18Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34475384258/job/102864786098",
+      "name": "integration",
+      "startedAt": "2026-09-10T12:12:08Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ],
+  "title": "fix: fence provider admission with a durable, generation-bound breaker (FA-020)"
+}
