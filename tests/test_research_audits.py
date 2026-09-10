@@ -697,6 +697,14 @@ def test_replaying_an_old_acceptance_never_overturns_a_later_rejection(audit):
     with service.store.transaction() as tx:
         assert tx.get('research_approvals', review.binding)['status'] == 'revoked'
         assert len([r for r in tx.scan('research_reviews') if r['review']['actor'] == 'conductor']) == 2
+    # Same execution, re-worded assessment: a new review identity, but not a new inspection.
+    for reworded in (replace(review, license_assessment=review.license_assessment + ' '),
+                     replace(review, license_assessment='Re-read: ' + review.license_assessment)):
+        with pytest.raises(ContractError, match='Re-approval requires a new inspection execution'):
+            service.review(task, reworded)
+    assert not service.coverage(record['id'])['adoption_eligible']
+    with service.store.transaction() as tx:
+        assert len([r for r in tx.scan('research_reviews') if r['review']['actor'] == 'conductor']) == 2
     # Re-approval needs a new review execution (new receipt), which then outranks the rejection.
     receipt = service.execute(task, task['input']['audit_id'], ['fixture-independent-inspection', 'again'])
     fresh = service.review(task, replace(review, execution_id=receipt['id']))
@@ -716,7 +724,11 @@ def test_rejection_then_acceptance_orders_by_sequence_not_existence(audit):
                                'license', 'deps', 'sre', 'architecture', 'graph')
     assert service.review(task, review)['sequence'] == 1
     assert not service.coverage(record['id'])['adoption_eligible']
-    assert service.review(task, replace(review, accepted=True))['sequence'] == 2
+    # Changing one's mind on the same inspection is not a new inspection; acceptance needs one.
+    with pytest.raises(ContractError, match='Re-approval requires a new inspection execution'):
+        service.review(task, replace(review, accepted=True))
+    again = service.execute(task, task['input']['audit_id'], ['fixture-independent-inspection', 'again'])
+    assert service.review(task, replace(review, accepted=True, execution_id=again['id']))['sequence'] == 2
     assert service.coverage(record['id'])['adoption_eligible']
     service.review(lead_task, replace(lead_review, accepted=False))
     assert not service.coverage(record['id'])['adoption_eligible']

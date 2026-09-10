@@ -374,6 +374,12 @@ class ResearchAudits:
             # INV-RESEARCH-004: reviews are ordered per binding and actor; the latest one is the verdict.
             siblings = [r for r in tx.scan('research_reviews')
                         if r['review']['binding'] == review.binding and r['review']['actor'] == review.actor]
+            # An acceptance is bound to one inspection execution. Re-wording a review that reuses an
+            # execution already judged by this actor is not a new inspection, so it cannot re-approve
+            # after a rejection (review counterexample, PR #39). Rejections stay conservative.
+            require(not review.accepted or not any(r['review']['execution_id'] == review.execution_id
+                                                   for r in siblings),
+                    'Re-approval requires a new inspection execution')
             record = {'audit_id': data['audit_id'], 'review': asdict(review),
                       'status': 'reviewed' if successful else 'inspection-blocked',
                       'sequence': 1 + max((r.get('sequence', 0) for r in siblings), default=0), 'at': utcnow()}
