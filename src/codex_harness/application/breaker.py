@@ -16,6 +16,7 @@ from codex_harness.domain.breaker import (
     new_state,
     parse_policy,
     parse_state,
+    parse_time,
 )
 from codex_harness.domain.model import ContractError, digest, require, utcnow
 
@@ -102,7 +103,7 @@ class Breaker:
             token = {'key': key, 'generation': state['generation'], 'probe': probe,
                      'policy_hash': self.policy['policy_hash'], 'policy_revision': self.policy['revision'],
                      'task_id': lease['id'], 'task_generation': lease['generation'], 'attempt': lease['attempt'],
-                     'admitted_at': now.isoformat()}
+                     'owner': lease.get('lease_owner'), 'admitted_at': now.isoformat()}
             self._event(tx, key, state['generation'], 'admitted', probe=probe, reason=reason, origin=origin,
                         task_id=lease['id'], attempt=lease['attempt'])
             return token
@@ -127,7 +128,15 @@ class Breaker:
                 return {'applied': False, 'reason': 'stale_generation', 'state': state['state'],
                         'generation': state['generation']}
             if token['probe']:
-                # Only the slot holder's result settles the probe; unknown releases the slot without a verdict.
+                # Only the current slot holder's result settles the probe, and only while its reservation
+                # is alive: a released, reclaimed or expired slot makes the report stale (review, PR #52).
+                reservation = state['reservation']
+                stale = self._probe_stale(reservation, token, now)
+                if stale:
+                    self._event(tx, key, state['generation'], 'stale_result', result=result, reason=stale,
+                                token_generation=token['generation'], task_id=token.get('task_id'))
+                    return {'applied': False, 'reason': stale, 'state': state['state'], 'generation': state['generation']}
+                # Unknown releases the slot without a verdict.
                 if result == 'success':
                     state.update(state='closed', failures=[], opened_at=None, reservation=None,
                                  generation=state['generation'] + 1)
@@ -147,6 +156,17 @@ class Breaker:
             self._event(tx, key, state['generation'], 'result', result=result, probe=token['probe'],
                         state=state['state'], task_id=token.get('task_id'))
             return {'applied': True, 'state': state['state'], 'generation': state['generation']}
+
+    @staticmethod
+    def _probe_stale(reservation, token, now):
+        if reservation is None:
+            return 'probe_released'
+        if any(reservation.get(field) != token.get(other) for field, other in
+               (('task_id', 'task_id'), ('generation', 'task_generation'), ('attempt', 'attempt'), ('owner', 'owner'))):
+            return 'probe_other_holder'
+        if now >= parse_time(reservation['expires_at'], 'reservation.expires_at'):
+            return 'probe_expired'
+        return None
 
     def inspect(self, key, now=None):
         now = _now(now)

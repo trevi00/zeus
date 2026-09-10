@@ -137,15 +137,24 @@ def test_single_probe_slot_is_fenced_by_generation(backend, request):
     # The old holder's late success is stale: it cannot close the slot the new holder owns.
     stale = breaker.report(probe, 'success', now=t + timedelta(seconds=93))
     assert stale == {'applied': False, 'reason': 'stale_generation', 'state': 'half_open', 'generation': 3}
+    # Review counterexample (PR #52): the current holder's success after its own TTL expired, with no
+    # reclaim in between (same generation), must not close the breaker either.
+    late = breaker.report(reclaimed, 'success', now=t + timedelta(seconds=92 + 31))
+    assert late == {'applied': False, 'reason': 'probe_expired', 'state': 'half_open', 'generation': 3}
+    assert breaker.inspect(KEY, now=t + timedelta(seconds=92 + 31))['state'] == 'half_open'
+    forged = breaker.report({**reclaimed, 'owner': 'someone-else'}, 'success', now=t + timedelta(seconds=93))
+    assert forged['applied'] is False and forged['reason'] == 'probe_other_holder'
     assert breaker.inspect(KEY, now=t + timedelta(seconds=93))['state'] == 'half_open'
     # Unknown (interrupted, cancelled) releases the slot without a verdict; the next probe is fresh.
     assert breaker.report(reclaimed, 'unknown', now=t + timedelta(seconds=94))['state'] == 'half_open'
+    released = breaker.report(reclaimed, 'success', now=t + timedelta(seconds=94))
+    assert released == {'applied': False, 'reason': 'probe_released', 'state': 'half_open', 'generation': 3}, 'a released token settles nothing'
     again = breaker.admit(KEY, first, now=t + timedelta(seconds=95))
     assert again['probe'] and again['generation'] == 4
     assert breaker.report(again, 'success', now=t + timedelta(seconds=96)) == {'applied': True, 'state': 'closed', 'generation': 5}
     with store.transaction() as tx:
         kinds = [e['kind'] for e in sorted(tx.scan(EVENTS), key=lambda e: e['sequence'])]
-    assert kinds.count('stale_result') == 1 and kinds.count('probe_reserved') == 3
+    assert kinds.count('stale_result') == 4 and kinds.count('probe_reserved') == 3
     report = breaker.inspect(KEY, now=t + timedelta(seconds=97))
     assert report['state'] == 'closed' and report['admits'] and 'never acceptance' in report['authority']
 
