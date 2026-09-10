@@ -1,0 +1,18 @@
+﻿import os,json,subprocess,time,hashlib,sys
+from pathlib import Path
+from codex_harness.bootstrap import database_url
+sys.stdout.reconfigure(encoding='utf-8')
+out=Path('.runtime/pr-review-batch-36-44')
+targets={36:['test_experience.py','test_project_skills.py'],37:['test_execution_fence.py','test_execution_identity.py','test_execution_recovery.py'],38:['test_idempotency_races.py'],39:['test_research_audits.py'],40:['test_maintenance.py','test_sdd.py'],41:['test_project_skills.py','test_skill_routing.py','test_skill_guidance.py','test_pipeline.py'],42:['test_architecture.py'],43:['test_observed_assets_cli.py','test_research_audits.py'],44:['test_skill_routing.py','test_project_skills.py','test_skill_ranking.py']}
+env=dict(os.environ,HARNESS_INTEGRATION='1',HARNESS_DATABASE_URL=database_url(),ZEUS_DATABASE_URL=database_url(),PYTHONIOENCODING='utf-8')
+env.pop('VIRTUAL_ENV',None)
+for n,files in targets.items():
+ root=Path(f'C:/Users/rudtn/zeus-pr-review-{n}')
+ sync=subprocess.run(['uv','sync','--frozen'],cwd=root,env=env,capture_output=True)
+ assert sync.returncode==0
+ args=[str(root/'.venv/Scripts/python.exe'),'-m','pytest','-q']+['tests/'+name for name in files if (root/'tests'/name).exists()]
+ start=time.monotonic();r=subprocess.run(args,cwd=root,env=env,capture_output=True)
+ raw=r.stdout+r.stderr;(out/f'{n}-tests.log').write_bytes(raw)
+ (out/f'{n}-tests.json').write_text(json.dumps({'argv':args,'head':json.loads((out/f'{n}.json').read_text('utf-8'))['headRefOid'],'exit_code':r.returncode,'seconds':time.monotonic()-start,'raw_sha256':hashlib.sha256(raw).hexdigest(),'real_postgres':True},indent=2)+'\n','utf-8')
+ print(n,r.returncode,raw.decode('utf-8',errors='replace')[-400:],flush=True)
+

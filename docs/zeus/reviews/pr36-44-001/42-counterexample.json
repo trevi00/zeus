@@ -1,0 +1,6 @@
+{
+  "pr": 42,
+  "scope": "Independent boundary counterexample; fixture data, not operational acceptance",
+  "production_source_alias_assertion": "from pathlib import Path\ndef test_wiring():\n    source = Path('src/codex_harness/cli.py').read_text()\n    assert 'record_incident' in source\n",
+  "detector_findings": []
+}

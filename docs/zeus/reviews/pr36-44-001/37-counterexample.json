@@ -1,0 +1,8 @@
+{
+  "pr": 37,
+  "scope": "Independent boundary counterexample; fixture data, not operational acceptance",
+  "fence_generation": 2,
+  "restored_generation": 1,
+  "stale_heartbeat_accepted": true,
+  "stale_completion": "succeeded"
+}

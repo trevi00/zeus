@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus-pr-review-38\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_idempotency_races.py"
+  ],
+  "head": "369e58b7d24765c08d80a90fb64c0e7675027db2",
+  "exit_code": 0,
+  "seconds": 13.530489700002363,
+  "raw_sha256": "3d0c79aeb0b2e6f8edd9fa186011ec789287022777eee35f8b26bfabd4d4d867",
+  "real_postgres": true
+}

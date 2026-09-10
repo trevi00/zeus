@@ -1,0 +1,235 @@
+diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..5812235 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -26,7 +26,7 @@ The trusted local-process identity boundary is documented in status.md; validati
+ | INV-RESEARCH-001 | Discovery and historical inventory never imply semantic review. Versioned imports preserve original reference records. Source verification reconciles every raw Git path and object against the pinned commit/tree, not just a manifest hash. |
+ | INV-RESEARCH-002 | Partition scope is immutable. Checkpoints require an authorized assigned task, current lease and task/partition generations; evidence history and continuation outbox writes commit atomically. Remaining work reconciles with recorded evidence. |
+ | INV-RESEARCH-003 | Model-authored receipt IDs are not runner evidence. Missing execution, binary inspection or unresolved subsystem work cannot establish completion. Record tests not run with reasons and follow-up. |
+-| INV-RESEARCH-004 | Both discovery feeds and legacy approvals lack adoption authority. Positive eligibility requires complete coverage and ordered independent reviews bound to source/evidence/proposal, deployed revision/policy and graph. Revalidate approval and immutable bytes before execution. Verified release activation enables dispatch; rollback pauses it without deleting evidence. |
++| INV-RESEARCH-004 | Both discovery feeds and legacy approvals lack adoption authority. Positive eligibility requires complete coverage and ordered independent reviews bound to source/evidence/proposal, deployed revision/policy and graph. Revalidate approval and immutable bytes before execution. Reviews are sequenced per binding and actor; a rejection after approval revokes it and the latest review is the verdict, so an earlier acceptance never outranks a later rejection. Verified release activation enables dispatch; rollback pauses it without deleting evidence. |
+ 
+ Audit wire schema: `src/codex_harness/resources/research.schema.json`.
+ Dormant seed definitions: `src/codex_harness/resources/research-backlog.json`.
+diff --git a/docs/zeus/implementation/latest-verdict-001/README.md b/docs/zeus/implementation/latest-verdict-001/README.md
+new file mode 100644
+index 0000000..172b182
+--- /dev/null
++++ b/docs/zeus/implementation/latest-verdict-001/README.md
+@@ -0,0 +1,62 @@
++# 최신 판정이 이전 PASS를 이긴다 — 연구 채택 승인 철회
++
++기존 FA-005 / GitHub [#6](https://github.com/trevi00/zeus/issues/6) / `ZEUS-f550e11eb0c4` 개정 1의 구현입니다.
++상류 `derive_state`는 `fold_latest_verdicts`가 PASS/FAIL만 소비해서 PASS 뒤 ERROR가 와도 `derive_completed`가
++과거 PASS를 유지했고, stage-state(FAILED)와 completed 집합의 의미가 갈렸습니다([harness-lib review](../../../full-analysis/harness-lib/review.md)
++`derive-state`, [review-probes 영수증](../../../full-analysis/harness-lib/review-probes.receipt.json) `derive_PASS_then_ERROR`).
++교차검토 합의는 "최신 판정·revision·ERROR/PARTIAL/REJECT를 읽기 경로 전체에서 일관 처리"입니다. 새 이슈나
++분석 후보는 추가하지 않았습니다.
++
++## Zeus 읽기 경로 점검
++
++Zeus는 이벤트 fold 대신 행마다 현재 status를 저장하므로 대부분의 경로는 최신 상태를 그대로 읽습니다.
++
++| 읽기 경로 | PASS 뒤 실패의 처리 | 근거 |
++|---|---|---|
++| 릴리스 검증 `Releases.verify` | 검사 하나라도 실패면 `rejected`, 승격 거부 | `test_release_runner`, `test_release_health` |
++| 작업 시도 `attempt_outcomes` / 측정 | 첫 시도와 최종 결과를 분리 계수, 시도 이력 손상은 unknown | `test_measurements` |
++| 역공학 진행 `ReverseProgress` | 완료 stage는 불변(같은 source), source 변경 시 명시 rebaseline | `test_reverse_progress` "immutable" |
++| 실행 fence `_owned` | 만료·재claim 뒤 이전 holder 거부 | `test_execution_identity` |
++| **연구 채택 `require_adoption`** | **결함**: 승인 뒤 도착한 거절 리뷰를 무시 | 이번 수정 |
++
++`Research.review()`는 `accepted=False` 리뷰를 저장만 하고 같은 binding의 `research_approvals`를 그대로 두었고,
++`require_adoption`은 승인 시점에 묶인 **승인** 리뷰 목록만 재검사했습니다. 그래서 conductor나 lead:research가
++같은 binding을 나중에 거절해도 `coverage()['adoption_eligible']`가 True로 남고 plan/implement 작업이 계속
++제출·claim됐습니다 — 상류의 "PASS 뒤 ERROR 무시"와 같은 형태입니다.
++
++## 변경
++
++- `application/research.py`: 리뷰 레코드에 binding·actor별 `sequence`와 `at`을 붙입니다. 거절 리뷰가 승인된
++  binding에 도착하면 승인을 `status: revoked`(+`revoked_by`, `revoked_at`)로 바꾸고 리뷰 자체는 보존합니다.
++  재승인 시 이전 철회 이력을 `revocations`에 남깁니다.
++- `application/audit_gate.py::require_adoption`: `status != approved`면 거부하고, 승인에 묶인 각 actor에 대해
++  같은 binding의 **최신 리뷰**(sequence, at)가 accepted인지 다시 검사합니다. 상태 플래그가 유실돼도 최신
++  리뷰 규칙만으로 거부됩니다. 레거시 승인(status 없음)은 approved로 읽되 최신 리뷰 규칙은 동일 적용됩니다.
++- `docs/contracts.md`: `INV-RESEARCH-004`에 "리뷰는 binding·actor별로 순서가 있고 승인 뒤 거절은 승인을 철회하며
++  최신 리뷰가 판정" 문장 추가.
++
++## 재현과 검증
++
++- `tests/test_research_audits.py::test_later_rejecting_review_revokes_approval[conductor|lead:research]`: 실제
++  fixture 감사 흐름으로 승인 → `adoption_eligible` True → 같은 task·receipt로 거절 리뷰 → eligible False, 승인
++  `revoked`, `require_adoption`이 `approval revoked`로 거부, 상태 플래그를 지워도 `rejected by a later review`로
++  거부, plan 작업 제출이 `Research adoption deferred`로 거부. 승인 리뷰 레코드는 삭제되지 않습니다.
++- `::test_rejection_then_acceptance_orders_by_sequence_not_existence`: 거절(seq 1) → 승인(seq 2)은 채택 가능,
++  그 뒤 lead의 거절은 다시 철회 — 존재가 아니라 순서가 판정입니다.
++- 음성 대조: `research.py`/`audit_gate.py`를 수정 전으로 되돌리면 위 3건이 실패함을 확인했습니다.
++- 기존 `test_research_audits.py` 69건은 그대로 통과합니다(총 72 passed).
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_research_audits.py` | 72 passed |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 920 passed, 305 skipped (164s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 철회된 binding의 재승인은 같은 decisions_pending 키가 이미 소비돼 새 리뷰 결정이 자동으로 큐잉되지 않습니다.
++  새 증거로 binding이 바뀌면 새 키가 생깁니다. 같은 binding의 재심 경로는 별도 설계 대상입니다.
++- 실패한 inspection **영수증**(증거)이 나중에 추가되는 경우는 판정이 아니라 증거이므로 이번에 승인을 철회하지
++  않습니다. 승인에 묶인 영수증이 바뀌면 기존 `changed independent inspection` 규칙이 거부합니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/application/audit_gate.py b/src/codex_harness/application/audit_gate.py
+index 023a36a..e2a8d2c 100644
+--- a/src/codex_harness/application/audit_gate.py
++++ b/src/codex_harness/application/audit_gate.py
+@@ -40,12 +40,19 @@ def ids(value):
+     active = tx.get('deployment', 'active') or {}
+     require(approval is not None and control.get('release_id') == active.get('release_id')
+             and control.get('status') == 'active', 'Research adoption deferred: rollout paused')
++    require(approval.get('status', 'approved') == 'approved', 'Research adoption deferred: approval revoked')
++    reviews = tx.scan('research_reviews')
+     actors = set()
+     for key in approval.get('reviews', []):
+         row = tx.get('research_reviews', key)
+         require(row is not None and digest(row['review']) == key
+                 and row['review']['binding'] == approval['binding'] and row['review']['accepted'],
+                 'Research adoption deferred: changed independent review')
++        # INV-RESEARCH-004: an earlier acceptance never outranks this actor's latest review.
++        latest = max((r for r in reviews if r['review']['binding'] == approval['binding']
++                      and r['review']['actor'] == row['review']['actor']),
++                     key=lambda r: (r.get('sequence', 0), r.get('at', '')))
++        require(latest['review']['accepted'], 'Research adoption deferred: rejected by a later review')
+         receipt_id = row['review']['execution_id']
+         receipt = tx.get('research_receipts', receipt_id)
+         require(receipt is not None and digest(receipt) == receipt_id
+diff --git a/src/codex_harness/application/research.py b/src/codex_harness/application/research.py
+index a035c21..e484d10 100644
+--- a/src/codex_harness/application/research.py
++++ b/src/codex_harness/application/research.py
+@@ -6,7 +6,7 @@
+ from dataclasses import asdict
+ from importlib.resources import files
+ 
+-from codex_harness.domain.model import canonical, digest, require
++from codex_harness.domain.model import canonical, digest, require, utcnow
+ from codex_harness.domain.research import (
+     AdaptationProposal,
+     InventoryEntry,
+@@ -309,10 +309,21 @@ def review(self, task, review):
+             self.artifacts.inspect(receipt['receipt']['output_ref'])
+             successful = receipt['receipt']['exit_status'] == 0 and not receipt['receipt']['inspection_blocked']
+             require(successful or not review.accepted, 'Inspection-blocked review cannot approve')
++            key = digest(asdict(review))
++            # INV-RESEARCH-004: reviews are ordered per binding and actor; the latest one is the verdict.
++            siblings = [r for r in tx.scan('research_reviews')
++                        if r['review']['binding'] == review.binding and r['review']['actor'] == review.actor
++                        and digest(r['review']) != key]
+             record = {'audit_id': data['audit_id'], 'review': asdict(review),
+-                      'status': 'reviewed' if successful else 'inspection-blocked'}
+-            tx.put('research_reviews', digest(asdict(review)), record)
++                      'status': 'reviewed' if successful else 'inspection-blocked',
++                      'sequence': 1 + max((r.get('sequence', 0) for r in siblings), default=0), 'at': utcnow()}
++            tx.put('research_reviews', key, record)
+             if not review.accepted:
++                approval = tx.get('research_approvals', review.binding)
++                if approval is not None and approval.get('status', 'approved') == 'approved':
++                    # A rejection after approval revokes it; an earlier PASS never outranks a later verdict.
++                    tx.put('research_approvals', review.binding, {**approval, 'status': 'revoked',
++                           'revoked_by': key, 'revoked_at': record['at']})
+                 return record
+             if review.actor == 'lead:research':
+                 self._queue_review(tx, data['audit_id'], data['proposal'], review.binding, 'conductor')
+@@ -324,8 +335,11 @@ def review(self, task, review):
+                            if r['review']['binding'] == review.binding and r['review']['accepted']]
+                 approval = {'audit_id': data['audit_id'], 'binding': review.binding,
+                             'proposal': data['proposal'],
+-                            'reviews': [digest(r['review']) for r in reviews]}
+-
++                            'reviews': [digest(r['review']) for r in reviews], 'status': 'approved'}
++                previous = tx.get('research_approvals', review.binding)
++                if previous is not None and previous.get('status') == 'revoked':
++                    approval['revocations'] = previous.get('revocations', []) + [
++                        {k: previous[k] for k in ('revoked_by', 'revoked_at')}]
+                 tx.put('research_approvals', review.binding, approval)
+             return record
+ 
+diff --git a/tests/test_research_audits.py b/tests/test_research_audits.py
+index bae795d..dd68a50 100644
+--- a/tests/test_research_audits.py
++++ b/tests/test_research_audits.py
+@@ -12,7 +12,7 @@
+ from codex_harness.application.research import ResearchAudits
+ from codex_harness.application.workflow import Workflow
+ from codex_harness.bootstrap import organization
+-from codex_harness.domain.model import ContractError, canonical, envelope
++from codex_harness.domain.model import ContractError, canonical, digest, envelope
+ from codex_harness.domain.research import (
+     InventoryEntry,
+     PartitionCheckpoint,
+@@ -569,6 +569,65 @@ def test_approval_invalidated_by_changed_binding(audit, change):
+     assert not service.coverage(record['id'])['adoption_eligible']
+ 
+ 
++@pytest.mark.parametrize('rejecting_actor', ['conductor', 'lead:research'])
++def test_later_rejecting_review_revokes_approval(audit, rejecting_actor):
++    # FA-005: a PASS followed by a rejection never stays "completed" on any read path.
++    from codex_harness.application.audit_gate import require_adoption
++    service, record, source, _, _ = audit
++    activate_fixture(service)
++    proposal = complete_fixture_audit(service, record, source)
++    service.propose(record['id'], proposal)
++    tasks = {actor: approve_fixture(service, actor) for actor in ('lead:research', 'conductor')}
++    assert service.coverage(record['id'])['adoption_eligible']
++    with service.store.transaction() as tx:
++        approval = next(r for r in tx.scan('research_approvals') if r['audit_id'] == record['id'])
++        assert approval['status'] == 'approved'
++        details = {'proposal': approval['proposal'], 'audit_approval': approval['binding']}
++        require_adoption(tx, details)
++        before = [r for r in tx.scan('research_reviews')]
++    task, review = tasks[rejecting_actor]
++    rejection = service.review(task, replace(review, accepted=False))
++    assert rejection['sequence'] == 2 and not rejection['review']['accepted']
++    assert not service.coverage(record['id'])['adoption_eligible']
++    with service.store.transaction() as tx:
++        revoked = tx.get('research_approvals', approval['binding'])
++        assert revoked['status'] == 'revoked' and revoked['revoked_by'] == digest(rejection['review'])
++        assert len(tx.scan('research_reviews')) == len(before) + 1, 'the accepting review is retained'
++        with pytest.raises(ContractError, match='approval revoked'):
++            require_adoption(tx, details)
++        # Even if the status flag were lost, the latest review per actor still decides.
++        tx.put('research_approvals', approval['binding'], {k: v for k, v in revoked.items()
++                                                             if k not in {'status', 'revoked_by', 'revoked_at'}})
++        with pytest.raises(ContractError, match='rejected by a later review'):
++            require_adoption(tx, details)
++    message = envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
++                       {'objective': 'adopt', **details}, 'fixture')
++    with pytest.raises(ContractError, match='Research adoption deferred'):
++        service.workflow.submit(message)
++
++
++def test_rejection_then_acceptance_orders_by_sequence_not_existence(audit):
++    from codex_harness.domain.research import IndependentReview
++    service, record, source, _, _ = audit
++    activate_fixture(service)
++    proposal = complete_fixture_audit(service, record, source)
++    service.propose(record['id'], proposal)
++    lead_task, lead_review = approve_fixture(service, 'lead:research')
++    task = lease_review(service, 'conductor')
++    receipt = service.execute(task, task['input']['audit_id'], ['fixture-independent-inspection'])
++    review = IndependentReview(task['input']['binding'], 'conductor', receipt['id'], False,
++                               'license', 'deps', 'sre', 'architecture', 'graph')
++    assert service.review(task, review)['sequence'] == 1
++    assert not service.coverage(record['id'])['adoption_eligible']
++    assert service.review(task, replace(review, accepted=True))['sequence'] == 2
++    assert service.coverage(record['id'])['adoption_eligible']
++    service.review(lead_task, replace(lead_review, accepted=False))
++    assert not service.coverage(record['id'])['adoption_eligible']
++    with service.store.transaction() as tx:
++        approval = next(r for r in tx.scan('research_approvals') if r['audit_id'] == record['id'])
++        assert approval['status'] == 'revoked'
++
++
+ def test_blocked_inspection_and_actor_spoof_cannot_approve(audit):
+     from codex_harness.domain.research import IndependentReview
+     service, record, source, _, _ = audit

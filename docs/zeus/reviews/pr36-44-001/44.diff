@@ -1,0 +1,255 @@
+diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..cf31c9e 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -75,6 +75,13 @@ cannot activate an excluded stack. Ambiguous/unavailable names remain explicit.
+ reference evidence survives advisory truncation via immutable handles, and non-skill
+ guidance never inflates selected/included/omitted skill counters.
+ 
++Skill metadata is parsed by the bounded string-only YAML loader: inline comments never
++enter matcher values, inline lists become string lists, and nested, tagged, duplicated or
++non-mapping metadata fails explicitly rather than being routed. Routing summaries state
++how many skills were inspected next to matched/full/pointer/legacy counts together with the
++policy, objective and admission-model identity, so zero matches are never read as
++"checked and clean" when nothing was inspected.
++
+ ## INV-SKILL-HISTORY-001
+ 
+ Skill-history observations are project/content-bound compiled selections, never success
+diff --git a/docs/zeus/implementation/skill-metadata-gate-001/README.md b/docs/zeus/implementation/skill-metadata-gate-001/README.md
+new file mode 100644
+index 0000000..62392cd
+--- /dev/null
++++ b/docs/zeus/implementation/skill-metadata-gate-001/README.md
+@@ -0,0 +1,57 @@
++# 스킬 메타데이터 파서와 검사 범위의 결속
++
++기존 FA-011 / GitHub [#12](https://github.com/trevi00/zeus/issues/12) / `ZEUS-74e61b578afa` 개정 1의 구현입니다.
++상류 품질 게이트는 템플릿의 `quality_axes_enforced: true   # ...`를 그대로 복사하면 값 전체를 문자열로 읽어 opt-in이
++꺼졌고, 실제 CLI가 `inspected=0`인 채 PASS를 출력했습니다. 리스트 정규화(`[a, b]`, `[any]`)와 누락 절 판정도 문서와
++달랐고 원본 단위 테스트 9개는 이 반례를 막지 않았습니다([common-quality 공동 검토](../../../full-analysis/cross-review-common-quality/resolution.md),
++[reviewer-observations](../../../full-analysis/cross-review-common-quality/reviewer-observations.stdout.txt)). 교차검토 합의는
++"명확한 입력 스키마·파서, 복사 가능한 예시 검증, 미검사와 PASS 구분"과 "검사 범위·개수·skip/not_run/fail/pass·코드/입력/정책
++해시를 결속"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## Zeus에 있던 같은 결함
++
++`adapters/skill_routing.frontmatter()`는 줄 단위 `key: value` 파서라 인라인 주석이 값에 남았습니다. 실측:
++`keywords: [alpha, beta]   # 주석`은 `]`로 끝나지 않아 `['[alpha,', 'beta]', '#', '주석']`으로 쪼개져 **조용히**
++매칭이 어긋났고, `min_score: 2  # note`는 `Invalid skill minimum score`로 **전체 컨텍스트 조립을 중단**시켰습니다.
++라우팅 요약에는 `matched/full/pointers/legacy`만 있어 "0 매칭"이 "0개 검사"와 구분되지 않았습니다.
++
++## 변경
++
++- `adapters/skill_routing.frontmatter()`: 기존 `project_skills.load_yaml`(문자열 전용·태그 금지·중복 키 거부·크기/전개
++  상한)로 파싱합니다. 스칼라는 문자열, 인라인 리스트는 문자열 리스트, 빈 값은 `''`, 중첩·태그·리스트 루트·문자열 아닌
++  항목은 명시 거부. 닫는 fence 규칙은 그대로입니다. `native_routing_replay`도 같은 함수를 씁니다.
++- `domain/skill_ranking.split_list_field()`: 이미 파싱된 리스트를 받아들이고(따옴표 제거만), 문자열이 아니면 거부.
++  `skill_guidance`의 `requires`/`keywords` 소비도 이 경로입니다.
++- `route_skills()` 요약에 `inspected`(메타데이터를 검사한 스킬 수) 추가. 이미 있던 `objective_hash`(입력),
++  `threshold_definition`·`policy`(정책), `admission_model`(코드 버전), 매니페스트의 `revision`과 함께 검사 범위·개수·
++  입력·정책·코드 식별이 한 레코드에 묶입니다. 메타데이터 오류는 skip이 아니라 명시 실패입니다(INV-SKILL-001).
++- `adapters/project_skills.load_yaml(text, label)`: 오류 메시지 라벨 인자(FA-002 PR과 같은 변경).
++- `docs/contracts.md`: `INV-SKILL-001`에 파서·요약 규칙 문단 추가.
++
++## 재현과 검증
++
++- `tests/test_skill_routing.py::test_inline_comments_never_enter_matcher_values`: 주석이 달린 템플릿 형태
++  (`keywords: [alpha, "beta gamma"]   # …`, `intent: 구현해 # …`, `min_score: 2  # …`, `quality_axes_enforced: true   # …`,
++  `description: "routing # not a comment"`)가 깨끗한 값으로 파싱되고 실제 `score_skill`이 `(True, 2, [intent, kw])`를
++  냅니다.
++- `::test_malformed_skill_metadata_fails_explicitly`(6종): 중첩 매핑, 리스트 안 리스트, 중복 키, `!!python` 태그, 리스트
++  루트, 깨진 YAML 모두 ContractError.
++- `::test_routing_summary_reports_inspected_count_so_zero_matches_are_not_unchecked`: 검사 2·매칭 1·레거시 1,
++  매칭 0이어도 검사 2, 입력이 없으면 검사 0 — 0/2와 0/0이 구분됩니다.
++- 기존 `test_skill_routing`·`test_skill_guidance`·`test_native_routing_replay`·`test_project_skills`·`test_skill_history`
++  58 passed(1 skipped).
++- 음성 대조: `skill_routing.py`·`skill_ranking.py`를 수정 전으로 되돌리면 신규 검사가 실패합니다.
++
++| 항목 | 결과 |
++|---|---|
++| 스킬 관련 5개 모듈 | 58 passed, 1 skipped |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 925 passed, 305 skipped (164s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- Zeus에는 상류의 축별 품질 검사기(G1~G9)가 없으며 이번에 만들지 않았습니다. 이 PR은 파서와 요약 계약을 고치고, 품질 판정
++  자체는 별도 설계(무엇을 검사하고 무엇을 PASS라 부르는지)로 남깁니다.
++- 매니페스트 소비자(모니터·감사 CLI)가 `inspected`를 표시하는 것은 후속입니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/adapters/project_skills.py b/src/codex_harness/adapters/project_skills.py
+index 0844069..ad95df7 100644
+--- a/src/codex_harness/adapters/project_skills.py
++++ b/src/codex_harness/adapters/project_skills.py
+@@ -31,17 +31,18 @@ def unique_mapping(loader, node):
+ UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
+ 
+ 
+-def load_yaml(text):
+-    require(len(text.encode('utf-8')) <= 65536, 'Project profile exceeds size limit')
++def load_yaml(text, label='Project profile'):
++    """Bounded string-only YAML (no tags, no implicit typing, unique keys); shared by lesson import."""
++    require(len(text.encode('utf-8')) <= 65536, label + ' exceeds size limit')
+     try:
+         value = yaml.load(text, Loader=UniqueLoader)
+     except (yaml.YAMLError, RecursionError) as exc:
+-        raise ContractError('Invalid project YAML') from exc
++        raise ContractError('Invalid ' + label + ' YAML') from exc
+     pending, count = [(value, 0)], 0
+     while pending:
+         node, depth = pending.pop()
+         count += 1
+-        require(count <= 4096 and depth <= 64, 'Project YAML expansion exceeds limit')
++        require(count <= 4096 and depth <= 64, label + ' YAML expansion exceeds limit')
+         children = node.values() if isinstance(node, dict) else node if isinstance(node, list) else ()
+         pending.extend((child, depth + 1) for child in children)
+     return value
+diff --git a/src/codex_harness/adapters/skill_routing.py b/src/codex_harness/adapters/skill_routing.py
+index 22fd1b3..4623493 100644
+--- a/src/codex_harness/adapters/skill_routing.py
++++ b/src/codex_harness/adapters/skill_routing.py
+@@ -2,6 +2,7 @@
+ import re
+ from pathlib import PurePosixPath
+ 
++from codex_harness.adapters.project_skills import load_yaml
+ from codex_harness.adapters.runtime_thresholds import effective_policy
+ from codex_harness.domain.model import ContextItem, canonical, digest, require
+ from codex_harness.domain.skill_admission import ADMISSION_MODEL, select_bodies
+@@ -16,16 +17,30 @@
+ 
+ 
+ def frontmatter(text):
++    """Skill metadata through the bounded string-only YAML loader (INV-SKILL-001).
++
++    A flat line parser kept inline comments inside matcher values, so a copied template turned
++    `keywords: [a, b]   # note` into the tokens `[a,`, `b]`, `#`, `note` and `min_score: 3  # note`
++    into a rejected score. Scalars stay strings, inline lists become string lists, and nested or
++    tagged metadata fails explicitly instead of being routed.
++    """
+     text = text.lstrip('\ufeff').replace('\r\n', '\n')
+     if not text.startswith('---\n'):
+         return None, text
+     parts = re.split(r'\n---(?:\n|$)', text, maxsplit=1)
+     require(len(parts) == 2, 'Malformed skill frontmatter fence')
++    loaded = load_yaml(parts[0][4:], 'Skill frontmatter')
++    require(loaded is None or isinstance(loaded, dict), 'Skill frontmatter must be a mapping')
+     meta = {}
+-    for line in parts[0][4:].splitlines():
+-        if ':' in line:
+-            key, value = line.split(':', 1)
+-            require(key.strip() not in meta, 'Duplicate skill frontmatter key')
++    for key, value in (loaded or {}).items():
++        require(isinstance(key, str) and key.strip(), 'Invalid skill frontmatter key')
++        if isinstance(value, list):
++            require(all(isinstance(item, str) for item in value), 'Skill frontmatter lists hold strings only')
++            meta[key.strip()] = [item.strip() for item in value if item.strip()]
++        elif value is None:
++            meta[key.strip()] = ''
++        else:
++            require(isinstance(value, str), 'Unsupported skill frontmatter value')
+             meta[key.strip()] = value.strip()
+     return meta, parts[1].strip()
+ 
+@@ -73,7 +88,7 @@ def route_skills(git, artifacts, cwd, revision, objective, items, records):
+         # INV-SKILL-HISTORY-001: preserve pre-budget Unicode character length;
+         # rendered/truncated lengths cannot replay the upstream budget guard.
+         record.update(base_score=base, score=score, dimensions=dims, body_chars=len(body),
+-                      description=meta.get('description', '')[:120],
++                      description=str(meta.get('description', ''))[:120],
+                       tier='unmatched', metadata=meta, routing_eligible=bool(match or boost))
+         if match or boost:
+             ranked.append((score, path, dims, body))
+@@ -95,8 +110,11 @@ def route_skills(git, artifacts, cwd, revision, objective, items, records):
+         if index < MAX_POINTERS:
+             body = canonical({k: record[k] for k in ('path', 'description', 'score', 'file', 'content_ref')})
+             output.append(ContextItem('project-skill:' + path, body, record['content_ref'], revision, 14))
++    # FA-011: the summary states how many skills were actually inspected, so "matched 0" is
++    # never read as "checked and clean" when the inspected count is also zero.
+     return output, {'admission_model': ADMISSION_MODEL,
+                     'objective_hash': digest(objective), 'pattern_evidence': evidence_refs,
++                    'inspected': len(items) - len(legacy),
+                     'matched': len(ranked), 'full': len(full_paths),
+                     'pointers': min(len(pointers), MAX_POINTERS),
+                     'external_pointers': max(0, len(pointers) - MAX_POINTERS),
+diff --git a/src/codex_harness/domain/skill_ranking.py b/src/codex_harness/domain/skill_ranking.py
+index e4283b3..fe6770e 100644
+--- a/src/codex_harness/domain/skill_ranking.py
++++ b/src/codex_harness/domain/skill_ranking.py
+@@ -9,7 +9,11 @@
+ from codex_harness.domain.model import require
+ 
+ 
+-def split_list_field(value: str) -> list[str]:
++def split_list_field(value) -> list[str]:
++    if isinstance(value, list):
++        # Already parsed by the YAML loader; only quote stripping remains for legacy spellings.
++        return [token for token in (str(item).strip().strip('"\'') for item in value) if token]
++    require(isinstance(value, str), 'Skill list field must be a string or list of strings')
+     s = value.strip()
+     if not s:
+         return []
+diff --git a/tests/test_skill_routing.py b/tests/test_skill_routing.py
+index 8d6e284..e08b396 100644
+--- a/tests/test_skill_routing.py
++++ b/tests/test_skill_routing.py
+@@ -130,3 +130,57 @@ def test_frontmatter_requires_a_bare_closing_fence():
+     with pytest.raises(ContractError, match='fence'):
+         frontmatter('---\nkeywords: test\n---not-a-fence\nbody')
+     assert frontmatter('---\nkeywords: test\n---\nBODY') == ({'keywords': 'test'}, 'BODY')
++
++
++def test_inline_comments_never_enter_matcher_values():
++    # FA-011: the upstream template copied with its inline comments must route, not corrupt.
++    from codex_harness.adapters.skill_routing import frontmatter
++    meta, body = frontmatter('---\nkeywords: [alpha, "beta gamma"]   # 매칭 키워드\n'
++                             'intent: 구현해 # 의도\nmin_score: 2  # 전문 본문 임계\n'
++                             'quality_axes_enforced: true   # 검사 opt-in\npaths:\n'
++                             'description: "routing # not a comment"\n---\nBODY')
++    assert meta == {'keywords': ['alpha', 'beta gamma'], 'intent': '구현해', 'min_score': '2',
++                    'quality_axes_enforced': 'true', 'paths': '', 'description': 'routing # not a comment'}
++    assert body == 'BODY'
++    assert score_skill(meta, 'alpha 구현해', set(), {}) == (True, 2, ['intent:구현해', 'kw:alpha'])
++    assert score_skill(meta, 'beta gamma', set(), {})[1] == 1
++
++
++@pytest.mark.parametrize('text, message', [
++    ('---\nkeywords:\n  nested: value\n---\nB', 'Unsupported skill frontmatter value'),
++    ('---\nkeywords: [a, [b]]\n---\nB', 'lists hold strings only'),
++    ('---\nkeywords: a\nkeywords: b\n---\nB', 'Duplicate'),
++    ('---\nkeywords: !!python/object/apply:os.system [x]\n---\nB', 'Unsupported YAML tag'),
++    ('---\n- just\n- a list\n---\nB', 'must be a mapping'),
++    ('---\nkeywords: [unclosed\n---\nB', 'Invalid Skill frontmatter YAML'),
++])
++def test_malformed_skill_metadata_fails_explicitly(text, message):
++    from codex_harness.adapters.skill_routing import frontmatter
++    with pytest.raises(ContractError, match=message):
++        frontmatter(text)
++
++
++def test_routing_summary_reports_inspected_count_so_zero_matches_are_not_unchecked(tmp_path):
++    from codex_harness.adapters.skill_routing import route_skills
++    from codex_harness.domain.model import ContextItem
++
++    class EmptyGit:
++        def _git(self, *args, **kwargs):
++            return ''
++
++    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
++    sources = {'one': '---\nkeywords: [alpha]  # comment\n---\nONE', 'two': '---\nkeywords: zeta\n---\nTWO',
++               'legacy': 'LEGACY'}
++    items, records = [], []
++    for name, source in sources.items():
++        record = artifacts.put(source, 'fixture')
++        path = f'.harness/skills/_common/{name}.md'
++        records.append({'path': path, 'content_ref': record['ref'], 'file': str(tmp_path / name),
++                        'revision': 'a' * 40, 'pipeline_boost': 0})
++        items.append(ContextItem('project-skill:' + path, source, record['ref'], 'a' * 40, 15))
++    _, summary = route_skills(EmptyGit(), artifacts, str(tmp_path), 'a' * 40, 'alpha', items, records)
++    assert (summary['inspected'], summary['matched'], summary['legacy']) == (2, 1, 1)
++    _, none = route_skills(EmptyGit(), artifacts, str(tmp_path), 'a' * 40, 'nothing', items, records)
++    assert (none['inspected'], none['matched']) == (2, 0), 'zero matches out of two inspected, not zero of zero'
++    _, empty = route_skills(EmptyGit(), artifacts, str(tmp_path), 'a' * 40, 'alpha', [], [])
++    assert (empty['inspected'], empty['matched']) == (0, 0)

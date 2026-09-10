@@ -1,0 +1,11 @@
+{
+  "pr": 37,
+  "backend": "real PostgreSQL, isolated schema",
+  "fault_input": "restore old task row only; retain durable fence",
+  "fence_generation": 2,
+  "restored_row_generation": 1,
+  "stale_heartbeat_accepted": true,
+  "stale_completion": "succeeded",
+  "host_clock_changed": false,
+  "schema_removed": true
+}

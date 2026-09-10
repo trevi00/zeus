@@ -1,0 +1,446 @@
+diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..dcee5f2 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -23,7 +23,7 @@ The trusted local-process identity boundary is documented in status.md; validati
+ 
+ | ID | Contract |
+ |---|---|
+-| INV-RESEARCH-001 | Discovery and historical inventory never imply semantic review. Versioned imports preserve original reference records. Source verification reconciles every raw Git path and object against the pinned commit/tree, not just a manifest hash. |
++| INV-RESEARCH-001 | Discovery and historical inventory never imply semantic review. Versioned imports preserve original reference records. Source verification reconciles every raw Git path and object against the pinned commit/tree, not just a manifest hash. Assets outside Git (uncommitted notes, caches, private sessions, nested repositories) are a separate observed-asset ledger per audit: they never enter the tracked denominator, but whole-analysis completeness and adoption proposals require every observed asset to carry an explicit final disposition, a disposition never regresses to pending, and observed records are part of the approval binding. |
+ | INV-RESEARCH-002 | Partition scope is immutable. Checkpoints require an authorized assigned task, current lease and task/partition generations; evidence history and continuation outbox writes commit atomically. Remaining work reconciles with recorded evidence. |
+ | INV-RESEARCH-003 | Model-authored receipt IDs are not runner evidence. Missing execution, binary inspection or unresolved subsystem work cannot establish completion. Record tests not run with reasons and follow-up. |
+ | INV-RESEARCH-004 | Both discovery feeds and legacy approvals lack adoption authority. Positive eligibility requires complete coverage and ordered independent reviews bound to source/evidence/proposal, deployed revision/policy and graph. Revalidate approval and immutable bytes before execution. Verified release activation enables dispatch; rollback pauses it without deleting evidence. |
+diff --git a/docs/zeus/implementation/observed-assets-001/README.md b/docs/zeus/implementation/observed-assets-001/README.md
+new file mode 100644
+index 0000000..d594cf9
+--- /dev/null
++++ b/docs/zeus/implementation/observed-assets-001/README.md
+@@ -0,0 +1,59 @@
++# Git 밖 관측 자산의 완전성 원장
++
++기존 FA-010 / GitHub [#11](https://github.com/trevi00/zeus/issues/11) / `ZEUS-3d913005bed0` 개정 1의 구현입니다.
++전체 분석은 Git 추적 2,736개 경로 외에 로컬 메타 9,420항목·추가 자산 3,434개(미커밋 노트, 플러그인, 캐시, 사적
++세션, 중첩 저장소)를 캡처했지만, 이들은 추적 분모 밖이라 상태가 [local-assets-status.json](../../../full-analysis/local-assets-status.json)에
++집계 숫자로만 남고 코드가 "전체 분석 완료"를 막지 못했습니다([coverage.json](../../../full-analysis/coverage.json)의
++`runtime_observations_in_tracked_denominator: false`). 교차검토 합의는 "tracked/observed/캐시/사적 세션/중첩 저장소를
++별도 원장으로 완전성 관리"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## 변경
++
++- `domain/research.py`: `ObservedAsset(path, basis, state, sha256, size, evidence_refs)` 계약 추가. `basis`는
++  `observed | cache | private_session | nested_repository`, `state`는 분석 원장의 상태 집합(보류 6종 / 최종 3종:
++  `semantically_reviewed`, `excluded_private_session_or_credential_surface`, `generated_cache_metadata_only`).
++  `semantically_reviewed`는 내용 해시와 증거 참조를 요구합니다. `parse_record`의 엄격 wire 경계(dataclass 계약 표)를
++  통과합니다. `research.schema.json`은 모델 출력 스키마이고 역사 개정에 동결된 계약(`test_baseline_reconstruction_and_semantic_preservation`)이라
++  건드리지 않았습니다 — 관측 자산은 운영자 매니페스트로 들어오지 모델이 출력하지 않습니다.
++- `application/research.py`:
++  - `observe_assets(audit_id, assets)`: 감사별 `research_observed_assets` 원장에 기록. 추적 Git 경로는 거부
++    (인벤토리에 속함), 같은 레코드 재등록은 무변경, 상태 변경은 이전 레코드를 `history`에 보존, 최종 → 보류 후퇴 거부.
++  - `coverage()`: `observed_assets{total, pending, pending_paths, states}`와 `whole_analysis_complete`(추적 경로·
++    하위시스템·관측 자산이 모두 처분됐을 때만 True)를 추가. 추적 분모(`remaining_paths`)는 변하지 않습니다.
++  - `propose()`의 adopt/adapt: 보류 관측 자산이 있으면 `Observed assets await disposition`으로 거부.
++- `application/audit_gate.py`: 관측 자산 버킷을 승인 binding 증거에 포함 — 승인 뒤 새 관측 자산이 등록되면
++  binding이 바뀌어 채택이 보류됩니다.
++- `adapters/observed_assets.py`: JSON 매니페스트를 읽어 등록하는 CLI(`--dry-run`은 검증만).
++- `docs/contracts.md`: `INV-RESEARCH-001`에 관측 자산 원장 문장 추가.
++
++```text
++uv run python -m codex_harness.adapters.observed_assets AUDIT_ID manifest.json [--dry-run]
++# manifest.json: [{"path": "notes/uncommitted.md", "basis": "observed", "state": "unreviewed_observed_asset",
++#                  "sha256": null, "size": 1234, "evidence_refs": []}, ...]   (path는 원시 상대 경로)
++```
++
++## 재현과 검증
++
++- `tests/test_research_audits.py::test_observed_assets_are_a_separate_completeness_ledger`: 실제 fixture 감사에서
++  관측 자산 4건(미커밋 노트·캐시 메타·사적 세션·중첩 저장소) 등록 → 추적 분모 불변, 상태 집계, 추적 경로 전부
++  검토 후에도 `whole_analysis_complete` False, adopt 제안 거부; 멱등 재등록 무변경; 증거 없는 reviewed 거부;
++  처분 후 완료 True와 제안 통과; 후퇴 거부와 history 보존; 추적 경로 등록 거부; basis/state/경로/해시 불량 거부;
++  승인 뒤 새 관측 자산 등록 시 `adoption_eligible` False.
++- `tests/test_observed_assets_cli.py`: 매니페스트 dry-run 무쓰기, 실제 등록, 잘못된 매니페스트 종료 코드.
++- 기존 `test_research_audits`·`test_output_schema`(동결 스키마 불변 확인)·`test_architecture` 통과.
++- 음성 대조: `application/research.py`·`audit_gate.py`를 수정 전으로 되돌리면 신규 검사가 실패합니다.
++
++| 항목 | 결과 |
++|---|---|
++| `test_research_audits` + `test_observed_assets_cli` + `test_output_schema` + `test_architecture` | 111 passed |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 919 passed, 305 skipped (167s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 분석 문서의 집계(`local-assets-status.json`)를 이 원장으로 옮기는 실제 등록은 운영자가 매니페스트로 수행합니다.
++  이 PR은 원장과 게이트를 제공하며 3,434개 자산을 등록·처분하지 않았습니다.
++- 관측 자산의 바이트 자체는 아티팩트로 강제 보관하지 않습니다(`sha256`·`evidence_refs`로 결속). 사적 세션·자격
++  증명 표면은 내용 없이 제외 상태만 기록하는 것이 의도입니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/adapters/observed_assets.py b/src/codex_harness/adapters/observed_assets.py
+new file mode 100644
+index 0000000..0ba0fe8
+--- /dev/null
++++ b/src/codex_harness/adapters/observed_assets.py
+@@ -0,0 +1,74 @@
++"""Register explicitly listed non-Git assets in an audit's observed-asset ledger.
++
++    uv run python -m codex_harness.adapters.observed_assets AUDIT_ID manifest.json [--dry-run]
++
++The manifest is a JSON list of {path, basis, state, sha256, size, evidence_refs}; `path` is the raw
++relative path and is stored base64-encoded like Git inventory entries (INV-RESEARCH-001).
++"""
++import argparse
++import base64
++import json
++import sys
++from dataclasses import asdict
++from pathlib import Path
++
++from codex_harness.adapters.artifacts import FileArtifacts
++from codex_harness.adapters.store import PostgresStore
++from codex_harness.application.research import ResearchAudits
++from codex_harness.application.workflow import Workflow
++from codex_harness.bootstrap import database_url, organization
++from codex_harness.domain.model import ContractError, require
++from codex_harness.domain.research import parse_record
++
++MAX_MANIFEST_BYTES = 8 * 1024 * 1024
++
++
++def load_manifest(path):
++    path = Path(path)
++    require(path.is_file() and not path.is_symlink(), 'Manifest must be a regular file')
++    data = path.read_bytes()
++    require(len(data) <= MAX_MANIFEST_BYTES, 'Manifest exceeds byte limit')
++    try:
++        entries = json.loads(data.decode('utf-8'))
++    except (UnicodeDecodeError, ValueError) as exc:
++        raise ContractError('Manifest is not UTF-8 JSON') from exc
++    require(isinstance(entries, list) and entries, 'Manifest must be a non-empty list')
++    assets = []
++    for entry in entries:
++        require(isinstance(entry, dict) and isinstance(entry.get('path'), str) and entry['path'],
++                'Manifest entry requires a raw relative path')
++        record = {**entry, 'path': base64.b64encode(entry['path'].encode('utf-8')).decode('ascii')}
++        assets.append(parse_record({'version': 1, 'kind': 'ObservedAsset', 'record': record}))
++    return assets
++
++
++def main(argv=None, store=None, artifacts=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('audit_id')
++    parser.add_argument('manifest', type=Path)
++    parser.add_argument('--artifacts', default='.runtime/artifacts')
++    parser.add_argument('--dry-run', action='store_true', help='Validate the manifest only; no database write')
++    args = parser.parse_args(argv)
++    try:
++        assets = load_manifest(args.manifest)
++        if args.dry_run:
++            report = {'audit_id': args.audit_id, 'assets': len(assets), 'preview_only': True,
++                      'pending': sum(a.pending for a in assets),
++                      'records': [asdict(a) for a in assets]}
++        else:
++            store = store or PostgresStore(database_url())
++            audits = ResearchAudits(store, None, artifacts or FileArtifacts(args.artifacts),
++                                    Workflow(store, organization()))
++            report = audits.observe_assets(args.audit_id, assets)
++    except ContractError as exc:
++        print(json.dumps({'error': 'ContractError', 'message': str(exc)}), file=sys.stderr)
++        return 2
++    except Exception as exc:
++        print(json.dumps({'error': 'Registration unavailable', 'type': type(exc).__name__}), file=sys.stderr)
++        return 1
++    print(json.dumps(report, ensure_ascii=True))
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/src/codex_harness/application/audit_gate.py b/src/codex_harness/application/audit_gate.py
+index 023a36a..0a8d2d7 100644
+--- a/src/codex_harness/application/audit_gate.py
++++ b/src/codex_harness/application/audit_gate.py
+@@ -2,7 +2,8 @@
+ from codex_harness.domain.model import digest, require
+ from codex_harness.domain.research import research_origin
+ 
+-AUDIT_EVIDENCE_BUCKETS = ('research_paths', 'research_subsystems', 'research_partitions')
++AUDIT_EVIDENCE_BUCKETS = ('research_paths', 'research_subsystems', 'research_partitions',
++                          'research_observed_assets')
+ 
+ 
+ def binding(tx, audit_id, proposal):
+diff --git a/src/codex_harness/application/research.py b/src/codex_harness/application/research.py
+index a035c21..420c7cb 100644
+--- a/src/codex_harness/application/research.py
++++ b/src/codex_harness/application/research.py
+@@ -6,10 +6,11 @@
+ from dataclasses import asdict
+ from importlib.resources import files
+ 
+-from codex_harness.domain.model import canonical, digest, require
++from codex_harness.domain.model import canonical, digest, require, utcnow
+ from codex_harness.domain.research import (
+     AdaptationProposal,
+     InventoryEntry,
++    ObservedAsset,
+     PartitionCheckpoint,
+     PathDisposition,
+     SourceIdentity,
+@@ -220,16 +221,65 @@ def _coverage(tx, audit):
+                     subsystems.add(s.name)
+         return paths, subsystems
+ 
++    @staticmethod
++    def _observed(tx, audit):
++        """INV-RESEARCH-001: observed assets are a separate ledger with their own completeness."""
++        from collections import Counter
++        rows = [r for r in tx.scan('research_observed_assets') if r['audit_id'] == audit['id']]
++        assets = [ObservedAsset(**r['record']) for r in rows]
++        for asset in assets:
++            asset.validate()
++        pending = sorted(a.path for a in assets if a.pending)
++        return {'total': len(assets), 'pending': len(pending), 'pending_paths': pending,
++                'states': dict(sorted(Counter(a.state for a in assets).items()))}
++
++    def observe_assets(self, audit_id, assets: list[ObservedAsset]):
++        assets = [parse_record({'version': 1, 'kind': 'ObservedAsset', 'record': asdict(a)}) for a in assets]
++        require(assets and len({a.path for a in assets}) == len(assets), 'Unique observed asset paths required')
++        for asset in assets:
++            for ref in asset.evidence_refs:
++                self.artifacts.inspect(ref)
++        with self.store.transaction() as tx:
++            audit = tx.get('research_audits', audit_id)
++            require(audit is not None, 'Unknown audit')
++            tracked = {e['path'] for e in audit['inventory']}
++            changed = 0
++            for asset in assets:
++                require(asset.path not in tracked, 'Tracked Git paths belong to the inventory, not the observed ledger')
++                key = digest({'audit': audit_id, 'path': asset.path})
++                record = asdict(asset)
++                old = tx.get('research_observed_assets', key)
++                if old is not None:
++                    if old['record'] == record:
++                        continue
++                    previous = ObservedAsset(**old['record'])
++                    require(previous.pending or not asset.pending,
++                            'Observed asset disposition cannot regress to pending')
++                    history = old.get('history', []) + [old['record']]
++                else:
++                    history = []
++                tx.put('research_observed_assets', key, {'id': key, 'audit_id': audit_id, 'record': record,
++                                                         'history': history, 'at': utcnow()})
++                changed += 1
++            return {'audit_id': audit_id, 'changed': changed, **self._observed(tx, audit)}
++
+     def coverage(self, audit_id):
+         with self.store.transaction() as tx:
+             audit = tx.get('research_audits', audit_id)
+             require(audit is not None, 'Unknown audit')
+             paths, subsystems = self._coverage(tx, audit)
++            observed = self._observed(tx, audit)
++            remaining_paths = sorted(set(p['path'] for p in audit['inventory']) - paths)
++            remaining_subsystems = sorted(set(audit['subsystems']) - subsystems)
+             return {'reviewed_paths': len(paths),
+-                    'remaining_paths': sorted(set(p['path'] for p in audit['inventory']) - paths),
+-                    'remaining_subsystems': sorted(set(audit['subsystems']) - subsystems),
++                    'remaining_paths': remaining_paths,
++                    'remaining_subsystems': remaining_subsystems,
++                    'observed_assets': observed,
++                    'whole_analysis_complete': not remaining_paths and not remaining_subsystems
++                    and observed['pending'] == 0,
+                     'adoption_eligible': self._eligible(tx, audit),
+-                    'reason': 'Eligibility requires complete coverage and current independent approvals'}
++                    'reason': 'Eligibility requires complete coverage, dispositioned observed assets '
++                              'and current independent approvals'}
+ 
+     def propose(self, audit_id, proposal: AdaptationProposal):
+         proposal = parse_record({'version': 1, 'kind': 'AdaptationProposal', 'record': asdict(proposal)})
+@@ -248,6 +298,7 @@ def propose(self, audit_id, proposal: AdaptationProposal):
+                 paths, systems = self._coverage(tx, audit)
+                 require(paths == {e['path'] for e in audit['inventory']}
+                         and systems == set(audit['subsystems']), 'Audit coverage incomplete')
++                require(self._observed(tx, audit)['pending'] == 0, 'Observed assets await disposition')
+                 from codex_harness.application.audit_gate import binding
+                 require(not any(p['open_questions'] for p in tx.scan('research_partitions')
+                                 if p['audit_id'] == audit_id), 'Open audit questions remain')
+diff --git a/src/codex_harness/domain/research.py b/src/codex_harness/domain/research.py
+index 2bb338b..4545dbe 100644
+--- a/src/codex_harness/domain/research.py
++++ b/src/codex_harness/domain/research.py
+@@ -56,6 +56,48 @@ def validate(self):
+             reference(self.artifact_ref)
+ 
+ 
++OBSERVED_BASES = ('observed', 'cache', 'private_session', 'nested_repository')
++OBSERVED_PENDING_STATES = ('unreviewed_observed_asset', 'acquisition_pending',
++                           'runtime_surface_classification_pending', 'requires_content_boundary_review',
++                           'large_asset_pending_streamed_review',
++                           'effective_config_requires_redacted_schema_review')
++OBSERVED_FINAL_STATES = ('semantically_reviewed', 'excluded_private_session_or_credential_surface',
++                         'generated_cache_metadata_only')
++
++
++@dataclass(frozen=True)
++class ObservedAsset:
++    """A local asset outside Git (INV-RESEARCH-001): its own ledger, never the tracked denominator."""
++    path: str  # Base64 of raw path bytes, like InventoryEntry.
++    basis: str
++    state: str
++    sha256: str | None
++    size: int | None
++    evidence_refs: list[str]
++
++    def validate(self):
++        import base64
++        try:
++            raw = base64.b64decode(self.path, validate=True)
++        except ValueError:
++            raw = b''
++        require(bool(raw) and b'\0' not in raw and not raw.startswith(b'/')
++                and all(p not in {b'', b'.', b'..'} for p in raw.split(b'/')), 'Invalid observed asset path')
++        require(self.basis in OBSERVED_BASES, 'Unknown observed asset basis')
++        require(self.state in OBSERVED_PENDING_STATES + OBSERVED_FINAL_STATES, 'Unknown observed asset state')
++        require(self.sha256 is None or bool(re.fullmatch(r'[0-9a-f]{64}', self.sha256)), 'Invalid observed asset hash')
++        require(self.size is None or (type(self.size) is int and self.size >= 0), 'Invalid observed asset size')
++        for ref in self.evidence_refs:
++            reference(ref)
++        if self.state == 'semantically_reviewed':
++            require(self.sha256 is not None and bool(self.evidence_refs),
++                    'Reviewed observed asset requires content hash and evidence')
++
++    @property
++    def pending(self):
++        return self.state in OBSERVED_PENDING_STATES
++
++
+ @dataclass(frozen=True)
+ class PathDisposition:
+     path: str
+@@ -229,7 +271,7 @@ def require_dispatch(details):
+ 
+ CONTRACTS = {cls.__name__: cls for cls in (
+     SourceIdentity, InventoryEntry, PathDisposition, SubsystemAnalysis, ExecutionReceipt,
+-    PartitionCheckpoint, AdaptationProposal, IndependentReview)}
++    PartitionCheckpoint, AdaptationProposal, IndependentReview, ObservedAsset)}
+ 
+ 
+ def parse_record(document: dict):
+diff --git a/tests/test_observed_assets_cli.py b/tests/test_observed_assets_cli.py
+new file mode 100644
+index 0000000..69aae32
+--- /dev/null
++++ b/tests/test_observed_assets_cli.py
+@@ -0,0 +1,42 @@
++"""FA-010: manifest registration of observed assets through the adapter CLI."""
++import copy
++import json
++
++from test_research_audits import audit  # noqa: F401  (fixture reuse)
++
++from codex_harness.adapters.observed_assets import main
++
++
++def manifest(tmp_path, entries):
++    path = tmp_path / 'observed.json'
++    path.write_text(json.dumps(entries, ensure_ascii=False), encoding='utf-8')
++    return path
++
++
++def test_dry_run_validates_without_writing_and_registration_uses_the_ledger(audit, tmp_path, capsys):  # noqa: F811
++    service, record, _, _, _ = audit
++    entries = [{'path': 'notes/미커밋.md', 'basis': 'observed', 'state': 'unreviewed_observed_asset',
++                'sha256': None, 'size': 12, 'evidence_refs': []},
++               {'path': '.cache/index.json', 'basis': 'cache', 'state': 'generated_cache_metadata_only',
++                'sha256': None, 'size': None, 'evidence_refs': []}]
++    path = manifest(tmp_path, entries)
++    before = copy.deepcopy(service.store.data)
++    assert main([record['id'], str(path), '--dry-run']) == 0
++    report = json.loads(capsys.readouterr().out)
++    assert report['preview_only'] and report['assets'] == 2 and report['pending'] == 1
++    assert service.store.data == before
++    assert main([record['id'], str(path)], store=service.store, artifacts=service.artifacts) == 0
++    report = json.loads(capsys.readouterr().out)
++    assert report['changed'] == 2 and report['pending'] == 1
++    coverage = service.coverage(record['id'])
++    assert coverage['observed_assets']['total'] == 2 and not coverage['whole_analysis_complete']
++    assert main([record['id'], str(path)], store=service.store, artifacts=service.artifacts) == 0
++    assert json.loads(capsys.readouterr().out)['changed'] == 0
++    for bad in ([], [{'path': ''}], [{'path': 'x', 'basis': 'observed', 'state': 'made_up',
++                                       'sha256': None, 'size': None, 'evidence_refs': []}],
++                [{'path': 'x', 'basis': 'observed', 'state': 'unreviewed_observed_asset', 'sha256': None,
++                  'size': None, 'evidence_refs': [], 'extra': 1}]):
++        assert main([record['id'], str(manifest(tmp_path, bad)), '--dry-run']) == 2
++        assert 'ContractError' in capsys.readouterr().err
++    assert main(['unknown-audit', str(path)], store=service.store, artifacts=service.artifacts) == 2
++    assert main([record['id'], str(tmp_path / 'missing.json'), '--dry-run']) == 2
+diff --git a/tests/test_research_audits.py b/tests/test_research_audits.py
+index bae795d..a4cd8fd 100644
+--- a/tests/test_research_audits.py
++++ b/tests/test_research_audits.py
+@@ -569,6 +569,65 @@ def test_approval_invalidated_by_changed_binding(audit, change):
+     assert not service.coverage(record['id'])['adoption_eligible']
+ 
+ 
++def observed(path, state='unreviewed_observed_asset', basis='observed', sha='a' * 64, refs=()):
++    from codex_harness.domain.research import ObservedAsset
++    return ObservedAsset(base64.b64encode(path.encode()).decode(), basis, state, sha, 10, list(refs))
++
++
++def test_observed_assets_are_a_separate_completeness_ledger(audit):
++    # FA-010: assets outside Git never enter the tracked denominator, yet block completion and adoption.
++    from codex_harness.domain.research import ObservedAsset
++    service, record, source, _, _ = audit
++    activate_fixture(service)
++    evidence = service.artifacts.put('observed asset review', 'fixture')['ref']
++    before = service.coverage(record['id'])
++    assert before['observed_assets'] == {'total': 0, 'pending': 0, 'pending_paths': [], 'states': {}}
++    assert not before['whole_analysis_complete']
++    result = service.observe_assets(record['id'], [
++        observed('notes/uncommitted.md'), observed('.cache/index.json', 'generated_cache_metadata_only', 'cache', None),
++        observed('sessions/private.jsonl', 'excluded_private_session_or_credential_surface', 'private_session', None),
++        observed('vendor/nested/.git/HEAD', 'acquisition_pending', 'nested_repository', None)])
++    assert result['changed'] == 4 and result['pending'] == 2
++    coverage = service.coverage(record['id'])
++    assert coverage['remaining_paths'] == before['remaining_paths'], 'the Git denominator is untouched'
++    assert coverage['observed_assets']['states'] == {
++        'acquisition_pending': 1, 'excluded_private_session_or_credential_surface': 1,
++        'generated_cache_metadata_only': 1, 'unreviewed_observed_asset': 1}
++    proposal = complete_fixture_audit(service, record, source)
++    assert service.coverage(record['id'])['remaining_paths'] == []
++    assert not service.coverage(record['id'])['whole_analysis_complete']
++    with pytest.raises(ContractError, match='Observed assets await disposition'):
++        service.propose(record['id'], proposal)
++    # Idempotent re-observation leaves no history; a disposition advances with evidence.
++    assert service.observe_assets(record['id'], [observed('notes/uncommitted.md')])['changed'] == 0
++    with pytest.raises(ContractError, match='requires content hash and evidence'):
++        service.observe_assets(record['id'], [observed('notes/uncommitted.md', 'semantically_reviewed')])
++    service.observe_assets(record['id'], [observed('notes/uncommitted.md', 'semantically_reviewed', refs=[evidence]),
++                                          observed('vendor/nested/.git/HEAD', 'excluded_private_session_or_credential_surface',
++                                                   'nested_repository', None)])
++    assert service.coverage(record['id'])['whole_analysis_complete']
++    with pytest.raises(ContractError, match='cannot regress'):
++        service.observe_assets(record['id'], [observed('notes/uncommitted.md')])
++    with service.store.transaction() as tx:
++        row = next(r for r in tx.scan('research_observed_assets')
++                   if r['record']['path'] == observed('notes/uncommitted.md').path)
++        assert [h['state'] for h in row['history']] == ['unreviewed_observed_asset']
++    tracked = base64.b64encode(b'normal').decode()
++    with pytest.raises(ContractError, match='belong to the inventory'):
++        service.observe_assets(record['id'], [ObservedAsset(tracked, 'observed', 'unreviewed_observed_asset', None, None, [])])
++    for bad in [observed('x', basis='mystery'), observed('x', state='done'), observed('/abs'), observed('a/../b'),
++                observed('x', sha='zz')]:
++        with pytest.raises(ContractError):
++            service.observe_assets(record['id'], [bad])
++    service.propose(record['id'], proposal)
++    approve_fixture(service, 'lead:research')
++    approve_fixture(service, 'conductor')
++    assert service.coverage(record['id'])['adoption_eligible']
++    # A new observed asset after approval changes the evidence binding and defers adoption.
++    service.observe_assets(record['id'], [observed('notes/late.md')])
++    assert not service.coverage(record['id'])['adoption_eligible']
++
++
+ def test_blocked_inspection_and_actor_spoof_cannot_approve(audit):
+     from codex_harness.domain.research import IndependentReview
+     service, record, source, _, _ = audit

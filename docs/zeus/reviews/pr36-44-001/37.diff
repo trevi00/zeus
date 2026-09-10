@@ -1,0 +1,681 @@
+diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..e6c38f2 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -164,6 +164,12 @@ effects and failure receipt redelivery compare typed task/generation/attempt,
+ executor owner, agent/actor and recovery sequence. An executor owner is a fencing
+ token in the trusted local runtime, not an authenticated tenant principal.
+ 
++Generations advance only through the durable `execution_fences` ledger, which outlives the
++task, decision or release-queue row: a recreated row, a regressed generation or a corrupted
++fence is blocked instead of re-armed, and a fenced task identity cannot be resubmitted from
++generation 0. Row or process existence is never execution identity, and the upstream file
++lease is not ported.
++
+ ## INV-EXECUTION-TIME-001
+ 
+ Timezone-aware UTC deadlines survive restart. Monotonic elapsed time is compared
+diff --git a/docs/zeus/implementation/execution-fence-001/README.md b/docs/zeus/implementation/execution-fence-001/README.md
+new file mode 100644
+index 0000000..8e06db9
+--- /dev/null
++++ b/docs/zeus/implementation/execution-fence-001/README.md
+@@ -0,0 +1,63 @@
++# 실행 세대의 내구 fence 원장
++
++기존 FA-003 / GitHub [#4](https://github.com/trevi00/zeus/issues/4) / `ZEUS-429c533aab0e` 개정 1의 구현입니다.
++상류 파일 lease는 파일이 삭제되면 epoch를 1부터 다시 발급하고 guard가 owner를 비교하지 않아, 이전
++소유자의 epoch 1 핸들이 새 lease를 통과했습니다([review-probes 영수증](../../../full-analysis/harness-lib/review-probes.receipt.json)
++`lease_deleted_reissued_ABA`: old 1 / new 1 / 이전 핸들 guard·release 통과). 교차검토 합의는 "단조 fencing·owner·generation·CAS를
++묶고 source 파일 lease는 직접 이식하지 않는다"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## Zeus의 현재 상태와 남아 있던 틈
++
++Zeus는 이미 PostgreSQL 트랜잭션 안에서 `id·generation·attempt·lease_owner·agent/actor·recovery_sequence`를
++모두 비교하고(`Workflow._same_execution`), 실행자는 claim마다 `uuid4()` owner를 쓰며, 문서를 삭제하는
++코드 경로가 없습니다. 그래서 "만료 후 재claim된 작업에 이전 holder가 개입"하는 상류 ABA는 그대로 재현되지
++않았습니다. 남아 있던 틈은 상류와 같은 형태 하나입니다: **행이 사라졌다가(운영자 퍼지·부분 복원·우회 도구)
++다시 만들어지면 generation이 0부터 재발급**되고, owner 문자열까지 같으면 이전 핸들이 다시 통과합니다.
++아래 프로브의 `no_fence` 변형이 MemoryStore와 실제 PostgreSQL 양쪽에서 이를 재현했습니다.
++
++## 변경
++
++- `application/execution_fence.py`: 행과 별개로 살아남는 `execution_fences` 버킷. `advance(tx, bucket, id,
++  generation, owner)`는 이전 fence보다 큰 generation만 허용하고, 손상된 fence(정수 아님)는 fail-closed로
++  거부합니다. `require_unused`는 fence가 있는 identity의 재생성을 막습니다.
++- `Workflow.submit`: 새 task를 만들기 전 `require_unused` — 퍼지된 identity의 재제출은 명시 거부.
++- `Workflow.claim`·`Executor.decide_one`·`ReleaseQueue.claim`: generation을 올리기 전 `advance`. 후퇴하면
++  그 행만 `ExecutionGenerationRegressed`로 차단(`block_execution`, release queue는 `failed`+사유)하고 다른
++  작업은 계속 서빙합니다. `Workflow.cancel`·`ExecutionRecovery`의 generation 증가도 fence를 통과합니다.
++- `docs/contracts.md`: `INV-EXECUTION-IDENTITY-001`에 내구 fence 문단 추가. 파일 lease는 이식하지 않습니다.
++
++기존 행(fence 없는 레거시)은 첫 claim에서 fence를 만들며 동작이 바뀌지 않습니다. PG를 예전 덤프로 복원하면
++fence도 함께 되돌아가므로 거짓 거부는 없고, 그 경우의 보호 범위는 덤프 시점까지입니다.
++
++## 재현과 검증
++
++- `probe.py` / `receipt.json`: 실제 `Workflow`로 (1) 만료된 holder가 재claim 뒤 heartbeat/complete/세대
++  위조 시도, (2) 퍼지된 행을 generation 0으로 재생성하고 **같은 owner 문자열**로 claim. 변형은 `current`,
++  `owner_blind`, `generation_blind`, `no_fence`(프로브 안 패치, 배포 코드 아님). MemoryStore와 이 PC의
++  실제 PostgreSQL(일회용 스키마, 운영 테이블 미접촉) 각각 실행.
++  - `current`: 8개 시도 모두 거부. 재생성된 행은 `ExecutionGenerationRegressed`로 차단.
++  - `owner_blind`/`generation_blind`: 여전히 전부 거부 — `attempt`가 generation·owner와 함께 움직이므로
++    비교 하나를 빼도 ABA가 열리지 않습니다(결속은 셋의 논리곱).
++  - `no_fence`: 재제출 **수락**, 재생성 행 claim이 **generation 1·attempt 1로 수락**, 이전 첫 holder의
++    heartbeat **수락** — 상류 epoch 1 재발급과 같은 결함이 Zeus에서도 fence 없이는 재현됩니다.
++- `tests/test_execution_fence.py`(memory + postgres 매개변수, 8 검사): 실제 lease 만료(1초) 후 재claim과
++  4종 stale 핸들의 heartbeat/complete/fail 거부와 무흔적, 퍼지 후 재제출 거부·우회 재삽입 행 차단·정상 작업
++  계속 서빙, cancel의 fence 전진과 손상 fence fail-closed, release 컨트롤러 잠금 만료·재claim·행 재생성,
++  decisions_pending 재생성 차단(`Executor.decide_one`). PostgreSQL 변형은 이 PC의 원장 컨테이너에
++  격리 스키마로 실행했습니다.
++- 기존 `tests/test_execution_identity.py`(실제 자식 프로세스·PG)와 `test_retry_state` 등 generation 의존
++  검사는 그대로 통과합니다.
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_execution_fence.py` memory+postgres (`HARNESS_INTEGRATION=1`) | 8 passed |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14, PG 변형 skip) | 922 passed, 308 skipped (173s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- fence는 같은 데이터베이스 안의 원장이라 DB 전체 삭제·구버전 복원에는 함께 되돌아갑니다. 그 경계는
++  `INV-RECOVERY-001`/호스트 복구 증적(#18)의 범위입니다.
++- 다중 호스트에서 같은 원장을 쓰는 구성은 검증하지 않았습니다(현재 사용 범위는 단일 PC).
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/docs/zeus/implementation/execution-fence-001/probe.py b/docs/zeus/implementation/execution-fence-001/probe.py
+new file mode 100644
+index 0000000..0a4e2ea
+--- /dev/null
++++ b/docs/zeus/implementation/execution-fence-001/probe.py
+@@ -0,0 +1,140 @@
++"""FA-003 reproduction against Zeus: the upstream lease ABA shapes, run on the real Workflow.
++
++Each variant runs the same two scenarios on a MemoryStore (and on PostgreSQL when
++ZEUS_PROBE_DSN is set): (1) an expired holder acting after another owner reclaimed the
++task, (2) a purged task row recreated from generation 0. Variants weaken one binding at
++a time so the receipt shows which binding rejects which action; only "current" is shipped.
++Usage: uv run python docs/zeus/implementation/execution-fence-001/probe.py [output.json]
++"""
++import contextlib
++import json
++import os
++import platform
++import sys
++import time
++from pathlib import Path
++
++import psycopg
++
++from codex_harness.adapters.store import MemoryStore, PostgresStore
++from codex_harness.application import workflow as workflow_module
++from codex_harness.application.workflow import Workflow
++from codex_harness.bootstrap import organization
++from codex_harness.domain.model import ContractError, envelope
++
++ROOT = Path(__file__).resolve().parents[4]
++
++
++def assignment():
++    return envelope('task.assign', 'lead:improvement', 'worker:implementation', 'implement',
++                    {'objective': 'probe'}, 'probe-correlation')
++
++
++def attempt(action):
++    try:
++        action()
++        return 'accepted'
++    except ContractError as exc:
++        return 'rejected: ' + str(exc)
++
++
++def purge(store, row_id):
++    if isinstance(store, MemoryStore):
++        del store.data['tasks', row_id]
++    else:
++        with psycopg.connect(store.dsn) as conn:
++            conn.execute("DELETE FROM documents WHERE bucket='tasks' AND id=%s", (row_id,))
++
++
++@contextlib.contextmanager
++def weakened(variant):
++    original = Workflow._same_execution
++    fence = (workflow_module.advance_fence, workflow_module.require_unused_fence)
++    try:
++        if variant in {'owner_blind', 'generation_blind'}:
++            skipped = 'lease_owner' if variant == 'owner_blind' else 'generation'
++
++            def blind(current, task):
++                return original({**current, skipped: None}, {**task, skipped: None})
++            Workflow._same_execution = staticmethod(blind)
++        if variant == 'no_fence':
++            workflow_module.advance_fence = lambda *a, **k: None
++            workflow_module.require_unused_fence = lambda *a, **k: None
++        yield
++    finally:
++        Workflow._same_execution = staticmethod(original)
++        workflow_module.advance_fence, workflow_module.require_unused_fence = fence
++
++
++def scenarios(store):
++    w = Workflow(store, organization())
++    task = w.submit(assignment())
++    first = w.claim('worker:implementation', 'first-owner', lease_seconds=1)
++    time.sleep(1.2)
++    second = w.claim('worker:implementation', 'second-owner', lease_seconds=60)
++    aba = {'reclaimed_generation': second['generation'],
++           'stale_heartbeat': attempt(lambda: w.heartbeat(first)),
++           'stale_complete': attempt(lambda: w.complete(first, {'summary': 'stale'})),
++           'stale_with_spoofed_generation': attempt(lambda: w.heartbeat({**first, 'generation': second['generation']}))}
++    with store.transaction() as tx:
++        row = tx.get('tasks', task['id'])
++    purge(store, task['id'])
++    message = task['message']
++    recreated = {'resubmit_after_purge': attempt(lambda: w.submit(message))}
++    with store.transaction() as tx:
++        tx.put('tasks', task['id'], {**row, 'status': 'queued', 'generation': 0, 'attempt': 0,
++                                     'lease_owner': None, 'lease_until': None})
++    # The upstream file lease re-issued epoch 1 to the same owner string; Zeus executors use a
++    # fresh uuid4 per claim, so owner reuse here is the adversarial worst case, not normal traffic.
++    claimed = w.claim('worker:implementation', 'first-owner', lease_seconds=60)
++    with store.transaction() as tx:
++        after = tx.get('tasks', task['id'])
++    recreated['claim_of_recreated_row_with_reused_owner'] = (
++        'accepted with generation %d attempt %d' % (claimed['generation'], claimed['attempt'])
++        if claimed else 'rejected: ' + str(after['error']))
++    recreated['old_first_holder_after_recreation'] = attempt(lambda: w.heartbeat(first))
++    recreated['old_second_holder_after_recreation'] = attempt(lambda: w.heartbeat(second))
++    return {'expired_holder': aba, 'recreated_row': recreated}
++
++
++@contextlib.contextmanager
++def isolated_schema(dsn):
++    """Same shape as the test fixture: a throwaway schema, never the operator's public tables."""
++    from uuid import uuid4
++
++    from psycopg import sql
++    from psycopg.conninfo import make_conninfo
++    schema = 'probe_' + uuid4().hex
++    with psycopg.connect(dsn) as conn:
++        conn.execute(sql.SQL('CREATE SCHEMA {}').format(sql.Identifier(schema)))
++    try:
++        store = PostgresStore(make_conninfo(dsn, options=f'-c search_path={schema},public'))
++        store.migrate()
++        yield store, schema
++    finally:
++        with psycopg.connect(dsn) as conn:
++            conn.execute(sql.SQL('DROP SCHEMA {} CASCADE').format(sql.Identifier(schema)))
++
++
++def main():
++    dsn = os.environ.get('ZEUS_PROBE_DSN')
++    receipt = {'python': sys.version, 'os': platform.platform(),
++               'scope': 'Real Workflow on MemoryStore' + (' and a throwaway PostgreSQL schema' if dsn else '')
++                        + '; weakened variants are probe-only patches, not shipped code.',
++               'variants': {}}
++    for variant in ('current', 'owner_blind', 'generation_blind', 'no_fence'):
++        receipt['variants'][variant] = {}
++        with weakened(variant):
++            receipt['variants'][variant]['memory'] = scenarios(MemoryStore())
++            if dsn:
++                with isolated_schema(dsn) as (store, schema):
++                    receipt['variants'][variant]['postgres'] = scenarios(store)
++                    receipt['variants'][variant]['postgres']['schema'] = schema
++    text = json.dumps(receipt, ensure_ascii=False, indent=2) + '\n'
++    if len(sys.argv) > 1:
++        Path(sys.argv[1]).write_text(text, encoding='utf-8')
++    sys.stdout.buffer.write(text.encode('utf-8'))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/docs/zeus/implementation/execution-fence-001/receipt.json b/docs/zeus/implementation/execution-fence-001/receipt.json
+new file mode 100644
+index 0000000..7a52211
+--- /dev/null
++++ b/docs/zeus/implementation/execution-fence-001/receipt.json
+@@ -0,0 +1,131 @@
++{
++  "python": "3.12.14 (main, Aug 14 2026, 15:40:22) [MSC v.1944 64 bit (AMD64)]",
++  "os": "Windows-11-10.0.26200-SP0",
++  "scope": "Real Workflow on MemoryStore and a throwaway PostgreSQL schema; weakened variants are probe-only patches, not shipped code.",
++  "variants": {
++    "current": {
++      "memory": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
++          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
++          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        }
++      },
++      "postgres": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
++          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
++          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        },
++        "schema": "probe_9987b2c7885d4289b16aa7a7b707a004"
++      }
++    },
++    "owner_blind": {
++      "memory": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
++          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
++          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        }
++      },
++      "postgres": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
++          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
++          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        },
++        "schema": "probe_b9339b6130294525965378a0707400dc"
++      }
++    },
++    "generation_blind": {
++      "memory": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
++          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
++          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        }
++      },
++      "postgres": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "rejected: Execution identity was used before; rows are never recreated",
++          "claim_of_recreated_row_with_reused_owner": "rejected: ExecutionGenerationRegressed",
++          "old_first_holder_after_recreation": "rejected: Stale or expired task execution",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        },
++        "schema": "probe_8d9111e72b5045aea44d92ef2cdc2376"
++      }
++    },
++    "no_fence": {
++      "memory": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "accepted",
++          "claim_of_recreated_row_with_reused_owner": "accepted with generation 1 attempt 1",
++          "old_first_holder_after_recreation": "accepted",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        }
++      },
++      "postgres": {
++        "expired_holder": {
++          "reclaimed_generation": 2,
++          "stale_heartbeat": "rejected: Stale or expired task execution",
++          "stale_complete": "rejected: Stale or expired task execution",
++          "stale_with_spoofed_generation": "rejected: Stale or expired task execution"
++        },
++        "recreated_row": {
++          "resubmit_after_purge": "accepted",
++          "claim_of_recreated_row_with_reused_owner": "accepted with generation 1 attempt 1",
++          "old_first_holder_after_recreation": "accepted",
++          "old_second_holder_after_recreation": "rejected: Stale or expired task execution"
++        },
++        "schema": "probe_047e3bc5d93944fdaafd0baec6694cbe"
++      }
++    }
++  }
++}
+diff --git a/src/codex_harness/adapters/executor.py b/src/codex_harness/adapters/executor.py
+index 30c42b0..dcb0c3c 100644
+--- a/src/codex_harness/adapters/executor.py
++++ b/src/codex_harness/adapters/executor.py
+@@ -530,6 +530,12 @@ def decide_one(self, agent: str) -> dict | None:
+                 if deadline is not None and deadline <= now:
+                     contain_with_notice(tx, self.service.org, row, 'decisions_pending', 'deadline_exceeded', now)
+                     continue
++                from codex_harness.application.execution_fence import advance as advance_fence
++                try:
++                    advance_fence(tx, 'decisions_pending', row['id'], row.get("generation", 0) + 1, owner)
++                except ContractError:
++                    block_execution(tx, row, 'decisions_pending', 'ExecutionGenerationRegressed', now, self.service.org)
++                    continue
+                 row.update(status="running", owner=owner, attempt=row["attempt"] + 1,
+                            lease_owner=owner, generation=row.get("generation", 0) + 1,
+                            lease_until=min(now + timedelta(seconds=1200), deadline).isoformat()
+diff --git a/src/codex_harness/application/execution_fence.py b/src/codex_harness/application/execution_fence.py
+new file mode 100644
+index 0000000..2eceabb
+--- /dev/null
++++ b/src/codex_harness/application/execution_fence.py
+@@ -0,0 +1,31 @@
++"""Durable per-row generation fences: row or process existence never re-issues authority.
++
++The upstream file lease re-issued epoch 1 after its file was deleted, so an old holder passed the
++guard again (FA-003). Zeus generations advance only through this ledger, which outlives the
++execution row itself: a recreated row or a regressed generation is rejected, never re-armed.
++"""
++from codex_harness.domain.model import require, utcnow
++
++BUCKET = 'execution_fences'
++
++
++def key(bucket, row_id):
++    return bucket + ':' + row_id
++
++
++def current(tx, bucket, row_id):
++    return tx.get(BUCKET, key(bucket, row_id))
++
++
++def require_unused(tx, bucket, row_id):
++    # INV-EXECUTION-IDENTITY-001: a fenced identity is never recreated from generation 0.
++    require(current(tx, bucket, row_id) is None, 'Execution identity was used before; rows are never recreated')
++
++
++def advance(tx, bucket, row_id, generation, owner=None):
++    require(type(generation) is int and generation > 0, 'Fence generation must be a positive integer')
++    fence = current(tx, bucket, row_id)
++    require(fence is None or (type(fence.get('generation')) is int and generation > fence['generation']),
++            'Execution generation regressed behind its durable fence')
++    tx.put(BUCKET, key(bucket, row_id), {'id': key(bucket, row_id), 'bucket': bucket, 'row_id': row_id,
++                                         'generation': generation, 'owner': owner, 'at': utcnow()})
+diff --git a/src/codex_harness/application/execution_recovery.py b/src/codex_harness/application/execution_recovery.py
+index 350a38c..9181c90 100644
+--- a/src/codex_harness/application/execution_recovery.py
++++ b/src/codex_harness/application/execution_recovery.py
+@@ -218,6 +218,8 @@ def apply(self, packet, *, actor='conductor'):
+             old_budget = row.get('retry_budget')
+             old_version = old_budget.get('version') if isinstance(old_budget, dict) else None
+             version = old_version + 1 if type(old_version) is int and old_version > 0 else 1
++            from codex_harness.application.execution_fence import advance as advance_fence
++            advance_fence(tx, packet['bucket'], row['id'], row['generation'] + 1)
+             row.update(status='retry', generation=row['generation'] + 1, lease_owner=None, lease_until=None,
+                        error=None, result=None, failure=None, failure_receipt=None, execution_deadline=packet['deadline'],
+                        recovery_sequence=row.get('recovery_sequence', 0) + 1, recovery_receipt=identity,
+diff --git a/src/codex_harness/application/release_queue.py b/src/codex_harness/application/release_queue.py
+index 9973cd1..3c92b22 100644
+--- a/src/codex_harness/application/release_queue.py
++++ b/src/codex_harness/application/release_queue.py
+@@ -2,8 +2,9 @@
+ from datetime import datetime, timedelta, timezone
+ from uuid import uuid4
+ 
++from codex_harness.application.execution_fence import advance as advance_fence
+ from codex_harness.application.tickets import ticket_binding
+-from codex_harness.domain.model import require
++from codex_harness.domain.model import ContractError, require
+ from codex_harness.domain.policy import POLICY
+ 
+ 
+@@ -43,8 +44,15 @@ def claim(self, now=None):
+                     row.update(status="failed", reason="release attempt budget exhausted")
+                     tx.put("release_queue", row["id"], row)
+                     continue
++                owner = str(uuid4())
++                try:
++                    advance_fence(tx, "release_queue", row["id"], row.get("generation", 0) + 1, owner)
++                except ContractError as exc:
++                    row.update(status="failed", reason=str(exc))
++                    tx.put("release_queue", row["id"], row)
++                    continue
+                 row.update(status="running", attempt=row.get("attempt", 0) + 1,
+-                           owner=str(uuid4()), generation=row.get("generation", 0) + 1,
++                           owner=owner, generation=row.get("generation", 0) + 1,
+                            lease_until=(now + timedelta(seconds=POLICY.release_lease_seconds)).isoformat())
+                 tx.put("release_queue", row["id"], row)
+                 tx.put("deployment_locks", "controller", {"release_id": row["id"],
+diff --git a/src/codex_harness/application/workflow.py b/src/codex_harness/application/workflow.py
+index 1a8f471..da7aea7 100644
+--- a/src/codex_harness/application/workflow.py
++++ b/src/codex_harness/application/workflow.py
+@@ -13,6 +13,8 @@
+     positive_integer,
+     retry_limit,
+ )
++from codex_harness.application.execution_fence import advance as advance_fence
++from codex_harness.application.execution_fence import require_unused as require_unused_fence
+ from codex_harness.application.execution_notices import record as execution_notice
+ from codex_harness.application.execution_time import (
+     CLOCK_TOLERANCE_SECONDS,
+@@ -59,6 +61,7 @@ def submit(self, message: dict) -> dict:
+             if old:
+                 require(old["input_hash"] == digest(message), "Conflicting task identity")
+                 return old
++            require_unused_fence(tx, "tasks", task_id)
+             dependencies = message["when"]["after"]
+             require(task_id not in dependencies, "Task cannot depend on itself")
+             require(all(tx.get("tasks", dep) is not None for dep in dependencies),
+@@ -165,6 +168,11 @@ def claim(self, agent: str, owner: str, lease_seconds: int = POLICY.task_lease_s
+                         contain_with_notice(tx, self.org, task, 'tasks', 'deadline_exceeded', now)
+                         continue
+                     lease_until = (now + timedelta(seconds=lease_seconds)).isoformat()
++                    try:
++                        advance_fence(tx, "tasks", task["id"], task["generation"] + 1, owner)
++                    except ContractError:
++                        block_execution(tx, task, "tasks", "ExecutionGenerationRegressed", now, self.org)
++                        continue
+                     task.update(status="running", attempt=task["attempt"] + 1,
+                                 generation=task["generation"] + 1, lease_owner=owner,
+                                 lease_until=min(datetime.fromisoformat(lease_until), deadline).isoformat()
+@@ -346,6 +354,7 @@ def cancel(self, task_id: str, actor: str, reason: str) -> None:
+             require(actor in {"conductor", task["message"]["who"]["sender"]}, "Cannot cancel task")
+             require(task["status"] not in {"succeeded", "cancelled"}, "Task already terminal")
+             self._attempt_outcome(task, "cancelled", utcnow(), reason)
++            advance_fence(tx, "tasks", task_id, task["generation"] + 1)
+             task.update(status="cancelled", error=reason, generation=task["generation"] + 1)
+             tx.put("tasks", task_id, task)
+             execution_notice(tx, self.org, task, 'tasks', 'operator_cancelled', utcnow())
+diff --git a/tests/test_execution_fence.py b/tests/test_execution_fence.py
+new file mode 100644
+index 0000000..20bc05d
+--- /dev/null
++++ b/tests/test_execution_fence.py
+@@ -0,0 +1,166 @@
++"""FA-003: an expired or recreated execution never regains authority (INV-EXECUTION-IDENTITY-001)."""
++import time
++from datetime import datetime, timedelta, timezone
++from types import SimpleNamespace
++
++import psycopg
++import pytest
++from test_workflow import assignment
++
++from codex_harness.adapters.artifacts import FileArtifacts
++from codex_harness.adapters.executor import Executor
++from codex_harness.adapters.store import MemoryStore
++from codex_harness.application.release_queue import ReleaseQueue
++from codex_harness.application.service import Harness
++from codex_harness.application.workflow import Workflow
++from codex_harness.bootstrap import organization
++from codex_harness.domain.model import ContractError, envelope
++from codex_harness.domain.policy import POLICY
++
++
++def backend_store(backend, request):
++    return MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
++
++
++def purge(store, bucket, row_id):
++    """Simulate a lost row (operator purge, partial restore); Zeus itself never deletes documents."""
++    if isinstance(store, MemoryStore):
++        del store.data[bucket, row_id]
++    else:
++        with psycopg.connect(store.dsn) as conn:
++            conn.execute('DELETE FROM documents WHERE bucket=%s AND id=%s', (bucket, row_id))
++
++
++@pytest.mark.parametrize('backend', ['memory', 'postgres'])
++def test_expired_holder_cannot_act_after_reclaim(backend, request):
++    store = backend_store(backend, request)
++    w = Workflow(store, organization())
++    task = w.submit(assignment())
++    first = w.claim('worker:implementation', 'first-owner', lease_seconds=1)
++    assert first['generation'] == 1
++    time.sleep(1.2)
++    second = w.claim('worker:implementation', 'second-owner', lease_seconds=60)
++    assert second['id'] == task['id'] and second['generation'] == 2 and second['attempt'] == 2
++    stale = [first, {**first, 'generation': 2}, {**first, 'lease_owner': 'second-owner'},
++             {**second, 'generation': 1}]
++    with store.transaction() as tx:
++        before = tx.records()
++    for handle in stale:
++        with pytest.raises(ContractError, match='Stale or expired'):
++            w.heartbeat(handle)
++        with pytest.raises(ContractError, match='Stale or expired'):
++            w.complete(handle, {'summary': 'stale'})
++        with pytest.raises(ContractError, match='Stale or expired'):
++            w.fail(handle, 'stale failure')
++    with store.transaction() as tx:
++        assert tx.records() == before, 'rejected stale actions leave no trace'
++    w.heartbeat(second)
++    assert w.complete(second, {'summary': 'current'})['status'] == 'succeeded'
++    with store.transaction() as tx:
++        fence = tx.get('execution_fences', 'tasks:' + task['id'])
++    assert fence['generation'] == 2 and fence['owner'] == 'second-owner'
++
++
++@pytest.mark.parametrize('backend', ['memory', 'postgres'])
++def test_recreated_task_row_cannot_reissue_generation(backend, request):
++    store = backend_store(backend, request)
++    w = Workflow(store, organization())
++    message = assignment()
++    task = w.submit(message)
++    lease = w.claim('worker:implementation', 'owner')
++    w.fail(lease, 'boom')
++    with store.transaction() as tx:
++        row = tx.get('tasks', task['id'])
++    purge(store, 'tasks', task['id'])
++    with pytest.raises(ContractError, match='used before'):
++        w.submit(message)
++    with store.transaction() as tx:
++        assert tx.get('tasks', task['id']) is None
++    # A tool that bypasses submit and re-inserts the row from generation 0 is blocked at claim.
++    with store.transaction() as tx:
++        tx.put('tasks', task['id'], {**row, 'status': 'queued', 'generation': 0, 'attempt': 0,
++                                     'lease_owner': None, 'lease_until': None})
++    healthy = w.submit(assignment())
++    claimed = w.claim('worker:implementation', 'owner-2')
++    assert claimed['id'] == healthy['id'], 'the healthy task is still served'
++    with store.transaction() as tx:
++        recreated = tx.get('tasks', task['id'])
++        assert recreated['status'] == 'blocked' and recreated['error'] == 'ExecutionGenerationRegressed'
++        assert recreated['lease_owner'] is None and recreated['generation'] == 0
++        assert tx.get('execution_fences', 'tasks:' + task['id'])['generation'] == 1
++        assert any(e['reason'] == 'ExecutionGenerationRegressed' for e in tx.scan('events') if 'reason' in e)
++    with pytest.raises(ContractError, match='Stale or expired'):
++        w.heartbeat(lease)
++
++
++def test_cancel_and_corrupted_fence_fail_closed():
++    store = MemoryStore()
++    w = Workflow(store, organization())
++    task = w.submit(assignment())
++    w.cancel(task['id'], 'conductor', 'stop')
++    with store.transaction() as tx:
++        assert tx.get('execution_fences', 'tasks:' + task['id'])['generation'] == 1
++    other = w.submit(assignment())
++    with store.transaction() as tx:
++        tx.put('execution_fences', 'tasks:' + other['id'], {'id': 'tasks:' + other['id'], 'generation': 'x'})
++    assert w.claim('worker:implementation', 'owner') is None
++    with store.transaction() as tx:
++        assert tx.get('tasks', other['id'])['error'] == 'ExecutionGenerationRegressed'
++    with pytest.raises(ContractError, match='regressed'):
++        w.cancel(other['id'], 'conductor', 'stop')
++
++
++@pytest.mark.parametrize('backend', ['memory', 'postgres'])
++def test_release_controller_fence_survives_lock_expiry_and_row_recreation(backend, request):
++    store = backend_store(backend, request)
++    queue = ReleaseQueue(store)
++    t0 = datetime.now(timezone.utc)
++    with store.transaction() as tx:
++        tx.put('release_queue', 'r1', {'id': 'r1', 'status': 'queued', 'at': t0.isoformat()})
++    first = queue.claim(now=t0)
++    assert first['generation'] == 1
++    later = t0 + timedelta(seconds=POLICY.release_lease_seconds + 1)
++    second = queue.claim(now=later)
++    assert second['id'] == 'r1' and second['generation'] == 2 and second['owner'] != first['owner']
++    with store.transaction() as tx:
++        before = tx.records()
++    for handle in (first, {**first, 'generation': 2}, {**second, 'owner': first['owner']}):
++        with pytest.raises(ContractError, match='Stale release controller'):
++            queue.heartbeat(handle, now=later)
++        with pytest.raises(ContractError, match='Stale release controller'):
++            queue.finish(handle, {'status': 'complete'}, now=later)
++    with store.transaction() as tx:
++        assert tx.records() == before
++    queue.heartbeat(second, now=later)
++    assert queue.finish(second, {'status': 'complete'}, now=later)['status'] == 'complete'
++    with store.transaction() as tx:
++        tx.put('release_queue', 'r1', {'id': 'r1', 'status': 'queued', 'at': t0.isoformat()})
++    assert queue.claim(now=later) is None
++    with store.transaction() as tx:
++        row = tx.get('release_queue', 'r1')
++        assert row['status'] == 'failed' and 'regressed' in row['reason']
++        assert tx.get('execution_fences', 'release_queue:r1')['generation'] == 2
++
++
++def test_recreated_decision_row_is_blocked_before_dispatch(tmp_path, monkeypatch):
++    store = MemoryStore()
++    service = Harness(store, organization())
++    executor = Executor(service, SimpleNamespace(repository=tmp_path), FileArtifacts(tmp_path / 'artifacts'))
++    row = {'id': 'decision', 'actor': 'lead:improvement', 'phase': 'diagnose',
++           'input': {'source_task_id': 'task', 'source_actor': 'worker:implementation',
++                     'evidence_ref': 'fixture:error', 'occurrence_id': 'occurrence'},
++           'message': envelope('task.assign', 'lead:improvement', 'worker:implementation',
++                               'implement', {}, 'correlation'), 'status': 'pending', 'attempt': 0}
++    with store.transaction() as tx:
++        tx.put('decisions_pending', 'decision', row)
++    monkeypatch.setattr(executor, '_run', lambda *a, **k: (_ for _ in ()).throw(RuntimeError('controlled')))
++    executor.decide_one('lead:improvement')
++    with store.transaction() as tx:
++        assert tx.get('decisions_pending', 'decision')['status'] == 'retry'
++        assert tx.get('execution_fences', 'decisions_pending:decision')['generation'] == 1
++        tx.put('decisions_pending', 'decision', row)  # recreated from generation 0
++    assert executor.decide_one('lead:improvement') is None
++    with store.transaction() as tx:
++        blocked = tx.get('decisions_pending', 'decision')
++        assert blocked['status'] == 'blocked' and blocked['error'] == 'ExecutionGenerationRegressed'
++        assert tx.get('execution_fences', 'decisions_pending:decision')['generation'] == 1

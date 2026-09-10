@@ -1,0 +1,7 @@
+{
+  "pr": 39,
+  "scope": "Independent boundary counterexample; fixture data, not operational acceptance",
+  "rejection_sequence": 2,
+  "replay_sequence": 3,
+  "old_acceptance_replay_restored_eligibility": true
+}

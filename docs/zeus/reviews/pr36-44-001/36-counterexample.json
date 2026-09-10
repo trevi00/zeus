@@ -1,0 +1,6 @@
+{
+  "pr": 36,
+  "scope": "Independent boundary counterexample; fixture data, not operational acceptance",
+  "same_id": true,
+  "valid_basis_transition_rejected": "Experience claim ID reused with different content"
+}

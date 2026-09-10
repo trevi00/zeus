@@ -1,0 +1,43 @@
+import json
+import sys
+from pathlib import Path
+from uuid import uuid4
+
+root = Path('C:/Users/rudtn/zeus-pr-review-37')
+sys.path[:0] = [str(root/'src'),str(root/'tests')]
+import psycopg
+from psycopg import sql
+from psycopg.conninfo import make_conninfo
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.application.workflow import Workflow
+from codex_harness.bootstrap import database_url, organization
+from test_workflow import assignment
+
+dsn = database_url()
+schema = 'review_fence_'+uuid4().hex
+with psycopg.connect(dsn) as conn:
+    conn.execute(sql.SQL('CREATE SCHEMA {}').format(sql.Identifier(schema)))
+try:
+    store = PostgresStore(make_conninfo(dsn,options=f'-c search_path={schema},public'))
+    store.migrate()
+    w = Workflow(store,organization())
+    task = w.submit(assignment())
+    old = w.claim('worker:implementation','old-owner',lease_seconds=120)
+    w.cancel(task['id'],'conductor','revoke old execution')
+    with store.transaction() as tx:
+        fence = tx.get('execution_fences','tasks:'+task['id'])
+        tx.put('tasks',task['id'],old)
+    w.heartbeat(old)
+    completed = w.complete(old,{'summary':'stale holder after partial row restore'})
+    assert fence['generation']==2 and old['generation']==1 and completed['status']=='succeeded'
+    receipt = {'pr':37,'backend':'real PostgreSQL, isolated schema',
+               'fault_input':'restore old task row only; retain durable fence',
+               'fence_generation':2,'restored_row_generation':1,'stale_heartbeat_accepted':True,
+               'stale_completion':'succeeded','host_clock_changed':False}
+finally:
+    with psycopg.connect(dsn) as conn:
+        conn.execute(sql.SQL('DROP SCHEMA {} CASCADE').format(sql.Identifier(schema)))
+receipt['schema_removed']=True
+Path('.runtime/pr-review-batch-36-44/37-postgres-counterexample.json').write_text(
+    json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(receipt))

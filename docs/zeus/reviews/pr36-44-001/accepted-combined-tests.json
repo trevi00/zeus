@@ -1,0 +1,13 @@
+{
+  "prs": [
+    40,
+    41,
+    42
+  ],
+  "tree": "8d9c4274c4f2b7de3856a68eed5a8a2bce391695",
+  "commit": "92421ef698436bb227100f732494db8f411ff401",
+  "exit_code": 0,
+  "seconds": 221.75,
+  "raw_sha256": "ab3d5a7b18015eeafd0d6c736e08ff457f9cb7b38fd975e7965ca22cfff2668f",
+  "scope": "Combined Windows ordinary regression; PostgreSQL-specific cases measured separately per PR"
+}

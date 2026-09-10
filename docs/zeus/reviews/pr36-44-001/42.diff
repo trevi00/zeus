@@ -1,0 +1,128 @@
+diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..6780878 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -25,7 +25,7 @@ The trusted local-process identity boundary is documented in status.md; validati
+ |---|---|
+ | INV-RESEARCH-001 | Discovery and historical inventory never imply semantic review. Versioned imports preserve original reference records. Source verification reconciles every raw Git path and object against the pinned commit/tree, not just a manifest hash. |
+ | INV-RESEARCH-002 | Partition scope is immutable. Checkpoints require an authorized assigned task, current lease and task/partition generations; evidence history and continuation outbox writes commit atomically. Remaining work reconciles with recorded evidence. |
+-| INV-RESEARCH-003 | Model-authored receipt IDs are not runner evidence. Missing execution, binary inspection or unresolved subsystem work cannot establish completion. Record tests not run with reasons and follow-up. |
++| INV-RESEARCH-003 | Model-authored receipt IDs are not runner evidence. Missing execution, binary inspection or unresolved subsystem work cannot establish completion. Record tests not run with reasons and follow-up. String presence in source text, file existence, AST shape or a test's name is not behavior evidence: Zeus tests assert on executed behavior with positive and negative controls, and the suite rejects assertions that only read production source text (structural policy tests excepted). |
+ | INV-RESEARCH-004 | Both discovery feeds and legacy approvals lack adoption authority. Positive eligibility requires complete coverage and ordered independent reviews bound to source/evidence/proposal, deployed revision/policy and graph. Revalidate approval and immutable bytes before execution. Verified release activation enables dispatch; rollback pauses it without deleting evidence. |
+ 
+ Audit wire schema: `src/codex_harness/resources/research.schema.json`.
+diff --git a/docs/zeus/implementation/behavior-assertions-001/README.md b/docs/zeus/implementation/behavior-assertions-001/README.md
+new file mode 100644
+index 0000000..de91260
+--- /dev/null
++++ b/docs/zeus/implementation/behavior-assertions-001/README.md
+@@ -0,0 +1,47 @@
++# 배선 문자열 검사는 동작 증거가 아니다
++
++기존 FA-009 / GitHub [#10](https://github.com/trevi00/zeus/issues/10) / `ZEUS-49fb81e7348d` 개정 1의 구현입니다.
++상류 검토는 여러 곳에서 "문자열 존재를 동작 검증으로 읽는" 테스트를 확인했습니다: `test_context_programming_smoke.py`는
++l2_driver 배선을 `code_only` 문자열 존재로 검사하고([design-canon review](../../../full-analysis/design-canon/review.md):35),
++`test_entrance_reconfirm_contract.py`는 판정 공식을 지역 helper에 복제한 뒤 AST로 교집합을 단언하며 실제 apply/ledger
++분기를 실행하지 않고([harness-experience trace T3](../../../full-analysis/harness-experience/trace.md)), `test_curator_smoke.py`는
++결함 자체를 기대값으로 인코딩했습니다(T1). 격리 컨테이너에서 상류 스위트가 PASS해도 "이 PASS는 문자열 배선 검사의
++한계를 해소하지 않는다"가 검토 결론입니다. 교차검토 합의는 "API/행동·부정/긍정 대조군으로 자산화; 문자열 존재를 E2E
++PASS로 승계 금지"입니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## Zeus 상태와 변경
++
++Zeus 스위트를 훑은 결과 production 소스 텍스트의 부분 문자열로 배선을 단언하는 테스트는 없었고, 소스를 읽는 테스트는
++계층 규칙·계약 ID 등록을 검사하는 구조 정책 테스트(`test_architecture.py`)뿐이었습니다. 이 상태를 앞으로도 유지하도록
++**스위트 자체에 가드**를 넣고 계약으로 적었습니다.
++
++- `tests/test_architecture.py`:
++  - `wiring_assertions(source)`: 테스트 소스의 `assert` 식이 production 위치(`src/`, `scripts/`, `harness_hooks/`,
++    `codex_harness.`)의 텍스트/바이트/AST를 읽어 단언하면 찾아냅니다. fixture·임시 파일·실행 결과 출력을 읽는 단언은
++    대상이 아닙니다.
++  - `test_tests_assert_behavior_not_source_text`: 모든 `tests/test_*.py`에 적용(구조 정책 테스트는 명시 허용목록).
++  - `test_wiring_detector_has_positive_and_negative_controls`: 탐지기 자체의 양성 3건(문자열 in 소스 텍스트, 바이트,
++    AST 형태)과 음성 5건(런타임 파일, 실행 결과, 관측 출력, assert 밖 읽기, 파싱 결과 값) 대조군.
++- `docs/contracts.md`: `INV-RESEARCH-003`에 "문자열 존재·파일 존재·AST 형태·테스트 이름은 동작 증거가 아니며 스위트가 이를
++  거부한다" 문장 추가.
++
++앞선 PR들의 검증 방식이 이 규칙의 적용 예입니다: 실제 자식 프로세스·실제 PostgreSQL·실제 훅 스크립트를 실행하고, 결속을
++빼면 실패하는 음성 대조와 수정 전 소스로 되돌린 음성 대조를 함께 남겼습니다(encoding-contract-001, execution-fence-001,
++idempotency-races-001 등).
++
++## 재현과 검증
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_architecture.py` (가드 + 대조군) | 4 passed; 현재 스위트 위반 0건 |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 919 passed, 305 skipped (168s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 탐지는 `assert` 식 안에서 소스를 직접 읽는 형태에 한정한 휴리스틱입니다. 변수에 읽어 둔 뒤 단언하는 경우는 잡지 못하며,
++  리뷰에서 같은 규칙을 적용해야 합니다. 상류의 hollow-assertion 감사 같은 토큰 수준 분석은 도입하지 않았습니다.
++- 상류 테스트(`test_context_programming_smoke.py` 등)의 수정은 티켓 범위(새 저장소 한정) 밖이며, 그 결과를 Zeus 증거로
++  승계하지 않는다는 원칙(INV-RESEARCH-003)만 적용합니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/tests/test_architecture.py b/tests/test_architecture.py
+index 77ce072..aeb2c75 100644
+--- a/tests/test_architecture.py
++++ b/tests/test_architecture.py
+@@ -19,6 +19,57 @@ def test_inner_layers_do_not_import_adapters_or_sdk():
+                     assert not module.startswith("codex_harness.bootstrap"), (source, module)
+ 
+ 
++SOURCE_TEXT_READERS = re.compile(r"\b(read_text|read_bytes|getsource|ast\.parse|ast\.walk|ast\.dump)\s*\(")
++PRODUCTION_LOCATIONS = re.compile(r"(src/|scripts/|harness_hooks/|codex_harness[./])")
++# Structural policy tests inspect source deliberately; behavior tests may not.
++WIRING_ALLOWLIST = {"test_architecture.py"}
++
++
++def wiring_assertions(source: str):
++    """FA-009: assertions that only check production source text, not executed behavior.
++
++    A `<literal> in <production file text>` or an AST-shape assertion proves that a string was
++    typed, never that the wiring runs. Reading fixtures or generated runtime files is fine.
++    """
++    findings = []
++    for node in ast.walk(ast.parse(source)):
++        if not isinstance(node, ast.Assert):
++            continue
++        text = ast.unparse(node.test)
++        if SOURCE_TEXT_READERS.search(text) and PRODUCTION_LOCATIONS.search(text):
++            findings.append((node.lineno, text[:120]))
++    return findings
++
++
++def test_tests_assert_behavior_not_source_text():
++    offenders = []
++    for test in sorted((ROOT / "tests").glob("test_*.py")):
++        if test.name in WIRING_ALLOWLIST:
++            continue
++        offenders += [(test.name, line, text) for line, text in
++                      wiring_assertions(test.read_text(encoding="utf-8-sig"))]
++    assert offenders == [], offenders
++
++
++def test_wiring_detector_has_positive_and_negative_controls():
++    positive = (
++        "from pathlib import Path\n"
++        "def test_x():\n"
++        "    assert 'record_incident' in (ROOT / 'src/codex_harness/cli.py').read_text()\n"
++        "    assert 'fence' in Path('scripts/check.py').read_bytes().decode()\n"
++        "    tree = ast.parse((ROOT / 'src/codex_harness/x.py').read_text())\n"
++        "    assert any(isinstance(n, ast.Call) for n in ast.walk(ast.parse(source_of('codex_harness.x'))))\n")
++    assert [line for line, _ in wiring_assertions(positive)] == [3, 4, 6]
++    negative = (
++        "def test_y(tmp_path):\n"
++        "    assert (tmp_path / 'lease.json').read_text() == '{}'\n"  # generated runtime file
++        "    assert service.record_incident(message)['occurrences'] == 1\n"  # executed behavior
++        "    assert 'FASTAPI_ELIGIBLE' in prompts[0]['body']\n"  # observed output of a run
++        "    body = (ROOT / 'src/codex_harness/cli.py').read_text()\n"  # read outside an assert
++        "    assert parse(body)['version'] == 1\n")
++    assert wiring_assertions(negative) == []
++
++
+ def test_invariant_comments_resolve_to_contract_registry():
+     contracts = (ROOT / "docs/contracts.md").read_text(encoding="utf-8")
+     for source in (ROOT / "src").rglob("*.py"):

@@ -1,0 +1,9 @@
+{
+  "pr": 44,
+  "scope": "Independent boundary counterexample; fixture data, not operational acceptance",
+  "normalized_duplicate_key_accepted": {
+    "keywords": [
+      "overridden"
+    ]
+  }
+}

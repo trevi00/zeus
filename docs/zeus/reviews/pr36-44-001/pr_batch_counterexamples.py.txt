@@ -1,0 +1,126 @@
+import json
+import os
+import runpy
+import sys
+import tempfile
+from dataclasses import replace
+from pathlib import Path
+
+n = int(sys.argv[1])
+root = Path(f'C:/Users/rudtn/zeus-pr-review-{n}')
+sys.path[:0] = [str(root/'src'), str(root/'tests')]
+os.chdir(root)
+out = Path('C:/Users/rudtn/zeus/.runtime/pr-review-batch-36-44')
+result = {'pr': n, 'scope': 'Independent boundary counterexample; fixture data, not operational acceptance'}
+
+if n == 36:
+    from codex_harness.adapters.experience import parse_lesson
+    from codex_harness.adapters.store import MemoryStore
+    from codex_harness.application.experience import ExperienceClaims
+    from codex_harness.domain.model import ContractError
+    data = b'---\noccurrences: 308\nevidence: []\n---\nlesson\n'
+    old = parse_lesson('harness', 'lessons/a.md', data, {'kind':'observed','revision':None})
+    pinned = parse_lesson('harness', 'lessons/a.md', data, {'kind':'pinned','revision':'a'*40})
+    claims = ExperienceClaims(MemoryStore())
+    claims.record(old, 'sha256:'+'a'*64)
+    try:
+        claims.record(pinned, 'sha256:'+'b'*64)
+    except ContractError as exc:
+        result.update(same_id=old['id']==pinned['id'], valid_basis_transition_rejected=str(exc))
+    else:
+        raise AssertionError('Expected the observed collision did not reproduce')
+
+elif n == 37:
+    from codex_harness.adapters.store import MemoryStore
+    from codex_harness.application.workflow import Workflow
+    from codex_harness.bootstrap import organization
+    from test_workflow import assignment
+    store = MemoryStore()
+    w = Workflow(store, organization())
+    task = w.submit(assignment())
+    old = w.claim('worker:implementation', 'old-owner', lease_seconds=120)
+    w.cancel(task['id'], 'conductor', 'revoke old execution')
+    with store.transaction() as tx:
+        fence = tx.get('execution_fences','tasks:'+task['id'])
+        tx.put('tasks',task['id'],old)  # Partial restore of only the formerly running row.
+    w.heartbeat(old)
+    completed = w.complete(old, {'summary':'stale holder wrote past durable fence'})
+    result.update(fence_generation=fence['generation'], restored_generation=old['generation'],
+                  stale_heartbeat_accepted=True, stale_completion=completed['status'])
+    assert fence['generation'] > old['generation'] and completed['status']=='succeeded'
+
+elif n in (39,43):
+    import test_research_audits as fixtures
+    from codex_harness.domain.model import ContractError
+    with tempfile.TemporaryDirectory(prefix='zeus-pr-review-') as tmp:
+        service, audit, source, _, _ = fixtures.audit.__wrapped__(Path(tmp))
+        fixtures.activate_fixture(service)
+        proposal = fixtures.complete_fixture_audit(service,audit,source)
+        if n == 39:
+            service.propose(audit['id'],proposal)
+            fixtures.approve_fixture(service,'lead:research')
+            task, original = fixtures.approve_fixture(service,'conductor')
+            rejected = service.review(task,replace(original,accepted=False))
+            assert not service.coverage(audit['id'])['adoption_eligible']
+            replay = service.review(task,original)
+            result.update(rejection_sequence=rejected['sequence'], replay_sequence=replay['sequence'],
+                          old_acceptance_replay_restored_eligibility=service.coverage(audit['id'])['adoption_eligible'])
+            assert result['old_acceptance_replay_restored_eligibility']
+        else:
+            with service.store.transaction() as tx:
+                part = tx.scan('research_partitions')[0]
+                tx.put('research_partitions',part['partition_id'],{**part,'open_questions':['unresolved semantic question']})
+            coverage = service.coverage(audit['id'])
+            try:
+                service.propose(audit['id'],proposal)
+            except ContractError as exc:
+                result['proposal_rejection']=str(exc)
+            result['whole_analysis_complete_with_open_question']=coverage['whole_analysis_complete']
+            assert coverage['whole_analysis_complete'] and 'Open audit questions' in result['proposal_rejection']
+
+elif n == 42:
+    api = runpy.run_path(str(root/'tests/test_architecture.py'))
+    code = "from pathlib import Path\ndef test_wiring():\n    source = Path('src/codex_harness/cli.py').read_text()\n    assert 'record_incident' in source\n"
+    findings = api['wiring_assertions'](code)
+    result.update(production_source_alias_assertion=code,detector_findings=findings)
+    assert findings == []
+
+elif n == 38:
+    import psycopg
+    from psycopg import sql
+    from psycopg.conninfo import make_conninfo
+    from uuid import uuid4
+    from codex_harness.adapters.store import PostgresStore
+    from codex_harness.bootstrap import database_url
+    import test_idempotency_races as fixtures
+    # Delay one owned interpreter after import, modelling a slow scheduled child.
+    fixtures.CHILD = fixtures.CHILD.replace("pause = spec['pause']",
+        "time.sleep(spec.get('review_start_delay', 0))\npause = spec['pause']")
+    schema = 'review_race_'+uuid4().hex
+    dsn = database_url()
+    with psycopg.connect(dsn) as conn:
+        conn.execute(sql.SQL('CREATE SCHEMA {}').format(sql.Identifier(schema)))
+    try:
+        store = PostgresStore(make_conninfo(dsn,options=f'-c search_path={schema},public'))
+        store.migrate()
+        specs = [{'message':fixtures.incident('review-slow-child',f'occurrence-{i}'),
+                  'review_start_delay':2.5 if i==3 else 0} for i in range(4)]
+        with tempfile.TemporaryDirectory(prefix='zeus-review-race-') as tmp:
+            rows = fixtures.race(store,Path(tmp),'record_incident',specs,unlocked=True)
+        counts = [r['occurrences'] for r in rows]
+        result.update(backend='real PostgreSQL isolated schema',child_start_delay_seconds=2.5,
+                      unlocked_occurrences=counts,expected_by_submitted_test=[1,1,1,1],
+                      exact_negative_control_broken=counts != [1,1,1,1])
+        assert result['exact_negative_control_broken']
+    finally:
+        with psycopg.connect(dsn) as conn:
+            conn.execute(sql.SQL('DROP SCHEMA {} CASCADE').format(sql.Identifier(schema)))
+
+elif n == 44:
+    from codex_harness.adapters.skill_routing import frontmatter
+    meta, _ = frontmatter('---\nkeywords: [safe]\n"keywords ": [overridden]\n---\nbody')
+    result['normalized_duplicate_key_accepted']=meta
+    assert meta['keywords']==['overridden']
+
+(out/f'{n}-counterexample.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(result))

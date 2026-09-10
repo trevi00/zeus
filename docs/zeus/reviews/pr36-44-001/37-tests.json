@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus-pr-review-37\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_execution_fence.py",
+    "tests/test_execution_identity.py",
+    "tests/test_execution_recovery.py"
+  ],
+  "head": "7905e192745508b6b634a4608b8cfb345aba524c",
+  "exit_code": 0,
+  "seconds": 38.91927199999918,
+  "raw_sha256": "84879d0600b7d87355e8d4ffb4b15600d19ce3d6a99207e7c7fc860aa6272112",
+  "real_postgres": true
+}

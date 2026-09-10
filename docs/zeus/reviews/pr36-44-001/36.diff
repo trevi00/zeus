@@ -1,0 +1,984 @@
+diff --git a/docs/contracts.md b/docs/contracts.md
+index 2a278f7..26222b6 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -82,6 +82,18 @@ attestations. Retry delivery cannot add samples, including after hot-window evic
+ Leased writes require current task ownership in the same transaction. A task excludes
+ its own observation from historical assessment. Advisory text and its full skill body
+ are included or omitted atomically; assessment provenance binds session recovery.
++## INV-EXPERIENCE-001
++
++Imported upstream experience (lesson) records are claims, not evidence. Each claim binds the
++source name, upstream path, exact bytes and rule version; the original `occurrences`, `trust`,
++`lifecycle` and `evidence` fields are preserved verbatim under `upstream` and never copied into
++Zeus incident, hook, review or release state. Independent occurrences are recomputed only from
++evidence tokens that identify one incident each; cumulative counters (`ledger:PASS xN`) and
++note locations (`repair-notes:*`) count zero, so a record without identities stays
++`upstream_occurrences_unverified`. Re-import of identical bytes changes nothing; different
++bytes of the same path are separate versions. Claims live in their own bucket and do not
++participate in INV-RECURRENCE-001 counting.
++
+ # INV-SKILL-IMPORT-001
+ 
+ Legacy skill telemetry imports bind exact raw bytes to a project/source segment and
+diff --git a/docs/zeus/implementation/experience-claims-001/README.md b/docs/zeus/implementation/experience-claims-001/README.md
+new file mode 100644
+index 0000000..46fb0bb
+--- /dev/null
++++ b/docs/zeus/implementation/experience-claims-001/README.md
+@@ -0,0 +1,62 @@
++# 상류 경험 기록의 주장 보존과 독립 occurrence 재계산
++
++기존 FA-002 / GitHub [#3](https://github.com/trevi00/zeus/issues/3) / `ZEUS-7fcc5f0308e7` 개정 1의 구현입니다.
++상류 curator는 같은 repair 노트를 다시 수확할 때마다 `occurrences`를 1 올리고, 프로젝트 원장의
++게이트 PASS **누계**를 `ledger:PASS xN` 토큰으로 찍습니다. 그래서 `occurrences: 308`은 "308회 독립 재발"이
++아니라 "수확 사이클 308회"이고, `trust: confirmed`는 bake 시간 경과 + 수확 2회면 붙습니다
++([교차검토 합의](../../../full-analysis/cross-review/resolution.md), [trace T1](../../../full-analysis/harness-experience/trace.md)).
++Zeus는 그 값을 승인·자격·재발 횟수로 승계하면 안 됩니다. 새 이슈나 분석 후보는 추가하지 않았습니다.
++
++## 변경
++
++- `domain/experience.py`: frontmatter 분리, 필드 검증(문자열·리스트·매핑만), 증거 토큰 분류,
++  `experience_claim(...)`. 상류 필드는 `upstream` 아래 **원문 그대로**(문자열) 보존하고 최상위에는
++  `trust`/`occurrences`/`lifecycle`를 두지 않습니다. 독립 occurrence는 사건 하나를 식별하는 토큰
++  (`incident:`, `occurrence:`, `ledger-event:`, `task:`)의 집합 크기로만 재계산합니다. `ledger:PASS xN`은
++  누계 카운터, `repair-notes:*`는 노트 위치라 0으로 셉니다. 식별 토큰이 없으면 상태는
++  `upstream_occurrences_unverified`입니다.
++- `application/experience.py`: `experience_claims` 버킷에 추가 전용 기록. ID = (규칙 버전, source, path,
++  바이트 SHA-256)이라 같은 바이트 재수입은 무변경, 같은 경로의 다른 바이트(pinned/observed)는 별개
++  버전이며 수입 순서(`sequence`)로 정렬합니다. 같은 ID에 다른 내용은 거부합니다.
++- `adapters/experience.py`: 명시한 파일/디렉터리만 읽고(홈 자동 스캔 없음) 원본 바이트를 아티팩트에
++  보관한 뒤 기록합니다. frontmatter YAML은 기존 `project_skills.load_yaml`(문자열 전용·태그 금지·
++  중복 키 거부·크기/전개 상한)을 재사용합니다. `--dry-run`은 DB·아티팩트 쓰기가 없습니다.
++- `docs/contracts.md`: `INV-EXPERIENCE-001` 추가. `record_incident`(INV-RECURRENCE-001)는 이 버킷을
++  읽지 않으며, 그 사실을 실제 서비스 호출로 검사합니다.
++
++```text
++uv run python -m codex_harness.adapters.experience <lessons-dir> --basis observed --path-prefix knowledge/lessons/ --dry-run
++uv run python -m codex_harness.adapters.experience <lessons-dir> --basis pinned --revision <40-hex> --path-prefix knowledge/lessons/
++```
++
++## 재현과 검증
++
++- `probe.py` / `observed-lessons-receipt.json`: 현재 PC의 실제 상류 lesson 25개(`harness/knowledge/lessons`)를
++  미리보기로 파싱하고 각 파일의 SHA-256을 [분석 인벤토리](../../../full-analysis/harness-experience/inventory.json)의
++  observed 항목과 대조했습니다. **25/25 일치**. 상류 `occurrences` 합계 **2,692**, 재계산한 독립 occurrence
++  합계 **0**, 25건 모두 `upstream_occurrences_unverified`. 예: `repair-cp949-…` `occurrences: 308`,
++  `trust: confirmed`, 증거 토큰 24개 = 카운터 23 + 노트 위치 1. `triage-…`/`wireframe-ui-…` 두 건은
++  분류되지 않은 토큰 2개씩(`ledger:<stage>::<statement>` 계열 키와 `repro:DETERMINISTIC|UNKNOWN`)이며,
++  계열 키는 사건이 아니라 문장 종류를 가리키므로 미분류로 남기고 식별로 세지 않습니다.
++- `tests/test_experience.py`(11 검사): 상류 값 원문 보존과 0 재계산, 식별 토큰 중복 1회 계수, 중첩
++  `restatement_suspects`·여러 줄 인용 스칼라 보존, 잘못된 입력 9종 명시 거부(frontmatter 없음, 스칼라
++  evidence, 빈 토큰, 중복 키, 리스트 루트, `!!python` 태그, 깨진 YAML, 비UTF-8, 256KiB 초과), basis/경로
++  검증, 버전 분리와 멱등 재수입, 같은 ID 다른 내용 거부, **수입 25건 뒤 `record_incident` 1건이 hook을
++  만들지 않음**, CLI dry-run 무쓰기와 주입 store 수입.
++- Windows 전체 회귀: 아래 표. Linux는 이 PR의 CI(ubuntu 매트릭스)로 확인하며 기록 시점에는 미실행입니다.
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_experience.py` + `test_architecture` + `test_project_skills` | 44 passed |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14) | 930 passed, 305 skipped (165s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 이번 구현은 주장 **보존과 분류**입니다. 상류 25건 중 어느 것도 사건 식별 토큰을 갖지 않으므로
++  독립 재발 횟수를 이 데이터에서 복원할 수는 없습니다. 복원하려면 상류가 사건별 식별자를 남기거나
++  Zeus가 자체 incident로 다시 관측해야 합니다(`independent_occurrence` 규약).
++- 경험을 Codex 작업 컨텍스트에 자문으로 주입하는 경로(설계·구현에만, 진단·리뷰·판정 제외)와 예산은
++  교차검토의 후속 제안이며 이 PR에 없습니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따릅니다. 이 기록은 구현·검증 증거이며 배포 승인이 아닙니다.
+diff --git a/docs/zeus/implementation/experience-claims-001/observed-lessons-receipt.json b/docs/zeus/implementation/experience-claims-001/observed-lessons-receipt.json
+new file mode 100644
+index 0000000..ce39307
+--- /dev/null
++++ b/docs/zeus/implementation/experience-claims-001/observed-lessons-receipt.json
+@@ -0,0 +1,322 @@
++{
++  "source": "harness",
++  "basis": {
++    "kind": "observed",
++    "revision": null
++  },
++  "claims": [
++    {
++      "path": "knowledge/lessons/repair-1-inv-t-ec00129b.md",
++      "sha256": "60dd05995dbff1e108ab71a784b50b74f4628802cee21213102448611e282304",
++      "id": "83c4632fd8edf520ffdc8eba8e1eefabd0ded3726305abefae57a9743850509e",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 293,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 23,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-10.-triage-3-2026-09-03-tier-7ff7b0f0.md",
++      "sha256": "c147ee74d10b12c37233f1b7c8eabe76a852e920ed1a45db7c49145fbfd9f316",
++      "id": "85cd9018a93f1a167b8e5743cb37d186f3c8db099999abe801023df83304b2f1",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 290,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 22,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-11.-prop-arming-skips-freshness-22c8b9da.md",
++      "sha256": "8091e3c411b439e13ba3ce92aba9d10bad013257c4aee3319a9e5f6b870be4b2",
++      "id": "1784515f3d447101a70d47d82c386cc8777a468bbcb46000d2b6aa9fc08ddd01",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 285,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 21,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-11.-triage-4-2026-09-03-13-18-7-5db016f6.md",
++      "sha256": "9eee75ff523e5a2e0691387116fe22984772461f3e5f407255acf7052d3e2111",
++      "id": "9f5ffadab6dea7ffeb59837274f1f1ffc4d9e2433e1f0fc151333547b72ed9aa",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 272,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 17,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-12.-triage-5-2026-09-03-15-5x-kst-8-faaccff4.md",
++      "sha256": "c2d1f61eff3afd516b34d549bf407d00e1e6fa8588a033e471da39d5d9abfb82",
++      "id": "9be887f2cf8b0d441098a78fbdafbd9eda88fadc33efea4bd388096106916898",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 248,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 12,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-13.-triage-6-2026-09-03-17-2x-kst-9-37c9930f.md",
++      "sha256": "5b40e25b97fa660f232fceaa0176d37b031ba50309e0c5e1dcb24fe3c00cc150",
++      "id": "a2d553b280f2ffd6c41db8f03f6af8396d8f4a1c7b61f8a95096439b8278a960",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 235,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 8,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-14.-2026-09-03-18-5x-kst-9-repair-6e678d11.md",
++      "sha256": "16a3ce8456cd2b7d066bb359db3368b0d1fc0634358fafc865b43fa81145e3ac",
++      "id": "78da45df36bb2a678e7602d66bcfb796283bac68fe2926c1e2852788e5115d9b",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 220,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 5,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-15.-report-2026-09-03-19-3x-kst-9-report-e3170e7d.md",
++      "sha256": "10c96292c91c592d5d9cbdfc8ab87eb7ad5519c9264d904b1d78b65d43971eb9",
++      "id": "0bba0f76bd9c5f5e210508763393d98dcb09b5a36d6fac17d71cf25261ac56aa",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 206,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 3,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-14-29-failures-uuid-column-bound-with-str-str-8dc6deb3.md",
++      "sha256": "c963eec46a5ec6fe35d86bd94f99a7fe8e7b5a3264972c9bc01740c07c7e2a07",
++      "id": "6faeb42d75fcbd2775900876bc0ae155b52139d41b66853275eb8b661dc09b74",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 2,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 1,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-14-circular-dependencies-removed-execution-le-8f1de356.md",
++      "sha256": "7f7f987caf5fee9fb6b71e026891d6c8c9a5f05b9523fcdef8fa4a7252678bf1",
++      "id": "18c6ad08b5143db8fc5d54018d2607c6d22cfea0ba3b8a5ccce255907f0bb9cf",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 2,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 1,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-14-e2e-front-iter-11-ex-28-tier-manual-test-4-88ae3faa.md",
++      "sha256": "a1c0218ead42b0e0eda7c6b7cd71ea80e844de9cdcec7e6705539e70fcdd5506",
++      "id": "67c9dfcb7155da5a8e7813e2fe2e391bb4f143ba4478a2e6faf6bc2f972587ea",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 2,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 1,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-14-frontend-e2e-auth.setup-41-41-41-db42d74d.md",
++      "sha256": "d46189873763241e92c43661e36cac08a1780e6357ce539443e1e59c05af2447",
++      "id": "2a3d6600b26aa3f6471d770a12ac40cb7534056327497ad01c5df5e2ac46da24",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 1,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 1,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-16-stage-19-red-18-5xx-f2ea2727.md",
++      "sha256": "8e71a7f505c7add2b13fe8b86d445e8c56f0be878a6a1ea36af1f2686f1af52d",
++      "id": "b77b7a9af492d658a9ec3fdff38d03012d056c8a3581d8e823b216fe0f1ed3bb",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 8,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 5,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-17-2-cycle-2-1-6-a-1-a-6-3-b-1-b-3-7bc5b317.md",
++      "sha256": "a965ddba165ac317aa9a8fa448c7dd476df0c6fc79deb5d029dbc2d586d886a6",
++      "id": "01d241b56f9007fa260c799f2b4085b6d6b5923f7c82a1574d5854b826dac82d",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 4,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 4,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-17-stage-16-e2e-test-2-redo-2-3e860d74.md",
++      "sha256": "4bb5db75f61b7e6e5773b15637709f7302b6fa22a7b9e646d939524dc7d76eb8",
++      "id": "89c5b390e1c7dbc2bbd839466f72da5811f0aca00df0da08b9aabe4bcc5c84f6",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 3,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 3,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-17-stage-16-e2e-test-3-0-841ed5b8.md",
++      "sha256": "2635d69131ec6631e4dac0ed3ef4e60d577577c10b47da7b48188db7c260e2e2",
++      "id": "8ffcc85c77d2047fad62bc013902f06efdb85ba403c022e71e742aed99b846c4",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 2,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 2,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-17-stage-17-blackbox-test-2-redo-7f2c3efd.md",
++      "sha256": "dd9c38cebad0b529d193ccf161bb4fea046ee24a93415246417c73ea24ec16e1",
++      "id": "565fa8baeecaa4997e57a8ccd76bd4b43beeeaa74cbfe45a948015e32f404980",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 3,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 3,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-17-stage-17-blackbox-test-3-redo-4-fa89a677.md",
++      "sha256": "7fdfd3bca369bbfa788cfa0d953cb4d4d9dcb97418a7d6eb151f913720b188fb",
++      "id": "fd54a2e133bf8b3d2bee29800b26b31787c05c7787c5b2e129f948f8c7f1c5a2",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 2,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 2,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-17-stage-19-reliability-test-2-cycle-2-redo-0-4d12cfb4.md",
++      "sha256": "5f515e839856307dcd845ea64e8998add9bd438b571f64a8b91ce21b3a9819df",
++      "id": "f9d3103937f484020851f23494b3f31c783aaac15363796fdc7ad9da6c7387c9",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 3,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 3,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-17-stage-wireframe-3-render-2-fail-951f406c.md",
++      "sha256": "3ee291de3c884a8e4b27eea6dc981167aec706599718d2c2b2b6cb45fa4f98d1",
++      "id": "abb315a63c7938c265295f9b6a8122648c54668e23d23d9f9dce52207a5b3c6f",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 1,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 1,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-2026-08-18-stage-17-blackbox-test-3-redo-2-2-01bc5601.md",
++      "sha256": "94b2eda7246cd819ec5373c926c9f932a35e0bae44c3b6448a35898a2ea8604c",
++      "id": "a99b21f0e32f40ebec981c51c6531bba1f77799e894ab1f1ed770d0fabf5a4b0",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 1,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 1,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-9-seam-shim-health-tamper-b402696f.md",
++      "sha256": "4281b48843330135c9c4773bb01ee0f7fb129013d4f030520e79ac770da80a1d",
++      "id": "167279b564cae831e918345a6d454d5b84bb64adf8130be0fad4a0e3bca42c32",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 299,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 23,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/repair-cp949-unicodeencodeerror-629cb3e3.md",
++      "sha256": "f817d402f09acc96d03b03d6c2b54adc581c395260e877ca658e9c3e19a4172b",
++      "id": "08d84f464689d4060ee848552831143059a76c07baf84f03e62cbf661a1d1a9d",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 308,
++      "upstream_trust": "confirmed",
++      "independent_occurrences": 0,
++      "counters": 23,
++      "unclassified": 0,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/triage-3df28ee1.md",
++      "sha256": "8bcb0d79a0ded83b967c047e0f8e7d8f57545bae7b1920cbc303f4d69e87146f",
++      "id": "47096b66d9063317857c79c15fc3014b27242bc5f4e4f659014a76a65b115343",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 1,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 0,
++      "unclassified": 2,
++      "inventory_match": "observed"
++    },
++    {
++      "path": "knowledge/lessons/wireframe-ui-83a36ff0.md",
++      "sha256": "78410407e62e71000bcbea8f56b042aa255ca1da63041342c57de3e8a9246d42",
++      "id": "c845cd69804f1d15889476edfde170db793415f279c1b0462e74d0a45681ea7a",
++      "status": "upstream_occurrences_unverified",
++      "upstream_occurrences": 1,
++      "upstream_trust": "proposed",
++      "independent_occurrences": 0,
++      "counters": 0,
++      "unclassified": 2,
++      "inventory_match": "observed"
++    }
++  ],
++  "totals": {
++    "files": 25,
++    "upstream_occurrences_sum": 2692,
++    "independent_occurrences_sum": 0,
++    "unverified": 25,
++    "recomputed": 0
++  },
++  "preview_only": true,
++  "python": "3.12.14 (main, Aug 14 2026, 15:40:22) [MSC v.1944 64 bit (AMD64)]",
++  "os": "Windows-11-10.0.26200-SP0",
++  "inventory": "docs\\full-analysis\\harness-experience\\inventory.json",
++  "inventory_matched": 25,
++  "scope": "Preview parse of actual local lesson bytes; no PostgreSQL, artifact, Codex or GitHub write. Inventory match binds bytes to the reviewed partition, not to any fresh upstream execution."
++}
+diff --git a/docs/zeus/implementation/experience-claims-001/probe.py b/docs/zeus/implementation/experience-claims-001/probe.py
+new file mode 100644
+index 0000000..25eaa79
+--- /dev/null
++++ b/docs/zeus/implementation/experience-claims-001/probe.py
+@@ -0,0 +1,49 @@
++"""FA-002 reproduction on the actual local upstream lessons, bound to the partition inventory.
++
++Runs the Zeus import in preview mode over a lessons directory, then cross-checks each file's
++SHA-256 against the observed/pinned entries in docs/full-analysis/harness-experience/inventory.json.
++No database, artifact, Codex or GitHub write happens.
++Usage: uv run python docs/zeus/implementation/experience-claims-001/probe.py LESSONS_DIR [output.json]
++"""
++import json
++import platform
++import sys
++from pathlib import Path
++
++from codex_harness.adapters.experience import preview_lessons
++
++ROOT = Path(__file__).resolve().parents[4]
++INVENTORY = ROOT / 'docs/full-analysis/harness-experience/inventory.json'
++
++
++def inventory_hashes():
++    entries = json.loads(INVENTORY.read_text(encoding='utf-8'))
++    entries = entries if isinstance(entries, list) else next(v for v in entries.values() if isinstance(v, list))
++    known = {}
++    for entry in entries:
++        if isinstance(entry, dict) and str(entry.get('path', '')).startswith('knowledge/lessons/'):
++            known.setdefault(entry['path'], {})[entry['version']] = entry.get('actual_sha256') or entry.get('sha256')
++    return known
++
++
++def main():
++    directory = Path(sys.argv[1])
++    report = preview_lessons([directory], 'harness', {'kind': 'observed', 'revision': None}, 'knowledge/lessons/')
++    known = inventory_hashes()
++    for claim in report['claims']:
++        versions = known.get(claim['path'], {})
++        claim['inventory_match'] = next((kind for kind, sha in versions.items() if sha == claim['sha256']), None)
++    report.update({
++        'python': sys.version, 'os': platform.platform(),
++        'inventory': str(INVENTORY.relative_to(ROOT)),
++        'inventory_matched': sum(claim['inventory_match'] is not None for claim in report['claims']),
++        'scope': 'Preview parse of actual local lesson bytes; no PostgreSQL, artifact, Codex or GitHub write. '
++                 'Inventory match binds bytes to the reviewed partition, not to any fresh upstream execution.'})
++    text = json.dumps(report, ensure_ascii=False, indent=2) + '\n'
++    if len(sys.argv) > 2:
++        Path(sys.argv[2]).write_text(text, encoding='utf-8')
++    sys.stdout.buffer.write(text.encode('utf-8'))
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/src/codex_harness/adapters/experience.py b/src/codex_harness/adapters/experience.py
+new file mode 100644
+index 0000000..a5af4d8
+--- /dev/null
++++ b/src/codex_harness/adapters/experience.py
+@@ -0,0 +1,119 @@
++"""Import explicitly selected upstream lesson files; never scan user homes automatically.
++
++    uv run python -m codex_harness.adapters.experience DIR_OR_FILES... --basis observed --dry-run
++"""
++import argparse
++import base64
++import json
++import sys
++from pathlib import Path
++
++from codex_harness.adapters.artifacts import FileArtifacts
++from codex_harness.adapters.project_skills import load_yaml
++from codex_harness.adapters.store import PostgresStore
++from codex_harness.application.experience import ExperienceClaims
++from codex_harness.bootstrap import database_url
++from codex_harness.domain.experience import (
++    MAX_LESSON_BYTES,
++    experience_claim,
++    split_frontmatter,
++    validate_basis,
++)
++from codex_harness.domain.model import ContractError, canonical, require
++
++
++def parse_lesson(source, path, data, basis):
++    """Frontmatter goes through the bounded string-only loader; implicit typing never applies."""
++    frontmatter, _ = split_frontmatter(data)
++    return experience_claim(source, path, data, basis, load_yaml(frontmatter, 'Lesson frontmatter'))
++
++
++def lesson_files(paths):
++    files = []
++    for path in paths:
++        path = Path(path)
++        require(not path.is_symlink(), 'Symlinked lesson input is not accepted')
++        if path.is_dir():
++            files.extend(p for p in sorted(path.glob('*.md')) if p.is_file() and not p.is_symlink())
++        else:
++            require(path.is_file(), 'Lesson input must be a regular file or directory: ' + str(path))
++            files.append(path)
++    require(bool(files), 'No lesson files selected')
++    return files
++
++
++def read_lesson(path):
++    with Path(path).open('rb') as stream:
++        data = stream.read(MAX_LESSON_BYTES + 1)
++    require(len(data) <= MAX_LESSON_BYTES, 'Lesson exceeds byte limit: ' + Path(path).name)
++    return data
++
++
++def import_lessons(paths, source, basis, store, artifacts, path_prefix=''):
++    basis = validate_basis(basis)
++    claims = ExperienceClaims(store)
++    report = []
++    for file in lesson_files(paths):
++        data = read_lesson(file)
++        claim = parse_lesson(source, path_prefix + file.name, data, basis)
++        receipt = artifacts.put(canonical({'encoding': 'base64', **claim['source'],
++                                           'body': base64.b64encode(data).decode('ascii')}), 'upstream-lesson')
++        result = claims.record(claim, receipt['ref'])
++        report.append(row(claim, result))
++    return {'source': source, 'basis': basis, 'claims': report, 'totals': totals(report)}
++
++
++def preview_lessons(paths, source, basis, path_prefix=''):
++    basis = validate_basis(basis)
++    report = [row(parse_lesson(source, path_prefix + file.name, read_lesson(file), basis))
++              for file in lesson_files(paths)]
++    return {'source': source, 'basis': basis, 'claims': report, 'totals': totals(report), 'preview_only': True}
++
++
++def row(claim, result=None):
++    return {'path': claim['source']['path'], 'sha256': claim['source']['sha256'], 'id': claim['id'],
++            'status': claim['status'], 'upstream_occurrences': claim['upstream_occurrences'],
++            'upstream_trust': claim['upstream'].get('trust'),
++            'independent_occurrences': claim['independent_occurrences']['count'],
++            'counters': len(claim['independent_occurrences']['counters']),
++            'unclassified': len(claim['independent_occurrences']['unclassified']),
++            **({'changed': result['changed'], 'body_ref': result['body_ref']} if result else {})}
++
++
++def totals(report):
++    return {'files': len(report),
++            'upstream_occurrences_sum': sum(entry['upstream_occurrences'] or 0 for entry in report),
++            'independent_occurrences_sum': sum(entry['independent_occurrences'] for entry in report),
++            'unverified': sum(entry['status'] == 'upstream_occurrences_unverified' for entry in report),
++            'recomputed': sum(entry['status'] == 'independently_recomputed' for entry in report)}
++
++
++def main(argv=None, store=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('paths', nargs='+', type=Path, help='Lesson .md files or directories (non-recursive)')
++    parser.add_argument('--source', default='harness', help='Upstream source name')
++    parser.add_argument('--basis', choices=('pinned', 'observed'), required=True)
++    parser.add_argument('--revision', help='Full commit SHA; required for pinned, forbidden for observed')
++    parser.add_argument('--path-prefix', default='', help='Upstream-relative directory recorded before file names')
++    parser.add_argument('--artifacts', default='.runtime/artifacts')
++    parser.add_argument('--dry-run', action='store_true', help='Parse and classify only; no database or artifact writes')
++    args = parser.parse_args(argv)
++    basis = {'kind': args.basis, 'revision': args.revision}
++    try:
++        if args.dry_run:
++            report = preview_lessons(args.paths, args.source, basis, args.path_prefix)
++        else:
++            report = import_lessons(args.paths, args.source, basis, store or PostgresStore(database_url()),
++                                    FileArtifacts(args.artifacts), args.path_prefix)
++    except ContractError as exc:
++        print(json.dumps({'error': 'ContractError', 'message': str(exc)}), file=sys.stderr)
++        return 2
++    except Exception as exc:
++        print(json.dumps({'error': 'Import unavailable', 'type': type(exc).__name__}), file=sys.stderr)
++        return 1
++    print(json.dumps(report, ensure_ascii=True))
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/src/codex_harness/adapters/project_skills.py b/src/codex_harness/adapters/project_skills.py
+index 0844069..ad95df7 100644
+--- a/src/codex_harness/adapters/project_skills.py
++++ b/src/codex_harness/adapters/project_skills.py
+@@ -31,17 +31,18 @@ def unique_mapping(loader, node):
+ UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
+ 
+ 
+-def load_yaml(text):
+-    require(len(text.encode('utf-8')) <= 65536, 'Project profile exceeds size limit')
++def load_yaml(text, label='Project profile'):
++    """Bounded string-only YAML (no tags, no implicit typing, unique keys); shared by lesson import."""
++    require(len(text.encode('utf-8')) <= 65536, label + ' exceeds size limit')
+     try:
+         value = yaml.load(text, Loader=UniqueLoader)
+     except (yaml.YAMLError, RecursionError) as exc:
+-        raise ContractError('Invalid project YAML') from exc
++        raise ContractError('Invalid ' + label + ' YAML') from exc
+     pending, count = [(value, 0)], 0
+     while pending:
+         node, depth = pending.pop()
+         count += 1
+-        require(count <= 4096 and depth <= 64, 'Project YAML expansion exceeds limit')
++        require(count <= 4096 and depth <= 64, label + ' YAML expansion exceeds limit')
+         children = node.values() if isinstance(node, dict) else node if isinstance(node, list) else ()
+         pending.extend((child, depth + 1) for child in children)
+     return value
+diff --git a/src/codex_harness/application/experience.py b/src/codex_harness/application/experience.py
+new file mode 100644
+index 0000000..01128a9
+--- /dev/null
++++ b/src/codex_harness/application/experience.py
+@@ -0,0 +1,42 @@
++"""Append-only experience claims; a separate bucket that recurrence counting never reads."""
++from codex_harness.domain.model import require, utcnow
++
++BUCKET = 'experience_claims'
++RECORD_ONLY = ('body_ref', 'recorded_at', 'sequence')
++
++
++class ExperienceClaims:
++    def __init__(self, store):
++        self.store = store
++
++    def record(self, claim, body_ref):
++        require(isinstance(body_ref, str) and body_ref.startswith('sha256:'), 'Lesson bytes must be archived first')
++        with self.store.transaction() as tx:
++            existing = tx.get(BUCKET, claim['id'])
++            if existing is not None:
++                # INV-EXPERIENCE-001: the ID binds source, path, bytes and rule version, so a
++                # different body under the same ID is corruption, not an update.
++                require({k: v for k, v in existing.items() if k not in RECORD_ONLY} == claim,
++                        'Experience claim ID reused with different content')
++                return {'id': claim['id'], 'changed': False, 'body_ref': existing['body_ref']}
++            # Import order is the only version order; timestamps can tie within one second.
++            sequence = 1 + sum(row['source']['name'] == claim['source']['name']
++                               and row['source']['path'] == claim['source']['path'] for row in tx.scan(BUCKET))
++            tx.put(BUCKET, claim['id'], {**claim, 'body_ref': body_ref, 'recorded_at': utcnow(),
++                                         'sequence': sequence})
++        return {'id': claim['id'], 'changed': True, 'body_ref': body_ref}
++
++    def versions(self, source, path):
++        with self.store.transaction() as tx:
++            rows = [row for row in tx.scan(BUCKET)
++                    if row['source']['name'] == source and row['source']['path'] == path]
++        return sorted(rows, key=lambda row: (row['sequence'], row['id']))
++
++    def summary(self):
++        with self.store.transaction() as tx:
++            rows = tx.scan(BUCKET)
++        return {'claims': len(rows),
++                'upstream_occurrences_sum': sum(row['upstream_occurrences'] or 0 for row in rows),
++                'independent_occurrences_sum': sum(row['independent_occurrences']['count'] for row in rows),
++                'unverified': sum(row['status'] == 'upstream_occurrences_unverified' for row in rows),
++                'recomputed': sum(row['status'] == 'independently_recomputed' for row in rows)}
+diff --git a/src/codex_harness/domain/experience.py b/src/codex_harness/domain/experience.py
+new file mode 100644
+index 0000000..4a7e771
+--- /dev/null
++++ b/src/codex_harness/domain/experience.py
+@@ -0,0 +1,109 @@
++"""Upstream experience (lesson) records preserved as claims; INV-EXPERIENCE-001.
++
++An upstream curator increments `occurrences` on every harvest of the same note and tags it with
++cumulative gate-PASS counters, so those numbers measure ingestion, not independent incidents.
++Zeus keeps the original fields verbatim as data and recomputes independence only from evidence
++tokens that identify one incident each. Nothing here feeds INV-RECURRENCE-001 counting.
++"""
++import hashlib
++import re
++
++from codex_harness.domain.model import ContractError, digest, require
++
++CLAIM_VERSION = 1
++MAX_LESSON_BYTES = 256 * 1024
++MAX_EVIDENCE_TOKENS = 4096
++FRONTMATTER = re.compile(r'\A---\r?\n(.*?)\r?\n---(?:\r?\n|\Z)', re.DOTALL)
++SOURCE_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,63}')
++REVISION = re.compile(r'[0-9a-f]{40}')
++# Cumulative project-wide PASS count at harvest time: the same value is stamped on every note.
++COUNTER_TOKEN = re.compile(r'ledger:PASS x[0-9]+')
++# Where the note was read from, not which failure it describes.
++SOURCE_TOKEN = re.compile(r'repair-notes:\S+')
++# One token identifies one incident, retry attempt or ledger event; repeats collapse to one.
++IDENTITY_TOKEN = re.compile(r'(incident|occurrence|ledger-event|task):[A-Za-z0-9][A-Za-z0-9_.:/@-]{0,255}')
++BASIS_KINDS = ('pinned', 'observed')
++
++
++def split_frontmatter(data):
++    """Return (frontmatter text, body text) from lesson bytes; the YAML itself is parsed by the adapter."""
++    require(isinstance(data, bytes) and len(data) <= MAX_LESSON_BYTES, 'Lesson exceeds byte limit')
++    try:
++        text = data.decode('utf-8')
++    except UnicodeDecodeError as exc:
++        raise ContractError('Lesson bytes are not UTF-8') from exc
++    match = FRONTMATTER.match(text)
++    require(match is not None, 'Lesson frontmatter missing')
++    return match.group(1), text[match.end():]
++
++
++def validate_fields(fields):
++    """Parsed frontmatter must be a string-keyed mapping of strings, lists and mappings only."""
++    require(isinstance(fields, dict), 'Lesson frontmatter must be a mapping')
++    pending = [fields]
++    while pending:
++        node = pending.pop()
++        if isinstance(node, dict):
++            require(all(isinstance(key, str) for key in node), 'Frontmatter keys must be strings')
++            pending.extend(node.values())
++        elif isinstance(node, list):
++            pending.extend(node)
++        else:
++            require(isinstance(node, str), 'Frontmatter scalars must be strings')
++    return fields
++
++
++def classify_evidence(tokens):
++    require(isinstance(tokens, list) and len(tokens) <= MAX_EVIDENCE_TOKENS
++            and all(isinstance(token, str) and token.strip() for token in tokens),
++            'Evidence tokens must be non-empty strings')
++    groups = {'identities': set(), 'counters': [], 'sources': [], 'unclassified': []}
++    for token in tokens:
++        if IDENTITY_TOKEN.fullmatch(token):
++            groups['identities'].add(token)
++        elif COUNTER_TOKEN.fullmatch(token):
++            groups['counters'].append(token)
++        elif SOURCE_TOKEN.fullmatch(token):
++            groups['sources'].append(token)
++        else:
++            groups['unclassified'].append(token)
++    groups['identities'] = sorted(groups['identities'])
++    return groups
++
++
++def validate_basis(basis):
++    require(isinstance(basis, dict) and basis.get('kind') in BASIS_KINDS, 'Basis must be pinned or observed')
++    revision = basis.get('revision')
++    if basis['kind'] == 'pinned':
++        require(isinstance(revision, str) and REVISION.fullmatch(revision) is not None,
++                'Pinned basis requires a full commit revision')
++    else:
++        require(revision is None, 'Observed bytes are not a commit; omit the revision')
++    return {'kind': basis['kind'], 'revision': revision}
++
++
++def upstream_count(value):
++    """The upstream occurrence counter as an integer when it is one; anything else stays unknown."""
++    return int(value) if isinstance(value, str) and re.fullmatch(r'[0-9]{1,12}', value) else None
++
++
++def experience_claim(source, path, data, basis, fields):
++    """Bind one upstream lesson's bytes and parsed frontmatter to a claim without Zeus authority."""
++    require(isinstance(source, str) and SOURCE_NAME.fullmatch(source) is not None, 'Invalid experience source name')
++    require(isinstance(path, str) and path and '\x00' not in path and not path.startswith('/')
++            and '..' not in path.split('/'), 'Invalid lesson path')
++    basis = validate_basis(basis)
++    frontmatter, body = split_frontmatter(data)
++    fields = validate_fields(fields)
++    evidence = classify_evidence(fields.get('evidence', []))
++    sha256 = hashlib.sha256(data).hexdigest()
++    independent = len(evidence['identities'])
++    return {'id': digest([CLAIM_VERSION, source, path, sha256]), 'version': CLAIM_VERSION,
++            'source': {'name': source, 'path': path, 'sha256': sha256, 'bytes': len(data), **basis},
++            'upstream': fields,
++            'upstream_occurrences': upstream_count(fields.get('occurrences')),
++            'frontmatter_sha256': hashlib.sha256(frontmatter.encode('utf-8')).hexdigest(),
++            'body_sha256': hashlib.sha256(body.encode('utf-8')).hexdigest(),
++            'independent_occurrences': {'count': independent, **evidence},
++            'status': 'independently_recomputed' if independent else 'upstream_occurrences_unverified',
++            'authority': 'advisory; not recurrence, trust or qualification evidence'}
+diff --git a/tests/test_experience.py b/tests/test_experience.py
+new file mode 100644
+index 0000000..8f1150c
+--- /dev/null
++++ b/tests/test_experience.py
+@@ -0,0 +1,189 @@
++"""INV-EXPERIENCE-001: upstream lesson labels are preserved data, never Zeus occurrence counts."""
++import copy
++import json
++from uuid import uuid4
++
++import pytest
++
++from codex_harness.adapters.artifacts import FileArtifacts
++from codex_harness.adapters.experience import import_lessons, main, parse_lesson, preview_lessons
++from codex_harness.adapters.store import MemoryStore
++from codex_harness.application.experience import ExperienceClaims
++from codex_harness.application.service import Harness
++from codex_harness.bootstrap import organization
++from codex_harness.domain.experience import classify_evidence, experience_claim, split_frontmatter
++from codex_harness.domain.model import ContractError, envelope
++
++PINNED = {'kind': 'pinned', 'revision': 'a3f8b3be9a0a389329de6e16a6c7db81782041a3'}
++OBSERVED = {'kind': 'observed', 'revision': None}
++PATH = 'knowledge/lessons/repair-cp949-629cb3e3.md'
++
++
++def lesson(occurrences=308, evidence=None, trust='confirmed', extra='', body='# 수리 경험: cp949 — 자식 인코딩\n'):
++    evidence = evidence if evidence is not None else [f'ledger:PASS x{n}' for n in (1, 2, *range(25, 46))] + [
++        'repair-notes:harness']
++    lines = ['---', 'created_by: agent:curator', 'created_ts: 1788396067.7754688', 'evidence:',
++             *['- ' + token for token in evidence], 'id: lesson:' + PATH, 'kind: lesson', 'lifecycle: active',
++             f'occurrences: {occurrences}', 'origin: promoted', 'pinned: false', 'source_families:',
++             '- repair::스위트 러너가 인코딩 계약을 안 실어 준다', *([extra] if extra else []),
++             f'trust: {trust}', '---', '', body]
++    return '\n'.join(lines).encode('utf-8')
++
++
++def test_upstream_counters_are_preserved_but_count_zero_independent_incidents():
++    claim = parse_lesson('harness', PATH, lesson(), OBSERVED)
++    upstream = claim['upstream']
++    # Strings only: the loader applies no implicit typing, so '308' and 'false' stay as written.
++    assert upstream['occurrences'] == '308' and upstream['trust'] == 'confirmed' and upstream['pinned'] == 'false'
++    assert upstream['created_ts'] == '1788396067.7754688'
++    assert upstream['source_families'] == ['repair::스위트 러너가 인코딩 계약을 안 실어 준다']
++    assert claim['upstream_occurrences'] == 308
++    independent = claim['independent_occurrences']
++    assert independent['count'] == 0 and independent['identities'] == []
++    assert len(independent['counters']) == 23 and independent['sources'] == ['repair-notes:harness']
++    assert claim['status'] == 'upstream_occurrences_unverified'
++    assert not {'trust', 'occurrences', 'lifecycle'} & set(claim), 'labels never surface at the top level'
++    assert claim['source']['kind'] == 'observed' and claim['source']['revision'] is None
++
++
++def test_nested_restatement_suspects_and_multiline_scalars_are_kept_as_data():
++    extra = ('restatement_suspects:\n- jaccard: 1.0\n  name: repair-9-seam.md\n  shared:\n  - ledger:PASS x25\n'
++             '  - repair-notes:harness\nnote: \'UUID column (`\'\'str\'\' object has\n  no attribute\'\'hex\'\'`)\'')
++    claim = parse_lesson('harness', PATH, lesson(extra=extra), PINNED)
++    assert claim['upstream']['restatement_suspects'] == [
++        {'jaccard': '1.0', 'name': 'repair-9-seam.md', 'shared': ['ledger:PASS x25', 'repair-notes:harness']}]
++    assert claim['upstream']['note'] == "UUID column (`'str' object has no attribute'hex'`)"
++    assert claim['independent_occurrences']['count'] == 0
++
++
++def test_identity_tokens_count_once_and_counters_never_count():
++    evidence = ['incident:a', 'incident:a', 'ledger-event:orchestrator.427', 'ledger:PASS x45',
++                'ledger:PASS x46', 'repair-notes:harness', 'something-else']
++    groups = classify_evidence(evidence)
++    assert groups['identities'] == ['incident:a', 'ledger-event:orchestrator.427']
++    assert groups['counters'] == ['ledger:PASS x45', 'ledger:PASS x46'] and groups['unclassified'] == ['something-else']
++    claim = parse_lesson('harness', 'lessons/x.md', lesson(occurrences=999, evidence=evidence), PINNED)
++    assert claim['independent_occurrences']['count'] == 2 and claim['status'] == 'independently_recomputed'
++    assert claim['upstream_occurrences'] == 999
++
++
++@pytest.mark.parametrize('data, message', [
++    (b'no frontmatter\n', 'frontmatter missing'),
++    (b'---\nevidence: not-a-list\n---\n', 'Evidence tokens'),
++    (b'---\nevidence:\n- \n---\n', 'Evidence tokens'),
++    (b'---\nid: a\nid: b\n---\n', 'Duplicate'),
++    (b'---\n- orphan\n---\n', 'must be a mapping'),
++    (b'---\nx: !!python/object/apply:os.system ["echo"]\n---\n', 'Unsupported YAML tag'),
++    (b'---\nid: [unclosed\n---\n', 'Invalid Lesson frontmatter YAML'),
++    (b'---\nid: a\n---\n\xff\xfe', 'not UTF-8'),
++    (b'---\nid: a\n---\n' + b'b' * (256 * 1024), 'byte limit'),
++], ids=['no-frontmatter', 'scalar-evidence', 'empty-token', 'duplicate-key', 'list-root', 'python-tag',
++        'invalid-yaml', 'not-utf8', 'oversize'])
++def test_malformed_lessons_fail_explicitly(data, message):
++    with pytest.raises(ContractError, match=message):
++        parse_lesson('harness', 'lessons/x.md', data, PINNED)
++
++
++def test_domain_rejects_typed_or_non_string_fields():
++    with pytest.raises(ContractError, match='scalars must be strings'):
++        experience_claim('harness', 'lessons/x.md', lesson(), PINNED, {'occurrences': 308})
++    with pytest.raises(ContractError, match='keys must be strings'):
++        experience_claim('harness', 'lessons/x.md', lesson(), PINNED, {1: 'a'})
++    claim = experience_claim('harness', 'lessons/x.md', lesson(), PINNED, {'occurrences': '12x'})
++    assert claim['upstream_occurrences'] is None and claim['upstream']['occurrences'] == '12x'
++
++
++def test_basis_and_path_validation():
++    with pytest.raises(ContractError, match='full commit revision'):
++        parse_lesson('harness', 'lessons/x.md', lesson(), {'kind': 'pinned', 'revision': 'abc'})
++    with pytest.raises(ContractError, match='omit the revision'):
++        parse_lesson('harness', 'lessons/x.md', lesson(), {'kind': 'observed', 'revision': PINNED['revision']})
++    for path in ('/abs/x.md', '../x.md', 'a/../x.md', ''):
++        with pytest.raises(ContractError, match='lesson path'):
++            parse_lesson('harness', path, lesson(), PINNED)
++    with pytest.raises(ContractError, match='source name'):
++        parse_lesson('bad name', 'lessons/x.md', lesson(), PINNED)
++
++
++def test_crlf_frontmatter_split():
++    frontmatter, body = split_frontmatter(b'---\r\nid: a\r\n---\r\nbody\r\n')
++    assert frontmatter == 'id: a' and body == 'body\r\n'
++
++
++def test_versions_are_separate_claims_and_reimport_is_idempotent(tmp_path):
++    store, artifacts = MemoryStore(), FileArtifacts(str(tmp_path / 'artifacts'))
++    directory = tmp_path / 'lessons'
++    directory.mkdir()
++    (directory / 'repair-cp949.md').write_bytes(lesson(occurrences=265))
++    first = import_lessons([directory], 'harness', PINNED, store, artifacts, 'knowledge/lessons/')
++    assert first['claims'][0]['changed'] and first['claims'][0]['path'] == 'knowledge/lessons/repair-cp949.md'
++    assert first['totals'] == {'files': 1, 'upstream_occurrences_sum': 265, 'independent_occurrences_sum': 0,
++                               'unverified': 1, 'recomputed': 0}
++    before = copy.deepcopy(store.data)
++    again = import_lessons([directory / 'repair-cp949.md'], 'harness', PINNED, store, artifacts, 'knowledge/lessons/')
++    assert not again['claims'][0]['changed'] and store.data == before
++    (directory / 'repair-cp949.md').write_bytes(lesson(occurrences=308))
++    observed = import_lessons([directory], 'harness', OBSERVED, store, artifacts, 'knowledge/lessons/')
++    assert observed['claims'][0]['changed'] and observed['claims'][0]['id'] != first['claims'][0]['id']
++    versions = ExperienceClaims(store).versions('harness', 'knowledge/lessons/repair-cp949.md')
++    assert [v['upstream_occurrences'] for v in versions] == [265, 308]
++    assert [v['source']['kind'] for v in versions] == ['pinned', 'observed'] and [v['sequence'] for v in versions] == [1, 2]
++    archived = artifacts.document(versions[1]['body_ref'])
++    assert archived['sha256'] == versions[1]['source']['sha256']
++    assert ExperienceClaims(store).summary() == {'claims': 2, 'upstream_occurrences_sum': 573,
++                                                 'independent_occurrences_sum': 0, 'unverified': 2, 'recomputed': 0}
++
++
++def test_same_id_with_different_content_is_rejected():
++    store = MemoryStore()
++    claim = parse_lesson('harness', 'lessons/x.md', lesson(), PINNED)
++    ExperienceClaims(store).record(claim, 'sha256:' + '0' * 64)
++    tampered = {**claim, 'upstream_occurrences': 1}
++    with pytest.raises(ContractError, match='different content'):
++        ExperienceClaims(store).record(tampered, 'sha256:' + '0' * 64)
++    with pytest.raises(ContractError, match='archived first'):
++        ExperienceClaims(store).record(claim, 'not-a-ref')
++
++
++def test_imported_claims_never_feed_recurrence(tmp_path):
++    store = MemoryStore()
++    directory = tmp_path / 'lessons'
++    directory.mkdir()
++    for index in range(25):
++        (directory / f'lesson-{index}.md').write_bytes(lesson(occurrences=308 + index))
++    report = import_lessons([directory], 'harness', OBSERVED, store, FileArtifacts(str(tmp_path / 'a')))
++    assert report['totals']['files'] == 25 and report['totals']['upstream_occurrences_sum'] > 7000
++    service = Harness(store, organization())
++    message = envelope('incident.report', 'worker:implementation', 'lead:improvement', 'record_incident',
++                       {'occurrence_id': str(uuid4()), 'root_cause': 'cp949-child-encoding',
++                        'scope': 'harness', 'evidence_refs': ['fixture:error']}, 'experience-test')
++    result = service.record_incident(message)
++    assert result['occurrences'] == 1 and result['hook_id'] is None
++    with store.transaction() as tx:
++        assert tx.scan('hooks') == [] and len(tx.scan('incidents')) == 1
++        assert len(tx.scan('experience_claims')) == 25
++
++
++def test_cli_dry_run_writes_nothing_and_import_uses_injected_store(tmp_path, capsys):
++    directory = tmp_path / 'lessons'
++    directory.mkdir()
++    (directory / 'one.md').write_bytes(lesson())
++    (directory / 'two.md').write_bytes(lesson(evidence=['incident:x']))
++    (directory / 'ignored.txt').write_bytes(b'not a lesson')
++    artifacts = tmp_path / 'artifacts'
++    assert main([str(directory), '--basis', 'observed', '--dry-run', '--artifacts', str(artifacts)]) == 0
++    report = json.loads(capsys.readouterr().out)
++    assert report['preview_only'] and report['totals'] == {'files': 2, 'upstream_occurrences_sum': 616,
++                                                           'independent_occurrences_sum': 1, 'unverified': 1,
++                                                           'recomputed': 1}
++    assert not artifacts.exists()
++    assert main([str(directory), '--basis', 'pinned', '--dry-run']) == 2
++    assert 'full commit revision' in capsys.readouterr().err
++    store = MemoryStore()
++    assert main([str(directory), '--basis', 'pinned', '--revision', PINNED['revision'],
++                 '--artifacts', str(artifacts), '--path-prefix', 'knowledge/lessons/'], store=store) == 0
++    report = json.loads(capsys.readouterr().out)
++    assert [entry['changed'] for entry in report['claims']] == [True, True] and artifacts.exists()
++    assert ExperienceClaims(store).versions('harness', 'knowledge/lessons/one.md')[0]['upstream_occurrences'] == 308
++    assert main([str(tmp_path / 'missing'), '--basis', 'observed', '--dry-run']) == 2
++    assert preview_lessons([directory / 'two.md'], 'harness', OBSERVED)['claims'][0]['status'] == 'independently_recomputed'

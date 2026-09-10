@@ -1,0 +1,224 @@
+diff --git a/docs/contracts.md b/docs/contracts.md
+index 20394bf..368ae65 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -11,7 +11,7 @@
+ | INV-SESSION-001 | Current context at 70% requests safe-point handoff. Checkpoint generation and execution lease fence stale writers. Busy agents do not hibernate; identity survives replacement. |
+ | INV-GRAPH-001 | Git owns definitions; PostgreSQL owns runtime facts. Graph/vectors are versioned derived views. Unchanged symbols retain IDs; stale evidence cannot enter commit-bound review. |
+ | INV-RECOVERY-001 | An external host controller restores the previous deployment without Codex. Images are pinned; rollback withdraws that release's hook. Destructive schema downgrade is outside this contract. |
+-| INV-RESOURCE-001 | Runtime limits have one definition in domain/policy.py. Collection retains pending messages, referenced artifacts and transitive evidence; only aged unreferenced artifacts are removed. |
++| INV-RESOURCE-001 | Runtime limits have one definition in domain/policy.py. Collection retains pending messages, referenced artifacts and transitive evidence; only aged unreferenced artifacts are removed. A referenced artifact that is missing is reported as lost evidence with a durable event, and a corrupted one aborts collection before any deletion; neither is folded into a healthy result. Hash-linked journals fail closed on any break, and an appended well-formed record never softens that verdict. |
+ 
+ Comments cite invariant IDs and explain non-obvious local reasons, without duplicating policy definitions.
+ Organization SSOT: `src/codex_harness/resources/organization.json`.
+diff --git a/docs/zeus/implementation/integrity-unknown-001/README.md b/docs/zeus/implementation/integrity-unknown-001/README.md
+new file mode 100644
+index 0000000..ff35425
+--- /dev/null
++++ b/docs/zeus/implementation/integrity-unknown-001/README.md
+@@ -0,0 +1,58 @@
++# 알 수 없음은 건강이 아니다 — 유실 참조 보고와 사이드카 강등 금지
++
++기존 FA-007 / GitHub [#8](https://github.com/trevi00/zeus/issues/8) / `ZEUS-2dd28a919f60` 개정 1의 구현입니다.
++상류 Guardian `ledger_seal.verify`는 봉인 구간 개서를 TAMPER로 판정하지만, 신규 `.compacted` 사이드카가 하나
++있으면 그 파일의 정당한 compaction 관계를 검증하지 않은 채 RESEAL_REQUIRED로 강등했고, CLI의 UNSEALED는 rc 0,
++watchdog은 TAMPER만 소비하며 검증 예외를 무시했습니다([guardian review F05/F13](../../../full-analysis/guardian/review.md),
++[observed 프로브 영수증](../../../full-analysis/guardian/observed-review-probes.receipt.json) `same_tamper_plus_new_sidecar`).
++교차검토 합의는 "compaction 전후 관계 증명, unknown을 healthy로 축약하지 않음"입니다. 새 이슈나 분석 후보는
++추가하지 않았습니다.
++
++## Zeus 점검
++
++| 무결성 경로 | 동작 | 근거 |
++|---|---|---|
++| SDD 이벤트 저널 `sdd.status` | 해시 체인 전수 검증, 틈·손상은 ContractError(fail closed) | `test_real_postgres_journal_tampering_is_detected` |
++| 티켓 생명주기 `verify_chain` | 순서·from_sequence 불일치 거부 | `test_ticket_lifecycle` |
++| Redis 스트림 `bus.compact` | pending·미전달 보호 경계 아래로만 축약, 오류는 전파 | `test_bus_compact_*` |
++| 배포 건강 `deployment.py` | 관측 불가는 `unknown`, healthy로 축약하지 않음 | 코드 |
++| **아티팩트 회수 `ArtifactMaintenance.collect`** | **결함**: 참조된 아티팩트 파일이 없으면 조용히 건너뛰고 결과는 정상처럼 보임 | 이번 수정 |
++
++`collect()`는 모든 문서와 아티팩트 본문에서 `sha256:` 참조를 전이적으로 모아 보존하지만, 참조된 파일이 **이미 없으면**
++`continue`만 하고 결과(`files`, `bytes`, `retained_references`)에 아무 흔적을 남기지 않았습니다. 손상된 파일은
++예외로 중단하면서 유실된 파일은 "건강한 회수"로 접히는 비대칭 — 상류의 UNSEALED rc 0 / 예외 무시와 같은 형태입니다.
++
++## 변경
++
++- `adapters/maintenance.py`: 유실 참조를 모아 `missing_references`, `missing_reference_sample`(최대 20),
++  `integrity: complete | missing_references`로 보고합니다. `apply` 시 유실 참조마다 `artifact.reference_missing`
++  이벤트를 한 번만 기록합니다(내용 주소 키). 참조되지 않은 오래된 파일의 회수는 계속하고, 손상된 참조 파일은 기존대로
++  삭제 전에 중단합니다.
++- `docs/contracts.md`: `INV-RESOURCE-001`에 유실·손상 참조 처리와 "추가된 정상 형식 레코드는 체인 파손 판정을 완화하지
++  못한다" 문장 추가.
++
++## 재현과 검증
++
++- `tests/test_maintenance.py::test_missing_referenced_evidence_is_reported_not_folded_into_a_healthy_result`: 참조 두
++  개 중 하나의 파일을 지운 뒤 미리보기·적용 모두 `integrity=missing_references`, 유실 ref 목록, 고아만 회수, 보존
++  ref 유지, 적용 시 이벤트 1건(재실행해도 1건), 참조가 없는 store는 `complete`.
++- `::test_corrupted_referenced_evidence_aborts_collection_before_any_deletion`: 손상 참조는 삭제 전 중단.
++- `tests/test_sdd.py::test_appended_sidecar_event_never_softens_a_journal_break`(실제 PostgreSQL): 이벤트 1을 개서한 뒤
++  head 해시에 이어지는 정상 형식의 "compaction_marker" 사이드카 이벤트를 덧붙이고 head를 갱신해도 `status()`는
++  `journal gap or corruption`으로 거부하고 두 레코드는 증거로 남습니다 — 상류의 TAMPER→RESEAL_REQUIRED 강등이
++  Zeus에서는 일어나지 않음을 실측.
++- 음성 대조: `maintenance.py`를 수정 전으로 되돌리면 유실 참조 검사가 실패합니다.
++
++| 항목 | 결과 |
++|---|---|
++| `tests/test_maintenance.py` | 4 passed |
++| `tests/test_sdd.py -k "sidecar or tampering"` (PG, `HARNESS_INTEGRATION=1`) | 2 passed |
++| Windows 전체 `uv run pytest -q` (Python 3.12.14, PG 검사 skip) | 919 passed, 306 skipped (178s) |
++| `uv run ruff check .` | 통과 |
++
++## 남은 범위
++
++- 유실 참조의 자동 복구(백업·재수집)는 없습니다. 이벤트와 결과 필드로 드러내는 것까지이며 처분은 운영자의 몫입니다.
++- 모니터 화면에 `maintenance.latest.integrity`를 표시하는 것은 별도 UI 작업입니다.
++- 이슈 종료는 Codex·Claude 독립 검토와 해당 개정 인수 기준 확인 뒤 [#30](https://github.com/trevi00/zeus/issues/30)
++  범위의 종료 경로를 따르는 별도 단계이며, 이 기록은 구현·검증 증거이지 배포 승인이 아닙니다.
+diff --git a/src/codex_harness/adapters/maintenance.py b/src/codex_harness/adapters/maintenance.py
+index 2d590e9..0674b36 100644
+--- a/src/codex_harness/adapters/maintenance.py
++++ b/src/codex_harness/adapters/maintenance.py
+@@ -6,7 +6,7 @@
+ 
+ from filelock import FileLock
+ 
+-from codex_harness.domain.model import canonical, require, utcnow
++from codex_harness.domain.model import canonical, digest, require, utcnow
+ from codex_harness.domain.policy import POLICY
+ 
+ 
+@@ -23,11 +23,14 @@ def collect(self, apply: bool = False, days: int = POLICY.artifact_retention_day
+         with FileLock(str(root.parent / "artifacts.lock"), timeout=30):
+             with self.store.transaction() as tx:
+                 marked = set(re.findall(r"sha256:[0-9a-f]{64}", canonical(tx.records())))
+-                pending = list(marked)
++                pending, missing = list(marked), []
+                 while pending:
+                     reference = pending.pop()
+                     path = root / (reference[7:] + ".txt")
+                     if not path.exists():
++                        # A referenced artifact that is gone is lost evidence, not a healthy
++                        # collection; it is reported, never folded into the reclaimed total.
++                        missing.append(reference)
+                         continue
+                     require(not path.is_symlink() and path.resolve().parent == root, "Artifact escaped store")
+                     content = path.read_bytes()
+@@ -47,8 +50,16 @@ def collect(self, apply: bool = False, days: int = POLICY.artifact_retention_day
+                     if apply:
+                         path.unlink()
+                         path.with_suffix(".json").unlink(missing_ok=True)
++                missing.sort()
+                 result = {"id": "latest", "at": utcnow(), "applied": apply, "files": len(candidates),
+-                          "bytes": reclaimed, "retained_references": len(marked), "grace_days": days}
++                          "bytes": reclaimed, "retained_references": len(marked), "grace_days": days,
++                          "missing_references": len(missing), "missing_reference_sample": missing[:20],
++                          "integrity": "missing_references" if missing else "complete"}
+                 if apply:
+                     tx.put("maintenance", "latest", result)
++                    for reference in missing:
++                        identity = digest({"type": "artifact.reference_missing", "reference": reference})
++                        if tx.get("events", identity) is None:
++                            tx.put("events", identity, {"type": "artifact.reference_missing",
++                                   "reference": reference, "at": result["at"]})
+                 return result
+diff --git a/tests/test_maintenance.py b/tests/test_maintenance.py
+index 1ca359a..030a3cb 100644
+--- a/tests/test_maintenance.py
++++ b/tests/test_maintenance.py
+@@ -29,6 +29,61 @@ def test_old_orphans_are_collected_but_transitive_evidence_and_recent_files_surv
+     assert all((artifacts.root / (ref[7:] + ".txt")).exists() for ref in (child, parent, recent))
+ 
+ 
++def test_missing_referenced_evidence_is_reported_not_folded_into_a_healthy_result(tmp_path):
++    # FA-007: unknown integrity never collapses into "healthy"; a lost reference stays visible.
++    artifacts = FileArtifacts(str(tmp_path / "artifacts"))
++    store = MemoryStore()
++    lost = artifacts.put("lost evidence", "fixture")["ref"]
++    kept = artifacts.put("kept evidence", "fixture")["ref"]
++    orphan = artifacts.put("orphan", "fixture")["ref"]
++    for path in artifacts.root.glob("*.txt"):
++        old = time.time() - 14 * 86400
++        os.utime(path, (old, old))
++    with store.transaction() as tx:
++        tx.put("approvals", "root", {"evidence_refs": [lost, kept]})
++    (artifacts.root / (lost[7:] + ".txt")).unlink()
++    maintenance = ArtifactMaintenance(store, artifacts)
++    preview = maintenance.collect()
++    assert preview["integrity"] == "missing_references" and preview["missing_references"] == 1
++    assert preview["missing_reference_sample"] == [lost] and preview["files"] == 1
++    with store.transaction() as tx:
++        assert tx.scan("events") == [] and tx.get("maintenance", "latest") is None
++    applied = maintenance.collect(apply=True)
++    assert applied["integrity"] == "missing_references" and applied["files"] == 1
++    assert not (artifacts.root / (orphan[7:] + ".txt")).exists()
++    assert (artifacts.root / (kept[7:] + ".txt")).exists()
++    with store.transaction() as tx:
++        events = tx.scan("events")
++        assert [e["reference"] for e in events] == [lost]
++        assert tx.get("maintenance", "latest")["missing_references"] == 1
++    maintenance.collect(apply=True)
++    with store.transaction() as tx:
++        assert len(tx.scan("events")) == 1, "one durable event per lost reference"
++    healthy = ArtifactMaintenance(MemoryStore(), artifacts).collect()
++    assert healthy["integrity"] == "complete" and healthy["missing_references"] == 0
++
++
++def test_corrupted_referenced_evidence_aborts_collection_before_any_deletion(tmp_path):
++    import pytest
++
++    from codex_harness.domain.model import ContractError
++    artifacts = FileArtifacts(str(tmp_path / "artifacts"))
++    store = MemoryStore()
++    referenced = artifacts.put("evidence", "fixture")["ref"]
++    orphan = artifacts.put("orphan", "fixture")["ref"]
++    for path in artifacts.root.glob("*.txt"):
++        old = time.time() - 14 * 86400
++        os.utime(path, (old, old))
++    with store.transaction() as tx:
++        tx.put("approvals", "root", {"evidence_refs": [referenced]})
++    (artifacts.root / (referenced[7:] + ".txt")).write_text("tampered", encoding="utf-8")
++    with pytest.raises(ContractError, match="corrupted"):
++        ArtifactMaintenance(store, artifacts).collect(apply=True)
++    assert (artifacts.root / (orphan[7:] + ".txt")).exists()
++    with store.transaction() as tx:
++        assert tx.get("maintenance", "latest") is None
++
++
+ def test_research_schedule_deduplicates_each_interval():
+     service = Harness(MemoryStore(), organization())
+     assert schedule_research(service, now=0) == 2
+diff --git a/tests/test_sdd.py b/tests/test_sdd.py
+index ffab004..6c322a4 100644
+--- a/tests/test_sdd.py
++++ b/tests/test_sdd.py
+@@ -285,6 +285,29 @@ def test_real_postgres_journal_tampering_is_detected(sdd):
+         service.status(row["id"])
+ 
+ 
++@pytest.mark.integration
++def test_appended_sidecar_event_never_softens_a_journal_break(sdd):
++    # FA-007: a new, well-formed continuation record does not downgrade a broken chain.
++    from codex_harness.domain.model import digest, utcnow
++    service, _, _, row = sdd
++    with service.store.transaction() as tx:
++        first = tx.scan("sdd_events")[0]
++        first["kind"] = "unauthorized_edit"
++        tx.put("sdd_events", row["id"] + ":00000001", first)
++        current = tx.get("sdd_iterations", row["id"])
++        sidecar = {"iteration_id": row["id"], "sequence": current["sequence"] + 1,
++                   "previous_hash": current["event_hash"], "at": utcnow(), "kind": "compaction_marker",
++                   "refs": [], "note": "claims to summarize earlier events"}
++        sidecar["hash"] = digest(sidecar)
++        tx.put("sdd_events", row["id"] + ":%08d" % sidecar["sequence"], sidecar)
++        current.update(sequence=sidecar["sequence"], event_hash=sidecar["hash"])
++        tx.put("sdd_iterations", row["id"], current)
++    with pytest.raises(ContractError, match="journal gap or corruption"):
++        service.status(row["id"])
++    with service.store.transaction() as tx:
++        assert len(tx.scan("sdd_events")) == 2, "evidence of both records is retained"
++
++
+ @pytest.mark.integration
+ def test_real_postgres_transfer_evidence_cannot_change_model_authority(sdd):
+     service, _, _, row = sdd

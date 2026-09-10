@@ -1,0 +1,19 @@
+{
+  "pr": 38,
+  "scope": "Independent boundary counterexample; fixture data, not operational acceptance",
+  "backend": "real PostgreSQL isolated schema",
+  "child_start_delay_seconds": 2.5,
+  "unlocked_occurrences": [
+    1,
+    1,
+    1,
+    4
+  ],
+  "expected_by_submitted_test": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "exact_negative_control_broken": true
+}
