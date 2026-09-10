@@ -1,0 +1,36 @@
+{
+  "scope": "FA-031 target tests: version normalization, location identification and states, duplicates and refused names, immutable applied history and out-of-order versions on an isolated PostgreSQL schema, concurrent child-process apply, bound run receipts",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_migration_precheck.py tests/test_architecture.py",
+  "started_at": "2026-09-10T10:11:02.940247+00:00",
+  "finished_at": "2026-09-10T10:11:10.704036+00:00",
+  "exit_code": 0,
+  "summary": [
+    "10 passed in 7.29s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "only the first version number is compared",
+      "result": "normalization and history tests fail"
+    },
+    {
+      "control": "unsupported names skipped instead of refused",
+      "result": "duplicates/refused-names test fails"
+    },
+    {
+      "control": "unreadable folder reported as found",
+      "result": "location states test fails"
+    },
+    {
+      "control": "modified applied version accepted",
+      "result": "immutability test fails"
+    },
+    {
+      "control": "apply without the control-plane advisory lock",
+      "result": "concurrent apply test fails"
+    }
+  ],
+  "not_claimed": "No Flyway engine run; no Windows/Linux/WSL install, upgrade, interrupted recovery or data-preservation run; no money scenario or human acceptance; Windows ACL permission denial observed via a file-instead-of-directory error only."
+}

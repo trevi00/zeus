@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from contextlib import contextmanager
 from copy import deepcopy
 from importlib.resources import files
@@ -75,14 +76,14 @@ class PostgresStore:
     def __init__(self, dsn: str):
         self.dsn = dsn
 
-    def migrate(self) -> None:
-        sql = files("codex_harness.resources").joinpath("001.sql").read_text(encoding="utf-8")
-        with psycopg.connect(self.dsn) as conn:
-            # INV-GRAPH-001: IF NOT EXISTS alone does not serialize concurrent DDL.
-            # Use the control-plane lock before creating extensions, tables or indexes.
-            conn.execute("SET LOCAL lock_timeout = '10s'")
-            conn.execute("SELECT pg_advisory_xact_lock(734219)")
-            conn.execute(sql)
+    def migrate(self) -> dict:
+        # INV-GRAPH-001: IF NOT EXISTS alone does not serialize concurrent DDL; the migrator takes
+        # the control-plane lock, re-reads the applied history under it, refuses a modified applied
+        # version and records every applied version with its checksum (INV-MIGRATION-001).
+        from codex_harness.adapters.migrations import Migrator
+        root = files("codex_harness.resources")
+        config = json.loads(root.joinpath("migrations.json").read_text(encoding="utf-8"))
+        return Migrator(self.dsn, config, str(root)).apply("store.migrate")
 
     @contextmanager
     def transaction(self):
