@@ -286,6 +286,29 @@ def test_real_postgres_journal_tampering_is_detected(sdd):
 
 
 @pytest.mark.integration
+def test_appended_sidecar_event_never_softens_a_journal_break(sdd):
+    # FA-007: a new, well-formed continuation record does not downgrade a broken chain.
+    from codex_harness.domain.model import digest, utcnow
+    service, _, _, row = sdd
+    with service.store.transaction() as tx:
+        first = tx.scan("sdd_events")[0]
+        first["kind"] = "unauthorized_edit"
+        tx.put("sdd_events", row["id"] + ":00000001", first)
+        current = tx.get("sdd_iterations", row["id"])
+        sidecar = {"iteration_id": row["id"], "sequence": current["sequence"] + 1,
+                   "previous_hash": current["event_hash"], "at": utcnow(), "kind": "compaction_marker",
+                   "refs": [], "note": "claims to summarize earlier events"}
+        sidecar["hash"] = digest(sidecar)
+        tx.put("sdd_events", row["id"] + ":%08d" % sidecar["sequence"], sidecar)
+        current.update(sequence=sidecar["sequence"], event_hash=sidecar["hash"])
+        tx.put("sdd_iterations", row["id"], current)
+    with pytest.raises(ContractError, match="journal gap or corruption"):
+        service.status(row["id"])
+    with service.store.transaction() as tx:
+        assert len(tx.scan("sdd_events")) == 2, "evidence of both records is retained"
+
+
+@pytest.mark.integration
 def test_real_postgres_transfer_evidence_cannot_change_model_authority(sdd):
     service, _, _, row = sdd
     record = {"task_family": "frontend.selector-export", "contract_hash": "a" * 64,
