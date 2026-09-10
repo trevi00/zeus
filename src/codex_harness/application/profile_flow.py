@@ -55,14 +55,18 @@ class ProfileFlow:
         counts = {}
         for result in results:
             counts[result['status']] = counts.get(result['status'], 0) + 1
-        ready = [r['input'] for r in results if r['status'] == 'ready']
+        ready = [{**r['input'], 'sequence': i} for i, r in enumerate(r for r in results if r['status'] == 'ready')]
         bundle = None
-        if ready:
-            bundle = self.scratch.write(run_id, owner, lease_until, {'policy_hash': policy['policy_hash'], 'model': policy['model'],
-                                                                        'records': [{**r, 'sequence': i} for i, r in enumerate(ready)]})
-        return self._run(run_id, owner, user, policy, consent, binding, status='ready' if ready else 'empty',
-                         results=[{k: v for k, v in r.items() if k != 'input'} for r in results], bundle=bundle,
-                         counts=counts, skipped=max(0, len(records) - policy['read_scope']['max_records']))
+        if ready and policy['retention']['temporary'] == 'run':
+            bundle = self.scratch.write(run_id, owner, lease_until, {'policy_hash': policy['policy_hash'], 'model': policy['model'], 'records': ready})
+        row = self._run(run_id, owner, user, policy, consent, binding, status='ready' if ready else 'empty',
+                        results=[{k: v for k, v in r.items() if k != 'input'} for r in results], bundle=bundle,
+                        counts=counts, skipped=max(0, len(records) - policy['read_scope']['max_records']))
+        if ready and policy['retention']['temporary'] == 'none':
+            # No temporary storage under this policy: the input exists only in this return value,
+            # never on disk and never in the ledger row (review, PR #63).
+            return {**row, 'input_records': ready, 'temporary_storage': 'none'}
+        return row
 
     def _run(self, run_id, owner, user, policy, consent, binding, *, status, results, bundle, counts=None, skipped=0):
         findings = {}

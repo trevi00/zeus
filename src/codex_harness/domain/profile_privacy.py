@@ -18,7 +18,9 @@ from codex_harness.domain.model import ContractError, digest, require
 POLICY_VERSION = 1
 TRANSPORTS = ('local', 'external')
 RECORD_FIELDS = ('content', 'project_path', 'kind', 'session_id', 'observed_at')
-INPUT_FIELDS = ('content', 'project_ref', 'kind', 'sequence')
+REQUIRED_FIELDS = ('content', 'project_path', 'kind')  # without these no scope or consent check can run
+INPUT_OF = {'content': 'content', 'project_path': 'project_ref', 'kind': 'kind', 'session_id': 'session_ref', 'observed_at': 'observed_at'}
+INPUT_FIELDS = tuple(INPUT_OF.values()) + ('sequence',)
 RENDERED_FIELDS = ('summary', 'instruction', 'project', 'signal', 'evidence', 'metadata')
 EVIDENCE_FIELDS = ('quote', 'source', 'signal')
 CONSENT_CHOICES = ('grant', 'cancel', 'questionnaire')
@@ -80,6 +82,10 @@ def parse_policy(policy):
     fields = policy['fields']
     require(isinstance(fields, dict) and fields and set(fields) <= set(RECORD_FIELDS)
             and all(type(v) is str and v.strip() for v in fields.values()), 'fields map collected record fields to their purpose')
+    # A policy that does not collect the fields the flow depends on is refused here, explicitly,
+    # instead of collecting them anyway later (review, PR #63).
+    missing = [f for f in REQUIRED_FIELDS if f not in fields]
+    require(not missing, 'Policy fields must include ' + ', '.join(REQUIRED_FIELDS) + '; missing ' + ', '.join(missing))
     scope = policy['read_scope']
     require(isinstance(scope, dict) and set(scope) == {'kinds', 'max_records', 'max_chars', 'projects'}
             and isinstance(scope['kinds'], list) and scope['kinds'] and all(type(k) is str for k in scope['kinds'])
@@ -160,9 +166,13 @@ def minimize(record, policy, consent):
     if any(kind in BLOCKING for kind in counts):
         return {'status': 'blocked', 'error': 'record carries ' + ', '.join(sorted(k for k in counts if k in BLOCKING)),
                 'checked_fields': checked, 'unchecked_fields': [], 'findings': counts, 'dropped_fields': dropped}
+    # The model input carries exactly the policy fields, nothing the policy did not name.
+    values = {'content': redact(content, findings), 'project_path': project_ref(record['project_path']), 'kind': record['kind'],
+              'session_id': hashlib.sha256(str(record.get('session_id')).encode('utf-8', 'surrogatepass')).hexdigest()[:16] if 'session_id' in record else None,
+              'observed_at': record.get('observed_at')}
+    model_input = {INPUT_OF[field]: values[field] for field in policy['fields'] if field in record}
     return {'status': 'ready', 'checked_fields': checked, 'unchecked_fields': [], 'findings': counts, 'dropped_fields': dropped,
-            'truncated': len(record['content']) > len(content),
-            'input': {'content': redact(content, findings), 'project_ref': project_ref(record['project_path']), 'kind': record['kind']}}
+            'truncated': len(record['content']) > len(content), 'input': model_input}
 
 
 def normalize_evidence(dimension):

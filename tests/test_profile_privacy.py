@@ -55,6 +55,8 @@ def test_notice_may_only_claim_what_the_policy_enforces():
     assert parse_policy(honest_external)['model']['transport'] == 'external'
     with pytest.raises(ContractError, match='raw text is not retained'):
         parse_policy({**POLICY, 'retention': {'temporary': 'run', 'permanent': 'none'}})
+    with pytest.raises(ContractError, match='must include content, project_path, kind; missing content, project_path'):
+        parse_policy({**POLICY, 'fields': {'kind': 'only the kind'}})  # review counterexample (PR #63)
     for bad in ({**POLICY, 'version': 2}, {**POLICY, 'fields': {'secret_field': 'x'}}, {**POLICY, 'read_scope': {**POLICY['read_scope'], 'max_chars': 99999}},
                 {**POLICY, 'notice': {'text': 'x', 'claims': ['never_leaks']}}, {k: v for k, v in POLICY.items() if k != 'purpose'}):
         with pytest.raises(ContractError):
@@ -97,7 +99,11 @@ def test_minimize_refuses_blocked_records_and_never_marks_unchecked_input_safe()
                       'kind': 'user_message', 'session_id': 's1', 'observed_at': 't'}, policy, granted)
     assert ready['status'] == 'ready' and ready['findings'] == {'email': 1, 'user_path': 1} and ready['dropped_fields'] == ['observed_at', 'session_id']
     assert ready['input'] == {'content': 'I prefer short diffs. mail [REDACTED email] at [REDACTED user_path]\\notes',
-                              'project_ref': project_ref(PROJECT_WIN), 'kind': 'user_message'}
+                              'project_ref': project_ref(PROJECT_WIN), 'kind': 'user_message'}, 'dropped fields never reach the input'
+    wider = parse_policy({**POLICY, 'fields': {**POLICY['fields'], 'observed_at': 'ordering', 'session_id': 'grouping'}})
+    wide = minimize({'content': 'x', 'project_path': PROJECT_WIN, 'kind': 'user_message', 'session_id': 's1', 'observed_at': 't1'}, wider, granted)
+    assert set(wide['input']) == {'content', 'project_ref', 'kind', 'session_ref', 'observed_at'} and wide['input']['session_ref'] != 's1'
+    assert wide['dropped_fields'] == [] and 's1' not in json.dumps(wide)
     assert 'sentinel-user' not in json.dumps(ready) and 'example.com' not in json.dumps(ready), 'neither the ledger nor the input keeps the value'
     blocked = minimize({'content': 'use password: hunter2-sentinel please', 'project_path': PROJECT_LINUX, 'kind': 'user_message'}, policy, granted)
     assert blocked['status'] == 'blocked' and 'input' not in blocked and blocked['findings'] == {'credential': 1} and 'hunter2' not in json.dumps(blocked)
@@ -174,6 +180,15 @@ def test_flow_needs_consent_keeps_only_counts_and_binds_the_run(tmp_path):
         assert row['cleanup']['deleted'] and row['render']['verdict'] == 'findings'
     with pytest.raises(ContractError, match='Binding requires'):
         flow.prepare_model_input('run-2', owner='w1', user='u1', policy=POLICY, records=[], binding={}, lease_until='x')
+    # temporary=none: nothing is written to scratch; the input lives only in the return value (review, PR #63).
+    volatile = {**POLICY, 'retention': {'temporary': 'none', 'permanent': 'profile_only'}}
+    flow.record_consent(volatile, consent(volatile, 'grant', at='2026-09-10T00:00:02+00:00'))
+    run2 = flow.prepare_model_input('run-3', owner='w1', user='u1', policy=volatile, records=records[:1], binding=binding, lease_until='2999-01-01T00:00:00+00:00')
+    assert run2['status'] == 'ready' and run2['bundle'] is None and run2['temporary_storage'] == 'none'
+    assert [r['content'] for r in run2['input_records']] == ['I prefer short diffs'] and not (tmp_path / 'scratch' / 'run-3').exists()
+    with flow.store.transaction() as tx:
+        stored = tx.get(RUNS, 'run-3')
+        assert 'input_records' not in stored and 'short diffs' not in json.dumps(stored)
 
 
 CHILD = r'''
