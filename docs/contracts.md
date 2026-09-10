@@ -456,6 +456,41 @@ equality on the checked scopes are recorded as separate facts; neither implies t
 shared literal value links contracts only through its type-and-tag identity and is a
 coincidence of declarations, never causal message delivery. Every observed contract appears in
 the view, including those no recorded comparison names, which are marked undeclared.
+## INV-PROFILE-001
+
+A profile data flow exists only as a versioned policy that names the collected record fields
+and their purpose, the read scope (kinds, record and character caps, projects), the model and
+its transport, temporary and permanent retention, and the user notice. The notice may claim
+only what the policy enforces: "no external transfer" requires a local transport and "raw text
+is not retained" requires profile-only permanent retention; a wider notice refuses the policy
+itself. The policy hash identifies the contract.
+
+Consent binds one user to one policy hash and to projects inside the read scope; cancel and
+questionnaire are preserved choices that collect nothing, a grant without projects collects
+nothing, and a preference inferred later is never authorization, approval or model
+qualification. Collection under any other policy version needs new consent.
+
+Every record is minimized before it can become model input: only policy fields survive, the
+content is capped, then scanned, then redacted, and the project path is replaced by a
+non-reversible reference. A record carrying a private key, a credential or a token is blocked
+from model input, not masked. Read failures, parse failures, out-of-scope kinds and
+non-consented projects are separate named results that produce no input, and each names the
+fields it could not check. The ledger keeps statuses, counts and kinds; it never keeps record
+text or matched values, and an output-stage filter never stands in for this input-stage
+minimization.
+
+`evidence` and `evidence_quotes` normalize to one schema; when both are present they must
+agree, and unsupported fields refuse. Every rendered field of every dimension (evidence,
+summary, instruction, project, signal, metadata) is scanned or named unchecked; "none
+detected" is said only about checked fields, and a profile with an unchecked field or a
+finding is not renderable.
+
+A temporary bundle belongs to its run: it is written atomically with an owner, a lease and a
+digest, read only by its owner after digest verification, deleted only by its owner or by an
+expired lease, and never by age or name prefix; a bundle whose process died is preserved for
+its owner to resume, and a tampered bundle is preserved and not used. Every run is bound to
+its source revision and environment. None of this is a user acceptance, a privacy
+qualification or a deployment.
 
 # SDD preparation contracts
 
