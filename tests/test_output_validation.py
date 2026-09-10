@@ -68,6 +68,28 @@ def test_unknown_keywords_are_configuration_errors_not_silent_no_ops():
     assert 'examples' in preflight(annotated)['keywords']
 
 
+def test_declared_dialect_is_the_validating_dialect():
+    # Review counterexample (PR #55): a draft-07 `$schema` made jsonschema.validate pick draft-07 and
+    # ignore prefixItems while the receipt claimed 2020-12.
+    schema = {'$schema': 'http://json-schema.org/draft-07/schema#', 'type': 'array', 'prefixItems': [{'type': 'integer'}]}
+    result = completed_output('["not-an-integer"]', schema)
+    assert result['answer'] is None and result['failure']['owner'] == 'configuration'
+    assert result['structural']['checks']['schema'] == 'configuration_error' and 'draft-07' in result['structural']['schema']['configuration_error']
+    declared = {**schema, '$schema': 'https://json-schema.org/draft/2020-12/schema'}
+    rejected = completed_output('["not-an-integer"]', declared)
+    assert rejected['failure']['output_reason'] == 'schema_mismatch' and rejected['structural']['checks']['schema'] == 'failed'
+    accepted = completed_output('[3]', declared)
+    assert accepted['answer'] == [3] and accepted['structural']['schema']['dialect'] == accepted['structural']['schema']['dialect']
+    assert accepted['structural']['schema']['validator'] == 'jsonschema.Draft202012Validator'
+    assert accepted['structural']['schema']['format'].startswith('annotation only')
+    # `format` is an annotation: a value that violates the named format still passes, and the receipt says so.
+    formatted = completed_output('{"when": "not-a-date"}', {'type': 'object', 'properties': {'when': {'type': 'string', 'format': 'date-time'}}})
+    assert formatted['answer'] == {'when': 'not-a-date'} and formatted['structural']['checks']['schema'] == 'checked'
+    # A transport event with params=None is neither a tool item nor a crash.
+    usage = tool_usage({'events': [{'method': 'item/completed', 'params': None}, {'method': 'item/completed'}], 'answer': {}})
+    assert usage['runner_observed']['commandExecution']['count'] == 0 and usage['comparison'] == 'not_declared'
+
+
 def test_output_validation_names_what_it_checked_and_who_owns_a_failure():
     ok = completed_output(json.dumps({'summary': 'done'}), SCHEMA)
     assert ok['answer'] == {'summary': 'done'} and 'failure' not in ok

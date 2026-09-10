@@ -1,7 +1,7 @@
 """Runner-observed output validation and durable execution failure evidence."""
 import json
 
-from jsonschema import ValidationError, validate
+from jsonschema import Draft202012Validator, ValidationError
 
 from codex_harness.adapters.output_schema import preflight
 from codex_harness.domain.model import ContractError, ExecutionFailure, canonical, digest
@@ -61,7 +61,8 @@ def completed_output(text, schema):
         else:
             if checks['schema'] != 'configuration_error':
                 try:
-                    validate(answer, schema)
+                    # The same dialect the preflight receipt names; `format` stays an annotation.
+                    Draft202012Validator(schema, format_checker=None).validate(answer)
                     checks['schema'] = 'checked'
                 except ValidationError as exc:
                     reason = 'schema_mismatch'
@@ -93,7 +94,8 @@ def tool_usage(result):
     for event in events:
         if not isinstance(event, dict) or event.get('method') != 'item/completed':
             continue
-        item = event.get('params', {}).get('item', {})
+        params = event.get('params')
+        item = params.get('item') if isinstance(params, dict) else None
         if isinstance(item, dict) and item.get('type') in observed and isinstance(item.get('id'), str):
             observed[item['type']].append(item['id'])
     answer = result.get('answer') if isinstance(result, dict) else None

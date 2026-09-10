@@ -16,6 +16,9 @@ from codex_harness.domain.model import ContractError, require
 CAUSE = "codex-output-schema-version-missing-type"
 SCOPE = "codex-harness/research-audit/output-schema"
 DIALECT = "https://json-schema.org/draft/2020-12/schema"
+DIALECT_URIS = frozenset({"https://json-schema.org/draft/2020-12/schema", "https://json-schema.org/draft/2020-12/schema#"})
+VALIDATOR = "jsonschema.Draft202012Validator"
+FORMAT_SEMANTICS = "annotation only: `format` is never asserted (no format checker is installed)"
 SUBSET_VERSION = 1
 MAX_DEPTH = 32
 MAX_BYTES = 256 * 1024
@@ -49,6 +52,11 @@ def preflight(schema):
     schema_hash = "sha256:" + hashlib.sha256(encoded.encode()).hexdigest()
     require(isinstance(schema, dict), f"outputSchema at $ must be an object; {schema_hash}")
     require(len(encoded.encode()) <= MAX_BYTES, f"outputSchema at $ exceeds {MAX_BYTES} bytes; {schema_hash}")
+    # The declared dialect and the validating dialect are one and the same: 2020-12. Any other
+    # `$schema` is refused instead of silently validated under a different draft (review, PR #55).
+    declared = schema.get("$schema")
+    require(declared is None or declared in DIALECT_URIS,
+            f"outputSchema at $ declares dialect {declared!r}; only {DIALECT} is validated; {schema_hash}")
     try:
         Draft202012Validator.check_schema(schema)
     except SchemaError as exc:
@@ -114,6 +122,6 @@ def preflight(schema):
                 walk(value, child_path, version, depth + 1)
 
     walk(schema, "$")
-    return {"schema_hash": schema_hash, "dialect": DIALECT, "subset_version": SUBSET_VERSION,
+    return {"schema_hash": schema_hash, "dialect": DIALECT, "validator": VALIDATOR, "subset_version": SUBSET_VERSION,
             "keywords": sorted(keywords), "checks": list(CHECKS), "max_depth": deepest[0],
-            "bytes": len(encoded.encode())}
+            "format": FORMAT_SEMANTICS, "bytes": len(encoded.encode())}
