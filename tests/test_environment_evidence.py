@@ -82,8 +82,8 @@ class FakeShell:
             dsn = self.dotenv_seen.split('HARNESS_DATABASE_URL=')[1].splitlines()[0]
             junit = next(a for a in argv if a.startswith('--junitxml='))[len('--junitxml='):]
             Path(junit).parent.mkdir(parents=True, exist_ok=True)
-            Path(junit).write_text('<testsuites><testsuite><testcase classname="tests.test_a" name="t1" file="tests/test_a.py"/>'
-                                   '<testcase classname="tests.test_a" name="t2" file="tests/test_a.py"><skipped/></testcase>'
+            Path(junit).write_text('<testsuites><testsuite><testcase classname="tests.test_a" name="t1"/>'
+                                   '<testcase classname="tests.test_a.TestGroup" name="t2"><skipped/></testcase>'
                                    '<testcase classname="tests.test_b" name="t3" file="tests/test_b.py"/></testsuite></testsuites>', encoding='utf-8')
             return f'..s\nE   AssertionError: assert {dsn} == other\n2 passed, 1 skipped in 1.0s\n'
         if key == 'pytest:docker':
@@ -111,6 +111,8 @@ def test_a_passing_run_binds_services_inputs_and_isolates_the_environment(tmp_pa
     receipt, shell = run(tmp_path, monkeypatch)
     assert receipt['passed'] is True and receipt['head'] == 'abc123'
     assert receipt['compose_project'].startswith('harness-evidence-host-a-') and len(receipt['compose_project'].split('-')[-1]) == 8
+    dotted = evidence.EvidenceRun('wsl-ubuntu-26.04', 'out', shell=FakeShell(tmp_path), root=tmp_path)
+    assert dotted.project.startswith('harness-evidence-wsl-ubuntu-26-04-'), 'compose project names cannot contain dots'
     # Source binding: tracked and untracked changes are listed, and the execution inputs are digested.
     assert receipt['tracked_changes'] == [' M src/x.py'] and receipt['untracked'] == ['scratch.txt']
     assert set(receipt['inputs']) == {'runner', 'compose', 'uv.lock', 'pyproject.toml', 'override'} and all(v.startswith('sha256:') for v in receipt['inputs'].values())

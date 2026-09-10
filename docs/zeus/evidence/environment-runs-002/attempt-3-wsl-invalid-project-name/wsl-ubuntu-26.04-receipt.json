@@ -1,0 +1,63 @@
+{
+  "label": "wsl-ubuntu-26.04",
+  "compose_project": "harness-evidence-wsl-ubuntu-26.04-1389bf4d",
+  "started_at": "2026-09-10T23:52:45.044893+00:00",
+  "phases": {
+    "preflight": {
+      "git_ok": true,
+      "ok": true,
+      "at": "2026-09-10T23:52:45.211819+00:00"
+    },
+    "claim_project": {
+      "found": {
+        "containers": [],
+        "volumes": [],
+        "networks": []
+      },
+      "errors": [],
+      "refusal": null,
+      "ok": true,
+      "at": "2026-09-10T23:52:45.267489+00:00"
+    },
+    "stack_up": {
+      "exit_code": 1,
+      "error": null,
+      "stderr_tail": [
+        "invalid project name \"harness-evidence-wsl-ubuntu-26.04-1389bf4d\": must consist only of lowercase alphanumeric characters, hyphens, and underscores as well as start with a letter or number"
+      ],
+      "ok": false,
+      "at": "2026-09-10T23:52:45.304567+00:00"
+    }
+  },
+  "steps": [],
+  "passed": false,
+  "authority": "what ran on this host at this head against the stack this run created; not a reboot, a human acceptance or a deployment",
+  "head": "5ed6bc89dfb89e77f33d10aee57eca3398135f86",
+  "tracked_changes": [],
+  "untracked": [],
+  "diff_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "inputs": {
+    "runner": "sha256:2bcb490d038d52b56cf671f0e6fc2cda85894808c813d618bb76d0920f47d280",
+    "compose": "sha256:6e008ba80bfe4e1ac1c2e1465da448ee38809faacb049dd9bf61a59ec183fb07",
+    "uv.lock": "sha256:48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+    "pyproject.toml": "sha256:7a0923abe0aea3fbe952a0cb4a79a856ec71d0ab7b77f1659c5fa401356ba0b5",
+    "override": "sha256:c62e3c45d221a89f5f16a7b4762270daae5e47e60661ecc6e1ba187eb22f8986"
+  },
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "machine": "x86_64",
+  "python": "3.12.14",
+  "uv": "uv 0.12.12 (x86_64-unknown-linux-gnu)",
+  "docker": "29.7.2",
+  "compose": "5.4.0",
+  "required_phases": [
+    "preflight",
+    "claim_project",
+    "stack_up",
+    "identity_before",
+    "steps",
+    "identity_after",
+    "identity_stable",
+    "teardown"
+  ],
+  "finished_at": "2026-09-10T23:52:45.304586+00:00"
+}

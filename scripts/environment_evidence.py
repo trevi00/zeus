@@ -88,7 +88,8 @@ class EvidenceRun:
             raise ValueError('label must be a lowercase token (letters, digits, dot, dash)')
         self.label, self.root, self.shell = label, Path(root), shell or Shell()
         self.out = self.root / out
-        self.project = project or f'harness-evidence-{label}-{uuid4().hex[:8]}'
+        # compose project names allow only [a-z0-9_-]; a label like "wsl-ubuntu-26.04" is normalized.
+        self.project = project or f"harness-evidence-{re.sub(r'[^a-z0-9-]', '-', label)}-{uuid4().hex[:8]}"
         self.password = secrets.token_hex(16)
         self.receipt = {'label': label, 'compose_project': self.project, 'started_at': now(), 'phases': {}, 'steps': [], 'passed': False,
                         'authority': 'what ran on this host at this head against the stack this run created; not a reboot, '
@@ -298,7 +299,9 @@ def per_file(junit_path):
     """Per test file outcome counts from the junit report, so a reader can map criteria to test nodes."""
     counts = {}
     for case in ET.parse(junit_path).getroot().iter('testcase'):
-        name = case.get('file') or (case.get('classname', '').split('.')[0] + '.py')
+        # xunit2 gives classname "tests.test_module[.TestClass]" and no file attribute.
+        module = next((part for part in case.get('classname', '').split('.') if part.startswith('test_')), None)
+        name = case.get('file') or (module + '.py' if module else '')
         key = name.replace('\\', '/').split('/')[-1] if name else 'unknown'
         bucket = counts.setdefault(key, {'passed': 0, 'skipped': 0, 'failed': 0, 'error': 0})
         if case.find('skipped') is not None:
