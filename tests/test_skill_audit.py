@@ -62,13 +62,14 @@ def test_match_rank_and_body_arrival_are_separate_counts_not_one_precision():
     rows = {row['path']: row for row in report['skills']}
     a, b = rows['python/a.md'], rows['python/b.md']
     assert (a['count'], a['rank_first_count']) == (4, 3) and (b['count'], b['rank_first_count']) == (3, 2)
-    assert a['delivery'] == {'full': 2, 'pointer': 1, 'external_pointer': 0, 'unmatched': 0, 'legacy': 0, 'unknown': 1}
-    assert b['delivery'] == {'full': 1, 'pointer': 1, 'external_pointer': 1, 'unmatched': 0, 'legacy': 0, 'unknown': 0}
+    assert a['delivery'] == {'full': 2, 'pointer': 1, 'external_pointer': 0, 'omitted': 0, 'unmatched': 0, 'legacy': 0, 'unknown': 1}
+    assert b['delivery'] == {'full': 1, 'pointer': 1, 'external_pointer': 1, 'omitted': 0, 'unmatched': 0, 'legacy': 0, 'unknown': 0}
     assert set(report['measurement_targets']) == {'raw_match', 'rank', 'body_arrival', 'behavior'}
     assert 'not measured' in report['measurement_targets']['behavior']
     assert 'precision' not in json.dumps(report).lower()
     text = render_text(report)
-    assert 'ranked first: 3/4; delivered full body: 2, pointer: 1, tier unknown: 1' in text
+    assert 'ranked first: 3/4; delivered full body: 2, pointer: 1, omitted by budget: 0, tier unknown: 1' in text
+    assert 'not model reach' in text and 'not model reach' in report['measurement_targets']['body_arrival']
     assert 'match != delivery != behavior' in text
 
 

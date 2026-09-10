@@ -46,6 +46,16 @@ class SkillHistory:
                         'Invalid rendered body hash')
         require(len({(r['path'], r['content_ref']) for r in event['top']}) == len(event['top']),
                 'Duplicate skill identity in observation')
+        if 'delivery' in event:
+            delivery = event['delivery']
+            require(isinstance(delivery, dict) and set(delivery) == {'stage', 'admitted', 'omitted'}
+                    and isinstance(delivery['stage'], str) and bool(delivery['stage'])
+                    and all(isinstance(delivery[k], list) and all(isinstance(v, str) for v in delivery[k])
+                            for k in ('admitted', 'omitted'))
+                    and not set(delivery['admitted']) & set(delivery['omitted']),
+                    'Invalid skill delivery record')
+            require(all(item['path'] in delivery['admitted'] for item in event['top']
+                        if item.get('tier') == 'full'), 'A full tier must be in the admitted set')
         # INV-SKILL-HISTORY-001: richer passive diagnostics do not create a new
         # observation or conflict with pre-audit retries of the same selection.
         scoring = [{key: item[key] for key in ('path', 'content_ref', 'score', 'base_score')

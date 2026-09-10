@@ -1,4 +1,5 @@
 import copy
+import hashlib
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 from uuid import uuid4
@@ -183,3 +184,40 @@ def test_advisory_failures_degrade_but_ownership_failure_still_stops_work(tmp_pa
     assert record_history(observation, 'context') == {'status': 'unavailable', 'reason': 'OSError'}
     with pytest.raises(OSError):
         record_history(observation, 'context', stale)  # ownership could not be checked
+
+
+def test_budget_omission_is_recorded_as_omitted_not_full(tmp_path):
+    # Review counterexample (PR #45): a 50,000-char full skill under a 22,000-byte budget never reached
+    # the packet, yet the audit counted delivery.full=1. The record now comes from the sealed packet.
+    from codex_harness.adapters.skill_history import finalize_delivery, record_history
+    store, artifacts = MemoryStore(), FileArtifacts(str(tmp_path / 'artifacts'))
+    body = 'X' * 50_000
+    raw = artifacts.put(body, 'fixture')
+    path = '.harness/skills/python/huge.md'
+    record = {'path': path, 'content_ref': raw['ref'], 'score': 7, 'base_score': 7, 'tier': 'full',
+              'rendered_hash': 'manifest-hash', 'body_chars': len(body)}
+    manifest = artifacts.put(canonical({'skills': [record]}), 'fixture-manifest')
+    item = ContextItem('project-skill:' + path, body, raw['ref'], 'a' * 40, 18)
+    required = {'role': 'worker', 'objective': 'verify', 'acceptance_criteria': ['bounded'], 'policy': 'fixture'}
+    items, observation = prepare_history(store, artifacts, 'project', 'agent', 'task', 'objective',
+                                         {'manifest_ref': manifest['ref']}, [item])
+    assert observation[2]['top'][0]['tier'] == 'full' and observation[2]['evidence_stage'] == 'selected_not_compiled'
+    starved = compile_context('worker', 'task', 'snapshot', required, items, 22_000, 0)
+    assert starved.evidence == [] and starved.omitted[0]['id'] == item.id
+    history, project, event = finalize_delivery(observation, starved)
+    assert event['top'][0]['tier'] == 'omitted' and 'rendered_hash' not in event['top'][0]
+    assert event['delivery'] == {'stage': 'context_compiled', 'admitted': [], 'omitted': [path]}
+    assert record_history((history, project, event), 'context-1') == {'status': 'recorded'}
+    report = history.audit(project)
+    row = next(r for r in report['skills'] if r['path'] == path)
+    assert row['delivery']['full'] == 0 and row['delivery']['omitted'] == 1
+    # Admitted under a real budget: the body hash is taken from the packet, not from the manifest.
+    admitted = compile_context('worker', 'task-2', 'snapshot', required, items, 200_000, 0)
+    _, _, event2 = finalize_delivery(observation, admitted)
+    assert event2['top'][0]['tier'] == 'full'
+    assert event2['top'][0]['context_body_hash'] == hashlib.sha256(admitted.evidence[0]['body'].encode('utf-8')).hexdigest()
+    assert event2['delivery'] == {'stage': 'context_compiled', 'admitted': [path], 'omitted': []}
+    # A record that claims a full tier outside its admitted set is refused by the ledger itself.
+    with pytest.raises(ContractError, match='full tier must be in the admitted set'):
+        history.record(project, {**event2, 'id': 'forged', 'context_ref': 'c', 'delivery': {**event2['delivery'], 'admitted': []}})
+    assert finalize_delivery(None, starved) is None

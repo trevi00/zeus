@@ -1,9 +1,11 @@
 """Bind routed skill observations and atomic body advisories to Executor context."""
+import hashlib
 import re
 from dataclasses import replace
 
 from codex_harness.application.skill_history import SkillHistory
 from codex_harness.domain.model import canonical, digest
+from codex_harness.domain.skill_audit import EVIDENCE_STAGE
 from codex_harness.domain.skill_history import TOP_MATCHES
 
 
@@ -28,6 +30,33 @@ def prepare_history(store, artifacts, project, agent, task, objective, selection
         return items, None
     selection.update(draft)
     return prepared
+
+
+def finalize_delivery(observation, packet):
+    """Rewrite the observation from the sealed packet: a skill the budget dropped is `omitted`, not
+    `full`, and an admitted body is hashed as it actually appears in the context (review, PR #45).
+
+    Selection tier (manifest) and final inclusion are different evidence stages; this records the
+    latter and names the stage, which is still before provider submission and any model behavior.
+    """
+    if observation is None:
+        return None
+    history, project, event = observation
+    admitted = {item['id']: item for item in packet.evidence if item['id'].startswith('project-skill:')}
+    omitted = {entry['id'] for entry in packet.omitted if entry['id'].startswith('project-skill:')}
+    top = []
+    for record in event['top']:
+        key = 'project-skill:' + record['path']
+        if key in admitted:
+            top.append({**record, 'context_body_hash': hashlib.sha256(
+                admitted[key]['body'].encode('utf-8')).hexdigest()})
+        elif key in omitted or record.get('tier') == 'full':
+            top.append({**{k: v for k, v in record.items() if k != 'rendered_hash'}, 'tier': 'omitted'})
+        else:
+            top.append(record)  # pointer tiers never carried a body into the packet
+    delivery = {'stage': EVIDENCE_STAGE, 'admitted': sorted(k.removeprefix('project-skill:') for k in admitted),
+                'omitted': sorted(k.removeprefix('project-skill:') for k in omitted)}
+    return history, project, {**event, 'top': top, 'delivery': delivery}
 
 
 def record_history(observation, context_ref, guard=None):
@@ -92,5 +121,5 @@ def _prepare_history(store, artifacts, project, agent, task, objective, selectio
              'top': [{**{key: r[key] for key in ('path', 'content_ref', 'score', 'base_score', 'body_chars',
                                                  'tier', 'rendered_hash') if key in r},
                       'dimensions': r.get('dimensions', [])}
-                     for r in top], 'kind': 'compiled_skill_selection'}
+                     for r in top], 'kind': 'compiled_skill_selection', 'evidence_stage': 'selected_not_compiled'}
     return annotated, (history, project_key, event)

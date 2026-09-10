@@ -16,11 +16,15 @@ from codex_harness.domain.skill_history import (
 
 DIMENSIONS = ('intent', 'path', 'kw', 'pat')
 # FA-012: what an observation can prove, stated per target instead of one blended "precision".
-DELIVERY_TIERS = ('full', 'pointer', 'external_pointer', 'unmatched', 'legacy')
+# `omitted`: selected at compile time but dropped from the final packet by the context budget.
+DELIVERY_TIERS = ('full', 'pointer', 'external_pointer', 'omitted', 'unmatched', 'legacy')
+EVIDENCE_STAGE = 'context_compiled'  # recorded before provider submission; never model reach
 MEASUREMENT_TARGETS = {
     'raw_match': 'top entries exist: the skill matched or was boosted at compile time',
     'rank': 'score order among matched candidates for one objective',
-    'body_arrival': 'delivered tier per observation: full body, pointer, external pointer or unknown',
+    'body_arrival': 'tier in the final compiled context per observation: full body, pointer, external '
+                    'pointer, omitted by budget, or unknown; recorded at context compilation, before '
+                    'provider submission or receipt, so it is not model reach',
     'behavior': 'not measured by telemetry; requires actual model output and human acceptance'}
 
 

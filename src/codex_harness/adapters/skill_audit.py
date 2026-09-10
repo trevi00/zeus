@@ -39,7 +39,8 @@ def render_text(report):
             delivered = row['delivery']
             lines.append(f"  ranked first: {row['rank_first_count']}/{row['count']}; delivered full body: "
                          f"{delivered['full']}, pointer: {delivered['pointer'] + delivered['external_pointer']}, "
-                         f"tier unknown: {delivered['unknown']} (match != delivery != behavior)")
+                         f"omitted by budget: {delivered['omitted']}, tier unknown: {delivered['unknown']} "
+                         f"(match != delivery != behavior; delivery = final compiled context, not model reach)")
         lines.append('dimension weight (counts of matching signals, not score contributions):')
         weights = report['dim_weight']
         total = sum(weights.values()) or 1

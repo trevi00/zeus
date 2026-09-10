@@ -51,6 +51,22 @@ Zeus의 라우팅 매니페스트는 스킬별 `tier`(full/pointer/external_poin
 | Windows 전체 `uv run pytest -q` (Python 3.12.14) | 919 passed, 305 skipped (185s) — 첫 실행에서 무관한 `test_github_tickets` 검사 1건이 실패했고 3회 단독 재실행과 전체 재실행에서 통과(시간 의존 flake) |
 | `uv run ruff check .` | 통과 |
 
+## 검토 반영 (PR #45, P2: 최종 컴파일에서 생략된 본문이 `delivery.full`로 집계됨)
+
+- 선택 단계 tier(manifest)와 최종 컨텍스트 포함은 다른 증거 단계입니다. `adapters/skill_history.finalize_delivery()`가
+  **봉인된 packet**에서 admitted/omitted를 계산해 관측을 다시 씁니다: 예산에 밀려 packet에 없는 full 스킬은 tier
+  `omitted`(새 tier)로 기록하고 manifest의 `rendered_hash`를 지우며, 들어간 스킬은 packet에 실린 본문 그대로의
+  `context_body_hash`(advisory 변환이 있으면 변환된 본문의 해시)를 붙입니다. 관측 `delivery`에 `stage`
+  (`context_compiled`)·`admitted`·`omitted`를 남기고, 선택 단계 이벤트에는 `evidence_stage=selected_not_compiled`를
+  표시합니다. Executor는 `packet.seal()` 뒤 `finalize_delivery` 결과를 기록합니다.
+- 원장(`application/skill_history.record`)은 `delivery` 블록을 검증하고, admitted 집합 밖의 항목이 `full`을 주장하면
+  거절합니다. 감사는 `omitted` 계수를 별도로 보여 주고 `body_arrival` 목표 설명과 텍스트에 "최종 컴파일 컨텍스트
+  기준, 제공자 제출 전, 모델 도달 아님"을 명시합니다.
+- 회귀: `test_budget_omission_is_recorded_as_omitted_not_full` — 50,000자 full 스킬 + 22,000바이트 예산에서
+  packet.evidence가 비고 감사 `delivery.full == 0, omitted == 1`; 충분한 예산에서는 full + packet 본문 해시; 위조
+  delivery(admitted 밖 full)는 원장이 거절. 실행 실패 경로: 기록은 packet 봉인 시점(제공자 호출 전)이며 실행 실패는
+  이 기록을 바꾸지 않습니다 — 그래서 이 증거는 "컨텍스트에 실림"까지이고 제공자 수신·모델 행동이 아닙니다.
+
 ## 남은 범위
 
 - "실제 행동"(모델이 스킬 지침을 따랐는가)은 텔레메트리로 잴 수 없다고 명시했을 뿐 측정 수단을 만들지 않았습니다. 그 증거는
