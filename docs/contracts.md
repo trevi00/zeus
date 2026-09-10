@@ -252,6 +252,44 @@ its own event and consumes nothing; a consumed or revoked approval certifies not
 issued, consumed, revoked, expired, missing and corrupt are distinct states. The approval
 never writes the active definition and never authorizes routing, graduation or deployment.
 
+## INV-MIGRATION-001
+
+The database migration tool is pinned: `zeus-sql-migrator@1` with the filename contract
+`V?<n>(.<n>|_<n>)*(__<description>)?.sql`. A version is normalized to its integer components
+(`V01`, `V1`, `001` and `V1.0` are the same version; `V1_2` and `V1.2` are the same version;
+`V08` is eight, never an octal error) and compared component-wise, never by its first number
+or lexically. A `.sql` file whose name does not match the contract is refused by name; it is
+never skipped, and a run that saw one never succeeds. Files with other extensions are listed
+as ignored, not treated as migrations.
+
+Every configured location is identified by module, vendor and path and classified as found,
+empty, missing or unreadable with the exact error; a location the discovery did not observe
+is unknown. Missing, unreadable and unknown are never empty; a required scope in any of these
+states refuses, and an optional one is stated as not applicable. The vendor list of one
+module never overwrites another's. Filename parity across the vendors of a module, the SQL
+content of the target vendor (empty, oversized and undecodable files are named), the applied
+history and the live schema are four separate results; a single vendor makes parity not
+applicable, not ok, and an unobserved required vendor makes it unknown. Apply is allowed only
+when every result is ok or not applicable; unknown is never approval.
+
+An applied version is immutable: the checksum recorded at apply time must equal the file's
+checksum, an applied version without a file cannot be verified, and a new version lower than
+an applied one is out of order. "Use MAX+1" is guidance, not a guarantee: apply re-reads the
+history under the control-plane advisory lock, refuses if any result changed, executes pending
+versions in normalized order and records version, checksum, name, tool and actor in the same
+transaction, so two concurrent appliers record each version exactly once. A statement that
+fails leaves no history row and no partial schema change of that version.
+
+A precheck or apply is evidence only as a receipt that binds the operation, the exact argv,
+the parsed config digest, the root, the source revision, the environment label, the exact
+stdout and stderr bytes and the exit code; a refused run (exit 1) and an errored run (exit 2)
+are recorded as such and never as success. Only a precheck whose recorded tool equals the
+pinned tool, that completed with exit 0 and allowed apply, and that is bound to the same
+revision and environment can approve an apply. None of this is deployment approval: the real
+Windows/Linux/WSL install, upgrade, interrupted-recovery and data-preservation runs, the money
+scenarios and the human acceptance they require are not performed by this contract, and no
+document count, quality score or gate table substitutes for them.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
