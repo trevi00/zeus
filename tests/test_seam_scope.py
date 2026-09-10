@@ -9,6 +9,8 @@ import pytest
 from test_seam_contracts import POLICY, REV, observation
 
 from codex_harness.adapters.seam_extraction import extract
+from codex_harness.adapters.store import MemoryStore
+from codex_harness.application.seam_ledger import SeamLedger
 from codex_harness.domain.model import ContractError
 from codex_harness.domain.seam_view import build_view, seam_id
 from codex_harness.domain.seams import (
@@ -113,3 +115,51 @@ def test_extractor_declares_its_scopes(tmp_path):
     assert status['covered_scopes'] == ENUM_SCOPES
     java, = extract('java', tmp_path, 'pkg/Status.java', revision=REV)
     assert java['covered_scopes'] == [] and java['fidelity'] == 'UNKNOWN', 'an absent tool covers nothing'
+
+
+@pytest.mark.parametrize('backend', ['memory', 'postgres'])
+def test_scope_gate_over_extracted_members_across_two_revisions(backend, request, tmp_path):
+    # Review (PR #60): the scope gate re-verified on the fixed extractor (#56: annotated members count) and
+    # the per-revision view (#59): a member the consumer lacks fails the gate at one revision and passes at the
+    # next, and an unresolved member candidate never lets OK through.
+    store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
+    ledger = SeamLedger(store)
+    later = 'e' * 40
+    producer_dir, consumer_dir = tmp_path / 'shop' / 'orders', tmp_path / 'shop' / 'billing'
+    producer_dir.mkdir(parents=True)
+    consumer_dir.mkdir(parents=True)
+    enum_source = 'from enum import Enum\nclass Status(Enum):\n    A = 1\n'
+    (producer_dir / 'status.py').write_text(enum_source + '    B: int = 2\n', encoding='utf-8')
+    (consumer_dir / 'status.py').write_text(enum_source, encoding='utf-8')
+    full = {**POLICY, 'compare': ['name', 'type', 'tag'], 'required_scopes': ENUM_SCOPES}
+    identity = {'version': 1, 'kind': 'identity'}
+
+    def snapshot(revision):
+        producer, = extract('python', tmp_path, 'shop/orders/status.py', revision=revision)
+        consumer, = extract('python', tmp_path, 'shop/billing/status.py', revision=revision)
+        rows = [ledger.record_observation(o, binding={'revision': revision}) for o in (producer, consumer)]
+        return producer, consumer, rows, ledger.compare(rows[0]['id'], rows[1]['id'], identity, full)
+
+    producer, consumer, rows, drift = snapshot(REV)
+    assert [m['name'] for m in producer['members']] == ['A', 'B'] and producer['fidelity'] == 'HIGH', 'B: int = 2 is a member (#56)'
+    assert producer['denominator'] == {'symbols_found': 2, 'unresolved': 0} and consumer['denominator']['symbols_found'] == 1
+    assert drift['result']['verdict'] == 'DRIFT' and drift['result']['scope_coverage']['complete'] is True
+    seam = seam_id(producer['identity']['id'], consumer['identity']['id'])
+    gate = {'version': 1, 'fail_on': ['DRIFT'], 'required_seams': [seam]}
+    first = ledger.view(gate)
+    assert first['view']['gate']['decision'] == 'fail' and first['view']['receipt']['revision'] == REV
+    # The consumer catches up at the next revision: the same seam is OK on every required scope and live.
+    (consumer_dir / 'status.py').write_text(enum_source + '    B: int = 2\n', encoding='utf-8')
+    producer2, consumer2, rows2, ok = snapshot(later)
+    assert ok['result']['verdict'] == 'OK' and ok['result']['scope_coverage']['unverified'] == [] and ok['result']['copy']['same_blob'] is True
+    newest = ledger.view(gate)
+    edge = {e['seam_id']: e for e in newest['view']['edges']}[seam]
+    assert newest['view']['receipt']['revision'] == later and newest['view']['gate']['decision'] == 'pass' and edge['live'] is True
+    assert ledger.view(gate, revision=REV)['id'] == first['id'], 'the failing earlier view regenerates unchanged (#59)'
+    # An unresolved member candidate (multi-target assignment) keeps the producer below HIGH: no OK, no pass.
+    (producer_dir / 'status.py').write_text(enum_source + '    B: int = 2\n    C = D = 3\n', encoding='utf-8')
+    third = 'f' * 40
+    producer3, consumer3, rows3, blocked = snapshot(third)
+    assert producer3['fidelity'] == 'LOW' and producer3['denominator'] == {'symbols_found': 4, 'unresolved': 2}
+    assert blocked['result']['verdict'] != 'OK'
+    assert ledger.view(gate)['view']['gate']['decision'] != 'pass' and ledger.view(gate)['view']['receipt']['revision'] == third
