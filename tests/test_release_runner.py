@@ -51,6 +51,30 @@ def test_failed_prerequisite_stops_downstream_execution(tmp_path, monkeypatch, f
         assert not tx.scan("deployment")
 
 
+@pytest.mark.parametrize("drift", ["patch", "repository"])
+def test_runner_refuses_reviewed_candidate_whose_patch_or_target_drifted(tmp_path, monkeypatch, drift,
+                                                                          fake_verification_services):
+    from codex_harness.domain.model import ContractError, digest
+    service = Harness(MemoryStore(), organization())
+    git = SimpleNamespace(repository=tmp_path, remote="fixture/repo", _git=lambda *args: "base",
+                          inspect=lambda *args: {"tree": "tree", "diff": "reviewed diff"},
+                          review_workspace=lambda *args: str(tmp_path))
+    artifacts = FileArtifacts(tmp_path / "artifacts")
+    runner = ReleaseRunner(service, git, artifacts, str(tmp_path / "unused-auth"))
+    candidate = {"revision": "candidate", "base": "base", "tree": "tree", "author": "worker:implementation",
+                 "repository": "fixture/repo" if drift == "patch" else "other/repo",
+                 "diff_hash": digest("tampered diff" if drift == "patch" else "reviewed diff")}
+    release = runner.releases.propose(candidate, {"checks": ["tests", "cli_start", "cli_file_task"]})
+    for actor in ("lead:improvement", "conductor"):
+        runner.releases.review(release["id"], actor, "candidate", True, "fixture:review")
+    monkeypatch.setattr(runner, "_check", lambda *a, **k: pytest.fail("checks ran for a drifted candidate"))
+    with pytest.raises(ContractError, match="patch mismatch" if drift == "patch" else "target repository changed"):
+        runner.run(release["id"])
+    with service.store.transaction() as tx:
+        assert tx.get("releases", release["id"])["status"] == "reviewed"
+        assert not tx.scan("promotion_intents") and not tx.scan("deployment")
+
+
 def test_verified_retry_rebases_before_remote_side_effects(tmp_path, monkeypatch):
     service = Harness(MemoryStore(), organization())
 

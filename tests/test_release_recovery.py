@@ -14,9 +14,10 @@ from codex_harness.domain.model import ContractError
 from codex_harness.domain.policy import POLICY
 
 
-def candidate_runner(tmp_path, store=None):
+def candidate_runner(tmp_path, store=None, remote=None):
     root = repository(tmp_path)
-    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"))
+    # The target repository is part of the captured identity (FA-015), so it is fixed before capture.
+    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"), remote=remote)
     workspace = adapter.prepare("candidate-task")
     from pathlib import Path
     (Path(workspace["path"]) / "change.txt").write_text("candidate", encoding="utf-8")
@@ -116,8 +117,7 @@ def test_recovery_blocks_unrelated_head_and_unproven_remote_effect(tmp_path, mon
 
 
 def test_remote_publication_interruption_is_explicitly_blocked(tmp_path, monkeypatch):
-    runner, release, _ = candidate_runner(tmp_path)
-    runner.git.remote = "fixture/repository"
+    runner, release, _ = candidate_runner(tmp_path, remote="fixture/repository")
     calls = []
 
     def interrupted(*args):
@@ -132,8 +132,7 @@ def test_remote_publication_interruption_is_explicitly_blocked(tmp_path, monkeyp
 
 
 def test_remote_merge_before_receipt_remains_explicitly_blocked(tmp_path, monkeypatch):
-    runner, release, root = candidate_runner(tmp_path)
-    runner.git.remote = "fixture/repository"
+    runner, release, root = candidate_runner(tmp_path, remote="fixture/repository")
     monkeypatch.setattr(runner.git, "publish", lambda *a: None)
     calls = []
     def merge(candidate):

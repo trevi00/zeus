@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 
 from codex_harness.adapters.commands import run_process
-from codex_harness.domain.model import require
+from codex_harness.domain.model import digest, require
 
 
 class GitCommandError(RuntimeError):
@@ -26,6 +26,15 @@ class GitWorkspace:
             raise GitCommandError("Git operation failed (" + (args[0] if args else '')
                 + ", cwd=" + str(cwd or self.repository) + "): " + result.stderr[-2000:])
         return result.stdout.strip() if strip else result.stdout
+
+    def target_identity(self) -> str:
+        return self.remote or "local"
+
+    def require_target(self, candidate: dict) -> None:
+        """A candidate captured for one repository never merges or publishes into another."""
+        recorded = candidate.get("repository")
+        require(recorded is None or recorded == self.target_identity(),
+                "Candidate target repository changed since review")
 
     def prepare(self, task_id: str, base: str = "HEAD") -> dict:
         require(bool(re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", task_id)), "Invalid workspace ID")
@@ -61,8 +70,13 @@ class GitWorkspace:
         require(revision != workspace["base"], "Task produced no code change")
         require(not self._git("status", "--porcelain", cwd=path), "Candidate workspace is dirty")
         self._git("fetch", path, "HEAD:refs/heads/" + workspace["branch"])
+        # INV-RELEASE-001 (FA-015): the reviewed identity names its canonical target repository and
+        # the exact patch (base -> revision) next to the preimage base and postimage tree.
         candidate = {**workspace, "revision": revision,
-                     "tree": self._git("rev-parse", "HEAD^{tree}", cwd=path), "author": "worker:implementation"}
+                     "tree": self._git("rev-parse", "HEAD^{tree}", cwd=path), "author": "worker:implementation",
+                     "repository": self.target_identity(),
+                     "diff_hash": digest(self._git("diff", "--no-ext-diff", workspace["base"], revision, "--",
+                                                   cwd=path))}
         manifests = [name for name in self._git("diff", "--name-only", workspace["base"], revision, cwd=path).splitlines()
                      if name.startswith("harness_hooks/") and name.endswith(".json")]
         require(len(manifests) <= 1, "Split independent hook updates into separate candidates")
@@ -107,6 +121,7 @@ class GitWorkspace:
 
     def publish(self, candidate: dict, title: str, body: str) -> dict:
         require(bool(self.remote), "GitHub repository must be configured")
+        self.require_target(candidate)
         require(bool(re.fullmatch(r"[\w.-]+/[\w.-]+", self.remote)), "Invalid GitHub repository")
         branch = candidate["branch"]
         self._git("push", "https://github.com/" + self.remote + ".git",
@@ -140,8 +155,12 @@ class GitWorkspace:
         return result.returncode == 0
 
     def merge(self, candidate: dict) -> dict:
+        self.require_target(candidate)
         require(self._git("rev-parse", candidate["revision"] + "^{tree}") == candidate["tree"],
                 "Candidate tree changed")
+        if candidate.get("diff_hash"):
+            require(digest(self._git("diff", "--no-ext-diff", candidate["base"], candidate["revision"], "--"))
+                    == candidate["diff_hash"], "Candidate patch changed")
         if self.remote:
             result = run_process(["gh", "pr", "merge", candidate["branch"], "--repo", self.remote,
                                   "--merge", "--match-head-commit", candidate["revision"]], timeout=120)

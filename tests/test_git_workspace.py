@@ -39,6 +39,28 @@ def test_candidate_isolation_commit_capture_and_exact_merge(tmp_path):
     assert (root / "change.txt").read_text() == "review me"
 
 
+def test_capture_binds_target_repository_and_patch_hash_and_merge_rechecks_them(tmp_path):
+    # FA-015: the reviewed identity carries base (preimage), tree (postimage), patch and target.
+    from codex_harness.domain.model import digest
+    root = repository(tmp_path)
+    adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"))
+    workspace = adapter.prepare("task-one", "HEAD")
+    (Path(workspace["path"]) / "change.txt").write_text("review me", encoding="utf-8")
+    candidate = adapter.capture(workspace)
+    assert candidate["repository"] == "local"
+    assert candidate["diff_hash"] == digest(adapter.inspect(candidate["revision"], candidate["base"])["diff"])
+    remote_adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"), remote="owner/repo")
+    with pytest.raises(ContractError, match="target repository changed"):
+        remote_adapter.merge(candidate)
+    with pytest.raises(ContractError, match="target repository changed"):
+        remote_adapter.publish({**candidate, "branch": "harness/task-one"}, "t", "b")
+    with pytest.raises(ContractError, match="Candidate patch changed"):
+        adapter.merge({**candidate, "diff_hash": "0" * 64})
+    assert not (root / "change.txt").exists(), "no rejected path touched main"
+    legacy = {k: v for k, v in candidate.items() if k not in {"repository", "diff_hash"}}
+    assert adapter.merge(legacy)["merged"], "pre-FA-015 candidates stay mergeable"
+
+
 def test_main_advance_invalidates_previous_merge_approval(tmp_path):
     root = repository(tmp_path)
     adapter = GitWorkspace(str(root), str(tmp_path / "workspaces"))

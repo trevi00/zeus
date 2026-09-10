@@ -100,6 +100,12 @@ class ReleaseRunner:
             return {"status": "rebasing", "task_id": request["message_id"]}
         inspected = self.git.inspect(candidate["revision"], candidate["base"])
         require(inspected["tree"] == candidate["tree"], "Candidate tree mismatch")
+        # FA-015: the reviewed patch and target repository are re-derived, never trusted from the record.
+        if candidate.get("diff_hash"):
+            require(digest(inspected["diff"]) == candidate["diff_hash"], "Candidate patch mismatch")
+        if candidate.get("repository") is not None:
+            require(candidate["repository"] == (getattr(self.git, "remote", None) or "local"),
+                    "Candidate target repository changed since review")
         incumbent = self.git.review_workspace(candidate["base"], "evaluator-" + release_id[:16])
         path = self.git.review_workspace(candidate["revision"], "canary-" + release_id[:16])
         # Fresh candidate venv; test definitions are taken from the incumbent commit.
@@ -152,6 +158,9 @@ class ReleaseRunner:
     def _promote(self, release, active, image):
         release_id, candidate, checks = release["id"], release["candidate"], release["checks"]
         self.fence()
+        if candidate.get("repository") is not None:
+            require(candidate["repository"] == (getattr(self.git, "remote", None) or "local"),
+                    "Candidate target repository changed since review")
         with self.service.store.transaction() as tx:
             ticket_binding(tx, candidate)
             intent = tx.get("promotion_intents", release_id)
