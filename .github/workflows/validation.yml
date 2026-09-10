@@ -45,7 +45,7 @@ jobs:
       - run: uv run harness setup
       - run: docker compose -p harness-ci up -d --wait postgres redis
       - run: uv run python scripts/check.py --integration
-      - run: uv run pytest -q tests/test_verification.py
+      - run: uv run pytest -q tests/test_verification.py tests/test_host_interruption.py
         env:
           ZEUS_TEST_DOCKER: '1'
       - if: always()
