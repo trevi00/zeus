@@ -1,0 +1,28 @@
+{
+  "scope": "FA-027 target tests: gate vocabulary, view provenance/roles/direction, determinism receipt, ledger view rows on MemoryStore + isolated PostgreSQL, SDD denominators",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_seam_view.py tests/test_seam_contracts.py tests/test_sdd.py",
+  "started_at": "2026-09-10T09:41:47.133184+00:00",
+  "finished_at": "2026-09-10T09:41:51.795247+00:00",
+  "exit_code": 0,
+  "summary": [
+    "33 passed in 4.24s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "negative_controls": [
+    {
+      "control": "fail-on vocabulary open (typos accepted)",
+      "result": "policy test fails"
+    },
+    {
+      "control": "live means not BLOCKED",
+      "result": "view test fails"
+    },
+    {
+      "control": "gate passes whenever nothing is in fail_on (BLOCKED/missing pass)",
+      "result": "view and ledger tests fail"
+    }
+  ],
+  "stacked_on": "fix/fa-024-seam-contracts (PR #56)",
+  "not_claimed": "No HTML/graph renderer; no Windows/Linux/WSL newline or path run; human E2E acceptance and model qualification are not consumers of the view; SDD executed/assertion/acceptance denominators stay zero until real runner and human paths exist."
+}

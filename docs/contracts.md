@@ -425,6 +425,23 @@ property of the output, never a replacement. Inspections are ledger rows bound t
 generation, attempt, owner and revision; a recording failure is a notice, never a success; and
 a checked inspection is deterministic evidence, never historical truth, semantic review, human
 acceptance, SDD acceptance or model qualification.
+## INV-SEAM-VIEW-001
+
+A seam view is a deterministic projection of recorded observations and comparisons, never a
+ledger of its own: equal inputs in any order produce byte-equal output, and the view carries a
+generation receipt (generator, inputs hash, view hash). Each node states its provenance —
+observed (HIGH), extracted_partial (LOW), unavailable (UNKNOWN) or declared_only (required by
+policy, never compared) — and each edge keeps producer and consumer roles, direction, verdict,
+fidelity on both sides, the effective transform and the comparison it came from. `live` is
+reserved for an OK comparison between two HIGH observations and never means observed traffic
+or acceptance; BLOCKED, unknown and declared-only seams stay visible and are never live. The
+gate policy is a closed vocabulary (fail-on names must be DRIFT, NEEDS_TRANSFORM or BLOCKED; a
+typo or an empty list is refused) with a non-empty set of required seams; the gate passes only
+when every required seam is present and OK, fails on a listed verdict, and is otherwise
+undecided — a required seam that is BLOCKED or missing never passes, and zero obligations are
+not a policy. The SDD gate report keeps separate denominators for declared scenarios, imported
+observations, runner-executed scenarios, verified assertions and human acceptance; imported
+claims, generated skeletons and marker removal never count as executed or accepted.
 
 # SDD preparation contracts
 

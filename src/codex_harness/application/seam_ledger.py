@@ -8,11 +8,13 @@ record and reports each corrupt line; a partial audit never presents itself as c
 import json
 
 from codex_harness.domain.model import digest, require, utcnow
+from codex_harness.domain.seam_view import build_view
 from codex_harness.domain.seams import VERDICTS, audit_records, compare, parse_observation
 
 OBSERVATIONS = 'seam_observations'
 COMPARISONS = 'seam_comparisons'
 IMPORTS = 'seam_ledger_imports'
+VIEWS = 'seam_views'
 REVIEWERS = ('lead:improvement', 'conductor')
 RECORD_KEYS = {'seam_id', 'verdict', 'producer', 'consumer', 'at'}
 
@@ -31,7 +33,10 @@ class SeamLedger:
             existing = tx.get(OBSERVATIONS, key)
             if existing is not None:
                 return existing
-            row = {'id': key, 'observation': observation, 'binding': binding, 'recorded_at': utcnow()}
+            # Recording order is assigned in the transaction, so "newest revision" never depends on a
+            # clock tie or on set iteration order (review, PR #59).
+            sequence = 1 + max((row.get('sequence', 0) for row in tx.scan(OBSERVATIONS)), default=0)
+            row = {'id': key, 'observation': observation, 'binding': binding, 'recorded_at': utcnow(), 'sequence': sequence}
             tx.put(OBSERVATIONS, key, row)
             return row
 
@@ -90,4 +95,51 @@ class SeamLedger:
             row = {'id': key, 'source_label': source_label, 'records': records, 'audit': audit, 'imported_at': utcnow(),
                    'authority': 'imported claims; not runtime observations, not acceptance'}
             tx.put(IMPORTS, key, row)
+            return row
+
+    def view(self, policy, *, revision=None, comparison_ids=None):
+        """Project one revision's rows into a deterministic view; the row is derived and regenerable.
+
+        The ledger is append-only, so it holds every revision ever observed. A view is about one
+        source revision (review, PR #59): its observations are the rows recorded at that revision, and
+        its comparisons are exactly those whose producer and consumer rows belong to it (or the
+        explicit `comparison_ids`). With no revision named, the newest recorded revision is used and
+        the receipt says which.
+        """
+        require(revision is None or (type(revision) is str and revision), 'View revision must be text')
+        require(comparison_ids is None or (isinstance(comparison_ids, list) and all(type(c) is str for c in comparison_ids)),
+                'comparison_ids must be a list of comparison ids')
+        with self.store.transaction() as tx:
+            observation_rows = tx.scan(OBSERVATIONS)
+            comparison_rows = tx.scan(COMPARISONS)
+        def recorded(row):
+            return (row.get('sequence', 0), row['recorded_at'], row['id'])
+        revisions = sorted({row['binding']['revision'] for row in observation_rows}, key=lambda r: max(
+            recorded(row) for row in observation_rows if row['binding']['revision'] == r))
+        if revision is None:
+            require(revisions, 'No observations recorded; nothing to view')
+            revision = revisions[-1]
+        by_id = {row['id']: row for row in observation_rows if row['binding']['revision'] == revision}
+        if comparison_ids is None:
+            selected = [row for row in comparison_rows if row['producer_row'] in by_id and row['consumer_row'] in by_id]
+        else:
+            selected = [row for row in comparison_rows if row['id'] in comparison_ids]
+            missing = sorted(set(comparison_ids) - {row['id'] for row in selected})
+            require(not missing, 'Unknown seam comparison ids: ' + ', '.join(missing))
+            outside = [row['id'] for row in selected if row['producer_row'] not in by_id or row['consumer_row'] not in by_id]
+            require(not outside, 'Comparisons outside revision ' + revision + ': ' + ', '.join(outside))
+        observations = [row['observation'] for row in by_id.values()]
+        comparisons = [{'id': row['id'], 'result': row['result']} for row in selected]
+        view = build_view(observations, comparisons, policy)
+        view['receipt'] = {**view['receipt'], 'revision': revision, 'revisions_recorded': revisions,
+                           'observation_rows': sorted(by_id), 'comparison_rows': sorted(row['id'] for row in selected)}
+        key = view['receipt']['inputs_hash']
+        with self.store.transaction() as tx:
+            existing = tx.get(VIEWS, key)
+            if existing is not None:
+                require(existing['view']['receipt']['view_hash'] == view['receipt']['view_hash'],
+                        'A regenerated view differs from the stored one for identical inputs')
+                return existing
+            row = {'id': key, 'view': view, 'generated_at': utcnow(), 'derived': True}
+            tx.put(VIEWS, key, row)
             return row
