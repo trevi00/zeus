@@ -59,6 +59,10 @@ class GateVerdict:
             require(self.verdict == 'RETRACT' and self.receipt_ref is None and self.exit_status is None
                     and isinstance(self.actor, str) and self.actor.strip(),
                     'A retraction names its actor and carries no verdict of its own')
+            # A retraction is a reviewer decision of its own: it carries the same authority level as
+            # the decision it undoes, and only an authenticated one takes effect (review, PR #46).
+            require(self.origin == 'reviewer_decision' and self.authority in AUTHORITIES,
+                    'A retraction is a reviewer decision with an authority level')
             return
         require(self.verdict in VERDICTS, 'Unknown gate verdict')
         require(self.statement_id not in HUMAN_STATEMENTS or self.origin == 'reviewer_decision',
@@ -123,7 +127,7 @@ def fold_verdicts(verdicts, statements, run_id, cycle):
     sequences = [v.sequence for v in parsed]
     require(len(sequences) == len(set(sequences)), 'Duplicate gate verdict sequence')
     by_sequence = {v.sequence: v for v in parsed}
-    retracted, foreign, ignored = set(), 0, []
+    retracted, foreign, ignored, unauthenticated = set(), 0, [], 0
     for verdict in parsed:
         if verdict.retracts is None:
             continue
@@ -136,6 +140,13 @@ def fold_verdicts(verdicts, statements, run_id, cycle):
         require(target is not None and target.retracts is None and all(
             getattr(target, key) == getattr(verdict, key) for key in BINDING),
             'Retraction must name a live verdict of the same statement and binding')
+        require(target.origin != 'reviewer_decision' or target.actor == verdict.actor,
+                'A reviewer decision can be retracted only by its own actor')
+        if verdict.authority != 'authenticated_provider':
+            # An unverified retraction is kept as a claim and undoes nothing (review, PR #46).
+            unauthenticated += 1
+            ignored.append(verdict.sequence)
+            continue
         retracted.add(verdict.retracts)
     latest = {}
     for verdict in sorted(parsed, key=lambda v: v.sequence):
@@ -158,7 +169,7 @@ def fold_verdicts(verdicts, statements, run_id, cycle):
     counts = {state: sum(row['state'] == state for row in states.values()) for state in STATES}
     return {'run_id': run_id, 'cycle': cycle, 'statements': states, 'counts': counts,
             'denominator': len(statements), 'complete': counts['passed'] == len(statements),
-            'foreign_verdicts': foreign, 'ignored_sequences': ignored,
+            'foreign_verdicts': foreign, 'ignored_sequences': ignored, 'unauthenticated_retractions': unauthenticated,
             'retracted_sequences': sorted(retracted)}
 
 
@@ -173,7 +184,8 @@ def compact(verdicts):
     pairs = set()
     for verdict in parsed:
         target = by_sequence.get(verdict.retracts) if verdict.retracts is not None else None
-        if target is not None and target.retracts is None and all(
-                getattr(target, key) == getattr(verdict, key) for key in BINDING):
+        if target is not None and target.retracts is None and verdict.authority == 'authenticated_provider' and all(
+                getattr(target, key) == getattr(verdict, key) for key in BINDING) and (
+                target.origin != 'reviewer_decision' or target.actor == verdict.actor):
             pairs.update({verdict.sequence, target.sequence})
     return [asdict(v) for v in parsed if v.sequence not in pairs]

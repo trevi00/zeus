@@ -59,7 +59,9 @@ class SDD:
                 # exit status itself; free text or a receipt for another statement is not (PR #46).
                 details['receipt_binding'] = bind_runner_receipt(
                     verdict, self.artifacts.document(verdict.receipt_ref))
-            elif verdict.retracts is None and verdict.authority == 'authenticated_provider':
+            elif verdict.authority == 'authenticated_provider':
+                # Reviewer decisions and retractions alike: authority comes only from the provider's own
+                # verification of this exact claim (review, PR #46).
                 verdict, details['provider_decision'] = self._provider_decision(verdict)
             if verdict.retracts is not None:
                 fold_verdicts(self._gate_verdicts(tx, row) + [asdict(verdict)], definitions, row['id'], row['revision'])
@@ -74,11 +76,11 @@ class SDD:
         the caller's claim. An unverified claim is kept as a pending unauthenticated claim."""
         verify = getattr(self.human_provider, 'verify', None)
         require(callable(verify), 'Decision provider must verify reviewer decisions')
-        decision = verify({key: getattr(verdict, key) for key in
-                           ('statement_id', 'stage', 'run_id', 'cycle', 'definition_hash', 'actor', 'verdict')})
+        claim_keys = ('statement_id', 'stage', 'run_id', 'cycle', 'definition_hash', 'actor', 'verdict', 'retracts')
+        decision = verify({key: getattr(verdict, key) for key in claim_keys})
         require(isinstance(decision, dict) and type(decision.get('authenticated')) is bool
                 and all(decision.get(key) == getattr(verdict, key) for key in
-                        ('statement_id', 'run_id', 'cycle', 'definition_hash', 'actor', 'verdict')),
+                        ('statement_id', 'run_id', 'cycle', 'definition_hash', 'actor', 'verdict', 'retracts')),
                 'Decision provider result does not bind this reviewer decision')
         if not decision['authenticated']:
             verdict = replace(verdict, authority='unauthenticated_claim')

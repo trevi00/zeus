@@ -32,9 +32,31 @@ def reviewer(statement, verdict, sequence, authority='authenticated_provider', *
     return runner(statement, verdict, sequence, **{**defaults, **changes})
 
 
-def retraction(statement, target, sequence):
-    return runner(statement, 'RETRACT', sequence, exit_status=None, receipt_ref=None, actor='operator',
-                  retracts=target)
+def retraction(statement, target, sequence, actor='operator', authority='authenticated_provider'):
+    return runner(statement, 'RETRACT', sequence, exit_status=None, receipt_ref=None, actor=actor,
+                  origin='reviewer_decision', authority=authority, retracts=target)
+
+
+def test_retraction_needs_the_same_trust_and_actor_as_its_target():
+    # Review counterexample (PR #46): PASS -> REJECT -> actor-only RETRACT flipped `complete` from false to true.
+    passed, rejected, other = reviewer('a', 'PASS', 1), reviewer('a', 'REJECT', 2), runner('b', 'PASS', 4)
+    forged = retraction('a', 2, 3, actor='qa-lead', authority='unauthenticated_claim')
+    fold = fold_verdicts([passed, rejected, forged, other], DEFINITION, 'run-1', 1)
+    assert fold['statements']['a']['state'] == 'failed' and fold['complete'] is False
+    assert fold['unauthenticated_retractions'] == 1 and fold['ignored_sequences'] == [3] and fold['retracted_sequences'] == []
+    with pytest.raises(ContractError, match='only by its own actor'):
+        fold_verdicts([passed, rejected, retraction('a', 2, 3, actor='someone-else'), other], DEFINITION, 'run-1', 1)
+    genuine = retraction('a', 2, 3, actor='qa-lead')
+    undone = fold_verdicts([passed, rejected, genuine, other], DEFINITION, 'run-1', 1)
+    assert undone['statements']['a']['state'] == 'passed' and undone['complete'] is True and undone['retracted_sequences'] == [2]
+    # Compaction never pairs a forged retraction with its target, so the compacted fold agrees with the full one.
+    assert fold_verdicts(compact([passed, rejected, forged, other]), DEFINITION, 'run-1', 1)['statements'] == fold['statements']
+    assert fold_verdicts(compact([passed, rejected, genuine, other]), DEFINITION, 'run-1', 1)['statements'] == undone['statements']
+    # A runner PASS may be retracted by any authenticated reviewer, never by a bare actor string.
+    assert fold_verdicts([runner('a', 'PASS', 1), retraction('a', 1, 2)], DEFINITION, 'run-1', 1)['statements']['a']['state'] == 'not_run'
+    assert fold_verdicts([runner('a', 'PASS', 1), retraction('a', 1, 2, authority='unauthenticated_claim')], DEFINITION, 'run-1', 1)['statements']['a']['state'] == 'passed'
+    with pytest.raises(ContractError, match='reviewer decision with an authority level'):
+        GateVerdict(**{**asdict(genuine), 'origin': 'runner_receipt', 'authority': None}).validate()
 
 
 def test_fold_attributes_by_statement_and_keeps_planned_denominator():
@@ -162,11 +184,13 @@ def test_iteration_records_verdicts_in_the_journal_and_advance_consumes_the_fold
         service.record_gate_verdict(row['id'], {**document, 'receipt_ref': 'sha256:' + 'f' * 64})
     with pytest.raises(ContractError, match='live verdict'):
         # Sequence 1 is the spec registration event, not a verdict of this statement.
-        service.record_gate_verdict(row['id'], {**document, 'verdict': 'RETRACT', 'receipt_ref': None,
-                                                'exit_status': None, 'actor': 'operator', 'retracts': 1})
+        service.record_gate_verdict(row['id'], {**document, 'verdict': 'RETRACT', 'receipt_ref': None, 'exit_status': None,
+                                                'origin': 'reviewer_decision', 'authority': 'unauthenticated_claim',
+                                                'actor': 'operator', 'retracts': 1})
     with pytest.raises(ContractError, match='retraction target'):
-        service.record_gate_verdict(row['id'], {**document, 'verdict': 'RETRACT', 'receipt_ref': None,
-                                                'exit_status': None, 'actor': 'operator', 'retracts': 99})
+        service.record_gate_verdict(row['id'], {**document, 'verdict': 'RETRACT', 'receipt_ref': None, 'exit_status': None,
+                                                'origin': 'reviewer_decision', 'authority': 'unauthenticated_claim',
+                                                'actor': 'operator', 'retracts': 99})
     events = service.status(row['id'])['events']
     assert [e['kind'] for e in events][-3:] == ['gate_verdict_recorded', 'transition_blocked', 'gate_verdict_recorded']
     assert replace(parse_verdict(events[-1]['details']['verdict']), sequence=1).sequence == 1
@@ -238,6 +262,23 @@ def test_human_statements_settle_only_through_the_provider_verification(tmp_path
     assert provider.calls[-1]['statement_id'] == 'human_scope' and provider.calls[-1]['run_id'] == row['id']
     event = service.status(row['id'])['events'][-1]
     assert event['details']['provider_decision'] == {'authenticated': True, 'provider': 'FixtureDecisionProvider'}
+    # Review counterexample (PR #46): a rejection followed by a retraction that only names an actor string.
+    rejected = service.record_gate_verdict(row['id'], {**claim, 'verdict': 'REJECT'})
+    assert rejected['gate']['statements']['human_scope']['state'] == 'failed'
+    reject_sequence = rejected['verdict']['sequence']
+    retract = {**claim, 'verdict': 'RETRACT', 'retracts': reject_sequence}
+    service.human_provider = FixtureDecisionProvider(authenticated=False)
+    unverified = service.record_gate_verdict(row['id'], retract)
+    assert unverified['verdict']['authority'] == 'unauthenticated_claim'
+    assert unverified['gate']['statements']['human_scope']['state'] == 'failed', 'an unverified retraction undoes nothing'
+    assert unverified['gate']['unauthenticated_retractions'] == 1
+    service.human_provider = FixtureDecisionProvider(authenticated=True, actor='someone-else')
+    with pytest.raises(ContractError, match='only by its own actor'):
+        service.record_gate_verdict(row['id'], {**retract, 'actor': 'someone-else'})
+    service.human_provider = provider
+    undone = service.record_gate_verdict(row['id'], retract)
+    assert undone['gate']['statements']['human_scope']['state'] == 'passed' and reject_sequence in undone['gate']['retracted_sequences']
+    assert provider.calls[-1]['verdict'] == 'RETRACT' and provider.calls[-1]['retracts'] == reject_sequence
 
 
 def test_retraction_is_bound_to_run_cycle_stage_and_definition():
