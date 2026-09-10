@@ -5,6 +5,15 @@ stack unsupported: it returns an UNKNOWN observation, never a regex HIGH. Spans 
 into the exact blob (no comment stripping, no line renumbering); a member whose value is not a
 literal is counted as unresolved and the observation is LOW, not HIGH. Discovery sorts before
 it caps and reports what it omitted; read, decoding and syntax failures are separate states.
+
+Member syntax (review, PR #56): `NAME = literal` and `NAME: annotation = literal` are members;
+`NAME = call()` or any other expression is unresolved; a multi-target or tuple assignment
+(`A = B = 1`, `A, B = 1, 2`) is unresolved as one candidate each, never dropped; an
+annotation without a value, a docstring, a function or `_private` names are not members.
+Base resolution is by name only (`Enum`, `IntEnum`, `StrEnum`, `Flag`, `IntFlag` as a bare
+name or attribute): imports are not followed, so a class named `Enum` from another module is
+treated as an enum and a subclass of a local enum alias is not. The observation records that
+scope as `source.base_resolution`.
 """
 import ast
 import hashlib
@@ -61,27 +70,39 @@ def _python_enums(data, package, revision, path):
     for node in tree.body:
         if not isinstance(node, ast.ClassDef) or not any(_base_name(b) in ENUM_BASES for b in node.bases):
             continue
-        members, unresolved, seen = [], 0, set()
+        members, unresolved, unsupported = [], 0, []
         for statement in node.body:
-            if not isinstance(statement, ast.Assign) or len(statement.targets) != 1 or not isinstance(statement.targets[0], ast.Name):
-                continue
-            name = statement.targets[0].id
+            name, value = None, None
+            if isinstance(statement, ast.Assign):
+                targets = statement.targets
+                if len(targets) == 1 and isinstance(targets[0], ast.Name):
+                    name, value = targets[0].id, statement.value
+                else:
+                    # `A = B = 1` or `A, B = 1, 2`: every bound name is a member candidate this
+                    # extractor does not resolve; it counts, it is never dropped.
+                    bound = [n.id for t in targets for n in ast.walk(t) if isinstance(n, ast.Name)]
+                    candidates = [n for n in bound if not n.startswith('_')] or ['<unnamed>']
+                    unresolved += len(candidates)
+                    unsupported.append({'line': statement.lineno, 'syntax': type(statement).__name__ + '/multi-target', 'names': candidates})
+                    continue
+            elif isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name) and statement.value is not None:
+                name, value = statement.target.id, statement.value
+            else:
+                continue  # annotation without value, docstring, method, pass: not a member
             if name.startswith('_'):
                 continue
-            if isinstance(statement.value, ast.Constant) and isinstance(statement.value.value, (int, str)) \
-                    and not isinstance(statement.value.value, bool):
-                value = statement.value.value
-                members.append({'name': name, 'type': type(value).__name__, 'tag': value, 'span': _span(data, offsets, statement)})
+            if isinstance(value, ast.Constant) and isinstance(value.value, (int, str)) and not isinstance(value.value, bool):
+                members.append({'name': name, 'type': type(value.value).__name__, 'tag': value.value, 'span': _span(data, offsets, statement)})
             else:
                 unresolved += 1  # a call, expression or alias is not a literal member value
-            seen.add(name)
         identity = contract_identity('python', package, node.name)
         found = len(members) + unresolved
         observations.append(parse_observation({
             'identity': identity, 'kind': 'enum', 'members': members,
             'fidelity': 'HIGH' if found and not unresolved else ('LOW' if found else 'UNKNOWN'),
             'denominator': {'symbols_found': found, 'unresolved': unresolved},
-            'source': {**source, 'span': _span(data, offsets, node)}}))
+            'source': {**source, 'span': _span(data, offsets, node), 'base_resolution': 'by name only; imports not followed',
+                       'unsupported_syntax': unsupported}}))
     return observations
 
 

@@ -131,10 +131,26 @@ def test_python_extractor_keeps_original_spans_and_names_every_failure(tmp_path)
             '    _ignored = 9\n\n'
             'class Priority(IntEnum):\n'
             '    LOW = helper()\n'
-            '    HIGH = 10\n')
+            '    HIGH = 10\n'
+            'class Annotated(Enum):\n'
+            '    A = 1\n'
+            '    B: int = 2\n'
+            '    C: int\n'
+            '    D = E = 3\n'
+            '    F, G = 4, 5\n'
+            '    def label(self):\n        return self.name\n')
     (src / 'status.py').write_text(body, encoding='utf-8')
     observations = extract('python', tmp_path, 'shop/orders/status.py', revision=REV)
-    status, priority = observations
+    status, priority, annotated = observations
+    # Review counterexample (PR #56): `B: int = 2` is a member; multi-target assignments are counted, never dropped.
+    assert [m['name'] for m in annotated['members']] == ['A', 'B'] and annotated['fidelity'] == 'LOW'
+    assert annotated['denominator'] == {'symbols_found': 6, 'unresolved': 4}, 'D, E, F, G are unresolved candidates'
+    assert [u['names'] for u in annotated['source']['unsupported_syntax']] == [['D', 'E'], ['F', 'G']]
+    assert annotated['source']['base_resolution'].startswith('by name only')
+    only_annotated = tmp_path / 'shop' / 'orders' / 'ann.py'
+    only_annotated.write_text('from enum import Enum\nclass Kind(Enum):\n    A: int = 1\n    B: str = "b"\n', encoding='utf-8')
+    kind, = extract('python', tmp_path, 'shop/orders/ann.py', revision=REV)
+    assert kind['fidelity'] == 'HIGH' and [(m['name'], m['tag']) for m in kind['members']] == [('A', 1), ('B', 'b')]
     assert status['identity']['package'] == 'shop.orders' and status['identity']['name'] == 'Status'
     assert status['fidelity'] == 'HIGH' and [m['name'] for m in status['members']] == ['PENDING', 'PAID', 'A']
     assert status['denominator'] == {'symbols_found': 3, 'unresolved': 0}
@@ -168,7 +184,7 @@ def test_python_extractor_keeps_original_spans_and_names_every_failure(tmp_path)
     with pytest.raises(ContractError, match='source revision'):
         extract('python', tmp_path, 'shop/orders/status.py', revision='')
     found = discover(tmp_path, 'python', max_files=3)
-    assert found['found'] == 5 and found['omitted'] == 2 and found['files'] == sorted(found['files']) and found['supported']
+    assert found['found'] == 6 and found['omitted'] == 3 and found['files'] == sorted(found['files']) and found['supported']
     assert found['files'][0] == 'shop/billing/status.py', 'sorted before the cap, so the selection is deterministic'
     assert discover(tmp_path, 'java')['supported'] is False and discover(tmp_path, 'java')['files'] == []
 
