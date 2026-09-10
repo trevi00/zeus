@@ -208,7 +208,7 @@ def test_concurrent_apply_records_each_version_once_and_receipts_bind_the_proces
     errored = receipts.record({'operation': 'precheck', **binding, **broken})
     assert errored['exit_code'] == 1 and errored['outcome'] == 'refused' and b'ZEUS_DATABASE_URL is not set' in broken['stderr']
     unreachable = _child('precheck', config_path, root, 'postgresql://nobody@127.0.0.1:1/none?connect_timeout=1', 'a')
-    assert unreachable['exit_code'] == 2 and unreachable['stderr'].startswith(b'error: ') and b'timeout' in unreachable['stderr'].lower()
+    assert unreachable['exit_code'] == 2 and unreachable['stderr'].startswith(b'error: ') and (b'OperationalError' in unreachable['stderr'] or b'ConnectionTimeout' in unreachable['stderr']), 'timeout on Windows, refused on Linux: both are named errors, never success'
     assert receipts.record({'operation': 'precheck', **binding, **unreachable})['outcome'] == 'error'
     for bad in ({**binding, 'source_revision': 'HEAD'}, {**binding, 'environment': ''}, {**binding, 'config_hash': 'short'}):
         with pytest.raises(ContractError):
