@@ -1,0 +1,27 @@
+{
+  "scope": "FA-025 target tests: real child processes in real Git review workspaces, real pytest runs, isolation-failure path",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_check_binding.py tests/test_release_runner.py tests/test_release_recovery.py tests/test_release_health.py tests/test_verification.py tests/test_release_test_imports.py",
+  "started_at": "2026-09-10T09:31:06.319689+00:00",
+  "finished_at": "2026-09-10T09:31:24.887634+00:00",
+  "exit_code": 0,
+  "summary": [
+    "52 passed, 1 skipped in 18.08s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "negative_controls": [
+    {
+      "control": "a test run with nothing executed passes on exit 0",
+      "result": "denominator tests fail (see README)"
+    },
+    {
+      "control": "revision mismatch ignored",
+      "result": "binding tests fail"
+    },
+    {
+      "control": "isolation failure not caught",
+      "result": "isolation test fails"
+    }
+  ],
+  "not_claimed": "Zeus installs no Git hooks, so hooksPath/linked-worktree/push-ref behaviour is not applicable; docker build/run checks remain exit-code based; no Linux/WSL run, no renderer/build artefacts, no human SDD acceptance."
+}

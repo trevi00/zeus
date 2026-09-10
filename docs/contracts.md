@@ -252,6 +252,22 @@ its own event and consumes nothing; a consumed or revoked approval certifies not
 issued, consumed, revoked, expired, missing and corrupt are distinct states. The approval
 never writes the active definition and never authorizes routing, graduation or deployment.
 
+## INV-CHECK-001
+
+A release check is evidence about one candidate only when its receipt binds the tree it ran
+against: the workspace path, the candidate revision the runner expected, the HEAD Git actually
+reported there and whether the tree was clean, plus the environment keys and the argv. A check
+whose workspace HEAD is not the candidate or whose tree is dirty is `revision_mismatch` and does
+not run; a workspace whose revision cannot be observed is `observation_error`, never a verdict.
+A test run passes only by its parsed denominator — executed tests greater than zero and no
+failures or errors — so an exit status of zero with everything skipped, deselected or no
+tests collected is `empty_check`, unparseable output is `unstructured_output`, and a summary
+that reports failures outranks a zero exit. When the verification runner cannot establish its
+isolated services the run stops before any test check with an observation-error receipt and
+the release stays reviewed; nothing downstream is a pass. Zeus installs no Git hooks; native
+Codex hooks are verified per candidate manifest and discovered through the transport, and no
+installation success, file presence or string marker is a check result.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

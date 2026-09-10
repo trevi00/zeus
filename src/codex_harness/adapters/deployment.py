@@ -14,6 +14,7 @@ from codex_harness.adapters.verification import VerificationServices, verificati
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
+from codex_harness.domain.check_results import bind_revision, classify_test_run, is_test_run
 from codex_harness.domain.model import canonical, digest, require, utcnow
 from codex_harness.domain.policy import POLICY
 
@@ -28,14 +29,43 @@ class ReleaseRunner:
         self.releases = Releases(service.store, service.org)
         self.fence = fence or (lambda: None)
 
+    def _observe_workspace(self, cwd):
+        """What the check will actually run against: HEAD and cleanliness of the cwd, read from Git."""
+        try:
+            head = self.git._git("rev-parse", "HEAD", cwd=cwd)
+            dirty = bool(self.git._git("status", "--porcelain", cwd=cwd))
+        except Exception as exc:  # not a Git worktree, or Git failed: recorded, never assumed clean
+            return {"observed_head": None, "dirty": None, "error": type(exc).__name__ + ": " + str(exc)[:200]}
+        return {"observed_head": head, "dirty": dirty, "error": None}
+
     def _check(self, argv: list[str], cwd: str | None = None,
-               timeout: int = POLICY.release_check_seconds, env=None) -> dict:
+               timeout: int = POLICY.release_check_seconds, env=None, expected_revision: str | None = None) -> dict:
         self.fence()
+        # INV-CHECK-001: the receipt names the tree the check ran against, not only the argv.
+        binding = {"cwd": str(Path(cwd).resolve()) if cwd else None, "expected_revision": expected_revision,
+                   "env_keys": sorted(env) if isinstance(env, dict) else None}
+        if cwd is not None and expected_revision is not None:
+            observed = self._observe_workspace(cwd)
+            binding.update(observed)
+            if observed["error"] is not None:
+                # The tree could not be observed: an observation error, not a verdict about the candidate.
+                receipt = self.artifacts.put(canonical({"argv": argv, "binding": binding, "executed": False}), "canary-failure")
+                return {"passed": False, "evidence": receipt["ref"], "outcome": "observation_error",
+                        "reason": "workspace revision could not be observed: " + observed["error"], "binding": binding}
+            binding.update(bind_revision(expected_revision, observed["observed_head"], observed["dirty"]))
+            if not binding["bound"]:
+                receipt = self.artifacts.put(canonical({"argv": argv, "binding": binding, "executed": False}), "canary")
+                return {"passed": False, "evidence": receipt["ref"], "outcome": "revision_mismatch",
+                        "reason": binding["reason"], "binding": binding}
         try:
             process = run_process(argv, cwd=cwd, timeout=timeout, env=env)
             self.fence()
+            verdict = {"passed": process.returncode == 0, "outcome": "executed"}
+            if is_test_run(argv):
+                verdict = classify_test_run(process.returncode, process.stdout)
             receipt = self.artifacts.put(canonical({"argv": argv, "exit_code": process.returncode,
-                                         "stdout": process.stdout, "stderr": process.stderr}), "canary")
+                                         "stdout": process.stdout, "stderr": process.stderr,
+                                         "binding": binding, "verdict": verdict}), "canary")
             unavailable = argv[0] == "docker" and any(text in process.stderr.lower() for text in (
                     "cannot connect to the docker daemon", "is the docker daemon running",
                     "error during connect", "failed to connect to the docker"))
@@ -43,11 +73,13 @@ class ReleaseRunner:
                 # Localized daemon diagnostics are not candidate execution evidence.
                 server = run_process(["docker", "info", "--format", "{{.ServerVersion}}"], timeout=15)
                 unavailable = server.returncode != 0
-            return {"passed": process.returncode == 0, "evidence": receipt["ref"],
-                    "outcome": "observation_error" if unavailable else "executed"}
+            return {"passed": verdict["passed"] and not unavailable, "evidence": receipt["ref"],
+                    "outcome": "observation_error" if unavailable else verdict["outcome"],
+                    **({"denominator": verdict["denominator"], "reason": verdict["reason"]} if "denominator" in verdict else {}),
+                    "binding": binding}
         except (subprocess.TimeoutExpired, OSError) as exc:
-            receipt = self.artifacts.put(str(exc), "canary-failure")
-            return {"passed": False, "evidence": receipt["ref"], "outcome": "observation_error"}
+            receipt = self.artifacts.put(canonical({"argv": argv, "binding": binding, "error": str(exc)}), "canary-failure")
+            return {"passed": False, "evidence": receipt["ref"], "outcome": "observation_error", "binding": binding}
 
     def run(self, release_id: str) -> dict:
         self.fence()
@@ -109,24 +141,35 @@ class ReleaseRunner:
         incumbent = self.git.review_workspace(candidate["base"], "evaluator-" + release_id[:16])
         path = self.git.review_workspace(candidate["revision"], "canary-" + release_id[:16])
         # Fresh candidate venv; test definitions are taken from the incumbent commit.
-        install = self._check(["uv", "sync", "--frozen"], path)
+        install = self._check(["uv", "sync", "--frozen"], path, expected_revision=candidate["revision"])
         if not install["passed"]:
             return self._reject_remaining(release, {}, install)
         python = Path(path) / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-        with VerificationServices(runtime_dir() / "verification", self.artifacts) as endpoints:
+        try:
+            services = VerificationServices(runtime_dir() / "verification", self.artifacts)
+            endpoints = services.__enter__()
+        except Exception as exc:
+            # INV-CHECK-001: a runner that cannot isolate stops; nothing downstream is a pass.
+            receipt = self.artifacts.put(canonical({"stage": "verification_isolation", "error": type(exc).__name__ + ": " + str(exc)[:500]}),
+                                         "canary-failure")
+            return self._reject_remaining(release, {}, {"passed": False, "evidence": receipt["ref"],
+                                                        "outcome": "observation_error", "reason": "verification isolation unavailable"})
+        with services:
             test_env = verification_environment(endpoints)
             incumbent_env = {**test_env, "PYTHONPATH": str(Path(incumbent) / "tests")}
             tests = self._check([str(python), "-m", "pytest", str(Path(incumbent) / "tests"),
-                "-c", str(Path(incumbent) / "pyproject.toml"), "--import-mode=importlib", "-q"], path, env=incumbent_env)
+                "-c", str(Path(incumbent) / "pyproject.toml"), "--import-mode=importlib", "-q"], path, env=incumbent_env,
+                expected_revision=candidate["revision"])
             if not tests["passed"]:
                 return self._reject_remaining(release, {"tests": tests}, tests)
-            candidate_tests = self._check([str(python), "-m", "pytest", "-q"], path, env=test_env)
+            candidate_tests = self._check([str(python), "-m", "pytest", "-q"], path, env=test_env,
+                                          expected_revision=candidate["revision"])
             if not candidate_tests["passed"]:
                 return self._reject_remaining(release, {"tests": candidate_tests}, candidate_tests)
             tests = {"passed": True, "evidence": self.artifacts.put(
                 canonical({"incumbent": tests, "candidate": candidate_tests}), "test-suites:" + release_id)["ref"]}
         image = "zeus:candidate-" + candidate["revision"][:16]
-        build = self._check(["docker", "build", "-t", image, path], timeout=600)
+        build = self._check(["docker", "build", "-t", image, path], cwd=path, timeout=600, expected_revision=candidate["revision"])
         if not build["passed"]:
             return self._reject_remaining(release, {"tests": tests}, build)
         else:
