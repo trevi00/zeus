@@ -218,6 +218,8 @@ class ExecutionRecovery:
             old_budget = row.get('retry_budget')
             old_version = old_budget.get('version') if isinstance(old_budget, dict) else None
             version = old_version + 1 if type(old_version) is int and old_version > 0 else 1
+            from codex_harness.application.execution_fence import advance as advance_fence
+            advance_fence(tx, packet['bucket'], row['id'], row['generation'] + 1)
             row.update(status='retry', generation=row['generation'] + 1, lease_owner=None, lease_until=None,
                        error=None, result=None, failure=None, failure_receipt=None, execution_deadline=packet['deadline'],
                        recovery_sequence=row.get('recovery_sequence', 0) + 1, recovery_receipt=identity,

@@ -13,6 +13,8 @@ from codex_harness.application.execution_budget import (
     positive_integer,
     retry_limit,
 )
+from codex_harness.application.execution_fence import advance as advance_fence
+from codex_harness.application.execution_fence import require_unused as require_unused_fence
 from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.execution_time import (
     CLOCK_TOLERANCE_SECONDS,
@@ -59,6 +61,7 @@ class Workflow:
             if old:
                 require(old["input_hash"] == digest(message), "Conflicting task identity")
                 return old
+            require_unused_fence(tx, "tasks", task_id)
             dependencies = message["when"]["after"]
             require(task_id not in dependencies, "Task cannot depend on itself")
             require(all(tx.get("tasks", dep) is not None for dep in dependencies),
@@ -165,6 +168,11 @@ class Workflow:
                         contain_with_notice(tx, self.org, task, 'tasks', 'deadline_exceeded', now)
                         continue
                     lease_until = (now + timedelta(seconds=lease_seconds)).isoformat()
+                    try:
+                        advance_fence(tx, "tasks", task["id"], task["generation"] + 1, owner)
+                    except ContractError:
+                        block_execution(tx, task, "tasks", "ExecutionGenerationRegressed", now, self.org)
+                        continue
                     task.update(status="running", attempt=task["attempt"] + 1,
                                 generation=task["generation"] + 1, lease_owner=owner,
                                 lease_until=min(datetime.fromisoformat(lease_until), deadline).isoformat()
@@ -346,6 +354,7 @@ class Workflow:
             require(actor in {"conductor", task["message"]["who"]["sender"]}, "Cannot cancel task")
             require(task["status"] not in {"succeeded", "cancelled"}, "Task already terminal")
             self._attempt_outcome(task, "cancelled", utcnow(), reason)
+            advance_fence(tx, "tasks", task_id, task["generation"] + 1)
             task.update(status="cancelled", error=reason, generation=task["generation"] + 1)
             tx.put("tasks", task_id, task)
             execution_notice(tx, self.org, task, 'tasks', 'operator_cancelled', utcnow())

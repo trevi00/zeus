@@ -2,8 +2,9 @@
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
+from codex_harness.application.execution_fence import advance as advance_fence
 from codex_harness.application.tickets import ticket_binding
-from codex_harness.domain.model import require
+from codex_harness.domain.model import ContractError, require
 from codex_harness.domain.policy import POLICY
 
 
@@ -43,8 +44,15 @@ class ReleaseQueue:
                     row.update(status="failed", reason="release attempt budget exhausted")
                     tx.put("release_queue", row["id"], row)
                     continue
+                owner = str(uuid4())
+                try:
+                    advance_fence(tx, "release_queue", row["id"], row.get("generation", 0) + 1, owner)
+                except ContractError as exc:
+                    row.update(status="failed", reason=str(exc))
+                    tx.put("release_queue", row["id"], row)
+                    continue
                 row.update(status="running", attempt=row.get("attempt", 0) + 1,
-                           owner=str(uuid4()), generation=row.get("generation", 0) + 1,
+                           owner=owner, generation=row.get("generation", 0) + 1,
                            lease_until=(now + timedelta(seconds=POLICY.release_lease_seconds)).isoformat())
                 tx.put("release_queue", row["id"], row)
                 tx.put("deployment_locks", "controller", {"release_id": row["id"],

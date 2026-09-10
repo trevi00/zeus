@@ -530,6 +530,12 @@ class Executor:
                 if deadline is not None and deadline <= now:
                     contain_with_notice(tx, self.service.org, row, 'decisions_pending', 'deadline_exceeded', now)
                     continue
+                from codex_harness.application.execution_fence import advance as advance_fence
+                try:
+                    advance_fence(tx, 'decisions_pending', row['id'], row.get("generation", 0) + 1, owner)
+                except ContractError:
+                    block_execution(tx, row, 'decisions_pending', 'ExecutionGenerationRegressed', now, self.service.org)
+                    continue
                 row.update(status="running", owner=owner, attempt=row["attempt"] + 1,
                            lease_owner=owner, generation=row.get("generation", 0) + 1,
                            lease_until=min(now + timedelta(seconds=1200), deadline).isoformat()
