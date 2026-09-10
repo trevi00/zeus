@@ -16,7 +16,8 @@ REJECTIONS = 'completion_rejections'
 RECORD_ONLY = ('sequence', 'recorded_at')
 STATES = ('unreadable', 'no_ledger', 'corrupt', 'partially_corrupt', 'rejected_only', 'not_evaluated',
           'stale', 'not_approved', 'incomplete', 'not_succeeded', 'receipt_unbound', 'artifact_missing',
-          'reviewer_unbound', 'scenario_mismatch', 'authoritative')
+          'artifact_unbound', 'reviewer_unbound', 'scenario_mismatch', 'authoritative')
+EVALUATION_KIND = 'completion-evaluation'
 
 
 def _excerpt(record):
@@ -121,7 +122,15 @@ class CompletionAuthority:
         return {**report, 'state': 'authoritative', 'authority': True}
 
     def _provenance(self, task, last, expected_scenarios):
-        """Values inside one JSON document prove nothing about each other; check them against their sources."""
+        """Values inside one JSON document prove nothing about each other; check them against their sources.
+
+        Review (PR #50, round 2): existence of a file and a caller's strings are not provenance either.
+        The execution artifact's own content must name this task and attempt; the evaluation artifact must
+        be a completion evaluation bound to this task, attempt and spec revision, carry the scenario
+        denominator the verdict must match, name the reviewer, and point at a verified reviewer execution
+        (a succeeded task of that reviewer whose recorded evidence is that very artifact).
+        """
+        target = last['target']
         receipt = last['runner_receipt']
         result = task.get('result') if isinstance(task.get('result'), dict) else {}
         execution_ref = result.get('execution_ref')
@@ -129,19 +138,45 @@ class CompletionAuthority:
             return {'state': 'receipt_unbound', 'reason': 'runner_receipt is not the execution evidence the task recorded'}
         if self.artifacts is None:
             return {'state': 'artifact_missing', 'reason': 'no artifact store to verify the receipt and evaluation artifact'}
+        documents = {}
         for ref in (execution_ref, last['evaluation_artifact']):
             try:
                 self.artifacts.inspect(ref)
+                documents[ref] = self.artifacts.document(ref)
             except Exception as exc:
                 return {'state': 'artifact_missing', 'reason': ref + ': ' + type(exc).__name__}
-        reviewer = last['reviewer']['actor']
-        if self.org is None or reviewer not in self.org.agents or reviewer == task.get('agent'):
-            return {'state': 'reviewer_unbound', 'reason': 'reviewer is not an independent organization actor'}
+        execution, evaluation = documents[execution_ref], documents[last['evaluation_artifact']]
+        if execution.get('task_id') != target['task_id'] or execution.get('attempt') != target['attempt']:
+            return {'state': 'receipt_unbound', 'reason': 'execution artifact content names another task or attempt'}
+        if (evaluation.get('kind') != EVALUATION_KIND or evaluation.get('task_id') != target['task_id']
+                or evaluation.get('attempt') != target['attempt'] or evaluation.get('spec_revision') != last['spec_revision']):
+            return {'state': 'artifact_unbound', 'reason': 'evaluation artifact content is not a completion evaluation of this task, attempt and spec revision'}
+        spec_scenarios = evaluation.get('scenarios')
+        if not isinstance(spec_scenarios, list) or not spec_scenarios or not all(type(s) is str and s for s in spec_scenarios):
+            return {'state': 'artifact_unbound', 'reason': 'evaluation artifact declares no scenario denominator'}
         if expected_scenarios is not None:
             require(isinstance(expected_scenarios, list) and all(type(s) is str for s in expected_scenarios),
                     'expected_scenarios must be scenario names')
-            if sorted(set(expected_scenarios)) != sorted(set(last['scenarios']['expected'])):
-                return {'state': 'scenario_mismatch', 'reason': 'verdict denominator differs from the approved spec scenarios'}
+        for denominator, who in ((spec_scenarios, 'the evaluation artifact'), (expected_scenarios, 'the consumer')):
+            if denominator is not None and sorted(set(denominator)) != sorted(set(last['scenarios']['expected'])):
+                return {'state': 'scenario_mismatch', 'reason': 'verdict denominator differs from the scenarios ' + who + ' names'}
+        reviewer = last['reviewer']
+        if self.org is None or reviewer['actor'] not in self.org.agents or reviewer['actor'] == task.get('agent'):
+            return {'state': 'reviewer_unbound', 'reason': 'reviewer is not an independent organization actor'}
+        if evaluation.get('reviewer') != reviewer:
+            return {'state': 'reviewer_unbound', 'reason': 'evaluation artifact names another reviewer'}
+        review_ref = evaluation.get('execution_ref')
+        try:
+            require(type(review_ref) is str and review_ref.startswith('sha256:'), 'no reviewer execution reference')
+            review = self.artifacts.document(review_ref)
+            with self.store.transaction() as tx:
+                review_task = tx.get('tasks', review.get('task_id')) if type(review.get('task_id')) is str else None
+            review_result = review_task.get('result') if review_task and isinstance(review_task.get('result'), dict) else {}
+            require(review_task is not None and review_task.get('agent') == reviewer['actor']
+                    and review_task.get('status') == 'succeeded' and review_task.get('attempt') == review.get('attempt')
+                    and review_result.get('execution_ref') == review_ref, 'reviewer execution is not a succeeded task of the reviewer')
+        except Exception as exc:
+            return {'state': 'reviewer_unbound', 'reason': 'no verified reviewer execution: ' + (str(exc)[:120] or type(exc).__name__)}
         return None
 
     def require_authority(self, task_id, *, spec_revision, evaluation_artifact, expected_scenarios=None):
