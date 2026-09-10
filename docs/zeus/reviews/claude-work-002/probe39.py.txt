@@ -1,0 +1,21 @@
+import json,sys,tempfile
+from pathlib import Path
+from dataclasses import replace
+sys.path[:0]=['C:/Users/rudtn/zeus-review2-39/src','C:/Users/rudtn/zeus-review2-39/tests']
+import test_research_audits as fixtures
+with tempfile.TemporaryDirectory() as d:
+    service,audit,source,_,_=fixtures.audit.__wrapped__(Path(d))
+    fixtures.activate_fixture(service)
+    proposal=fixtures.complete_fixture_audit(service,audit,source)
+    service.propose(audit['id'],proposal)
+    fixtures.approve_fixture(service,'lead:research')
+    task,original=fixtures.approve_fixture(service,'conductor')
+    rejected=service.review(task,replace(original,accepted=False))
+    replay=service.review(task,original)
+    assert replay['sequence']==1 and not service.coverage(audit['id'])['adoption_eligible']
+    changed=replace(original,license_assessment=original.license_assessment+' ')
+    try: service.review(task,changed)
+    except Exception as exc:
+        assert 'new inspection execution' in str(exc)
+        print(json.dumps({'same_receipt_reapproval_refused':str(exc),'adoption_eligible':service.coverage(audit['id'])['adoption_eligible']}))
+    else: raise AssertionError('reapproval accepted')

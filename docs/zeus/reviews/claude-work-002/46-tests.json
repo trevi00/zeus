@@ -1,0 +1,13 @@
+{
+  "head": "318ce36c2e882f8e9e528ad309b63c8ac7631bb0",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_gate_verdicts.py",
+    "tests/test_sdd.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 5.830950499999744,
+  "log_sha256": "1fe62c896791ec29599a6d54f3b7ac581337e54278d4803c271239faa640cf75",
+  "postgres_enabled": true
+}

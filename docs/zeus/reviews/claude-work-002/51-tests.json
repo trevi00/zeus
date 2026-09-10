@@ -1,0 +1,13 @@
+{
+  "head": "820d35358eb56f86e41da5689c83f5fba985f8f9",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_invocation_ledger.py",
+    "tests/test_project_skills.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 14.015540599997621,
+  "log_sha256": "8692c3a368773a48c7c460b036d177e9a0e13c1f0a5e895a2c030b85e2d70be4",
+  "postgres_enabled": true
+}

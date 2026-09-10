@@ -1,0 +1,15 @@
+{
+  "head": "7426bce806e4ea28044ede2a6f64a03595222085",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_project_skills.py",
+    "tests/test_skill_audit.py",
+    "tests/test_skill_history.py",
+    "tests/test_skill_routing.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 12.44710849999683,
+  "log_sha256": "5dae564f4cbba22852e8e21cef09597fdf83fbdeb5ac83104397e528aac3338e",
+  "postgres_enabled": true
+}

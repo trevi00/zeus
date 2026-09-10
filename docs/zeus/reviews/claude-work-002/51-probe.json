@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 51, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"new_task_refused\": \"Invocation capacity is reserved by other executions\", \"summary\": {\"reservations\": 1, \"by_status\": {\"reserved\": 1, \"settled\": 0, \"unsettled_unknown\": 0}, \"by_outcome\": {}, \"usage_unknown\": 1, \"measured_total_tokens\": 0, \"note\": \"unknown usage is excluded from the measured sum, never counted as zero\", \"as_of\": \"2026-09-10T11:23:02.772503+00:00\"}}\n",
+  "stderr": ""
+}

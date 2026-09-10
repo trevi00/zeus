@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 50, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"state\": \"authoritative\", \"authority\": true, \"real_receipts_created\": 0, \"evaluation_artifacts_created\": 0}\n",
+  "stderr": ""
+}

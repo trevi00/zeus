@@ -1,0 +1,12 @@
+{
+  "head": "dc083caa73a2f4a1b0b64a5105208307ddec783d",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_idempotency_races.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 13.289006200000586,
+  "log_sha256": "ad9d9c469504c92aea6b680a393de9b523b4ef74cf32b6c8efe65159a5413a74",
+  "postgres_enabled": true
+}

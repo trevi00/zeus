@@ -1,0 +1,242 @@
+[
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-001",
+    "metadata": [
+      "HEAD 741cc1d441c7a6335768cad618c47a1c9393ac12",
+      "branch refs/heads/fix/fa-001-python-child-encoding"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-002",
+    "metadata": [
+      "HEAD 620029f9e561fb77fbcc22f6a5817e054b8773bb",
+      "branch refs/heads/fix/fa-002-occurrence-counting"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-003",
+    "metadata": [
+      "HEAD 16c05c2f4748b4cc54717496b5e4c0305b30387e",
+      "branch refs/heads/fix/fa-003-lease-fencing"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-004",
+    "metadata": [
+      "HEAD dc083caa73a2f4a1b0b64a5105208307ddec783d",
+      "branch refs/heads/fix/fa-004-idempotency-race"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-005",
+    "metadata": [
+      "HEAD fd45154f13f2674a483ca9593bf35e7542894b46",
+      "branch refs/heads/fix/fa-005-latest-verdict"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-007",
+    "metadata": [
+      "HEAD fdbf905e3ad7fe00d163326d991a88629fd7dfb3",
+      "branch refs/heads/fix/fa-007-integrity-unknown"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-008",
+    "metadata": [
+      "HEAD 278b724d0870398abfdabe8727996de174d5b576",
+      "branch refs/heads/fix/fa-008-stack-routing"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-009",
+    "metadata": [
+      "HEAD 9357680ef5e10e9b52b3a4b1b880e3a074300b95",
+      "branch refs/heads/fix/fa-009-wiring-assertions"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-010",
+    "metadata": [
+      "HEAD 7e4692143d5717e112ffe66b2fa27f9c016f1113",
+      "branch refs/heads/fix/fa-010-observed-assets"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-011",
+    "metadata": [
+      "HEAD 79fb71b8e7ec4a4f7d1d3001f4672915c80f418b",
+      "branch refs/heads/fix/fa-011-skill-frontmatter-gate"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-012",
+    "metadata": [
+      "HEAD 7426bce806e4ea28044ede2a6f64a03595222085",
+      "branch refs/heads/fix/fa-012-skill-measurement-targets"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-013",
+    "metadata": [
+      "HEAD 318ce36c2e882f8e9e528ad309b63c8ac7631bb0",
+      "branch refs/heads/fix/fa-013-gate-verdicts"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-014",
+    "metadata": [
+      "HEAD e102d462886a9809a49a4efb38378545411dd86a",
+      "branch refs/heads/fix/fa-014-spec-replay-attribution"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-015",
+    "metadata": [
+      "HEAD c7674d6b3d4444dccb1b25611d70e7ff9429e760",
+      "branch refs/heads/fix/fa-015-candidate-target-binding"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-016",
+    "metadata": [
+      "HEAD f055fafdcf15774655dae16e6fde42edb3007adb",
+      "branch refs/heads/fix/fa-016-progress-event-identity"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-018",
+    "metadata": [
+      "HEAD 7866032f8d485995f2ead86dc59449f273e37397",
+      "branch refs/heads/fix/fa-018-completion-authority"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-019",
+    "metadata": [
+      "HEAD 820d35358eb56f86e41da5689c83f5fba985f8f9",
+      "branch refs/heads/fix/fa-019-provider-port"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-020",
+    "metadata": [
+      "HEAD ae0f373a6b47d9622a90dfce99fb359b506cbfe9",
+      "branch refs/heads/fix/fa-020-breaker-admission"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-021",
+    "metadata": [
+      "HEAD 4ea2f561a73ca6ad947b52e0c091689909cc29d8",
+      "branch refs/heads/fix/fa-021-calibration-approval"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-022",
+    "metadata": [
+      "HEAD b2f36cb29430c37e8435c5f90479f3cd758ef1f4",
+      "branch refs/heads/fix/fa-022-evidence-inspection"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-023",
+    "metadata": [
+      "HEAD fc35ed0dcd9d3a9af31ddb712761b614d88055c6",
+      "branch refs/heads/fix/fa-023-output-validation"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-024",
+    "metadata": [
+      "HEAD 9ba590b1d7891048244a208fdd27ded92dd4df6c",
+      "branch refs/heads/fix/fa-024-seam-contracts"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-025",
+    "metadata": [
+      "HEAD f6acba25b9379328ab32bec522a1072b3745653c",
+      "branch refs/heads/fix/fa-025-check-binding"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-026",
+    "metadata": [
+      "HEAD ffe49cac4e3e757e71c618b8fa281703616ab58f",
+      "branch refs/heads/fix/fa-026-runner-categories"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-027",
+    "metadata": [
+      "HEAD 922e8c76152b4e1ad3ff59c447bb7f413f9ce92d",
+      "branch refs/heads/fix/fa-027-seam-view"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-028",
+    "metadata": [
+      "HEAD a321c70b0d04ac7f65ca591e7bd2ad19386c57e1",
+      "branch refs/heads/fix/fa-028-seam-scope"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-030",
+    "metadata": [
+      "HEAD b7c301cf6f7de1133d2ee1be12354f0ad829a703",
+      "branch refs/heads/fix/fa-030-snapshot-integrity"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-031",
+    "metadata": [
+      "HEAD 571e6cef57df4b817f634fa53d1cfe1db48234c9",
+      "branch refs/heads/fix/fa-031-migration-precheck"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/fa-032",
+    "metadata": [
+      "HEAD 6c5734010044125e07db98523f22723b121453eb",
+      "branch refs/heads/fix/fa-032-profile-privacy"
+    ],
+    "status": ""
+  },
+  {
+    "path": "C:/Users/rudtn/zeus-pr/ticket-order",
+    "metadata": [
+      "HEAD c60cbfb59b6cd2cd7f79e50920e0d7e80e4f7634",
+      "branch refs/heads/fix/ticket-observation-order"
+    ],
+    "status": ""
+  }
+]

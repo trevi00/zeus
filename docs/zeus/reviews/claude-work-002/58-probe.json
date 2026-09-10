@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 58, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"verdict\": {\"category\": \"executed\", \"stage\": \"run\", \"exit_status\": 0, \"output_class\": \"stdout\", \"passed\": false, \"outcome\": \"empty_check\", \"denominator\": {\"passed\": 0, \"failed\": 0, \"skipped\": 3, \"errors\": 0, \"xfailed\": 0, \"xpassed\": 0, \"deselected\": 0, \"warnings\": 0, \"parsed\": true, \"no_tests_ran\": false}, \"reason\": \"nothing executed: 3 skipped, 0 deselected\", \"mode\": \"pytest\"}, \"receipt_exit_status\": 0, \"receipt_inspection_blocked\": false, \"research_success_predicate\": true}\n",
+  "stderr": ""
+}

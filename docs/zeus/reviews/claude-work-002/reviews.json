@@ -1,0 +1,156 @@
+[
+  {
+    "pr": 36,
+    "head": "620029f9e561fb77fbcc22f6a5817e054b8773bb",
+    "decision": "수용 후보",
+    "test_summary": "22 passed in 3.16s",
+    "location": null
+  },
+  {
+    "pr": 38,
+    "head": "dc083caa73a2f4a1b0b64a5105208307ddec783d",
+    "decision": "수용 후보",
+    "test_summary": "6 passed in 11.57s",
+    "location": null
+  },
+  {
+    "pr": 39,
+    "head": "fd45154f13f2674a483ca9593bf35e7542894b46",
+    "decision": "수용 후보",
+    "test_summary": "78 passed in 72.84s (0:01:12)",
+    "location": null
+  },
+  {
+    "pr": 45,
+    "head": "7426bce806e4ea28044ede2a6f64a03595222085",
+    "decision": "수용 후보",
+    "test_summary": "61 passed in 11.04s",
+    "location": null
+  },
+  {
+    "pr": 46,
+    "head": "318ce36c2e882f8e9e528ad309b63c8ac7631bb0",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "27 passed in 3.85s",
+    "location": "https://github.com/trevi00/zeus/blob/318ce36c2e882f8e9e528ad309b63c8ac7631bb0/src/codex_harness/application/sdd.py#L64"
+  },
+  {
+    "pr": 48,
+    "head": "c7674d6b3d4444dccb1b25611d70e7ff9429e760",
+    "decision": "수용 후보",
+    "test_summary": "32 passed in 27.93s",
+    "location": null
+  },
+  {
+    "pr": 49,
+    "head": "f055fafdcf15774655dae16e6fde42edb3007adb",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "40 passed in 19.34s",
+    "location": "https://github.com/trevi00/zeus/blob/f055fafdcf15774655dae16e6fde42edb3007adb/src/codex_harness/adapters/executor.py#L248"
+  },
+  {
+    "pr": 50,
+    "head": "7866032f8d485995f2ead86dc59449f273e37397",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "21 passed in 16.62s",
+    "location": "https://github.com/trevi00/zeus/blob/7866032f8d485995f2ead86dc59449f273e37397/src/codex_harness/application/completion.py#L36"
+  },
+  {
+    "pr": 51,
+    "head": "820d35358eb56f86e41da5689c83f5fba985f8f9",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "44 passed in 12.30s",
+    "location": "https://github.com/trevi00/zeus/blob/820d35358eb56f86e41da5689c83f5fba985f8f9/src/codex_harness/application/invocation_ledger.py#L53"
+  },
+  {
+    "pr": 52,
+    "head": "ae0f373a6b47d9622a90dfce99fb359b506cbfe9",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "68 passed in 26.73s",
+    "location": "https://github.com/trevi00/zeus/blob/ae0f373a6b47d9622a90dfce99fb359b506cbfe9/src/codex_harness/application/breaker.py#L129"
+  },
+  {
+    "pr": 53,
+    "head": "4ea2f561a73ca6ad947b52e0c091689909cc29d8",
+    "decision": "수용 후보",
+    "test_summary": "20 passed in 41.69s",
+    "location": null
+  },
+  {
+    "pr": 54,
+    "head": "b2f36cb29430c37e8435c5f90479f3cd758ef1f4",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "12 passed in 7.64s",
+    "location": "https://github.com/trevi00/zeus/blob/b2f36cb29430c37e8435c5f90479f3cd758ef1f4/src/codex_harness/application/evidence_inspection.py#L33"
+  },
+  {
+    "pr": 55,
+    "head": "fc35ed0dcd9d3a9af31ddb712761b614d88055c6",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "43 passed in 16.98s",
+    "location": "https://github.com/trevi00/zeus/blob/fc35ed0dcd9d3a9af31ddb712761b614d88055c6/src/codex_harness/adapters/execution_output.py#L64"
+  },
+  {
+    "pr": 56,
+    "head": "9ba590b1d7891048244a208fdd27ded92dd4df6c",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "11 passed in 1.00s",
+    "location": "https://github.com/trevi00/zeus/blob/9ba590b1d7891048244a208fdd27ded92dd4df6c/src/codex_harness/adapters/seam_extraction.py#L66"
+  },
+  {
+    "pr": 57,
+    "head": "f6acba25b9379328ab32bec522a1072b3745653c",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "9 passed in 7.83s",
+    "location": "https://github.com/trevi00/zeus/blob/f6acba25b9379328ab32bec522a1072b3745653c/src/codex_harness/adapters/deployment.py#L151"
+  },
+  {
+    "pr": 58,
+    "head": "ffe49cac4e3e757e71c618b8fa281703616ab58f",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "7 passed in 5.95s",
+    "location": "https://github.com/trevi00/zeus/blob/ffe49cac4e3e757e71c618b8fa281703616ab58f/src/codex_harness/adapters/source_execution.py#L139"
+  },
+  {
+    "pr": 59,
+    "head": "922e8c76152b4e1ad3ff59c447bb7f413f9ce92d",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "10 passed in 1.42s",
+    "location": "https://github.com/trevi00/zeus/blob/922e8c76152b4e1ad3ff59c447bb7f413f9ce92d/src/codex_harness/application/seam_ledger.py#L100"
+  },
+  {
+    "pr": 60,
+    "head": "a321c70b0d04ac7f65ca591e7bd2ad19386c57e1",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "9 passed in 1.05s",
+    "location": "https://github.com/trevi00/zeus/blob/a321c70b0d04ac7f65ca591e7bd2ad19386c57e1/src/codex_harness/adapters/seam_extraction.py#L66"
+  },
+  {
+    "pr": 61,
+    "head": "b7c301cf6f7de1133d2ee1be12354f0ad829a703",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "10 passed in 0.99s",
+    "location": "https://github.com/trevi00/zeus/blob/b7c301cf6f7de1133d2ee1be12354f0ad829a703/src/codex_harness/domain/snapshot_integrity.py#L155"
+  },
+  {
+    "pr": 62,
+    "head": "571e6cef57df4b817f634fa53d1cfe1db48234c9",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "14 passed in 8.12s",
+    "location": "https://github.com/trevi00/zeus/blob/571e6cef57df4b817f634fa53d1cfe1db48234c9/src/codex_harness/application/migration_receipts.py#L53"
+  },
+  {
+    "pr": 63,
+    "head": "6c5734010044125e07db98523f22723b121453eb",
+    "decision": "변경 요청 / 병합 보류",
+    "test_summary": "11 passed in 0.72s",
+    "location": "https://github.com/trevi00/zeus/blob/6c5734010044125e07db98523f22723b121453eb/src/codex_harness/domain/profile_privacy.py#L165"
+  },
+  {
+    "pr": 64,
+    "head": "c60cbfb59b6cd2cd7f79e50920e0d7e80e4f7634",
+    "decision": "수용 후보",
+    "test_summary": "54 passed in 15.69s",
+    "location": null
+  }
+]

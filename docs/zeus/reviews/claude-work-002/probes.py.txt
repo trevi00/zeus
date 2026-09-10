@@ -1,0 +1,135 @@
+import sys, json, tempfile, copy
+from pathlib import Path
+from datetime import datetime, timedelta, timezone
+n = int(sys.argv[1])
+root = Path(f'C:/Users/rudtn/zeus-review2-{n}')
+sys.path[:0] = [str(root/'src'), str(root/'tests')]
+from codex_harness.adapters.store import MemoryStore
+from codex_harness.domain.model import ContractError
+out = {'pr': n, 'scope': 'direct production functions with synthetic input; no model or human acceptance'}
+if n == 36:
+    from codex_harness.adapters.experience import parse_lesson
+    from codex_harness.application.experience import ExperienceClaims
+    claims=ExperienceClaims(MemoryStore()); data=b'---\noccurrences: 308\nevidence: []\n---\nlesson\n'
+    outputs=[]
+    for source in [{'kind':'observed','revision':None},{'kind':'pinned','revision':'a'*40},{'kind':'pinned','revision':'b'*40}]:
+        row=parse_lesson('harness','lessons/a.md',data,source)
+        outputs.append(claims.record(row,'sha256:'+'a'*64))
+    out.update(record_results=outputs)
+    assert outputs[0]['changed'] and not outputs[1]['changed'] and outputs[1]['acquisition_added'] and outputs[2]['acquisition_added']
+elif n == 46:
+    from test_gate_verdicts import reviewer, retraction, DEFINITION
+    from codex_harness.domain.gate_verdicts import fold_verdicts
+    rows = [reviewer('a','PASS',1),reviewer('a','REJECT',2)]
+    before = fold_verdicts(rows, {'a':DEFINITION['a']}, 'run-1',1)
+    after = fold_verdicts(rows+[retraction('a',2,3)], {'a':DEFINITION['a']}, 'run-1',1)
+    out.update(before=before['complete'], after_unauthenticated_retraction=after['complete'])
+    assert not before['complete'] and after['complete']
+elif n == 50:
+    from test_completion_authority import running_task, verdict, inspect
+    from codex_harness.application.completion import CompletionAuthority
+    store=MemoryStore(); workflow,task=running_task(store); authority=CompletionAuthority(store)
+    workflow.complete(task, {'summary':'worker claim only'})
+    authority.record(verdict(task))
+    report=inspect(authority,task)
+    out.update(state=report['state'],authority=report['authority'],real_receipts_created=0,evaluation_artifacts_created=0)
+    assert report['authority']
+elif n == 51:
+    from codex_harness.application.invocation_ledger import InvocationLedger
+    from codex_harness.application.workflow import Workflow
+    from codex_harness.bootstrap import organization
+    from test_workflow import assignment
+    store=MemoryStore(); w=Workflow(store,organization()); w.submit(assignment()); lease=w.claim('worker:implementation','owner')
+    ledger=InvocationLedger(store,capacity=1); ledger.reserve(lease,request={},budget_seconds=1)
+    w.cancel(lease['id'],'conductor','worker stopped; no retry')
+    try: ledger.reserve({'id':'other-task','generation':1,'attempt':1},request={},budget_seconds=1)
+    except ContractError as e: out['new_task_refused']=str(e)
+    out['summary']=ledger.summary()
+    assert 'capacity' in out['new_task_refused'] and out['summary']['by_status']['reserved']==1
+elif n == 52:
+    from codex_harness.application.breaker import Breaker,DEFAULT_POLICY,breaker_key
+    b=Breaker(MemoryStore(),{**DEFAULT_POLICY,'failure_threshold':1,'cooldown_seconds':1,'probe_ttl_seconds':2})
+    lease={'id':'task','generation':1,'attempt':1,'lease_owner':'owner'}; t=datetime.now(timezone.utc); key=breaker_key('codex','test')
+    b.report(b.admit(key,lease,t),'failure',t)
+    token=b.admit(key,lease,t+timedelta(seconds=2))
+    report=b.report(token,'success',t+timedelta(seconds=5))
+    out.update(expired_probe_report=report)
+    assert report['applied'] and report['state']=='closed'
+elif n == 54:
+    from codex_harness.application.evidence_inspection import EvidenceInspections
+    from codex_harness.adapters.evidence_inspection import EvidenceInspector
+    from codex_harness.adapters.artifacts import FileArtifacts
+    from test_evidence_inspection import policy,command
+    with tempfile.TemporaryDirectory() as d:
+        store=MemoryStore(); artifacts=FileArtifacts(Path(d)/'artifacts')
+        task={'id':'task','generation':1,'attempt':1}; candidate={'revision':'a'*40}
+        claims=[command('print(123)')]
+        first=EvidenceInspections(store,EvidenceInspector(artifacts,policy())).inspect(task,candidate,claims,d)
+        strict=EvidenceInspector(artifacts,policy(allowed_argv_prefixes=[['not-allowed']]))
+        second=EvidenceInspections(store,strict).inspect(task,candidate,claims,d)
+        actual=strict.inspect(claims,d,{})
+        out.update(first=first['verdict'],after_policy_change=second['verdict'],fresh_strict_state=actual['findings'][0]['state'],cached_policy=second['policy_hash'],current_policy=strict.policy['policy_hash'])
+        assert second['verdict']=='all_checked' and actual['findings'][0]['state']=='not_checked'
+elif n == 55:
+    from codex_harness.adapters.execution_output import completed_output,tool_usage
+    r=completed_output('"not-an-email"',{'type':'string','format':'email'})
+    out.update(invalid_email_answer=r['answer'],schema_check=r['structural']['checks']['schema'])
+    assert r['answer']=='not-an-email' and r['structural']['checks']['schema']=='checked'
+    dialect=completed_output('["not-an-integer"]',{'$schema':'http://json-schema.org/draft-07/schema#','type':'array','prefixItems':[{'type':'integer'}]})
+    out['dialect_mismatch']={'claimed_dialect':dialect['structural']['schema']['dialect'],'answer':dialect['answer'],'schema_check':dialect['structural']['checks']['schema']}
+    assert dialect['answer']==['not-an-integer']
+    try: tool_usage({'events':[{'method':'item/completed','params':None}]})
+    except Exception as e: out['malformed_event_error']=type(e).__name__+': '+str(e)
+elif n in (56,60):
+    from codex_harness.adapters.seam_extraction import extract
+    with tempfile.TemporaryDirectory() as d:
+        Path(d,'e.py').write_text('from enum import Enum\nclass Status(Enum):\n    A = 1\n    B: int = 2\n',encoding='utf-8')
+        obs=extract('python',d,'e.py',revision='a'*40)[0]
+        out.update(fidelity=obs['fidelity'],members=[m['name'] for m in obs['members']],denominator=obs['denominator'])
+        assert obs['fidelity']=='HIGH' and len(obs['members'])==1
+elif n == 59:
+    from codex_harness.adapters.seam_extraction import extract
+    from codex_harness.application.seam_ledger import SeamLedger
+    from codex_harness.domain.seam_view import seam_id
+    with tempfile.TemporaryDirectory() as d:
+        ledger=SeamLedger(MemoryStore()); path=Path(d,'e.py'); path.write_text('from enum import Enum\nclass A(Enum):\n    X=1\n')
+        a=extract('python',d,'e.py',revision='a'*40)[0]; ledger.record_observation(a,binding={'revision':'a'*40})
+        path.write_text('from enum import Enum\nclass A(Enum):\n    X=2\n')
+        b=extract('python',d,'e.py',revision='b'*40)[0]; ledger.record_observation(b,binding={'revision':'b'*40})
+        try: ledger.view({'version':1,'fail_on':['DRIFT'],'required_seams':['required']})
+        except ContractError as e: out['after_second_revision']=str(e)
+        assert 'different sources' in out['after_second_revision']
+elif n == 58:
+    from codex_harness.domain.check_results import classify_isolated_run
+    verdict=classify_isolated_run(stage='run',exit_status=0,stdout='3 skipped in 0.02s',stderr='',command=['python','-m','pytest'])
+    blocked=verdict['category']!='executed'
+    out.update(verdict=verdict,receipt_exit_status=0,receipt_inspection_blocked=blocked,research_success_predicate=(0==0 and not blocked))
+    assert not verdict['passed'] and out['research_success_predicate']
+elif n == 61:
+    from codex_harness.domain.snapshot_integrity import verify_snapshot
+    manifest={'version':1,'required':{'parents.json':{'kind':'json','schema_version':1},'child.json':{'kind':'json','schema_version':1,'references':{'parent':'parents.json'}}}}
+    files={'parents.json':json.dumps({'id':'parent','schema_version':1}).encode(),'child.json':json.dumps({'id':'child','schema_version':1,'parent':'MISSING'},indent=2).encode()}
+    pretty=verify_snapshot(files,manifest)
+    files['child.json']=json.dumps({'id':'child','schema_version':1,'parent':'MISSING'}).encode()
+    compact=verify_snapshot(files,manifest)
+    out.update(pretty=pretty['status'],compact=compact['status'],pretty_dangling=pretty['denominator']['dangling_references'])
+    assert pretty['status']=='valid' and compact['status']=='invalid'
+elif n == 62:
+    from codex_harness.application.migration_receipts import MigrationReceipts
+    from codex_harness.adapters.artifacts import FileArtifacts
+    from codex_harness.domain.migrations import TOOL
+    with tempfile.TemporaryDirectory() as d:
+        store=MemoryStore(); receipts=MigrationReceipts(store,FileArtifacts(Path(d)/'artifacts'))
+        run={'operation':'precheck','argv':['python','-m','codex_harness.adapters.migrations','precheck'], 'config_hash':'a'*64,'root':d,'source_revision':'b'*40,'environment':'test','stdout':json.dumps({'operation':'precheck','tool':TOOL,'plan':{'config_hash':'c'*64,'apply_allowed':True,'results':{}}}).encode(),'stderr':b'','exit_code':0,'started_at':'2026-09-10T00:00:00Z','finished_at':'2026-09-10T00:00:01Z'}
+        row=receipts.record(run)
+        with store.transaction() as tx: accepted=receipts.require_approved(tx,row['id'],source_revision='b'*40,environment='test')
+        out.update(submitted_config='a'*64,process_config='c'*64,accepted=accepted['apply_allowed'])
+        assert accepted['apply_allowed']
+elif n == 63:
+    from test_profile_privacy import POLICY,consent,PROJECT_WIN
+    from codex_harness.domain.profile_privacy import minimize,parse_consent,parse_policy
+    p=copy.deepcopy(POLICY);p['fields']={'kind':'kind only'}
+    result=minimize({'content':'NOT_AUTHORIZED_SENTINEL','project_path':PROJECT_WIN,'kind':'user_message'},p,parse_consent(consent(p),p))
+    out.update(policy_fields=list(p['fields']),input_fields=list(result['input']),dropped_fields=result['dropped_fields'],content_leaked=result['input']['content']=='NOT_AUTHORIZED_SENTINEL')
+    assert out['content_leaked']
+print(json.dumps(out,ensure_ascii=False))

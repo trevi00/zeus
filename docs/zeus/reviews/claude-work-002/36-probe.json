@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 36, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"record_results\": [{\"id\": \"19e9f525938c1d178198369f2b61b7c0179c62030124a5a1645aa26ae6e917fe\", \"changed\": true, \"acquisition_added\": true, \"body_ref\": \"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}, {\"id\": \"19e9f525938c1d178198369f2b61b7c0179c62030124a5a1645aa26ae6e917fe\", \"changed\": false, \"acquisition_added\": true, \"body_ref\": \"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}, {\"id\": \"19e9f525938c1d178198369f2b61b7c0179c62030124a5a1645aa26ae6e917fe\", \"changed\": false, \"acquisition_added\": true, \"body_ref\": \"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}]}\n",
+  "stderr": ""
+}

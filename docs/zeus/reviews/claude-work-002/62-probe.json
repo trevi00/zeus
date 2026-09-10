@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 62, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"submitted_config\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"process_config\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\", \"accepted\": true}\n",
+  "stderr": ""
+}

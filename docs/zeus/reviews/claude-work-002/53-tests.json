@@ -1,0 +1,13 @@
+{
+  "head": "4ea2f561a73ca6ad947b52e0c091689909cc29d8",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_threshold_approvals.py",
+    "tests/test_threshold_collection.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 43.319991099997424,
+  "log_sha256": "9e2d8539bd1844e39cecf0391cb9b93e838deddcda347de7a57e3a1e4982e7a4",
+  "postgres_enabled": true
+}

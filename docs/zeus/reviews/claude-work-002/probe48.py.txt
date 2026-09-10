@@ -1,0 +1,19 @@
+import json, sys, tempfile, subprocess
+from pathlib import Path
+sys.path[:0] = ['C:/Users/rudtn/zeus-review2-48/src', 'C:/Users/rudtn/zeus-review2-48/tests']
+from test_git_workspace import repository
+from codex_harness.adapters.git import GitWorkspace
+with tempfile.TemporaryDirectory() as d:
+    p=Path(d); root=repository(p)
+    first=GitWorkspace(str(root),str(p/'workspaces'))
+    workspace=first.prepare('counterexample')
+    (Path(workspace['path'])/'change.txt').write_text('reviewed for repository A','utf-8')
+    candidate=first.capture(workspace)
+    subprocess.run(['git','clone','--quiet',str(root),str(p/'other-repo')],check=True,capture_output=True)
+    other=GitWorkspace(str(p/'other-repo'),str(p/'other-workspaces'))
+    other._git('config','user.name','Review Fixture'); other._git('config','user.email','review@example.invalid')
+    try: other.merge(candidate)
+    except Exception as exc:
+        assert 'target' in str(exc).lower() or 'repository' in str(exc).lower()
+        print(json.dumps({'cross_repository_refused':str(exc),'second_file_exists':(p/'other-repo/change.txt').exists()}))
+    else: raise AssertionError('cross repository merge accepted')

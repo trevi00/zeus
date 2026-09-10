@@ -1,0 +1,505 @@
+{
+  "status": "inventory and summary inspection only; not complete semantic source review",
+  "files": [
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/checkpoint-verification.json",
+      "bytes": 8996
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion-prompt.txt",
+      "bytes": 1004
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion-receipt.json",
+      "bytes": 3141
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion.json",
+      "bytes": 22789
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion.md",
+      "bytes": 20726
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion.stderr.txt",
+      "bytes": 0
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial-prompt.txt",
+      "bytes": 1761
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial-receipt.json",
+      "bytes": 4306
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial.json",
+      "bytes": 32619
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial.md",
+      "bytes": 30195
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial.stderr.txt",
+      "bytes": 0
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/prior-unreviewed.json",
+      "bytes": 20176
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/resolution.md",
+      "bytes": 7458
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/root-followup.md",
+      "bytes": 5352
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/root-initial.md",
+      "bytes": 3525
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/root-supporting.json",
+      "bytes": 7483
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/scope.json",
+      "bytes": 12806
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/artifact-hashes.json",
+      "bytes": 2982
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/checkpoint.json",
+      "bytes": 1238
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/file-reviews.md",
+      "bytes": 20662
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/files.json",
+      "bytes": 85205
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/metadata-history.json",
+      "bytes": 644
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/prepare.py",
+      "bytes": 2073
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/prior-path-ledger.json",
+      "bytes": 11067
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/read-receipts.json",
+      "bytes": 5031
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/record_review.first.executed.txt",
+      "bytes": 12002
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/record_review.py",
+      "bytes": 12079
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/remaining.json",
+      "bytes": 537
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/review.md",
+      "bytes": 2250
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/scope.json",
+      "bytes": 3682
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/supporting-evidence.json",
+      "bytes": 4999
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/supporting-reuse.json",
+      "bytes": 55237
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/supporting-review.md",
+      "bytes": 3343
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/validation.json",
+      "bytes": 593
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/artifact-hashes.json",
+      "bytes": 2666
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/checkpoint.json",
+      "bytes": 1232
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/file-reviews.md",
+      "bytes": 18787
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/files.json",
+      "bytes": 85844
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prepare.py",
+      "bytes": 2255
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prior-path-ledger.json",
+      "bytes": 8614
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prior-support-status.json",
+      "bytes": 5946
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/read-receipts.json",
+      "bytes": 4349
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/record_review.py",
+      "bytes": 11997
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/remaining.json",
+      "bytes": 459
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/review.md",
+      "bytes": 1636
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/scope.json",
+      "bytes": 2612
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/supporting-evidence.json",
+      "bytes": 14688
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/supporting-review.md",
+      "bytes": 4185
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/unavailable-support.json",
+      "bytes": 436
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/validation.json",
+      "bytes": 521
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/artifact-hashes.json",
+      "bytes": 2667
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/checkpoint.json",
+      "bytes": 1297
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/file-reviews.md",
+      "bytes": 23131
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/files.json",
+      "bytes": 82725
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/prepare.py",
+      "bytes": 2255
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/prior-path-ledger.json",
+      "bytes": 7809
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/prior-support-status.json",
+      "bytes": 7058
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/read-receipts.json",
+      "bytes": 3868
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/record_review.py",
+      "bytes": 13411
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/remaining.json",
+      "bytes": 488
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/review.md",
+      "bytes": 2337
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/scope.json",
+      "bytes": 2509
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/supporting-evidence.json",
+      "bytes": 38046
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/supporting-review.md",
+      "bytes": 4994
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/unavailable-support.json",
+      "bytes": 5145
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/validation.json",
+      "bytes": 521
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/checkpoint.json",
+      "bytes": 2533
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/files.json",
+      "bytes": 95888
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/record-validation.json",
+      "bytes": 1074
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/record_review.py",
+      "bytes": 15359
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/remaining.json",
+      "bytes": 1319
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/review.md",
+      "bytes": 25415
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/supporting-evidence.json",
+      "bytes": 40586
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/verification.json",
+      "bytes": 2160
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/checkpoint.json",
+      "bytes": 2230
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/files.json",
+      "bytes": 73943
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/record-validation.json",
+      "bytes": 1069
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/record_review.py",
+      "bytes": 12149
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/remaining.json",
+      "bytes": 1264
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/review.md",
+      "bytes": 22163
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/supporting-evidence.json",
+      "bytes": 35418
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/verification.json",
+      "bytes": 1618
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/README.md",
+      "bytes": 1798
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/build_index.py",
+      "bytes": 9547
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/checkpoint.json",
+      "bytes": 1104
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/files.json",
+      "bytes": 58127
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/inventory.json",
+      "bytes": 2186
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/own-checks.md",
+      "bytes": 1014
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/prior-ledger.json",
+      "bytes": 9714
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/remaining.json",
+      "bytes": 565
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/review.md",
+      "bytes": 22348
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/supporting.json",
+      "bytes": 47039
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/validate_index.py",
+      "bytes": 3222
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/validation.json",
+      "bytes": 444
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/README.md",
+      "bytes": 1398
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/build_index.py",
+      "bytes": 10312
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/checkpoint.json",
+      "bytes": 1401
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/files.json",
+      "bytes": 50769
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/inventory.json",
+      "bytes": 1854
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/prior-ledger.json",
+      "bytes": 8035
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/remaining.json",
+      "bytes": 721
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/review.md",
+      "bytes": 22703
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/supporting.json",
+      "bytes": 61405
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/test-limits.md",
+      "bytes": 1342
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/validate_index.py",
+      "bytes": 4074
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/validation.json",
+      "bytes": 570
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/README.md",
+      "bytes": 1509
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/build_index.py",
+      "bytes": 10406
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/checkpoint.json",
+      "bytes": 1400
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/files.json",
+      "bytes": 38662
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/inventory.json",
+      "bytes": 1390
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/prior-ledger.json",
+      "bytes": 5771
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/remaining.json",
+      "bytes": 837
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/review.md",
+      "bytes": 18668
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/supporting.json",
+      "bytes": 62412
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/test-limits.md",
+      "bytes": 945
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/validate_index.py",
+      "bytes": 4072
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/validation.json",
+      "bytes": 569
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial-prompt.txt",
+      "bytes": 1688
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial-receipt.json",
+      "bytes": 4202
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.json",
+      "bytes": 38666
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.md",
+      "bytes": 36275
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.stderr.txt",
+      "bytes": 0
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/root-initial.md",
+      "bytes": 3991
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/scope.json",
+      "bytes": 11438
+    }
+  ]
+}

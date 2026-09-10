@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 60, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"fidelity\": \"HIGH\", \"members\": [\"A\"], \"denominator\": {\"symbols_found\": 1, \"unresolved\": 0}}\n",
+  "stderr": ""
+}

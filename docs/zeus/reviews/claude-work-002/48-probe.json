@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"cross_repository_refused\": \"Candidate target repository changed since review\", \"second_file_exists\": false}\n",
+  "stderr": ""
+}

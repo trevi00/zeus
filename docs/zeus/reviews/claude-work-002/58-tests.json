@@ -1,0 +1,12 @@
+{
+  "head": "ffe49cac4e3e757e71c618b8fa281703616ab58f",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_runner_categories.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 7.94203660000494,
+  "log_sha256": "c3eacd34a017c2c6beae7a191303a0941cb92351fab3b6000f78fea3d286b4b4",
+  "postgres_enabled": true
+}

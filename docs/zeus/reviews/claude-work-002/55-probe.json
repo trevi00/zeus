@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 55, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"invalid_email_answer\": \"not-an-email\", \"schema_check\": \"checked\", \"dialect_mismatch\": {\"claimed_dialect\": \"https://json-schema.org/draft/2020-12/schema\", \"answer\": [\"not-an-integer\"], \"schema_check\": \"checked\"}, \"malformed_event_error\": \"AttributeError: 'NoneType' object has no attribute 'get'\"}\n",
+  "stderr": ""
+}

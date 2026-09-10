@@ -1,0 +1,12 @@
+{
+  "head": "f6acba25b9379328ab32bec522a1072b3745653c",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_check_binding.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 9.300893600004201,
+  "log_sha256": "083dc2de3ed637dcdaa6d1a44c145e5b0c7c29b6fd0b951c5f538f9ac7decd0f",
+  "postgres_enabled": true
+}

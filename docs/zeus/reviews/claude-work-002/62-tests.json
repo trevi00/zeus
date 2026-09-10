@@ -1,0 +1,13 @@
+{
+  "head": "571e6cef57df4b817f634fa53d1cfe1db48234c9",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_maintenance.py",
+    "tests/test_migration_precheck.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 9.567646600000444,
+  "log_sha256": "81c020a544f944a919c68c94d2833c7a66c3557e617b6d51e6d30fd972ed618d",
+  "postgres_enabled": true
+}

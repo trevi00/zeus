@@ -1,0 +1,22 @@
+import sys,tempfile,json
+from pathlib import Path
+sys.path.insert(0,'C:/Users/rudtn/zeus-review2-57/src')
+from codex_harness.adapters.verification import VerificationServices
+from codex_harness.adapters.artifacts import FileArtifacts
+root=Path('C:/Users/rudtn/zeus/.runtime/claude-work-review-002/verification')
+service=VerificationServices(root,FileArtifacts(root/'artifacts'))
+out={'scope':'actual disposable Docker PostgreSQL/Redis; production VerificationServices; no model call'}
+entered=False
+try:
+    endpoints=service.__enter__(); entered=True
+    out['first_enter']='services_ready'
+    try:
+        with service: pass
+    except Exception as e:
+        out['second_enter_error']=type(e).__name__+': '+str(e)
+        out['cleanup_not_called_directory_exists']=service.directory.exists()
+finally:
+    if entered:
+        out['review_cleanup']=service._cleanup_observed()
+    Path('C:/Users/rudtn/zeus/.runtime/claude-work-review-002/57-probe.json').write_text(json.dumps(out,indent=2),'utf-8')
+    print(json.dumps(out))

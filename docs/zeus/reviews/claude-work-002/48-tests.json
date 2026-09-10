@@ -1,0 +1,14 @@
+{
+  "head": "c7674d6b3d4444dccb1b25611d70e7ff9429e760",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_git_workspace.py",
+    "tests/test_release_recovery.py",
+    "tests/test_release_runner.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 29.954503699998895,
+  "log_sha256": "bd98fd5639fd9ec4dcbd089a423d6ffa1519dc47be1c7b422bdadd24b8473089",
+  "postgres_enabled": true
+}

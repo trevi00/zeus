@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 54, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"first\": \"all_checked\", \"after_policy_change\": \"all_checked\", \"fresh_strict_state\": \"not_checked\", \"cached_policy\": \"54cda76801b576fb626dda0b6401c289b695f03580f0e72e423fb683b1af0d6a\", \"current_policy\": \"46e9079e10a8e0fcc1fab136d9673e3e2f32124509ebe369057fd9b4ea9948a2\"}\n",
+  "stderr": ""
+}

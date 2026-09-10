@@ -1,0 +1,12 @@
+{
+  "head": "a321c70b0d04ac7f65ca591e7bd2ad19386c57e1",
+  "files": [
+    "tests/test_architecture.py",
+    "tests/test_seam_scope.py"
+  ],
+  "exit_code": 0,
+  "ruff_exit_code": 0,
+  "seconds": 2.744518799998332,
+  "log_sha256": "82756d06e7729b515801a34195f6ede2e88011d06acb8c12edd33095f976e465",
+  "postgres_enabled": true
+}

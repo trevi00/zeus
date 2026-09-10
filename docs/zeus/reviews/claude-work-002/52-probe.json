@@ -1,0 +1,5 @@
+{
+  "exit": 0,
+  "stdout": "{\"pr\": 52, \"scope\": \"direct production functions with synthetic input; no model or human acceptance\", \"expired_probe_report\": {\"applied\": true, \"state\": \"closed\", \"generation\": 3}}\n",
+  "stderr": ""
+}
