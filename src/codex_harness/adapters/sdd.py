@@ -158,21 +158,35 @@ def replay_source(spec):
         "        self.driver = webdriver.Remote(os.environ['ZEUS_APPIUM_URL'], options=options)",
         "        self.addCleanup(self.driver.quit)", "",
     ]
+    # FA-014: every generated check is attributed at runtime to its scenario, oracle index and
+    # requirement IDs (subTest), so a failure maps back to the acceptance criterion it exercised.
+    # All spec text enters the source as Python literals (repr), never as raw code or comments.
+    oracles = {scenario["id"]: {"requirement_ids": list(scenario["requirement_ids"]),
+                                "oracles": list(scenario["then"])} for scenario in active}
+    position = lines.index("class SpecReplay(unittest.TestCase):")
+    lines[position:position] = ["SPEC_HASH = " + repr(digest(spec)), "ORACLES = " + repr(oracles), ""]
     for index, scenario in enumerate(active, 1):
         lines += ["    def test_" + str(index).zfill(4) + "_" + digest(scenario["id"])[:16] + "(self):",
                   "        " + repr("Scenario " + scenario["id"] + ": " + scenario["title"])]
         for binding in scenario["bindings"]:
             locator = (binding["selector"]["strategy"], binding["selector"]["value"])
-            lines.append("        element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(" + repr(locator) + "))")
             operation = binding["operation"]
+            indent = "        "
+            if operation.startswith("assert_"):
+                attribution = {"scenario": scenario["id"], "oracle": binding["oracle_index"],
+                               "requirement_ids": list(scenario["requirement_ids"]),
+                               "expected": scenario["then"][binding["oracle_index"]]}
+                lines.append(indent + "with self.subTest(**" + repr(attribution) + "):")
+                indent += "    "
+            lines.append(indent + "element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(" + repr(locator) + "))")
             if operation == "tap":
-                lines.append("        element.click()")
+                lines.append(indent + "element.click()")
             elif operation == "input":
-                lines += ["        element.clear()", "        element.send_keys(os.environ[" + repr(binding["value"]) + "])"]
+                lines += [indent + "element.clear()", indent + "element.send_keys(os.environ[" + repr(binding["value"]) + "])"]
             elif operation == "assert_visible":
-                lines.append("        self.assertTrue(element.is_displayed())")
+                lines.append(indent + "self.assertTrue(element.is_displayed())")
             else:
-                lines.append("        WebDriverWait(self.driver, 20).until(exact_text(" + repr(locator) + ", " + repr(binding["value"]) + "))")
+                lines.append(indent + "WebDriverWait(self.driver, 20).until(exact_text(" + repr(locator) + ", " + repr(binding["value"]) + "))")
         lines.append("")
     lines += ["if __name__ == '__main__':", "    unittest.main()", ""]
     return "\n".join(lines)
