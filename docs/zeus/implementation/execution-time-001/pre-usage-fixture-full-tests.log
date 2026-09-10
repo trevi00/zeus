@@ -1,0 +1,52 @@
+.......................................................................s [  6%]
+............ssssssssssss..ss....ssss.s.s..ss.s.s.s.s.s.ss.s.s......s..s. [ 12%]
+s.s.s......ssssss........ssssssss.s.s.s.s.ss.s...sss.s..ss....ssss.s.s.s [ 19%]
+.s.s.s.s.s.s.s.s.ss...s.s.s........s.s.s.s.s.s.s.s.sss.................. [ 25%]
+..............s.s.s.s.s..ss.s.s.s.s.s.s.s.s.s.s.s.s.s..ss.s.s.ssssssssss [ 31%]
+ssssssssssssssss........................................................ [ 38%]
+.............................................ssssss.s.s.s.s.s.s.s....... [ 44%]
+....................................................................s... [ 51%]
+........................................s.s.s....s..s................... [ 57%]
+........................................................s.s.s.........ss [ 63%]
+sssssss.....sssss.s.ss.s.s.s....ssss..ss.s.............................. [ 70%]
+.........ssssss.............................s........................... [ 76%]
+...s.s.s.s.s......................................................s..... [ 83%]
+...ssssssss.....sssss.s.s.s.s.s.s..ss.......sssssss.s.s.s.s.s.s.s.s.s.s. [ 89%]
+s.s.s.s.s.s.s.s.s.s.s.s........................Fs...............s....... [ 95%]
+.........s....s....s....s....s....s...........                           [100%]
+================================== FAILURES ===================================
+___________ test_distinct_task_occurrences_and_authorized_recovery ____________
+
+setup = namespace(executor=<codex_harness.adapters.executor.Executor object at 0x000002A559DB9DB0>, service=<codex_harness.app...se_until': None, 'lease_owner': None, 'result': None, 'error': None, 'created_at': '2026-09-10T00:46:40.490992+00:00'})
+
+    def test_distinct_task_occurrences_and_authorized_recovery(setup):
+        s = setup
+        workflow = Workflow(s.service.store, s.service.org)
+        error = ExecutionFailure('codex-provider-usage-limit-exceeded', {'execution_ref': 'fixture'})
+        for index in range(2):
+            message = envelope('task.assign', 'lead:research', 'worker:github', 'research', {}, 'fixture')
+            if index == 0:
+                message = s.task['message']
+            workflow.submit(message)
+            task = workflow.claim('worker:github', 'owner')
+            workflow.fail_execution(task, error)
+>           assert workflow.claim('worker:github', 'owner', now=datetime.now(timezone.utc) + timedelta(days=30)) is None
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_usage_limit.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\codex_harness\application\workflow.py:90: in claim
+    require(requested_now is None or abs((now - aware_time()).total_seconds()) <= CLOCK_TOLERANCE_SECONDS,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+condition = False, reason = 'Injected execution time differs from host clock'
+
+    def require(condition: bool, reason: str) -> None:
+        if not condition:
+>           raise ContractError(reason)
+E           codex_harness.domain.model.ContractError: Injected execution time differs from host clock
+
+src\codex_harness\domain\model.py:40: ContractError
+=========================== short test summary info ===========================
+FAILED tests/test_usage_limit.py::test_distinct_task_occurrences_and_authorized_recovery
+1 failed, 860 passed, 265 skipped in 190.41s (0:03:10)

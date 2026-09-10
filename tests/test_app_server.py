@@ -12,6 +12,31 @@ MANIFEST = json.loads((ROOT / 'harness_hooks/hook-ab97ba09554daa5aec289867.json'
 SCHEMA = {'type': 'object', 'properties': {'accepted': {'type': 'boolean'}}, 'required': ['accepted']}
 
 
+@pytest.mark.parametrize('timeout', [True, 0, -1, float('nan'), float('inf')])
+def test_invalid_timeout_never_sends_request(timeout):
+    server = AppServer(executable='unit-fixture-no-process')
+    with pytest.raises(ContractError, match='finite and positive'):
+        server.request('thread/start', {}, timeout)
+    with pytest.raises(ContractError, match='finite and positive'):
+        server.run('unit fixture', str(ROOT), SCHEMA, timeout)
+    assert server.sequence == 0 and server.process is None
+
+
+def test_startup_spends_the_turn_budget(monkeypatch):
+    import time
+    server = AppServer(executable='unit-fixture-no-process')
+    calls = []
+    def slow_request(method, params, timeout):
+        calls.append(method)
+        assert 0 < timeout <= 0.05
+        time.sleep(0.06)
+        return {'thread': {'id': 'unit-thread'}}
+    monkeypatch.setattr(server, 'request', slow_request)
+    with pytest.raises(ContractError, match='before turn start'):
+        server.run('unit fixture', str(ROOT), SCHEMA, timeout=0.05)
+    assert calls == ['thread/start']
+
+
 def replay(monkeypatch, events, *, hooks=None, discovered=None, read_only=True,
            thread_id=None, model=None):
     server = AppServer(executable='fixture', hooks=hooks)

@@ -41,7 +41,8 @@ class ExecutionRecovery:
                     and budget is None and row['attempt'] > 0, 'Not an unverified legacy retry')
         elif operation == 'repair':
             require(row['status'] == 'blocked' and row.get('error') in
-                    {'InvalidRetryBudget', 'InvalidExecutionDeadline', 'RecoveryContextChanged'},
+                    {'InvalidRetryBudget', 'InvalidExecutionDeadline', 'InvalidExecutionLease',
+                     'InvalidExecutionClock', 'ClockDiscontinuity', 'RecoveryContextChanged'},
                     'Only corrupt controls or changed recovery context can be repaired')
         else:
             require(operation == 'resume', 'Invalid recovery operation')
@@ -223,6 +224,7 @@ class ExecutionRecovery:
                        retry_budget={'version': version, 'max_attempts': packet['max_attempts'],
                                      'bound_at': now.isoformat(), 'origin': packet['operation'], 'recovery_ref': identity})
             row.pop('owner', None)
+            row.pop('execution_clock', None)
             row.pop('completed_at', None)
             restored = deepcopy(related)
             if row.get('phase') == 'threshold_review' and related is not None and related['request']['status'] == 'failed':

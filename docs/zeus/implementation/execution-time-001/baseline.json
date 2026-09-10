@@ -1,0 +1,9 @@
+{
+  "source": "cfb5c6e34861717afa4ace0dc79a34cb8e780c7f",
+  "deadline": "2026-09-10T00:10:25.067691+00:00",
+  "observed_at": "2026-09-10T00:10:25.254916+00:00",
+  "elapsed_seconds": 1.1669408999987354,
+  "late_status": "succeeded",
+  "lease_until": "2026-09-10T00:11:25.213597+00:00",
+  "scope": "Actual PG and elapsed host time; no model execution or clock alteration"
+}

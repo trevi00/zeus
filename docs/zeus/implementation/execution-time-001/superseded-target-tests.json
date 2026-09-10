@@ -1,0 +1,1 @@
+{"argv": ["uv", "run", "pytest", "-q", "tests/test_execution_time.py", "tests/test_execution_rejections.py", "tests/test_execution_notices.py", "tests/test_execution_recovery.py", "tests/test_workflow.py", "tests/test_decision_atomicity.py"], "exit_code": 0, "seconds": 24.711393356323242, "integration": true}

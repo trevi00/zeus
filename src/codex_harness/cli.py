@@ -211,6 +211,7 @@ def parser() -> argparse.ArgumentParser:
                                            "outbox_quarantine", "outbox_delivery", "outbox_attempts",
                                            "execution_failures", "execution_recoveries", "execution_notices", "execution_notice_errors",
                                            "execution_rejections",
+                                           "execution_time_events",
                                            "tasks", "decisions_pending", "releases", "deployment", "release_queue"])
     rollback = commands.add_parser("rollback-hook")
     rollback.add_argument("hook_id")

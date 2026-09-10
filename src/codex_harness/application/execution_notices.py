@@ -7,7 +7,8 @@ from codex_harness.domain.model import ContractError, digest, envelope, require
 REASONS = {'execution_failed', 'budget_exhausted', 'deadline_exceeded', 'dependency_failed',
            'operator_cancelled', 'ticket_binding_changed', 'execution_recovered', 'InvalidExecutionDeadline',
            'InvalidRetryBudget', 'UnverifiedLegacyRetryBudget', 'RecoveryContextChanged',
-           'inspection_blocked', 'decision_blocked', 'ticket_superseded'}
+           'inspection_blocked', 'decision_blocked', 'ticket_superseded', 'InvalidExecutionLease',
+           'InvalidExecutionClock', 'ClockDiscontinuity'}
 
 
 def _build(org, row, bucket, reason_code, at, transition_ref):

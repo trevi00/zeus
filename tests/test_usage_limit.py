@@ -171,7 +171,14 @@ def test_distinct_task_occurrences_and_authorized_recovery(setup):
         workflow.submit(message)
         task = workflow.claim('worker:github', 'owner')
         workflow.fail_execution(task, error)
-        assert workflow.claim('worker:github', 'owner', now=datetime.now(timezone.utc) + timedelta(days=30)) is None
+        # Persist an already expired lease; do not inject a future host clock.
+        with s.service.store.transaction() as tx:
+            terminal = tx.get('tasks', task['id'])
+            terminal['lease_until'] = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+            tx.put('tasks', task['id'], terminal)
+        assert workflow.claim('worker:github', 'owner') is None
+        with s.service.store.transaction() as tx:
+            assert tx.get('tasks', task['id']) == terminal
     unauthorized = envelope('task.assign', 'lead:improvement', 'worker:github', 'research', {}, 'fixture')
     with pytest.raises(ContractError):
         workflow.submit(unauthorized)

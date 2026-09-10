@@ -266,7 +266,10 @@
                   },
                   "reason_code": {
                     "enum": [
+                      "ClockDiscontinuity",
+                      "InvalidExecutionClock",
                       "InvalidExecutionDeadline",
+                      "InvalidExecutionLease",
                       "InvalidRetryBudget",
                       "RecoveryContextChanged",
                       "UnverifiedLegacyRetryBudget",

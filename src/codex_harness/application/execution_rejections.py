@@ -1,6 +1,7 @@
 """Reconcile only the same execution; durably observe fenced-out executors."""
-from codex_harness.application.execution_budget import aware_time, deadline_time
-from codex_harness.domain.model import ContractError, digest, require
+from codex_harness.application.execution_budget import aware_time
+from codex_harness.application.execution_time import ExecutionTimeError, active
+from codex_harness.domain.model import digest, require
 
 
 def _identity(row):
@@ -35,11 +36,12 @@ def reconcile(store, lease, error, rejection_error=None):
             reason = 'execution_not_running'
         else:
             try:
-                until = deadline_time(current.get('lease_until'))
-            except ContractError:
-                until = None
-            reason = 'invalid_execution_lease' if until is None else 'execution_lease_expired'
-            if until is not None and until > now:
+                valid = active(current, bucket, now)
+                reason = 'execution_lease_expired'
+            except ExecutionTimeError as exc:
+                valid = False
+                reason = 'invalid_execution_lease' if exc.reason == 'InvalidExecutionLease' else exc.reason
+            if valid:
                 # A valid owner's unrelated error is not evidence of lease loss.
                 raise error from rejection_error
         request = {'bucket': bucket, 'submitted': submitted, 'observed': observed,

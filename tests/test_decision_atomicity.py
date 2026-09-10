@@ -11,6 +11,36 @@ from codex_harness.bootstrap import organization
 from codex_harness.domain.model import envelope
 
 
+@pytest.mark.parametrize('backend', ['memory', 'postgres'])
+def test_decision_retry_does_not_replenish_durable_time_budget(tmp_path, monkeypatch, backend, request):
+    # Execution failure input fixture; this does not claim a real model invocation.
+    store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
+    service = Harness(store, organization())
+    executor = Executor(service, SimpleNamespace(repository=tmp_path), FileArtifacts(tmp_path / 'artifacts'))
+    with store.transaction() as tx:
+        tx.put('decisions_pending', 'decision', {'id': 'decision', 'actor': 'lead:improvement',
+            'phase': 'diagnose', 'input': {'source_task_id': 'task', 'source_actor': 'worker:implementation',
+                'evidence_ref': 'fixture:error', 'occurrence_id': 'occurrence'},
+            'message': envelope('task.assign', 'lead:improvement', 'worker:implementation',
+                                'implement', {}, 'correlation'), 'status': 'pending', 'attempt': 0})
+
+    def fail(*args, **kwargs):
+        raise RuntimeError('Controlled unit execution failure')
+
+    monkeypatch.setattr(executor, '_run', fail)
+    executor.decide_one('lead:improvement')
+    with store.transaction() as tx:
+        first = tx.get('decisions_pending', 'decision')
+        assert first['status'] == 'retry'
+        assert first['execution_deadline'] and first['execution_clock']['deadline_remaining'] > 0
+    executor.decide_one('lead:improvement')
+    with store.transaction() as tx:
+        second = tx.get('decisions_pending', 'decision')
+        assert second['attempt'] == first['attempt'] + 1
+        assert second['execution_deadline'] == first['execution_deadline']
+        assert second['execution_clock']['deadline_remaining'] <= first['execution_clock']['deadline_remaining']
+
+
 @pytest.mark.parametrize("phase,actor", [("diagnose", "lead:improvement"),
                                         ("review_lead", "lead:improvement"),
                                         ("review_conductor", "conductor")])

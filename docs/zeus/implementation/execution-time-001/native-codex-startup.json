@@ -1,0 +1,11 @@
+{
+  "scope": "Actual installed Codex app-server initialize and expired pre-start budget; empty temporary CODEX_HOME, no model turn or human acceptance",
+  "pid": 27728,
+  "exit_code": 1,
+  "methods": [
+    "initialize",
+    "initialized"
+  ],
+  "elapsed_seconds": 0.22791879999931552,
+  "app_server_source_sha256": "72e80cd9d4f3f3784577315d98765ddc48f603365e0c86a2e3fc62de2186aed3"
+}

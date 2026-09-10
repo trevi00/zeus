@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
@@ -14,6 +14,17 @@ from codex_harness.application.execution_budget import (
     retry_limit,
 )
 from codex_harness.application.execution_notices import record as execution_notice
+from codex_harness.application.execution_time import (
+    CLOCK_TOLERANCE_SECONDS,
+    ExecutionTimeError,
+    active,
+    check_clock,
+    contain_with_notice,
+    deadline,
+    observe_domain,
+    pin_clock,
+    running,
+)
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.domain.model import (
     ContractError,
@@ -74,21 +85,29 @@ class Workflow:
         if max_attempts is not None:
             positive_integer(max_attempts, "Retry limit")
         require(isinstance(owner, str) and bool(owner.strip()), "Execution owner required")
+        requested_now = now
         now = aware_time(now)
+        require(requested_now is None or abs((now - aware_time()).total_seconds()) <= CLOCK_TOLERANCE_SECONDS,
+                'Injected execution time differs from host clock')
         try:
             lease_until = (now + timedelta(seconds=lease_seconds)).isoformat()
         except OverflowError as exc:
             raise ContractError("Lease duration out of timestamp range") from exc
         with self.store.transaction() as tx:
-            running = [row for bucket in ("tasks", "decisions_pending") for row in tx.scan(bucket)
-                       if row["status"] == "running" and datetime.fromisoformat(row["lease_until"]) > now]
-            if len(running) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in running):
+            live = running(tx, self.org, requested_now)
+            if len(live) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in live):
                 return None
             for task in sorted(tx.scan("tasks"), key=lambda t: (t["created_at"], t["id"])):
                 if task["agent"] != agent or task["status"] not in {"queued", "running", "retry"}:
                     continue
-                if task["status"] == "running" and datetime.fromisoformat(task["lease_until"]) > now:
-                    continue
+                now = aware_time(requested_now)
+                if task['status'] == 'running':
+                    try:
+                        if active(task, 'tasks', now):
+                            continue
+                    except ExecutionTimeError as exc:
+                        contain_with_notice(tx, self.org, task, 'tasks', exc.reason, now, exc.observation)
+                        continue
                 try:
                     ticket_binding(tx, task["message"]["what"]["details"])
                 except ContractError as exc:
@@ -130,9 +149,16 @@ class Workflow:
                         tx.put("tasks", task["id"], task)
                         execution_notice(tx, self.org, task, 'tasks', 'budget_exhausted', now.isoformat())
                         continue
+                    now = aware_time(requested_now)
+                    if deadline is not None and deadline <= now:
+                        contain_with_notice(tx, self.org, task, 'tasks', 'deadline_exceeded', now)
+                        continue
+                    lease_until = (now + timedelta(seconds=lease_seconds)).isoformat()
                     task.update(status="running", attempt=task["attempt"] + 1,
                                 generation=task["generation"] + 1, lease_owner=owner,
-                                lease_until=lease_until)
+                                lease_until=min(datetime.fromisoformat(lease_until), deadline).isoformat()
+                                if deadline else lease_until)
+                    pin_clock(task, 'tasks', now, datetime.fromisoformat(task['lease_until']))
                     tx.put("tasks", task["id"], task)
                     return task
                 tx.put("tasks", task["id"], task)
@@ -140,17 +166,56 @@ class Workflow:
                                  'deadline_exceeded' if task['status'] == 'expired' else 'dependency_failed', now.isoformat())
         return None
 
+    @staticmethod
+    def _same_execution(current, task):
+        keys = ('id', 'generation', 'attempt', 'lease_owner', 'agent', 'actor', 'recovery_sequence')
+        for key in keys:
+            default = 0 if key == 'recovery_sequence' else None
+            left, right = current.get(key, default), task.get(key, default)
+            if type(left) is not type(right) or left != right:
+                return False
+        return True
+
     def _owned(self, tx, task: dict, now: datetime | None = None) -> dict:
         bucket = task.get("_bucket", "tasks")
         require(bucket in {"tasks", "decisions_pending"}, "Invalid execution aggregate")
         current = tx.get(bucket, task["id"])
         now = aware_time(now)
         require(current is not None and current["status"] == "running"
-                and current["generation"] == task["generation"]
-                and current["lease_owner"] == task["lease_owner"]
-                and datetime.fromisoformat(current["lease_until"]) > now,
+                and self._same_execution(current, task),
                 "Stale or expired task execution")
+        require(active(current, bucket, now), "Stale or expired task execution")
+        observe_domain(tx, current, bucket, now)
         return current
+
+    def contain_time(self, task, error):
+        if not isinstance(error, ExecutionTimeError):
+            return None
+        bucket = task.get('_bucket', 'tasks')
+        require(bucket in {'tasks', 'decisions_pending'}, 'Invalid execution aggregate')
+        with self.store.transaction() as tx:
+            row = tx.get(bucket, task['id'])
+            if not row or not self._same_execution(row, task):
+                return None
+            if row['status'] != 'running':
+                return row if row['status'] in {'expired', 'blocked'} else None
+            # Re-evaluate after business rollback; never apply an old observation to repaired state.
+            now = aware_time()
+            try:
+                active(row, bucket, now)
+            except ExecutionTimeError as current_error:
+                return contain_with_notice(tx, self.org, row, bucket, current_error.reason, now,
+                                           current_error.observation)
+            return None
+
+    @contextmanager
+    def _execution_transaction(self, task):
+        try:
+            with self.store.transaction() as tx:
+                yield tx
+        except ExecutionTimeError as exc:
+            self.contain_time(task, exc)
+            raise
 
     def heartbeat(self, task: dict, seconds: int = POLICY.task_lease_seconds) -> None:
         positive_integer(seconds, "Lease duration")
@@ -158,14 +223,36 @@ class Workflow:
             lease_until = (datetime.now(timezone.utc) + timedelta(seconds=seconds)).isoformat()
         except OverflowError as exc:
             raise ContractError("Lease duration out of timestamp range") from exc
-        with self.store.transaction() as tx:
+        with self._execution_transaction(task) as tx:
             current = self._owned(tx, task)
+            now = aware_time()
+            lease_until = (now + timedelta(seconds=seconds)).isoformat()
+            due = deadline(current, task.get('_bucket', 'tasks'))
+            if due is not None:
+                lease_until = min(datetime.fromisoformat(lease_until), due).isoformat()
             current["lease_until"] = lease_until
+            pin_clock(current, task.get('_bucket', 'tasks'), now, datetime.fromisoformat(lease_until), renew=True)
             tx.put(task.get("_bucket", "tasks"), task["id"], current)
+
+    def remaining_seconds(self, task, maximum):
+        import time
+
+        from codex_harness.application.execution_time import DOMAIN
+        with self._execution_transaction(task) as tx:
+            row = self._owned(tx, task)
+            now = aware_time()
+            due = deadline(row, task.get('_bucket', 'tasks'))
+            remaining = min(maximum, (due - now).total_seconds()) if due is not None else maximum
+            elapsed, pin = check_clock(row, now, time.monotonic(), DOMAIN)
+            if elapsed is not None and pin.get('deadline_remaining') is not None:
+                remaining = min(remaining, pin['deadline_remaining'] - elapsed)
+            if remaining <= 0:
+                raise ExecutionTimeError('deadline_exceeded')
+            return remaining
 
     def complete(self, task: dict, result: dict, commands: list[dict] | None = None) -> dict:
         require(isinstance(result, dict), "Task result must be an object")
-        with self.store.transaction() as tx:
+        with self._execution_transaction(task) as tx:
             current = self._owned(tx, task)
             try:
                 ticket_binding(tx, task["message"]["what"]["details"])
@@ -215,7 +302,7 @@ class Workflow:
                    "attempt": task["attempt"], "owner": task["lease_owner"],
                    "error": error, "retryable": retryable, "failure": failure}
         identity = digest(request)
-        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
+        with (nullcontext(transaction) if transaction is not None else self._execution_transaction(task)) as tx:
             receipt = tx.get("execution_failures", identity)
             if receipt:
                 current = tx.get(bucket, task["id"])

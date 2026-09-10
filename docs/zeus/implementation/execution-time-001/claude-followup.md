@@ -1,0 +1,9 @@
+## Verdict: fix 1 lands but breaks an existing test; fix 2 is sound.
+
+**Blocker 2 (injected `now` inflating lease):** `workflow.py:88-91` computes `requested_now`, then rejects any injection >5s from `aware_time()` before `with self.store.transaction()` — so `test_injected_schedule_time_cannot_change_host_lease_budget` (`tests/test_execution_time.py:19-31`) correctly sees a `ContractError` and byte-identical `tx.records()`. Residual, accepted: skew *within* tolerance still shifts `lease_seconds` by up to 5s, since `until` derives from `now` and `pin_clock` re-samples the host.
+
+**Regression — `tests/test_usage_limit.py:174`.** `workflow.claim('worker:github', 'owner', now=now+30 days)` is a bare `assert ... is None`; it now raises `ContractError` and the test fails. That call was using injected time to prove the usage-limit block outlasts a lease, so the fix is not just a test-signature change: the test needs a different lever (mutate `lease_until`/`execution_deadline` in-store, or assert the rejection separately). `tests/test_workflow.py:24` uses +2s and stays inside tolerance — unaffected.
+
+**Blocker 1 (missing `attempt`):** `execution_time.py:116` uses `row.get('attempt')`, and `:128` gates `_attempt_outcome` on `type(...) is int and > 0`, so a legacy row yields `attempt: None` in the event rather than a fabricated `0`, matching `test_execution_time.py:50-51`. No `KeyError` escapes the `except ExecutionTimeError` handler in `running()`, so the healthy claim proceeds. `record` then quarantines the malformed row (`execution_notices.py:60-78`) — one `execution_notice_errors` row, transaction intact. Both `expired` and non-expired legs are covered; note the non-expired leg exercises `block_execution`, not `record`, so the single error row there comes from that path.
+
+**Unchanged non-blockers:** `require(...)` at `:121` remains unreachable; 5s tolerance vs. suspend/NTP still needs documenting.

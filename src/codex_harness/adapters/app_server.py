@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import queue
 import signal
@@ -115,15 +116,18 @@ class AppServer:
         return value
 
     def request(self, method: str, params: dict, timeout: float = 30):
+        require(type(timeout) in (int, float) and math.isfinite(timeout) and timeout > 0,
+                'Request timeout must be finite and positive')
+        deadline = time.monotonic() + timeout
         if method == "turn/start" and "outputSchema" in params:
             preflight(params["outputSchema"])
         self.sequence += 1
         request_id = self.sequence
         self.send({"id": request_id, "method": method, "params": params})
-        deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             value = self._receive(deadline - time.monotonic())
             if value.get("id") == request_id and "method" not in value:
+                require(time.monotonic() < deadline, f"Codex {method} timed out")
                 require("error" not in value, f"Codex {method} error: {value.get('error')}")
                 return value.get("result", {})
             self.notifications.append(value)
@@ -132,6 +136,14 @@ class AppServer:
     def run(self, prompt: str, cwd: str, schema: dict, timeout: int = 240,
             thread_id: str | None = None, on_event=None, read_only: bool = False, on_tick=None,
             model: str | None = None) -> dict:
+        require(type(timeout) in (int, float) and math.isfinite(timeout) and timeout > 0,
+                'Execution timeout must be finite and positive')
+        deadline = time.monotonic() + timeout
+        def request_budget():
+            remaining = deadline - time.monotonic()
+            require(remaining > 0, 'Codex execution budget exceeded before turn start')
+            return min(30, remaining)
+
         require(model is None or (isinstance(model, str) and model.strip()),
                 "model must be a nonempty string")
         options = {"cwd": str(Path(cwd).resolve()), "approvalPolicy": "never",
@@ -141,7 +153,7 @@ class AppServer:
         if read_only:
             options["developerInstructions"] = "This is an independent review. Inspect and test, but do not edit tracked source, commit, push, merge, or deploy."
         if self.hooks and not self.hook_state:
-            discovered = self.request("hooks/list", {"cwds": [options["cwd"]]})
+            discovered = self.request("hooks/list", {"cwds": [options["cwd"]]}, request_budget())
             commands = {hook["command"] for groups in self.hooks.values()
                         for group in groups for hook in group["hooks"]}
             entries = [hook for row in discovered["data"] for hook in row["hooks"]
@@ -155,17 +167,16 @@ class AppServer:
             self.notifications.clear()
             self.__enter__()
         if thread_id:
-            response = self.request("thread/resume", {"threadId": thread_id, **options})
+            response = self.request("thread/resume", {"threadId": thread_id, **options}, request_budget())
         else:
-            response = self.request("thread/start", options)
+            response = self.request("thread/start", options, request_budget())
         thread_id = response["thread"]["id"]
         turn_options = {"threadId": thread_id,
                         "input": [{"type": "text", "text": prompt}], "outputSchema": schema}
         if model is not None:
             turn_options["model"] = model
-        turn = self.request("turn/start", turn_options)
+        turn = self.request("turn/start", turn_options, request_budget())
         turn_id = turn["turn"]["id"]
-        deadline = time.monotonic() + timeout
         events, answer_text, usage = [], "", None
         inspection_failures = {}
         rotate, interrupted = False, False

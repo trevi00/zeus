@@ -14,6 +14,13 @@ from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.skill_history import prepare_history, project_identity, record_history
 from codex_harness.application.execution_notices import record as execution_notice
+from codex_harness.application.execution_time import (
+    ExecutionTimeError,
+    active,
+    contain_with_notice,
+    pin_clock,
+    running,
+)
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
@@ -215,9 +222,14 @@ class Executor:
             if heartbeat:
                 heartbeat()
             last_beat = time.monotonic()
+            last_time_check = last_beat
+            time_limit = POLICY.task_seconds if agent.startswith('worker:') else POLICY.decision_seconds
 
             def observe(event):
-                nonlocal last_beat
+                nonlocal last_beat, last_time_check
+                if event is None and lease and time.monotonic() - last_time_check >= 5:
+                    self.workflow.remaining_seconds(lease, time_limit)
+                    last_time_check = time.monotonic()
                 if heartbeat and time.monotonic() - last_beat > 20:
                     heartbeat()
                     last_beat = time.monotonic()
@@ -250,7 +262,10 @@ class Executor:
             result = None
             try:
                 with AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration()) as runtime:
-                    result = runtime.run(prompt, cwd, schema, POLICY.task_seconds if agent.startswith("worker:") else POLICY.decision_seconds,
+                    timeout = time_limit
+                    if lease:
+                        timeout = self.workflow.remaining_seconds(lease, timeout)
+                    result = runtime.run(prompt, cwd, schema, timeout,
                                          on_event=observe, read_only=read_only, on_tick=lambda: observe(None),
                                          model=selection.requested_model)
             except Exception as exc:
@@ -422,6 +437,9 @@ class Executor:
 
     def _lost_execution(self, lease, error, rejection_error=None):
         # INV-SESSION-001: a stale executor cannot publish failure or diagnosis.
+        contained = self.workflow.contain_time(lease, rejection_error) or self.workflow.contain_time(lease, error)
+        if contained is not None:
+            return contained
         from codex_harness.application.execution_rejections import reconcile
         return reconcile(self.service.store, lease, error, rejection_error)
 
@@ -452,15 +470,20 @@ class Executor:
         owner, now = str(uuid4()), datetime.now(timezone.utc)
         decision = None
         with self.service.store.transaction() as tx:
-            running = [row for bucket in ("tasks", "decisions_pending") for row in tx.scan(bucket)
-                       if row["status"] == "running" and datetime.fromisoformat(row["lease_until"]) > now]
-            if len(running) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in running):
+            live = running(tx, self.service.org)
+            if len(live) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in live):
                 return None
             for row in tx.scan("decisions_pending"):
                 if row["actor"] != agent or row["status"] not in {"pending", "running", "retry"}:
                     continue
-                if row["status"] == "running" and datetime.fromisoformat(row["lease_until"]) > now:
-                    continue
+                now = datetime.now(timezone.utc)
+                if row['status'] == 'running':
+                    try:
+                        if active(row, 'decisions_pending', now):
+                            continue
+                    except ExecutionTimeError as exc:
+                        contain_with_notice(tx, self.service.org, row, 'decisions_pending', exc.reason, now, exc.observation)
+                        continue
                 from codex_harness.application.execution_recovery import ExecutionRecovery
                 try:
                     ExecutionRecovery(self.service.store, self.service.org, self.artifacts).validate_decision(tx, row)
@@ -507,9 +530,19 @@ class Executor:
 
                         ThresholdReviews.exhausted(tx, row)
                     continue
+                now = datetime.now(timezone.utc)
+                if deadline is None:
+                    # Pin the remaining retry window once; restarts do not replenish it.
+                    deadline = now + timedelta(seconds=POLICY.decision_seconds * (limit - row['attempt']))
+                    row['execution_deadline'] = deadline.isoformat()
+                if deadline is not None and deadline <= now:
+                    contain_with_notice(tx, self.service.org, row, 'decisions_pending', 'deadline_exceeded', now)
+                    continue
                 row.update(status="running", owner=owner, attempt=row["attempt"] + 1,
                            lease_owner=owner, generation=row.get("generation", 0) + 1,
-                           lease_until=(now + timedelta(seconds=1200)).isoformat())
+                           lease_until=min(now + timedelta(seconds=1200), deadline).isoformat()
+                           if deadline is not None else (now + timedelta(seconds=1200)).isoformat())
+                pin_clock(row, 'decisions_pending', now, datetime.fromisoformat(row['lease_until']))
                 tx.put("decisions_pending", row["id"], row)
                 decision = row
                 break
