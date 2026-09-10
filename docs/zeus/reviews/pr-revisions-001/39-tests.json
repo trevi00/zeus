@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus-pr-review-39\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_research_audits.py"
+  ],
+  "head": "60a6fa4c4d17a021321724f21c92245a066055ea",
+  "exit_code": 0,
+  "seconds": 72.51452409999911,
+  "raw_sha256": "bc001adafbd927cfa3d1871f18f03d7200d6f2f54de916f95578462ccae3786c",
+  "real_postgres": true
+}

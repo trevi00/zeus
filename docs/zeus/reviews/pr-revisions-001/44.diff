@@ -1,0 +1,73 @@
+﻿diff --git a/docs/contracts.md b/docs/contracts.md
+index cf31c9e..685cded 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -76,8 +76,8 @@ reference evidence survives advisory truncation via immutable handles, and non-s
+ guidance never inflates selected/included/omitted skill counters.
+ 
+ Skill metadata is parsed by the bounded string-only YAML loader: inline comments never
+-enter matcher values, inline lists become string lists, and nested, tagged, duplicated or
+-non-mapping metadata fails explicitly rather than being routed. Routing summaries state
++enter matcher values, inline lists become string lists, and nested, tagged, duplicated (also after key
++normalization) or non-mapping metadata fails explicitly rather than being routed. Routing summaries state
+ how many skills were inspected next to matched/full/pointer/legacy counts together with the
+ policy, objective and admission-model identity, so zero matches are never read as
+ "checked and clean" when nothing was inspected.
+diff --git a/docs/zeus/implementation/skill-metadata-gate-001/README.md b/docs/zeus/implementation/skill-metadata-gate-001/README.md
+index 62392cd..7ba6b0c 100644
+--- a/docs/zeus/implementation/skill-metadata-gate-001/README.md
++++ b/docs/zeus/implementation/skill-metadata-gate-001/README.md
+@@ -26,6 +26,9 @@
+   `threshold_definition`·`policy`(정책), `admission_model`(코드 버전), 매니페스트의 `revision`과 함께 검사 범위·개수·
+   입력·정책·코드 식별이 한 레코드에 묶입니다. 메타데이터 오류는 skip이 아니라 명시 실패입니다(INV-SKILL-001).
+ - `adapters/project_skills.load_yaml(text, label)`: 오류 메시지 라벨 인자(FA-002 PR과 같은 변경).
++- **검토 반례 반영(PR #44 P2)**: `keywords: [safe]`와 `"keywords ": [overridden]`는 YAML에선 다른 키였다가 `strip()` 뒤 같은
++  키가 되어 조용히 덮어썼습니다. 이제 정규화 뒤 중복을 `Duplicate skill frontmatter key after normalization`으로 거부합니다
++  (`test_quoted_padded_key_cannot_override_the_matcher_input`, 말형 6종→8종).
+ - `docs/contracts.md`: `INV-SKILL-001`에 파서·요약 규칙 문단 추가.
+ 
+ ## 재현과 검증
+diff --git a/src/codex_harness/adapters/skill_routing.py b/src/codex_harness/adapters/skill_routing.py
+index 4623493..7a5ac52 100644
+--- a/src/codex_harness/adapters/skill_routing.py
++++ b/src/codex_harness/adapters/skill_routing.py
+@@ -34,6 +34,9 @@ def frontmatter(text):
+     meta = {}
+     for key, value in (loaded or {}).items():
+         require(isinstance(key, str) and key.strip(), 'Invalid skill frontmatter key')
++        # Review counterexample (PR #44): `keywords` and `"keywords "` are distinct YAML keys but
++        # collapse after normalization; the collision is refused instead of silently overwriting.
++        require(key.strip() not in meta, 'Duplicate skill frontmatter key after normalization')
+         if isinstance(value, list):
+             require(all(isinstance(item, str) for item in value), 'Skill frontmatter lists hold strings only')
+             meta[key.strip()] = [item.strip() for item in value if item.strip()]
+diff --git a/tests/test_skill_routing.py b/tests/test_skill_routing.py
+index e08b396..799e35b 100644
+--- a/tests/test_skill_routing.py
++++ b/tests/test_skill_routing.py
+@@ -150,6 +150,8 @@ def test_inline_comments_never_enter_matcher_values():
+     ('---\nkeywords:\n  nested: value\n---\nB', 'Unsupported skill frontmatter value'),
+     ('---\nkeywords: [a, [b]]\n---\nB', 'lists hold strings only'),
+     ('---\nkeywords: a\nkeywords: b\n---\nB', 'Duplicate'),
++    ('---\nkeywords: [safe]\n"keywords ": [overridden]\n---\nB', 'Duplicate skill frontmatter key after normalization'),
++    ('---\n" keywords": [first]\nkeywords: [second]\n---\nB', 'Duplicate skill frontmatter key after normalization'),
+     ('---\nkeywords: !!python/object/apply:os.system [x]\n---\nB', 'Unsupported YAML tag'),
+     ('---\n- just\n- a list\n---\nB', 'must be a mapping'),
+     ('---\nkeywords: [unclosed\n---\nB', 'Invalid Skill frontmatter YAML'),
+@@ -160,6 +162,16 @@ def test_malformed_skill_metadata_fails_explicitly(text, message):
+         frontmatter(text)
+ 
+ 
++def test_quoted_padded_key_cannot_override_the_matcher_input():
++    # The collision is refused before any matcher sees it (review counterexample, PR #44).
++    from codex_harness.adapters.skill_routing import frontmatter
++    with pytest.raises(ContractError, match='after normalization'):
++        frontmatter('---\nkeywords: [safe]\n"keywords ": [overridden]\n---\nBODY')
++    meta, _ = frontmatter('---\n"keywords ": [padded]\n---\nBODY')
++    assert meta == {'keywords': ['padded']}, 'a lone padded key still normalizes'
++    assert score_skill(meta, 'padded', set(), {})[1] == 1
++
++
+ def test_routing_summary_reports_inspected_count_so_zero_matches_are_not_unchecked(tmp_path):
+     from codex_harness.adapters.skill_routing import route_skills
+     from codex_harness.domain.model import ContextItem

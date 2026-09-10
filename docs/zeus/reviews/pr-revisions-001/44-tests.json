@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "C:\\Users\\rudtn\\zeus-pr-review-44\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_skill_routing.py",
+    "tests/test_project_skills.py"
+  ],
+  "head": "79fb71b8e7ec4a4f7d1d3001f4672915c80f418b",
+  "exit_code": 0,
+  "seconds": 8.217239300000074,
+  "raw_sha256": "570d153b51503fcb67794d2864456213eaad467eac2bbf300e09b5a0d698eafe",
+  "real_postgres": true
+}

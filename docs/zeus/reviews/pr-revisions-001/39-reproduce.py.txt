@@ -1,0 +1,18 @@
+import json,sys,tempfile
+from pathlib import Path
+from dataclasses import replace
+sys.path[:0]=['C:/Users/rudtn/zeus-pr-review-39/src','C:/Users/rudtn/zeus-pr-review-39/tests']
+import test_research_audits as fixtures
+with tempfile.TemporaryDirectory() as d:
+    service,audit,source,_,_=fixtures.audit.__wrapped__(Path(d))
+    fixtures.activate_fixture(service)
+    proposal=fixtures.complete_fixture_audit(service,audit,source)
+    service.propose(audit['id'],proposal)
+    fixtures.approve_fixture(service,'lead:research')
+    task,original=fixtures.approve_fixture(service,'conductor')
+    rejected=service.review(task,replace(original,accepted=False))
+    replay=service.review(task,original)
+    assert replay['sequence']==1 and not service.coverage(audit['id'])['adoption_eligible']
+    changed=replace(original,license_assessment=original.license_assessment+' ')
+    reviewed=service.review(task,changed)
+    print(json.dumps({'scope':'controlled application fixture, no actual model approval','identical_replay_fixed':True,'same_execution_receipt':changed.execution_id==original.execution_id,'only_change':'trailing space in license_assessment','new_sequence':reviewed['sequence'],'adoption_eligible':service.coverage(audit['id'])['adoption_eligible']}))

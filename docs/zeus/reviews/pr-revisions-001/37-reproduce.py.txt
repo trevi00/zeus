@@ -1,0 +1,30 @@
+import json,sys
+from pathlib import Path
+from uuid import uuid4
+sys.path[:0]=['C:/Users/rudtn/zeus-pr-review-37/src','C:/Users/rudtn/zeus-pr-review-37/tests']
+import psycopg
+from psycopg import sql
+from psycopg.conninfo import make_conninfo
+from codex_harness.adapters.store import PostgresStore
+from codex_harness.application.workflow import Workflow
+from codex_harness.bootstrap import database_url,organization
+from codex_harness.domain.model import ContractError
+from test_workflow import assignment
+dsn=database_url(); schema='review_fence_'+uuid4().hex
+with psycopg.connect(dsn) as conn: conn.execute(sql.SQL('CREATE SCHEMA {}').format(sql.Identifier(schema)))
+try:
+    store=PostgresStore(make_conninfo(dsn,options=f'-c search_path={schema},public')); store.migrate()
+    w=Workflow(store,organization()); task=w.submit(assignment()); old=w.claim('worker:implementation','owner',lease_seconds=120)
+    w.cancel(task['id'],'conductor','revoke')
+    with store.transaction() as tx: tx.put('tasks',task['id'],old); before=tx.records()
+    errors={}
+    for name,op in [('heartbeat',lambda:w.heartbeat(old)),('complete',lambda:w.complete(old,{'summary':'stale'})),('fail',lambda:w.fail(old,'stale'))]:
+        try: op()
+        except ContractError as exc: errors[name]=str(exc)
+    with store.transaction() as tx: unchanged=tx.records()==before
+    assert len(errors)==3 and unchanged
+    result=dict(backend='actual PostgreSQL isolated schema',blocked=errors,records_unchanged=unchanged,host_clock_changed=False)
+finally:
+    with psycopg.connect(dsn) as conn: conn.execute(sql.SQL('DROP SCHEMA {} CASCADE').format(sql.Identifier(schema)))
+result['schema_removed']=True
+print(json.dumps(result))

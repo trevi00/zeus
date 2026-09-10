@@ -1,0 +1,97 @@
+﻿diff --git a/docs/contracts.md b/docs/contracts.md
+index dcee5f2..29dc091 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -23,7 +23,7 @@ The trusted local-process identity boundary is documented in status.md; validati
+ 
+ | ID | Contract |
+ |---|---|
+-| INV-RESEARCH-001 | Discovery and historical inventory never imply semantic review. Versioned imports preserve original reference records. Source verification reconciles every raw Git path and object against the pinned commit/tree, not just a manifest hash. Assets outside Git (uncommitted notes, caches, private sessions, nested repositories) are a separate observed-asset ledger per audit: they never enter the tracked denominator, but whole-analysis completeness and adoption proposals require every observed asset to carry an explicit final disposition, a disposition never regresses to pending, and observed records are part of the approval binding. |
++| INV-RESEARCH-001 | Discovery and historical inventory never imply semantic review. Versioned imports preserve original reference records. Source verification reconciles every raw Git path and object against the pinned commit/tree, not just a manifest hash. Assets outside Git (uncommitted notes, caches, private sessions, nested repositories) are a separate observed-asset ledger per audit: they never enter the tracked denominator, but whole-analysis completeness and adoption proposals share one denominator — every observed asset dispositioned and no open partition questions — a disposition never regresses to pending, and observed records are part of the approval binding. |
+ | INV-RESEARCH-002 | Partition scope is immutable. Checkpoints require an authorized assigned task, current lease and task/partition generations; evidence history and continuation outbox writes commit atomically. Remaining work reconciles with recorded evidence. |
+ | INV-RESEARCH-003 | Model-authored receipt IDs are not runner evidence. Missing execution, binary inspection or unresolved subsystem work cannot establish completion. Record tests not run with reasons and follow-up. |
+ | INV-RESEARCH-004 | Both discovery feeds and legacy approvals lack adoption authority. Positive eligibility requires complete coverage and ordered independent reviews bound to source/evidence/proposal, deployed revision/policy and graph. Revalidate approval and immutable bytes before execution. Verified release activation enables dispatch; rollback pauses it without deleting evidence. |
+diff --git a/docs/zeus/implementation/observed-assets-001/README.md b/docs/zeus/implementation/observed-assets-001/README.md
+index d594cf9..07b2eed 100644
+--- a/docs/zeus/implementation/observed-assets-001/README.md
++++ b/docs/zeus/implementation/observed-assets-001/README.md
+@@ -21,6 +21,9 @@
+   - `coverage()`: `observed_assets{total, pending, pending_paths, states}`와 `whole_analysis_complete`(추적 경로·
+     하위시스템·관측 자산이 모두 처분됐을 때만 True)를 추가. 추적 분모(`remaining_paths`)는 변하지 않습니다.
+   - `propose()`의 adopt/adapt: 보류 관측 자산이 있으면 `Observed assets await disposition`으로 거부.
++  - **검토 반례 반영(PR #43 P1)**: partition에 `open_questions`가 남아도 `whole_analysis_complete=true`였고 같은 상태의
++    `propose()`는 `Open audit questions remain`으로 거절해 완료 판정과 게이트가 어긋났습니다. 이제 `coverage()`는 열린
++    질문 목록(`open_questions`)을 함께 보이고 완료 판정에 포함해 제안 게이트와 같은 분모를 씁니다.
+ - `application/audit_gate.py`: 관측 자산 버킷을 승인 binding 증거에 포함 — 승인 뒤 새 관측 자산이 등록되면
+   binding이 바뀌어 채택이 보류됩니다.
+ - `adapters/observed_assets.py`: JSON 매니페스트를 읽어 등록하는 CLI(`--dry-run`은 검증만).
+@@ -38,14 +41,14 @@ uv run python -m codex_harness.adapters.observed_assets AUDIT_ID manifest.json [
+   관측 자산 4건(미커밋 노트·캐시 메타·사적 세션·중첩 저장소) 등록 → 추적 분모 불변, 상태 집계, 추적 경로 전부
+   검토 후에도 `whole_analysis_complete` False, adopt 제안 거부; 멱등 재등록 무변경; 증거 없는 reviewed 거부;
+   처분 후 완료 True와 제안 통과; 후퇴 거부와 history 보존; 추적 경로 등록 거부; basis/state/경로/해시 불량 거부;
+-  승인 뒤 새 관측 자산 등록 시 `adoption_eligible` False.
++  승인 뒤 새 관측 자산 등록 시 `adoption_eligible` False; partition 열린 질문이 있으면 완료 False·제안 거부, 해소 후 완료 True.
+ - `tests/test_observed_assets_cli.py`: 매니페스트 dry-run 무쓰기, 실제 등록, 잘못된 매니페스트 종료 코드.
+ - 기존 `test_research_audits`·`test_output_schema`(동결 스키마 불변 확인)·`test_architecture` 통과.
+ - 음성 대조: `application/research.py`·`audit_gate.py`를 수정 전으로 되돌리면 신규 검사가 실패합니다.
+ 
+ | 항목 | 결과 |
+ |---|---|
+-| `test_research_audits` + `test_observed_assets_cli` + `test_output_schema` + `test_architecture` | 111 passed |
++| `test_research_audits` + `test_observed_assets_cli` (+ 검토 반례) | 71 passed |
+ | Windows 전체 `uv run pytest -q` (Python 3.12.14) | 919 passed, 305 skipped (167s) |
+ | `uv run ruff check .` | 통과 |
+ 
+diff --git a/src/codex_harness/application/research.py b/src/codex_harness/application/research.py
+index 420c7cb..d54a2ea 100644
+--- a/src/codex_harness/application/research.py
++++ b/src/codex_harness/application/research.py
+@@ -271,15 +271,20 @@ class ResearchAudits:
+             observed = self._observed(tx, audit)
+             remaining_paths = sorted(set(p['path'] for p in audit['inventory']) - paths)
+             remaining_subsystems = sorted(set(audit['subsystems']) - subsystems)
++            # The completion verdict shares the proposal gate's denominators (review counterexample,
++            # PR #43): open partition questions keep the analysis incomplete on every read path.
++            open_questions = sorted(q for p in tx.scan('research_partitions') if p['audit_id'] == audit_id
++                                    for q in p['open_questions'])
+             return {'reviewed_paths': len(paths),
+                     'remaining_paths': remaining_paths,
+                     'remaining_subsystems': remaining_subsystems,
+                     'observed_assets': observed,
++                    'open_questions': open_questions,
+                     'whole_analysis_complete': not remaining_paths and not remaining_subsystems
+-                    and observed['pending'] == 0,
++                    and observed['pending'] == 0 and not open_questions,
+                     'adoption_eligible': self._eligible(tx, audit),
+-                    'reason': 'Eligibility requires complete coverage, dispositioned observed assets '
+-                              'and current independent approvals'}
++                    'reason': 'Eligibility requires complete coverage, dispositioned observed assets, '
++                              'no open partition questions and current independent approvals'}
+ 
+     def propose(self, audit_id, proposal: AdaptationProposal):
+         proposal = parse_record({'version': 1, 'kind': 'AdaptationProposal', 'record': asdict(proposal)})
+diff --git a/tests/test_research_audits.py b/tests/test_research_audits.py
+index a4cd8fd..1be0643 100644
+--- a/tests/test_research_audits.py
++++ b/tests/test_research_audits.py
+@@ -619,6 +619,20 @@ def test_observed_assets_are_a_separate_completeness_ledger(audit):
+                 observed('x', sha='zz')]:
+         with pytest.raises(ContractError):
+             service.observe_assets(record['id'], [bad])
++    # Review counterexample (PR #43): an open partition question must keep the completion verdict and
++    # the proposal gate in agreement.
++    with service.store.transaction() as tx:
++        partition = tx.scan('research_partitions')[0]
++        partition['open_questions'] = ['Which runtime consumes this path?']
++        tx.put('research_partitions', partition['partition_id'], partition)
++    questioned = service.coverage(record['id'])
++    assert not questioned['whole_analysis_complete'] and questioned['open_questions'] == ['Which runtime consumes this path?']
++    with pytest.raises(ContractError, match='Open audit questions remain'):
++        service.propose(record['id'], proposal)
++    with service.store.transaction() as tx:
++        partition['open_questions'] = []
++        tx.put('research_partitions', partition['partition_id'], partition)
++    assert service.coverage(record['id'])['whole_analysis_complete']
+     service.propose(record['id'], proposal)
+     approve_fixture(service, 'lead:research')
+     approve_fixture(service, 'conductor')

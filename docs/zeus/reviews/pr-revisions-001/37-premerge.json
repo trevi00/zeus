@@ -1,0 +1,107 @@
+{
+  "closingIssuesReferences": [],
+  "headRefOid": "16c05c2f4748b4cc54717496b5e4c0305b30387e",
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:36:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441711161/job/102757935370",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T05:35:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:36:38Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441708753/job/102757931157",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T05:35:54Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:36:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441711161/job/102757935297",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T05:35:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:36:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441708753/job/102757931331",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T05:35:54Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:41:36Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441711161/job/102757935345",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T05:35:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:41:18Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441708753/job/102757930932",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T05:35:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:40:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441711161/job/102757935463",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T05:35:55Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:41:35Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441708753/job/102757931165",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T05:36:27Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:38:31Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441711161/job/102757935110",
+      "name": "integration",
+      "startedAt": "2026-09-10T05:35:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T05:38:51Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34441708753/job/102757931184",
+      "name": "integration",
+      "startedAt": "2026-09-10T05:35:54Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ]
+}

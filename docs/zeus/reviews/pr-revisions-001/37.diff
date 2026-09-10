@@ -1,0 +1,203 @@
+﻿diff --git a/docs/contracts.md b/docs/contracts.md
+index e6c38f2..f118f41 100644
+--- a/docs/contracts.md
++++ b/docs/contracts.md
+@@ -167,7 +167,9 @@ token in the trusted local runtime, not an authenticated tenant principal.
+ Generations advance only through the durable `execution_fences` ledger, which outlives the
+ task, decision or release-queue row: a recreated row, a regressed generation or a corrupted
+ fence is blocked instead of re-armed, and a fenced task identity cannot be resubmitted from
+-generation 0. Row or process existence is never execution identity, and the upstream file
++generation 0. Every write by an existing handle re-checks the current row's generation and
++owner against the fence in the same transaction, so a row restored behind the fence cannot
++re-arm its old holder; rows that predate the ledger pass, a corrupted fence fails closed. Row or process existence is never execution identity, and the upstream file
+ lease is not ported.
+ 
+ ## INV-EXECUTION-TIME-001
+diff --git a/docs/zeus/implementation/execution-fence-001/README.md b/docs/zeus/implementation/execution-fence-001/README.md
+index 8e06db9..11ded2d 100644
+--- a/docs/zeus/implementation/execution-fence-001/README.md
++++ b/docs/zeus/implementation/execution-fence-001/README.md
+@@ -24,6 +24,11 @@ Zeus는 이미 PostgreSQL 트랜잭션 안에서 `id·generation·attempt·lease
+ - `Workflow.claim`·`Executor.decide_one`·`ReleaseQueue.claim`: generation을 올리기 전 `advance`. 후퇴하면
+   그 행만 `ExecutionGenerationRegressed`로 차단(`block_execution`, release queue는 `failed`+사유)하고 다른
+   작업은 계속 서빙합니다. `Workflow.cancel`·`ExecutionRecovery`의 generation 증가도 fence를 통과합니다.
++- **검토 반례 반영(PR #37 P1)**: 새 claim의 `advance`만으로는 기존 handle의 쓰기를 막지 못했습니다 — 행만 과거
++  running/gen1로 복원하면 옛 handle의 heartbeat/complete가 통과했습니다(Codex가 실제 PG에서 재현). 이제 `_owned`
++  (tasks·decisions)와 `ReleaseQueue._owned`가 **모든 쓰기**에서 현재 행의 generation·owner를 durable fence와 같은
++  트랜잭션에서 대조합니다(`execution_fence.require_current`). fence가 없는 레거시 행은 통과, fence 손상은 fail-closed,
++  fence보다 뒤처진 행·다른 owner는 거부합니다.
+ - `docs/contracts.md`: `INV-EXECUTION-IDENTITY-001`에 내구 fence 문단 추가. 파일 lease는 이식하지 않습니다.
+ 
+ 기존 행(fence 없는 레거시)은 첫 claim에서 fence를 만들며 동작이 바뀌지 않습니다. PG를 예전 덤프로 복원하면
+@@ -50,7 +55,7 @@ fence도 함께 되돌아가므로 거짓 거부는 없고, 그 경우의 보호
+ 
+ | 항목 | 결과 |
+ |---|---|
+-| `tests/test_execution_fence.py` memory+postgres (`HARNESS_INTEGRATION=1`) | 8 passed |
++| `tests/test_execution_fence.py` memory+postgres (`HARNESS_INTEGRATION=1`) | 8 passed → 검토 반례 추가 후 11 passed (`test_row_restored_behind_the_fence_cannot_re_arm_its_old_holder[memory\|postgres]`, `test_decision_and_release_rows_behind_the_fence_are_refused`) |
+ | Windows 전체 `uv run pytest -q` (Python 3.12.14, PG 변형 skip) | 922 passed, 308 skipped (173s) |
+ | `uv run ruff check .` | 통과 |
+ 
+diff --git a/src/codex_harness/application/execution_fence.py b/src/codex_harness/application/execution_fence.py
+index 2eceabb..eb89fdb 100644
+--- a/src/codex_harness/application/execution_fence.py
++++ b/src/codex_harness/application/execution_fence.py
+@@ -22,6 +22,22 @@ def require_unused(tx, bucket, row_id):
+     require(current(tx, bucket, row_id) is None, 'Execution identity was used before; rows are never recreated')
+ 
+ 
++def require_current(tx, bucket, row_id, generation, owner=None):
++    """Every write by an existing handle checks the row against the durable fence, not only claims.
++
++    A row restored to an older running generation while the fence has moved on (partial restore,
++    manual repair) must not re-arm the old holder. A legacy row without a fence passes; a corrupted
++    fence fails closed.
++    """
++    fence = current(tx, bucket, row_id)
++    if fence is None:
++        return
++    require(type(fence.get('generation')) is int and fence['generation'] == generation,
++            'Execution row is behind its durable fence')
++    require(fence.get('owner') is None or owner is None or fence['owner'] == owner,
++            'Execution owner differs from the durable fence')
++
++
+ def advance(tx, bucket, row_id, generation, owner=None):
+     require(type(generation) is int and generation > 0, 'Fence generation must be a positive integer')
+     fence = current(tx, bucket, row_id)
+diff --git a/src/codex_harness/application/release_queue.py b/src/codex_harness/application/release_queue.py
+index 3c92b22..b63c37f 100644
+--- a/src/codex_harness/application/release_queue.py
++++ b/src/codex_harness/application/release_queue.py
+@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
+ from uuid import uuid4
+ 
+ from codex_harness.application.execution_fence import advance as advance_fence
++from codex_harness.application.execution_fence import require_current as require_current_fence
+ from codex_harness.application.tickets import ticket_binding
+ from codex_harness.domain.model import ContractError, require
+ from codex_harness.domain.policy import POLICY
+@@ -69,6 +70,7 @@ class ReleaseQueue:
+                 and lock.get("owner") == claim["owner"]
+                 and datetime.fromisoformat(row["lease_until"]) > now,
+                 "Stale release controller")
++        require_current_fence(tx, "release_queue", row["id"], row.get("generation"), row.get("owner"))
+         return row
+ 
+     def heartbeat(self, claim, now=None):
+diff --git a/src/codex_harness/application/workflow.py b/src/codex_harness/application/workflow.py
+index da7aea7..d03e394 100644
+--- a/src/codex_harness/application/workflow.py
++++ b/src/codex_harness/application/workflow.py
+@@ -14,6 +14,7 @@ from codex_harness.application.execution_budget import (
+     retry_limit,
+ )
+ from codex_harness.application.execution_fence import advance as advance_fence
++from codex_harness.application.execution_fence import require_current as require_current_fence
+ from codex_harness.application.execution_fence import require_unused as require_unused_fence
+ from codex_harness.application.execution_notices import record as execution_notice
+ from codex_harness.application.execution_time import (
+@@ -203,6 +204,9 @@ class Workflow:
+         require(current is not None and current["status"] == "running"
+                 and self._same_execution(current, task),
+                 "Stale or expired task execution")
++        # INV-EXECUTION-IDENTITY-001: the row itself is checked against the durable fence on every
++        # write, so a row restored to an older running generation cannot re-arm its old holder.
++        require_current_fence(tx, bucket, current["id"], current.get("generation"), current.get("lease_owner"))
+         require(active(current, bucket, now), "Stale or expired task execution")
+         observe_domain(tx, current, bucket, now)
+         return current
+diff --git a/tests/test_decision_recovery.py b/tests/test_decision_recovery.py
+index 9e8b0a2..484ea6d 100644
+--- a/tests/test_decision_recovery.py
++++ b/tests/test_decision_recovery.py
+@@ -45,8 +45,11 @@ def resume(recovery, row, operation='resume'):
+ 
+ 
+ def lease(executor, row):
++    from codex_harness.application.execution_fence import advance as advance_fence
+     with executor.service.store.transaction() as tx:
+         current = tx.get('decisions_pending', row['id'])
++        # A fixture claim advances the durable fence exactly as Executor.decide_one does.
++        advance_fence(tx, 'decisions_pending', row['id'], current['generation'] + 1, 'fixture-owner')
+         current.update(status='running', attempt=current['attempt'] + 1, generation=current['generation'] + 1,
+                        lease_owner='fixture-owner', lease_until=(datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat())
+         tx.put('decisions_pending', row['id'], current)
+diff --git a/tests/test_execution_fence.py b/tests/test_execution_fence.py
+index 20bc05d..b741784 100644
+--- a/tests/test_execution_fence.py
++++ b/tests/test_execution_fence.py
+@@ -93,6 +93,73 @@ def test_recreated_task_row_cannot_reissue_generation(backend, request):
+         w.heartbeat(lease)
+ 
+ 
++@pytest.mark.parametrize('backend', ['memory', 'postgres'])
++def test_row_restored_behind_the_fence_cannot_re_arm_its_old_holder(backend, request):
++    # Review counterexample (PR #37): claim gen1 -> cancel (fence 2) -> restore only the task row to
++    # running/gen1 -> the old handle must still be refused on heartbeat, complete and fail.
++    store = backend_store(backend, request)
++    w = Workflow(store, organization())
++    task = w.submit(assignment())
++    lease = w.claim('worker:implementation', 'owner', lease_seconds=300)
++    with store.transaction() as tx:
++        running_row = tx.get('tasks', task['id'])
++    w.cancel(task['id'], 'conductor', 'operator stop')
++    with store.transaction() as tx:
++        assert tx.get('execution_fences', 'tasks:' + task['id'])['generation'] == 2
++        tx.put('tasks', task['id'], running_row)  # partial restore of the row only
++        before = tx.records()
++    for action in (lambda: w.heartbeat(lease), lambda: w.complete(lease, {'summary': 'restored'}),
++                   lambda: w.fail(lease, 'restored failure')):
++        with pytest.raises(ContractError, match='behind its durable fence'):
++            action()
++    with store.transaction() as tx:
++        assert tx.records() == before
++        assert tx.get('tasks', task['id'])['status'] == 'running', 'the restored row is left for the operator'
++    # Same generation but a different owner than the fence recorded is refused as well.
++    with store.transaction() as tx:
++        tx.put('execution_fences', 'tasks:' + task['id'], {'id': 'tasks:' + task['id'], 'bucket': 'tasks',
++               'row_id': task['id'], 'generation': 1, 'owner': 'someone-else'})
++    with pytest.raises(ContractError, match='owner differs from the durable fence'):
++        w.heartbeat(lease)
++    # A fence that matches the row again lets the legitimate holder continue.
++    with store.transaction() as tx:
++        tx.put('execution_fences', 'tasks:' + task['id'], {'id': 'tasks:' + task['id'], 'bucket': 'tasks',
++               'row_id': task['id'], 'generation': 1, 'owner': 'owner'})
++    w.heartbeat(lease)
++    assert w.complete(lease, {'summary': 'legitimate'})['status'] == 'succeeded'
++
++
++def test_decision_and_release_rows_behind_the_fence_are_refused():
++    store = MemoryStore()
++    w = Workflow(store, organization())
++    task = w.submit(assignment())
++    lease = w.claim('worker:implementation', 'owner')
++    decision = {**lease, '_bucket': 'decisions_pending'}
++    with store.transaction() as tx:
++        tx.put('decisions_pending', task['id'], {k: v for k, v in decision.items() if k != '_bucket'})
++        tx.put('execution_fences', 'decisions_pending:' + task['id'], {'id': 'x', 'bucket': 'decisions_pending',
++               'row_id': task['id'], 'generation': 3, 'owner': None})
++    with pytest.raises(ContractError, match='behind its durable fence'):
++        w.heartbeat(decision)
++    queue = ReleaseQueue(store)
++    t0 = datetime.now(timezone.utc)
++    with store.transaction() as tx:
++        tx.put('release_queue', 'r1', {'id': 'r1', 'status': 'queued', 'at': t0.isoformat()})
++    claim = queue.claim(now=t0)
++    with store.transaction() as tx:
++        tx.put('execution_fences', 'release_queue:r1', {'id': 'y', 'bucket': 'release_queue', 'row_id': 'r1',
++               'generation': 2, 'owner': claim['owner']})
++    with pytest.raises(ContractError, match='behind its durable fence'):
++        queue.heartbeat(claim, now=t0)
++    legacy_store = MemoryStore()
++    legacy = Workflow(legacy_store, organization())
++    legacy_task = legacy.submit(assignment())
++    legacy_lease = legacy.claim('worker:implementation', 'owner')
++    with legacy_store.transaction() as tx:
++        del legacy_store.data['execution_fences', 'tasks:' + legacy_task['id']]
++    legacy.heartbeat(legacy_lease)  # rows written before fences existed keep working
++
++
+ def test_cancel_and_corrupted_fence_fail_closed():
+     store = MemoryStore()
+     w = Workflow(store, organization())
