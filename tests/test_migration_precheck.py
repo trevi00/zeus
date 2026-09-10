@@ -175,7 +175,8 @@ def test_concurrent_apply_records_each_version_once_and_receipts_bind_the_proces
     config_path = tmp_path / 'migrations.json'
     config_path.write_text(json.dumps(config), encoding='utf-8')
     config_hash = parse_config(config)['config_hash']
-    binding = {'config_hash': config_hash, 'root': str(root), 'source_revision': 'c' * 40, 'environment': 'windows-11'}
+    binding = {'config_hash': config_hash, 'root': str(root.resolve()), 'source_revision': 'c' * 40, 'environment': 'windows-11'}
+    approval = {'source_revision': 'c' * 40, 'environment': 'windows-11', 'config_hash': config_hash, 'root': str(root.resolve())}
     receipts = MigrationReceipts(isolated_pgstore, FileArtifacts(str(tmp_path / 'artifacts')))
     precheck = _child('precheck', config_path, root, isolated_pgstore.dsn, 'a')
     row = receipts.record({'operation': 'precheck', **binding, **precheck})
@@ -183,7 +184,7 @@ def test_concurrent_apply_records_each_version_once_and_receipts_bind_the_proces
     assert row['tool_pinned'] and b'precheck refused: schema=refused' in precheck['stderr']
     with isolated_pgstore.transaction() as tx:
         with pytest.raises(ContractError, match='did not allow apply: schema=refused'):
-            receipts.require_approved(tx, row['id'], source_revision='c' * 40, environment='windows-11')
+            receipts.require_approved(tx, row['id'], **approval)
     env = {**os.environ, 'ZEUS_DATABASE_URL': isolated_pgstore.dsn, 'PYTHONIOENCODING': 'utf-8'}
     children = [subprocess.Popen([sys.executable, '-m', 'codex_harness.adapters.migrations', 'apply', '--config', str(config_path), '--root', str(root),
                                   '--applied-by', name], env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE) for name in ('left', 'right')]
@@ -198,11 +199,30 @@ def test_concurrent_apply_records_each_version_once_and_receipts_bind_the_proces
     approved = receipts.record({'operation': 'precheck', **binding, **_child('precheck', config_path, root, isolated_pgstore.dsn, 'a')})
     assert approved['exit_code'] == 0 and approved['apply_allowed'] is True and approved['results']['history'] == 'ok'
     with isolated_pgstore.transaction() as tx:
-        assert receipts.require_approved(tx, approved['id'], source_revision='c' * 40, environment='windows-11')['id'] == approved['id']
-        with pytest.raises(ContractError, match='another revision or environment'):
-            receipts.require_approved(tx, approved['id'], source_revision='d' * 40, environment='windows-11')
+        assert receipts.require_approved(tx, approved['id'], **approval)['id'] == approved['id']
         assert receipts.artifacts.document(approved['stdout_ref'])['raw'].encode('latin-1').startswith(b'{"operation": "precheck"')
         assert len(tx.scan(BUCKET)) == 2
+        with pytest.raises(ContractError, match='another revision or environment'):
+            receipts.require_approved(tx, approved['id'], **{**approval, 'source_revision': 'd' * 40})
+        with pytest.raises(ContractError, match='another migration config or root'):
+            receipts.require_approved(tx, approved['id'], **{**approval, 'config_hash': 'f' * 64})
+        with pytest.raises(ContractError, match='another migration config or root'):
+            receipts.require_approved(tx, approved['id'], **{**approval, 'root': str(tmp_path / 'elsewhere')})
+    # Review counterexample (PR #62): a receipt whose stdout is about another config or root is a
+    # binding mismatch, recorded as such and never an approval, even with the right revision.
+    other_config = {**config, 'expected_tables': ['documents', 'ledger']}
+    other_hash = parse_config(other_config)['config_hash']
+    mismatched = receipts.record({'operation': 'precheck', **binding, 'config_hash': other_hash, **_child('precheck', config_path, root, isolated_pgstore.dsn, 'a')})
+    assert mismatched['outcome'] == 'binding_mismatch' and mismatched['binding_mismatches'] == ['config_hash']
+    with isolated_pgstore.transaction() as tx:
+        with pytest.raises(ContractError, match='another migration config or root'):
+            receipts.require_approved(tx, mismatched['id'], **approval)
+        with pytest.raises(ContractError, match='names another config_hash'):
+            receipts.require_approved(tx, mismatched['id'], **{**approval, 'config_hash': other_hash})
+    wrong_root = receipts.record({'operation': 'precheck', **binding, 'root': str(tmp_path / 'elsewhere'), **_child('precheck', config_path, root, isolated_pgstore.dsn, 'a')})
+    assert wrong_root['outcome'] == 'binding_mismatch' and wrong_root['binding_mismatches'] == ['root']
+    wrong_op = receipts.record({'operation': 'apply', **binding, **_child('precheck', config_path, root, isolated_pgstore.dsn, 'a')})
+    assert wrong_op['binding_mismatches'] == ['operation']
     # An errored run (unset DSN) is recorded as an error with exit 2, not as success.
     broken = _child('precheck', config_path, root, '', 'a')
     errored = receipts.record({'operation': 'precheck', **binding, **broken})
@@ -213,10 +233,11 @@ def test_concurrent_apply_records_each_version_once_and_receipts_bind_the_proces
     for bad in ({**binding, 'source_revision': 'HEAD'}, {**binding, 'environment': ''}, {**binding, 'config_hash': 'short'}):
         with pytest.raises(ContractError):
             receipts.record({'operation': 'precheck', **bad, **precheck})
-    apply_row = receipts.record({'operation': 'apply', **binding, **precheck})
+    apply_row = receipts.record({'operation': 'apply', **binding, **_child('apply', config_path, root, isolated_pgstore.dsn, 'a')})
+    assert apply_row['binding_mismatches'] == [] and apply_row['applied'] == []
     with isolated_pgstore.transaction() as tx:
         with pytest.raises(ContractError, match='Only a precheck'):
-            receipts.require_approved(tx, apply_row['id'], source_revision='c' * 40, environment='windows-11')
+            receipts.require_approved(tx, apply_row['id'], **approval)
 
 
 def test_memory_store_receipts_do_not_need_postgres(tmp_path):
@@ -226,4 +247,4 @@ def test_memory_store_receipts_do_not_need_postgres(tmp_path):
     assert row['outcome'] == 'unparseable' and row['tool_pinned'] is False and row['apply_allowed'] is False
     with MemoryStore().transaction() as tx:
         with pytest.raises(ContractError, match='missing'):
-            receipts.require_approved(tx, row['id'], source_revision='unversioned', environment='ci')
+            receipts.require_approved(tx, row['id'], source_revision='unversioned', environment='ci', config_hash='a' * 64, root='r')

@@ -42,6 +42,19 @@ class MigrationReceipts:
         tool = document.get('tool') if isinstance(document, dict) else None
         outcome = ('error' if isinstance(document, dict) and 'error' in document else 'refused' if isinstance(document, dict) and 'refused' in document
                    else 'completed' if isinstance(document, dict) and ('plan' in document or 'receipt' in document) else 'unparseable')
+        # The process output must name the same operation, config and root the caller says it ran;
+        # otherwise the receipt is kept as a binding mismatch and can never approve (review, PR #62).
+        body = document.get('plan') if isinstance(document, dict) and 'plan' in document else document.get('receipt') if isinstance(document, dict) else None
+        mismatches = []
+        if isinstance(document, dict) and document.get('operation') != run['operation']:
+            mismatches.append('operation')
+        if isinstance(body, dict):
+            if body.get('config_hash') != run['config_hash']:
+                mismatches.append('config_hash')
+            if body.get('root') != run['root']:
+                mismatches.append('root')
+        if mismatches and outcome == 'completed':
+            outcome = 'binding_mismatch'
         stdout = self.artifacts.put(canonical({'kind': 'stdout', 'raw': run['stdout'].decode('latin-1')}), 'migration-run')
         stderr = self.artifacts.put(canonical({'kind': 'stderr', 'raw': run['stderr'].decode('latin-1')}), 'migration-run')
         key = digest(['migration-run-v1', run['operation'], run['argv'], run['config_hash'], run['source_revision'], run['environment'],
@@ -49,7 +62,7 @@ class MigrationReceipts:
         row = {'id': key, 'operation': run['operation'], 'argv': run['argv'], 'config_hash': run['config_hash'], 'root': run['root'],
                'source_revision': run['source_revision'], 'environment': run['environment'], 'exit_code': run['exit_code'],
                'stdout_ref': stdout['ref'], 'stderr_ref': stderr['ref'], 'started_at': run['started_at'], 'finished_at': run['finished_at'],
-               'tool': tool, 'tool_pinned': tool == TOOL, 'outcome': outcome,
+               'tool': tool, 'tool_pinned': tool == TOOL, 'outcome': outcome, 'binding_mismatches': mismatches,
                'apply_allowed': bool(isinstance(document, dict) and document.get('plan', {}).get('apply_allowed')) if run['operation'] == 'precheck' else None,
                'results': document.get('plan', {}).get('results') if isinstance(document, dict) and run['operation'] == 'precheck' else None,
                'applied': document.get('receipt', {}).get('applied') if isinstance(document, dict) and run['operation'] == 'apply' else None,
@@ -62,13 +75,16 @@ class MigrationReceipts:
             tx.put(BUCKET, key, row)
         return row
 
-    def require_approved(self, tx, run_id, *, source_revision, environment):
+    def require_approved(self, tx, run_id, *, source_revision, environment, config_hash, root):
+        """The consumer says which config and root it is about to apply; the receipt must be for exactly those."""
         row = tx.get(BUCKET, run_id)
         require(row is not None, 'Migration run missing')
         require(row['operation'] == 'precheck', 'Only a precheck can approve an apply')
         require(row['tool_pinned'], 'Precheck ran a tool other than the pinned one')
         require(row['source_revision'] == source_revision and row['environment'] == environment,
                 'Precheck is bound to another revision or environment')
+        require(row['config_hash'] == config_hash and row['root'] == root, 'Precheck is bound to another migration config or root')
+        require(not row['binding_mismatches'], 'Precheck output names another ' + ', '.join(row['binding_mismatches']) + ' than its receipt')
         require(row['outcome'] == 'completed' and row['exit_code'] == 0 and row['apply_allowed'] is True,
                 'Precheck did not allow apply: ' + (', '.join(f'{k}={v}' for k, v in sorted((row.get('results') or {}).items())
                                                              if v not in {'ok', 'not_applicable'}) or row['outcome']))

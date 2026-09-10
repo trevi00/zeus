@@ -98,7 +98,8 @@ class Migrator:
             "SELECT table_name FROM information_schema.tables WHERE table_schema = ANY(current_schemas(false)) ORDER BY table_name").fetchall()]
 
     def _evaluate(self, conn):
-        return evaluate(self.config, discover(self.config, self.root), self.history(conn), self.live_tables(conn))
+        plan = evaluate(self.config, discover(self.config, self.root), self.history(conn), self.live_tables(conn))
+        return {**plan, 'root': str(self.root.resolve())}
 
     def precheck(self):
         """Read-only: files, history and schema as they are now."""
@@ -139,6 +140,7 @@ class Migrator:
             history = self.history(conn)
         return {'applied': applied, 'already_applied': [{'module': r['module'], 'version': r['version']} for r in history
                                                         if {'module': r['module'], 'version': r['version']} not in applied],
+                'root': str(self.root.resolve()),
                 'history': history, 'tool': TOOL, 'config_hash': self.config['config_hash'], 'schema_verified': self.config['expected_tables']}
 
 
