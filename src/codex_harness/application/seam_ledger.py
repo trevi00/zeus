@@ -8,11 +8,13 @@ record and reports each corrupt line; a partial audit never presents itself as c
 import json
 
 from codex_harness.domain.model import digest, require, utcnow
+from codex_harness.domain.seam_view import build_view
 from codex_harness.domain.seams import VERDICTS, audit_records, compare, parse_observation
 
 OBSERVATIONS = 'seam_observations'
 COMPARISONS = 'seam_comparisons'
 IMPORTS = 'seam_ledger_imports'
+VIEWS = 'seam_views'
 REVIEWERS = ('lead:improvement', 'conductor')
 RECORD_KEYS = {'seam_id', 'verdict', 'producer', 'consumer', 'at'}
 
@@ -90,4 +92,21 @@ class SeamLedger:
             row = {'id': key, 'source_label': source_label, 'records': records, 'audit': audit, 'imported_at': utcnow(),
                    'authority': 'imported claims; not runtime observations, not acceptance'}
             tx.put(IMPORTS, key, row)
+            return row
+
+    def view(self, policy):
+        """Project the recorded rows into one deterministic view; the row is derived and regenerable."""
+        with self.store.transaction() as tx:
+            observations = [row['observation'] for row in tx.scan(OBSERVATIONS)]
+            comparisons = [{'id': row['id'], 'result': row['result']} for row in tx.scan(COMPARISONS)]
+        view = build_view(observations, comparisons, policy)
+        key = view['receipt']['inputs_hash']
+        with self.store.transaction() as tx:
+            existing = tx.get(VIEWS, key)
+            if existing is not None:
+                require(existing['view']['receipt']['view_hash'] == view['receipt']['view_hash'],
+                        'A regenerated view differs from the stored one for identical inputs')
+                return existing
+            row = {'id': key, 'view': view, 'generated_at': utcnow(), 'derived': True}
+            tx.put(VIEWS, key, row)
             return row
