@@ -89,6 +89,20 @@ attestations. Retry delivery cannot add samples, including after hot-window evic
 Leased writes require current task ownership in the same transaction. A task excludes
 its own observation from historical assessment. Advisory text and its full skill body
 are included or omitted atomically; assessment provenance binds session recovery.
+## INV-EXPERIENCE-001
+
+Imported upstream experience (lesson) records are claims, not evidence. Each claim binds the
+source name, upstream path, exact bytes and rule version; the original `occurrences`, `trust`,
+`lifecycle` and `evidence` fields are preserved verbatim under `upstream` and never copied into
+Zeus incident, hook, review or release state. Independent occurrences are recomputed only from
+evidence tokens that identify one incident each; cumulative counters (`ledger:PASS xN`) and
+note locations (`repair-notes:*`) count zero, so a record without identities stays
+`upstream_occurrences_unverified`. Re-import of identical bytes changes nothing; different
+bytes of the same path are separate versions. The acquisition basis (observed bytes, pinned
+commit) is separate from the content claim: the same bytes seen on another basis add an
+acquisition to the existing claim, never a version or an occurrence. Claims live in their own bucket and do not
+participate in INV-RECURRENCE-001 counting.
+
 # INV-SKILL-IMPORT-001
 
 Legacy skill telemetry imports bind exact raw bytes to a project/source segment and
