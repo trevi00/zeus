@@ -41,12 +41,19 @@ def require_adoption(tx, details):
     active = tx.get('deployment', 'active') or {}
     require(approval is not None and control.get('release_id') == active.get('release_id')
             and control.get('status') == 'active', 'Research adoption deferred: rollout paused')
+    require(approval.get('status', 'approved') == 'approved', 'Research adoption deferred: approval revoked')
+    reviews = tx.scan('research_reviews')
     actors = set()
     for key in approval.get('reviews', []):
         row = tx.get('research_reviews', key)
         require(row is not None and digest(row['review']) == key
                 and row['review']['binding'] == approval['binding'] and row['review']['accepted'],
                 'Research adoption deferred: changed independent review')
+        # INV-RESEARCH-004: an earlier acceptance never outranks this actor's latest review.
+        latest = max((r for r in reviews if r['review']['binding'] == approval['binding']
+                      and r['review']['actor'] == row['review']['actor']),
+                     key=lambda r: (r.get('sequence', 0), r.get('at', '')))
+        require(latest['review']['accepted'], 'Research adoption deferred: rejected by a later review')
         receipt_id = row['review']['execution_id']
         receipt = tx.get('research_receipts', receipt_id)
         require(receipt is not None and digest(receipt) == receipt_id

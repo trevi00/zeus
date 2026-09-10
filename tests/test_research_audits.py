@@ -12,7 +12,7 @@ from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.research import ResearchAudits
 from codex_harness.application.workflow import Workflow
 from codex_harness.bootstrap import organization
-from codex_harness.domain.model import ContractError, canonical, envelope
+from codex_harness.domain.model import ContractError, canonical, digest, envelope
 from codex_harness.domain.research import (
     InventoryEntry,
     PartitionCheckpoint,
@@ -640,6 +640,101 @@ def test_observed_assets_are_a_separate_completeness_ledger(audit):
     # A new observed asset after approval changes the evidence binding and defers adoption.
     service.observe_assets(record['id'], [observed('notes/late.md')])
     assert not service.coverage(record['id'])['adoption_eligible']
+
+
+@pytest.mark.parametrize('rejecting_actor', ['conductor', 'lead:research'])
+def test_later_rejecting_review_revokes_approval(audit, rejecting_actor):
+    # FA-005: a PASS followed by a rejection never stays "completed" on any read path.
+    from codex_harness.application.audit_gate import require_adoption
+    service, record, source, _, _ = audit
+    activate_fixture(service)
+    proposal = complete_fixture_audit(service, record, source)
+    service.propose(record['id'], proposal)
+    tasks = {actor: approve_fixture(service, actor) for actor in ('lead:research', 'conductor')}
+    assert service.coverage(record['id'])['adoption_eligible']
+    with service.store.transaction() as tx:
+        approval = next(r for r in tx.scan('research_approvals') if r['audit_id'] == record['id'])
+        assert approval['status'] == 'approved'
+        details = {'proposal': approval['proposal'], 'audit_approval': approval['binding']}
+        require_adoption(tx, details)
+        before = [r for r in tx.scan('research_reviews')]
+    task, review = tasks[rejecting_actor]
+    rejection = service.review(task, replace(review, accepted=False))
+    assert rejection['sequence'] == 2 and not rejection['review']['accepted']
+    assert not service.coverage(record['id'])['adoption_eligible']
+    with service.store.transaction() as tx:
+        revoked = tx.get('research_approvals', approval['binding'])
+        assert revoked['status'] == 'revoked' and revoked['revoked_by'] == digest(rejection['review'])
+        assert len(tx.scan('research_reviews')) == len(before) + 1, 'the accepting review is retained'
+        with pytest.raises(ContractError, match='approval revoked'):
+            require_adoption(tx, details)
+        # Even if the status flag were lost, the latest review per actor still decides.
+        tx.put('research_approvals', approval['binding'], {k: v for k, v in revoked.items()
+                                                             if k not in {'status', 'revoked_by', 'revoked_at'}})
+        with pytest.raises(ContractError, match='rejected by a later review'):
+            require_adoption(tx, details)
+    message = envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
+                       {'objective': 'adopt', **details}, 'fixture')
+    with pytest.raises(ContractError, match='Research adoption deferred'):
+        service.workflow.submit(message)
+
+
+def test_replaying_an_old_acceptance_never_overturns_a_later_rejection(audit):
+    # Review counterexample (PR #39): PASS -> REJECT -> replay of the identical PASS object.
+    service, record, source, _, _ = audit
+    activate_fixture(service)
+    proposal = complete_fixture_audit(service, record, source)
+    service.propose(record['id'], proposal)
+    tasks = {actor: approve_fixture(service, actor) for actor in ('lead:research', 'conductor')}
+    task, review = tasks['conductor']
+    with service.store.transaction() as tx:
+        original = tx.get('research_reviews', digest(asdict(review)))
+    rejection = service.review(task, replace(review, accepted=False))
+    assert rejection['sequence'] == 2 and not service.coverage(record['id'])['adoption_eligible']
+    replayed = service.review(task, review)
+    assert replayed == original and replayed['sequence'] == 1, 'redelivery keeps its original order'
+    assert not service.coverage(record['id'])['adoption_eligible']
+    with service.store.transaction() as tx:
+        assert tx.get('research_approvals', review.binding)['status'] == 'revoked'
+        assert len([r for r in tx.scan('research_reviews') if r['review']['actor'] == 'conductor']) == 2
+    # Same execution, re-worded assessment: a new review identity, but not a new inspection.
+    for reworded in (replace(review, license_assessment=review.license_assessment + ' '),
+                     replace(review, license_assessment='Re-read: ' + review.license_assessment)):
+        with pytest.raises(ContractError, match='Re-approval requires a new inspection execution'):
+            service.review(task, reworded)
+    assert not service.coverage(record['id'])['adoption_eligible']
+    with service.store.transaction() as tx:
+        assert len([r for r in tx.scan('research_reviews') if r['review']['actor'] == 'conductor']) == 2
+    # Re-approval needs a new review execution (new receipt), which then outranks the rejection.
+    receipt = service.execute(task, task['input']['audit_id'], ['fixture-independent-inspection', 'again'])
+    fresh = service.review(task, replace(review, execution_id=receipt['id']))
+    assert fresh['sequence'] == 3 and service.coverage(record['id'])['adoption_eligible']
+
+
+def test_rejection_then_acceptance_orders_by_sequence_not_existence(audit):
+    from codex_harness.domain.research import IndependentReview
+    service, record, source, _, _ = audit
+    activate_fixture(service)
+    proposal = complete_fixture_audit(service, record, source)
+    service.propose(record['id'], proposal)
+    lead_task, lead_review = approve_fixture(service, 'lead:research')
+    task = lease_review(service, 'conductor')
+    receipt = service.execute(task, task['input']['audit_id'], ['fixture-independent-inspection'])
+    review = IndependentReview(task['input']['binding'], 'conductor', receipt['id'], False,
+                               'license', 'deps', 'sre', 'architecture', 'graph')
+    assert service.review(task, review)['sequence'] == 1
+    assert not service.coverage(record['id'])['adoption_eligible']
+    # Changing one's mind on the same inspection is not a new inspection; acceptance needs one.
+    with pytest.raises(ContractError, match='Re-approval requires a new inspection execution'):
+        service.review(task, replace(review, accepted=True))
+    again = service.execute(task, task['input']['audit_id'], ['fixture-independent-inspection', 'again'])
+    assert service.review(task, replace(review, accepted=True, execution_id=again['id']))['sequence'] == 2
+    assert service.coverage(record['id'])['adoption_eligible']
+    service.review(lead_task, replace(lead_review, accepted=False))
+    assert not service.coverage(record['id'])['adoption_eligible']
+    with service.store.transaction() as tx:
+        approval = next(r for r in tx.scan('research_approvals') if r['audit_id'] == record['id'])
+        assert approval['status'] == 'revoked'
 
 
 def test_blocked_inspection_and_actor_spoof_cannot_approve(audit):
