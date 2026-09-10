@@ -1,5 +1,8 @@
 """Versioned SDD work and evidence preparation, without impersonating human acceptance."""
+from dataclasses import asdict
+
 from codex_harness.application.tickets import ticket_binding
+from codex_harness.domain.gate_verdicts import fold_verdicts, parse_verdict
 from codex_harness.domain.model import canonical, digest, require, utcnow
 from codex_harness.domain.sdd import (
     STAGES,
@@ -12,8 +15,50 @@ from codex_harness.domain.sdd import (
 
 
 class SDD:
-    def __init__(self, store, artifacts):
+    def __init__(self, store, artifacts, human_provider=None):
         self.store, self.artifacts = store, artifacts
+        # INV-ORACLE-001: without an authenticated decision provider, no verdict can carry that authority.
+        self.human_provider = human_provider
+
+    @staticmethod
+    def statement_definitions(row, stage):
+        """INV-GATE-001: each stage check is a fixed statement bound to the spec revision it judges."""
+        checks = next(checks for key, _, _, checks in STAGES if key == stage)
+        return {name: digest({'stage': stage, 'statement': name, 'spec_hash': row['spec_hash']}) for name in checks}
+
+    @staticmethod
+    def _gate_verdicts(tx, row):
+        return [event['details']['verdict'] for event in tx.scan('sdd_events')
+                if event['iteration_id'] == row['id'] and event['kind'] == 'gate_verdict_recorded']
+
+    def _gates(self, tx, row):
+        verdicts = self._gate_verdicts(tx, row)
+        return {stage: fold_verdicts(verdicts, self.statement_definitions(row, stage), row['id'], row['revision'])
+                for stage, _, _, _ in STAGES}
+
+    def record_gate_verdict(self, iteration_id, document):
+        require(isinstance(document, dict), 'Gate verdict document required')
+        require(document.get('authority') != 'authenticated_provider' or self.human_provider is not None,
+                'Authenticated human authority requires a configured decision provider')
+        with self.store.transaction() as tx:
+            row = tx.get('sdd_iterations', iteration_id)
+            require(row, 'SDD iteration not found')
+            self._current(tx, row)
+            stage = document.get('stage')
+            require(any(key == stage for key, _, _, _ in STAGES), 'Unknown SDD stage')
+            definitions = self.statement_definitions(row, stage)
+            require(document.get('statement_id') in definitions, 'Statement is not part of this stage')
+            verdict = parse_verdict({**document, 'run_id': row['id'], 'cycle': row['revision'],
+                                     'sequence': row['sequence'] + 1,
+                                     'definition_hash': definitions[document['statement_id']]})
+            if verdict.receipt_ref:
+                self.artifacts.inspect(verdict.receipt_ref)
+            if verdict.retracts is not None:
+                fold_verdicts(self._gate_verdicts(tx, row) + [asdict(verdict)], definitions, row['id'], row['revision'])
+            event = self._append(tx, row, 'gate_verdict_recorded',
+                                 [verdict.receipt_ref] if verdict.receipt_ref else [], verdict=asdict(verdict))
+            return {'sequence': event['sequence'], 'verdict': asdict(verdict),
+                    'gate': self._gates(tx, row)[stage], 'release_authorized': False}
 
     def _spec(self, row):
         spec = self.artifacts.document(row["spec_ref"])
@@ -97,9 +142,10 @@ class SDD:
             superseded = not ticket or ticket["revision"] != row["zeus_ticket"]["revision"]
             head = tx.get("sdd_spec_heads", row["spec_id"])
             spec_superseded = not head or head["iteration_id"] != iteration_id
+            gates = self._gates(tx, row)
         return {**row, "status": "superseded_ticket" if superseded else "superseded_spec" if spec_superseded else row["status"],
                 "spec": spec, "report": gate_report(spec, runs), "observations": runs,
-                "notifications": notices, "events": events}
+                "notifications": notices, "events": events, "gates": gates}
 
     def observe(self, iteration_id, environment, events, source_name):
         validate_environment(environment)
@@ -162,10 +208,16 @@ class SDD:
             require(row and row["sequence"] == expected_sequence, "Stale SDD transition")
             self._current(tx, row)
             report = gate_report(self._spec(row))
-            self._append(tx, row, "transition_blocked", stage=row["stage"], reason=report["next_action"])
-            self._notify(tx, row, "transition_blocked", report["next_action"])
+            gate = self._gates(tx, row)[row["stage"]]
+            # INV-GATE-001: the transition consumes the shared fold, statement by statement.
+            unsettled = sorted(name for name, state in gate["statements"].items() if state["state"] != "passed")
+            reason = (report["next_action"] if not unsettled else
+                      "Stage statements not passed: " + ", ".join(f"{name}={gate['statements'][name]['state']}"
+                                                                    for name in unsettled))
+            self._append(tx, row, "transition_blocked", stage=row["stage"], reason=reason, gate=gate)
+            self._notify(tx, row, "transition_blocked", reason)
             return {"status": "blocked", "stage": row["stage"], "sequence": row["sequence"],
-                    "reason": report["next_action"], "release_authorized": False}
+                    "reason": reason, "gate": gate, "release_authorized": False}
 
     def record_transfer(self, iteration_id, record):
         keys = {"task_family", "contract_hash", "guardrail_hash", "toolchain_hash", "source_model", "target_model", "evidence_refs"}
