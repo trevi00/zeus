@@ -82,6 +82,43 @@ def holdout_boundary(events):
     return datetime.fromtimestamp(dates[index], timezone.utc).isoformat()
 
 
+def unique_events(events):
+    """Deduplicate a corpus by observation id (or exact content when unidentified) and describe
+    the denominator: audit rows, re-collected duplicates and unscored events never count as
+    additional successful executions."""
+    seen, unique = set(), []
+    counts = {'events': 0, 'invalid': 0, 'unidentified': 0, 'duplicates': 0, 'unscored': 0}
+    for event in events:
+        counts['events'] += 1
+        if not isinstance(event, dict):
+            counts['invalid'] += 1
+            continue
+        identity = event.get('id')
+        if not isinstance(identity, str) or not identity:
+            counts['unidentified'] += 1
+            try:
+                identity = 'content:' + digest(event)
+            except (TypeError, ValueError, OverflowError, RecursionError) as exc:
+                raise ContractError('Invalid threshold corpus encoding') from exc
+        if identity in seen:
+            counts['duplicates'] += 1
+            continue
+        seen.add(identity)
+        if not any(finite_number(entry.get('score')) for entry in replay.top_entries(event)):
+            counts['unscored'] += 1
+        unique.append(event)
+    counts['unique'] = len(unique)
+    return unique, counts
+
+
+def evaluation_scope(events, entry, policy_revision):
+    dates = sorted(when for event in events if (when := timestamp(event.get('at'))) is not None)
+    return {'telemetry_source': entry.telemetry_source, 'policy_revision': policy_revision,
+            'first_at': datetime.fromtimestamp(dates[0], timezone.utc).isoformat() if dates else None,
+            'last_at': datetime.fromtimestamp(dates[-1], timezone.utc).isoformat() if dates else None,
+            'unknown_timestamps': len(events) - len(dates)}
+
+
 def direction_allowed(entry, current, proposed):
     # Compare against effective current policy, not a possibly obsolete default.
     return (entry.direction_safety == 'either'
@@ -103,12 +140,14 @@ def propose_threshold_changes(*, events_by_source, current_values, policy_revisi
         if not entry.wired:
             continue
         require(name in current_values, 'Missing effective threshold value')
-        events = events_by_source.get(entry.telemetry_source, [])
-        require(isinstance(events, list), 'Invalid threshold corpus')
+        collected = events_by_source.get(entry.telemetry_source, [])
+        require(isinstance(collected, list), 'Invalid threshold corpus')
         try:
-            corpus_hash = digest(events)
+            corpus_hash = digest(collected)
         except (TypeError, ValueError, OverflowError, RecursionError) as exc:
             raise ContractError('Invalid threshold corpus encoding') from exc
+        # The denominator is unique executions, not collected rows.
+        events, denominator = unique_events(collected)
         if len(events) < min_sample:
             continue
         boundary = holdout_boundary(events)
@@ -141,6 +180,7 @@ def propose_threshold_changes(*, events_by_source, current_values, policy_revisi
         basis = {'name': name, 'policy_revision': policy_revision, 'current': current,
                  'suggested': chosen['value'] if accepted else None,
                  'evaluated_value': chosen['value'], 'corpus_hash': corpus_hash,
+                 'unique_corpus_hash': digest(events),
                  'registry_hash': digest(asdict(entry)), 'min_sample': min_sample,
                  'calculation': {'version': CALCULATION_VERSION,
                      'reference_model': replay.REFERENCE_MODEL,
@@ -150,6 +190,7 @@ def propose_threshold_changes(*, events_by_source, current_values, policy_revisi
         proposals.append({**basis, 'id': digest(basis), 'reference_accepted': bool(accepted),
             'advisory_only': True, 'activation_ready': False,
             'sample_size': len(events), 'trailing_size': len(trailing), 'holdout_size': len(held),
+            'denominator': denominator, 'evaluation_scope': evaluation_scope(events, entry, policy_revision),
             'trailing_target_current': target, 'trailing_target_proposed': chosen['trailing_target'],
             'report': chosen['report'], 'alternatives': alternatives,
             'selection_rule': 'highest_holdout_gain_raise_first_ties' if accepted else 'last_rejected_candidate'})

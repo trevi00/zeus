@@ -197,6 +197,25 @@ pure clock-input tests or modified stored observations. Their absence must remai
 explicit in acceptance evidence. This does not authorize changing the user's host
 clock or claim trusted elapsed-time continuity across offline clock changes.
 
+## INV-THRESHOLD-APPROVAL-001
+
+Calibration evaluates unique executions: a corpus is deduplicated by observation identity (or
+exact content when unidentified) before any metric runs, and every proposal carries its
+denominator (collected, unique, duplicates, unidentified, unscored, invalid) and evaluation
+scope (source, policy revision, time range). A candidate value that would admit no entry in
+the trailing or held-out window is rejected by the gate as `empty_admission`, whatever the
+pinned precision returns for an empty admission. An approval exists only for a request both
+independent assessments accepted, and it binds the exact threshold name, current value,
+proposed value, policy revision, evaluation evidence reference, corpus hash, registry hash,
+reviewers, issuing actor, target environment and expiry; the same binding is one approval.
+Certifying an application is a conditional transition consumed exactly once: the applied Git
+policy must move only that name, from exactly the approved current value to exactly the
+approved proposed value (same type), on top of exactly the assessed previous revision, to a
+different revision, in the approved environment, before expiry. Every refusal is recorded as
+its own event and consumes nothing; a consumed or revoked approval certifies nothing further;
+issued, consumed, revoked, expired, missing and corrupt are distinct states. The approval
+never writes the active definition and never authorizes routing, graduation or deployment.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

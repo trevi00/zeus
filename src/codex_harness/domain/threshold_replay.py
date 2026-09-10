@@ -39,6 +39,12 @@ def full_body_admit_precision(events, threshold):
     return sum(score > threshold for score in scores) / len(scores) if scores else 1.0
 
 
+def admitted_entries(events, threshold):
+    """Entries the threshold would admit: the denominator a precision of 1.0 must not hide."""
+    return sum(1 for event in events for entry in top_entries(event)
+               if finite_number(entry.get('score')) and entry['score'] >= threshold)
+
+
 def non_truncation_rate(events, threshold):
     require(finite_number(threshold), 'Invalid replay threshold')
     usable = truncated = 0
@@ -90,6 +96,9 @@ def evaluate_threshold_change(*, events, old_value, proposed_value, holdout_boun
         return reject('replay_error:' + type(exc).__name__)
     if not all(math.isfinite(value) for value in (t_new, t_old, g_new, g_old)):
         return reject('non_finite_metric')
+    if admitted_entries(holdout, proposed_value) == 0 or admitted_entries(trailing, proposed_value) == 0:
+        # INV-THRESHOLD-APPROVAL-001: excluding every match scores a vacuous precision, never an improvement.
+        return reject('empty_admission')
     target, guard = t_new - t_old, g_new - g_old
     accepted = target > 0 and guard >= 0
     reason = ('accept: target improves on held-out, guard not regressed' if accepted else
@@ -139,5 +148,5 @@ def replay_report(events, **options):
                 'Target deltas use holdout; guard deltas use the complete corpus, including training.',
                 'Raw character sum, not per-body reduction or the final UTF-8 context compiler.',
                 'Only recorded top matches are available; lowering thresholds can undercount admissions and pressure.',
-                'Empty admission scores optimistically; reference acceptance can select zero skills.',
+                'The pinned precision scores an empty admission as 1.0; the gate rejects such a value as empty_admission.',
                 'Reference guard skips unsized entries; acceptance is not a coverage guarantee.']}
