@@ -33,7 +33,10 @@ class SeamLedger:
             existing = tx.get(OBSERVATIONS, key)
             if existing is not None:
                 return existing
-            row = {'id': key, 'observation': observation, 'binding': binding, 'recorded_at': utcnow()}
+            # Recording order is assigned in the transaction, so "newest revision" never depends on a
+            # clock tie or on set iteration order (review, PR #59).
+            sequence = 1 + max((row.get('sequence', 0) for row in tx.scan(OBSERVATIONS)), default=0)
+            row = {'id': key, 'observation': observation, 'binding': binding, 'recorded_at': utcnow(), 'sequence': sequence}
             tx.put(OBSERVATIONS, key, row)
             return row
 
@@ -109,8 +112,10 @@ class SeamLedger:
         with self.store.transaction() as tx:
             observation_rows = tx.scan(OBSERVATIONS)
             comparison_rows = tx.scan(COMPARISONS)
+        def recorded(row):
+            return (row.get('sequence', 0), row['recorded_at'], row['id'])
         revisions = sorted({row['binding']['revision'] for row in observation_rows}, key=lambda r: max(
-            row['recorded_at'] for row in observation_rows if row['binding']['revision'] == r))
+            recorded(row) for row in observation_rows if row['binding']['revision'] == r))
         if revision is None:
             require(revisions, 'No observations recorded; nothing to view')
             revision = revisions[-1]

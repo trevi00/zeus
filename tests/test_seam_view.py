@@ -105,7 +105,7 @@ def test_view_is_deterministic_with_a_generation_receipt():
 
 
 @pytest.mark.parametrize('backend', ['memory', 'postgres'])
-def test_ledger_view_row_is_derived_and_regenerable(backend, request):
+def test_ledger_view_row_is_derived_and_regenerable(backend, request, monkeypatch):
     store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
     ledger = SeamLedger(store)
     observations, _ = fixtures()
@@ -144,6 +144,20 @@ def test_ledger_view_row_is_derived_and_regenerable(backend, request):
         ledger.view(policy, comparison_ids=['nope'])
     with pytest.raises(ContractError, match='No observations recorded'):
         SeamLedger(MemoryStore()).view(policy)
+    # Review counterexample (PR #59, round 2): two revisions recorded within one clock tick. The newest is
+    # decided by the recording sequence assigned in the ledger transaction, not by a timestamp tie-break.
+    frozen = SeamLedger(MemoryStore())
+    monkeypatch.setattr('codex_harness.application.seam_ledger.utcnow', lambda: '2026-09-10T00:00:00+00:00')
+    tick_a, tick_b = 'a' * 40, 'b' * 40
+    a_rows = [frozen.record_observation({**o, 'source': {**o['source'], 'revision': tick_a}}, binding={'revision': tick_a}) for o in observations[:2]]
+    b_rows = [frozen.record_observation({**o, 'source': {**o['source'], 'revision': tick_b, 'blob_sha': 'sha256:' + ('8' * 63) + str(i)}}, binding={'revision': tick_b})
+              for i, o in enumerate(observations[:2])]
+    assert [r['sequence'] for r in a_rows + b_rows] == [1, 2, 3, 4] and len({r['recorded_at'] for r in a_rows + b_rows}) == 1
+    frozen.compare(a_rows[0]['id'], a_rows[1]['id'], identity, POLICY)
+    frozen.compare(b_rows[0]['id'], b_rows[1]['id'], identity, POLICY)
+    for _ in range(3):
+        assert frozen.view(policy)['view']['receipt']['revision'] == tick_b
+    assert frozen.view(policy)['view']['receipt']['revisions_recorded'] == [tick_a, tick_b]
     with store.transaction() as tx:
         assert len(tx.scan(OBSERVATIONS)) == 6, 'history is preserved, never rewritten'
         assert len(tx.scan(VIEWS)) == 4
