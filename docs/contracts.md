@@ -75,6 +75,13 @@ cannot activate an excluded stack. Ambiguous/unavailable names remain explicit. 
 reference evidence survives advisory truncation via immutable handles, and non-skill
 guidance never inflates selected/included/omitted skill counters.
 
+Skill metadata is parsed by the bounded string-only YAML loader: inline comments never
+enter matcher values, inline lists become string lists, and nested, tagged, duplicated or
+non-mapping metadata fails explicitly rather than being routed. Routing summaries state
+how many skills were inspected next to matched/full/pointer/legacy counts together with the
+policy, objective and admission-model identity, so zero matches are never read as
+"checked and clean" when nothing was inspected.
+
 ## INV-SKILL-HISTORY-001
 
 Skill-history observations are project/content-bound compiled selections, never success
