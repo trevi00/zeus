@@ -1,0 +1,588 @@
+﻿2026-09-10T00:53:05.4067028Z Current runner version: '2.337.0'
+2026-09-10T00:53:05.4092108Z ##[group]Runner Image Provisioner
+2026-09-10T00:53:05.4093051Z Hosted Compute Agent
+2026-09-10T00:53:05.4093751Z Version: 20260828.587
+2026-09-10T00:53:05.4094396Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-10T00:53:05.4095260Z Build Date: 2026-08-28T16:44:25Z
+2026-09-10T00:53:05.4095953Z Worker ID: {0f47b89d-440f-453a-980f-ffc325c39f31}
+2026-09-10T00:53:05.4096659Z Azure Region: westus
+2026-09-10T00:53:05.4097578Z ##[endgroup]
+2026-09-10T00:53:05.4099343Z ##[group]Operating System
+2026-09-10T00:53:05.4100087Z Ubuntu
+2026-09-10T00:53:05.4100627Z 24.04.5
+2026-09-10T00:53:05.4101214Z LTS
+2026-09-10T00:53:05.4101777Z ##[endgroup]
+2026-09-10T00:53:05.4102338Z ##[group]Runner Image
+2026-09-10T00:53:05.4103039Z Image: ubuntu-24.04
+2026-09-10T00:53:05.4103640Z Version: 20260907.300.1
+2026-09-10T00:53:05.4104932Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-10T00:53:05.4106555Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+2026-09-10T00:53:05.4108084Z ##[endgroup]
+2026-09-10T00:53:05.4109207Z ##[group]GITHUB_TOKEN Permissions
+2026-09-10T00:53:05.4111522Z Contents: read
+2026-09-10T00:53:05.4112159Z Metadata: read
+2026-09-10T00:53:05.4112753Z ##[endgroup]
+2026-09-10T00:53:05.4115263Z Secret source: Actions
+2026-09-10T00:53:05.4116233Z Cache mode: write
+2026-09-10T00:53:05.4116991Z Prepare workflow directory
+2026-09-10T00:53:05.4453261Z Prepare all required actions
+2026-09-10T00:53:05.4501844Z Getting action download info
+2026-09-10T00:53:05.8055074Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-10T00:53:05.9378440Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-09-10T00:53:06.1823970Z Complete job name: integration
+2026-09-10T00:53:06.2613012Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T00:53:06.2621828Z ##[group]Run actions/checkout@v4
+2026-09-10T00:53:06.2622581Z with:
+2026-09-10T00:53:06.2623009Z   fetch-depth: 0
+2026-09-10T00:53:06.2623471Z   repository: trevi00/zeus
+2026-09-10T00:53:06.2627155Z   token: ***
+2026-09-10T00:53:06.2627806Z   ssh-strict: true
+2026-09-10T00:53:06.2628254Z   ssh-user: git
+2026-09-10T00:53:06.2628704Z   persist-credentials: true
+2026-09-10T00:53:06.2629198Z   clean: true
+2026-09-10T00:53:06.2629640Z   sparse-checkout-cone-mode: true
+2026-09-10T00:53:06.2630163Z   fetch-tags: false
+2026-09-10T00:53:06.2630615Z   show-progress: true
+2026-09-10T00:53:06.2631076Z   lfs: false
+2026-09-10T00:53:06.2631535Z   submodules: false
+2026-09-10T00:53:06.2631996Z   set-safe-directory: true
+2026-09-10T00:53:06.2632508Z   allow-unsafe-pr-checkout: false
+2026-09-10T00:53:06.2633292Z ##[endgroup]
+2026-09-10T00:53:06.3642679Z Syncing repository: trevi00/zeus
+2026-09-10T00:53:06.3645130Z ##[group]Getting Git version info
+2026-09-10T00:53:06.3646311Z Working directory is '/home/runner/work/zeus/zeus'
+2026-09-10T00:53:06.3648297Z [command]/usr/bin/git version
+2026-09-10T00:53:06.3752610Z git version 2.55.0
+2026-09-10T00:53:06.3776393Z ##[endgroup]
+2026-09-10T00:53:06.3793864Z Temporarily overriding HOME='/home/runner/work/_temp/19a16eed-93d3-41ab-ab25-af98f612cf8b' before making global git config changes
+2026-09-10T00:53:06.3796646Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T00:53:06.3802032Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/zeus/zeus
+2026-09-10T00:53:06.3868528Z Deleting the contents of '/home/runner/work/zeus/zeus'
+2026-09-10T00:53:06.3870056Z ##[group]Initializing the repository
+2026-09-10T00:53:06.3878480Z [command]/usr/bin/git init /home/runner/work/zeus/zeus
+2026-09-10T00:53:06.4001819Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-10T00:53:06.4003237Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-10T00:53:06.4004375Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-10T00:53:06.4005534Z hint: call:
+2026-09-10T00:53:06.4006014Z hint:
+2026-09-10T00:53:06.4006620Z hint: 	git config --global init.defaultBranch <name>
+2026-09-10T00:53:06.4007642Z hint:
+2026-09-10T00:53:06.4008319Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-10T00:53:06.4009364Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-10T00:53:06.4010192Z hint:
+2026-09-10T00:53:06.4010658Z hint: 	git branch -m <name>
+2026-09-10T00:53:06.4011195Z hint:
+2026-09-10T00:53:06.4011943Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-10T00:53:06.4018287Z Initialized empty Git repository in /home/runner/work/zeus/zeus/.git/
+2026-09-10T00:53:06.4029152Z [command]/usr/bin/git remote add origin https://github.com/trevi00/zeus
+2026-09-10T00:53:06.4085383Z ##[endgroup]
+2026-09-10T00:53:06.4086731Z ##[group]Disabling automatic garbage collection
+2026-09-10T00:53:06.4090897Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-10T00:53:06.4125422Z ##[endgroup]
+2026-09-10T00:53:06.4126743Z ##[group]Setting up auth
+2026-09-10T00:53:06.4134057Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T00:53:06.4173316Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-10T00:53:06.4559366Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T00:53:06.4612831Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-10T00:53:06.4872212Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T00:53:06.4912186Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-10T00:53:06.5168060Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-10T00:53:06.5217252Z ##[endgroup]
+2026-09-10T00:53:06.5218483Z ##[group]Fetching the repository
+2026-09-10T00:53:06.5232313Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-09-10T00:53:07.5651287Z From https://github.com/trevi00/zeus
+2026-09-10T00:53:07.5653703Z  * [new branch]      main       -> origin/main
+2026-09-10T00:53:07.5668045Z [command]/usr/bin/git branch --list --remote origin/main
+2026-09-10T00:53:07.5699699Z   origin/main
+2026-09-10T00:53:07.5713111Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-09-10T00:53:07.5739665Z 5ccd2e926384fbdf1f6cac286a628f77614eb210
+2026-09-10T00:53:07.5744910Z ##[endgroup]
+2026-09-10T00:53:07.5746289Z ##[group]Determining the checkout info
+2026-09-10T00:53:07.5748283Z ##[endgroup]
+2026-09-10T00:53:07.5753039Z [command]/usr/bin/git sparse-checkout disable
+2026-09-10T00:53:07.5813412Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-10T00:53:07.5847903Z ##[group]Checking out the ref
+2026-09-10T00:53:07.5851372Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-09-10T00:53:07.8189537Z Switched to a new branch 'main'
+2026-09-10T00:53:07.8191233Z branch 'main' set up to track 'origin/main'.
+2026-09-10T00:53:07.8206427Z ##[endgroup]
+2026-09-10T00:53:07.8257237Z [command]/usr/bin/git log -1 --format=%H
+2026-09-10T00:53:07.8287812Z 5ccd2e926384fbdf1f6cac286a628f77614eb210
+2026-09-10T00:53:07.8557518Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T00:53:07.8559465Z ##[group]Run actions/setup-python@v5
+2026-09-10T00:53:07.8559781Z with:
+2026-09-10T00:53:07.8560022Z   python-version: 3.13
+2026-09-10T00:53:07.8560298Z   check-latest: false
+2026-09-10T00:53:07.8562799Z   token: ***
+2026-09-10T00:53:07.8563062Z   update-environment: true
+2026-09-10T00:53:07.8563378Z   allow-prereleases: false
+2026-09-10T00:53:07.8563662Z   freethreaded: false
+2026-09-10T00:53:07.8563929Z ##[endgroup]
+2026-09-10T00:53:07.9979750Z ##[group]Installed versions
+2026-09-10T00:53:08.0656662Z (node:2255) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-10T00:53:08.0658587Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-10T00:53:08.0659389Z Successfully set up CPython (3.13.15)
+2026-09-10T00:53:08.0660154Z ##[endgroup]
+2026-09-10T00:53:08.0950112Z ##[group]Run python -m pip install uv==0.12.2
+2026-09-10T00:53:08.0950933Z [36;1mpython -m pip install uv==0.12.2[0m
+2026-09-10T00:53:08.1019104Z shell: /usr/bin/bash -e {0}
+2026-09-10T00:53:08.1019695Z env:
+2026-09-10T00:53:08.1020222Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:08.1021034Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-10T00:53:08.1021834Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:08.1022375Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:08.1022955Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:08.1023671Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-10T00:53:08.1024085Z ##[endgroup]
+2026-09-10T00:53:12.6239050Z Collecting uv==0.12.2
+2026-09-10T00:53:12.6936669Z   Downloading uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+2026-09-10T00:53:12.7120803Z Downloading uv-0.12.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (22.3 MB)
+2026-09-10T00:53:13.2279655Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 22.3/22.3 MB 46.0 MB/s  0:00:00
+2026-09-10T00:53:13.4995792Z Installing collected packages: uv
+2026-09-10T00:53:13.7343512Z Successfully installed uv-0.12.2
+2026-09-10T00:53:13.7966464Z ##[group]Run uv sync --frozen
+2026-09-10T00:53:13.7966821Z [36;1muv sync --frozen[0m
+2026-09-10T00:53:13.8006320Z shell: /usr/bin/bash -e {0}
+2026-09-10T00:53:13.8006577Z env:
+2026-09-10T00:53:13.8006848Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:13.8007596Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-10T00:53:13.8008044Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:13.8008475Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:13.8008889Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:13.8009305Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-10T00:53:13.8009632Z ##[endgroup]
+2026-09-10T00:53:13.8650604Z Using CPython 3.13.15 interpreter at: /opt/hostedtoolcache/Python/3.13.15/x64/bin/python3
+2026-09-10T00:53:13.8651708Z Creating virtual environment at: .venv
+2026-09-10T00:53:13.8785353Z    Building zeus-harness @ file:///home/runner/work/zeus/zeus
+2026-09-10T00:53:13.9580265Z Downloading pygments (1.2MiB)
+2026-09-10T00:53:13.9588421Z Downloading numpy (15.9MiB)
+2026-09-10T00:53:13.9599980Z Downloading psycopg-binary (5.0MiB)
+2026-09-10T00:53:13.9606876Z Downloading onnxruntime (22.1MiB)
+2026-09-10T00:53:13.9611923Z Downloading tokenizers (3.2MiB)
+2026-09-10T00:53:13.9619871Z Downloading hf-xet (4.3MiB)
+2026-09-10T00:53:13.9649235Z Downloading ruff (9.8MiB)
+2026-09-10T00:53:13.9650832Z Downloading pillow (6.6MiB)
+2026-09-10T00:53:14.3838486Z  Downloaded tokenizers
+2026-09-10T00:53:14.4191901Z  Downloaded hf-xet
+2026-09-10T00:53:14.5094721Z  Downloaded psycopg-binary
+2026-09-10T00:53:14.5945013Z  Downloaded ruff
+2026-09-10T00:53:14.6873720Z  Downloaded pillow
+2026-09-10T00:53:14.7716229Z  Downloaded pygments
+2026-09-10T00:53:14.8034398Z  Downloaded onnxruntime
+2026-09-10T00:53:15.0014447Z  Downloaded numpy
+2026-09-10T00:53:15.0559991Z       Built zeus-harness @ file:///home/runner/work/zeus/zeus
+2026-09-10T00:53:15.0569572Z Prepared 55 packages in 1.18s
+2026-09-10T00:53:15.1033996Z Installed 55 packages in 46ms
+2026-09-10T00:53:15.1034730Z  + anyio==4.15.1
+2026-09-10T00:53:15.1035306Z  + arrow==1.4.0
+2026-09-10T00:53:15.1035833Z  + attrs==26.1.0
+2026-09-10T00:53:15.1036318Z  + certifi==2026.7.22
+2026-09-10T00:53:15.1036851Z  + charset-normalizer==3.5.1
+2026-09-10T00:53:15.1037638Z  + click==8.5.0
+2026-09-10T00:53:15.1038141Z  + fastembed==0.8.0
+2026-09-10T00:53:15.1038650Z  + filelock==3.32.5
+2026-09-10T00:53:15.1039167Z  + flatbuffers==25.12.19
+2026-09-10T00:53:15.1039628Z  + fqdn==1.5.1
+2026-09-10T00:53:15.1040121Z  + fsspec==2026.7.0
+2026-09-10T00:53:15.1040656Z  + h11==0.16.0
+2026-09-10T00:53:15.1041187Z  + hf-xet==1.6.0
+2026-09-10T00:53:15.1041697Z  + httpcore==1.0.9
+2026-09-10T00:53:15.1042215Z  + httpx==0.28.1
+2026-09-10T00:53:15.1042720Z  + huggingface-hub==1.30.0
+2026-09-10T00:53:15.1043222Z  + idna==3.19
+2026-09-10T00:53:15.1043698Z  + iniconfig==2.3.0
+2026-09-10T00:53:15.1044332Z  + isoduration==20.11.0
+2026-09-10T00:53:15.1044923Z  + jsonpointer==3.1.1
+2026-09-10T00:53:15.1045540Z  + jsonschema==4.26.0
+2026-09-10T00:53:15.1046137Z  + jsonschema-specifications==2025.9.1
+2026-09-10T00:53:15.1046831Z  + loguru==0.7.3
+2026-09-10T00:53:15.1047587Z  + mmh3==5.3.0
+2026-09-10T00:53:15.1048140Z  + numpy==2.5.3
+2026-09-10T00:53:15.1048677Z  + onnxruntime==1.29.0
+2026-09-10T00:53:15.1049255Z  + packaging==26.3
+2026-09-10T00:53:15.1049826Z  + pillow==12.3.0
+2026-09-10T00:53:15.1050429Z  + pluggy==1.6.0
+2026-09-10T00:53:15.1051111Z  + protobuf==7.36.1
+2026-09-10T00:53:15.1051658Z  + psycopg==3.3.5
+2026-09-10T00:53:15.1052219Z  + psycopg-binary==3.3.5
+2026-09-10T00:53:15.1052800Z  + py-rust-stemmers==0.1.8
+2026-09-10T00:53:15.1053346Z  + pygments==2.21.0
+2026-09-10T00:53:15.1053798Z  + pytest==9.1.1
+2026-09-10T00:53:15.1054268Z  + python-dateutil==2.9.0.post0
+2026-09-10T00:53:15.1054861Z  + pyyaml==6.0.3
+2026-09-10T00:53:15.1055323Z  + redis==6.4.0
+2026-09-10T00:53:15.1055705Z  + referencing==0.37.0
+2026-09-10T00:53:15.1056406Z  + requests==2.34.2
+2026-09-10T00:53:15.1056805Z  + rfc3339-validator==0.1.4
+2026-09-10T00:53:15.1057581Z  + rfc3987==1.3.8
+2026-09-10T00:53:15.1057959Z  + rpds-py==2026.6.3
+2026-09-10T00:53:15.1058341Z  + ruff==0.16.6
+2026-09-10T00:53:15.1058665Z  + six==1.17.0
+2026-09-10T00:53:15.1059002Z  + tokenizers==0.23.2
+2026-09-10T00:53:15.1059358Z  + tqdm==4.70.0
+2026-09-10T00:53:15.1059700Z  + tree-sitter==0.25.2
+2026-09-10T00:53:15.1060111Z  + tree-sitter-python==0.25.0
+2026-09-10T00:53:15.1060571Z  + typing-extensions==4.16.0
+2026-09-10T00:53:15.1060975Z  + tzdata==2026.3
+2026-09-10T00:53:15.1061327Z  + uri-template==1.3.0
+2026-09-10T00:53:15.1061685Z  + urllib3==2.7.0
+2026-09-10T00:53:15.1062040Z  + webcolors==25.10.0
+2026-09-10T00:53:15.1062557Z  + zeus-harness==0.2.0 (from file:///home/runner/work/zeus/zeus)
+2026-09-10T00:53:15.1208895Z ##[group]Run uv run harness setup
+2026-09-10T00:53:15.1209237Z [36;1muv run harness setup[0m
+2026-09-10T00:53:15.1246203Z shell: /usr/bin/bash -e {0}
+2026-09-10T00:53:15.1246447Z env:
+2026-09-10T00:53:15.1246717Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:15.1247166Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-10T00:53:15.1247925Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:15.1248353Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:15.1248753Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:15.1249334Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-10T00:53:15.1249658Z ##[endgroup]
+2026-09-10T00:53:16.6049323Z {
+2026-09-10T00:53:16.6049893Z   "repository": "/home/runner/work/zeus/zeus",
+2026-09-10T00:53:16.6050272Z   "env_created": true
+2026-09-10T00:53:16.6050517Z }
+2026-09-10T00:53:16.6591737Z ##[group]Run docker compose -p harness-ci up -d --wait postgres redis
+2026-09-10T00:53:16.6592305Z [36;1mdocker compose -p harness-ci up -d --wait postgres redis[0m
+2026-09-10T00:53:16.6629977Z shell: /usr/bin/bash -e {0}
+2026-09-10T00:53:16.6630219Z env:
+2026-09-10T00:53:16.6630484Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:16.6630921Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-10T00:53:16.6631347Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:16.6631731Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:16.6632107Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:16.6632510Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-10T00:53:16.6632825Z ##[endgroup]
+2026-09-10T00:53:21.7130279Z  postgres Pulling 
+2026-09-10T00:53:21.7130850Z  redis Pulling 
+2026-09-10T00:53:22.9268766Z  897d797d2723 Pulling fs layer 
+2026-09-10T00:53:22.9269295Z  d85eda7b0b14 Pulling fs layer 
+2026-09-10T00:53:22.9269708Z  9516b0cd89c9 Pulling fs layer 
+2026-09-10T00:53:22.9270107Z  de4b872bfdc3 Pulling fs layer 
+2026-09-10T00:53:22.9270503Z  2c96e5a02ba0 Pulling fs layer 
+2026-09-10T00:53:22.9270903Z  4f4fb700ef54 Pulling fs layer 
+2026-09-10T00:53:22.9271296Z  41caa0265cb5 Pulling fs layer 
+2026-09-10T00:53:22.9271842Z  de4b872bfdc3 Waiting 
+2026-09-10T00:53:22.9272219Z  2c96e5a02ba0 Waiting 
+2026-09-10T00:53:22.9272598Z  4f4fb700ef54 Waiting 
+2026-09-10T00:53:22.9272965Z  41caa0265cb5 Waiting 
+2026-09-10T00:53:22.9273335Z  039e6f9f9752 Pulling fs layer 
+2026-09-10T00:53:22.9273770Z  9524156efd7a Pulling fs layer 
+2026-09-10T00:53:22.9274233Z  d7b627e06eac Pulling fs layer 
+2026-09-10T00:53:22.9274641Z  f495088ca134 Pulling fs layer 
+2026-09-10T00:53:22.9275040Z  1e12f8d900eb Pulling fs layer 
+2026-09-10T00:53:22.9275456Z  039e6f9f9752 Waiting 
+2026-09-10T00:53:22.9275857Z  740ea3feff0f Pulling fs layer 
+2026-09-10T00:53:22.9276288Z  9524156efd7a Waiting 
+2026-09-10T00:53:22.9276648Z  5ac7c444edb0 Pulling fs layer 
+2026-09-10T00:53:22.9277047Z  11ec1b6ae2a0 Pulling fs layer 
+2026-09-10T00:53:22.9277688Z  d7b627e06eac Waiting 
+2026-09-10T00:53:22.9278044Z  ef21471f3a2b Pulling fs layer 
+2026-09-10T00:53:22.9278437Z  62ca04624b47 Pulling fs layer 
+2026-09-10T00:53:22.9278811Z  f495088ca134 Waiting 
+2026-09-10T00:53:22.9279159Z  44438d8012af Pulling fs layer 
+2026-09-10T00:53:22.9279560Z  f67c9bdd808a Pulling fs layer 
+2026-09-10T00:53:22.9279814Z  3d4e001e01a2 Pulling fs layer 
+2026-09-10T00:53:22.9280066Z  8cb2f3b54f01 Pulling fs layer 
+2026-09-10T00:53:22.9280305Z  9ef6b0a1be9e Pulling fs layer 
+2026-09-10T00:53:22.9280542Z  1e12f8d900eb Waiting 
+2026-09-10T00:53:22.9280766Z  b70609756d71 Pulling fs layer 
+2026-09-10T00:53:22.9281008Z  740ea3feff0f Waiting 
+2026-09-10T00:53:22.9281220Z  5ac7c444edb0 Waiting 
+2026-09-10T00:53:22.9281428Z  11ec1b6ae2a0 Waiting 
+2026-09-10T00:53:22.9281630Z  ef21471f3a2b Waiting 
+2026-09-10T00:53:22.9281836Z  3d4e001e01a2 Waiting 
+2026-09-10T00:53:22.9282039Z  62ca04624b47 Waiting 
+2026-09-10T00:53:22.9282237Z  8cb2f3b54f01 Waiting 
+2026-09-10T00:53:22.9282443Z  44438d8012af Waiting 
+2026-09-10T00:53:22.9282643Z  9ef6b0a1be9e Waiting 
+2026-09-10T00:53:22.9282841Z  f67c9bdd808a Waiting 
+2026-09-10T00:53:22.9283037Z  b70609756d71 Waiting 
+2026-09-10T00:53:23.1323354Z  d85eda7b0b14 Downloading [==================================================>]     952B/952B
+2026-09-10T00:53:23.1324601Z  d85eda7b0b14 Verifying Checksum 
+2026-09-10T00:53:23.1325378Z  d85eda7b0b14 Download complete 
+2026-09-10T00:53:23.1329367Z  9516b0cd89c9 Downloading [>                                                  ]  3.456kB/194.3kB
+2026-09-10T00:53:23.1348812Z  897d797d2723 Downloading [>                                                  ]  48.49kB/3.647MB
+2026-09-10T00:53:23.1352358Z  9516b0cd89c9 Downloading [==================================================>]  194.3kB/194.3kB
+2026-09-10T00:53:23.1354436Z  9516b0cd89c9 Verifying Checksum 
+2026-09-10T00:53:23.1355335Z  9516b0cd89c9 Download complete 
+2026-09-10T00:53:23.1519810Z  897d797d2723 Verifying Checksum 
+2026-09-10T00:53:23.1524554Z  897d797d2723 Download complete 
+2026-09-10T00:53:23.1611056Z  897d797d2723 Extracting [>                                                  ]  65.54kB/3.647MB
+2026-09-10T00:53:23.2558466Z  897d797d2723 Extracting [==================================================>]  3.647MB/3.647MB
+2026-09-10T00:53:23.2572690Z  897d797d2723 Extracting [==================================================>]  3.647MB/3.647MB
+2026-09-10T00:53:23.2761175Z  897d797d2723 Pull complete 
+2026-09-10T00:53:23.2891563Z  d85eda7b0b14 Extracting [==================================================>]     952B/952B
+2026-09-10T00:53:23.2896851Z  d85eda7b0b14 Extracting [==================================================>]     952B/952B
+2026-09-10T00:53:23.3564280Z  de4b872bfdc3 Downloading [>                                                  ]  130.4kB/12.42MB
+2026-09-10T00:53:23.3572700Z  2c96e5a02ba0 Downloading [==================================================>]     100B/100B
+2026-09-10T00:53:23.3574268Z  2c96e5a02ba0 Verifying Checksum 
+2026-09-10T00:53:23.3574768Z  2c96e5a02ba0 Download complete 
+2026-09-10T00:53:23.3805395Z  4f4fb700ef54 Download complete 
+2026-09-10T00:53:23.4010138Z  de4b872bfdc3 Verifying Checksum 
+2026-09-10T00:53:23.4010677Z  de4b872bfdc3 Download complete 
+2026-09-10T00:53:23.5715148Z  41caa0265cb5 Downloading [==================================================>]     604B/604B
+2026-09-10T00:53:23.5715793Z  41caa0265cb5 Verifying Checksum 
+2026-09-10T00:53:23.5716089Z  41caa0265cb5 Download complete 
+2026-09-10T00:53:23.6065177Z  039e6f9f9752 Downloading [>                                                  ]  294.3kB/28.23MB
+2026-09-10T00:53:23.6497644Z  9524156efd7a Downloading [==================================================>]   1.17kB/1.17kB
+2026-09-10T00:53:23.6498429Z  9524156efd7a Verifying Checksum 
+2026-09-10T00:53:23.6498869Z  9524156efd7a Download complete 
+2026-09-10T00:53:23.6911519Z  039e6f9f9752 Verifying Checksum 
+2026-09-10T00:53:23.6912037Z  039e6f9f9752 Download complete 
+2026-09-10T00:53:23.7952438Z  d7b627e06eac Downloading [>                                                  ]  48.55kB/4.534MB
+2026-09-10T00:53:23.7996356Z  039e6f9f9752 Extracting [>                                                  ]  294.9kB/28.23MB
+2026-09-10T00:53:23.8144520Z  d7b627e06eac Verifying Checksum 
+2026-09-10T00:53:23.8145905Z  d7b627e06eac Download complete 
+2026-09-10T00:53:23.8691054Z  f495088ca134 Downloading [>                                                  ]  15.79kB/1.25MB
+2026-09-10T00:53:23.8783009Z  f495088ca134 Verifying Checksum 
+2026-09-10T00:53:23.8784237Z  f495088ca134 Download complete 
+2026-09-10T00:53:23.9007362Z  039e6f9f9752 Extracting [=========>                                         ]  5.308MB/28.23MB
+2026-09-10T00:53:23.9088787Z  1e12f8d900eb Downloading [>                                                  ]  81.32kB/8.066MB
+2026-09-10T00:53:23.9384536Z  d85eda7b0b14 Pull complete 
+2026-09-10T00:53:23.9401216Z  1e12f8d900eb Verifying Checksum 
+2026-09-10T00:53:23.9401968Z  1e12f8d900eb Download complete 
+2026-09-10T00:53:23.9415394Z  9516b0cd89c9 Extracting [========>                                          ]  32.77kB/194.3kB
+2026-09-10T00:53:23.9428370Z  9516b0cd89c9 Extracting [==================================================>]  194.3kB/194.3kB
+2026-09-10T00:53:23.9557805Z  9516b0cd89c9 Extracting [==================================================>]  194.3kB/194.3kB
+2026-09-10T00:53:24.0144296Z  039e6f9f9752 Extracting [================>                                  ]  9.142MB/28.23MB
+2026-09-10T00:53:24.0325562Z  740ea3feff0f Downloading [>                                                  ]  15.79kB/1.196MB
+2026-09-10T00:53:24.0452467Z  740ea3feff0f Verifying Checksum 
+2026-09-10T00:53:24.0453287Z  740ea3feff0f Download complete 
+2026-09-10T00:53:24.0991949Z  5ac7c444edb0 Downloading [==================================================>]     116B/116B
+2026-09-10T00:53:24.0993127Z  5ac7c444edb0 Verifying Checksum 
+2026-09-10T00:53:24.0993903Z  5ac7c444edb0 Download complete 
+2026-09-10T00:53:24.1205459Z  039e6f9f9752 Extracting [====================>                              ]   11.5MB/28.23MB
+2026-09-10T00:53:24.1610299Z  11ec1b6ae2a0 Downloading [==================================================>]  3.143kB/3.143kB
+2026-09-10T00:53:24.1611202Z  11ec1b6ae2a0 Verifying Checksum 
+2026-09-10T00:53:24.1612257Z  11ec1b6ae2a0 Download complete 
+2026-09-10T00:53:24.1709738Z  9516b0cd89c9 Pull complete 
+2026-09-10T00:53:24.1741261Z  de4b872bfdc3 Extracting [>                                                  ]  131.1kB/12.42MB
+2026-09-10T00:53:24.2216807Z  039e6f9f9752 Extracting [===============================>                   ]  17.69MB/28.23MB
+2026-09-10T00:53:24.2719653Z  ef21471f3a2b Downloading [>                                                  ]  532.9kB/112.9MB
+2026-09-10T00:53:24.2748698Z  de4b872bfdc3 Extracting [==============>                                    ]   3.67MB/12.42MB
+2026-09-10T00:53:24.3204688Z  62ca04624b47 Downloading [================>                                  ]  3.499kB/10.35kB
+2026-09-10T00:53:24.3206170Z  62ca04624b47 Downloading [==================================================>]  10.35kB/10.35kB
+2026-09-10T00:53:24.3208097Z  62ca04624b47 Verifying Checksum 
+2026-09-10T00:53:24.3208935Z  62ca04624b47 Download complete 
+2026-09-10T00:53:24.3327698Z  039e6f9f9752 Extracting [========================================>          ]     23MB/28.23MB
+2026-09-10T00:53:24.3731271Z  ef21471f3a2b Downloading [===========>                                       ]  25.68MB/112.9MB
+2026-09-10T00:53:24.3765847Z  de4b872bfdc3 Extracting [==================================>                ]  8.651MB/12.42MB
+2026-09-10T00:53:24.3861420Z  44438d8012af Downloading [==================================================>]     128B/128B
+2026-09-10T00:53:24.3865485Z  44438d8012af Download complete 
+2026-09-10T00:53:24.4489482Z  de4b872bfdc3 Extracting [==================================================>]  12.42MB/12.42MB
+2026-09-10T00:53:24.4740668Z  ef21471f3a2b Downloading [=======================>                           ]  53.92MB/112.9MB
+2026-09-10T00:53:24.5198508Z  de4b872bfdc3 Pull complete 
+2026-09-10T00:53:24.5307432Z  2c96e5a02ba0 Extracting [==================================================>]     100B/100B
+2026-09-10T00:53:24.5309399Z  2c96e5a02ba0 Extracting [==================================================>]     100B/100B
+2026-09-10T00:53:24.5431285Z  f67c9bdd808a Downloading [==================================================>]     167B/167B
+2026-09-10T00:53:24.5432075Z  f67c9bdd808a Verifying Checksum 
+2026-09-10T00:53:24.5432466Z  f67c9bdd808a Download complete 
+2026-09-10T00:53:24.5508155Z  2c96e5a02ba0 Pull complete 
+2026-09-10T00:53:24.5524524Z  4f4fb700ef54 Extracting [==================================================>]      32B/32B
+2026-09-10T00:53:24.5530156Z  4f4fb700ef54 Extracting [==================================================>]      32B/32B
+2026-09-10T00:53:24.5747035Z  4f4fb700ef54 Pull complete 
+2026-09-10T00:53:24.5759709Z  ef21471f3a2b Downloading [===================================>               ]  79.52MB/112.9MB
+2026-09-10T00:53:24.5774470Z  41caa0265cb5 Extracting [==================================================>]     604B/604B
+2026-09-10T00:53:24.5785119Z  41caa0265cb5 Extracting [==================================================>]     604B/604B
+2026-09-10T00:53:24.5928538Z  41caa0265cb5 Pull complete 
+2026-09-10T00:53:24.6004503Z  039e6f9f9752 Extracting [==========================================>        ]  23.89MB/28.23MB
+2026-09-10T00:53:24.6007664Z  3d4e001e01a2 Downloading [============================>                      ]    3.5kB/6.106kB
+2026-09-10T00:53:24.6009446Z  3d4e001e01a2 Downloading [==================================================>]  6.106kB/6.106kB
+2026-09-10T00:53:24.6013949Z  3d4e001e01a2 Verifying Checksum 
+2026-09-10T00:53:24.6015874Z  3d4e001e01a2 Download complete 
+2026-09-10T00:53:24.6022543Z  redis Pulled 
+2026-09-10T00:53:24.6776384Z  ef21471f3a2b Downloading [================================================>  ]  108.9MB/112.9MB
+2026-09-10T00:53:24.6919274Z  ef21471f3a2b Verifying Checksum 
+2026-09-10T00:53:24.6920146Z  ef21471f3a2b Download complete 
+2026-09-10T00:53:24.7446855Z  039e6f9f9752 Extracting [===============================================>   ]  26.84MB/28.23MB
+2026-09-10T00:53:24.7638456Z  8cb2f3b54f01 Downloading [==================================================>]     184B/184B
+2026-09-10T00:53:24.7639296Z  8cb2f3b54f01 Verifying Checksum 
+2026-09-10T00:53:24.7639807Z  8cb2f3b54f01 Download complete 
+2026-09-10T00:53:24.8196157Z  9ef6b0a1be9e Downloading [=>                                                 ]  3.498kB/129.1kB
+2026-09-10T00:53:24.8208028Z  9ef6b0a1be9e Downloading [==================================================>]  129.1kB/129.1kB
+2026-09-10T00:53:24.8208962Z  9ef6b0a1be9e Verifying Checksum 
+2026-09-10T00:53:24.8209471Z  9ef6b0a1be9e Download complete 
+2026-09-10T00:53:24.9074489Z  b70609756d71 Downloading [>                                                  ]  15.79kB/1.466MB
+2026-09-10T00:53:24.9151476Z  b70609756d71 Verifying Checksum 
+2026-09-10T00:53:24.9152068Z  b70609756d71 Download complete 
+2026-09-10T00:53:25.0303641Z  039e6f9f9752 Extracting [================================================>  ]  27.43MB/28.23MB
+2026-09-10T00:53:25.1486643Z  039e6f9f9752 Extracting [==================================================>]  28.23MB/28.23MB
+2026-09-10T00:53:25.1728914Z  039e6f9f9752 Pull complete 
+2026-09-10T00:53:25.1741189Z  9524156efd7a Extracting [==================================================>]   1.17kB/1.17kB
+2026-09-10T00:53:25.1745423Z  9524156efd7a Extracting [==================================================>]   1.17kB/1.17kB
+2026-09-10T00:53:25.2225538Z  9524156efd7a Pull complete 
+2026-09-10T00:53:25.2241615Z  d7b627e06eac Extracting [>                                                  ]  65.54kB/4.534MB
+2026-09-10T00:53:25.3061486Z  d7b627e06eac Extracting [==================================================>]  4.534MB/4.534MB
+2026-09-10T00:53:25.3533254Z  d7b627e06eac Pull complete 
+2026-09-10T00:53:25.3543907Z  f495088ca134 Extracting [=>                                                 ]  32.77kB/1.25MB
+2026-09-10T00:53:25.3769012Z  f495088ca134 Extracting [==================================================>]   1.25MB/1.25MB
+2026-09-10T00:53:25.3904505Z  f495088ca134 Pull complete 
+2026-09-10T00:53:25.3920841Z  1e12f8d900eb Extracting [>                                                  ]   98.3kB/8.066MB
+2026-09-10T00:53:25.4980546Z  1e12f8d900eb Extracting [========================>                          ]  3.932MB/8.066MB
+2026-09-10T00:53:25.6003843Z  1e12f8d900eb Extracting [=====================================>             ]  6.095MB/8.066MB
+2026-09-10T00:53:25.6552837Z  1e12f8d900eb Extracting [==================================================>]  8.066MB/8.066MB
+2026-09-10T00:53:25.6945327Z  1e12f8d900eb Pull complete 
+2026-09-10T00:53:25.6956780Z  740ea3feff0f Extracting [=>                                                 ]  32.77kB/1.196MB
+2026-09-10T00:53:25.7308298Z  740ea3feff0f Extracting [==================================================>]  1.196MB/1.196MB
+2026-09-10T00:53:25.7408443Z  740ea3feff0f Extracting [==================================================>]  1.196MB/1.196MB
+2026-09-10T00:53:25.7753452Z  740ea3feff0f Pull complete 
+2026-09-10T00:53:25.7786576Z  5ac7c444edb0 Extracting [==================================================>]     116B/116B
+2026-09-10T00:53:25.7794172Z  5ac7c444edb0 Extracting [==================================================>]     116B/116B
+2026-09-10T00:53:25.7866680Z  5ac7c444edb0 Pull complete 
+2026-09-10T00:53:25.7877455Z  11ec1b6ae2a0 Extracting [==================================================>]  3.143kB/3.143kB
+2026-09-10T00:53:25.7881892Z  11ec1b6ae2a0 Extracting [==================================================>]  3.143kB/3.143kB
+2026-09-10T00:53:25.7964045Z  11ec1b6ae2a0 Pull complete 
+2026-09-10T00:53:25.8539722Z  ef21471f3a2b Extracting [>                                                  ]  557.1kB/112.9MB
+2026-09-10T00:53:25.9638242Z  ef21471f3a2b Extracting [===>                                               ]  7.799MB/112.9MB
+2026-09-10T00:53:26.0689519Z  ef21471f3a2b Extracting [====>                                              ]  10.58MB/112.9MB
+2026-09-10T00:53:26.1772746Z  ef21471f3a2b Extracting [======>                                            ]  15.04MB/112.9MB
+2026-09-10T00:53:26.2783033Z  ef21471f3a2b Extracting [========>                                          ]  18.94MB/112.9MB
+2026-09-10T00:53:26.3865967Z  ef21471f3a2b Extracting [===========>                                       ]  25.07MB/112.9MB
+2026-09-10T00:53:26.4892136Z  ef21471f3a2b Extracting [===============>                                   ]  33.98MB/112.9MB
+2026-09-10T00:53:26.5895435Z  ef21471f3a2b Extracting [===================>                               ]  42.89MB/112.9MB
+2026-09-10T00:53:26.6951931Z  ef21471f3a2b Extracting [=======================>                           ]  52.36MB/112.9MB
+2026-09-10T00:53:26.7987956Z  ef21471f3a2b Extracting [=========================>                         ]  57.38MB/112.9MB
+2026-09-10T00:53:26.9022450Z  ef21471f3a2b Extracting [============================>                      ]  64.62MB/112.9MB
+2026-09-10T00:53:27.0051545Z  ef21471f3a2b Extracting [=================================>                 ]   75.2MB/112.9MB
+2026-09-10T00:53:27.1113226Z  ef21471f3a2b Extracting [=====================================>             ]  84.12MB/112.9MB
+2026-09-10T00:53:27.2125311Z  ef21471f3a2b Extracting [=========================================>         ]  93.03MB/112.9MB
+2026-09-10T00:53:27.3326357Z  ef21471f3a2b Extracting [==========================================>        ]  96.93MB/112.9MB
+2026-09-10T00:53:27.4551678Z  ef21471f3a2b Extracting [============================================>      ]  100.8MB/112.9MB
+2026-09-10T00:53:27.5694479Z  ef21471f3a2b Extracting [==============================================>    ]  104.7MB/112.9MB
+2026-09-10T00:53:27.6962497Z  ef21471f3a2b Extracting [===============================================>   ]  107.5MB/112.9MB
+2026-09-10T00:53:27.8090210Z  ef21471f3a2b Extracting [================================================>  ]  109.2MB/112.9MB
+2026-09-10T00:53:28.0938545Z  ef21471f3a2b Extracting [=================================================> ]  111.4MB/112.9MB
+2026-09-10T00:53:28.2191253Z  ef21471f3a2b Extracting [==================================================>]  112.9MB/112.9MB
+2026-09-10T00:53:28.8302774Z  ef21471f3a2b Pull complete 
+2026-09-10T00:53:28.8315061Z  62ca04624b47 Extracting [==================================================>]  10.35kB/10.35kB
+2026-09-10T00:53:28.8320004Z  62ca04624b47 Extracting [==================================================>]  10.35kB/10.35kB
+2026-09-10T00:53:28.8454838Z  62ca04624b47 Pull complete 
+2026-09-10T00:53:28.8465631Z  44438d8012af Extracting [==================================================>]     128B/128B
+2026-09-10T00:53:28.8470719Z  44438d8012af Extracting [==================================================>]     128B/128B
+2026-09-10T00:53:28.8602788Z  44438d8012af Pull complete 
+2026-09-10T00:53:28.8615968Z  f67c9bdd808a Extracting [==================================================>]     167B/167B
+2026-09-10T00:53:28.8620155Z  f67c9bdd808a Extracting [==================================================>]     167B/167B
+2026-09-10T00:53:28.8716138Z  f67c9bdd808a Pull complete 
+2026-09-10T00:53:28.8728578Z  3d4e001e01a2 Extracting [==================================================>]  6.106kB/6.106kB
+2026-09-10T00:53:28.8734408Z  3d4e001e01a2 Extracting [==================================================>]  6.106kB/6.106kB
+2026-09-10T00:53:28.8822320Z  3d4e001e01a2 Pull complete 
+2026-09-10T00:53:28.8833587Z  8cb2f3b54f01 Extracting [==================================================>]     184B/184B
+2026-09-10T00:53:28.8839560Z  8cb2f3b54f01 Extracting [==================================================>]     184B/184B
+2026-09-10T00:53:28.8920918Z  8cb2f3b54f01 Pull complete 
+2026-09-10T00:53:28.8931377Z  9ef6b0a1be9e Extracting [============>                                      ]  32.77kB/129.1kB
+2026-09-10T00:53:28.8942451Z  9ef6b0a1be9e Extracting [==================================================>]  129.1kB/129.1kB
+2026-09-10T00:53:28.9430916Z  9ef6b0a1be9e Pull complete 
+2026-09-10T00:53:28.9441432Z  b70609756d71 Extracting [=>                                                 ]  32.77kB/1.466MB
+2026-09-10T00:53:29.0051792Z  b70609756d71 Extracting [==================================================>]  1.466MB/1.466MB
+2026-09-10T00:53:29.0054990Z  b70609756d71 Extracting [==================================================>]  1.466MB/1.466MB
+2026-09-10T00:53:29.0287990Z  b70609756d71 Pull complete 
+2026-09-10T00:53:29.0343769Z  postgres Pulled 
+2026-09-10T00:53:29.0424040Z  Network harness-ci_default  Creating
+2026-09-10T00:53:29.0789109Z  Network harness-ci_default  Created
+2026-09-10T00:53:29.0795982Z  Volume "harness-ci_redis-data"  Creating
+2026-09-10T00:53:29.0810639Z  Volume "harness-ci_redis-data"  Created
+2026-09-10T00:53:29.0813687Z  Volume "harness-ci_postgres-data"  Creating
+2026-09-10T00:53:29.0822896Z  Volume "harness-ci_postgres-data"  Created
+2026-09-10T00:53:29.0828111Z  Container harness-ci-postgres-1  Creating
+2026-09-10T00:53:29.0828987Z  Container harness-ci-redis-1  Creating
+2026-09-10T00:53:29.1060915Z  Container harness-ci-redis-1  Created
+2026-09-10T00:53:29.1062125Z  Container harness-ci-postgres-1  Created
+2026-09-10T00:53:29.1063035Z  Container harness-ci-postgres-1  Starting
+2026-09-10T00:53:29.1064084Z  Container harness-ci-redis-1  Starting
+2026-09-10T00:53:30.1146037Z  Container harness-ci-redis-1  Started
+2026-09-10T00:53:30.1249106Z  Container harness-ci-postgres-1  Started
+2026-09-10T00:53:30.1249573Z  Container harness-ci-redis-1  Waiting
+2026-09-10T00:53:30.1249926Z  Container harness-ci-postgres-1  Waiting
+2026-09-10T00:53:33.6262964Z  Container harness-ci-postgres-1  Healthy
+2026-09-10T00:53:33.6263789Z  Container harness-ci-redis-1  Healthy
+2026-09-10T00:53:33.6383677Z ##[group]Run uv run python scripts/check.py --integration
+2026-09-10T00:53:33.6384113Z [36;1muv run python scripts/check.py --integration[0m
+2026-09-10T00:53:33.6420291Z shell: /usr/bin/bash -e {0}
+2026-09-10T00:53:33.6420551Z env:
+2026-09-10T00:53:33.6420818Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:33.6421261Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-10T00:53:33.6421687Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:33.6422084Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:33.6422461Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:53:33.6422849Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-10T00:53:33.6423170Z ##[endgroup]
+2026-09-10T00:53:33.7732798Z All checks passed!
+2026-09-10T00:53:37.7415654Z ........................................................................ [  6%]
+2026-09-10T00:53:43.0212609Z ........................................................................ [ 12%]
+2026-09-10T00:53:50.0078099Z ................................................................s....... [ 19%]
+2026-09-10T00:54:02.2942500Z ........................................................................ [ 25%]
+2026-09-10T00:54:11.8885095Z ........................................................................ [ 31%]
+2026-09-10T00:54:13.5749194Z ........................................................................ [ 38%]
+2026-09-10T00:54:18.4421902Z ........................................................................ [ 44%]
+2026-09-10T00:54:20.8486342Z ........................................................................ [ 51%]
+2026-09-10T00:54:25.5934589Z ........................................................................ [ 57%]
+2026-09-10T00:54:31.5066662Z ........................................................................ [ 63%]
+2026-09-10T00:54:36.3274035Z ........................................................................ [ 70%]
+2026-09-10T00:54:38.1092997Z ........................................................................ [ 76%]
+2026-09-10T00:54:45.7957527Z ........................................................................ [ 83%]
+2026-09-10T00:54:56.0180232Z ........................................................................ [ 89%]
+2026-09-10T00:54:58.4296722Z ................................................................ss...... [ 95%]
+2026-09-10T00:54:59.3892290Z ..............................................                           [100%]
+2026-09-10T00:54:59.3893006Z 1123 passed, 3 skipped in 84.38s (0:01:24)
+2026-09-10T00:54:59.5158007Z ##[group]Run uv run pytest -q tests/test_verification.py
+2026-09-10T00:54:59.5158491Z [36;1muv run pytest -q tests/test_verification.py[0m
+2026-09-10T00:54:59.5194307Z shell: /usr/bin/bash -e {0}
+2026-09-10T00:54:59.5194551Z env:
+2026-09-10T00:54:59.5194813Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:54:59.5195255Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-10T00:54:59.5195693Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:54:59.5196069Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:54:59.5196441Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:54:59.5196831Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-10T00:54:59.5197155Z   ZEUS_TEST_DOCKER: 1
+2026-09-10T00:54:59.5197642Z ##[endgroup]
+2026-09-10T00:55:02.7609176Z ..........                                                               [100%]
+2026-09-10T00:55:02.7609828Z 10 passed in 2.88s
+2026-09-10T00:55:02.8104155Z ##[group]Run docker compose -p harness-ci down --volumes
+2026-09-10T00:55:02.8104618Z [36;1mdocker compose -p harness-ci down --volumes[0m
+2026-09-10T00:55:02.8142564Z shell: /usr/bin/bash -e {0}
+2026-09-10T00:55:02.8142816Z env:
+2026-09-10T00:55:02.8143088Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:55:02.8143533Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+2026-09-10T00:55:02.8143964Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:55:02.8144336Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:55:02.8144714Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+2026-09-10T00:55:02.8145109Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+2026-09-10T00:55:02.8145428Z ##[endgroup]
+2026-09-10T00:55:02.8814106Z  Container harness-ci-postgres-1  Stopping
+2026-09-10T00:55:02.8814692Z  Container harness-ci-redis-1  Stopping
+2026-09-10T00:55:03.0976755Z  Container harness-ci-redis-1  Stopped
+2026-09-10T00:55:03.0977572Z  Container harness-ci-redis-1  Removing
+2026-09-10T00:55:03.1049737Z  Container harness-ci-redis-1  Removed
+2026-09-10T00:55:03.2478101Z  Container harness-ci-postgres-1  Stopped
+2026-09-10T00:55:03.2485331Z  Container harness-ci-postgres-1  Removing
+2026-09-10T00:55:03.2531746Z  Container harness-ci-postgres-1  Removed
+2026-09-10T00:55:03.2537848Z  Volume harness-ci_postgres-data  Removing
+2026-09-10T00:55:03.2538706Z  Network harness-ci_default  Removing
+2026-09-10T00:55:03.2539681Z  Volume harness-ci_redis-data  Removing
+2026-09-10T00:55:03.2555629Z  Volume harness-ci_redis-data  Removed
+2026-09-10T00:55:03.3015315Z  Volume harness-ci_postgres-data  Removed
+2026-09-10T00:55:03.3701557Z  Network harness-ci_default  Removed
+2026-09-10T00:55:03.3831438Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T00:55:03.3832867Z Post job cleanup.
+2026-09-10T00:55:03.5006279Z (node:16081) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-10T00:55:03.5007785Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-10T00:55:03.5256045Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-10T00:55:03.5258354Z Post job cleanup.
+2026-09-10T00:55:03.6312771Z [command]/usr/bin/git version
+2026-09-10T00:55:03.6363880Z git version 2.55.0
+2026-09-10T00:55:03.6417155Z Temporarily overriding HOME='/home/runner/work/_temp/4429db04-c61b-4e74-b2d9-db26a9fbb03b' before making global git config changes
+2026-09-10T00:55:03.6419293Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T00:55:03.6420657Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/zeus/zeus
+2026-09-10T00:55:03.6463247Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T00:55:03.6503312Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-10T00:55:03.6765699Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T00:55:03.6794825Z http.https://github.com/.extraheader
+2026-09-10T00:55:03.6809799Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-10T00:55:03.6847230Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-10T00:55:03.7128915Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T00:55:03.7168830Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-10T00:55:03.7614897Z Cleaning up orphan processes
+2026-09-10T00:55:03.8004317Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -96,3 +96,19 @@ actual PostgreSQL/Redis targeted suite 220 passed / 7 skipped. Skipped tests are
 not acceptance evidence. Raw failed/superseded logs retain their original bytes,
 including diagnostic trailing whitespace; source and prose whitespace are checked
 separately. WSL and CI receipts will be attached against the committed source.
+
+Native WSL validation of source commit `5ccd2e926384fbdf1f6cac286a628f77614eb210`
+passed all 11 recorded stages: frozen dependency sync, Ruff, full suite
+(867 passed / 259 skipped), actual PostgreSQL/Redis target (226 passed / 1 skipped),
+build and CLI checks. The isolated clone remained clean and the lockfile unchanged.
+All captured stream hashes and byte lengths were verified, and the temporary
+credential bootstrap file was removed; no database credentials were found in
+published evidence. WSL raw streams and runner are under `wsl/`.
+
+CI run [34423160400](https://github.com/trevi00/zeus/actions/runs/34423160400)
+passed integration, both Linux jobs and Windows Python 3.14. Windows Python 3.12
+exposed a unit assertion comparing a computed 0.05000000000001137-second remainder
+to exactly 0.05. The test now allows 1 ns of subtraction roundoff; the runtime
+deadline implementation is unchanged. Its 24 App Server tests and Ruff pass
+locally. The failed CI receipt and raw logs are retained, and the full CI matrix
+is rerun for the test correction.

@@ -28,7 +28,8 @@ def test_startup_spends_the_turn_budget(monkeypatch):
     calls = []
     def slow_request(method, params, timeout):
         calls.append(method)
-        assert 0 < timeout <= 0.05
+        # Deadline subtraction can round a 50 ms budget slightly upwards.
+        assert 0 < timeout <= 0.05 + 1e-9
         time.sleep(0.06)
         return {'thread': {'id': 'unit-thread'}}
     monkeypatch.setattr(server, 'request', slow_request)
