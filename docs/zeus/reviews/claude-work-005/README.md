@@ -20,3 +20,7 @@
 이번 수용은 Codex 보완을 포함한 결합 결과에 대한 판정이며 원본 두 head에 결함이 없었다는 뜻이 아닙니다. 제품 소스 변경은 reviewer 결과 검증과 schema 위치 판별 두 곳이고 계약 문서 충돌은 양쪽 내용을 보존했습니다.
 
 테스트 fixture는 실제 모델·사람 인수나 운영 배포 증거가 아닙니다. reference 저장소 전체 의미 분석이나 기존 로컬 full-analysis 미커밋 자료의 전체 검토를 완료했다고 주장하지 않습니다. 기존 로컬 변경은 보존했습니다. 기존 33개 이슈는 별도의 신뢰된 종료 증거 조건이 남아 OPEN으로 유지하며 이번 코드 수용 결과를 로컬 티켓과 GitHub에 동기화합니다.
+
+두 PR 모두 수용 리뷰 게시 후 commit/body readback을 확인했고, 로컬 advisory review와 이슈 #19/#24 동기화도 완료했습니다(`github-reviews.json`, `ticket-sync.json`). 게시 시점 열린 PR은 없으며 기존 33개 이슈는 OPEN입니다(`final-open-state.json`).
+
+병합 전 CI 10/10 성공과 병합 tree 일치는 완료된 검증입니다. 병합 후 자동 시작된 [main CI](https://github.com/trevi00/zeus/actions/runs/34493278566)는 별도 실행이고 게시 시점의 상태를 `merged-main-ci.json`에 기록했습니다. 뒤이은 문서 전용 커밋은 `[skip ci]`입니다.

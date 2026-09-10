@@ -1,0 +1,112 @@
+[
+  {
+    "pr": 50,
+    "issue": 19,
+    "review": {
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "revision": 1,
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "claimed_reviewer": "Codex independent revised Claude PR review 005",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #50 재검토 005: 통합 보완 후 수용 / 병합 완료\n\n원본 검토 head: `f0440adc5c53dd37cca4f5770251295780f6e44d`\n\nClaude 수정에서 reviewer 출력의 target/spec/verdict/scenarios 결합, 무관한 검토 실행 거부, 명시적 거절의 승인 변조 거부를 확인했습니다. 추가 검토에서 excluded의 id만 비교해 approved_by/revision/reason을 변조해도 authoritative가 되는 반례를 재현했습니다. Codex 통합 수정은 reviewer 시나리오를 기존 폐쇄형 스키마로 검증하고 제외 승인 근거 전체를 비교합니다. 잘못된 자료형도 verdict_mismatch로 거부합니다.\n\n원본 head만 단독 승인한 것이 아니라 [통합 PR #67](https://github.com/trevi00/zeus/pull/67)의 보완 커밋 `7c4d69a`를 포함해 수용했습니다. 두 원본 PR의 ancestry를 보존했고, 전체·PostgreSQL 대상 테스트 및 통합 CI 10/10 통과 후 병합 tree 일치를 확인했습니다.\n\n실제 모델·사람 인수 또는 운영 배포를 검증했다는 뜻은 아닙니다. 연결 이슈의 종료 증거는 별도로 필요합니다. [보고서와 실행 증거](https://github.com/trevi00/zeus/tree/main/docs/zeus/reviews/claude-work-005).\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/50",
+        "https://github.com/trevi00/zeus/blob/ebb18de4ac00f6724146547a2054b6504c05be64/docs/zeus/reviews/claude-work-005/50-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "a44ffe05af1a5c4c334b4e5b903aeb9685fe543e7c842a00467b48e1cb07d347",
+      "at": "2026-09-10T15:05:12.216580+00:00"
+    },
+    "projection": {
+      "id": "e49115940356843f9f7c098df466acbb6b752270484fe05e92944c16c5f1f417",
+      "ticket_id": "ZEUS-07f94a1a4390",
+      "repository": "trevi00/zeus",
+      "number": 19,
+      "url": "https://github.com/trevi00/zeus/issues/19",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "attempted_content_hash": "e4e470fcb76b7697da91aba1dce70e0a4e8622bbd308bb8e03a45f195643f0c4",
+      "body_hash": "b6cdfd4c1ce918f71372dcd18dc2025e91071862c7f5876f62807ad30f00aab3",
+      "title_hash": "a01f3e7d22624aabd539618f1ea0facdd111b3b830c57e2f5143695477392e2d",
+      "observed_body_hash": "b6cdfd4c1ce918f71372dcd18dc2025e91071862c7f5876f62807ad30f00aab3",
+      "observed_title_hash": "a01f3e7d22624aabd539618f1ea0facdd111b3b830c57e2f5143695477392e2d",
+      "title": "[FA-018] 완료 판정에 실제 평가 실행·대상·시도 신원 결속",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:f9449cd4178690a0f95cb297feea167a0e150309f970335a4e348e1c89420262",
+      "observation_id": "3b66dcec2a2b6e8906cbb360a86b01aec8be925fa6991a1286a34d39ea13224c",
+      "at": "2026-09-10T15:05:15.066189+00:00",
+      "review_ids": [
+        "08c32fc4bb0334999c368f2bd90a0f7257d8d2c62fb364f515ee4c23cf791e37",
+        "31b65899719614985508c17bed2092084b8e55d866075862bc8193472abbe823",
+        "399c22a1b6bea5a6f0deed90b87f8cbba9748a24d2914a3fa0990726f12143b2",
+        "49c0c68e13065a735e34664aea7e061394f53f7e5562a61a9d58244c0c19e890",
+        "612ef6c9e7411d77bc09a72a5258876f93a142e6a2206d5cd853dffb56d1ed5f",
+        "819a47c5fa110c59e991bb4b673f95a5dbab47814c5457159e994ff2107f7bff",
+        "8a18b62b7b4e30f5efd25596a6f358300f581dd54b3c2d96ab56815d58eaf61a",
+        "a44ffe05af1a5c4c334b4e5b903aeb9685fe543e7c842a00467b48e1cb07d347",
+        "b926dc82cfd99fcb4b079ef86b37b643b159c3615ff4a382f2a00c5aeacfabb3",
+        "edf1ef47b236f3e2ac60f9faa6d0e9e91ff3907d50a503a9d11a031d77106931",
+        "f465d93323da7cc25a2950a43c6be4501b9a830a46076a57ac4707e7059e2918"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 55,
+    "issue": 24,
+    "review": {
+      "ticket_id": "ZEUS-5f46ad3a1d56",
+      "revision": 1,
+      "content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
+      "claimed_reviewer": "Codex independent revised Claude PR review 005",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "# PR #55 재검토 005: 통합 보완 후 수용 / 병합 완료\n\n원본 검토 head: `1534926cfb4cd7e6c208bdd064df93f658dcb253`\n\nClaude 수정에서 모든 활성 local reference를 검사하고 annotation/외부/비스키마 대상을 거부하며 정상 재귀 참조를 유지하는 것을 확인했습니다. 추가 검토에서는 정상 $defs의 이름이 description/default/examples일 때 잘못 거부하는 문제를 재현했습니다. Codex 통합 수정은 참조 단어가 아니라 스키마의 구조적 위치를 판별하여 정상 정의를 허용하고 실제 annotation 참조는 계속 거부합니다.\n\n원본 head만 단독 승인한 것이 아니라 [통합 PR #67](https://github.com/trevi00/zeus/pull/67)의 보완 커밋 `7c4d69a`를 포함해 수용했습니다. 두 원본 PR의 ancestry를 보존했고, 전체·PostgreSQL 대상 테스트 및 통합 CI 10/10 통과 후 병합 tree 일치를 확인했습니다.\n\n실제 모델·사람 인수 또는 운영 배포를 검증했다는 뜻은 아닙니다. 연결 이슈의 종료 증거는 별도로 필요합니다. [보고서와 실행 증거](https://github.com/trevi00/zeus/tree/main/docs/zeus/reviews/claude-work-005).\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/55",
+        "https://github.com/trevi00/zeus/blob/ebb18de4ac00f6724146547a2054b6504c05be64/docs/zeus/reviews/claude-work-005/55-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "08e7c39dd7fb3d46626c0e96edb9fbc981e30da214994981f07e11b567fa663d",
+      "at": "2026-09-10T15:05:15.122876+00:00"
+    },
+    "projection": {
+      "id": "a67cf245e665bc901322da1707bf8eca94cc00974ea5027a9c1788296a3a628c",
+      "ticket_id": "ZEUS-5f46ad3a1d56",
+      "repository": "trevi00/zeus",
+      "number": 24,
+      "url": "https://github.com/trevi00/zeus/issues/24",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
+      "attempted_content_hash": "fed5b8c76af975c3263b713907fc6a653490f7d7ed1c2c5c0d562d9df3d077f7",
+      "body_hash": "5044c176a4d7539afde00ef06cf9ee37bd92133e2afa61c6af8070d21f58db23",
+      "title_hash": "24400b4c1431dba4f278032ed35cf2a27876b0fa95f196e633f02d1f0defd510",
+      "observed_body_hash": "5044c176a4d7539afde00ef06cf9ee37bd92133e2afa61c6af8070d21f58db23",
+      "observed_title_hash": "24400b4c1431dba4f278032ed35cf2a27876b0fa95f196e633f02d1f0defd510",
+      "title": "[FA-023] 구조·어휘 검사의 실제 분모와 인수 권위 분리",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:d6c9ac6df1c0d5ab0f9f69526419bc5d6ce3c637e623f50ec08ec68460b7731f",
+      "observation_id": "27984c24adf6ac79fa330db8c1a707efadb0ede4578bf7209da455b2b2b717cc",
+      "at": "2026-09-10T15:05:17.878521+00:00",
+      "review_ids": [
+        "08e7c39dd7fb3d46626c0e96edb9fbc981e30da214994981f07e11b567fa663d",
+        "4ad00c7c1357e02c9cfd646f8fb4bb3b46ff8a08d9a09e48171256a1e82ae8fa",
+        "759f9e3c491a2151b6798d12c62b39df9a4dffdbe80ab231528f0d0af01cca1b",
+        "a74c323b232b1a12e757beac46db7a773a736ff6a61d6c96c47ab571116faaa8",
+        "e3ceb6ab0b848e5f71dc23d1f861fb327a67a62146abf381d416935ea6d89dfa"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  }
+]
