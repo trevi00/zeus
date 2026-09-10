@@ -168,7 +168,7 @@ def test_deadline_and_budgets_are_enforced_and_termination_is_recorded(tmp_path)
 
 
 @pytest.mark.parametrize('backend', ['memory', 'postgres'])
-def test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failure_as_success(backend, request, tmp_path):
+def test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failure_as_success(backend, request, tmp_path, monkeypatch):
     store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
     workflow = Workflow(store, organization())
     workflow.submit(assignment())
@@ -203,7 +203,23 @@ def test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failur
     again = stricter.inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
     assert again['id'] != checked['id'] and again['verdict'] == 'incomplete' and again['policy_hash'] != checked['policy_hash']
     assert again['denominator']['not_checked'] == 1 and again['inspector']['policy_hash'] == again['policy_hash']
-    assert set(again['inspector']) == {'policy_hash', 'environment', 'platform', 'python'}
+    assert set(again['inspector']) == {'policy_hash', 'environment_names', 'environment_digest', 'tool', 'platform'}
+    # Review counterexample (PR #54, round 2): the same environment *names* with a changed value must not reuse a
+    # pass. The value digest is in the identity and the replay runs under the snapshot that identity was taken from.
+    gate = command('import os, sys; sys.exit(0 if os.environ.get("LANG") == "review-pass" else 3)')
+    monkeypatch.setenv('LANG', 'review-pass')
+    passing = inspections.inspect(lease, candidate, [gate], workspace)
+    assert passing['verdict'] == 'all_checked' and passing['context']['environment_digest'] == passing['inspector']['environment_digest']
+    monkeypatch.setenv('LANG', 'review-fail')
+    failing = inspections.inspect(lease, candidate, [gate], workspace)
+    assert failing['id'] != passing['id'] and failing['verdict'] == 'incomplete', 'a changed value is a new inspection, not a cache hit'
+    assert failing['inspector']['environment_digest'] != passing['inspector']['environment_digest']
+    assert failing['inspector']['environment_names'] == passing['inspector']['environment_names']
+    assert inspections.inspect(lease, candidate, [gate], workspace) == failing, 'and the failing result is what the cache now holds'
+    # The snapshot handed to the inspector is the environment the child actually runs under.
+    direct = inspections.inspector.inspect([gate], workspace, inspections.binding(lease, candidate, workspace),
+                                           environment={**inspections.inspector.snapshot()['environment'], 'LANG': 'review-pass'})
+    assert direct['findings'][0]['state'] == 'checked' and direct['context']['environment_digest'] != failing['context']['environment_digest']
     with store.transaction() as tx:
         with pytest.raises(ContractError, match='Evidence inspection is incomplete'):
             stricter.require_all_checked(tx, again['id'])
@@ -212,10 +228,11 @@ def test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failur
     class OtherHost:
         def __init__(self, inner):
             self.inner, self.policy = inner, inner.policy
-        def identity(self):
-            return {**self.inner.identity(), 'platform': 'fixture-other-host'}
-        def inspect(self, claims, cwd, binding):
-            return self.inner.inspect(claims, cwd, binding)
+        def snapshot(self):
+            inner = self.inner.snapshot()
+            return {**inner, 'identity': {**inner['identity'], 'platform': 'fixture-other-host'}}
+        def inspect(self, claims, cwd, binding, environment=None):
+            return self.inner.inspect(claims, cwd, binding, environment=environment)
     elsewhere = EvidenceInspections(store, OtherHost(inspector(tmp_path, replays_per_claim=1))).inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
     assert elsewhere['id'] != checked['id'] and elsewhere['inspector']['platform'] == 'fixture-other-host'
     with pytest.raises(ContractError, match='typed execution lease'):

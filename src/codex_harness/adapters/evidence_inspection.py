@@ -159,7 +159,7 @@ class EvidenceInspector:
         return {'state': 'checked', 'cause': 'file present' + (' with the claimed hash' if claim['sha256'] else
                                                               '; no hash was claimed, so only presence is checked'), **detail}
 
-    def inspect_command(self, claim, cwd, remaining_seconds):
+    def inspect_command(self, claim, cwd, remaining_seconds, environment=None):
         if not authorized(claim['argv'], self.policy):
             return {'state': 'not_checked', 'cause': 'command is not an authorized replay prefix; a claim is not authority'}
         per_command = min(self.policy['replay']['per_command_seconds'], remaining_seconds)
@@ -169,7 +169,7 @@ class EvidenceInspector:
         runs = []
         for _ in range(self.policy['replay']['replays_per_claim']):
             run = _capture(claim['argv'], str(Path(cwd).resolve()), per_command, self.policy['replay']['max_output_bytes'],
-                           replay_environment())
+                           dict(environment) if environment is not None else replay_environment())
             runs.append(self._archive(run))
             if run.get('failure'):
                 break
@@ -177,19 +177,32 @@ class EvidenceInspector:
         return {'state': state, 'cause': cause, 'runs': runs, 'replay_argv': list(claim['argv']),
                 'argv_identical': True}
 
-    def identity(self):
-        """What decides an inspection result besides the claims and the execution: the policy and the host."""
-        return {'policy_hash': self.policy['policy_hash'], 'environment': sorted(replay_environment()),
-                'platform': platform.platform(), 'python': platform.python_version()}
+    def snapshot(self):
+        """One environment snapshot: its digest is part of the inspection identity and the same values
+        are what every replay runs under (review, PR #54: names alone let a changed value reuse a pass)."""
+        environment = replay_environment()
+        identity = {'policy_hash': self.policy['policy_hash'], 'environment_names': sorted(environment),
+                    'environment_digest': digest(sorted(environment.items())),
+                    'tool': {'python': platform.python_version(), 'executable_digest': digest(sys.executable),
+                             'implementation': platform.python_implementation()},
+                    'platform': platform.platform()}
+        return {'identity': identity, 'environment': environment}
 
-    def inspect(self, claims, cwd, binding):
-        """Inspect every claim in one explicit context; the budget is enforced, never assumed."""
+    def identity(self):
+        return self.snapshot()['identity']
+
+    def inspect(self, claims, cwd, binding, environment=None):
+        """Inspect every claim in one explicit context; the budget is enforced, never assumed.
+
+        `environment` is the snapshot the caller keyed the inspection by; every replay runs under exactly it.
+        """
+        environment = dict(environment) if environment is not None else replay_environment()
         root = Path(cwd)
         if not root.is_dir():
             return {'context': {**binding, 'cwd': str(root)}, 'policy_hash': self.policy['policy_hash'], 'findings': [
                 {'claim': None, 'state': 'error', 'cause': 'workspace directory does not exist'}]}
-        context = {**binding, 'cwd': str(root.resolve()), 'environment': sorted(replay_environment()),
-                   'python': sys.version.split()[0]}
+        context = {**binding, 'cwd': str(root.resolve()), 'environment': sorted(environment),
+                   'environment_digest': digest(sorted(environment.items())), 'python': sys.version.split()[0]}
         findings = []
         deadline = time.monotonic() + self.policy['replay']['total_seconds']
         for index, raw in enumerate(claims):
@@ -204,7 +217,7 @@ class EvidenceInspector:
             if claim['kind'] == 'file':
                 result = self.inspect_file(claim, root)
             else:
-                result = self.inspect_command(claim, root, deadline - time.monotonic())
+                result = self.inspect_command(claim, root, deadline - time.monotonic(), environment)
             findings.append({'claim': claim, **result})
         return {'context': context, 'policy_hash': self.policy['policy_hash'], 'findings': findings,
                 'inspection_id': digest([context, self.policy['policy_hash'], [f['claim'] for f in findings]])}

@@ -32,17 +32,23 @@ class EvidenceInspections:
         bound = self.binding(task, candidate, cwd)
         # The policy and the host that decide the result are part of the identity: a stricter policy or
         # another environment never reads back an older all_checked (review, PR #54).
-        identity = self.inspector.identity()
+        snapshot = self.inspector.snapshot()
+        identity = snapshot['identity'] if isinstance(snapshot, dict) else None
         require(isinstance(identity, dict) and type(identity.get('policy_hash')) is str and identity['policy_hash']
-                and isinstance(identity.get('environment'), list), 'Inspector identity requires policy_hash and environment')
-        key = digest(['evidence-inspection-v2', bound, identity, list(claims)])
+                and type(identity.get('environment_digest')) is str and isinstance(snapshot.get('environment'), dict),
+                'Inspector snapshot requires an identity with policy_hash and environment_digest, and the environment values')
+        key = digest(['evidence-inspection-v3', bound, identity, list(claims)])
         with self.store.transaction() as tx:
             existing = tx.get(BUCKET, key)
         if existing is not None:
             return existing
-        report = self.inspector.inspect(list(claims), cwd, bound)
+        # The replays run under the very environment the identity was taken from.
+        report = self.inspector.inspect(list(claims), cwd, bound, environment=snapshot['environment'])
         counts = denominator(report['findings'])
         require(report['policy_hash'] == identity['policy_hash'], 'Inspector reported a different policy than its identity')
+        require(report['findings'] and report['findings'][0].get('cause') == 'workspace directory does not exist'
+                or report['context'].get('environment_digest') == identity['environment_digest'],
+                'Inspector replayed under a different environment than its identity')
         row = {'id': key, 'binding': bound, 'policy_hash': report['policy_hash'], 'inspector': identity, 'context': report['context'],
                'claims': list(claims), 'findings': report['findings'], 'denominator': counts,
                'verdict': verdict(report['findings']), 'recorded_at': utcnow(),
