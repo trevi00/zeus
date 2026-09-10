@@ -122,7 +122,7 @@ class Tickets:
                 "lifecycle_history": sorted(lifecycle, key=lambda r: r["sequence"]),
                 "reviews": sorted(reviews, key=lambda r: (r["at"], r["id"])),
                 "github": sorted(links, key=lambda r: r["id"]),
-                "external_observations": sorted(observations, key=lambda r: (r["at"], r["id"]))}
+                "external_observations": sorted(observations, key=lambda r: (r.get("sequence", 0), r["at"], r["id"]))}
 
     def list(self):
         with self.store.transaction() as tx:

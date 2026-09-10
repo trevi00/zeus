@@ -168,6 +168,26 @@ def test_remote_manual_close_is_a_conflict_not_local_acceptance(setup):
     assert state["edits"] == 0
 
 
+def test_observations_read_back_in_the_order_they_were_made_even_within_one_clock_tick(setup, monkeypatch):
+    # Windows clocks under load hand out the same timestamp to consecutive observations; the order
+    # must come from the ledger, not from a digest tie-break on identical wall-clock strings.
+    tickets, ticket, github, state = setup
+    monkeypatch.setattr("codex_harness.adapters.github_tickets.utcnow", lambda: "2026-09-10T00:00:00+00:00")
+    github.sync(ticket["id"], "fixture/zeus")
+    state["issue"]["state"] = "CLOSED"
+    assert github.sync(ticket["id"], "fixture/zeus")["status"] == "state_conflict"
+    observations = tickets.get(ticket["id"])["external_observations"]
+    assert [o["sequence"] for o in observations] == list(range(1, len(observations) + 1))
+    assert len({o["at"] for o in observations}) == 1 and observations[-1]["state"] == "CLOSED"
+    state["issue"]["state"] = "OPEN"
+    github.sync(ticket["id"], "fixture/zeus")
+    latest = tickets.get(ticket["id"])["external_observations"][-1]
+    assert latest["state"] == "OPEN" and latest["sequence"] == len(observations) + 1
+    # Re-recording an identical observation keeps its identity, first_seen and sequence.
+    again = github._observe(ticket["id"], "fixture/zeus", state["issue"], latest["purpose"])
+    assert again["id"] == latest["id"] and again["sequence"] == latest["sequence"] and again["first_seen"] == latest["first_seen"]
+
+
 def test_external_title_change_is_preserved_and_invalidates_synced_status(setup):
     tickets, ticket, github, state = setup
     github.sync(ticket["id"], "fixture/zeus")
