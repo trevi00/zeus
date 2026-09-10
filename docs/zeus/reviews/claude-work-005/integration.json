@@ -1,0 +1,48 @@
+{
+  "tree": "d21d034c5a75b896f56522af2625901e7d1c2ec1",
+  "checks": [
+    {
+      "check": "ruff",
+      "exit": 0,
+      "seconds": 0.04343210000661202,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "postgres_enabled": false,
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-review5-integration\\.venv\\Scripts\\ruff.exe",
+        "check",
+        "."
+      ]
+    },
+    {
+      "check": "full",
+      "exit": 0,
+      "seconds": 302.48282800000743,
+      "sha256": "521588c1a12680a8574d7e60cd48f03ff209a649ad079c2316473797cd6cfdee",
+      "postgres_enabled": false,
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-review5-integration\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q"
+      ]
+    },
+    {
+      "check": "postgres-targets",
+      "exit": 0,
+      "seconds": 34.81045439999434,
+      "sha256": "5839fe1eb9f376cf628178f25f41b90d104d617b6d21ff0994405e79c8ba6e03",
+      "postgres_enabled": true,
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-review5-integration\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_architecture.py",
+        "tests/test_completion_authority.py",
+        "tests/test_execution_output.py",
+        "tests/test_output_validation.py",
+        "tests/test_review005_boundaries.py"
+      ]
+    }
+  ]
+}

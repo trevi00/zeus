@@ -1,0 +1,22 @@
+import os,json,subprocess,time,hashlib
+from pathlib import Path
+from codex_harness.bootstrap import database_url
+out=Path('.runtime/claude-work-review-005').resolve(); root=Path('C:/Users/rudtn/zeus-review5-integration')
+env=dict(os.environ,PYTHONIOENCODING='utf-8');env.pop('VIRTUAL_ENV',None)
+env.pop('HARNESS_INTEGRATION',None)
+subprocess.run(['uv','sync','--frozen'],cwd=root,env=env,check=True,capture_output=True)
+python=str(root/'.venv/Scripts/python.exe')
+checks=[('ruff',[str(root/'.venv/Scripts/ruff.exe'),'check','.'],False),('full',[python,'-m','pytest','-q'],False)]
+files={'tests/test_review005_boundaries.py'}
+for n in [50,55]: files.update(json.loads((out/f'{n}-tests.json').read_text('utf-8'))['files'])
+checks.append(('postgres-targets',[python,'-m','pytest','-q',*sorted(files)],True))
+results=[]
+for label,argv,pg in checks:
+    current=dict(env)
+    if pg: current.update(HARNESS_INTEGRATION='1',HARNESS_DATABASE_URL=database_url(),ZEUS_DATABASE_URL=database_url())
+    t=time.monotonic(); p=subprocess.run(argv,cwd=root,env=current,capture_output=True)
+    raw=p.stdout+p.stderr;(out/f'integration-{label}.log').write_bytes(raw)
+    results.append({'check':label,'exit':p.returncode,'seconds':time.monotonic()-t,'sha256':hashlib.sha256(raw).hexdigest(),'postgres_enabled':pg,'argv':argv})
+    print(label,p.returncode,raw.decode('utf-8',errors='replace')[-1000:],flush=True)
+    (out/'integration.json').write_text(json.dumps({'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=root,text=True).strip(),'checks':results},indent=2),'utf-8')
+    if p.returncode: break

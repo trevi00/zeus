@@ -1,0 +1,179 @@
+FsFsFsFFF.                                                               [100%]
+================================== FAILURES ===================================
+_ test_exclusion_provenance_cannot_be_rewritten[approved_by-human:forged-memory] _
+
+backend = 'memory', field = 'approved_by', value = 'human:forged'
+request = <FixtureRequest for <Function test_exclusion_provenance_cannot_be_rewritten[approved_by-human:forged-memory]>>
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3358/test_exclusion_provenance_cann0')
+
+    @pytest.mark.parametrize('backend', ['memory', 'postgres'])
+    @pytest.mark.parametrize('field,value', [('approved_by', 'human:forged'), ('revision', 'b' * 40), ('reason', 'different approval')])
+    def test_exclusion_provenance_cannot_be_rewritten(backend, field, value, request, tmp_path):
+        store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
+        case = Case(store, tmp_path)
+        case.finish()
+        produced = {'expected': SCENARIOS, 'passed': ['login'], 'excluded': [
+            {'id': 'checkout', 'approved_by': 'human:owner', 'revision': 'd' * 40, 'reason': 'reviewed exclusion'}]}
+        evaluation = case.evaluation(evaluated=case.evaluated(case.task, scenarios=produced))
+        altered = deepcopy(produced)
+        altered['excluded'][0][field] = value
+        case.record(case.verdict(evaluation=evaluation, scenarios=altered))
+>       assert case.inspect(expected_scenarios=SCENARIOS)['state'] == 'verdict_mismatch'
+E       AssertionError: assert 'authoritative' == 'verdict_mismatch'
+E         
+E         - verdict_mismatch
+E         + authoritative
+
+tests\test_review005_boundaries.py:23: AssertionError
+_ test_exclusion_provenance_cannot_be_rewritten[revision-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb-memory] _
+
+backend = 'memory', field = 'revision'
+value = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+request = <FixtureRequest for <Function test_exclusion_provenance_cannot_be_rewritten[revision-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb-memory]>>
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3358/test_exclusion_provenance_cann2')
+
+    @pytest.mark.parametrize('backend', ['memory', 'postgres'])
+    @pytest.mark.parametrize('field,value', [('approved_by', 'human:forged'), ('revision', 'b' * 40), ('reason', 'different approval')])
+    def test_exclusion_provenance_cannot_be_rewritten(backend, field, value, request, tmp_path):
+        store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
+        case = Case(store, tmp_path)
+        case.finish()
+        produced = {'expected': SCENARIOS, 'passed': ['login'], 'excluded': [
+            {'id': 'checkout', 'approved_by': 'human:owner', 'revision': 'd' * 40, 'reason': 'reviewed exclusion'}]}
+        evaluation = case.evaluation(evaluated=case.evaluated(case.task, scenarios=produced))
+        altered = deepcopy(produced)
+        altered['excluded'][0][field] = value
+        case.record(case.verdict(evaluation=evaluation, scenarios=altered))
+>       assert case.inspect(expected_scenarios=SCENARIOS)['state'] == 'verdict_mismatch'
+E       AssertionError: assert 'authoritative' == 'verdict_mismatch'
+E         
+E         - verdict_mismatch
+E         + authoritative
+
+tests\test_review005_boundaries.py:23: AssertionError
+_ test_exclusion_provenance_cannot_be_rewritten[reason-different approval-memory] _
+
+backend = 'memory', field = 'reason', value = 'different approval'
+request = <FixtureRequest for <Function test_exclusion_provenance_cannot_be_rewritten[reason-different approval-memory]>>
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3358/test_exclusion_provenance_cann4')
+
+    @pytest.mark.parametrize('backend', ['memory', 'postgres'])
+    @pytest.mark.parametrize('field,value', [('approved_by', 'human:forged'), ('revision', 'b' * 40), ('reason', 'different approval')])
+    def test_exclusion_provenance_cannot_be_rewritten(backend, field, value, request, tmp_path):
+        store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
+        case = Case(store, tmp_path)
+        case.finish()
+        produced = {'expected': SCENARIOS, 'passed': ['login'], 'excluded': [
+            {'id': 'checkout', 'approved_by': 'human:owner', 'revision': 'd' * 40, 'reason': 'reviewed exclusion'}]}
+        evaluation = case.evaluation(evaluated=case.evaluated(case.task, scenarios=produced))
+        altered = deepcopy(produced)
+        altered['excluded'][0][field] = value
+        case.record(case.verdict(evaluation=evaluation, scenarios=altered))
+>       assert case.inspect(expected_scenarios=SCENARIOS)['state'] == 'verdict_mismatch'
+E       AssertionError: assert 'authoritative' == 'verdict_mismatch'
+E         
+E         - verdict_mismatch
+E         + authoritative
+
+tests\test_review005_boundaries.py:23: AssertionError
+_________ test_schema_names_are_not_annotation_locations[description] _________
+
+name = 'description'
+
+    @pytest.mark.parametrize('name', ['description', 'default', 'examples'])
+    def test_schema_names_are_not_annotation_locations(name):
+        schema = {'type': 'object', '$defs': {name: {'type': 'integer'}},
+                  'properties': {'value': {'$ref': '#/$defs/' + name}}}
+>       assert preflight(schema)['dialect'].endswith('2020-12/schema')
+               ^^^^^^^^^^^^^^^^^
+
+tests\test_review005_boundaries.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\codex_harness\adapters\output_schema.py:142: in preflight
+    walk(schema, "$")
+src\codex_harness\adapters\output_schema.py:133: in walk
+    walk(value[name], child_path + f"[{json.dumps(name)}]",
+src\codex_harness\adapters\output_schema.py:115: in walk
+    _refuse("codex-output-schema-reference-into-annotation", path,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cause = 'codex-output-schema-reference-into-annotation'
+path = '$["properties"]["value"]'
+message = '#/$defs/description points into annotation data, which is never validated'
+schema_hash = 'sha256:e712b1a8326d891c07db4e77c1041958bffc3eb390cec74cd5c2ff181c8d2b8b'
+
+    def _refuse(cause, path, message, schema_hash):
+>       raise ContractError(f"{cause}: {SCOPE} at {path}: {message}; {schema_hash}")
+E       codex_harness.domain.model.ContractError: codex-output-schema-reference-into-annotation: codex-harness/research-audit/output-schema at $["properties"]["value"]: #/$defs/description points into annotation data, which is never validated; sha256:e712b1a8326d891c07db4e77c1041958bffc3eb390cec74cd5c2ff181c8d2b8b
+
+src\codex_harness\adapters\output_schema.py:43: ContractError
+___________ test_schema_names_are_not_annotation_locations[default] ___________
+
+name = 'default'
+
+    @pytest.mark.parametrize('name', ['description', 'default', 'examples'])
+    def test_schema_names_are_not_annotation_locations(name):
+        schema = {'type': 'object', '$defs': {name: {'type': 'integer'}},
+                  'properties': {'value': {'$ref': '#/$defs/' + name}}}
+>       assert preflight(schema)['dialect'].endswith('2020-12/schema')
+               ^^^^^^^^^^^^^^^^^
+
+tests\test_review005_boundaries.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\codex_harness\adapters\output_schema.py:142: in preflight
+    walk(schema, "$")
+src\codex_harness\adapters\output_schema.py:133: in walk
+    walk(value[name], child_path + f"[{json.dumps(name)}]",
+src\codex_harness\adapters\output_schema.py:115: in walk
+    _refuse("codex-output-schema-reference-into-annotation", path,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cause = 'codex-output-schema-reference-into-annotation'
+path = '$["properties"]["value"]'
+message = '#/$defs/default points into annotation data, which is never validated'
+schema_hash = 'sha256:91afee4b474ae7701d57a68aeb4029aa06d892deaad910508efedc5ebcbd5fb1'
+
+    def _refuse(cause, path, message, schema_hash):
+>       raise ContractError(f"{cause}: {SCOPE} at {path}: {message}; {schema_hash}")
+E       codex_harness.domain.model.ContractError: codex-output-schema-reference-into-annotation: codex-harness/research-audit/output-schema at $["properties"]["value"]: #/$defs/default points into annotation data, which is never validated; sha256:91afee4b474ae7701d57a68aeb4029aa06d892deaad910508efedc5ebcbd5fb1
+
+src\codex_harness\adapters\output_schema.py:43: ContractError
+__________ test_schema_names_are_not_annotation_locations[examples] ___________
+
+name = 'examples'
+
+    @pytest.mark.parametrize('name', ['description', 'default', 'examples'])
+    def test_schema_names_are_not_annotation_locations(name):
+        schema = {'type': 'object', '$defs': {name: {'type': 'integer'}},
+                  'properties': {'value': {'$ref': '#/$defs/' + name}}}
+>       assert preflight(schema)['dialect'].endswith('2020-12/schema')
+               ^^^^^^^^^^^^^^^^^
+
+tests\test_review005_boundaries.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\codex_harness\adapters\output_schema.py:142: in preflight
+    walk(schema, "$")
+src\codex_harness\adapters\output_schema.py:133: in walk
+    walk(value[name], child_path + f"[{json.dumps(name)}]",
+src\codex_harness\adapters\output_schema.py:115: in walk
+    _refuse("codex-output-schema-reference-into-annotation", path,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cause = 'codex-output-schema-reference-into-annotation'
+path = '$["properties"]["value"]'
+message = '#/$defs/examples points into annotation data, which is never validated'
+schema_hash = 'sha256:223bf105e5fe7f0b83083727b8fe2e947c799d6e4eea7b8f580ab3b934a0ad65'
+
+    def _refuse(cause, path, message, schema_hash):
+>       raise ContractError(f"{cause}: {SCOPE} at {path}: {message}; {schema_hash}")
+E       codex_harness.domain.model.ContractError: codex-output-schema-reference-into-annotation: codex-harness/research-audit/output-schema at $["properties"]["value"]: #/$defs/examples points into annotation data, which is never validated; sha256:223bf105e5fe7f0b83083727b8fe2e947c799d6e4eea7b8f580ab3b934a0ad65
+
+src\codex_harness\adapters\output_schema.py:43: ContractError
+=========================== short test summary info ===========================
+FAILED tests/test_review005_boundaries.py::test_exclusion_provenance_cannot_be_rewritten[approved_by-human:forged-memory]
+FAILED tests/test_review005_boundaries.py::test_exclusion_provenance_cannot_be_rewritten[revision-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb-memory]
+FAILED tests/test_review005_boundaries.py::test_exclusion_provenance_cannot_be_rewritten[reason-different approval-memory]
+FAILED tests/test_review005_boundaries.py::test_schema_names_are_not_annotation_locations[description]
+FAILED tests/test_review005_boundaries.py::test_schema_names_are_not_annotation_locations[default]
+FAILED tests/test_review005_boundaries.py::test_schema_names_are_not_annotation_locations[examples]
+6 failed, 1 passed, 3 skipped in 0.45s

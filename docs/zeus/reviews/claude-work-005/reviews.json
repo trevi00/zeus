@@ -1,0 +1,14 @@
+[
+  {
+    "pr": 50,
+    "head": "f0440adc5c53dd37cca4f5770251295780f6e44d",
+    "accepted": true,
+    "finding": "Claude 수정에서 reviewer 출력의 target/spec/verdict/scenarios 결합, 무관한 검토 실행 거부, 명시적 거절의 승인 변조 거부를 확인했습니다. 추가 검토에서 excluded의 id만 비교해 approved_by/revision/reason을 변조해도 authoritative가 되는 반례를 재현했습니다. Codex 통합 수정은 reviewer 시나리오를 기존 폐쇄형 스키마로 검증하고 제외 승인 근거 전체를 비교합니다. 잘못된 자료형도 verdict_mismatch로 거부합니다."
+  },
+  {
+    "pr": 55,
+    "head": "1534926cfb4cd7e6c208bdd064df93f658dcb253",
+    "accepted": true,
+    "finding": "Claude 수정에서 모든 활성 local reference를 검사하고 annotation/외부/비스키마 대상을 거부하며 정상 재귀 참조를 유지하는 것을 확인했습니다. 추가 검토에서는 정상 $defs의 이름이 description/default/examples일 때 잘못 거부하는 문제를 재현했습니다. Codex 통합 수정은 참조 단어가 아니라 스키마의 구조적 위치를 판별하여 정상 정의를 허용하고 실제 annotation 참조는 계속 거부합니다."
+  }
+]

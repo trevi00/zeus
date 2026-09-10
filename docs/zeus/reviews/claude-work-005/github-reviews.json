@@ -1,0 +1,18 @@
+[
+  {
+    "pr": 50,
+    "head": "f0440adc5c53dd37cca4f5770251295780f6e44d",
+    "review_id": 5168803975,
+    "url": "https://github.com/trevi00/zeus/pull/50#pullrequestreview-5168803975",
+    "state": "COMMENTED",
+    "readback_verified": true
+  },
+  {
+    "pr": 55,
+    "head": "1534926cfb4cd7e6c208bdd064df93f658dcb253",
+    "review_id": 5168804471,
+    "url": "https://github.com/trevi00/zeus/pull/55#pullrequestreview-5168804471",
+    "state": "COMMENTED",
+    "readback_verified": true
+  }
+]

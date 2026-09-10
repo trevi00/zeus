@@ -1,0 +1,255 @@
+{
+  "baseRefName": "main",
+  "comments": [
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTuQ9cA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "검토 반영 — `ac43634` (P1: 존재하지 않는 실행·평가 증적도 completion authority)\n\n**변경** (`application/completion.py`): `CompletionAuthority(store, artifacts=None, org=None)`. `authoritative` 앞에 `_provenance`가 문서 밖 출처를 검사합니다 —\n- `receipt_unbound`: `runner_receipt.id`가 task row가 기록한 `result.execution_ref`와 같고 `digest`가 그 ref의 해시가 아니면.\n- `artifact_missing`: artifact store가 없거나 execution ref·evaluation_artifact가 실재(`artifacts.inspect`)하지 않으면.\n- `reviewer_unbound`: reviewer가 조직 actor가 아니거나 실행 agent 자신이면.\n- `scenario_mismatch`: 소비자가 넘긴 승인 spec의 `expected_scenarios`와 분모가 다르면.\n`require_authority`도 `expected_scenarios`를 받습니다. 네 상태 모두 `STATES`에 추가.\n\n**테스트** (`tests/test_completion_authority.py`): 실제 FileArtifacts에 execution/evaluation 문서를 두고 worker 완료가 `execution_ref`를 기록하는 흐름으로 전부 재작성; 새 검사에서 조작된 execution_ref → `receipt_unbound`, 빈 artifact store → `artifact_missing`(ref 명시), worker 자신·미지 actor → `reviewer_unbound`, 분모 불일치 → `scenario_mismatch`, 일치 시에만 `authoritative`; 도달 가능 상태 집합 갱신.\n\nmain(`66076cc`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 19 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T12:17:54Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/50#issuecomment-5618548080",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTvN69A",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "재검토 003 반영 — `ffe395a` (P1: 파일 존재와 호출자 문자열만으로 완료 권위)\n\n**변경** (`application/completion.py` `_provenance`): 존재 확인 대신 **내용 결속**을 검사합니다.\n- 실행 artifact의 문서가 이 task_id·attempt를 이름해야 함(아니면 `receipt_unbound`, \"content\" 사유).\n- 평가 artifact는 `kind=completion-evaluation`이고 task_id·attempt·spec_revision이 판정과 같아야 하며(`artifact_unbound`), `scenarios` 분모를 **스스로** 선언해야 합니다 — 판정의 expected가 그 분모와 다르면 `scenario_mismatch`(소비자의 `expected_scenarios`는 선택적 추가 대조이며, 생략해도 artifact 분모 검사는 항상 수행).\n- reviewer는 조직 actor·실행 agent 아님·평가 artifact가 이름한 reviewer와 동일해야 하고, 평가 artifact의 `execution_ref`가 **그 reviewer의 succeeded task**가 기록한 execution 증거여야 합니다(`reviewer_unbound`, \"no verified reviewer execution\"). reviewer 실행 0회는 권위가 되지 않습니다.\n\n**테스트** (`tests/test_completion_authority.py` 전면 재작성): 러너가 쓰는 형식의 execution 문서, reviewer의 실제 task+완료, 평가 artifact를 만드는 `Case` 픽스처로 전체 재구성. 새 반례: fixture label 두 artifact → `receipt_unbound`/`artifact_unbound`; task_id·attempt·spec 불일치, 빈 분모, 다른 reviewer, worker 자신, 미지 actor, reviewer 실행 없음, reviewer task 미완료 각각 이름 있는 상태; 모두 맞을 때만 `authoritative`.\n\nmain(`457928c`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 19 passed; Ruff 통과. 전체 스위트 결과는 별도 코멘트로 남깁니다.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T13:34:51Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/50#issuecomment-5619546868",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTvRZmA",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "전체 스위트(Windows, Python 3.12, PG 검사 skip; `ffe395a`): **1065 passed, 336 skipped** (273s).\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T13:38:52Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/50#issuecomment-5619603864",
+      "viewerDidAuthor": true
+    },
+    {
+      "id": "IC_kwDOUTB0Pc8AAAABTv430g",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "재검토 004 반영 — `f0440ad` (P1: reviewer 실행이 현재 target을 검토했는지 미확인)\n\n**변경** (`application/completion.py` `_provenance`): reviewer의 succeeded task 확인 뒤, **그 실행이 기록한 출력 자체**(`answer.evaluated`)에서 결속을 도출합니다 —\n- `evaluated.target`(task_id/generation/attempt)과 `evaluated.spec_revision`이 판정의 target·spec과 같아야 함. 다른 작업을 검토한 실행을 호출자가 만든 평가 문서로 연결하면 `reviewer_unbound` (\"did not evaluate this execution\").\n- `evaluated.verdict`와 `evaluated.scenarios`(expected/passed/excluded id)가 기록된 판정과 정확히 같아야 함. 다르면 새 상태 `verdict_mismatch` — reviewer 실행이 `iterate`로 거절한 것을 `approved`로 기록할 수 없고, reviewer가 내지 않은 시나리오 결과도 기록할 수 없습니다.\n\n**테스트** (`tests/test_completion_authority.py`): Codex 반례 그대로 — 무관한 작업(unrelated Case)을 검토한 reviewer task를 연결 + `expected_scenarios` 명시 → `reviewer_unbound`, `require_authority` 거절; reviewer 출력 `iterate`인데 approved 기록 → `verdict_mismatch`, 같은 출력을 iterate로 기록하면 `not_approved`; passed 절반만 낸 출력 → `verdict_mismatch`; 다른 spec을 검토한 출력 → `reviewer_unbound`; 픽스처의 reviewer 실행은 이제 항상 target/spec/scenarios/verdict를 출력에 담습니다.\n\nmain(`59a6cb5`) 위로 rebase. 로컬(MemoryStore + 격리 PG): 19 passed; Ruff 통과.\n\nhttps://claude.ai/code/session_01NZdmMMvAoT4U6cVLpVdTW2",
+      "createdAt": "2026-09-10T14:24:19Z",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/trevi00/zeus/pull/50#issuecomment-5620250578",
+      "viewerDidAuthor": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/contracts.md",
+      "additions": 20,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "docs/zeus/implementation/completion-authority-001/README.md",
+      "additions": 69,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "docs/zeus/implementation/completion-authority-001/target-tests.json",
+      "additions": 28,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/application/completion.py",
+      "additions": 200,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "src/codex_harness/domain/completion.py",
+      "additions": 145,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/test_completion_authority.py",
+      "additions": 437,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ],
+  "headRefOid": "f0440adc5c53dd37cca4f5770251295780f6e44d",
+  "mergeable": "MERGEABLE",
+  "number": 50,
+  "reviews": [
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM_K9yw",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #50: 변경 요청 / 병합 보류\n\n검토 head: `7866032f8d485995f2ead86dc59449f273e37397`. Codex 독립 검토입니다.\n\n**[P1] 존재하지 않는 실행·평가 증적도 completion authority가 됩니다**\n\nworker task를 succeeded로 만든 뒤 실제 receipt/artifact를 하나도 생성하지 않고 형식만 맞춘 runner_receipt digest와 evaluation_artifact를 record하면 inspect가 state=authoritative, authority=true를 반환합니다. 같은 JSON 안의 값 비교는 출처 검증이 아닙니다.\n\n위치: [src/codex_harness/application/completion.py:36](https://github.com/trevi00/zeus/blob/7866032f8d485995f2ead86dc59449f273e37397/src/codex_harness/application/completion.py#L36)\n\n수정·재검증 조건: 독립 runner 원장/불변 artifact 실재와 digest, reviewer 출처 및 승인된 spec의 scenario 분모를 검증하세요. 연결 전에는 claim/advisory로 유지하고 require_authority가 허용하지 않아야 합니다.\n\n검증: 해당 head의 대상 검사 **21 passed in 16.62s**, Ruff 통과. 개별 대상 검사에 PostgreSQL 통합을 활성화했습니다. 통과 횟수는 파일 간 중복을 포함하므로 고유 테스트 수로 합산하지 않습니다.\n\n실제 모델·사람 인수·실기기·재부팅 검증은 수행하지 않았습니다. PR 수용과 연결 이슈의 완료/종료는 별도입니다.\n",
+      "submittedAt": "2026-09-10T11:31:16Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "7866032f8d485995f2ead86dc59449f273e37397"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABM__Vow",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #50 재검토 003: 변경 요청 / 병합 보류\n\n검토 head: `ac436349760d09f7833c2e031a8b1486fbc2e6fa`\n\n[P1] 파일 존재와 호출자 문자열만으로 완료 권위를 만들 수 있습니다. 실행·평가 artifact 내용이 fixture label뿐이고 실제 reviewer/provider 호출이 0회여도 require_authority가 authoritative=true를 반환했습니다. expected_scenarios를 생략하면 스펙 시나리오 완전성 검사도 생략됩니다. 실행/평가 내용의 task·attempt·spec 결합과 검증된 reviewer 실행을 확인하고 스펙에서 기대 시나리오를 필수로 도출해야 합니다.\n\n대상: [소스](https://github.com/trevi00/zeus/blob/ac436349760d09f7833c2e031a8b1486fbc2e6fa/src/codex_harness/application/completion.py)\n\n독립 검증: `23 passed in 18.87s`; Ruff 통과. PostgreSQL 통합 모드를 켜고 해당 PR 변경 테스트와 관련 회귀 테스트를 실행했습니다. CI 10/10 성공도 확인했습니다.\n\n검증 범위는 이 PR의 변경과 이전 반례 및 추가 경계 조건입니다. 저장소 전체·실모델·사람 인수·운영 배포 완료 판정은 아닙니다. 이슈 종료 권위는 별도이므로 OPEN을 유지합니다.\n",
+      "submittedAt": "2026-09-10T12:59:34Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "ac436349760d09f7833c2e031a8b1486fbc2e6fa"
+      }
+    },
+    {
+      "id": "PRR_kwDOUTB0Pc8AAAABNAkSYQ",
+      "author": {
+        "login": "trevi00"
+      },
+      "authorAssociation": "OWNER",
+      "body": "# PR #50 재검토 004: 변경 요청 / 병합 보류\n\n검토 head: `ffe395a135a9b772831af6f6b4c0c1db80052840`\n\n[P1] reviewer의 succeeded task를 확인하지만 그 실행이 현재 target/spec/평가 결과를 검토했는지는 확인하지 않습니다. 실제 Workflow로 다른 작업(unrelated-task-never-this-target)을 검토한 reviewer task를 완료시키고, 호출자가 만든 현재 작업의 evaluation artifact에 그 execution_ref를 연결했습니다. expected_scenarios까지 명시했는데 require_authority가 authority=true를 반환했습니다. reviewer execution의 검증된 출력에서 대상 task/generation/attempt/spec, 시나리오 결과 및 판정을 도출·검증해야 합니다. 임의 evaluation 문서에서 일방적으로 참조하는 것만으로는 결속이 아닙니다. 현재 실행을 대상으로 한 명시적 거절 결과도 승인으로 바꿀 수 없는 회귀 테스트가 필요합니다.\n\n대상: [소스](https://github.com/trevi00/zeus/blob/ffe395a135a9b772831af6f6b4c0c1db80052840/src/codex_harness/application/completion.py)\n\n독립 대상 테스트: `23 passed in 21.50s`, Ruff 통과. 최초 확인 시 CI 10/10 SUCCESS였습니다. 실 PostgreSQL 모드로 대상 테스트를 실행했으며 모든 테스트가 DB를 사용하는 것은 아닙니다. #59/#60의 전체 seam 테스트는 통합 검증에도 포함합니다.\n\n반례 코드와 결과는 [검토 보고서](https://github.com/trevi00/zeus/tree/main/docs/zeus/reviews/claude-work-004)에 보존합니다. 합성 fixture를 통한 소스 동작 검증이며 실모델·사람 인수·운영 완료 판정이 아닙니다. 연결 이슈의 종료 증거는 별도로 충족해야 합니다.\n",
+      "submittedAt": "2026-09-10T13:54:41Z",
+      "includesCreatedEdit": false,
+      "reactionGroups": [],
+      "state": "COMMENTED",
+      "commit": {
+        "oid": "ffe395a135a9b772831af6f6b4c0c1db80052840"
+      }
+    }
+  ],
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:25:09Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488788231/job/102909797896",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T14:23:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:25:11Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488781763/job/102909778725",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-10T14:23:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:25:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488788231/job/102909797889",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T14:23:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:24:58Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488781763/job/102909778805",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-10T14:23:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:30:39Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488788231/job/102909797755",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T14:23:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:30:17Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488781763/job/102909778669",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-10T14:23:57Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:30:32Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488788231/job/102909797857",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T14:23:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:30:51Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488781763/job/102909778490",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-10T14:23:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:27:40Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488788231/job/102909797364",
+      "name": "integration",
+      "startedAt": "2026-09-10T14:23:59Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-10T14:27:34Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34488781763/job/102909778259",
+      "name": "integration",
+      "startedAt": "2026-09-10T14:23:56Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ]
+}
