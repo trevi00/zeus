@@ -2,7 +2,8 @@
 from codex_harness.domain.model import digest, require
 from codex_harness.domain.research import research_origin
 
-AUDIT_EVIDENCE_BUCKETS = ('research_paths', 'research_subsystems', 'research_partitions')
+AUDIT_EVIDENCE_BUCKETS = ('research_paths', 'research_subsystems', 'research_partitions',
+                          'research_observed_assets')
 
 
 def binding(tx, audit_id, proposal):

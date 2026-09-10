@@ -6,10 +6,11 @@ import json
 from dataclasses import asdict
 from importlib.resources import files
 
-from codex_harness.domain.model import canonical, digest, require
+from codex_harness.domain.model import canonical, digest, require, utcnow
 from codex_harness.domain.research import (
     AdaptationProposal,
     InventoryEntry,
+    ObservedAsset,
     PartitionCheckpoint,
     PathDisposition,
     SourceIdentity,
@@ -220,16 +221,70 @@ class ResearchAudits:
                     subsystems.add(s.name)
         return paths, subsystems
 
+    @staticmethod
+    def _observed(tx, audit):
+        """INV-RESEARCH-001: observed assets are a separate ledger with their own completeness."""
+        from collections import Counter
+        rows = [r for r in tx.scan('research_observed_assets') if r['audit_id'] == audit['id']]
+        assets = [ObservedAsset(**r['record']) for r in rows]
+        for asset in assets:
+            asset.validate()
+        pending = sorted(a.path for a in assets if a.pending)
+        return {'total': len(assets), 'pending': len(pending), 'pending_paths': pending,
+                'states': dict(sorted(Counter(a.state for a in assets).items()))}
+
+    def observe_assets(self, audit_id, assets: list[ObservedAsset]):
+        assets = [parse_record({'version': 1, 'kind': 'ObservedAsset', 'record': asdict(a)}) for a in assets]
+        require(assets and len({a.path for a in assets}) == len(assets), 'Unique observed asset paths required')
+        for asset in assets:
+            for ref in asset.evidence_refs:
+                self.artifacts.inspect(ref)
+        with self.store.transaction() as tx:
+            audit = tx.get('research_audits', audit_id)
+            require(audit is not None, 'Unknown audit')
+            tracked = {e['path'] for e in audit['inventory']}
+            changed = 0
+            for asset in assets:
+                require(asset.path not in tracked, 'Tracked Git paths belong to the inventory, not the observed ledger')
+                key = digest({'audit': audit_id, 'path': asset.path})
+                record = asdict(asset)
+                old = tx.get('research_observed_assets', key)
+                if old is not None:
+                    if old['record'] == record:
+                        continue
+                    previous = ObservedAsset(**old['record'])
+                    require(previous.pending or not asset.pending,
+                            'Observed asset disposition cannot regress to pending')
+                    history = old.get('history', []) + [old['record']]
+                else:
+                    history = []
+                tx.put('research_observed_assets', key, {'id': key, 'audit_id': audit_id, 'record': record,
+                                                         'history': history, 'at': utcnow()})
+                changed += 1
+            return {'audit_id': audit_id, 'changed': changed, **self._observed(tx, audit)}
+
     def coverage(self, audit_id):
         with self.store.transaction() as tx:
             audit = tx.get('research_audits', audit_id)
             require(audit is not None, 'Unknown audit')
             paths, subsystems = self._coverage(tx, audit)
+            observed = self._observed(tx, audit)
+            remaining_paths = sorted(set(p['path'] for p in audit['inventory']) - paths)
+            remaining_subsystems = sorted(set(audit['subsystems']) - subsystems)
+            # The completion verdict shares the proposal gate's denominators (review counterexample,
+            # PR #43): open partition questions keep the analysis incomplete on every read path.
+            open_questions = sorted(q for p in tx.scan('research_partitions') if p['audit_id'] == audit_id
+                                    for q in p['open_questions'])
             return {'reviewed_paths': len(paths),
-                    'remaining_paths': sorted(set(p['path'] for p in audit['inventory']) - paths),
-                    'remaining_subsystems': sorted(set(audit['subsystems']) - subsystems),
+                    'remaining_paths': remaining_paths,
+                    'remaining_subsystems': remaining_subsystems,
+                    'observed_assets': observed,
+                    'open_questions': open_questions,
+                    'whole_analysis_complete': not remaining_paths and not remaining_subsystems
+                    and observed['pending'] == 0 and not open_questions,
                     'adoption_eligible': self._eligible(tx, audit),
-                    'reason': 'Eligibility requires complete coverage and current independent approvals'}
+                    'reason': 'Eligibility requires complete coverage, dispositioned observed assets, '
+                              'no open partition questions and current independent approvals'}
 
     def propose(self, audit_id, proposal: AdaptationProposal):
         proposal = parse_record({'version': 1, 'kind': 'AdaptationProposal', 'record': asdict(proposal)})
@@ -248,6 +303,7 @@ class ResearchAudits:
                 paths, systems = self._coverage(tx, audit)
                 require(paths == {e['path'] for e in audit['inventory']}
                         and systems == set(audit['subsystems']), 'Audit coverage incomplete')
+                require(self._observed(tx, audit)['pending'] == 0, 'Observed assets await disposition')
                 from codex_harness.application.audit_gate import binding
                 require(not any(p['open_questions'] for p in tx.scan('research_partitions')
                                 if p['audit_id'] == audit_id), 'Open audit questions remain')

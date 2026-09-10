@@ -569,6 +569,79 @@ def test_approval_invalidated_by_changed_binding(audit, change):
     assert not service.coverage(record['id'])['adoption_eligible']
 
 
+def observed(path, state='unreviewed_observed_asset', basis='observed', sha='a' * 64, refs=()):
+    from codex_harness.domain.research import ObservedAsset
+    return ObservedAsset(base64.b64encode(path.encode()).decode(), basis, state, sha, 10, list(refs))
+
+
+def test_observed_assets_are_a_separate_completeness_ledger(audit):
+    # FA-010: assets outside Git never enter the tracked denominator, yet block completion and adoption.
+    from codex_harness.domain.research import ObservedAsset
+    service, record, source, _, _ = audit
+    activate_fixture(service)
+    evidence = service.artifacts.put('observed asset review', 'fixture')['ref']
+    before = service.coverage(record['id'])
+    assert before['observed_assets'] == {'total': 0, 'pending': 0, 'pending_paths': [], 'states': {}}
+    assert not before['whole_analysis_complete']
+    result = service.observe_assets(record['id'], [
+        observed('notes/uncommitted.md'), observed('.cache/index.json', 'generated_cache_metadata_only', 'cache', None),
+        observed('sessions/private.jsonl', 'excluded_private_session_or_credential_surface', 'private_session', None),
+        observed('vendor/nested/.git/HEAD', 'acquisition_pending', 'nested_repository', None)])
+    assert result['changed'] == 4 and result['pending'] == 2
+    coverage = service.coverage(record['id'])
+    assert coverage['remaining_paths'] == before['remaining_paths'], 'the Git denominator is untouched'
+    assert coverage['observed_assets']['states'] == {
+        'acquisition_pending': 1, 'excluded_private_session_or_credential_surface': 1,
+        'generated_cache_metadata_only': 1, 'unreviewed_observed_asset': 1}
+    proposal = complete_fixture_audit(service, record, source)
+    assert service.coverage(record['id'])['remaining_paths'] == []
+    assert not service.coverage(record['id'])['whole_analysis_complete']
+    with pytest.raises(ContractError, match='Observed assets await disposition'):
+        service.propose(record['id'], proposal)
+    # Idempotent re-observation leaves no history; a disposition advances with evidence.
+    assert service.observe_assets(record['id'], [observed('notes/uncommitted.md')])['changed'] == 0
+    with pytest.raises(ContractError, match='requires content hash and evidence'):
+        service.observe_assets(record['id'], [observed('notes/uncommitted.md', 'semantically_reviewed')])
+    service.observe_assets(record['id'], [observed('notes/uncommitted.md', 'semantically_reviewed', refs=[evidence]),
+                                          observed('vendor/nested/.git/HEAD', 'excluded_private_session_or_credential_surface',
+                                                   'nested_repository', None)])
+    assert service.coverage(record['id'])['whole_analysis_complete']
+    with pytest.raises(ContractError, match='cannot regress'):
+        service.observe_assets(record['id'], [observed('notes/uncommitted.md')])
+    with service.store.transaction() as tx:
+        row = next(r for r in tx.scan('research_observed_assets')
+                   if r['record']['path'] == observed('notes/uncommitted.md').path)
+        assert [h['state'] for h in row['history']] == ['unreviewed_observed_asset']
+    tracked = base64.b64encode(b'normal').decode()
+    with pytest.raises(ContractError, match='belong to the inventory'):
+        service.observe_assets(record['id'], [ObservedAsset(tracked, 'observed', 'unreviewed_observed_asset', None, None, [])])
+    for bad in [observed('x', basis='mystery'), observed('x', state='done'), observed('/abs'), observed('a/../b'),
+                observed('x', sha='zz')]:
+        with pytest.raises(ContractError):
+            service.observe_assets(record['id'], [bad])
+    # Review counterexample (PR #43): an open partition question must keep the completion verdict and
+    # the proposal gate in agreement.
+    with service.store.transaction() as tx:
+        partition = tx.scan('research_partitions')[0]
+        partition['open_questions'] = ['Which runtime consumes this path?']
+        tx.put('research_partitions', partition['partition_id'], partition)
+    questioned = service.coverage(record['id'])
+    assert not questioned['whole_analysis_complete'] and questioned['open_questions'] == ['Which runtime consumes this path?']
+    with pytest.raises(ContractError, match='Open audit questions remain'):
+        service.propose(record['id'], proposal)
+    with service.store.transaction() as tx:
+        partition['open_questions'] = []
+        tx.put('research_partitions', partition['partition_id'], partition)
+    assert service.coverage(record['id'])['whole_analysis_complete']
+    service.propose(record['id'], proposal)
+    approve_fixture(service, 'lead:research')
+    approve_fixture(service, 'conductor')
+    assert service.coverage(record['id'])['adoption_eligible']
+    # A new observed asset after approval changes the evidence binding and defers adoption.
+    service.observe_assets(record['id'], [observed('notes/late.md')])
+    assert not service.coverage(record['id'])['adoption_eligible']
+
+
 def test_blocked_inspection_and_actor_spoof_cannot_approve(audit):
     from codex_harness.domain.research import IndependentReview
     service, record, source, _, _ = audit
