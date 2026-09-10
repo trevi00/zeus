@@ -1,0 +1,36 @@
+{
+  "scope": "FA-032 target tests: policy/notice entailment, consent binding, sensitive-kind scan across Windows/Linux/WSL paths and Korean text, input minimization and blocking, evidence normalization and full-field render check, consent-gated flow on MemoryStore, owned scratch bundles with a crashed child process",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_profile_privacy.py tests/test_architecture.py",
+  "started_at": "2026-09-10T10:18:19.975219+00:00",
+  "finished_at": "2026-09-10T10:18:20.901718+00:00",
+  "exit_code": 0,
+  "summary": [
+    "11 passed in 0.48s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "inputs": "synthetic sentinels only; no real conversation, credential, user path or model call",
+  "negative_controls": [
+    {
+      "control": "notice wider than the policy accepted",
+      "result": "policy test fails"
+    },
+    {
+      "control": "blocked kinds redacted instead of refused",
+      "result": "scan, minimize and flow tests fail"
+    },
+    {
+      "control": "only evidence is checked at render",
+      "result": "render and flow tests fail"
+    },
+    {
+      "control": "unchecked fields reported as none detected",
+      "result": "render test fails"
+    },
+    {
+      "control": "anyone can clean up a run",
+      "result": "flow and scratch tests fail"
+    }
+  ],
+  "not_claimed": "No real collection, model call, notice UI, questionnaire UI or retention operation; no measured recall/false-positive rate for the scan patterns; free-text personal data (names, addresses) is outside the pattern set; Windows ACL errors not exercised."
+}
