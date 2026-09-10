@@ -1,0 +1,527 @@
+{
+  "head": "567d75b89be4ded5e077825d13d94c3d9f619f92",
+  "authority": "Synthetic subprocess-boundary probes; no Docker command, real test suite or operational recovery executed",
+  "cases": [
+    {
+      "case": "test_failure",
+      "exception": null,
+      "receipt_passed": false,
+      "steps": 3,
+      "commands": [
+        [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=no"
+        ],
+        [
+          "uv",
+          "--version"
+        ],
+        [
+          "docker",
+          "version",
+          "--format",
+          "{{.Server.Version}}"
+        ],
+        [
+          "docker",
+          "compose",
+          "version",
+          "--short"
+        ],
+        [
+          "uv",
+          "run",
+          "harness",
+          "setup"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "up",
+          "-d",
+          "--wait",
+          "postgres",
+          "redis"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "ps",
+          "--format",
+          "json"
+        ],
+        [
+          "uv",
+          "run",
+          "ruff",
+          "check",
+          "."
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider"
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_verification.py",
+          "tests/test_host_interruption.py"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "down",
+          "--volumes",
+          "--remove-orphans"
+        ]
+      ]
+    },
+    {
+      "case": "setup_failure",
+      "exception": null,
+      "receipt_passed": true,
+      "steps": 3,
+      "commands": [
+        [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=no"
+        ],
+        [
+          "uv",
+          "--version"
+        ],
+        [
+          "docker",
+          "version",
+          "--format",
+          "{{.Server.Version}}"
+        ],
+        [
+          "docker",
+          "compose",
+          "version",
+          "--short"
+        ],
+        [
+          "uv",
+          "run",
+          "harness",
+          "setup"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "up",
+          "-d",
+          "--wait",
+          "postgres",
+          "redis"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "ps",
+          "--format",
+          "json"
+        ],
+        [
+          "uv",
+          "run",
+          "ruff",
+          "check",
+          "."
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider"
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_verification.py",
+          "tests/test_host_interruption.py"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "down",
+          "--volumes",
+          "--remove-orphans"
+        ]
+      ]
+    },
+    {
+      "case": "teardown_failure",
+      "exception": null,
+      "receipt_passed": true,
+      "steps": 3,
+      "commands": [
+        [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=no"
+        ],
+        [
+          "uv",
+          "--version"
+        ],
+        [
+          "docker",
+          "version",
+          "--format",
+          "{{.Server.Version}}"
+        ],
+        [
+          "docker",
+          "compose",
+          "version",
+          "--short"
+        ],
+        [
+          "uv",
+          "run",
+          "harness",
+          "setup"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "up",
+          "-d",
+          "--wait",
+          "postgres",
+          "redis"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "ps",
+          "--format",
+          "json"
+        ],
+        [
+          "uv",
+          "run",
+          "ruff",
+          "check",
+          "."
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider"
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_verification.py",
+          "tests/test_host_interruption.py"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "down",
+          "--volumes",
+          "--remove-orphans"
+        ]
+      ]
+    },
+    {
+      "case": "timeout_after_ruff",
+      "exception": "TimeoutExpired",
+      "receipt_passed": true,
+      "steps": 1,
+      "commands": [
+        [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=no"
+        ],
+        [
+          "uv",
+          "--version"
+        ],
+        [
+          "docker",
+          "version",
+          "--format",
+          "{{.Server.Version}}"
+        ],
+        [
+          "docker",
+          "compose",
+          "version",
+          "--short"
+        ],
+        [
+          "uv",
+          "run",
+          "harness",
+          "setup"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "up",
+          "-d",
+          "--wait",
+          "postgres",
+          "redis"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "ps",
+          "--format",
+          "json"
+        ],
+        [
+          "uv",
+          "run",
+          "ruff",
+          "check",
+          "."
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "down",
+          "--volumes",
+          "--remove-orphans"
+        ]
+      ]
+    },
+    {
+      "case": "existing_project",
+      "exception": null,
+      "receipt_passed": true,
+      "steps": 3,
+      "commands": [
+        [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=no"
+        ],
+        [
+          "uv",
+          "--version"
+        ],
+        [
+          "docker",
+          "version",
+          "--format",
+          "{{.Server.Version}}"
+        ],
+        [
+          "docker",
+          "compose",
+          "version",
+          "--short"
+        ],
+        [
+          "uv",
+          "run",
+          "harness",
+          "setup"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "up",
+          "-d",
+          "--wait",
+          "postgres",
+          "redis"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "ps",
+          "--format",
+          "json"
+        ],
+        [
+          "uv",
+          "run",
+          "ruff",
+          "check",
+          "."
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider"
+        ],
+        [
+          "uv",
+          "run",
+          "python",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_verification.py",
+          "tests/test_host_interruption.py"
+        ],
+        [
+          "docker",
+          "compose",
+          "-p",
+          "existing-production-project",
+          "down",
+          "--volumes",
+          "--remove-orphans"
+        ]
+      ]
+    }
+  ],
+  "archive_hash_checks": [
+    {
+      "host": "windows-11",
+      "log": "windows-11-ruff.log",
+      "git_blob_stdout_digest_matches": true,
+      "stderr_empty": true
+    },
+    {
+      "host": "windows-11",
+      "log": "windows-11-full-suite-integration.log",
+      "git_blob_stdout_digest_matches": true,
+      "stderr_empty": true
+    },
+    {
+      "host": "windows-11",
+      "log": "windows-11-disposable-docker-checks.log",
+      "git_blob_stdout_digest_matches": true,
+      "stderr_empty": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "log": "wsl-ubuntu-26.04-ruff.log",
+      "git_blob_stdout_digest_matches": true,
+      "stderr_empty": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "log": "wsl-ubuntu-26.04-full-suite-integration.log",
+      "git_blob_stdout_digest_matches": true,
+      "stderr_empty": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "log": "wsl-ubuntu-26.04-disposable-docker-checks.log",
+      "git_blob_stdout_digest_matches": true,
+      "stderr_empty": true
+    }
+  ]
+}

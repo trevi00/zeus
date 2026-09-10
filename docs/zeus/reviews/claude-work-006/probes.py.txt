@@ -1,0 +1,41 @@
+﻿import contextlib, hashlib, importlib.util, io, json, subprocess, sys, tempfile
+from pathlib import Path
+ROOT=Path('C:/Users/rudtn/zeus-review-069')
+OUT=Path('C:/Users/rudtn/zeus/.runtime/review-069');OUT.mkdir(parents=True,exist_ok=True)
+spec=importlib.util.spec_from_file_location('runner',ROOT/'scripts/environment_evidence.py')
+m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+results=[]
+for case in ('test_failure','setup_failure','teardown_failure','timeout_after_ruff','existing_project'):
+ with tempfile.TemporaryDirectory() as tmp:
+  m.ROOT=Path(tmp); calls=[]
+  def fake(argv,env=None,timeout=3600):
+   calls.append(argv)
+   rc=0; stdout='ok\n'
+   if argv[:2]==['git','rev-parse']: stdout='e2e32351d2ebfc6371c8314b0450a22dfcd5d63b\n'
+   elif argv[:2]==['git','status']: stdout=''
+   elif 'ps' in argv: stdout=''
+   elif 'setup' in argv and case=='setup_failure': rc=1
+   elif 'down' in argv and case=='teardown_failure': rc=1
+   elif 'pytest' in argv:
+    if case=='test_failure': rc=1;stdout='1 failed\n'
+    elif case=='timeout_after_ruff':raise subprocess.TimeoutExpired(argv,timeout)
+    else:stdout='1 passed\n'
+   elif 'ruff' in argv:stdout='All checks passed!\n'
+   return subprocess.CompletedProcess(argv,rc,stdout,''),0.01
+  m.capture=fake;sys.argv=['runner','--label','probe','--project','existing-production-project','--out','out']
+  error=None
+  try:
+   with contextlib.redirect_stderr(io.StringIO()):m.main()
+  except BaseException as exc:error=type(exc).__name__
+  receipt=json.loads((Path(tmp)/'out/probe-receipt.json').read_text())
+  results.append({'case':case,'exception':error,'receipt_passed':receipt['passed'],'steps':len(receipt['steps']),'commands':calls})
+checks=[]
+for host in ['windows-11','wsl-ubuntu-26.04']:
+ prefix='docs/zeus/evidence/environment-runs-001/'
+ r=json.loads(subprocess.check_output(['git','show','567d75b:'+prefix+host+'-receipt.json'],cwd=ROOT))
+ for step in r['steps']:
+  raw=subprocess.check_output(['git','show','567d75b:'+prefix+step['log']],cwd=ROOT)
+  checks.append({'host':host,'log':step['log'],'git_blob_stdout_digest_matches':'sha256:'+hashlib.sha256(raw).hexdigest()==step['stdout_sha256'],'stderr_empty':step['stderr_sha256']=='sha256:'+hashlib.sha256(b'').hexdigest()})
+result={'head':'567d75b89be4ded5e077825d13d94c3d9f619f92','authority':'Synthetic subprocess-boundary probes; no Docker command, real test suite or operational recovery executed','cases':results,'archive_hash_checks':checks}
+(OUT/'probes.json').write_text(json.dumps(result,indent=2),'utf-8')
+print(json.dumps({'cases':[{k:v for k,v in r.items() if k!='commands'} for r in results],'hash_checks':checks},indent=2))

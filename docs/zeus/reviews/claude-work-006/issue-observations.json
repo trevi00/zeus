@@ -1,0 +1,149 @@
+[
+  {
+    "issue": 12,
+    "ticket_id": "ZEUS-74e61b578afa",
+    "comment_url": "https://github.com/trevi00/zeus/issues/12#issuecomment-5622183918",
+    "observation": {
+      "id": "647ecb82458a3267799f9ca5e3067eefa4876b7cdc2c7819bfa732df1924b8d8",
+      "ticket_id": "ZEUS-74e61b578afa",
+      "repository": "trevi00/zeus",
+      "number": 12,
+      "url": "https://github.com/trevi00/zeus/issues/12",
+      "state": "OPEN",
+      "title": "[FA-011] 스킬 품질 게이트의 미검사 PASS와 템플릿 계약 불일치",
+      "purpose": "pull",
+      "evidence_ref": "sha256:878b321b2d668e392484f68911ff4e2dd832f0c6ef3f7a75aaa784d61421f1a1",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:42:44.074914+00:00",
+      "first_seen": "2026-09-10T16:42:44.074914+00:00",
+      "sequence": 2
+    }
+  },
+  {
+    "issue": 16,
+    "ticket_id": "ZEUS-39d3d0633060",
+    "comment_url": "https://github.com/trevi00/zeus/issues/16#issuecomment-5622184288",
+    "observation": {
+      "id": "fdc525de5bd2250253c7ad3bd379af4b7aa4f53c45c4f2f47f93975a70980c3e",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "repository": "trevi00/zeus",
+      "number": 16,
+      "url": "https://github.com/trevi00/zeus/issues/16",
+      "state": "OPEN",
+      "title": "[FA-015] writeback 승인 대상 결속·단일 소비·다중 파일 복구 계약 보강",
+      "purpose": "pull",
+      "evidence_ref": "sha256:6f4f73cdc30d384ec777cb4e8acb9ea9a4fb30b39ea688de5165c8836be749ad",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:42:45.879049+00:00",
+      "first_seen": "2026-09-10T16:42:45.879049+00:00",
+      "sequence": 4
+    }
+  },
+  {
+    "issue": 17,
+    "ticket_id": "ZEUS-e36daeb984c1",
+    "comment_url": "https://github.com/trevi00/zeus/issues/17#issuecomment-5622184666",
+    "observation": {
+      "id": "3889ff50f320c7ebaee155b84392b56a8abf7fae53cde1407b4adb3e902b009a",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "number": 17,
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "state": "OPEN",
+      "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:842e13a9f29c256b8ca66ce2383c51aa64488578fcd6e3e4e4bc44de681dbbfb",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:42:48.012090+00:00",
+      "first_seen": "2026-09-10T16:42:48.012090+00:00",
+      "sequence": 6
+    }
+  },
+  {
+    "issue": 18,
+    "ticket_id": "ZEUS-3875a025c20d",
+    "comment_url": "https://github.com/trevi00/zeus/issues/18#issuecomment-5622185048",
+    "observation": {
+      "id": "f05fd21f98bff971a4c7d078d945fddb2f59e6ea4a5e9cd2e8fddd64a251be22",
+      "ticket_id": "ZEUS-3875a025c20d",
+      "repository": "trevi00/zeus",
+      "number": 18,
+      "url": "https://github.com/trevi00/zeus/issues/18",
+      "state": "OPEN",
+      "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:715433e3f3437e51134bbb26410ad9edd86f527114f19dfd15c1b6cf64a64277",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:42:49.815865+00:00",
+      "first_seen": "2026-09-10T16:42:49.815865+00:00",
+      "sequence": 2
+    }
+  },
+  {
+    "issue": 21,
+    "ticket_id": "ZEUS-0ecf8213b0da",
+    "comment_url": "https://github.com/trevi00/zeus/issues/21#issuecomment-5622185397",
+    "observation": {
+      "id": "d6554c0726ebd17f40c5e651326b75218cb51be333504ef4259e6dec00ce1fa2",
+      "ticket_id": "ZEUS-0ecf8213b0da",
+      "repository": "trevi00/zeus",
+      "number": 21,
+      "url": "https://github.com/trevi00/zeus/issues/21",
+      "state": "OPEN",
+      "title": "[FA-020] 차단기 단일 재시험 예약·세대·저장 성공과 정책 경계 결속",
+      "purpose": "pull",
+      "evidence_ref": "sha256:b56d0d882f8374c69ba61af3eb49c497022d4312b77c920f4db5aadd552f7ca0",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:42:51.632042+00:00",
+      "first_seen": "2026-09-10T16:42:51.632042+00:00",
+      "sequence": 6
+    }
+  },
+  {
+    "issue": 23,
+    "ticket_id": "ZEUS-a9984f5b7caf",
+    "comment_url": "https://github.com/trevi00/zeus/issues/23#issuecomment-5622185752",
+    "observation": {
+      "id": "a68f9406147ae6482c6f1e0be1651439f09e0af8c30136ce3a9616c0f8712da2",
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "repository": "trevi00/zeus",
+      "number": 23,
+      "url": "https://github.com/trevi00/zeus/issues/23",
+      "state": "OPEN",
+      "title": "[FA-022] 증거 검사 unknown·재실행 동일성·실행 권한 결속",
+      "purpose": "pull",
+      "evidence_ref": "sha256:efa58e04934a9375474d7acf7138cc6b373fef892ed065f639adab966edeec53",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:42:53.438599+00:00",
+      "first_seen": "2026-09-10T16:42:53.438599+00:00",
+      "sequence": 8
+    }
+  },
+  {
+    "issue": 26,
+    "ticket_id": "ZEUS-9495da500988",
+    "comment_url": "https://github.com/trevi00/zeus/issues/26#issuecomment-5622186128",
+    "observation": {
+      "id": "e69b1d4a546e662bfa3bb0e4359663ccfaabd05cf9f4514d5c8864409620003b",
+      "ticket_id": "ZEUS-9495da500988",
+      "repository": "trevi00/zeus",
+      "number": 26,
+      "url": "https://github.com/trevi00/zeus/issues/26",
+      "state": "OPEN",
+      "title": "[FA-025] 설치·검사 결과와 실제 후보 리비전의 결속",
+      "purpose": "pull",
+      "evidence_ref": "sha256:e0d23c9786cad55f1b2a80740be2d62b86b3d1e7e8b6030ba6fe8b8c92935da6",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-10T16:42:55.386714+00:00",
+      "first_seen": "2026-09-10T16:42:55.386714+00:00",
+      "sequence": 6
+    }
+  }
+]
