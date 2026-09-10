@@ -257,6 +257,11 @@ def test_real_skill_history_annotation_and_recovery_survive_other_task_observati
     assert len(history['events']) == 5
     assert all(event['top'][0]['body_chars'] == len('FASTAPI_ELIGIBLE')
                for event in history['events'])
+    # FA-012: the actual executor observation records the delivered tier and rendered hash.
+    tiers = [event['top'][0]['tier'] for event in history['events']]
+    assert tiers.count('full') >= 1 and set(tiers) <= {'full', 'pointer'}
+    assert all(event['top'][0]['rendered_hash'] for event in history['events'] if event['top'][0]['tier'] == 'full')
+    assert audit['skills'][0]['delivery']['full'] == tiers.count('full')
     executor._run('worker:implementation', 'main', 'changed objective', {},
                   str(root), IMPLEMENTATION)
     assert prompts[-1]['required']['recovery']['sources'] == {}

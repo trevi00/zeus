@@ -86,6 +86,13 @@ policy, objective and admission-model identity, so zero matches are never read a
 
 Skill-history observations are project/content-bound compiled selections, never success
 attestations. Retry delivery cannot add samples, including after hot-window eviction.
+Each observed selection records score and, from the sealed context packet rather than the
+selection manifest, the tier that actually entered the final context (a skill the budget
+dropped is `omitted`, never `full`) with the hash of the admitted body; the record names its
+evidence stage (context compiled, before provider submission), which is not model reach.
+Audits report raw match, rank-first and body-arrival counts as separate targets; no blended
+precision/recall is derived across different decisions, and model behavior is declared
+unmeasured by telemetry.
 Leased writes require current task ownership in the same transaction. A task excludes
 its own observation from historical assessment. Advisory text and its full skill body
 are included or omitted atomically; assessment provenance binds session recovery.

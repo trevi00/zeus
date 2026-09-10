@@ -47,6 +47,54 @@ def test_dates_legacy_dimensions_and_invalid_entries_are_explicit():
     assert 'no skill-match telemetry' in render_text(audit_history([]))
 
 
+def test_match_rank_and_body_arrival_are_separate_counts_not_one_precision():
+    # FA-012: the upstream evaluator blended "matched AND winner" with "matched"; here each target
+    # is its own count and behavior is declared unmeasured.
+    def two(index, a_score, b_score, a_tier, b_tier):
+        return {'id': str(index), 'manifest_ref': 'manifest', 'context_ref': 'context', 'at': '2026-09-08T00:00:00Z',
+                'top': [{'path': 'python/a.md', 'content_ref': 'v1', 'score': a_score, 'tier': a_tier,
+                         'rendered_hash': 'h-a', 'dimensions': ['kw:x']},
+                        {'path': 'python/b.md', 'content_ref': 'v1', 'score': b_score, 'tier': b_tier,
+                         'dimensions': ['kw:x']}]}
+    events = [two(0, 5, 3, 'full', 'pointer'), two(1, 2, 4, 'pointer', 'full'), two(2, 3, 3, 'full', 'external_pointer'),
+              observation('legacy', 3)]
+    report = audit_history(events)
+    rows = {row['path']: row for row in report['skills']}
+    a, b = rows['python/a.md'], rows['python/b.md']
+    assert (a['count'], a['rank_first_count']) == (4, 3) and (b['count'], b['rank_first_count']) == (3, 2)
+    assert a['delivery'] == {'full': 2, 'pointer': 1, 'external_pointer': 0, 'omitted': 0, 'unmatched': 0, 'legacy': 0, 'unknown': 1}
+    assert b['delivery'] == {'full': 1, 'pointer': 1, 'external_pointer': 1, 'omitted': 0, 'unmatched': 0, 'legacy': 0, 'unknown': 0}
+    assert set(report['measurement_targets']) == {'raw_match', 'rank', 'body_arrival', 'behavior'}
+    assert 'not measured' in report['measurement_targets']['behavior']
+    assert 'precision' not in json.dumps(report).lower()
+    text = render_text(report)
+    assert 'ranked first: 3/4; delivered full body: 2, pointer: 1, omitted by budget: 0, tier unknown: 1' in text
+    assert 'not model reach' in text and 'not model reach' in report['measurement_targets']['body_arrival']
+    assert 'match != delivery != behavior' in text
+
+
+def test_recorded_observations_keep_tier_and_reject_unknown_tiers():
+    store, history = MemoryStore(), None
+    history = SkillHistory(store)
+    event = observation('with-tier')
+    event['top'][0].update(tier='full', rendered_hash='abc')
+    assert history.record('project', event)
+    with store.transaction() as tx:
+        stored = tx.get('skill_history', 'project')['events'][0]['top'][0]
+    assert stored['tier'] == 'full' and stored['rendered_hash'] == 'abc'
+    bad = observation('bad-tier')
+    bad['top'][0]['tier'] = 'delivered?'
+    with pytest.raises(ContractError, match='delivery tier'):
+        history.record('project', bad)
+    empty_hash = observation('bad-hash')
+    empty_hash['top'][0]['rendered_hash'] = ''
+    with pytest.raises(ContractError, match='rendered body hash'):
+        history.record('project', empty_hash)
+    # Adding the tier to an already recorded selection is a diagnostic, not a new observation.
+    replay = observation('with-tier')
+    assert not history.record('project', replay)
+
+
 def test_total_score_matches_upstream_producer_not_pointer_eligibility():
     events = [observation(i, 4) for i in range(3)]
     for event in events:

@@ -13,7 +13,12 @@ from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.execution_output import evidence_json, persist_result
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.project_skills import project_context
-from codex_harness.adapters.skill_history import prepare_history, project_identity, record_history
+from codex_harness.adapters.skill_history import (
+    finalize_delivery,
+    prepare_history,
+    project_identity,
+    record_history,
+)
 from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.execution_time import (
     ExecutionTimeError,
@@ -217,7 +222,7 @@ class Executor:
             history_recording = None
             if skill_observation:
                 history_recording = record_history(
-                    skill_observation, context_ref['ref'],
+                    finalize_delivery(skill_observation, packet), context_ref['ref'],
                     (lambda tx: self.workflow._owned(tx, lease)) if lease else None)
             prompt = packet.render()
             if heartbeat:
