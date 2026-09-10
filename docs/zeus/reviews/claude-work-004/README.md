@@ -31,3 +31,7 @@ PostgreSQL 대상 목록 작성 때 test_seam_scopes.py라는 잘못된 파일�
 `probes.py.txt`는 두 새 반례, `previous_probes.py.txt`와 `check_previous.py.txt`는 수용 4건의 이전 반례 재실행 코드입니다. 각 script의 checkout 경로를 PR별 고정 head에 맞추고 해당 venv Python으로 실행합니다. 결과는 PR별 `*-probe.json`에 있습니다. 실행 fixture는 실제 모델/사람 인수 증거가 아니며 운영 배포·재부팅 검증도 이번 범위가 아닙니다.
 
 기존 로컬 full-analysis 미커밋 자료는 보존했습니다. 이번 검토 범위는 수정된 6개 PR과 결합 동작이며 전체 reference 저장소 의미 분석 완료 판정이 아닙니다. 로컬 티켓과 GitHub 이슈에 판정 및 남은 조건을 기록하고, 신뢰된 종료 증거가 별도로 필요한 기존 33개 이슈는 OPEN으로 유지합니다.
+
+6건 모두 PR 리뷰를 게시하고 commit/body readback을 확인했습니다. 로컬 advisory review와 연결 이슈 #19/#23/#24/#28/#29/#33의 동기화도 완료했습니다(`github-reviews.json`, `ticket-sync.json`). 기존 33개 이슈는 OPEN, 보류한 #50/#55의 head는 검토한 커밋과 일치합니다(`final-open-state.json`).
+
+병합 전 CI 10/10 성공과 병합 tree 일치는 완료된 검증입니다. 병합 후 자동 시작된 [main CI](https://github.com/trevi00/zeus/actions/runs/34486422670)는 별도 실행이며 게시 시점 상태를 `merged-main-ci.json`에 기록합니다. 뒤이은 문서 전용 커밋은 `[skip ci]`입니다.

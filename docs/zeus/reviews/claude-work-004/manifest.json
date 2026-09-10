@@ -49,11 +49,13 @@
   "integration-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
   "integration.json": "618b25e18a0f47a059438afa2a1def6e181e04cc1c96aac1ee7a58b96516da3a",
   "integration.py.txt": "49d67260f46430763e1fb5ead02308f0404954a98e8fdb39da4d073cf47fe66c",
+  "merged-main-ci.json": "b40209bb1e4e9faa4b97a6d8ae494b24e8b858a8d76e9213cfd4a543a0b35bbd",
   "merges.json": "14c9790533f5f677cc03bb53712f5ecaa019d2c14cb262884d78f5e58baab4a4",
   "postgres.py.txt": "a8e5cc3be64009eddd6130a273f37bd388d08d1edc0c525e68ca71f53e93638d",
   "previous_probes.py.txt": "cea93b7820f4ac8a4e010689dc771466b074e2348961ddc9bfd26cec4f3aca80",
   "probes.py.txt": "8bccfb94a2dfc3d92c268f2d4075335a2832379f7f73cda318c7b66813bff538",
-  "README.md": "b36245b7b5f4abe47952f096c5df8c2b25c0c84c9af7f00e15732e897e61338a",
+  "README.md": "7649460d57dee8496af43ba400ef6f08fc10bf2f0177447d4dcd9828b7f16e2d",
   "reviews.json": "3b134f2cb522f389f6ba14ff5c2438b69d268151154e29b0fff7892b5e91ad1b",
-  "run_tests.py.txt": "7c2e1f81cac2fe795377d2c75519fed90dfdb01340d38816b4c4db10833839d9"
+  "run_tests.py.txt": "7c2e1f81cac2fe795377d2c75519fed90dfdb01340d38816b4c4db10833839d9",
+  "ticket-sync.json": "fa24e819a7b6e0aa4cb24050f4f075ba795173c5b7852af0519698a2d2ac742f"
 }
