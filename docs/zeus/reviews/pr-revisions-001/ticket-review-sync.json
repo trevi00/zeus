@@ -1,0 +1,194 @@
+[
+  {
+    "pr": 37,
+    "review": {
+      "ticket_id": "ZEUS-429c533aab0e",
+      "revision": 1,
+      "content_hash": "bf381dd399a25485b371966035badf6d4b6e2c16be74429a8fcdfcf0342f5c4a",
+      "claimed_reviewer": "Codex independent revised PR review",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "Codex \uc218\uc815\ubcf8 \ub3c5\ub9bd \uc7ac\uac80\ud1a0 \u2014 **\uc774\uc804 \uc9c0\uc801 \ud574\uacb0, \uba85\uc2dc \ubc94\uc704 \uc218\uc6a9 / \ubcd1\ud569 \uac00\ub2a5**\n\n\ub300\uc0c1 `16c05c2f4748b4cc54717496b5e4c0305b30387e`.\n\ntask/decision/release \uae30\uc874 handle\uc758 \uc4f0\uae30\uc5d0\uc11c durable fence\ub97c \ub300\uc870\ud569\ub2c8\ub2e4. \uc2e4\uc81c PG\uc5d0\uc11c gen1 \ud589\ub9cc \ubcf5\uc6d0\ud558\uace0 fence2\ub97c \uc720\uc9c0\ud55c \ub4a4 heartbeat/complete/fail \ubaa8\ub450 \uac70\ubd80\ub418\uace0 \uc804\uccb4 \uc6d0\uc7a5 \ubd88\ubcc0\uc778 \uac83\uc744 \ub3c5\ub9bd \uc7ac\ud604\ud588\uc2b5\ub2c8\ub2e4. fence\uac00 \uc544\uc608 \uc5c6\ub294 \ub808\uac70\uc2dc \ud589\uc744 \ud5c8\uc6a9\ud558\ub294 \uc815\ucc45\uc740 \uba85\uc2dc\ub41c \uc608\uc678\uc774\uba70, \uc804\uccb4 DB \ubc31\uc5c5 \ub864\ubc31\uc774\ub098 \uc6b4\uc601 \uc7ac\ubd80\ud305 \ubcf4\ud638\uae4c\uc9c0 \uc8fc\uc7a5\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\n\ub3c5\ub9bd \uad00\ub828 \uac80\uc0ac `162 passed, 1 skipped in 40.39s`. #37/#43/#44\ub97c \ud604\uc7ac main\uc5d0 \ud568\uaed8 \uacb0\ud569\ud55c Ruff\uc640 Windows \uc804\uccb4 \ud68c\uadc0 `950 passed, 310 skipped in 220.86s (0:03:40)` \ud1b5\uacfc, \uac80\uc99d tree `d18c8b2ca94e2a5913c37e4da7a522931e999b5b`. PR\ubcc4 CI 10\uac1c \uc131\uacf5, \uc790\ub3d9 \uc774\uc288 \uc885\ub8cc \uc5f0\uacb0 \uc5c6\uc74c. Skip\uc740 PASS\uac00 \uc544\ub2d9\ub2c8\ub2e4.\n\n\uc774 \ud310\uc815\uc740 \ud574\ub2f9 \ucf54\ub4dc\uc758 \uc218\uc6a9\uc774\uba70 \uc5f0\uacb0 \uc774\uc288 \uc804\uccb4 \uc778\uc218/\uc885\ub8cc \ubc0f \uc6b4\uc601 \ubc30\ud3ec \uc2b9\uc778\uc774 \uc544\ub2d9\ub2c8\ub2e4. \uc2e4\uc81c \ubaa8\ub378/\uc2e4\uae30\uae30/\ud638\uc2a4\ud2b8 \uc7ac\ubd80\ud305\uc744 \ucd94\uac00 \uce21\uc815\ud558\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/37",
+        "https://github.com/trevi00/zeus/blob/4b68c0c2e3dff73b604180e2a8f9a98c69cc46d0/docs/zeus/reviews/pr-revisions-001/37-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "ef82b56ae17e5eb4329594486845a8fe265726bb6b21b39f3805fe194b5c001b",
+      "at": "2026-09-10T05:48:14.260216+00:00"
+    },
+    "projection": {
+      "id": "d6ec27b67129ed20219f2111a996cd01046734947b02bb56ae4d088e6cbdf0f3",
+      "ticket_id": "ZEUS-429c533aab0e",
+      "repository": "trevi00/zeus",
+      "number": 4,
+      "url": "https://github.com/trevi00/zeus/issues/4",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "bf381dd399a25485b371966035badf6d4b6e2c16be74429a8fcdfcf0342f5c4a",
+      "attempted_content_hash": "bf381dd399a25485b371966035badf6d4b6e2c16be74429a8fcdfcf0342f5c4a",
+      "body_hash": "d618bc81b43b4955ac5053f5a88125d329cdedd9a9de2eb0d9b1fdd09f8664cc",
+      "title_hash": "2778ca645b7528b4fa41a336d65614202d3d2a3f1a69494a835a78bed97bbd88",
+      "observed_body_hash": "d618bc81b43b4955ac5053f5a88125d329cdedd9a9de2eb0d9b1fdd09f8664cc",
+      "observed_title_hash": "2778ca645b7528b4fa41a336d65614202d3d2a3f1a69494a835a78bed97bbd88",
+      "title": "[FA-003] lease epoch \uc7ac\uc0ac\uc6a9\uc73c\ub85c \uc774\uc804 \uc18c\uc720\uc790 \uad8c\ud55c \ubd80\ud65c",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:f08fad8b55a657fd5f54fb986bfa02fd861a0e0cae79de37da39bd38206518b1",
+      "observation_id": "40d1e2bebc4fb515eefd238f04b69fa07fafcbcda464b3f0aba3ad63296cba34",
+      "at": "2026-09-10T05:48:16.435843+00:00",
+      "review_ids": [
+        "ef82b56ae17e5eb4329594486845a8fe265726bb6b21b39f3805fe194b5c001b",
+        "f500d9d1fdfeda25a6bb81b3d0e4e7e9c342228c4129ac8cba8ddd4b4c4eefba"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 39,
+    "review": {
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "revision": 1,
+      "content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "claimed_reviewer": "Codex independent revised PR review",
+      "claimed_provider": "OpenAI",
+      "verdict": "changes_requested",
+      "summary": "Codex \uc218\uc815\ubcf8 \ub3c5\ub9bd \uc7ac\uac80\ud1a0 \u2014 **\ubcc0\uacbd \uc694\uccad \uc720\uc9c0**\n\n\ub300\uc0c1 `60a6fa4c4d17a021321724f21c92245a066055ea`.\n\n\uc6d0\ub798 \uc9c0\uc801\ud55c \ub3d9\uc77c \ub9ac\ubdf0 \uc7ac\uc804\uc1a1\uc740 seq1\uc744 \uc720\uc9c0\ud558\uace0 revoked\ub97c \ub4a4\uc9d1\uc9c0 \uc54a\uc544 \uc218\uc815\ub41c \uac83\uc744 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4. \ub2e4\ub9cc \uc0c8 \uacc4\uc57d\uc758 \u201c\uc7ac\uc2b9\uc778\uc740 \uc0c8 inspection receipt\uac00 \ud544\uc694\u201d\ub294 \uc544\uc9c1 \uac15\uc81c\ub418\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.\n\n**[P1] \uae30\uc874 \uc601\uc218\uc99d\uc744 \uadf8\ub300\ub85c \uc4f0\uace0 \ud3c9\uac00 \ubb38\uad6c\ub9cc \ubc14\uafb8\uba74 \uc7ac\uc2b9\uc778\ub429\ub2c8\ub2e4.** PASS\u2192REJECT\u2192\uc6d0\ub798 PASS\uc758 `license_assessment` \ub05d\uc5d0 \uacf5\ubc31 \ud558\ub098\ub9cc \ucd94\uac00\ud55c \uac1d\uccb4\ub97c \uc81c\ucd9c\ud558\uba74 \ub3d9\uc77c execution_id\ub85c seq3\uacfc adoption_eligible=true\uac00 \ub429\ub2c8\ub2e4. `research.py:review`\uc758 digest\ub294 \uc804\uccb4 \ubb38\uad6c\ub97c \ud3ec\ud568\ud558\ubbc0\ub85c \uac19\uc740 inspection\uc744 \uc0c8 review identity\ub85c \ub9cc\ub4dc\ub294 \uac83\uc740 \uac00\ub2a5\ud569\ub2c8\ub2e4.\n\n\uc694\uccad: \uc7ac\uc804\uc1a1\uc758 \ub0b4\uc6a9 digest \uac80\uc0ac\uc640 \ubcc4\uac1c\ub85c, rejection \uc774\ud6c4 acceptance\uc5d0 \uc0c8\ub85c\uc6b4 \uc720\ud6a8 inspection execution\uc744 \uc694\uad6c\ud558\uc138\uc694. \ub3d9\uc77c execution_id\uc5d0\uc11c \ubb38\uad6c\ub9cc \ub2ec\ub77c\uc9c0\ub294 \uc785\ub825\uc744 \uac70\ubd80\ud558\uac70\ub098 \uc774\uc804 \uc21c\uc11c\ub85c \ucc98\ub9ac\ud558\ub294 \ud68c\uadc0\uac00 \ud544\uc694\ud569\ub2c8\ub2e4. \ubb38\uad6c \uacf5\ubc31 \uc815\uaddc\ud654\ub9cc\uc73c\ub85c\ub294 \ub2e4\ub978 \ubb38\uc7a5\uc73c\ub85c \uac19\uc740 \uc6b0\ud68c\uac00 \uac00\ub2a5\ud569\ub2c8\ub2e4. \uc7ac\ud604\uc740 \uaca9\ub9ac\ub41c \uc560\ud50c\ub9ac\ucf00\uc774\uc158 fixture\uc774\uba70 \uc2e4\uc81c \ubaa8\ub378 \uc2b9\uc778 \uce21\uc815\uc774 \uc544\ub2d9\ub2c8\ub2e4.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/39",
+        "https://github.com/trevi00/zeus/blob/4b68c0c2e3dff73b604180e2a8f9a98c69cc46d0/docs/zeus/reviews/pr-revisions-001/39-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "3d8aec71be619fa6e6d86f891e7c53b58c7e3c448ceb86b6fe138a3dc2ed7559",
+      "at": "2026-09-10T05:48:16.481881+00:00"
+    },
+    "projection": {
+      "id": "1973e58fc98ea656a9fac5b3caf3bbff637e92cc827220581949b6a7deed1309",
+      "ticket_id": "ZEUS-f550e11eb0c4",
+      "repository": "trevi00/zeus",
+      "number": 6,
+      "url": "https://github.com/trevi00/zeus/issues/6",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "attempted_content_hash": "57d75d23f6362c8fee0770dd4fc73a1d24c42c805a603730225d2207ab7af2be",
+      "body_hash": "dbdf93071f1ccec5c6a7c8a28f7e8aeb8fb29243c9b9119a48ffc33e70a9f583",
+      "title_hash": "c10c1aedb839d73073df52732704d0ceb3d5c109fa6d77dc358ca0093aac74cb",
+      "observed_body_hash": "dbdf93071f1ccec5c6a7c8a28f7e8aeb8fb29243c9b9119a48ffc33e70a9f583",
+      "observed_title_hash": "c10c1aedb839d73073df52732704d0ceb3d5c109fa6d77dc358ca0093aac74cb",
+      "title": "[FA-005] PASS \uc774\ud6c4 ERROR\ub97c \uc644\ub8cc helper\uac00 \ubb34\uc2dc",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:952c9eea7b3bab94978c5ae9b014817b59b3c189e214e03fc19231591cfc4633",
+      "observation_id": "a24f3809392f8b808dc8d1630e00b577a231fefd3316018ec03fed493247dfcc",
+      "at": "2026-09-10T05:48:18.565112+00:00",
+      "review_ids": [
+        "3d8aec71be619fa6e6d86f891e7c53b58c7e3c448ceb86b6fe138a3dc2ed7559",
+        "d79c8e80e18556e9248e3afca1a3ec4f84e63ec0958289db12ec0cf79c67f299"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 43,
+    "review": {
+      "ticket_id": "ZEUS-3d913005bed0",
+      "revision": 1,
+      "content_hash": "bd843d57a7f7ffa5de30e4a4d2c17b94472ce002d9406d4aaeb4a1b8cc639867",
+      "claimed_reviewer": "Codex independent revised PR review",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "Codex \uc218\uc815\ubcf8 \ub3c5\ub9bd \uc7ac\uac80\ud1a0 \u2014 **\uc774\uc804 \uc9c0\uc801 \ud574\uacb0, \uba85\uc2dc \ubc94\uc704 \uc218\uc6a9 / \ubcd1\ud569 \uac00\ub2a5**\n\n\ub300\uc0c1 `7e4692143d5717e112ffe66b2fa27f9c016f1113`.\n\nopen partition questions\uac00 \uc788\uc73c\uba74 whole_analysis_complete=false\uc774\uace0 \uac19\uc740 \uc0c1\ud0dc\uc758 proposal\ub3c4 \uac70\ubd80\ub429\ub2c8\ub2e4. observed assets \ucc98\ubd84 \ubd84\ubaa8\uc640 \uc2b9\uc778 binding, CLI \uc785\ub825 \uac80\uc99d \uacbd\ub85c\ub97c \ub2e4\uc2dc \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4. \uc644\ub8cc \ud45c\uc2dc\ub294 \ub4f1\ub85d\ub41c inventory/observed ledger \ubc94\uc704\uc774\uba70 \ubc1c\uacac\ud558\uc9c0 \ubabb\ud55c \ub85c\uceec \uc790\uc0b0\uae4c\uc9c0 \uc804\ubd80 \ubd84\uc11d\ud588\ub2e4\ub294 \ub73b\uc774 \uc544\ub2d9\ub2c8\ub2e4.\n\n\ub3c5\ub9bd \uad00\ub828 \uac80\uc0ac `71 passed in 58.15s`. #37/#43/#44\ub97c \ud604\uc7ac main\uc5d0 \ud568\uaed8 \uacb0\ud569\ud55c Ruff\uc640 Windows \uc804\uccb4 \ud68c\uadc0 `950 passed, 310 skipped in 220.86s (0:03:40)` \ud1b5\uacfc, \uac80\uc99d tree `d18c8b2ca94e2a5913c37e4da7a522931e999b5b`. PR\ubcc4 CI 10\uac1c \uc131\uacf5, \uc790\ub3d9 \uc774\uc288 \uc885\ub8cc \uc5f0\uacb0 \uc5c6\uc74c. Skip\uc740 PASS\uac00 \uc544\ub2d9\ub2c8\ub2e4.\n\n\uc774 \ud310\uc815\uc740 \ud574\ub2f9 \ucf54\ub4dc\uc758 \uc218\uc6a9\uc774\uba70 \uc5f0\uacb0 \uc774\uc288 \uc804\uccb4 \uc778\uc218/\uc885\ub8cc \ubc0f \uc6b4\uc601 \ubc30\ud3ec \uc2b9\uc778\uc774 \uc544\ub2d9\ub2c8\ub2e4. \uc2e4\uc81c \ubaa8\ub378/\uc2e4\uae30\uae30/\ud638\uc2a4\ud2b8 \uc7ac\ubd80\ud305\uc744 \ucd94\uac00 \uce21\uc815\ud558\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/43",
+        "https://github.com/trevi00/zeus/blob/4b68c0c2e3dff73b604180e2a8f9a98c69cc46d0/docs/zeus/reviews/pr-revisions-001/43-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "6a0ee9f57b45bf96a8cbc120f9a86fc12e40a37f97b7dca9fa443543b63eaa06",
+      "at": "2026-09-10T05:48:18.611034+00:00"
+    },
+    "projection": {
+      "id": "1f118662f71a706f6524856b7b54c36d37fde9bfedfdb62489e8b3e810babf5b",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "repository": "trevi00/zeus",
+      "number": 11,
+      "url": "https://github.com/trevi00/zeus/issues/11",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "bd843d57a7f7ffa5de30e4a4d2c17b94472ce002d9406d4aaeb4a1b8cc639867",
+      "attempted_content_hash": "bd843d57a7f7ffa5de30e4a4d2c17b94472ce002d9406d4aaeb4a1b8cc639867",
+      "body_hash": "214f5a1362c5abf154d157e7be56dff9f575e09bef84d8bb5d24f25de68d992f",
+      "title_hash": "10e1c021354ef51b1da6a4f085da3899b96b050f1b5f07ff2f74162a39d30eab",
+      "observed_body_hash": "214f5a1362c5abf154d157e7be56dff9f575e09bef84d8bb5d24f25de68d992f",
+      "observed_title_hash": "10e1c021354ef51b1da6a4f085da3899b96b050f1b5f07ff2f74162a39d30eab",
+      "title": "[FA-010] Git \ucd94\uc801 \ubc16 \uacbd\ud5d8\u00b7\ud50c\ub7ec\uadf8\uc778\u00b7\ubbf8\ucee4\ubc0b \ub178\ud2b8\uc758 \ubd84\uc11d \ub204\ub77d",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:6af184f0d410e4cc774b2bf5b77925d35f20dced10f0d67e928d23558088cc2f",
+      "observation_id": "08c0a39c7e58800f85900839de1cc51a830210efc140124a05a27498e13bbeb8",
+      "at": "2026-09-10T05:48:20.819122+00:00",
+      "review_ids": [
+        "29cfcd176b75d7cfbaca91e2f99effe21b8de52e9e1763c35279e38a19334364",
+        "6a0ee9f57b45bf96a8cbc120f9a86fc12e40a37f97b7dca9fa443543b63eaa06"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  },
+  {
+    "pr": 44,
+    "review": {
+      "ticket_id": "ZEUS-74e61b578afa",
+      "revision": 1,
+      "content_hash": "f244763f9d207b64fcc846c0c2b1554286b9601099436ebee19cc3e19e7e3587",
+      "claimed_reviewer": "Codex independent revised PR review",
+      "claimed_provider": "OpenAI",
+      "verdict": "support",
+      "summary": "Codex \uc218\uc815\ubcf8 \ub3c5\ub9bd \uc7ac\uac80\ud1a0 \u2014 **\uc774\uc804 \uc9c0\uc801 \ud574\uacb0, \uba85\uc2dc \ubc94\uc704 \uc218\uc6a9 / \ubcd1\ud569 \uac00\ub2a5**\n\n\ub300\uc0c1 `79fb71b8e7ec4a4f7d1d3001f4672915c80f418b`.\n\nYAML raw key \uac80\uc0ac\uc5d0 \ub354\ud574 key.strip() \uc774\ud6c4 \ucda9\ub3cc\ub3c4 \uac70\ubd80\ud569\ub2c8\ub2e4. \uc120\ud589/\ud6c4\ud589 \uacf5\ubc31 \ucda9\ub3cc\uacfc \uc815\uc0c1 \ub2e8\uc77c padded key\uc758 matcher \uacbd\ub85c \ud68c\uadc0\uac00 \ud1b5\uacfc\ud588\uc2b5\ub2c8\ub2e4. \uac80\uc0ac \uc218/\uc815\ucc45 provenance\ub294 \uc2e4\uc81c \ubaa8\ub378 \ud589\ub3d9 \uc778\uc218\uc640 \uad6c\ubd84\ud569\ub2c8\ub2e4.\n\n\ub3c5\ub9bd \uad00\ub828 \uac80\uc0ac `40 passed in 7.75s`. #37/#43/#44\ub97c \ud604\uc7ac main\uc5d0 \ud568\uaed8 \uacb0\ud569\ud55c Ruff\uc640 Windows \uc804\uccb4 \ud68c\uadc0 `950 passed, 310 skipped in 220.86s (0:03:40)` \ud1b5\uacfc, \uac80\uc99d tree `d18c8b2ca94e2a5913c37e4da7a522931e999b5b`. PR\ubcc4 CI 10\uac1c \uc131\uacf5, \uc790\ub3d9 \uc774\uc288 \uc885\ub8cc \uc5f0\uacb0 \uc5c6\uc74c. Skip\uc740 PASS\uac00 \uc544\ub2d9\ub2c8\ub2e4.\n\n\uc774 \ud310\uc815\uc740 \ud574\ub2f9 \ucf54\ub4dc\uc758 \uc218\uc6a9\uc774\uba70 \uc5f0\uacb0 \uc774\uc288 \uc804\uccb4 \uc778\uc218/\uc885\ub8cc \ubc0f \uc6b4\uc601 \ubc30\ud3ec \uc2b9\uc778\uc774 \uc544\ub2d9\ub2c8\ub2e4. \uc2e4\uc81c \ubaa8\ub378/\uc2e4\uae30\uae30/\ud638\uc2a4\ud2b8 \uc7ac\ubd80\ud305\uc744 \ucd94\uac00 \uce21\uc815\ud558\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4.\n",
+      "evidence_refs": [
+        "https://github.com/trevi00/zeus/pull/44",
+        "https://github.com/trevi00/zeus/blob/4b68c0c2e3dff73b604180e2a8f9a98c69cc46d0/docs/zeus/reviews/pr-revisions-001/44-review.md"
+      ],
+      "authority": "advisory_only",
+      "id": "9ae35c297cc82deaad4fe7139f17b2c580a7ed1b79f55ac8a5da8d69f33d4768",
+      "at": "2026-09-10T05:48:20.886472+00:00"
+    },
+    "projection": {
+      "id": "cae5b075535e006bed45c644f593b3f5d12a612d2a2ada3de9430bc817f133fd",
+      "ticket_id": "ZEUS-74e61b578afa",
+      "repository": "trevi00/zeus",
+      "number": 12,
+      "url": "https://github.com/trevi00/zeus/issues/12",
+      "attempted_revision": 1,
+      "synced_revision": 1,
+      "content_hash": "f244763f9d207b64fcc846c0c2b1554286b9601099436ebee19cc3e19e7e3587",
+      "attempted_content_hash": "f244763f9d207b64fcc846c0c2b1554286b9601099436ebee19cc3e19e7e3587",
+      "body_hash": "1c0ed958229819895d399ec8f8bdd7fb4592b7b2fea5568b6cc9d4ed3dbe1af4",
+      "title_hash": "1678c7ee1695522260018a89498e0eeb9c56da0e993b66940b4c087bea22ebb3",
+      "observed_body_hash": "1c0ed958229819895d399ec8f8bdd7fb4592b7b2fea5568b6cc9d4ed3dbe1af4",
+      "observed_title_hash": "1678c7ee1695522260018a89498e0eeb9c56da0e993b66940b4c087bea22ebb3",
+      "title": "[FA-011] \uc2a4\ud0ac \ud488\uc9c8 \uac8c\uc774\ud2b8\uc758 \ubbf8\uac80\uc0ac PASS\uc640 \ud15c\ud50c\ub9bf \uacc4\uc57d \ubd88\uc77c\uce58",
+      "desired_state": "OPEN",
+      "observed_state": "OPEN",
+      "lifecycle_sequence": 0,
+      "lifecycle_event": null,
+      "observation_ref": "sha256:4c53745914a1aa5e0b10528b30c3fe5e78149c57d6d3aff4507eeda39c603123",
+      "observation_id": "334bdfd2cbd047ffed878cdb2d0c861dba12096ff267ed56065412c1d429eef1",
+      "at": "2026-09-10T05:48:23.022552+00:00",
+      "review_ids": [
+        "05cb84af9976c033b4be1cab1c8b591d4eb0d91c5c33591987f75d69fa517b09",
+        "9ae35c297cc82deaad4fe7139f17b2c580a7ed1b79f55ac8a5da8d69f33d4768"
+      ],
+      "status": "synced",
+      "projected_lifecycle_event": null
+    }
+  }
+]
