@@ -88,8 +88,9 @@ def test_runner_receipts_carry_category_denominator_and_attempt(audit, tmp_path,
 
 def test_isolation_failures_are_unavailable_and_never_rerun_on_the_host(audit, tmp_path, monkeypatch):  # noqa: F811
     service, _, source, _, _ = audit
-    runner = DockerSourceRunner(tmp_path / 'host', service.artifacts)
-    # No docker on PATH at all: the spawn fails for real, and nothing else is tried.
+    # No docker binary at the configured path and none on PATH: the spawn fails for real on every host
+    # (CI Windows runners resolve a bare `docker` outside PATH), and nothing else is tried.
+    runner = DockerSourceRunner(tmp_path / 'host', service.artifacts, docker=str(tmp_path / 'empty-path' / 'docker'))
     monkeypatch.setenv('PATH', str(tmp_path / 'empty-path'))
     monkeypatch.setattr('codex_harness.adapters.source_execution.run_process',
                         lambda argv, timeout: (_ for _ in ()).throw(OSError('no docker')))
@@ -125,5 +126,5 @@ def test_isolation_failures_are_unavailable_and_never_rerun_on_the_host(audit, t
     receipt = runner.execute(source, ['python', 'script.py'], IMAGE)
     doc = receipt_document(service, receipt)
     assert doc['verdict']['category'] == 'client_timeout' and receipt.inspection_blocked
-    assert removed and removed[-1][:3] == ['docker', 'rm', '-f']
+    assert removed and removed[-1][:3] == [runner.docker, 'rm', '-f']
     assert os.name  # platform-neutral: no host rerun path exists to exercise

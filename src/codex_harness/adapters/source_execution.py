@@ -66,8 +66,10 @@ class _ClientTimeout(Exception):
 
 
 class DockerSourceRunner:
-    def __init__(self, root, artifacts):
-        self.root, self.artifacts = Path(root), artifacts
+    def __init__(self, root, artifacts, docker='docker'):
+        # The runner binary is explicit so an absent runner is a real spawn failure on every host,
+        # not a PATH lookup that a system directory can satisfy behind the test's back.
+        self.root, self.artifacts, self.docker = Path(root), artifacts, docker
         self.root.mkdir(parents=True, exist_ok=True)
 
     def execute(self, source, command, image, attempt=None):
@@ -109,7 +111,7 @@ class DockerSourceRunner:
                     path.parent.mkdir(parents=True, exist_ok=True)
                     path.write_bytes(raw)  # Source symlinks remain inert regular files.
                     path.chmod(0o755 if entry['mode'] == '100755' else 0o644)
-                argv = ['docker', 'run', '--rm', '--name', name, '--network', 'none',
+                argv = [self.docker, 'run', '--rm', '--name', name, '--network', 'none',
                         '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                         '--memory', str(POLICY.source_memory_mb) + 'm', '--cpus', str(POLICY.source_cpus),
                         '--pids-limit', str(POLICY.source_pids),
@@ -148,7 +150,7 @@ class DockerSourceRunner:
             finally:
                 # Remove only this uniquely named container, including a timed-out Docker client.
                 try:
-                    run_process(['docker', 'rm', '-f', name], timeout=20)
+                    run_process([self.docker, 'rm', '-f', name], timeout=20)
                 except (OSError, subprocess.TimeoutExpired):
                     pass  # The in-container deadline also bounds orphaned execution.
             document = {**output, 'configuration': configuration, 'verdict': verdict, 'command': list(command),
