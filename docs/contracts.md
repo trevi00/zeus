@@ -215,6 +215,13 @@ owner against the fence in the same transaction, so a row restored behind the fe
 re-arm its old holder; rows that predate the ledger pass, a corrupted fence fails closed. Row or process existence is never execution identity, and the upstream file
 lease is not ported.
 
+Execution progress records are written only under the current lease and carry the task
+generation and attempt, a per-record sequence, a unique event identity, and the event's
+own occurrence time separately from the collection time (absent occurrence time stays
+null); a stale generation cannot write progress, and a malformed runtime event is retained
+as evidence and counted instead of being dropped or allowed to overwrite the last
+well-formed state.
+
 ## INV-EXECUTION-TIME-001
 
 Timezone-aware UTC deadlines survive restart. Monotonic elapsed time is compared
@@ -252,8 +259,156 @@ its own event and consumes nothing; a consumed or revoked approval certifies not
 issued, consumed, revoked, expired, missing and corrupt are distinct states. The approval
 never writes the active definition and never authorizes routing, graduation or deployment.
 
+## INV-INVOCATION-001
+
+A model invocation is a typed request against a declared transport support matrix: unknown
+options and options the transport does not support are refused before execution with their
+names, never silently dropped, and invalid types or values (empty model, non-finite or
+non-positive timeout, empty schema) are refused the same way. A probe proves an executable and
+at most a version; it never proves model readiness or qualification, and registry lookup is not
+availability. Before the call, the attempt reserves one invocation in the transaction that
+re-proves current ownership; an attempt holds at most one open reservation, open reservations
+are the concurrency budget, and a reservation that never settles is closed as
+`unsettled_unknown` with unknown usage when the next attempt reserves or the transport raises.
+The result is classified from what was observed — accepted, empty answer, invalid output,
+tool-only, interrupted, inspection-blocked, provider failure — so a clean exit with no answer is
+never acceptance. Usage names its source event and basis; absent usage is unknown, never zero,
+and unknown usage is excluded from measured sums. The requested model and the model the
+transport reported are separate fields; an unreported model stays unknown. The raw event stream
+is hashed (surrogates preserved) and kept with the execution evidence.
+
+## INV-BREAKER-001
+
+Provider admission is a committed, generation-fenced state transition in the control-plane
+store, never a boolean from a file. A breaker is keyed by typed lowercase provider and scope
+tokens hashed together (aliases and path-like parts are refused, not folded). Admission
+returns a token naming the generation, policy revision, task, attempt and time it was granted
+under, and only a committed transaction can return one: a store that cannot write admits
+nothing. An open breaker refuses until its cooldown elapses; half-open holds exactly one probe
+reservation bound to its holder with a TTL, an expired reservation is reclaimed under a new
+generation, and a result reported against any other generation is recorded as stale and
+changes nothing, so an old holder never closes or opens the slot a new holder owns. Unknown
+results (interrupted, cancelled, unproven) release the slot without a verdict; only provider
+failures and transport deaths count as failures, and malformed output is not a provider
+failure. Failure history folds over unique events ordered by time inside the window, so
+duplicates and input order cannot change the count. Policy is validated on read and on write
+(integer-not-bool counts, finite positive durations, threshold within retained history, probe
+TTL within the window, Git or explicit unversioned revision) and a written policy is applied
+only when it reads back equal. Missing, corrupt and unreadable state are distinct from a new
+breaker and none of them is quietly closed; corruption records a notice and requires repair. A
+closed breaker admits calls and authorizes nothing else: not acceptance, graduation or deployment.
+
+## INV-SEAM-001
+
+A seam contract observation is typed: a qualified identity (stack, package, name — the same
+short name in another package is another contract, never dropped), a kind, members with name,
+type, tag and byte span into the exact blob, a fidelity claim, a denominator (symbols found,
+unresolved) and a source identity (path, blob hash, revision, parser). HIGH fidelity cannot
+coexist with unresolved members; an extractor that could not read, decode, parse, or does not
+support a stack returns an UNKNOWN observation with a named state, never a regex HIGH. Spans
+are computed on the original bytes with no comment stripping or renumbering. Discovery sorts
+before it caps and counts what it omitted; discovery and parse denominators are separate. A
+transform is a closed schema (unknown options are refused, never ignored) whose effective
+mapping is computed over the whole input set including passthrough values; any collision or
+empty target is NEEDS_TRANSFORM, and a declared non-identity that changes nothing is reported
+as effectively identity rather than trusted as a mapping. Comparison is directional under a
+versioned policy that names the compared keys; fidelity below HIGH is BLOCKED; agreement on
+names, types and tags is textual and is not compiler, serialization or product compatibility.
+A comparison is advisory; only a reviewer, under a Git policy revision and with a reason, makes
+a DRIFT blocking-eligible. An imported ledger keeps every prior valid record, reports each
+corrupt line, and a partial audit never presents itself as complete or current.
+
+## INV-CHECK-001
+
+A release check is evidence about one candidate only when its receipt binds the tree it ran
+against: the workspace path, the candidate revision the runner expected, the HEAD Git actually
+reported there and whether the tree was clean, plus the environment keys and the argv. A check
+whose workspace HEAD is not the candidate or whose tree is dirty is `revision_mismatch` and does
+not run; a workspace whose revision cannot be observed is `observation_error`, never a verdict.
+A test run passes only by its parsed denominator — executed tests greater than zero and no
+failures or errors — so an exit status of zero with everything skipped, deselected or no
+tests collected is `empty_check`, unparseable output is `unstructured_output`, and a summary
+that reports failures outranks a zero exit. When the verification runner cannot establish its
+isolated services the run stops before any test check with an observation-error receipt and
+the release stays reviewed; nothing downstream is a pass. Zeus installs no Git hooks; native
+Codex hooks are verified per candidate manifest and discovered through the transport, and no
+installation success, file presence or string marker is a check result.
+
+## INV-RUNNER-001
+
+An isolated source run is named by where the attempt ended and what it produced, never by an
+exit status alone. Materialization or runner start failures are `isolation_unavailable` with
+the failing stage and error; they are never substituted by a run in the host environment. A
+runner client that outlives its deadline is `client_timeout` and the uniquely named container
+is removed regardless. In-container deadline exits (124, 137) are `timeout`; the runner's own
+exits (125-127) are `runner_error`, not the command's verdict. An executed command passes only
+with exit 0 and observable stdout: exit 0 with no output, or with diagnostics only on stderr,
+is not a pass; a pytest command passes only by its parsed denominator (INV-CHECK-001), and an
+assertion message is never read as a missing dependency. Every receipt carries the command,
+the runner mode, output digests, the category and, when dispatched from the queue, the
+request, owner, task and generation it ran for.
+
+## INV-SNAPSHOT-001
+
+A confirmed snapshot is verified against a closed manifest that names every required file, its
+kind, its schema version, its required fields and its references. Every line of every required
+file is checked: a line that is not an object, lacks a required field, carries another schema
+version, contains a non-finite number or cannot be parsed is corrupt and counted, never dropped.
+A missing file, an unreadable file, a corrupt file and a legitimately empty file are four
+distinct states, and "0 records" is reported with the state that produced it. A torn trailing
+line is tolerated only in live mode as a line that is not yet part of the confirmed set; in
+confirmed mode it is corruption. A reference to an id that no required file declares dangles and
+invalidates the snapshot. The verdict carries the whole denominator (files required, present,
+valid, empty, missing, unreadable, corrupt; lines total, corrupt; records valid; torn tails;
+dangling references; extra files). An import archives the exact bytes, binds the source, tool
+and environment revisions and the manifest hash, records valid and invalid snapshots alike, and
+lets only a valid snapshot be consumed; an invalid one never touches runtime state. A change
+names the checks it obliges through an explicit path policy; a change that obliges no check is
+stated as such and is never a passed check, and an unmapped change is named, never silently
+unchecked. Zeus's own CI runs every job on every push and pull request without path filters;
+commits marked to skip CI carry no check result at all and must not be read as green.
+
+## INV-MIGRATION-001
+
+The database migration tool is pinned: `zeus-sql-migrator@1` with the filename contract
+`V?<n>(.<n>|_<n>)*(__<description>)?.sql`. A version is normalized to its integer components
+(`V01`, `V1`, `001` and `V1.0` are the same version; `V1_2` and `V1.2` are the same version;
+`V08` is eight, never an octal error) and compared component-wise, never by its first number
+or lexically. A `.sql` file whose name does not match the contract is refused by name; it is
+never skipped, and a run that saw one never succeeds. Files with other extensions are listed
+as ignored, not treated as migrations.
+
+Every configured location is identified by module, vendor and path and classified as found,
+empty, missing or unreadable with the exact error; a location the discovery did not observe
+is unknown. Missing, unreadable and unknown are never empty; a required scope in any of these
+states refuses, and an optional one is stated as not applicable. The vendor list of one
+module never overwrites another's. Filename parity across the vendors of a module, the SQL
+content of the target vendor (empty, oversized and undecodable files are named), the applied
+history and the live schema are four separate results; a single vendor makes parity not
+applicable, not ok, and an unobserved required vendor makes it unknown. Apply is allowed only
+when every result is ok or not applicable; unknown is never approval.
+
+An applied version is immutable: the checksum recorded at apply time must equal the file's
+checksum, an applied version without a file cannot be verified, and a new version lower than
+an applied one is out of order. "Use MAX+1" is guidance, not a guarantee: apply re-reads the
+history under the control-plane advisory lock, refuses if any result changed, executes pending
+versions in normalized order and records version, checksum, name, tool and actor in the same
+transaction, so two concurrent appliers record each version exactly once. A statement that
+fails leaves no history row and no partial schema change of that version.
+
+A precheck or apply is evidence only as a receipt that binds the operation, the exact argv,
+the parsed config digest, the root, the source revision, the environment label, the exact
+stdout and stderr bytes and the exit code; a refused run (exit 1) and an errored run (exit 2)
+are recorded as such and never as success. Only a precheck whose recorded tool equals the
+pinned tool, that completed with exit 0 and allowed apply, and that is bound to the same
+revision and environment can approve an apply. None of this is deployment approval: the real
+Windows/Linux/WSL install, upgrade, interrupted-recovery and data-preservation runs, the money
+scenarios and the human acceptance they require are not performed by this contract, and no
+document count, quality score or gate table substitutes for them.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
 - INV-ORACLE-001: Imported observations and structural coverage cannot populate approved expected outcomes, certify real-device execution, authenticate human QA, or authorize a release. Gaps remain visible. Eight-stage reports are preparation only until actual providers are implemented.
 - INV-SDD-002: SDD journals retain ordered, hash-linked events; duplicate imports/proposals are idempotent and transitions use compare-and-swap. Notifications are local records, not external messages. Model transfer candidates never change routing authority.
+- INV-GATE-001: Every gate verdict names one fixed statement, its stage, run, cycle and the definition hash it judged, with the runner receipt and process exit status or the reviewer's actor and authority level; a non-zero exit is never PASS and an unauthenticated reviewer claim never settles a statement. A runner receipt counts only when the receipt document itself names the same run, cycle, statement, definition, artifact, environment and exit status; human statements (`human_*`) accept reviewer decisions only; `authenticated_provider` authority is granted only by the configured provider's own verification of that exact statement and actor, and an unverified claim is kept as a pending unauthenticated claim. A retraction binds to the run, cycle, stage and definition of the verdict it names; one issued for another run or cycle is foreign and never removes a verdict here. All consumers use one fold: the planned statements are the denominator (`not_run` is a state, never an omission), verdicts for another run, cycle or definition are foreign, the latest live verdict wins, ERROR withdraws validity rather than leaving an earlier PASS, PARTIAL stays pending, and a retraction removes exactly one named verdict so that the fold of a compacted view equals the fold of the full view.

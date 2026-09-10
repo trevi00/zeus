@@ -13,6 +13,7 @@ from uuid import uuid4
 
 from codex_harness.adapters.commands import run_process
 from codex_harness.application.source_execution import SourceExecutions
+from codex_harness.domain.check_results import classify_isolated_run
 from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.policy import POLICY
 from codex_harness.domain.research import ExecutionReceipt, SourceIdentity
@@ -60,12 +61,18 @@ def bounded_command(argv, timeout):
         tails[0].decode('utf-8', errors='replace'), tails[1].decode('utf-8', errors='replace'))
 
 
+class _ClientTimeout(Exception):
+    """The docker client outlived its deadline; the container may still be running until removed."""
+
+
 class DockerSourceRunner:
-    def __init__(self, root, artifacts):
-        self.root, self.artifacts = Path(root), artifacts
+    def __init__(self, root, artifacts, docker='docker'):
+        # The runner binary is explicit so an absent runner is a real spawn failure on every host,
+        # not a PATH lookup that a system directory can satisfy behind the test's back.
+        self.root, self.artifacts, self.docker = Path(root), artifacts, docker
         self.root.mkdir(parents=True, exist_ok=True)
 
-    def execute(self, source, command, image):
+    def execute(self, source, command, image, attempt=None):
         source.validate()
         require(re.fullmatch(r'sha256:[0-9a-f]{64}', image) is not None, 'Immutable runner image required')
         require(command and all(isinstance(arg, str) and arg for arg in command), 'Invalid command')
@@ -78,6 +85,7 @@ class DockerSourceRunner:
         with tempfile.TemporaryDirectory(prefix='source-', dir=self.root) as directory:
             root = Path(directory).resolve()
             require(root.parent == self.root.resolve(), 'Temporary source root escaped workspace')
+            stage, verdict = 'materialize', None
             try:
                 seen = set()
                 for entry in manifest['entries']:
@@ -103,7 +111,7 @@ class DockerSourceRunner:
                     path.parent.mkdir(parents=True, exist_ok=True)
                     path.write_bytes(raw)  # Source symlinks remain inert regular files.
                     path.chmod(0o755 if entry['mode'] == '100755' else 0o644)
-                argv = ['docker', 'run', '--rm', '--name', name, '--network', 'none',
+                argv = [self.docker, 'run', '--rm', '--name', name, '--network', 'none',
                         '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                         '--memory', str(POLICY.source_memory_mb) + 'm', '--cpus', str(POLICY.source_cpus),
                         '--pids-limit', str(POLICY.source_pids),
@@ -112,30 +120,55 @@ class DockerSourceRunner:
                         '-v', str(root) + ':/source:ro', '-w', '/source',
                         '--entrypoint', '/usr/bin/timeout', image, '--signal=KILL', '--',
                         str(POLICY.source_execution_seconds), *command]
-                result = bounded_command(argv, timeout=POLICY.source_execution_seconds + 10)
+                stage = 'spawn'
+                try:
+                    result = bounded_command(argv, timeout=POLICY.source_execution_seconds + 10)
+                except subprocess.TimeoutExpired as exc:
+                    stage = 'run'
+                    raise _ClientTimeout(str(exc)) from exc
+                stage = 'run'
                 status = result.returncode
+                # INV-RUNNER-001: the category comes from where the attempt ended and what it produced.
+                verdict = classify_isolated_run(stage='run', exit_status=status, stdout=result.stdout,
+                                                stderr=result.stderr, command=list(command))
                 output = {'argv': argv, 'stdout': result.stdout[-POLICY.source_output_bytes:],
                           'stderr': result.stderr[-POLICY.source_output_bytes:], 'exit_status': status,
-                          'output_tail_limit_bytes': POLICY.source_output_bytes}
-                blocked = status in {124, 125, 126, 127, 137}
+                          'output_tail_limit_bytes': POLICY.source_output_bytes,
+                          'stdout_sha256': hashlib.sha256(result.stdout.encode('utf-8', 'surrogatepass')).hexdigest(),
+                          'stderr_sha256': hashlib.sha256(result.stderr.encode('utf-8', 'surrogatepass')).hexdigest()}
+                blocked = verdict['category'] != 'executed'
+            except _ClientTimeout as exc:
+                verdict = classify_isolated_run(stage='run', exit_status=None, stdout='', stderr='', command=list(command),
+                                                client_timeout=True, error=str(exc))
+                output, status, blocked = {'error': str(exc)}, 125, True
             except (OSError, subprocess.TimeoutExpired, ContractError, ValueError) as exc:
+                # Isolation could not be established or the runner could not start: unavailable, never a
+                # substitute execution in the host environment.
+                verdict = classify_isolated_run(stage=stage if stage != 'run' else 'spawn', exit_status=None, stdout='',
+                                                stderr='', command=list(command), error=type(exc).__name__ + ': ' + str(exc)[:300])
                 output, status, blocked = {'error': str(exc)}, 125, True
             finally:
                 # Remove only this uniquely named container, including a timed-out Docker client.
                 try:
-                    run_process(['docker', 'rm', '-f', name], timeout=20)
+                    run_process([self.docker, 'rm', '-f', name], timeout=20)
                 except (OSError, subprocess.TimeoutExpired):
                     pass  # The in-container deadline also bounds orphaned execution.
-            ref = self.artifacts.put(canonical({**output, 'configuration': configuration}),
-                                     'host-isolated-source-execution')['ref']
+            document = {**output, 'configuration': configuration, 'verdict': verdict, 'command': list(command),
+                        'attempt': attempt, 'runner_mode': 'docker-networkless-readonly',
+                        'note': 'passed is decided by category, denominator and output class; never by exit status alone'}
+            ref = self.artifacts.put(canonical(document), 'host-isolated-source-execution')['ref']
         return ExecutionReceipt(source, digest(configuration), command,
             'docker-networkless-readonly-source-inert-links-no-credentials', status, ref,
-            'harness:host-docker-source-runner-v1', blocked)
+            'harness:host-docker-source-runner-v1', blocked,
+            passed=bool(verdict.get('passed')) and status == 0 and not blocked,
+            outcome=verdict.get('outcome') or verdict['category'])
 
     def run_one(self, workflow):
         queue = SourceExecutions(workflow)
         row = queue.claim()
         if row:
-            receipt = self.execute(SourceIdentity(**row['source']), row['command'], row['image'])
+            receipt = self.execute(SourceIdentity(**row['source']), row['command'], row['image'],
+                                   attempt={'request_id': row['id'], 'owner': row['owner'], 'task_id': row['task']['id'],
+                                            'generation': row['task']['generation'], 'release_id': row.get('release_id')})
             queue.complete(row, receipt)
         return row

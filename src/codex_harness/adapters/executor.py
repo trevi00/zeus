@@ -19,6 +19,7 @@ from codex_harness.adapters.skill_history import (
     project_identity,
     record_history,
 )
+from codex_harness.application.breaker import Breaker, breaker_key, result_of, result_of_exception
 from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.application.execution_time import (
     ExecutionTimeError,
@@ -27,9 +28,11 @@ from codex_harness.application.execution_time import (
     pin_clock,
     running,
 )
+from codex_harness.application.invocation_ledger import InvocationLedger
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
+from codex_harness.domain.invocation import classify_result, parse_request, usage_record
 from codex_harness.domain.model import (
     ContextItem,
     ContractError,
@@ -65,6 +68,59 @@ DIAGNOSIS = object_schema({"confirmed": {"type": "boolean"}, "root_cause": TEXT,
                           "scope": TEXT, "reason": TEXT})
 
 
+def progress_occurrence(event: dict):
+    """The event's own UTC occurrence time, or None; the collection moment never stands in for it."""
+    params = event.get("params") if isinstance(event.get("params"), dict) else {}
+    item = params.get("item") if isinstance(params.get("item"), dict) else {}
+    for candidate in (params.get("completedAtMs"), item.get("completedAtMs"), event.get("emittedAtMs")):
+        if type(candidate) is int and 0 < candidate < 10**14:
+            return datetime.fromtimestamp(candidate / 1000, tz=timezone.utc).isoformat()
+    return None
+
+
+PROGRESS_EVENTS = {"item/completed", "thread/tokenUsage/updated"}
+
+
+def progress_event_shape(event) -> str | None:
+    """Name what is wrong with a runtime event before anything reads into it; None means well-formed.
+
+    Review counterexample (PR #49): `method=[]` raised inside set membership and `item="garbage"`
+    advanced the sequence. A progress event is a dict whose method is text, whose params is a dict,
+    and whose per-method payload has the identifiers the reader will use.
+    """
+    if not isinstance(event, dict):
+        return "event is not an object"
+    method = event.get("method")
+    if not isinstance(method, str) or not method:
+        return "method is not text"
+    params = event.get("params", {})
+    if not isinstance(params, dict):
+        return "params is not an object"
+    if method == "item/completed":
+        item = params.get("item")
+        if not isinstance(item, dict):
+            return "item is not an object"
+        if not isinstance(item.get("id"), str) or not item["id"]:
+            return "item.id missing"
+        if not isinstance(item.get("type"), str) or not item["type"]:
+            return "item.type missing"
+        if "status" in item and not isinstance(item["status"], str):
+            return "item.status is not text"
+    elif method == "thread/tokenUsage/updated":
+        if not isinstance(params.get("tokenUsage"), dict):
+            return "tokenUsage is not an object"
+    return None
+
+
+def progress_event_id(event: dict, receipt_ref: str) -> str:
+    """Unique per delivered event: runtime item identity when present, else the retained bytes."""
+    params = event.get("params") if isinstance(event.get("params"), dict) else {}
+    item = params.get("item") if isinstance(params.get("item"), dict) else {}
+    if isinstance(item.get("id"), str) and item["id"]:
+        return f"{event.get('method')}:{item['id']}:{item.get('status')}"
+    return f"{event.get('method')}:{receipt_ref}"
+
+
 def artifact_reader_handle(root, reference: str) -> dict:
     """Describe one exact-ref reader invocation without shell command interpolation."""
     return {
@@ -89,6 +145,8 @@ class Executor:
         self.service, self.git, self.artifacts = service, git, artifacts
         self.knowledge, self.research, self.release_runner = knowledge, research, release_runner
         self.workflow = Workflow(service.store, service.org)
+        self.invocations = InvocationLedger(service.store)
+        self.breaker = Breaker(service.store)
         self.releases = Releases(service.store, service.org)
         self.audit_execution = None
         if audit_runner is not None:
@@ -241,10 +299,17 @@ class Executor:
                     last_beat = time.monotonic()
                 if event is None:
                     return
-                if event.get("method") in {"item/completed", "thread/tokenUsage/updated"}:
+                # FA-016: a malformed runtime event is retained as evidence and counted, never
+                # dropped, and never allowed to overwrite the well-formed progress state. The shape
+                # is checked before any field is read (review, PR #49).
+                defect = progress_event_shape(event)
+                malformed = defect is not None
+                if malformed or event["method"] in PROGRESS_EVENTS:
                     with self.service.store.transaction() as tx:
                         prior = tx.get("execution_progress", key) or {}
-                    receipt = self.artifacts.put(evidence_json({"event": event, "previous": prior.get("last_record") if matches(prior) else None}),
+                    receipt = self.artifacts.put(evidence_json({"event": event if not malformed else repr(event),
+                                                                "malformed": malformed, "defect": defect,
+                                                                "previous": prior.get("last_record") if matches(prior) else None}),
                                                  "runtime-event:" + key)
                     with self.service.store.transaction() as tx:
                         if lease:
@@ -254,28 +319,61 @@ class Executor:
                             previous = {"id": key, "recent": []}
                         if context_bound:
                             previous["research_binding"] = binding
+                        if malformed:
+                            previous["malformed_events"] = previous.get("malformed_events", 0) + 1
+                            previous.setdefault("malformed_recent", [])
+                            previous["malformed_recent"] = (previous["malformed_recent"] + [receipt["ref"]])[-6:]
+                            previous.setdefault("malformed_defects", {})
+                            previous["malformed_defects"][defect] = previous["malformed_defects"].get(defect, 0) + 1
+                            tx.put("execution_progress", key, previous)
+                            return
+                        # Occurrence time comes from the event itself; collection time is ours.
+                        # They are kept apart so replay never reorders by the merge moment.
+                        occurred = progress_occurrence(event)
+                        collected = utcnow()  # one clock read: `at` and `collected_at` are the same moment
+                        previous["sequence"] = previous.get("sequence", 0) + 1
                         previous["recent"] = (previous["recent"] + [receipt["ref"]])[-6:]
                         previous["last_record"] = receipt["ref"]
-                        previous.update(agent=agent, context_ref=context_ref["ref"], at=utcnow(),
+                        previous.update(agent=agent, context_ref=context_ref["ref"], at=collected,
+                                        collected_at=collected, occurred_at=occurred,
+                                        event_id=progress_event_id(event, receipt["ref"]),
+                                        generation=lease.get("generation") if lease else None,
+                                        attempt=lease.get("attempt") if lease else None,
                                         last_event=event.get("method"), worktree=cwd)
                         item = event.get("params", {}).get("item")
-                        if item:
-                            previous["last_completed"] = {"id": item["id"], "type": item["type"],
-                                                          "status": item.get("status"), "evidence": receipt["ref"]}
+                        if isinstance(item, dict) and isinstance(item.get("id"), str):
+                            previous["last_completed"] = {"id": item["id"], "type": item.get("type"),
+                                                          "status": item.get("status"), "evidence": receipt["ref"],
+                                                          "sequence": previous["sequence"], "occurred_at": occurred}
                         tx.put("execution_progress", key, previous)
 
             started = time.monotonic()
             result = None
+            timeout = time_limit
+            if lease:
+                timeout = self.workflow.remaining_seconds(lease, timeout)
+            # INV-INVOCATION-001: the request is checked against the transport's support matrix and
+            # the attempt is reserved (ownership re-proven in the same transaction) before any call.
+            request = parse_request('app_server', {'model': selection.requested_model, 'timeout': timeout,
+                                                   'output_schema': schema, 'read_only': read_only})
+            reservation = (self.invocations.reserve(lease, request=request, budget_seconds=timeout, stage=stage,
+                                                    guard=lambda tx: self.workflow._owned(tx, lease))
+                           if lease else None)
+            admission = None
             try:
+                # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
+                # probe slot; breaker refusal must release the invocation reservation.
+                admission = self.breaker.admit(breaker_key('codex-app-server', workload), lease) if lease else None
                 with AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration()) as runtime:
-                    timeout = time_limit
-                    if lease:
-                        timeout = self.workflow.remaining_seconds(lease, timeout)
                     result = runtime.run(prompt, cwd, schema, timeout,
                                          on_event=observe, read_only=read_only, on_tick=lambda: observe(None),
                                          model=selection.requested_model)
             except Exception as exc:
                 if result is None or not (result.get("inspection_blocked") or result.get("failure")):
+                    if reservation is not None:
+                        self.invocations.abandon(reservation['id'], 'exception:' + type(exc).__name__)
+                    if admission is not None:
+                        self.breaker.report(admission, result_of_exception(exc))
                     raise
                 # INV-RELEASE-001 / INV-SESSION-001: cleanup cannot erase a known
                 # blocked result before its artifact and fenced checkpoint are saved.
@@ -284,6 +382,17 @@ class Executor:
                 result.update(elapsed_seconds=time.monotonic() - started,
                               context_ref=context_ref["ref"], research_binding=binding)
             result["model_selection"] = selection.receipt()
+            result['invocation'] = {'request': request, 'outcome': classify_result(result),
+                                    'usage': usage_record({**result, 'requested_model': selection.requested_model}),
+                                    'reservation': reservation['id'] if reservation else None}
+            if reservation is not None:
+                self.invocations.settle(reservation['id'], outcome=result['invocation']['outcome'],
+                                        usage=result['invocation']['usage'])
+            if admission is not None:
+                verdict = result_of(result)
+                result['breaker'] = {**self.breaker.report(admission, verdict), 'verdict': verdict,
+                                     'key': admission['key'], 'admitted_generation': admission['generation'],
+                                     'probe': admission['probe'], 'policy_revision': admission['policy_revision']}
             if history_recording:
                 result['skill_history_recording'] = history_recording
             evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,

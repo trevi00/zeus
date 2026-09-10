@@ -16,6 +16,7 @@ from codex_harness.domain.research import (
     SourceIdentity,
     SubsystemAnalysis,
     parse_record,
+    receipt_successful,
 )
 from codex_harness.ports import AuditArtifacts, SourceVerifier, Store
 
@@ -137,8 +138,7 @@ class ResearchAudits:
                     require(receipt is not None and receipt['audit_id'] == checkpoint.audit_id
                             and receipt['task_id'] == task['id']
                             and receipt['generation'] == task['generation']
-                            and receipt['receipt']['exit_status'] == 0
-                            and not receipt['receipt']['inspection_blocked'],
+                            and receipt_successful(receipt['receipt']),
                             'Runner receipt missing, stale, blocked or unsuccessful')
                     self.artifacts.inspect(receipt['receipt']['output_ref'])
             for disposition in dispositions:
@@ -363,8 +363,10 @@ class ResearchAudits:
                     and receipt['task_id'] == task['id'] and receipt['generation'] == task['generation'],
                     'Independent command inspection required')
             self.artifacts.inspect(receipt['receipt']['output_ref'])
-            successful = receipt['receipt']['exit_status'] == 0 and not receipt['receipt']['inspection_blocked']
-            require(successful or not review.accepted, 'Inspection-blocked review cannot approve')
+            successful = receipt_successful(receipt['receipt'])
+            require(successful or not review.accepted,
+                    'Inspection-blocked review cannot approve' if receipt['receipt'].get('inspection_blocked')
+                    else 'Inspection did not pass (' + str(receipt['receipt'].get('outcome')) + '); review cannot approve')
             key = digest(asdict(review))
             existing = tx.get('research_reviews', key)
             if existing is not None:

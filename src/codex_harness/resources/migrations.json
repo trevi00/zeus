@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "target_vendor": "postgres",
+  "expected_tables": [
+    "documents",
+    "knowledge_edges",
+    "knowledge_nodes",
+    "schema_migrations"
+  ],
+  "locations": [
+    {
+      "module": "core",
+      "vendor": "postgres",
+      "path": "."
+    }
+  ]
+}

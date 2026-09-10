@@ -377,8 +377,8 @@ def main() -> None:
             return
         service = build()
         if args.command == "init-db":
-            service.store.migrate()
-            emit({"migrated": True})
+            receipt = service.store.migrate()
+            emit({"migrated": True, "applied": receipt["applied"], "already_applied": receipt["already_applied"], "tool": receipt["tool"]})
         elif args.command == 'execution-recovery':
             from codex_harness.adapters.artifacts import FileArtifacts
             from codex_harness.adapters.configuration import runtime_dir
