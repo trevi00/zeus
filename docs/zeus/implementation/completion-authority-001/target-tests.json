@@ -1,0 +1,28 @@
+{
+  "scope": "FA-018 target tests on MemoryStore and an isolated PostgreSQL schema (HARNESS_INTEGRATION=1)",
+  "command": "uv run python -m pytest -q -p no:cacheprovider tests/test_completion_authority.py tests/test_architecture.py",
+  "started_at": "2026-09-10T05:48:47.563847+00:00",
+  "finished_at": "2026-09-10T05:49:03.799839+00:00",
+  "exit_code": 0,
+  "summary": [
+    "21 passed in 15.75s"
+  ],
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.7",
+  "database_url_host": "127.0.0.1:63556",
+  "negative_controls": [
+    {
+      "control": "domain/completion.py and application/completion.py removed",
+      "result": "1 error (collection: module missing)"
+    },
+    {
+      "control": "latest() ordered by observed_at instead of sequence",
+      "result": "2 failed (test_recording_order_not_observed_time_selects_the_verdict[memory|postgres]), 15 passed"
+    },
+    {
+      "control": "record() no longer binds generation/attempt to the task row",
+      "result": "4 failed (binding and reclaimed-execution tests), 13 passed"
+    }
+  ],
+  "not_claimed": "No real evaluator provider, hook host, human scenario acceptance or Linux/WSL run; the runner receipt and evaluation artifact in tests are fixture values."
+}
