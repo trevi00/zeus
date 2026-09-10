@@ -8,7 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from codex_harness.adapters.commands import run_process
+from codex_harness.adapters.commands import python_channel_environment, run_process
 from codex_harness.domain.model import canonical, hook_apply, require
 
 
@@ -51,7 +51,9 @@ class NativeHooks:
         for kind, cases in manifest["cases"].items():
             passed, evidence = True, []
             for case in cases:
-                result = run_process([sys.executable, str(script)], input_text=canonical(case["input"]), timeout=30)
+                # INV-ENCODING-001: case input/output cross the channel as UTF-8 in both directions.
+                result = run_process([sys.executable, str(script)], input_text=canonical(case["input"]),
+                                     timeout=30, env=python_channel_environment())
                 try:
                     output = json.loads(result.stdout) if result.stdout.strip() else None
                 except json.JSONDecodeError:

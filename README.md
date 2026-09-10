@@ -69,6 +69,8 @@ DB와 Redis는 localhost의 55432, 56379 포트를 사용합니다. 인증·실�
 Windows 호스트 `.venv`와 컨테이너 `/repository/.venv`는 별도 볼륨으로 분리합니다.
 supervisor는 호스트에서 실행되며 에이전트에 Docker 소켓을 노출하지 않습니다.
 `-InstallStartup`은 현재 사용자의 로그인 시 supervisor를 시작하도록 등록합니다.
+Zeus가 띄우는 Python 자식(릴리스 pytest, 훅 카나리아)은 Windows 콘솔 코드 페이지와 무관하게
+`PYTHONIOENCODING=utf-8`로 결속됩니다([인코딩 계약](docs/zeus/implementation/encoding-contract-001/README.md)).
 
 ## 티켓을 통한 개선 요청
 
