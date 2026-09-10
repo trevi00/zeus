@@ -406,6 +406,92 @@ Windows/Linux/WSL install, upgrade, interrupted-recovery and data-preservation r
 scenarios and the human acceptance they require are not performed by this contract, and no
 document count, quality score or gate table substitutes for them.
 
+## INV-EVIDENCE-001
+
+A worker's evidence claim is typed (a file with optional content hash and line range, or a
+command with its expected exit status); free text is at most a command claim of expected exit
+zero. Inspection yields exactly one of checked, not_checked, missing, unknown, error,
+replay_failed, flake_pattern or verified_mismatch, always with a cause; there is no CLEAN, a
+directory or an unrelated file is not evidence, a permission or stat error is unknown, and an
+inspection whose claims were not all checked is incomplete. File checks and command replays
+share one explicit context: the workspace the claims came from, the candidate source revision,
+the policy hash and a minimal recorded environment; nothing is ever resolved against the
+inspector's own cwd. A model-written command is never authority: only an argv prefix listed in
+the Git-defined evidence policy is replayed, in a bounded child (finite positive per-command
+deadline within an aggregate budget, claim count and output byte caps, process-tree
+termination recorded), and identical replays that disagree are a flake pattern. Raw stdout and
+stderr bytes are archived byte-for-byte with their hashes; a decoding problem is a recorded
+property of the output, never a replacement. Inspections are ledger rows bound to task,
+generation, attempt, owner and revision; a recording failure is a notice, never a success; and
+a checked inspection is deterministic evidence, never historical truth, semantic review, human
+acceptance, SDD acceptance or model qualification.
+## INV-SEAM-VIEW-001
+
+A seam view is a deterministic projection of recorded observations and comparisons, never a
+ledger of its own: equal inputs in any order produce byte-equal output, and the view carries a
+generation receipt (generator, inputs hash, view hash). Each node states its provenance —
+observed (HIGH), extracted_partial (LOW), unavailable (UNKNOWN) or declared_only (required by
+policy, never compared) — and each edge keeps producer and consumer roles, direction, verdict,
+fidelity on both sides, the effective transform and the comparison it came from. `live` is
+reserved for an OK comparison between two HIGH observations and never means observed traffic
+or acceptance; BLOCKED, unknown and declared-only seams stay visible and are never live. The
+gate policy is a closed vocabulary (fail-on names must be DRIFT, NEEDS_TRANSFORM or BLOCKED; a
+typo or an empty list is refused) with a non-empty set of required seams; the gate passes only
+when every required seam is present and OK, fails on a listed verdict, and is otherwise
+undecided — a required seam that is BLOCKED or missing never passes, and zero obligations are
+not a policy. The SDD gate report keeps separate denominators for declared scenarios, imported
+observations, runner-executed scenarios, verified assertions and human acceptance; imported
+claims, generated skeletons and marker removal never count as executed or accepted.
+
+## INV-SEAM-SCOPE-001
+
+A seam check names what it can see. Every observation declares its covered check scopes (an
+extractor states them; an unknown observation covers nothing), and an approved comparison
+policy names the scopes the specification requires — member names, types and tags, envelope,
+RPC, response types, error mapping, storage, execution, human scenario. A comparison reports,
+per required scope, whether both sides covered it and the policy compared it; OK speaks only
+for the checked scopes, every other required scope is unverified, and an OK with unverified
+required scopes is not live and never passes a gate. Byte identity of the source blobs and
+equality on the checked scopes are recorded as separate facts; neither implies the other. A
+shared literal value links contracts only through its type-and-tag identity and is a
+coincidence of declarations, never causal message delivery. Every observed contract appears in
+the view, including those no recorded comparison names, which are marked undeclared.
+## INV-PROFILE-001
+
+A profile data flow exists only as a versioned policy that names the collected record fields
+and their purpose, the read scope (kinds, record and character caps, projects), the model and
+its transport, temporary and permanent retention, and the user notice. The notice may claim
+only what the policy enforces: "no external transfer" requires a local transport and "raw text
+is not retained" requires profile-only permanent retention; a wider notice refuses the policy
+itself. The policy hash identifies the contract.
+
+Consent binds one user to one policy hash and to projects inside the read scope; cancel and
+questionnaire are preserved choices that collect nothing, a grant without projects collects
+nothing, and a preference inferred later is never authorization, approval or model
+qualification. Collection under any other policy version needs new consent.
+
+Every record is minimized before it can become model input: only policy fields survive, the
+content is capped, then scanned, then redacted, and the project path is replaced by a
+non-reversible reference. A record carrying a private key, a credential or a token is blocked
+from model input, not masked. Read failures, parse failures, out-of-scope kinds and
+non-consented projects are separate named results that produce no input, and each names the
+fields it could not check. The ledger keeps statuses, counts and kinds; it never keeps record
+text or matched values, and an output-stage filter never stands in for this input-stage
+minimization.
+
+`evidence` and `evidence_quotes` normalize to one schema; when both are present they must
+agree, and unsupported fields refuse. Every rendered field of every dimension (evidence,
+summary, instruction, project, signal, metadata) is scanned or named unchecked; "none
+detected" is said only about checked fields, and a profile with an unchecked field or a
+finding is not renderable.
+
+A temporary bundle belongs to its run: it is written atomically with an owner, a lease and a
+digest, read only by its owner after digest verification, deleted only by its owner or by an
+expired lease, and never by age or name prefix; a bundle whose process died is preserved for
+its owner to resume, and a tampered bundle is preserved and not used. Every run is bound to
+its source revision and environment. None of this is a user acceptance, a privacy
+qualification or a deployment.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

@@ -193,7 +193,13 @@ def gate_report(spec, observations=()):
                   else "Actual version-bound runner evidence required"} for name in checks]
         rows.append({"id": key, "title": title, "responsible_team": owner, "status": "blocked",
                      "checks": facts, "authority": "advisory_gate_report"})
-    return {"schema": "zeus.sdd-report.v1", "spec_hash": digest(spec), "stages": rows,
+    scenarios = spec.get("scenarios", [])
+    imported = [o for o in observations if isinstance(o, dict)]
+    # INV-SEAM-VIEW-001: each stage has its own denominator; an imported claim is not an executed scenario.
+    denominators = {"scenarios_declared": len(scenarios), "observations_imported": len(imported),
+                    "scenarios_executed_by_runner": 0, "assertions_verified": 0, "human_accepted": 0,
+                    "note": "imported observations, generated skeletons and marker removal never count as executed or accepted"}
+    return {"schema": "zeus.sdd-report.v1", "spec_hash": digest(spec), "stages": rows, "denominators": denominators,
             "observation_count": len(observations), "acceptance_passed": False,
             "release_authorized": False, "human_authority_configured": False,
             "next_action": "Review the intended user scenarios and configure authenticated human approval",
