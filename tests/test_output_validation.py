@@ -82,6 +82,19 @@ def test_declared_dialect_is_the_validating_dialect():
     assert accepted['answer'] == [3] and accepted['structural']['schema']['dialect'] == accepted['structural']['schema']['dialect']
     assert accepted['structural']['schema']['validator'] == 'jsonschema.Draft202012Validator'
     assert accepted['structural']['schema']['format'].startswith('annotation only')
+    # Review counterexample (PR #55, round 2): a nested `$schema` must not smuggle another dialect into a subschema.
+    nested = {'type': 'object', 'properties': {'x': {'$schema': 'http://json-schema.org/draft-07/schema#', 'type': 'array',
+                                                     'prefixItems': [{'type': 'integer'}]}}}
+    smuggled = completed_output('{"x": ["not-an-integer"]}', nested)
+    assert smuggled['answer'] is None and smuggled['failure']['owner'] == 'configuration'
+    assert 'nested-dialect' in smuggled['structural']['schema']['configuration_error']
+    for where in ({'$defs': {'row': {'$schema': 'https://json-schema.org/draft/2020-12/schema', 'type': 'integer'}}, 'type': 'object',
+                   'properties': {'x': {'$ref': '#/$defs/row'}}},
+                  {'type': 'array', 'items': {'$schema': 'https://json-schema.org/draft/2020-12/schema', 'type': 'integer'}}):
+        assert 'nested-dialect' in completed_output('[1]', where)['structural']['schema']['configuration_error'], 'even the same dialect: root only'
+    # An annotation payload that merely contains a "$schema" key is data, not a schema.
+    annotated = {'type': 'object', 'properties': {'x': {'type': 'integer', 'default': 1, 'examples': [{'$schema': 'data'}]}}}
+    assert completed_output('{"x": 2}', annotated)['answer'] == {'x': 2}
     # `format` is an annotation: a value that violates the named format still passes, and the receipt says so.
     formatted = completed_output('{"when": "not-a-date"}', {'type': 'object', 'properties': {'when': {'type': 'string', 'format': 'date-time'}}})
     assert formatted['answer'] == {'when': 'not-a-date'} and formatted['structural']['checks']['schema'] == 'checked'

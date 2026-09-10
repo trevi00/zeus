@@ -77,6 +77,11 @@ def preflight(schema):
         deepest[0] = max(deepest[0], depth)
         if depth > MAX_DEPTH:
             _refuse("codex-output-schema-too-deep", path, f"nesting exceeds {MAX_DEPTH}", schema_hash)
+        if "$schema" in node and path != "$":
+            # A dialect is declared once, at the root, and it is the dialect the validator runs; a nested
+            # declaration would let a subschema claim rules nobody applies (review, PR #55).
+            _refuse("codex-output-schema-nested-dialect", path,
+                    "dialect declarations are allowed only at the schema root", schema_hash)
         unsupported = sorted(key for key in node if key not in SUPPORTED_KEYWORDS)
         if unsupported:
             # A keyword nobody validates is a check that never runs: refuse it as a configuration error.
