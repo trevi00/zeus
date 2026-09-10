@@ -56,6 +56,48 @@ class InventoryEntry:
             reference(self.artifact_ref)
 
 
+OBSERVED_BASES = ('observed', 'cache', 'private_session', 'nested_repository')
+OBSERVED_PENDING_STATES = ('unreviewed_observed_asset', 'acquisition_pending',
+                           'runtime_surface_classification_pending', 'requires_content_boundary_review',
+                           'large_asset_pending_streamed_review',
+                           'effective_config_requires_redacted_schema_review')
+OBSERVED_FINAL_STATES = ('semantically_reviewed', 'excluded_private_session_or_credential_surface',
+                         'generated_cache_metadata_only')
+
+
+@dataclass(frozen=True)
+class ObservedAsset:
+    """A local asset outside Git (INV-RESEARCH-001): its own ledger, never the tracked denominator."""
+    path: str  # Base64 of raw path bytes, like InventoryEntry.
+    basis: str
+    state: str
+    sha256: str | None
+    size: int | None
+    evidence_refs: list[str]
+
+    def validate(self):
+        import base64
+        try:
+            raw = base64.b64decode(self.path, validate=True)
+        except ValueError:
+            raw = b''
+        require(bool(raw) and b'\0' not in raw and not raw.startswith(b'/')
+                and all(p not in {b'', b'.', b'..'} for p in raw.split(b'/')), 'Invalid observed asset path')
+        require(self.basis in OBSERVED_BASES, 'Unknown observed asset basis')
+        require(self.state in OBSERVED_PENDING_STATES + OBSERVED_FINAL_STATES, 'Unknown observed asset state')
+        require(self.sha256 is None or bool(re.fullmatch(r'[0-9a-f]{64}', self.sha256)), 'Invalid observed asset hash')
+        require(self.size is None or (type(self.size) is int and self.size >= 0), 'Invalid observed asset size')
+        for ref in self.evidence_refs:
+            reference(ref)
+        if self.state == 'semantically_reviewed':
+            require(self.sha256 is not None and bool(self.evidence_refs),
+                    'Reviewed observed asset requires content hash and evidence')
+
+    @property
+    def pending(self):
+        return self.state in OBSERVED_PENDING_STATES
+
+
 @dataclass(frozen=True)
 class PathDisposition:
     path: str
@@ -229,7 +271,7 @@ def require_dispatch(details):
 
 CONTRACTS = {cls.__name__: cls for cls in (
     SourceIdentity, InventoryEntry, PathDisposition, SubsystemAnalysis, ExecutionReceipt,
-    PartitionCheckpoint, AdaptationProposal, IndependentReview)}
+    PartitionCheckpoint, AdaptationProposal, IndependentReview, ObservedAsset)}
 
 
 def parse_record(document: dict):
