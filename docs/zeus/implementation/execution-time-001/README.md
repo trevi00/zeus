@@ -112,3 +112,18 @@ to exactly 0.05. The test now allows 1 ns of subtraction roundoff; the runtime
 deadline implementation is unchanged. Its 24 App Server tests and Ruff pass
 locally. The failed CI receipt and raw logs are retained, and the full CI matrix
 is rerun for the test correction.
+
+The followup WSL clone at `2ddad14aae7dfa480a7717c302afed08b1a4c22b` passed
+all 24 App Server tests, Ruff and build. Its recorded `source-equivalence` command
+verified no change to `src`, `uv.lock` or CI workflows relative to the full WSL
+validation commit. All 11 stage receipts and stream hashes verified
+(`wsl-roundoff/receipt.json`). This rerun covers the corrected assertion; the real
+PostgreSQL/Redis and full WSL evidence remains the unchanged-runtime baseline above.
+
+The second CI run, 34423578433, exposed another assumption in the same unit
+fixture: after a fixed 60 ms sleep, the runtime clock could still report time left
+in its 50 ms budget on Windows Python 3.12. The fixture now uses a one-second
+startup budget and waits until the same monotonic clock has explicitly crossed
+the observed remaining budget plus 100 ms. It no longer infers elapsed runtime
+clock time from one short sleep. This is still a transport unit fixture; no model
+turn is represented as executed. The runtime source remains unchanged.

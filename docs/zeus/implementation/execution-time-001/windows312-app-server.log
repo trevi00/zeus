@@ -1,0 +1,13 @@
+........................                                                 [100%]
+24 passed in 2.33s
+Downloading cpython-3.12.14-windows-x86_64-none (download) (21.0MiB)
+ Downloaded cpython-3.12.14-windows-x86_64-none (download)
+Downloading onnxruntime (13.4MiB)
+Downloading numpy (12.0MiB)
+Downloading pillow (6.9MiB)
+Downloading psycopg-binary (3.5MiB)
+ Downloaded psycopg-binary
+ Downloaded pillow
+ Downloaded numpy
+ Downloaded onnxruntime
+Installed 57 packages in 440ms

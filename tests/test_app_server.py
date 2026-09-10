@@ -28,13 +28,15 @@ def test_startup_spends_the_turn_budget(monkeypatch):
     calls = []
     def slow_request(method, params, timeout):
         calls.append(method)
-        # Deadline subtraction can round a 50 ms budget slightly upwards.
-        assert 0 < timeout <= 0.05 + 1e-9
-        time.sleep(0.06)
+        # Use the runtime clock itself: Windows 3.12 can quantize short sleeps.
+        assert 0 < timeout <= 1 + 1e-9
+        wait_until = time.monotonic() + timeout + 0.1
+        while time.monotonic() < wait_until:
+            time.sleep(0.01)
         return {'thread': {'id': 'unit-thread'}}
     monkeypatch.setattr(server, 'request', slow_request)
     with pytest.raises(ContractError, match='before turn start'):
-        server.run('unit fixture', str(ROOT), SCHEMA, timeout=0.05)
+        server.run('unit fixture', str(ROOT), SCHEMA, timeout=1)
     assert calls == ['thread/start']
 
 
