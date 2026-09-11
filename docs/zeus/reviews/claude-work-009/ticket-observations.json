@@ -1,0 +1,59 @@
+[
+  {
+    "issue": 1,
+    "observation": {
+      "id": "cb314ad4126313a46a211b8c563287ca5ec6414e63cca33e4b5331485cc0fc26",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "repository": "trevi00/zeus",
+      "number": 1,
+      "url": "https://github.com/trevi00/zeus/issues/1",
+      "state": "OPEN",
+      "title": "[ZEUS-ANALYSIS] Claude 로컬 하네스 전체 분석과 Zeus 흡수",
+      "purpose": "pull",
+      "evidence_ref": "sha256:cdb562413f1b880aa5394bf385eb0aa8ab64f7fc5081f5cc9e77801a6a6d3c71",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T05:49:56.563616+00:00",
+      "first_seen": "2026-09-11T05:49:56.563616+00:00",
+      "sequence": 4
+    }
+  },
+  {
+    "issue": 11,
+    "observation": {
+      "id": "27caaf49ad1cdb3427c108d047e17671fc6275bbef7fc8eb3b1c79e1cb535d67",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "repository": "trevi00/zeus",
+      "number": 11,
+      "url": "https://github.com/trevi00/zeus/issues/11",
+      "state": "OPEN",
+      "title": "[FA-010] Git 추적 밖 경험·플러그인·미커밋 노트의 분석 누락",
+      "purpose": "pull",
+      "evidence_ref": "sha256:491ca707bba1f026d678a7584b90b2478e097dcf94490b2dee2efddba4557907",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T05:49:57.225625+00:00",
+      "first_seen": "2026-09-11T05:49:57.225625+00:00",
+      "sequence": 4
+    }
+  },
+  {
+    "issue": 17,
+    "observation": {
+      "id": "b2419a1ae457ee420cdff4228ffccc394b5de1775914010886e6a323dd28b8c5",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "number": 17,
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "state": "OPEN",
+      "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:cf2bd9b6d3fb554f8940cb6908987c3d00d11945c70665c4fb4b997e2441eebd",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T05:49:57.879331+00:00",
+      "first_seen": "2026-09-11T05:49:57.879331+00:00",
+      "sequence": 9
+    }
+  }
+]

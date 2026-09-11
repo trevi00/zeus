@@ -28,8 +28,20 @@
     "sha256": "75943f57e8ec1a8dcd262ee1ec022d82475bf340815a7655fa879224c9e93107"
   },
   {
+    "path": "issue-comment.md",
+    "sha256": "81f2ce977f7b1f6c07dbf605978ee4dd11473f563126c8039f30f0974c44265f"
+  },
+  {
     "path": "pr-snapshot.json",
     "sha256": "49cea998397a3c0ab0a4a6c4064660e73f253a79da017ce5357d4902742a5725"
+  },
+  {
+    "path": "published-issues.json",
+    "sha256": "168aac2860d1426bcc791f3288d6dbb1ed3ebc999f3497977932f86654693a48"
+  },
+  {
+    "path": "published-review.json",
+    "sha256": "c17dc35b7b82f38a4875bdc1ae783e5876736c71587f9f559272cbe5d3c139ce"
   },
   {
     "path": "README.md",
@@ -46,5 +58,9 @@
   {
     "path": "test_review_boundaries.py",
     "sha256": "fcfc0cc1612bc9d674ddb05a2e76a6460ec7fa65cde78c8b775932181fdc8eef"
+  },
+  {
+    "path": "ticket-observations.json",
+    "sha256": "344f26d7ca0bcb857d72f12f4e395532dc91f5d679b42fceb4a3196749152844"
   }
 ]
