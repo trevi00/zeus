@@ -1,0 +1,893 @@
+{
+ "committed_revision": "50ebc2d3cd9fb2ab24a501d9ffeecfdbd4d0d928",
+ "coverage_tracked_paths": 2736,
+ "coverage_whole_analysis_complete": false,
+ "committed_dispositions": {
+  "baldrix": {
+   "body_reviewed_call_test_trace_pending": 356,
+   "semantically_reviewed": 900,
+   "unreviewed": 392
+  },
+  "guardian": {
+   "semantically_reviewed": 13
+  },
+  "harness": {
+   "body_reviewed_call_test_trace_pending": 248,
+   "semantic-reviewed-execution-not-attested": 93,
+   "semantically_reviewed": 264,
+   "semantically_reviewed_static_only": 61,
+   "unreviewed": 265
+  },
+  "harness-design": {
+   "body_reviewed_call_test_trace_pending": 48,
+   "semantically_reviewed": 6,
+   "unreviewed": 90
+  }
+ },
+ "adoption_status": {
+  "not_approved_not_incorporated": 2736
+ },
+ "unreviewed": {
+  "count": 747,
+  "bytes": 10829817,
+  "total_bytes": 27667767,
+  "by_source_top_level": {
+   "harness:brain": 164,
+   "baldrix:atlas": 134,
+   "baldrix:skills": 134,
+   "harness:knowledge": 62,
+   "harness-design:design": 59,
+   "baldrix:state": 48,
+   "harness:ledger": 38,
+   "harness-design:analysis": 28,
+   "baldrix:commands": 21,
+   "baldrix:templates": 17,
+   "baldrix:<root>": 14,
+   "baldrix:docs": 12,
+   "baldrix:brain": 6,
+   "baldrix:scripts": 3,
+   "baldrix:evals": 2,
+   "harness-design:knowledge": 2,
+   "baldrix:skill-bodies": 1,
+   "harness:tools": 1,
+   "harness-design:<root>": 1
+  }
+ },
+ "partitions": {
+  "partitions": 349,
+  "paths_listed": 2736,
+  "paths_listed_more_than_once": 0,
+  "ledger_paths_not_partitioned": 0,
+  "partitions_with_unreviewed": 112,
+  "rows": [
+   {
+    "partition": "harness:ledger/role-runs:001",
+    "paths": 32,
+    "unreviewed": 32,
+    "bytes": 189911,
+    "scope_sha256": "2065664f5b0dd672c7840658f252bb374b41cae109a25705c503b135dc5d28ff"
+   },
+   {
+    "partition": "baldrix:atlas/atlas-system:001",
+    "paths": 23,
+    "unreviewed": 23,
+    "bytes": 147638,
+    "scope_sha256": "ce0d0ff2f11cc00356dcaa0e4477753a607c0b0b01d1ffddc4d0651fd85b609b"
+   },
+   {
+    "partition": "harness-design:design:007",
+    "paths": 22,
+    "unreviewed": 22,
+    "bytes": 193798,
+    "scope_sha256": "fde819888b824e020fd680bac53fa61eb6d5ad1721d693b16a9075e8dbe746be"
+   },
+   {
+    "partition": "harness:brain/proposed:009",
+    "paths": 22,
+    "unreviewed": 22,
+    "bytes": 195178,
+    "scope_sha256": "ae989ca2fa3016a36028efbd096155198f1c4c5c91c8063077bc422820573e23"
+   },
+   {
+    "partition": "baldrix:skills/java:001",
+    "paths": 19,
+    "unreviewed": 19,
+    "bytes": 193214,
+    "scope_sha256": "2d70a0aa5a674b93af765ebc7dc2dc38692dda1e92477d5fc2d44f3a0055b772"
+   },
+   {
+    "partition": "baldrix:skills/typescript:001",
+    "paths": 19,
+    "unreviewed": 19,
+    "bytes": 172097,
+    "scope_sha256": "2696d456e63ac7298dda1bd5f608a4d2486cc24f76a051091ff29564d667dd0a"
+   },
+   {
+    "partition": "harness:brain/proposed:007",
+    "paths": 19,
+    "unreviewed": 19,
+    "bytes": 199928,
+    "scope_sha256": "45146bc2100952823fc9daf251d20d7a0f3bd60cbfc3f066984e4fabf5407be6"
+   },
+   {
+    "partition": "baldrix:skills/java:002",
+    "paths": 17,
+    "unreviewed": 17,
+    "bytes": 136329,
+    "scope_sha256": "3cf03446cabab031c7c6cb737f848e88a438ed4b34059501cfeb817d73eb3cb3"
+   },
+   {
+    "partition": "baldrix:state:001",
+    "paths": 17,
+    "unreviewed": 17,
+    "bytes": 195404,
+    "scope_sha256": "6b04c668b0e89523d9be94cef0f8b992c3d166005c4c2994930b7921131a9ed9"
+   },
+   {
+    "partition": "harness:brain/proposed:003",
+    "paths": 17,
+    "unreviewed": 17,
+    "bytes": 162308,
+    "scope_sha256": "a6a705828729cb2e3a2d79d681b41204f8a4eb5e4ec1ecc93ae613baa4776094"
+   },
+   {
+    "partition": "harness:brain/proposed:008",
+    "paths": 17,
+    "unreviewed": 17,
+    "bytes": 196477,
+    "scope_sha256": "7f082d3a7460a405bd9023e01d4e4332c1fdb36b709cb0ae2b7540099570ff1c"
+   },
+   {
+    "partition": "baldrix:atlas/autopilot:001",
+    "paths": 16,
+    "unreviewed": 16,
+    "bytes": 75603,
+    "scope_sha256": "f035e2200fba131102a8e1a2c43d0cefd0a274527c7051bf2bcf30b48b3484d6"
+   },
+   {
+    "partition": "baldrix:commands:001",
+    "paths": 15,
+    "unreviewed": 15,
+    "bytes": 194897,
+    "scope_sha256": "35587c42a51899a31357b39d5a93c215c97d05dd42c578fc487e5d68e0c31d02"
+   },
+   {
+    "partition": "baldrix:atlas/debate-engine:001",
+    "paths": 14,
+    "unreviewed": 14,
+    "bytes": 73922,
+    "scope_sha256": "9cadc2018531c614970166eed7940fd8b41f732641ef97f7bbf64ef11b6f51a5"
+   },
+   {
+    "partition": "baldrix:skills/_outpos:001",
+    "paths": 14,
+    "unreviewed": 14,
+    "bytes": 148372,
+    "scope_sha256": "bb3071b2b45c1f98099ee4940179da7e3a6eb38e6ab9921098f1559e2783b14c"
+   },
+   {
+    "partition": "baldrix:skills/kotlin:001",
+    "paths": 14,
+    "unreviewed": 14,
+    "bytes": 144872,
+    "scope_sha256": "c0b3e268c5785ccc6ce20a0e9aed68880a1f7c685b9cb603082c84bd694c2431"
+   },
+   {
+    "partition": "harness-design:design:006",
+    "paths": 14,
+    "unreviewed": 14,
+    "bytes": 199661,
+    "scope_sha256": "5e8439b1db337b8d02defbba4b23cdefde490a536448d8ba2b1163df640a786d"
+   },
+   {
+    "partition": "harness:brain/proposed:004",
+    "paths": 14,
+    "unreviewed": 14,
+    "bytes": 192459,
+    "scope_sha256": "c90c4a0c6f61fdb17b2baf00d8df7f2ba10802b09a97b2397e5ff18ad67caa78"
+   },
+   {
+    "partition": "harness:brain/proposed:006",
+    "paths": 14,
+    "unreviewed": 14,
+    "bytes": 198037,
+    "scope_sha256": "193b1d7c00b03e3e94c21b9b46b14092a0a4e46d028ea43767ab67ccb2a8904c"
+   },
+   {
+    "partition": "baldrix:atlas/memory-architecture:001",
+    "paths": 13,
+    "unreviewed": 13,
+    "bytes": 61380,
+    "scope_sha256": "26c7175d24abfaffefa90edd3f0ead89257c8f4c01a583dcf944e373ed744d1b"
+   },
+   {
+    "partition": "baldrix:atlas/evaluator-system:001",
+    "paths": 12,
+    "unreviewed": 12,
+    "bytes": 50214,
+    "scope_sha256": "6c00dbb5f5276dcb019c0d96372c1d570476f64ad8b5c9986739d41249f15dfd"
+   },
+   {
+    "partition": "baldrix:atlas/hook-system:001",
+    "paths": 12,
+    "unreviewed": 12,
+    "bytes": 50771,
+    "scope_sha256": "d88219281b0946023794696105d8f02392c110ac18df849900e81fed7d57c515"
+   },
+   {
+    "partition": "baldrix:atlas/skill-promotion:001",
+    "paths": 12,
+    "unreviewed": 12,
+    "bytes": 56149,
+    "scope_sha256": "fdd580d1c628f90196bff5da83719702483d3e2921ed255393d5eb5f3287e0a9"
+   },
+   {
+    "partition": "harness:brain/mockups:001",
+    "paths": 12,
+    "unreviewed": 12,
+    "bytes": 86458,
+    "scope_sha256": "c5a23401d9cb2233e08213b0a13d599ad104dc58c12e9c696b34e57d773c5531"
+   },
+   {
+    "partition": "harness:brain/patches:001",
+    "paths": 12,
+    "unreviewed": 12,
+    "bytes": 180442,
+    "scope_sha256": "47bd3f3279856d75ebbce56e600056f2932a050639ccf6e772f038543140a256"
+   },
+   {
+    "partition": "harness:knowledge/research:001",
+    "paths": 12,
+    "unreviewed": 12,
+    "bytes": 187037,
+    "scope_sha256": "4a465f6c658b1bd702ee62830dce0f0209783c89378bd6724bc3949cc17b9053"
+   },
+   {
+    "partition": "harness:knowledge/research:002",
+    "paths": 12,
+    "unreviewed": 12,
+    "bytes": 193441,
+    "scope_sha256": "215d400ebb2f88f9a26c6f0b996acc9d7dcd6c459908405c8127cda514fe2009"
+   },
+   {
+    "partition": "harness:knowledge/research:003",
+    "paths": 11,
+    "unreviewed": 11,
+    "bytes": 189683,
+    "scope_sha256": "2be3ad17e6e106785c5f4667e9b523edf8cc274cc01237ba23a98f216fe06913"
+   },
+   {
+    "partition": "baldrix:atlas/mutation-tokens:001",
+    "paths": 10,
+    "unreviewed": 10,
+    "bytes": 53188,
+    "scope_sha256": "987dcd0e9cbe577117f0539765ccd745c15268a237322d43dab4bc923ca5f5aa"
+   },
+   {
+    "partition": "baldrix:docs/subsystems:001",
+    "paths": 10,
+    "unreviewed": 10,
+    "bytes": 121471,
+    "scope_sha256": "67b1be15fefacd4fcea00266418516f08198bbdf06cfe4e87256aef5b61c3b60"
+   },
+   {
+    "partition": "baldrix:skills/_pipeline:001",
+    "paths": 10,
+    "unreviewed": 10,
+    "bytes": 65670,
+    "scope_sha256": "a7f3db819b2c00a0f4baabf6f8812037e3b05cdbc07a8a221a5ae1e3c96ce521"
+   },
+   {
+    "partition": "harness:brain/patches:002",
+    "paths": 10,
+    "unreviewed": 10,
+    "bytes": 98045,
+    "scope_sha256": "9001735b4005d62e1b71db7c040df920118bea15593e76c6b839b820bfd55393"
+   },
+   {
+    "partition": "harness:brain/proposed:005",
+    "paths": 10,
+    "unreviewed": 10,
+    "bytes": 88952,
+    "scope_sha256": "de62a377c020212136cf1f49fdfd0a641bd029973f57e0dbb3ebf934f06c6b14"
+   },
+   {
+    "partition": "harness:knowledge/research:004",
+    "paths": 10,
+    "unreviewed": 10,
+    "bytes": 192235,
+    "scope_sha256": "17dbaf24b3a99a274437c35c44a93eab508216197b7638e40e1a005d3bb110c5"
+   },
+   {
+    "partition": "baldrix:templates/prd:001",
+    "paths": 9,
+    "unreviewed": 9,
+    "bytes": 19084,
+    "scope_sha256": "ed28efe83c3cea07408915b3082fa692b4299dc0cacfa61fa2b5a710248b54e6"
+   },
+   {
+    "partition": "baldrix:atlas/seam-registry:001",
+    "paths": 8,
+    "unreviewed": 8,
+    "bytes": 36673,
+    "scope_sha256": "5b8ea4d3bc33bcbcc9d0a4792d4002faf592afe39cec0fc160c3a70992bbe039"
+   },
+   {
+    "partition": "baldrix:state/operator-pending:001",
+    "paths": 8,
+    "unreviewed": 8,
+    "bytes": 67889,
+    "scope_sha256": "53773a8de4416225b5992eba5489606d4ece440b11f083bb5dd9bf3f3272299c"
+   },
+   {
+    "partition": "harness:brain/spikes:001",
+    "paths": 8,
+    "unreviewed": 8,
+    "bytes": 145849,
+    "scope_sha256": "958e00ad9984befa98b0a160f2ed3e11f0c327dc2fc010fadd3532dec80f0ab3"
+   },
+   {
+    "partition": "harness:knowledge/research:005",
+    "paths": 8,
+    "unreviewed": 8,
+    "bytes": 175651,
+    "scope_sha256": "a938dc7456b59f8d8bccf6dc81d6d0545124d8bfed1384c7f4a11e4ce3a8d29a"
+   },
+   {
+    "partition": "baldrix:atlas/dge-cycle:001",
+    "paths": 7,
+    "unreviewed": 7,
+    "bytes": 26557,
+    "scope_sha256": "f70784ce98857c1fb71a9aa08c7d23f32cfa62c8a9556a65d589c92920c3f36b"
+   },
+   {
+    "partition": "baldrix:root:001",
+    "paths": 7,
+    "unreviewed": 7,
+    "bytes": 198783,
+    "scope_sha256": "d7352ef8e93dbbd5d4557619cba788ed41be5c855acc4729efe71c1d88d7f78c"
+   },
+   {
+    "partition": "baldrix:root:002",
+    "paths": 7,
+    "unreviewed": 7,
+    "bytes": 119531,
+    "scope_sha256": "8e2b6bb429f147c33f9523b5490bdbd4e07afc85f135b3059c570cf9e40af8d4"
+   },
+   {
+    "partition": "baldrix:skills/kookmin-sanghoe:001",
+    "paths": 7,
+    "unreviewed": 7,
+    "bytes": 104677,
+    "scope_sha256": "a48b77c1febe8ff262691a156b0df76fbdfae06ff151fead793a620996df289d"
+   },
+   {
+    "partition": "harness:knowledge/research:006",
+    "paths": 7,
+    "unreviewed": 7,
+    "bytes": 175571,
+    "scope_sha256": "04b889652efa10f199fd9348cce4aaa24730cb82381bd7325a1be399f363a54d"
+   },
+   {
+    "partition": "baldrix:commands:002",
+    "paths": 6,
+    "unreviewed": 6,
+    "bytes": 47246,
+    "scope_sha256": "a6b4e231f89376fb3f53d69245168056c9676e82539e8ab6685c12a86fba0894"
+   },
+   {
+    "partition": "baldrix:skills/data:001",
+    "paths": 6,
+    "unreviewed": 6,
+    "bytes": 34854,
+    "scope_sha256": "0f33b2a8b2babf6780c9d39e4d20b3fc90ff154f29746426db2bf9ffdc56dbf2"
+   },
+   {
+    "partition": "baldrix:skills/mobile:001",
+    "paths": 6,
+    "unreviewed": 6,
+    "bytes": 72979,
+    "scope_sha256": "4daa717c8424c4ca557877b88f745e9be6642e30dc698111875f3871a6292967"
+   },
+   {
+    "partition": "baldrix:skills/dart:001",
+    "paths": 5,
+    "unreviewed": 5,
+    "bytes": 38233,
+    "scope_sha256": "5ef1dddeadf91442d6fa58b4a8528d1b6a3e678f77f58bfaa948757962987e5f"
+   },
+   {
+    "partition": "baldrix:skills/infra:001",
+    "paths": 5,
+    "unreviewed": 5,
+    "bytes": 25156,
+    "scope_sha256": "bcb22bea8c155f717e868674b326477968f17719d232189d8f6c6f1a8d509f59"
+   },
+   {
+    "partition": "baldrix:skills/ml:001",
+    "paths": 5,
+    "unreviewed": 5,
+    "bytes": 23906,
+    "scope_sha256": "7e2914ef4e29c2d0bd91fdaa7e1b521fb33bf50faa859bc54e9b7ba2c6659757"
+   },
+   {
+    "partition": "baldrix:atlas/_meta:001",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 19436,
+    "scope_sha256": "20a5983ea31a7aad75a0a1879746089e2046b560362fe97c42e0a51989474344"
+   },
+   {
+    "partition": "baldrix:state/outpos-analysis:001",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 113978,
+    "scope_sha256": "dff75fd31d74a16cf517d0e8d5ad89acf9c8eb4a67e746f9bbeebb46e282f2cf"
+   },
+   {
+    "partition": "baldrix:state/outpos-develop-analysis:001",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 90662,
+    "scope_sha256": "828fd4c5be04c19bd8247389f7f5afb986268586efcbadb0e64994bfead7735d"
+   },
+   {
+    "partition": "baldrix:state/swarm-research:001",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 24032,
+    "scope_sha256": "498e54ddcdc9a12b18e5dc51de110d057b383f36ae150450f8379279e22fff36"
+   },
+   {
+    "partition": "baldrix:state/wating-analysis:001",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 67793,
+    "scope_sha256": "40ba8e9cbe7e68e14af3576a306cefd7545408be704131a3e1171d707891fbe2"
+   },
+   {
+    "partition": "harness-design:analysis/web:001",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 130238,
+    "scope_sha256": "d08cab19d51db14c96c2417272a778762012a26abdc54810f0dd55ca0a68c1d2"
+   },
+   {
+    "partition": "harness-design:analysis:003",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 177893,
+    "scope_sha256": "bd254a0bff4ee1ddf904da22a0860e26573ecc01f577d1b2e76a686434405673"
+   },
+   {
+    "partition": "harness-design:analysis:006",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 178807,
+    "scope_sha256": "ea0c24638094614429035eaefcc646b1ba3b4df1851dbcab97545eb5b53ee480"
+   },
+   {
+    "partition": "harness-design:design:008",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 129654,
+    "scope_sha256": "cfd8aac7c3b313f1d1903dd3166feea0e1d4b66954b4c59d0e4a69100fcb5249"
+   },
+   {
+    "partition": "harness:brain/proposed:010",
+    "paths": 4,
+    "unreviewed": 4,
+    "bytes": 28527,
+    "scope_sha256": "0ad6432ff0c16fc514b3ac7937ed36793b6ed8b57268f8ac4f223c17be77b4ae"
+   },
+   {
+    "partition": "baldrix:brain/l2:001",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 4005,
+    "scope_sha256": "7c2f3b4e0701920f2213bae11d5053c3b743f32f167830728c7d2f88c803a519"
+   },
+   {
+    "partition": "baldrix:skills/systems:001",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 13449,
+    "scope_sha256": "9b0c38c01cc4e03e8d296c313f6650cc55e7f25e24d3360c762ff98d049f2e27"
+   },
+   {
+    "partition": "baldrix:templates/flowchart:001",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 10213,
+    "scope_sha256": "0c326c62a656e268679e5f423113c3da4412b5c82be7e496749842b573038820"
+   },
+   {
+    "partition": "harness-design:analysis/claude-khaness:001",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 154999,
+    "scope_sha256": "227a5caa709efbe18c294e3098d655dae43360d928440df314627298b87ec40a"
+   },
+   {
+    "partition": "harness-design:analysis:001",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 175710,
+    "scope_sha256": "ef2b79c1515e4b16c9bb0839815cca3e82367a2e40597bbc3f88edb125dde42d"
+   },
+   {
+    "partition": "harness-design:analysis:002",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 167666,
+    "scope_sha256": "c4bb33c3fdf2b982d23eba42af55a66ac2905498769b0a7b884261d2c67a2929"
+   },
+   {
+    "partition": "harness-design:analysis:004",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 157460,
+    "scope_sha256": "368f49973e1688d1c8df987d863d9710a466032d0b610e9cfc3301318e2fa7e2"
+   },
+   {
+    "partition": "harness-design:analysis:005",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 158404,
+    "scope_sha256": "e35ececf84796bab451a9815091d9368050f00f9530089564ef16c5f2d2ffbca"
+   },
+   {
+    "partition": "harness-design:design:002",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 186156,
+    "scope_sha256": "ad3ea3555e7e0c4f640b8eb1dcc946365ce92070a5a46f0173a37787ef335df3"
+   },
+   {
+    "partition": "harness-design:design:004",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 188136,
+    "scope_sha256": "18649e2865e5653ef9922b2a5f213d1f3902bd894ea299f90645a88048142e32"
+   },
+   {
+    "partition": "harness-design:design:005",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 190959,
+    "scope_sha256": "b9bb42dfefb089afd8de9a60b4ee7d100ee08863c93de48580d2fac0f007032f"
+   },
+   {
+    "partition": "harness-design:design:009",
+    "paths": 4,
+    "unreviewed": 3,
+    "bytes": 157601,
+    "scope_sha256": "77a85e128d7805daec21940cf36314c87672d14163ff3d2ded23be56e7f71988"
+   },
+   {
+    "partition": "harness:ledger/role-runs:002",
+    "paths": 3,
+    "unreviewed": 3,
+    "bytes": 19649,
+    "scope_sha256": "8fb25dd8d65ad802302b736e98631350f964d05bc8fa89a04e59240da66f1c5b"
+   },
+   {
+    "partition": "baldrix:atlas/_common:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 3080,
+    "scope_sha256": "cbfbf8799d092d4b3157333fde51f9bdb011572991a1a3cd8ac8edb23e2f4321"
+   },
+   {
+    "partition": "baldrix:evals/router:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 4068,
+    "scope_sha256": "ef34ba0eae9934b7fc060333275ff63b937d149df49fa7b940de6cc3ef986417"
+   },
+   {
+    "partition": "baldrix:scripts/lib/replay:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 1337,
+    "scope_sha256": "bbde993097419b12d9c7b71af59c884e99a19da99ec2695039e2ff0e70d41868"
+   },
+   {
+    "partition": "baldrix:skills/external:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 2648,
+    "scope_sha256": "33834a0fdd32a263044570817b4ff4bfd544a1f20cf9a6a7acd41796ed7a91b5"
+   },
+   {
+    "partition": "baldrix:state/decisions:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 10325,
+    "scope_sha256": "d7e613e1b8437dda953ff50ce543adc9677cadeffcbcd1c9d5e6301e181b6201"
+   },
+   {
+    "partition": "baldrix:templates/skill:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 3729,
+    "scope_sha256": "be67a610adcea755123863b58bd57f935ee646460e12a9765c0693d0acc5df0e"
+   },
+   {
+    "partition": "harness-design:design/components:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 7542,
+    "scope_sha256": "12379243cb2821c971f38a639060f795063d7126158b05896548f9078e119430"
+   },
+   {
+    "partition": "harness-design:design:001",
+    "paths": 4,
+    "unreviewed": 2,
+    "bytes": 119109,
+    "scope_sha256": "bc364a2ba74272191d7ce7a1cba9bfafbffa2489aa8b3750041fc47b2eb3aed2"
+   },
+   {
+    "partition": "harness-design:design:003",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 183463,
+    "scope_sha256": "11656b721edfe0741759b21b8ecb46f625b5e2388173a1f7e762944c78da448c"
+   },
+   {
+    "partition": "harness-design:knowledge/prompts-chat:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 24993,
+    "scope_sha256": "99c421bba9aef2e250760f2b5ac4bb9fa9a638ede420c8ef2bafd8584e123834"
+   },
+   {
+    "partition": "harness:brain/drafts:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 39161,
+    "scope_sha256": "c7bbe2b1e9165f473e5451280512258203fd50f5a031e5313bc93faa6b709725"
+   },
+   {
+    "partition": "harness:brain/patches:004",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 26694,
+    "scope_sha256": "dd631d011ed4987bc1b9734e6d229b476d2a648772de29a18858b5a2a350afcd"
+   },
+   {
+    "partition": "harness:ledger/evolve:001",
+    "paths": 2,
+    "unreviewed": 2,
+    "bytes": 12721,
+    "scope_sha256": "b122fef4dc97d280a25a6af9a83572f086e3b4379b6957203dbf639735d08f68"
+   },
+   {
+    "partition": "baldrix:atlas:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 5888,
+    "scope_sha256": "193f9f34a29a9a567aa5e538e8c45f893576d516517d90e06e220ca6759e6d69"
+   },
+   {
+    "partition": "baldrix:brain/graduation:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 247,
+    "scope_sha256": "72961f95b1f63bbb0bd69b0e02d24fac6dfe9644e8aa6643944db2d42003b5cd"
+   },
+   {
+    "partition": "baldrix:brain/l1:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 58314,
+    "scope_sha256": "ab3eea6ff46da0f0c746dc2582f9198c0c33d91296f9a404c025d3bd2499171b"
+   },
+   {
+    "partition": "baldrix:brain/l1:002",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 502041,
+    "scope_sha256": "b5ce6862ab45620b24d082c6480d903d98a9d8cd62b4bbd751ccb4dba45d048d"
+   },
+   {
+    "partition": "baldrix:docs/runbooks:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 10074,
+    "scope_sha256": "355e2d600b1adaa1f26250b03c89ace287e32cb8d5c0ca2cb84e6de25306590d"
+   },
+   {
+    "partition": "baldrix:docs:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 15159,
+    "scope_sha256": "10f67f0af8436011ffc952fff660d4bd8c14f4c38e18b378ff3fb9cef3a521ed"
+   },
+   {
+    "partition": "baldrix:scripts/operator:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 6000,
+    "scope_sha256": "2b823706d26559d1e3bf0a541aca70bbc17e4f6b65120953ef3519c9bd6058f2"
+   },
+   {
+    "partition": "baldrix:skill-bodies:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 6262,
+    "scope_sha256": "447219922fb36932d146b9dbf0e90537d1b9beac093bff72e683d1e0096af746"
+   },
+   {
+    "partition": "baldrix:skills/gsd-skill-promotion-runbook:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 9470,
+    "scope_sha256": "7efc8091691b4e4a7955d836257053722f9576faf496eef1636c783ab19987d9"
+   },
+   {
+    "partition": "baldrix:skills/register-to-artifacthub:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 12989,
+    "scope_sha256": "422e7ee6182e85dde1480dbbd0f5d859716b2da6f292746ae3f5811084936942"
+   },
+   {
+    "partition": "baldrix:state/analysis:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 12014,
+    "scope_sha256": "febabee4b0d07f7f8db90ddba51d3f8d23addfdeed14e0e2e348fae81946d53d"
+   },
+   {
+    "partition": "baldrix:state/outpos-violations:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 9145,
+    "scope_sha256": "e35f0e30ee3a57898ed15aed7f4f50e62520e9c891b7e21e9f963bee7014e939"
+   },
+   {
+    "partition": "baldrix:state/residual_norm:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 707,
+    "scope_sha256": "44e1ade4b7df61d050bbbaf3be25fcce7861ea5228351ba27b597f2369a70325"
+   },
+   {
+    "partition": "baldrix:state:002",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 271535,
+    "scope_sha256": "8f71b51ddf6a51c957a796f73cae5c2b4883c8f71250b206b39adfa3d777b0b8"
+   },
+   {
+    "partition": "baldrix:state:003",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 48078,
+    "scope_sha256": "30f7c32b8d3eff58fe0329a3cdbab05358710bbdd091efc56c393cf15fec943f"
+   },
+   {
+    "partition": "baldrix:templates/convention:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 5940,
+    "scope_sha256": "fbaf7bc1a1a9185f6b1a6ed957f06ad8c0395b9ed6cac7d7d0b0fcf7f22955e2"
+   },
+   {
+    "partition": "baldrix:templates/hook:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 2249,
+    "scope_sha256": "5db08676245de8df649816bf86095bbcd77c2a5d9d05540d7e948b909a6bfdba"
+   },
+   {
+    "partition": "baldrix:templates:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 10324,
+    "scope_sha256": "44ed792b3ba8bff02659675ae76c1a5a4068aec0244bb36b959129a0556bac48"
+   },
+   {
+    "partition": "harness-design:analysis:007",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 53912,
+    "scope_sha256": "ef7c6da1133afa03f6c2bba6d3eaaf602e9f3ff0152c773128c180627aeb6d07"
+   },
+   {
+    "partition": "harness-design:design/reference:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 6570,
+    "scope_sha256": "581c1d057562a033f01c8a6281b3dcdd24b2cc42ac4e827c66f6f8ab252fed85"
+   },
+   {
+    "partition": "harness-design:root:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 256,
+    "scope_sha256": "086054bff16e1f6f4f6ef7792306523ec0b806acdcc5a6e4c3cbc77d54e68eab"
+   },
+   {
+    "partition": "harness:brain/patches:003",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 181632,
+    "scope_sha256": "24c8a08460e015e3164db0f447c7f913c5589eedc8c88c76703245a8d1b37802"
+   },
+   {
+    "partition": "harness:knowledge/decisions:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 12914,
+    "scope_sha256": "278b5e16cf9eee4ac339f2dd4137f9e1e0d4017e4983cb1437bf4fce26e59bac"
+   },
+   {
+    "partition": "harness:knowledge/research:007",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 39584,
+    "scope_sha256": "e829f90bea368cd56d4dea672e237fd1702706d62c79b618be1bb6d46496afc8"
+   },
+   {
+    "partition": "harness:ledger:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 470537,
+    "scope_sha256": "e4e2a7cfc351a7ab59e153e3eca23f13b69946b16e25ebe2f5a413a6a51f5e65"
+   },
+   {
+    "partition": "harness:tools:001",
+    "paths": 1,
+    "unreviewed": 1,
+    "bytes": 9652,
+    "scope_sha256": "4af674bea2a2bd37eb4a67aa7fae630f7f85a860450806d466d8bd9858c15756"
+   }
+  ]
+ },
+ "live_checkout": "C:\\Users\\rudtn\\zeus",
+ "live_dispositions": {
+  "baldrix": {
+   "body_reviewed_call_test_trace_pending": 356,
+   "semantically_reviewed": 923,
+   "unreviewed": 369
+  },
+  "guardian": {
+   "semantically_reviewed": 13
+  },
+  "harness": {
+   "body_reviewed_call_test_trace_pending": 265,
+   "semantic-reviewed-execution-not-attested": 93,
+   "semantically_reviewed": 264,
+   "semantically_reviewed_static_only": 61,
+   "unreviewed": 248
+  },
+  "harness-design": {
+   "body_reviewed_call_test_trace_pending": 48,
+   "semantically_reviewed": 6,
+   "unreviewed": 90
+  }
+ },
+ "live_diff": {
+  "committed_entries": 2736,
+  "live_entries": 2736,
+  "changed_entries": 40,
+  "transitions": [
+   {
+    "source": "baldrix",
+    "from": "unreviewed",
+    "to": "semantically_reviewed",
+    "review_records": "docs/full-analysis/baldrix-atlas-system-001/files.json",
+    "count": 23
+   },
+   {
+    "source": "harness",
+    "from": "unreviewed",
+    "to": "body_reviewed_call_test_trace_pending",
+    "review_records": "docs/full-analysis/harness-proposed-003/files.json",
+    "count": 17
+   }
+  ]
+ }
+}
