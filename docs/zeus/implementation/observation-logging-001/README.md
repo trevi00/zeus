@@ -154,6 +154,12 @@ ack/health/termination은 임시 파일 + `os.replace`(양쪽 모두 원자)로 
 | Windows 11, 호스트 증거 2차 (head `e367003`) | 같은 러너 | **통과**: ruff 0.1s; full-suite-integration 1495 passed, 14 skipped (420.2s); disposable-docker-checks 17 passed (61.8s). 관측 테스트 파일별: contract 16, spool 5, observations 19, wiring 11 passed, skip 0. 격리 스택 `harness-evidence-windows-11-793e601e`, 임시 포트, 종료 후 정리. 영수증 `windows-11-receipt.json`(tracked_changes [], untracked []) |
 | WSL Ubuntu 26.04 (WSL2 kernel 6.18), 호스트 증거 (head `e367003`) | `~/.local/bin/uv run python scripts/environment_evidence.py --label wsl-ubuntu-26.04 --out docs/zeus/evidence/environment-runs-003` (WSL fs 클론 `~/zeus-evidence`, 같은 커밋) | **통과**: ruff; full-suite-integration 1501 passed, 8 skipped (140.8s); disposable-docker-checks 17 passed (53.6s). 관측 테스트 파일별: contract 16, spool 5, observations 19, wiring 11 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-bf2f7d72`. 영수증 `wsl-ubuntu-26.04-receipt.json`(tracked_changes [], untracked []) |
 
+GitHub Actions (head `9b7156d`): ubuntu 3.12/3.14와 integration 잡은 통과, windows 잡 4개 중 3개가
+`test_real_child_processes_…[memory]`에서 실패했다. 공유 러너에서 자식 프로세스의 import가 0.4초보다
+오래 걸려 kill 시점에 스풀 파일이 아직 없었다(타이밍 결함은 테스트에 있고 런타임 코드는 같다).
+다음 커밋에서 kill을 "첫 완료 레코드가 관측된 뒤"로 바꿔 결정적으로 만들었다. 이 수정은 테스트
+파일만 바꾸므로 위 호스트 영수증(head `e367003`)은 런타임 코드에 대해 그대로 유효하다.
+
 공개 산출물 검사: 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
 (러너가 실행별 비밀번호를 scrub한 뒤 기록). 이 검사는 grep으로 했고 결과를 PR 본문에 적었다.
 

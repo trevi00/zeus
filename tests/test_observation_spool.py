@@ -124,13 +124,19 @@ def test_real_child_processes_concurrent_kill_and_partial_tail_lose_no_complete_
                                        env=dict(os.environ, PYTHONIOENCODING="utf-8"),
                                        creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
                 for mode in ("a", "b", "partial", "killed")}
-    time.sleep(0.4)
+    directory = SpoolDirectory(root)
+    killed_path = root / "spool" / (runs["killed"] + ".jsonl")
+    deadline = time.monotonic() + 90  # slow CI runners take seconds to import; kill only once it is producing
+    while time.monotonic() < deadline:
+        if killed_path.exists() and any(row[2] == "complete" for row in directory.read(killed_path)):
+            break
+        assert children["killed"].poll() is None, "the producer to be killed exited on its own"
+        time.sleep(0.05)
     children["killed"].kill()
     results = {mode: child.communicate(timeout=60) for mode, child in children.items()}
     assert children["a"].returncode == 0 and children["b"].returncode == 0, results
     assert children["partial"].returncode == 3
     assert children["killed"].returncode != 0
-    directory = SpoolDirectory(root)
     files = {path.stem: path for path in directory.spool_files()}
     assert set(files) == set(runs.values())
     killed_rows = list(directory.read(files[runs["killed"]]))
