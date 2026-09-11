@@ -304,14 +304,16 @@ class Observer:
         return record
 
     def _record_alert(self, record, tx=None) -> bool:
+        # The stored row says how it got there; the caller's copy is updated only after success.
+        stored = {**record, "notification": {"status": "recorded", "channel": "postgres:" + ALERT_BUCKET}}
         try:
             if tx is not None:
-                tx.put(ALERT_BUCKET, record["event_id"], record)
+                tx.put(ALERT_BUCKET, record["event_id"], stored)
                 return True
             if self.store is None:
                 return False
             with self.store.transaction() as sink:
-                sink.put(ALERT_BUCKET, record["event_id"], record)
+                sink.put(ALERT_BUCKET, record["event_id"], stored)
                 self._flush_pending(sink)
             self._sink("available")
             return True

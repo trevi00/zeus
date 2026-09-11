@@ -158,7 +158,8 @@ def test_spool_saturation_is_counted_and_alerted_not_silently_dropped(tmp_path, 
     assert o.counters["alerts_recorded"] + o.counters["alerts_suppressed"] >= 1
     assert SpoolDirectory(root).read_health()[0]["counters"]["dropped_spool_full"] == dropped
     with store.transaction() as tx:
-        assert any(a["event_type"] == "operations.spool_saturated" for a in tx.scan("observation_alerts"))
+        saturated = [a for a in tx.scan("observation_alerts") if a["event_type"] == "operations.spool_saturated"]
+    assert saturated and all(a["notification"]["status"] == "recorded" for a in saturated), "the stored row says recorded"
 
 
 def test_alert_storms_are_rate_limited_per_kind_and_key(tmp_path, store):
@@ -263,9 +264,11 @@ def test_real_postgres_connection_refusal_is_a_sink_outage(tmp_path, isolated_pg
     o = file_observer(tmp_path, unreachable, alert_window_seconds=0)
     record = o.alert("sink_unavailable", "postgres", attributes={"sink": "postgres", "error_type": "probe", "pending": 0})
     assert record["notification"]["status"] == "pending" and o.sink_state == "unavailable"
+    assert len(o.pending_alerts) == 2, "the explicit alert plus the observer's own sink_unavailable alert"
     o.store = isolated_pgstore
     later = o.alert("spool_saturated", "k", attributes={"bytes": 1, "limit_bytes": 1, "dropped": 1})
     assert later["notification"]["status"] == "recorded" and not o.pending_alerts
     with isolated_pgstore.transaction() as tx:
-        statuses = sorted(a["notification"]["status"] for a in tx.scan("observation_alerts"))
-    assert statuses == ["recorded", "recorded_after_recovery"]
+        rows = {a["event_id"]: a["notification"]["status"] for a in tx.scan("observation_alerts")}
+    assert rows[later["event_id"]] == "recorded"
+    assert sorted(rows.values()) == ["recorded", "recorded_after_recovery", "recorded_after_recovery"]
