@@ -31,13 +31,32 @@
 
 | 호스트 | head | 전체 스위트 (PG+Redis, 격리 환경) | 일회용 Docker 검사 | ruff | identity_stable | 영수증 |
 |---|---|---|---|---|---|---|
-| Windows 11 | WIN_HEAD | WIN_FULL | WIN_DOCKER | WIN_RUFF | WIN_IDENTITY | [windows-11-receipt.json](windows-11-receipt.json) |
-| WSL2 Ubuntu 26.04 | WSL_HEAD | WSL_FULL | WSL_DOCKER | WSL_RUFF | WSL_IDENTITY | [wsl-ubuntu-26.04-receipt.json](wsl-ubuntu-26.04-receipt.json) |
+| Windows 11 | `d925e01` | **1441 passed, 14 skipped** (374s) | **17 passed** (56s) | 통과 | ok (PG xact_commit +9608, Redis commands +12650) | [windows-11-receipt.json](windows-11-receipt.json) |
+| WSL2 Ubuntu 26.04 | `d925e01` | **1447 passed, 8 skipped** (124s) | **17 passed** (49s) | 통과 | ok (PG xact_commit +9427, Redis commands +12566) | [wsl-ubuntu-26.04-receipt.json](wsl-ubuntu-26.04-receipt.json) |
+
+두 호스트 모두 `passed=true`: 8단계 전부 ok, 각 실행이 만든 프로젝트만 제거되고 잔여물 없음, `.env`는 이전 내용으로 복원, 파일별 계수는
+89개 테스트 파일에 대해 기록됨. 일회용 Docker 검사 17건에는 이번에 추가한 호스트 포트 연결 대기 검사가 포함됩니다. Windows 영수증의
+`tracked_changes`에는 실행 시작 시점의 작업트리 상태로 이 evidence 디렉터리 안의 attempt 파일 이동(제 정리 실수로 잠시 attempt-3 파일이
+덮여 있던 상태)이 적혀 있습니다 — 실행 입력(러너·compose·override·uv.lock·pyproject)의 digest는 head와 같고, 그 상태는 커밋 전에 git으로
+복원했습니다. 영수증은 사후에 고치지 않았습니다.
+
+### 시도 기록 (모두 러너가 `passed=false`·exit 1로 기록, 디렉터리에 그대로 보존)
+
+| 시도 | 결과 | 원인 | 조치 |
+|---|---|---|---|
+| attempt-1 (Windows, `7fd152a`) | 4 failed | 러너가 `*_REPOSITORY`/`*_RUNTIME_DIR`까지 환경변수로 고정해 configuration/supervisor 검사를 덮어씀 | 서비스 설정만 고정 |
+| attempt-2 (Windows, `5b1379a`) | 1 failed | DB를 환경변수로 고정해 명시 저장소의 `.env`를 읽는 검사와 충돌; 로그에 실행별 비밀번호 1회 노출 | `.env`로 고정(CI 방식), 로그 치환 |
+| attempt-3 (Windows, `5ed6bc8`) | 통과했으나 `per_file`이 1개 파일로 뭉침 | xunit2 junit에 `file` 속성이 없음 | classname에서 모듈 도출 |
+| attempt-3 (WSL, `5ed6bc8`) | stack_up 실패 | 라벨의 `.`이 compose 프로젝트 이름에 불허 | 이름 정규화 |
+| attempt-4 (WSL, `ce95566`) | Docker 검사 2 errors | `up --wait` 뒤에도 호스트 포트가 잠시 `Connection refused` | `VerificationServices`가 연결 가능할 때까지 유계 대기 (`d925e01`) |
+| attempt-5 (Windows, `ce95566`) | 통과 (참고용) | 포트 대기 수정 전 Windows 실행 | 최종 실행으로 대체 |
 
 ## 이슈별 대응 (테스트 노드 / 실제 서비스 / 실패 주입 / 미실행)
 
 요약 통과 수는 이슈의 종료 조건을 채우지 않습니다. 아래는 각 이슈의 잔여 조건 중 "호스트별 실제 환경" 부분에 이 실행이 제공하는 것과
-제공하지 않는 것입니다. 파일별 계수는 영수증 `per_file`에 있습니다.
+제공하지 않는 것입니다. 파일별 계수(두 호스트 동일): skill_routing 17, git_workspace 7, release_runner 6, execution_progress 2, breaker 14,
+evidence_inspection 8, check_binding 7, verification 10(+1 skip, 일회용 Docker 단계에서 실행), host_interruption 1(+5 skip, 일회용 Docker
+단계에서 실행), integration 26 — 전부 passed. 전체는 영수증 `per_file`.
 
 | 이슈 | 이 실행이 다루는 테스트 파일 | 실제 서비스 / 실패 주입 | 제공하지 않는 것 |
 |---|---|---|---|
