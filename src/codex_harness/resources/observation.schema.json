@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:zeus:observation:1",
+  "title": "Zeus observation event (general / development / operations log record)",
+  "description": "An observation is evidence about something that happened. It is not a six-W business message: it has no who/what/how sections, it cannot assign work, and it grants no authority (INV-OBSERVATION-001).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "event_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "category": {"enum": ["general", "development", "operations"]},
+    "event_type": {"type": "string", "pattern": "^(general|development|operations)\\.[a-z][a-z0-9_]{1,63}$"},
+    "severity": {"enum": ["debug", "info", "warning", "error", "critical"]},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "component": {"type": "string", "minLength": 1, "maxLength": 80},
+        "host": {"type": ["string", "null"], "maxLength": 255},
+        "pid": {"type": ["integer", "null"], "minimum": 0}
+      },
+      "required": ["component", "host", "pid"]
+    },
+    "observed_at": {"type": "string", "format": "date-time"},
+    "occurred_at": {"type": ["string", "null"], "format": "date-time"},
+    "correlation_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+    "causation_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["execution", "system"]},
+        "role": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+        "provider": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+        "process_run_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+        "session_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+        "bucket": {"enum": ["tasks", "decisions_pending", null]},
+        "task_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+        "generation": {"type": ["integer", "null"], "minimum": 0},
+        "attempt": {"type": ["integer", "null"], "minimum": 0},
+        "invocation_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+        "revision": {"type": ["string", "null"], "minLength": 1, "maxLength": 255}
+      },
+      "required": ["kind", "role", "provider", "process_run_id", "session_id", "bucket", "task_id",
+                   "generation", "attempt", "invocation_id", "revision"],
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "execution"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "role": {"type": "string"},
+              "task_id": {"type": "string"},
+              "bucket": {"enum": ["tasks", "decisions_pending"]},
+              "generation": {"type": "integer"},
+              "attempt": {"type": "integer"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "system"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "task_id": {"type": "null"},
+              "session_id": {"type": "null"},
+              "bucket": {"type": "null"},
+              "generation": {"type": "null"},
+              "attempt": {"type": "null"},
+              "invocation_id": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "sequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "process_run_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+        "number": {"type": ["integer", "null"], "minimum": 1},
+        "basis": {"enum": ["spool_append", "unassigned"]}
+      },
+      "required": ["process_run_id", "number", "basis"]
+    },
+    "outcome": {"enum": ["started", "succeeded", "failed", "aborted", "blocked", "unknown", "observed"]},
+    "reason_code": {"type": ["string", "null"], "pattern": "^[A-Za-z][A-Za-z0-9_]{0,79}$"},
+    "evidence_refs": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {"type": "string", "minLength": 1, "maxLength": 255}
+    },
+    "attributes": {"type": "object"},
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "applied": {"const": true},
+        "findings": {"type": "integer", "minimum": 0},
+        "truncated": {"type": "integer", "minimum": 0}
+      },
+      "required": ["applied", "findings", "truncated"]
+    }
+  },
+  "required": ["schema_version", "event_id", "category", "event_type", "severity", "source", "observed_at",
+               "occurred_at", "correlation_id", "causation_id", "execution", "sequence", "outcome",
+               "reason_code", "evidence_refs", "attributes", "redaction"]
+}

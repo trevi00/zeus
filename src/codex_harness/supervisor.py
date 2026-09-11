@@ -1,6 +1,7 @@
 """Docker-host supervision, wake-on-message and release recovery without an LLM."""
 import argparse
 import json
+import sys
 import threading
 import time
 from datetime import datetime, timezone
@@ -23,7 +24,7 @@ from codex_harness.adapters.maintenance import ArtifactMaintenance
 from codex_harness.adapters.verification import VerificationServices
 from codex_harness.application.release_queue import ReleaseQueue
 from codex_harness.application.scheduling import schedule_research
-from codex_harness.bootstrap import build, build_executor, redis_url
+from codex_harness.bootstrap import build, build_executor, build_observer, redis_url
 from codex_harness.domain.model import ContractError, utcnow
 from codex_harness.domain.policy import POLICY
 
@@ -106,7 +107,7 @@ def deploy_queued(service, executor):
     print(json.dumps({"release": claim["id"], "result": result}), flush=True)
 
 
-def tick(research=False, releases=False):
+def tick(research=False, releases=False, observer=None):
     global release_thread, source_thread, maintenance_thread, last_maintenance
     root, runtime = repository_root(), runtime_dir()
     compose_env = compose_environment()
@@ -122,10 +123,14 @@ def tick(research=False, releases=False):
         if ready.returncode:
             raise RuntimeError(ready.stderr)
     service = build()
+    # INV-OBSERVATION-001: supervisor decisions are operations-log system events (no task).
+    observer = observer or build_observer(service.store, "supervisor")
+    if observer.store is None:
+        observer.store = service.store
     bus = RedisBus(redis_url())
     if research:
         schedule_research(service)
-    service.flush_outbox(bus)
+    service.flush_outbox(bus, audit=observer.audit_system)
     now = datetime.now(timezone.utc)
     with service.store.transaction() as tx:
         tasks = tx.scan("tasks") + tx.scan("decisions_pending")
@@ -156,6 +161,7 @@ def tick(research=False, releases=False):
             maintenance_thread = threading.Thread(target=maintain_views,
                 args=(service, executor, bus, root, runtime), daemon=True)
             maintenance_thread.start()
+    backlog_total = 0
     for agent, name in TARGETS.items():
         agent_tasks = [row for row in tasks if row.get("agent", row.get("actor")) == agent]
         busy = any(row["status"] == "running" and datetime.fromisoformat(row["lease_until"]) > now
@@ -167,10 +173,22 @@ def tick(research=False, releases=False):
         groups = bus.client.xinfo_groups(key) if bus.client.exists(key) else []
         backlog = (sum(g.get("pending", 0) + (g.get("lag") or 0) for g in groups)
                    if groups else bus.client.xlen(key))
+        backlog_total += int(backlog)
         row = services.get(name, {})
         running = row.get("State") == "running"
         replace = running and row.get("Image") != desired and not busy
+        observer.emit("operations.backlog_observed", "observed", severity="debug",
+                      attributes={"agent": agent, "stream_backlog": int(backlog), "durable_ready": bool(ready),
+                                  "busy": bool(busy), "running": bool(running)})
         if (not running and (backlog or ready)) or replace:
+            if replace:
+                observer.emit("operations.worker_replace_requested", "started",
+                              attributes={"agent": agent, "service": name, "image_from": row.get("Image"),
+                                          "image_to": desired})
+            else:
+                observer.emit("operations.worker_wake_requested", "started",
+                              attributes={"agent": agent, "service": name, "image": desired,
+                                          "stream_backlog": int(backlog), "durable_ready": bool(ready)})
             result = run_process(["docker", "compose", "--profile", "agents", "--profile", "workers",
                                   "up", "-d", "--no-build", name], cwd=str(root), timeout=60,
                                  env={**compose_env, "HARNESS_AGENT_IMAGE": desired, "ZEUS_AGENT_IMAGE": desired})
@@ -180,6 +198,9 @@ def tick(research=False, releases=False):
                               "image": desired}), flush=True)
             if replace:
                 break
+    observer.emit("operations.supervisor_tick", "observed", severity="debug",
+                  attributes={"services_running": sum(1 for row in services.values() if row.get("State") == "running"),
+                              "backlog_total": backlog_total, "desired_image": desired})
     if releases and (release_thread is None or not release_thread.is_alive()):
         release_thread = threading.Thread(target=deploy_queued, args=(service, build_executor(service)), daemon=True)
         release_thread.start()
@@ -196,14 +217,23 @@ def main():
         select_repository(args.repository)
     runtime = runtime_dir()
     runtime.mkdir(parents=True, exist_ok=True)
+    observer = None
     try:
         with FileLock(str(runtime / "supervisor.lock"), timeout=0):
             while True:
                 failed = False
                 try:
-                    tick(args.research, args.releases)
+                    if observer is None:
+                        observer = build_observer(None, "supervisor")
+                        observer.emit("general.process_started", "started",
+                                      attributes={"agent": None, "autonomous": True, "platform": sys.platform,
+                                                  "python": sys.version.split()[0], "mode": "supervisor"})
+                    tick(args.research, args.releases, observer)
                 except Exception as exc:
                     failed = True
+                    if observer is not None:
+                        observer.emit("operations.supervisor_error", "failed", severity="error",
+                                      reason_code=type(exc).__name__, attributes={"error_type": type(exc).__name__})
                     print(json.dumps({"supervisor_error": str(exc), "at": utcnow()}), flush=True)
                 if args.once:
                     if release_thread:

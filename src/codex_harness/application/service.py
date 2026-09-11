@@ -204,7 +204,7 @@ class Harness:
             tx.put("sessions", agent, record)
             return record
 
-    def flush_outbox(self, bus: MessageBus, limit: int = 100) -> dict:
+    def flush_outbox(self, bus: MessageBus, limit: int = 100, audit=None) -> dict:
         from codex_harness.application.outbox import relay
 
-        return relay(self.store, self.org, bus, limit)
+        return relay(self.store, self.org, bus, limit, audit)

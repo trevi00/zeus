@@ -13,6 +13,7 @@ from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector
 from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
 from codex_harness.adapters.hooks import NativeHooks
+from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.skill_history import (
     finalize_delivery,
@@ -31,6 +32,12 @@ from codex_harness.application.execution_time import (
     running,
 )
 from codex_harness.application.invocation_ledger import InvocationLedger
+from codex_harness.application.observations import (
+    MemoryDirectory,
+    Observer,
+    PostExecutionRecordFailure,
+    ReconciliationRequired,
+)
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
@@ -46,6 +53,7 @@ from codex_harness.domain.model import (
     utcnow,
 )
 from codex_harness.domain.model_routing import select_model
+from codex_harness.domain.observation import invocation_outcome, new_process_run_id
 from codex_harness.domain.policy import POLICY
 from codex_harness.domain.research import require_dispatch
 
@@ -123,6 +131,14 @@ def progress_event_id(event: dict, receipt_ref: str) -> str:
     return f"{event.get('method')}:{receipt_ref}"
 
 
+def _item_field(event, name: str):
+    """A text field of a runtime event's item, or None; never a placeholder for a malformed event."""
+    params = event.get("params") if isinstance(event, dict) and isinstance(event.get("params"), dict) else {}
+    item = params.get("item") if isinstance(params.get("item"), dict) else {}
+    value = item.get(name)
+    return value if type(value) is str and value else None
+
+
 def artifact_reader_handle(root, reference: str) -> dict:
     """Describe one exact-ref reader invocation without shell command interpolation."""
     return {
@@ -143,11 +159,16 @@ def artifact_reader_handle(root, reference: str) -> dict:
 class Executor:
     """Infrastructure composition for role-specific, independently executed Codex tasks."""
 
-    def __init__(self, service, git, artifacts, knowledge=None, research=None, release_runner=None, audit_runner=None):
+    def __init__(self, service, git, artifacts, knowledge=None, research=None, release_runner=None, audit_runner=None,
+                 observer=None):
         self.service, self.git, self.artifacts = service, git, artifacts
         self.knowledge, self.research, self.release_runner = knowledge, research, release_runner
         self.workflow = Workflow(service.store, service.org)
         self.invocations = InvocationLedger(service.store)
+        # INV-OBSERVATION-001: without a configured durable spool the observer still audits into the
+        # store; only its diagnostic records stay in memory (unit boundaries, never a deployment).
+        self.observer = observer or Observer(service.store, MemorySpool(new_process_run_id()),
+                                             component="executor", directory=MemoryDirectory())
         self.breaker = Breaker(service.store)
         self.evidence = EvidenceInspections(service.store, EvidenceInspector(artifacts))
         self.releases = Releases(service.store, service.org)
@@ -314,6 +335,16 @@ class Executor:
                                                                 "malformed": malformed, "defect": defect,
                                                                 "previous": prior.get("last_record") if matches(prior) else None}),
                                                  "runtime-event:" + key)
+                    def note_progress(progress_sequence):
+                        self.observer.emit("development.progress_recorded", "observed",
+                                           execution=observed_execution(reservation_id), correlation_id=correlation,
+                                           causation_id=key, occurred_at=None if malformed else progress_occurrence(event),
+                                           severity="warning" if malformed else "debug", evidence_refs=[receipt["ref"]],
+                                           attributes={"progress_sequence": progress_sequence,
+                                                       "method": str(event.get("method")) if isinstance(event, dict) else "malformed",
+                                                       "item_type": _item_field(event, "type"),
+                                                       "item_status": _item_field(event, "status"),
+                                                       "receipt_ref": receipt["ref"], "malformed": malformed, "defect": defect})
                     with self.service.store.transaction() as tx:
                         if lease:
                             self.workflow._owned(tx, lease)
@@ -329,6 +360,7 @@ class Executor:
                             previous.setdefault("malformed_defects", {})
                             previous["malformed_defects"][defect] = previous["malformed_defects"].get(defect, 0) + 1
                             tx.put("execution_progress", key, previous)
+                            note_progress(None)
                             return
                         # Occurrence time comes from the event itself; collection time is ours.
                         # They are kept apart so replay never reorders by the merge moment.
@@ -349,6 +381,7 @@ class Executor:
                                                           "status": item.get("status"), "evidence": receipt["ref"],
                                                           "sequence": previous["sequence"], "occurred_at": occurred}
                         tx.put("execution_progress", key, previous)
+                    note_progress(previous.get("sequence"))
 
             started = time.monotonic()
             result = None
@@ -359,10 +392,37 @@ class Executor:
             # the attempt is reserved (ownership re-proven in the same transaction) before any call.
             request = parse_request('app_server', {'model': selection.requested_model, 'timeout': timeout,
                                                    'output_schema': schema, 'read_only': read_only})
-            reservation = (self.invocations.reserve(lease, request=request, budget_seconds=timeout, stage=stage,
-                                                    guard=lambda tx: self.workflow._owned(tx, lease))
-                           if lease else None)
+            # INV-OBSERVATION-001: a provider never starts for a task whose earlier run left
+            # termination evidence that was not reconciled; the reservation and its audit record
+            # commit together, and a failed audit means no reservation and no provider.
+            if lease:
+                pending = self.observer.pending_terminations(key)
+                if pending:
+                    raise ReconciliationRequired(key, pending)
+            correlation = self.observer.correlation(lease)
+
+            def observed_execution(invocation_id=None):
+                if lease:
+                    return self.observer.for_lease(lease, provider="codex-app-server", invocation_id=invocation_id,
+                                                   revision=basis_revision)
+                return self.observer.system(revision=basis_revision, role=agent)
+            reservation = (self.invocations.reserve(
+                lease, request=request, budget_seconds=timeout, stage=stage,
+                guard=lambda tx: self.workflow._owned(tx, lease),
+                audit=lambda tx, row: self.observer.audit(
+                    tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
+                    execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
+                    attributes={"reservation_id": row["id"], "stage": stage, "transport": "app_server",
+                                "requested_model": selection.requested_model, "budget_seconds": float(timeout),
+                                "workload": workload}))
+                if lease else None)
+            reservation_id = reservation["id"] if reservation else None
             admission = None
+            self.observer.emit("development.provider_started", "started", execution=observed_execution(reservation_id),
+                               correlation_id=correlation, causation_id=key,
+                               attributes={"reservation_id": reservation_id, "transport": "app_server",
+                                           "requested_model": selection.requested_model, "read_only": read_only,
+                                           "timeout_seconds": float(timeout), "context_ref": context_ref["ref"]})
             try:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
                 # probe slot; breaker refusal must release the invocation reservation.
@@ -373,8 +433,22 @@ class Executor:
                                          model=selection.requested_model)
             except Exception as exc:
                 if result is None or not (result.get("inspection_blocked") or result.get("failure")):
+                    self.observer.emit("development.provider_failed", "failed", severity="error",
+                                       execution=observed_execution(reservation_id), correlation_id=correlation,
+                                       causation_id=key, reason_code=type(exc).__name__,
+                                       attributes={"reservation_id": reservation_id, "error_type": type(exc).__name__,
+                                                   "elapsed_seconds": time.monotonic() - started})
                     if reservation is not None:
-                        self.invocations.abandon(reservation['id'], 'exception:' + type(exc).__name__)
+                        error_type = type(exc).__name__
+                        reason = 'exception:' + error_type
+
+                        def abandoned(tx, row):
+                            self.observer.audit(tx, "development.invocation_abandoned", "aborted",
+                                                identity=["reservation", row["id"], "abandoned"],
+                                                execution=observed_execution(row["id"]), correlation_id=correlation,
+                                                causation_id=key, reason_code=error_type,
+                                                attributes={"reservation_id": row["id"], "reason": reason})
+                        self.invocations.abandon(reservation['id'], reason, audit=abandoned)
                     if admission is not None:
                         self.breaker.report(admission, result_of_exception(exc))
                     raise
@@ -388,9 +462,34 @@ class Executor:
             result['invocation'] = {'request': request, 'outcome': classify_result(result),
                                     'usage': usage_record({**result, 'requested_model': selection.requested_model}),
                                     'reservation': reservation['id'] if reservation else None}
+            usage = result['invocation']['usage']
+            self.observer.emit("development.provider_finished", invocation_outcome(result['invocation']['outcome']),
+                               execution=observed_execution(reservation_id), correlation_id=correlation, causation_id=key,
+                               attributes={"reservation_id": reservation_id,
+                                           "invocation_outcome": result['invocation']['outcome'],
+                                           "elapsed_seconds": time.monotonic() - started,
+                                           "event_count": usage["event_count"], "stream_hash": usage["stream_hash"],
+                                           "confirmed_model": usage["confirmed_model"], "usage_source": usage["source"],
+                                           "total_tokens": usage["total_tokens"], "thread_id": result.get("thread_id")})
             if reservation is not None:
-                self.invocations.settle(reservation['id'], outcome=result['invocation']['outcome'],
-                                        usage=result['invocation']['usage'])
+                try:
+                    self.invocations.settle(
+                        reservation['id'], outcome=result['invocation']['outcome'], usage=usage,
+                        audit=lambda tx, row: self.observer.audit(
+                            tx, "development.invocation_settled", invocation_outcome(row["outcome"]),
+                            identity=["reservation", row["id"], "settled"], execution=observed_execution(row["id"]),
+                            correlation_id=correlation, causation_id=key,
+                            attributes={"reservation_id": row["id"], "invocation_outcome": row["outcome"],
+                                        "usage_source": row["usage"]["source"], "total_tokens": row["usage"]["total_tokens"],
+                                        "within_budget": bool(row.get("within_budget"))}))
+                except Exception as exc:
+                    # The provider already ran. Keep redacted termination evidence locally, then
+                    # fail this attempt without ever claiming completion; the next run of this
+                    # task is refused until an operator reconciles (INV-OBSERVATION-001).
+                    record_id = self.observer.record_termination(
+                        lease, reservation_id=reservation['id'], classification=result['invocation']['outcome'],
+                        stream_hash=usage.get("stream_hash"), error=exc)
+                    raise PostExecutionRecordFailure(record_id, exc) from exc
             if admission is not None:
                 verdict = result_of(result)
                 result['breaker'] = {**self.breaker.report(admission, verdict), 'verdict': verdict,
@@ -415,6 +514,12 @@ class Executor:
                 state["research_binding"] = binding
             session = self.service.checkpoint(agent, generation, state, execution=lease)
             generation = session["generation"]
+            self.observer.emit("development.checkpoint_recorded", "observed", execution=observed_execution(reservation_id),
+                               correlation_id=correlation, causation_id=key,
+                               evidence_refs=[evidence_ref["ref"], context_ref["ref"]],
+                               attributes={"session_generation": generation, "session_id": session["session_id"],
+                                           "handoff_reason": state["handoff_reason"], "evidence_ref": evidence_ref["ref"],
+                                           "context_ref": context_ref["ref"]})
             if result.get("inspection_blocked"):
                 return {"accepted": False, "inspection_blocked": True,
                         "reason": "inspection-blocked: bubblewrap namespace creation denied; "
@@ -441,7 +546,10 @@ class Executor:
                 with self.service.store.transaction() as tx:
                     inspect_approval(tx, details, self.artifacts)
             def heartbeat():
-                self.workflow.heartbeat(task)
+                current = self.workflow.heartbeat(task)
+                self.observer.emit("operations.lease_renewed", "observed", severity="debug",
+                                   execution=self.observer.for_lease(task), correlation_id=self.observer.correlation(task),
+                                   causation_id=task["id"], attributes={"lease_until": str(current.get("lease_until"))})
             if action in {'audit_discovery', 'audit_acquire', 'audit_partition', 'audit_propose'}:
                 require(self.audit_execution is not None, 'Audit executor unavailable')
                 result = self.audit_execution.execute(task)
@@ -544,9 +652,42 @@ class Executor:
                           "origin": details, "execution_ref": self.artifacts.put(canonical(candidate), "git-rebase")["ref"]}
             else:
                 raise ValueError("Unsupported task action: " + action)
-            return self.workflow.complete(task, result, commands)
+            current = self.workflow.complete(task, result, commands)
+            self.observer.emit("development.task_completed", "succeeded" if current["status"] == "succeeded" else "blocked",
+                               execution=self.observer.for_lease(task), correlation_id=self.observer.correlation(task),
+                               causation_id=task["id"], evidence_refs=[result["execution_ref"]] if result.get("execution_ref") else [],
+                               attributes={"status": current["status"], "commands": len(commands)})
+            return current
+        except ReconciliationRequired as exc:
+            return self._block_for_reconciliation(task, agent, exc)
         except Exception as exc:
             return self._fail_task(task, agent, exc)
+
+    def _block_for_reconciliation(self, lease, agent, exc):
+        """INV-OBSERVATION-001: no provider ran; the execution stops until an operator reconciles."""
+        bucket = lease.get("_bucket", "tasks")
+        try:
+            with self.service.store.transaction() as tx:
+                current = self.workflow._owned(tx, lease)
+                current.update(status="blocked", error="reconciliation_required", lease_until=None, lease_owner=None)
+                tx.put(bucket, lease["id"], current)
+                event = {"type": "execution.reconciliation_required", "bucket": bucket, "task_id": lease["id"],
+                         "generation": current.get("generation", 0), "attempt": current.get("attempt"),
+                         "records": [row.get("record_id") for row in exc.records]}
+                identity = digest(event)
+                if tx.get("events", identity) is None:
+                    tx.put("events", identity, {**event, "at": utcnow()})
+                self.observer.audit(tx, "development.reconciliation_required", "blocked",
+                                    identity=["reconciliation_required", bucket, lease["id"], current.get("generation"),
+                                              current.get("attempt")],
+                                    execution=self.observer.for_lease(lease, role=agent),
+                                    correlation_id=self.observer.correlation(lease), causation_id=lease["id"],
+                                    reason_code="reconciliation_required", severity="critical",
+                                    attributes={"terminations": len(exc.records),
+                                                "record_id": str(exc.records[0].get("record_id"))})
+                return current
+        except ContractError as failure:
+            return self._lost_execution(lease, exc, failure)
 
     def _inspect_evidence(self, task, result, workspace_path):
         claims = result.get("tests") if isinstance(result.get("tests"), list) else []
@@ -585,7 +726,12 @@ class Executor:
                                          "known_causes": [{"root_cause": h["root_cause"], "scope": h["scope"]}
                                                           for h in tx.scan("incidents")]},
                                "status": "pending", "attempt": 0})
-                return current
+            self.observer.emit("development.task_failed", "failed", severity="error",
+                               execution=self.observer.for_lease(task, role=agent), correlation_id=self.observer.correlation(task),
+                               causation_id=task["id"], reason_code=type(error).__name__,
+                               attributes={"status": current["status"], "error_type": type(error).__name__,
+                                           "failure_receipt": current.get("failure_receipt")})
+            return current
         except ContractError as exc:
             return self._lost_execution(task, error, exc)
 
@@ -727,6 +873,8 @@ class Executor:
                     execution_notice(tx, self.service.org, current, 'decisions_pending', 'decision_blocked', utcnow())
                 return current
             return self._commit_decision(decision, agent, phase, data, result, lease)
+        except ReconciliationRequired as exc:
+            return self._block_for_reconciliation({**decision, "_bucket": "decisions_pending"}, agent, exc)
         except Exception as exc:
             try:
                 return self.workflow.fail_execution({**decision, "_bucket": "decisions_pending"}, exc)

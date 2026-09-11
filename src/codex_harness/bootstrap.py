@@ -29,7 +29,31 @@ def redis_url() -> str:
     return settings().get("HARNESS_REDIS_URL", "redis://127.0.0.1:56379/0")
 
 
-def build_executor(service=None):
+def observation_root():
+    return runtime_dir() / "observations"
+
+
+def build_observer(store, component: str, role: str | None = None):
+    """One durable observer per process: spool, health and termination records under the runtime dir."""
+    from codex_harness.adapters.observation_spool import FileSpool, SpoolDirectory
+    from codex_harness.application.observations import Observer
+    from codex_harness.domain.observation import new_process_run_id
+    from codex_harness.domain.policy import POLICY
+
+    root = observation_root()
+    spool = FileSpool(root, new_process_run_id(), max_bytes=POLICY.observation_spool_bytes)
+    return Observer(store, spool, component=component, directory=SpoolDirectory(root), role=role)
+
+
+def build_collector(store, observer=None):
+    from codex_harness.adapters.contracts import validate_observation
+    from codex_harness.adapters.observation_spool import SpoolDirectory
+    from codex_harness.application.observations import Collector
+
+    return Collector(store, SpoolDirectory(observation_root()), validate=validate_observation, observer=observer)
+
+
+def build_executor(service=None, observer=None):
     from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.adapters.audit_runner import AuditRunner
     from codex_harness.adapters.executor import Executor
@@ -42,6 +66,8 @@ def build_executor(service=None):
     artifacts = FileArtifacts(str(runtime / "artifacts"))
     remote = settings().get("HARNESS_GITHUB_REPO")
     git = GitWorkspace(repository, str(runtime / "workspaces"), remote)
-    return Executor(service or build(), git, artifacts, PostgresKnowledge(database_url()),
+    service = service or build()
+    return Executor(service, git, artifacts, PostgresKnowledge(database_url()),
                     ResearchSources(artifacts),
-                    audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True))
+                    audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True),
+                    observer=observer or build_observer(service.store, "executor"))

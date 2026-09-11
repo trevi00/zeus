@@ -256,6 +256,7 @@ class Workflow:
             current["lease_until"] = lease_until
             pin_clock(current, task.get('_bucket', 'tasks'), now, datetime.fromisoformat(lease_until), renew=True)
             tx.put(task.get("_bucket", "tasks"), task["id"], current)
+            return current
 
     def remaining_seconds(self, task, maximum):
         import time

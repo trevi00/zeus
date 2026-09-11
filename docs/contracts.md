@@ -532,6 +532,42 @@ list, with the comparison stated; a self-report never certifies the presence or 
 tool use. Zeus keeps no lexical, filename or boilerplate grade; structural validity and
 observed tool use are evidence for review, never SDD acceptance or model qualification.
 
+## INV-OBSERVATION-001
+
+General, development and operations logs share one versioned observation contract
+(`observation.schema.json`, `urn:zeus:observation:1`) that is a different contract from the
+six-W business message: an observation has no who/what/how sections, cannot be validated,
+routed or handled as an assignment, and grants no workflow authority; the outbox relay
+quarantines one disguised as a message. Every record names its execution (role, provider,
+process run, task, bucket, generation, attempt, invocation, revision) or is a system event whose
+task and session are explicit nulls, never placeholders; the schema validates the two branches
+separately. `occurred_at` is the event's own time or null and `observed_at` is the collection
+moment; order is (process_run_id, sequence) and causality is causation_id plus the existing task,
+message and generation identities, never the wall clock. The outcome vocabulary distinguishes
+started, succeeded, failed, aborted, blocked, unknown and observed; a provider exit code or a
+transport acknowledgement never produces a success outcome, and a stream entry id is recorded as
+a delivery fact beside the attempt, not as a task completion. Attributes are allow-listed and
+typed per event type and size-bounded; prompts, environment, credentials, private keys and model
+reasoning are excluded by construction and every string is redacted before any durable or public
+surface (spool, sink, health record, alert, CLI); foreign error messages are recorded as their
+type and digest, not their text. The same event id with the same content hash is a redelivery;
+the same id with different content is isolated in quarantine with an alert and never overwrites
+the first record. Mandatory transitions (invocation reserved, settled, abandoned; outbox publish,
+retry, error, quarantine; reconciliation) are append-only audit rows written inside the business
+transaction, so the reservation does not commit — and no provider starts — without its audit.
+Diagnostic records go to a bounded per-process durable spool whose sequence number advances
+only on a successful append; a full or failing spool is counted, written to the protected local
+health record and alerted with rate limiting, never dropped silently, and never blocks the
+execution path or bypasses reservation and lease limits. The collector consumes complete
+records, quarantines corrupt lines, leaves a truncated tail unconsumed, deduplicates by id and
+content hash, and acknowledges an offset only after the sink transaction committed. When the
+provider already ran and the settlement could not be recorded, redacted minimal termination
+evidence is kept locally, the attempt fails without claiming completion, and the executor refuses
+to start a provider for that task until an operator reconciles the record; the invocation ledger
+closes the orphaned reservation as unsettled_unknown. Health, status, orphan and alert reports are
+informational only. Unit fault injection and MemoryStore exercise these boundaries; they are not
+operational evidence.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
