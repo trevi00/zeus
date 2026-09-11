@@ -207,6 +207,19 @@ Codex에 보고한다.
 
 GitHub Actions(head 09dbb9e): push·pull_request 두 run 모두 10/10 통과(재실행 없음).
 
+4차 검토 반영 후 (런타임·테스트 head `1b5d70f`, `environment-runs-007`):
+
+| 호스트 | 결과 |
+|---|---|
+| Windows 11 (Python 3.12.14) | **통과**: ruff; full-suite-integration 1567 passed, 14 skipped (541s); disposable-docker 17 passed (60s). 관측 테스트 8파일 123 passed, skip 0 (contract 16, review 16, review2 24, review3 14, **review4 10**, spool 5, wiring 19, observations 19). 격리 스택 `harness-evidence-windows-11-68802b72`. 영수증 tracked_changes [], untracked [] |
+| WSL Ubuntu 26.04 (WSL2 kernel 6.18, Python 3.12.14, filelock 3.32.5 `UnixFileLock`) | **통과**: ruff; full-suite-integration 1573 passed, 8 skipped (166s); disposable-docker 17 passed (55s). 관측 123 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-13cf38ac`. Codex의 `lock_boundaries_linux.py`는 같은 head에서 첫 블록의 `assert directory.run_finished(run)`(40행)에서 멈추고(거절된 작성자의 close가 run을 끝내지 않음), 두 번째 블록만 따로 실행하면 `age_before 691200 → finished_on_first_check true → age_after_probe 691200`(lock 파일 자체의 mtime 나이는 0.0초로, 조회가 파일은 갱신하지만 보존 시각은 건드리지 않음)이다. 이 두 실행은 임시 디렉터리에서 했고 산출물은 남기지 않았다 |
+
+GitHub Actions(head 1b5d70f): pull_request run 34590777031 10/10 통과. push run 34590773034는 1차 시도에서
+`integration` 잡만 실패 — `tests/test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[12]`와
+`test_postgres_restart_rolls_back_unconfirmed_failure`가 일회용 PostgreSQL 컨테이너에 `the database system is starting up` /
+`server closed the connection unexpectedly`로 연결 실패(이전 라운드와 같은 readiness 부류, 이 PR이 바꾸지 않은 파일).
+`gh run rerun --failed` 후 2차 시도 통과(10/10). 재실행 사실은 실패 이력에 그대로 남긴다.
+
 공개 산출물 검사(모든 라운드): 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
 (러너가 실행별 비밀번호를 scrub한 뒤 기록). 이 검사는 grep으로 했고 결과를 PR 본문에 적었다.
 
