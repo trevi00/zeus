@@ -1,0 +1,62 @@
+[
+  {
+    "path": "changed-regressions.xml",
+    "sha256": "eda27adcc93f6672397776219e55107ac1547c8a7b057b243934cf037906adda"
+  },
+  {
+    "path": "check_receipts.py",
+    "sha256": "14c30d269266c8d690630463d7874419e8c251982d639d143749ea5c3b7ee9b1"
+  },
+  {
+    "path": "filelock-source-identity.json",
+    "sha256": "42fdd12a9d2725db3458462a4a2ab01e88f8ed84495b798474e4c99737de57b7"
+  },
+  {
+    "path": "final-ci-runs.json",
+    "sha256": "cb6c3e9b185f3c8a1365b6e30a746fb98554c1d4ebcb055d2a281879bb1c59c9"
+  },
+  {
+    "path": "integration-result.json",
+    "sha256": "c7a4609ed26de222e871ad01e6a0db664ba9809572c88c01f69d3d3a4422a57c"
+  },
+  {
+    "path": "integration.log",
+    "sha256": "d303f31860663ca1fdea45cb07d16795b55040374a66d8192e8991628a40dff2"
+  },
+  {
+    "path": "integration.xml",
+    "sha256": "6dffdce0f570497d88d69cf58d817ac99fc66f01c4aa1029c22080a046603998"
+  },
+  {
+    "path": "lock-boundaries-linux.log",
+    "sha256": "7bc40c7c8d1839bcdfed45f7bde051b5c9c9800bafa20d0c9bebc048fd7c1d74"
+  },
+  {
+    "path": "lock-boundary-windows.xml",
+    "sha256": "c188aab89997c36503951449a7278e4d661fd4be1360132077f8550a4ed80341"
+  },
+  {
+    "path": "lock_boundaries_linux.py",
+    "sha256": "b2b75f723716ac751f8fa6bf8326d8c1ede6d81ef5dcc30f8f8dc22f4ead3b45"
+  },
+  {
+    "path": "pr-snapshot.json",
+    "sha256": "5e792a0845c6cca0da22626a11ab047ee99cb2ede463950b65f7cef2878aca94"
+  },
+  {
+    "path": "README.md",
+    "sha256": "1b394a28f4d1fdec4b5a126374ba5c82325a2310ba40971ed219d45a31e10fda"
+  },
+  {
+    "path": "receipt-check.json",
+    "sha256": "62729b999a735ae7840ea540670afcbf09fecc27c02767bcb5c1c6717bf7dc9d"
+  },
+  {
+    "path": "run_integration.py",
+    "sha256": "31de743c5ca29652c7905b3b969ce96ec50a18ff49f0716c9e82009fd7f32c65"
+  },
+  {
+    "path": "test_lock_boundary.py",
+    "sha256": "fda2ed6a4a1feb02103042c1cd1eb7e5d8589790f0f6ebd5bd51bca2b91a8db9"
+  }
+]

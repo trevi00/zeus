@@ -1,0 +1,21 @@
+{
+  "version": "3.32.5",
+  "files": [
+    {
+      "name": "__init__.py",
+      "sha256": "644857d02a33bd1c45430b26f1861ceae88bbee2187be6a80f6d0009f8f28b38"
+    },
+    {
+      "name": "_api.py",
+      "sha256": "c8435f6d4a9a219fc5120a848e445fd2729988d82f7292570ee966c2e03c2b99"
+    },
+    {
+      "name": "_unix.py",
+      "sha256": "5bde6028b8d88af35960b4f7eb7e28ee5d2941fbd4f127415bfd82ddba3794bc"
+    },
+    {
+      "name": "_windows.py",
+      "sha256": "3318fda8b336f7537347a0d7b10fd04787f79245e06a92027b7a08bdaa9e064b"
+    }
+  ]
+}
