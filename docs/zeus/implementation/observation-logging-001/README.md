@@ -177,7 +177,14 @@ GitHub Actions (head `9b7156d`): ubuntu 3.12/3.14와 integration 잡은 통과, 
 다음 커밋에서 kill을 "첫 완료 레코드가 관측된 뒤"로 바꿔 결정적으로 만들었다. 이 수정은 테스트
 파일만 바꾸므로 위 호스트 영수증(head `e367003`)은 런타임 코드에 대해 그대로 유효하다.
 
-공개 산출물 검사: 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
+1차 검토 반영 후 (head `0dba6f8`, `environment-runs-004`):
+
+| 호스트 | 결과 |
+|---|---|
+| Windows 11 | **통과**: ruff; full-suite-integration 1519 passed, 14 skipped (518s); disposable-docker 17 passed. 관측 테스트 5파일 75 passed, skip 0 (contract 16, review 16, spool 5, wiring 19, observations 19). 격리 스택 `harness-evidence-windows-11-6cd2beee`. 영수증 tracked_changes [], untracked [] |
+| WSL Ubuntu 26.04 (WSL2) | **통과**: ruff; full-suite-integration 1525 passed, 8 skipped (161s); disposable-docker 17 passed. 관측 테스트 5파일 75 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-b8b459cc`. 영수증 tracked_changes [], untracked [] |
+
+공개 산출물 검사(두 라운드 모두): 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
 (러너가 실행별 비밀번호를 scrub한 뒤 기록). 이 검사는 grep으로 했고 결과를 PR 본문에 적었다.
 
 실행하지 않은 것: 실제 Claude/Codex 모델 호출(범위 밖, fake transport만 사용), 네이티브 Linux(WSL2만),
