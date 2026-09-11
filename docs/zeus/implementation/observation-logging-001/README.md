@@ -198,6 +198,15 @@ GitHub Actions(head 3d6e757): push run 10/10 통과; pull_request run은 integra
 결함은 WSL 1차 disposable-docker 오류와 동일 부류다. 원인 해결은 이 PR의 명세 범위 밖이며 별도 항목으로
 Codex에 보고한다.
 
+3차 검토 반영 후 (head `09dbb9e`, `environment-runs-006`):
+
+| 호스트 | 결과 |
+|---|---|
+| Windows 11 | **통과**: ruff; full-suite-integration 1557 passed, 14 skipped (565s); disposable-docker 17 passed. 관측 테스트 7파일 113 passed, skip 0 (contract 16, review 16, review2 24, review3 14, spool 5, wiring 19, observations 19). 격리 스택 `harness-evidence-windows-11-3fb495b9` |
+| WSL Ubuntu 26.04 | **통과**: ruff; full-suite-integration 1563 passed, 8 skipped (167s); disposable-docker 17 passed. 관측 113 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-01051ffe`. 실제 flock 기반 작성자 생존 증명(`test_dead_writer_is_proven_by_the_released_lock`, `test_age_alone_never_finishes_a_live_writer`)이 Linux 파일시스템에서 통과 |
+
+GitHub Actions(head 09dbb9e): push·pull_request 두 run 모두 10/10 통과(재실행 없음).
+
 공개 산출물 검사(모든 라운드): 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
 (러너가 실행별 비밀번호를 scrub한 뒤 기록). 이 검사는 grep으로 했고 결과를 PR 본문에 적었다.
 
