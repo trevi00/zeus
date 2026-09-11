@@ -28,8 +28,20 @@
     "sha256": "7d5eb8b19f92d7aa253413380f9bdbc0a73d260421e00b4723945b2c88a4ae83"
   },
   {
+    "path": "issue-comment.md",
+    "sha256": "af07c3dfecaaa389e25d6dfa8b2370530f968c08cb86129e328e1c67b7bdb4c7"
+  },
+  {
     "path": "pr-snapshot.json",
     "sha256": "ee31e0e0f8b961f016f6f410aca9a7a0a249fdc8ff685856594a15ed779f6814"
+  },
+  {
+    "path": "published-issues.json",
+    "sha256": "4e5d464856d743f87156200a5295bfe0a8e89bae58802f6930a298e190d616b3"
+  },
+  {
+    "path": "published-review.json",
+    "sha256": "7bfe097d8c73bad97449f174222c46d0968325cab7886086cd382eb153866952"
   },
   {
     "path": "README.md",
@@ -50,5 +62,9 @@
   {
     "path": "startup_gc_race_linux.py",
     "sha256": "4c8ae57515973f477b83c43e16e81ff06322b4f2e99c3b742755488f730fec49"
+  },
+  {
+    "path": "ticket-observations.json",
+    "sha256": "3e770f62517ed9a1e7bfda88cbe461a3f61acd71ff85a43ac6f99cdd2c5c9643"
   }
 ]
