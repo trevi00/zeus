@@ -14,6 +14,7 @@ from codex_harness.adapters.evidence_inspection import EvidenceInspector
 from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.observation_spool import MemorySpool
+from codex_harness.adapters.output_schema import preflight
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.skill_history import (
     finalize_delivery,
@@ -45,6 +46,7 @@ from codex_harness.domain.invocation import classify_result, parse_request, usag
 from codex_harness.domain.model import (
     ContextItem,
     ContractError,
+    ExecutionFailure,
     canonical,
     compile_context,
     digest,
@@ -392,6 +394,10 @@ class Executor:
             # the attempt is reserved (ownership re-proven in the same transaction) before any call.
             request = parse_request('app_server', {'model': selection.requested_model, 'timeout': timeout,
                                                    'output_schema': schema, 'read_only': read_only})
+            # INV-OUTPUT-001 / INV-OBSERVATION-001: a schema the subset refuses is a configuration
+            # error; it is refused here, before any provider is entered, so it never needs a
+            # termination record.
+            preflight(schema)
             # INV-OBSERVATION-001: a provider never starts for a task whose earlier run left
             # termination evidence that was not reconciled; the reservation and its audit record
             # commit together, and a failed audit means no reservation and no provider.
@@ -418,16 +424,33 @@ class Executor:
                 if lease else None)
             reservation_id = reservation["id"] if reservation else None
             admission = None
-            self.observer.emit("development.provider_started", "started", execution=observed_execution(reservation_id),
-                               correlation_id=correlation, causation_id=key,
-                               attributes={"reservation_id": reservation_id, "transport": "app_server",
-                                           "requested_model": selection.requested_model, "read_only": read_only,
-                                           "timeout_seconds": float(timeout), "context_ref": context_ref["ref"]})
+            # INV-OBSERVATION-001: `provider_entered` marks the external-effect boundary. Before it,
+            # a failure is a refusal that never started the provider and may be retried. After it,
+            # every failure up to the durable checkpoint (transport, progress, cleanup, settlement,
+            # breaker report, result persistence, checkpoint) leaves termination evidence and
+            # refuses a new run of this task until an operator reconciles. The one exception is a
+            # runner-observed output failure, whose evidence is persisted before it is raised.
+            provider_entered = False
+
+            def terminated(exc, boundary, classification="unknown", stream_hash=None):
+                if not lease:
+                    return exc
+                record_id = self.observer.record_termination(
+                    lease, reservation_id=reservation_id, classification=classification, stream_hash=stream_hash,
+                    error=exc, boundary=boundary)
+                return PostExecutionRecordFailure(record_id, exc, boundary)
             try:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
                 # probe slot; breaker refusal must release the invocation reservation.
                 admission = self.breaker.admit(breaker_key('codex-app-server', workload), lease) if lease else None
                 with AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration()) as runtime:
+                    provider_entered = True
+                    self.observer.emit("development.provider_started", "started",
+                                       execution=observed_execution(reservation_id),
+                                       correlation_id=correlation, causation_id=key,
+                                       attributes={"reservation_id": reservation_id, "transport": "app_server",
+                                                   "requested_model": selection.requested_model, "read_only": read_only,
+                                                   "timeout_seconds": float(timeout), "context_ref": context_ref["ref"]})
                     result = runtime.run(prompt, cwd, schema, timeout,
                                          on_event=observe, read_only=read_only, on_tick=lambda: observe(None),
                                          model=selection.requested_model)
@@ -437,44 +460,55 @@ class Executor:
                                        execution=observed_execution(reservation_id), correlation_id=correlation,
                                        causation_id=key, reason_code=type(exc).__name__,
                                        attributes={"reservation_id": reservation_id, "error_type": type(exc).__name__,
-                                                   "elapsed_seconds": time.monotonic() - started})
-                    if reservation is not None:
-                        error_type = type(exc).__name__
-                        reason = 'exception:' + error_type
+                                                   "elapsed_seconds": time.monotonic() - started,
+                                                   "provider_entered": provider_entered})
+                    try:
+                        if reservation is not None:
+                            error_type = type(exc).__name__
+                            reason = 'exception:' + error_type
 
-                        def abandoned(tx, row):
-                            self.observer.audit(tx, "development.invocation_abandoned", "aborted",
-                                                identity=["reservation", row["id"], "abandoned"],
-                                                execution=observed_execution(row["id"]), correlation_id=correlation,
-                                                causation_id=key, reason_code=error_type,
-                                                attributes={"reservation_id": row["id"], "reason": reason})
-                        self.invocations.abandon(reservation['id'], reason, audit=abandoned)
-                    if admission is not None:
-                        self.breaker.report(admission, result_of_exception(exc))
+                            def abandoned(tx, row):
+                                self.observer.audit(tx, "development.invocation_abandoned", "aborted",
+                                                    identity=["reservation", row["id"], "abandoned"],
+                                                    execution=observed_execution(row["id"]), correlation_id=correlation,
+                                                    causation_id=key, reason_code=error_type,
+                                                    attributes={"reservation_id": row["id"], "reason": reason})
+                            self.invocations.abandon(reservation['id'], reason, audit=abandoned)
+                        if admission is not None:
+                            self.breaker.report(admission, result_of_exception(exc))
+                    except Exception:
+                        if not provider_entered:
+                            raise
+                        # Bookkeeping failed after the provider was entered: the termination
+                        # record below is what must survive, not this secondary failure.
+                    if provider_entered:
+                        raise terminated(exc, "transport") from exc
                     raise
                 # INV-RELEASE-001 / INV-SESSION-001: cleanup cannot erase a known
                 # blocked result before its artifact and fenced checkpoint are saved.
                 result["cleanup_error"] = {"type": type(exc).__name__, "message": str(exc)}
-            if context_bound:
-                result.update(elapsed_seconds=time.monotonic() - started,
-                              context_ref=context_ref["ref"], research_binding=binding)
-            result["model_selection"] = selection.receipt()
-            result['invocation'] = {'request': request, 'outcome': classify_result(result),
-                                    'usage': usage_record({**result, 'requested_model': selection.requested_model}),
-                                    'reservation': reservation['id'] if reservation else None}
-            usage = result['invocation']['usage']
-            self.observer.emit("development.provider_finished", invocation_outcome(result['invocation']['outcome']),
-                               execution=observed_execution(reservation_id), correlation_id=correlation, causation_id=key,
-                               attributes={"reservation_id": reservation_id,
-                                           "invocation_outcome": result['invocation']['outcome'],
-                                           "elapsed_seconds": time.monotonic() - started,
-                                           "event_count": usage["event_count"], "stream_hash": usage["stream_hash"],
-                                           "confirmed_model": usage["confirmed_model"], "usage_source": usage["source"],
-                                           "total_tokens": usage["total_tokens"], "thread_id": result.get("thread_id")})
-            if reservation is not None:
-                try:
+            boundary = "classification"
+            try:
+                if context_bound:
+                    result.update(elapsed_seconds=time.monotonic() - started,
+                                  context_ref=context_ref["ref"], research_binding=binding)
+                result["model_selection"] = selection.receipt()
+                result['invocation'] = {'request': request, 'outcome': classify_result(result),
+                                        'usage': usage_record({**result, 'requested_model': selection.requested_model}),
+                                        'reservation': reservation['id'] if reservation else None}
+                usage = result['invocation']['usage']
+                classification = result['invocation']['outcome']
+                self.observer.emit("development.provider_finished", invocation_outcome(classification),
+                                   execution=observed_execution(reservation_id), correlation_id=correlation, causation_id=key,
+                                   attributes={"reservation_id": reservation_id, "invocation_outcome": classification,
+                                               "elapsed_seconds": time.monotonic() - started,
+                                               "event_count": usage["event_count"], "stream_hash": usage["stream_hash"],
+                                               "confirmed_model": usage["confirmed_model"], "usage_source": usage["source"],
+                                               "total_tokens": usage["total_tokens"], "thread_id": result.get("thread_id")})
+                boundary = "settlement"
+                if reservation is not None:
                     self.invocations.settle(
-                        reservation['id'], outcome=result['invocation']['outcome'], usage=usage,
+                        reservation['id'], outcome=classification, usage=usage,
                         audit=lambda tx, row: self.observer.audit(
                             tx, "development.invocation_settled", invocation_outcome(row["outcome"]),
                             identity=["reservation", row["id"], "settled"], execution=observed_execution(row["id"]),
@@ -482,44 +516,47 @@ class Executor:
                             attributes={"reservation_id": row["id"], "invocation_outcome": row["outcome"],
                                         "usage_source": row["usage"]["source"], "total_tokens": row["usage"]["total_tokens"],
                                         "within_budget": bool(row.get("within_budget"))}))
-                except Exception as exc:
-                    # The provider already ran. Keep redacted termination evidence locally, then
-                    # fail this attempt without ever claiming completion; the next run of this
-                    # task is refused until an operator reconciles (INV-OBSERVATION-001).
-                    record_id = self.observer.record_termination(
-                        lease, reservation_id=reservation['id'], classification=result['invocation']['outcome'],
-                        stream_hash=usage.get("stream_hash"), error=exc)
-                    raise PostExecutionRecordFailure(record_id, exc) from exc
-            if admission is not None:
-                verdict = result_of(result)
-                result['breaker'] = {**self.breaker.report(admission, verdict), 'verdict': verdict,
-                                     'key': admission['key'], 'admitted_generation': admission['generation'],
-                                     'probe': admission['probe'], 'policy_revision': admission['policy_revision']}
-            result['tool_usage'] = tool_usage(result)  # INV-OUTPUT-001: observed, beside any self-report
-            if history_recording:
-                result['skill_history_recording'] = history_recording
-            evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,
-                                          basis_revision=basis_revision, context_ref=context_ref['ref'])
-            graph = ({"code": self.knowledge.index_python(cwd),
-                      "runtime": self.knowledge.project_runtime(self.service.store, self.service.org)}
-                     if self.knowledge and result["rotate"] else None)
-            state = {"next_action": "continue interrupted assignment" if result["interrupted"] else "await next assignment",
-                     "task_id": key, "source_revision": self.git._git("rev-parse", "HEAD", cwd=cwd),
-                     "graph_snapshot": graph or packet.snapshot, "worktree": cwd,
-                     "context_ref": context_ref["ref"], "evidence_ref": evidence_ref["ref"],
-                     "thread_id": result["thread_id"], "usage": result["usage"],
-                     "message_cursor": key, "decisions": result["answer"],
-                     "handoff_reason": "context_threshold" if result["rotate"] else "task_boundary"}
-            if context_bound:
-                state["research_binding"] = binding
-            session = self.service.checkpoint(agent, generation, state, execution=lease)
-            generation = session["generation"]
-            self.observer.emit("development.checkpoint_recorded", "observed", execution=observed_execution(reservation_id),
-                               correlation_id=correlation, causation_id=key,
-                               evidence_refs=[evidence_ref["ref"], context_ref["ref"]],
-                               attributes={"session_generation": generation, "session_id": session["session_id"],
-                                           "handoff_reason": state["handoff_reason"], "evidence_ref": evidence_ref["ref"],
-                                           "context_ref": context_ref["ref"]})
+                boundary = "breaker_report"
+                if admission is not None:
+                    verdict = result_of(result)
+                    result['breaker'] = {**self.breaker.report(admission, verdict), 'verdict': verdict,
+                                         'key': admission['key'], 'admitted_generation': admission['generation'],
+                                         'probe': admission['probe'], 'policy_revision': admission['policy_revision']}
+                result['tool_usage'] = tool_usage(result)  # INV-OUTPUT-001: observed, beside any self-report
+                if history_recording:
+                    result['skill_history_recording'] = history_recording
+                boundary = "result_persistence"
+                evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,
+                                              basis_revision=basis_revision, context_ref=context_ref['ref'])
+                boundary = "checkpoint"
+                graph = ({"code": self.knowledge.index_python(cwd),
+                          "runtime": self.knowledge.project_runtime(self.service.store, self.service.org)}
+                         if self.knowledge and result["rotate"] else None)
+                state = {"next_action": "continue interrupted assignment" if result["interrupted"] else "await next assignment",
+                         "task_id": key, "source_revision": self.git._git("rev-parse", "HEAD", cwd=cwd),
+                         "graph_snapshot": graph or packet.snapshot, "worktree": cwd,
+                         "context_ref": context_ref["ref"], "evidence_ref": evidence_ref["ref"],
+                         "thread_id": result["thread_id"], "usage": result["usage"],
+                         "message_cursor": key, "decisions": result["answer"],
+                         "handoff_reason": "context_threshold" if result["rotate"] else "task_boundary"}
+                if context_bound:
+                    state["research_binding"] = binding
+                session = self.service.checkpoint(agent, generation, state, execution=lease)
+                generation = session["generation"]
+                self.observer.emit("development.checkpoint_recorded", "observed", execution=observed_execution(reservation_id),
+                                   correlation_id=correlation, causation_id=key,
+                                   evidence_refs=[evidence_ref["ref"], context_ref["ref"]],
+                                   attributes={"session_generation": generation, "session_id": session["session_id"],
+                                               "handoff_reason": state["handoff_reason"], "evidence_ref": evidence_ref["ref"],
+                                               "context_ref": context_ref["ref"]})
+            except ExecutionFailure:
+                # Runner-observed output failure: its evidence artifact is persisted before the raise
+                # and the settlement is recorded, so this is an observed outcome, not an unknown one.
+                raise
+            except Exception as exc:
+                invocation = result.get('invocation') if isinstance(result, dict) else None
+                raise terminated(exc, boundary, (invocation or {}).get('outcome', 'unknown'),
+                                 ((invocation or {}).get('usage') or {}).get('stream_hash')) from exc
             if result.get("inspection_blocked"):
                 return {"accepted": False, "inspection_blocked": True,
                         "reason": "inspection-blocked: bubblewrap namespace creation denied; "
@@ -660,8 +697,47 @@ class Executor:
             return current
         except ReconciliationRequired as exc:
             return self._block_for_reconciliation(task, agent, exc)
+        except PostExecutionRecordFailure as exc:
+            # The failure is recorded like any other (receipt, diagnosis request, notice), then the
+            # task is blocked in place so no later claim can run the provider again unreconciled.
+            failed = self._fail_task(task, agent, exc)
+            return self._block_after_failure(task, agent, exc, failed)
         except Exception as exc:
             return self._fail_task(task, agent, exc)
+
+    def _block_after_failure(self, lease, agent, exc, failed):
+        """INV-OBSERVATION-001: a retryable failure record becomes a block when termination evidence exists."""
+        bucket = lease.get("_bucket", "tasks")
+        if not isinstance(failed, dict) or failed.get("status") != "retry":
+            return failed
+        with self.service.store.transaction() as tx:
+            current = tx.get(bucket, lease["id"])
+            if (current is None or current.get("status") != "retry"
+                    or (current.get("generation"), current.get("attempt")) != (failed.get("generation"), failed.get("attempt"))
+                    or current.get("failure_receipt") != failed.get("failure_receipt")):
+                return failed  # someone else already moved the execution on; the guard in _run still holds
+            current.update(status="blocked", error="reconciliation_required")
+            tx.put(bucket, lease["id"], current)
+            self._record_reconciliation_block(tx, bucket, lease, agent, current, [exc.record_id])
+            return current
+
+    def _record_reconciliation_block(self, tx, bucket, lease, agent, current, record_ids):
+        event = {"type": "execution.reconciliation_required", "bucket": bucket, "task_id": lease["id"],
+                 "generation": current.get("generation", 0), "attempt": current.get("attempt"),
+                 "records": list(record_ids)}
+        identity = digest(event)
+        if tx.get("events", identity) is None:
+            tx.put("events", identity, {**event, "at": utcnow()})
+        # The lead learns about the block through the existing informational notice path
+        # (execution.notice → outbox), not through the observation record.
+        execution_notice(tx, self.service.org, current, bucket, 'reconciliation_required', utcnow(), identity)
+        self.observer.audit(tx, "development.reconciliation_required", "blocked",
+                            identity=["reconciliation_required", bucket, lease["id"], current.get("generation"),
+                                      current.get("attempt")],
+                            execution=self.observer.for_lease(lease, role=agent),
+                            correlation_id=self.observer.correlation(lease), causation_id=lease["id"],
+                            reason_code="reconciliation_required", severity="critical",
+                            attributes={"terminations": len(record_ids), "record_id": str(record_ids[0])})
 
     def _block_for_reconciliation(self, lease, agent, exc):
         """INV-OBSERVATION-001: no provider ran; the execution stops until an operator reconciles."""
@@ -671,20 +747,8 @@ class Executor:
                 current = self.workflow._owned(tx, lease)
                 current.update(status="blocked", error="reconciliation_required", lease_until=None, lease_owner=None)
                 tx.put(bucket, lease["id"], current)
-                event = {"type": "execution.reconciliation_required", "bucket": bucket, "task_id": lease["id"],
-                         "generation": current.get("generation", 0), "attempt": current.get("attempt"),
-                         "records": [row.get("record_id") for row in exc.records]}
-                identity = digest(event)
-                if tx.get("events", identity) is None:
-                    tx.put("events", identity, {**event, "at": utcnow()})
-                self.observer.audit(tx, "development.reconciliation_required", "blocked",
-                                    identity=["reconciliation_required", bucket, lease["id"], current.get("generation"),
-                                              current.get("attempt")],
-                                    execution=self.observer.for_lease(lease, role=agent),
-                                    correlation_id=self.observer.correlation(lease), causation_id=lease["id"],
-                                    reason_code="reconciliation_required", severity="critical",
-                                    attributes={"terminations": len(exc.records),
-                                                "record_id": str(exc.records[0].get("record_id"))})
+                self._record_reconciliation_block(tx, bucket, lease, agent, current,
+                                                  [row.get("record_id") for row in exc.records])
                 return current
         except ContractError as failure:
             return self._lost_execution(lease, exc, failure)
@@ -875,6 +939,13 @@ class Executor:
             return self._commit_decision(decision, agent, phase, data, result, lease)
         except ReconciliationRequired as exc:
             return self._block_for_reconciliation({**decision, "_bucket": "decisions_pending"}, agent, exc)
+        except PostExecutionRecordFailure as exc:
+            lease = {**decision, "_bucket": "decisions_pending"}
+            try:
+                failed = self.workflow.fail_execution(lease, exc)
+            except ContractError as failure:
+                return self._lost_execution(lease, exc, failure)
+            return self._block_after_failure(lease, agent, exc, failed)
         except Exception as exc:
             try:
                 return self.workflow.fail_execution({**decision, "_bucket": "decisions_pending"}, exc)

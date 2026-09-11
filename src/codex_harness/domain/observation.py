@@ -27,6 +27,10 @@ MAX_ATTRIBUTES_BYTES = 4096
 MAX_EVIDENCE_REFS = 32
 REASON_CODE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,79}$")
 IDENTIFIER = re.compile(r"^[0-9a-f]{32}$")
+# Correlation, causation and evidence identifiers are opaque handles (uuids, "kind:uuid", sha256
+# references, task ids). They are refused, never rewritten, when they do not look like one: a
+# redacted identifier would silently merge unrelated executions, and free text has no place here.
+REFERENCE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,199}$")
 
 # Attribute allow-lists per event type. A key that is not listed is refused; a value is a JSON
 # scalar of the declared type. Prompts, environment variables, credentials, private keys and
@@ -52,7 +56,8 @@ REGISTRY = {
     "development.provider_finished": {"reservation_id": _N, "invocation_outcome": _S, "elapsed_seconds": _F,
                                       "event_count": _I, "stream_hash": _S, "confirmed_model": _N,
                                       "usage_source": _S, "total_tokens": _NI, "thread_id": _N},
-    "development.provider_failed": {"reservation_id": _N, "error_type": _S, "elapsed_seconds": _F},
+    "development.provider_failed": {"reservation_id": _N, "error_type": _S, "elapsed_seconds": _F,
+                                    "provider_entered": _B},
     "development.invocation_settled": {"reservation_id": _S, "invocation_outcome": _S, "usage_source": _S,
                                        "total_tokens": _NI, "within_budget": _B},
     "development.invocation_abandoned": {"reservation_id": _S, "reason": _S},
@@ -63,7 +68,7 @@ REGISTRY = {
     "development.task_completed": {"status": _S, "commands": _I},
     "development.task_failed": {"status": _S, "error_type": _S, "failure_receipt": _N},
     "development.termination_recorded": {"reservation_id": _N, "invocation_outcome": _S, "stream_hash": _S,
-                                         "error_type": _S, "record_id": _S},
+                                         "error_type": _S, "record_id": _S, "boundary": _S},
     "development.reconciliation_required": {"terminations": _I, "record_id": _S},
     "development.reconciliation_resolved": {"record_id": _S, "resolution": _S, "operator": _S},
     "operations.lease_renewed": {"lease_until": _S},
@@ -264,14 +269,15 @@ def build_event(*, event_type: str, outcome: str, execution: dict, sequence: dic
             "Sequence must name the process run and say whether a number was assigned")
     require(isinstance(source, dict) and type(source.get("component")) is str and bool(source["component"]),
             "Source component required")
-    require(correlation_id is None or (type(correlation_id) is str and bool(correlation_id.strip())),
-            "correlation_id must be text or null, never a placeholder")
-    require(causation_id is None or (type(causation_id) is str and bool(causation_id.strip())),
-            "causation_id must be text or null, never a placeholder")
+    require(correlation_id is None or (type(correlation_id) is str and REFERENCE.fullmatch(correlation_id) is not None),
+            "correlation_id must be an opaque identifier or null, never free text or a placeholder")
+    require(causation_id is None or (type(causation_id) is str and REFERENCE.fullmatch(causation_id) is not None),
+            "causation_id must be an opaque identifier or null, never free text or a placeholder")
     require(reason_code is None or (type(reason_code) is str and REASON_CODE.fullmatch(reason_code) is not None),
             "reason_code must be an identifier or null")
     require(isinstance(evidence_refs, (list, tuple)) and len(evidence_refs) <= MAX_EVIDENCE_REFS
-            and all(type(ref) is str and bool(ref.strip()) for ref in evidence_refs), "Invalid evidence references")
+            and all(type(ref) is str and REFERENCE.fullmatch(ref) is not None for ref in evidence_refs),
+            "Evidence references must be opaque identifiers")
     _timestamp(observed_at, "observed_at")
     require(observed_at is not None, "observed_at is the collection moment and is required")
     _timestamp(occurred_at, "occurred_at")
@@ -279,11 +285,10 @@ def build_event(*, event_type: str, outcome: str, execution: dict, sequence: dic
     redacted, findings, truncated = redact_value(attributes)
     require(len(canonical(redacted).encode("utf-8")) <= MAX_ATTRIBUTES_BYTES,
             f"Attributes exceed {MAX_ATTRIBUTES_BYTES} bytes for {event_type}")
-    reason_code, reason_findings = (redact_text(reason_code) if reason_code else (None, 0))
-    refs, ref_findings, _ = redact_value(list(evidence_refs))
+    refs = list(evidence_refs)  # identifiers passed the reference rule; nothing to redact
     redacted_source, source_findings, _ = redact_value({"component": source["component"],
                                                         "host": source.get("host"), "pid": source.get("pid")})
-    findings += reason_findings + ref_findings + source_findings
+    findings += source_findings
     if identity is None:
         require(sequence["number"] is not None, "An event without an explicit identity needs a sequence number")
         identity = ["sequence", sequence["process_run_id"], sequence["number"]]

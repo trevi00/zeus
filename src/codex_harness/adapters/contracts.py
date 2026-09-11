@@ -19,8 +19,13 @@ def validate_message(message: dict) -> dict:
 
 
 def validate_observation(event: dict) -> dict:
-    """INV-OBSERVATION-001: the versioned observation schema, a different contract from six-W."""
+    """INV-OBSERVATION-001: the versioned observation schema, a different contract from six-W.
+
+    The error names the path and the failed keyword only. jsonschema's default message repeats
+    the offending instance value, which is exactly what a refused record must not carry into
+    quarantine rows or health files.
+    """
     errors = sorted(OBSERVATION_VALIDATOR.iter_errors(event), key=lambda e: str(e.path))
     if errors:
-        raise ContractError("; ".join(f"{list(e.path)}: {e.message}" for e in errors[:5]))
+        raise ContractError("; ".join(f"{list(e.path)}: {e.validator}" for e in errors[:5]))
     return event

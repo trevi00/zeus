@@ -560,13 +560,24 @@ only on a successful append; a full or failing spool is counted, written to the 
 health record and alerted with rate limiting, never dropped silently, and never blocks the
 execution path or bypasses reservation and lease limits. The collector consumes complete
 records, quarantines corrupt lines, leaves a truncated tail unconsumed, deduplicates by id and
-content hash, and acknowledges an offset only after the sink transaction committed. When the
-provider already ran and the settlement could not be recorded, redacted minimal termination
-evidence is kept locally, the attempt fails without claiming completion, and the executor refuses
-to start a provider for that task until an operator reconciles the record; the invocation ledger
-closes the orphaned reservation as unsettled_unknown. Health, status, orphan and alert reports are
-informational only. Unit fault injection and MemoryStore exercise these boundaries; they are not
-operational evidence.
+content hash, acknowledges an offset only after the sink transaction committed, and reclaims a
+segment only when it is fully acknowledged and no longer being written, so a spool that is
+consumed never saturates and an active segment is never truncated. Correlation, causation and
+evidence identifiers are opaque handles and are refused, never rewritten, when they are not;
+operator labels follow the same rule and operator free text is redacted and bounded before it is
+stored or returned. Once the provider is entered, every failure up to the durable checkpoint
+(transport, progress, cleanup, settlement, breaker report, result persistence, checkpoint) leaves
+redacted termination evidence naming its boundary, records the failure, blocks the task and
+notifies the lead through the existing execution notice; a refusal proven to precede entry stays
+an ordinary retry, and a runner-observed output failure whose evidence is already persisted is an
+observed outcome. Reconciliation commits the operator's decision and audit to the sink before the
+local blocking record is finalized, is idempotent for the same decision and refuses a different
+one; re-queuing goes through execution recovery, which refuses while any termination record is
+pending. Pending alerts are persisted locally, cleared only after the transaction that carried
+them committed, and inherited by the next process run. The invocation ledger closes an orphaned
+reservation as unsettled_unknown. Health, status, orphan and alert reports are informational
+only. Unit fault injection and MemoryStore exercise these boundaries; they are not operational
+evidence.
 
 # SDD preparation contracts
 

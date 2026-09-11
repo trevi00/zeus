@@ -283,6 +283,7 @@
                       "execution_recovered",
                       "inspection_blocked",
                       "operator_cancelled",
+                      "reconciliation_required",
                       "ticket_binding_changed",
                       "ticket_superseded"
                     ]

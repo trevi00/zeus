@@ -14,6 +14,7 @@ from codex_harness.adapters.observation_spool import (
     SpoolDirectory,
     atomic_write,
     encode_record,
+    segment_identity,
 )
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.observations import Collector, Observer
@@ -125,7 +126,7 @@ def test_real_child_processes_concurrent_kill_and_partial_tail_lose_no_complete_
                                        creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
                 for mode in ("a", "b", "partial", "killed")}
     directory = SpoolDirectory(root)
-    killed_path = root / "spool" / (runs["killed"] + ".jsonl")
+    killed_path = root / "spool" / (runs["killed"] + ".0000.jsonl")
     deadline = time.monotonic() + 90  # slow CI runners take seconds to import; kill only once it is producing
     while time.monotonic() < deadline:
         if killed_path.exists() and any(row[2] == "complete" for row in directory.read(killed_path)):
@@ -137,13 +138,15 @@ def test_real_child_processes_concurrent_kill_and_partial_tail_lose_no_complete_
     assert children["a"].returncode == 0 and children["b"].returncode == 0, results
     assert children["partial"].returncode == 3
     assert children["killed"].returncode != 0
-    files = {path.stem: path for path in directory.spool_files()}
-    assert set(files) == set(runs.values())
-    killed_rows = list(directory.read(files[runs["killed"]]))
+    by_run = {}
+    for path in directory.spool_files():
+        by_run.setdefault(segment_identity(path)[0], []).append(path)
+    assert set(by_run) == set(runs.values())
+    killed_rows = [row for path in by_run[runs["killed"]] for row in directory.read(path)]
     complete_killed = [row for row in killed_rows if row[2] == "complete"]
     assert complete_killed, "the killed producer wrote at least one complete record before the kill"
     assert all(row[2] in {"complete", "truncated_tail"} for row in killed_rows)
-    partial_rows = list(directory.read(files[runs["partial"]]))
+    partial_rows = [row for path in by_run[runs["partial"]] for row in directory.read(path)]
     assert [row[2] for row in partial_rows][-1] == "truncated_tail" and len(partial_rows) == 151
     collector = Collector(store, directory, validate=validate_observation, batch=500)
     passes, first = [], {"inserted": 0, "conflicts": 0, "corrupt": 0, "duplicates": 0}

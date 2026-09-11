@@ -91,23 +91,40 @@ attributes 허용 키와 타입은 레지스트리에 있다. 프롬프트·환�
 | 진단 (`Observer.emit`) | `<runtime>/observations/spool/<process_run_id>.jsonl`, 한 프로세스 한 파일, 레코드당 한 번의 write, 32 MiB 상한 | 절대 raise하지 않음. SpoolFull/OSError → 카운터, `health/<run>.json` 갱신, 알림(창 300초 억제). 거절된 이벤트는 payload 없이 `observation_refused` |
 | 수집 (`Collector.collect`, `zeus observe collect`) | 파일별 ack 오프셋부터 읽어 PG `observations`에 넣고, 커밋 후 `.ack` 원자 교체 | sink 실패 → ack 전진 없음, `sink_unavailable` 알림 보류, 다음 수집에서 재시도·중복 제거 (L06). 손상 줄 → `observation_quarantine`, 잘린 꼬리 → 소비 안 함 (L05) |
 | 알림 | PG `observation_alerts` (tx 안 또는 별도 tx) | PG 불가 → `notification.status=pending, channel=null`로 로컬 보류(100건 상한), 복구 후 `recorded_after_recovery`로 재생. Redis/PG 모두 없을 때 외부 알림 성공을 주장하지 않음 |
-| provider 실행 후 정산 실패 | `terminations/<digest>.json` create-only(원자), 가능하면 PG `observation_terminations` | `PostExecutionRecordFailure`로 시도 실패 처리(완료 주장 없음). 같은 task의 다음 실행은 `ReconciliationRequired` → 상태 `blocked`, `execution.reconciliation_required` 이벤트, 감사. 운영자가 `zeus observe reconcile <id> --resolution rerun|discard --operator --reason`로 정리 후에만 재개 (L04) |
+| provider **진입 이후** 실패 (검토 R1) | `terminations/<digest>.json`(임시 파일 + `os.replace`, 존재 시 재전달로 계수), 가능하면 PG `observation_terminations`; 레코드에 실패 경계 `boundary` ∈ transport / classification / settlement / breaker_report / result_persistence / checkpoint | `provider_entered`가 외부 효과 경계다. 진입 전 거절(예약 감사 실패, breaker, AppServer 생성 실패)은 종료 기록 없이 통상 retry. 진입 후에는 checkpoint까지의 모든 예외가 `PostExecutionRecordFailure`가 되어 (1) 기존 실패 기록(영수증·진단 요청·`execution_failed` notice)을 남기고 (2) 같은 tx에서 작업을 `blocked/reconciliation_required`로 바꾸고 `execution.notice(reconciliation_required)`를 outbox에 넣고 감사한다. 예외: runner가 관측한 출력 실패(`ExecutionFailure`)는 증거 artifact를 먼저 저장하므로 관측된 결과이며 기존 retry 의미를 유지한다. `_run` 진입 시 `pending_terminations` 검사는 다른 프로세스가 남긴 기록에 대한 2차 방어다 (L04) |
+| reconcile (검토 R2) | `zeus observe reconcile <id> --resolution rerun\|discard --operator <식별자> --reason <문장>`: **PG 결정 + 감사 커밋이 먼저**, 로컬 pending 파일의 resolved 이동은 그 뒤 | PG 실패 → 명령 실패, pending 유지. 커밋 후 로컬 finalize 실패·응답 유실 → 같은 명령 재전달이 PG의 resolved 행과 같은 결정임을 확인하고 finalize만 다시 한다(다른 결정이면 거절). `pending_terminations`는 PG가 resolved인 로컬 파일을 늦게 finalize한다. 읽을 수 없는 pending 파일은 모든 작업을 차단하고 status에 `unreadable`로 나온다. 권한 효과: `rerun`/`discard` 모두 관측 차단만 해제한다. 재큐잉은 기존 `execution-recovery prepare --operation repair` + `apply`로만 하며, PG에 pending termination이 남아 있으면 repair가 거절된다. `discard`는 작업을 blocked로 둔다(cancel 또는 별도 결정) |
+| 스풀 공간 (검토 R3) | 세그먼트 회전(`<run>.<n>.jsonl`, 기본 4 MiB)과 **미확인 바이트** 기준 상한(32 MiB). 수집기가 세그먼트를 ack하고, 완전히 ack된 세그먼트가 작성자의 현재 세그먼트가 아니면(다음 세그먼트 존재 또는 `.closed` 마커) 삭제한다 | 활성 세그먼트는 절대 truncate하지 않는다. 수집이 따라오면 상한을 몇 번 넘겨도 기록이 이어지고, sink 단절 중에는 상한에서 멈추며 카운터·알림으로 드러난다. ack 유실은 재수집 후 id/hash 중복 제거로 흡수된다 |
+| 보류 알림 (설계 판단 3) | `pending-alerts/<run>.json`에 원자 기록. 새 프로세스는 이전 run의 보류 파일을 상속한다 | `_flush_pending`은 tx 안에 put만 하고, 커밋 후 `_flushed`가 목록·파일을 비운다. 커밋 실패 시 보류 유지. 재시작 후 다음 성공 tx에서 `recorded_after_recovery`(replayed_by 포함)로 재생 |
 
-Windows/Linux 차이: 단일 작성자 파일 + O_APPEND 한 번 쓰기로 동시 append 인터리빙을 피하고,
-ack/health/termination은 임시 파일 + `os.replace`(양쪽 모두 원자)로 쓴다. fsync는 기본 on.
+Windows/Linux 차이: 단일 작성자 세그먼트 + O_APPEND 한 번 쓰기로 동시 append 인터리빙을 피하고,
+ack/health/termination/pending-alerts는 임시 파일 + `os.replace`(양쪽 모두 원자)로 쓴다. fsync는 기본 on.
+
+### 3.3.1 redaction 경계 (검토 R4)
+
+- `correlation_id`·`causation_id`·`evidence_refs`는 불투명 식별자 규칙(`^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,199}$`)을
+  통과해야 하고, 아니면 이벤트를 **거절**한다(치환하면 서로 다른 실행이 합쳐지므로). 거절은
+  `operations.observation_refused`로 남고 payload는 싣지 않는다.
+- `reconcile`의 `operator`는 같은 식별자 규칙, `reason`은 redaction 후 300자로 잘라 `{text, sha256,
+  redaction_findings, truncated}`로 저장한다. CLI 반환값·resolved 파일·PG 행 모두 이 형태다.
+- `validate_observation` 오류 문장은 경로와 실패 키워드만 담는다(`['outcome']: enum`). 격리 행의
+  `defect`도 그 문장이다.
+- 이물 예외는 타입 + `message_sha256` 16자만 기록한다. `ContractError`(Zeus 자체 문구)는 redaction 후
+  300자.
+- 회귀 테스트가 producer·CLI 반환·PG 행·파일·격리·알림·health·status를 함께 검사한다. JUnit은 호스트
+  러너가 비밀번호를 scrub한 뒤 `CANARY-`/`password=`를 grep한다.
 
 ### 3.4 기존 기능 재사용 표
 
 | 기존 | 재사용 방식 | 새로 만들지 않은 것 |
 |---|---|---|
 | `documents` 테이블(bucket 문서 저장소) | `observation_*` 버킷 6개 | 새 테이블·마이그레이션 없음 |
-| six-W v1 `message.schema.json` | 변경 없음. 관측 레코드는 별도 스키마 | 새 message type·reason enum 없음 |
+| six-W v1 `message.schema.json` | 관측 레코드는 별도 스키마. Codex 결정(설계 판단 2)으로 `execution.notice`의 `reason_code` enum과 `REASONS`에 `reconciliation_required` 1개를 추가해 차단을 팀장에게 기존 경로로 알린다 | 새 message type 없음. 소비자(`Workflow.handle → receive`)는 변경 없이 증명·중복 전달·수신자 검사를 그대로 적용 |
 | invocation ledger 예약/정산/포기 | `audit=` 콜백 한 줄 | 별도 작업 원장 없음 |
 | outbox 시도/영수증 | `audit=` 콜백 | 별도 전달 경로 없음 |
 | execution_progress / checkpoint / artifacts | 그대로 두고 참조(evidence_refs)만 기록 | 이벤트 원문 복제 없음 |
 | `execution_notices` (six-W notice) | 그대로 둠 | 6절 보고 |
 | `health` 버킷 | supervisor·outbox health 유지 | 관측 health는 로컬 파일 + `zeus observe status` |
-| `execution-recovery prepare/apply` | blocked 작업의 재개 경로로 그대로 사용 | 새 recovery 명령 없음 |
+| `execution-recovery prepare/apply` | `repair`의 적격 오류에 `reconciliation_required`를 추가. PG에 pending termination이 남아 있으면 prepare/apply 모두 거절 | 새 recovery 명령 없음 |
 | `profile_privacy` / `monitoring.safe_text` 정규식 | 같은 패턴을 `redact_text`에 통합 | 기존 함수 변경 없음 |
 
 ## 4. 구현 (바뀐 파일)
@@ -167,6 +184,24 @@ GitHub Actions (head `9b7156d`): ubuntu 3.12/3.14와 integration 잡은 통과, 
 호스트 재부팅·Docker Desktop 재시작, 사람 인수. 단위 테스트의 PG 쓰기 실패·연결 단절은 Interceptor
 주입이며, `test_real_postgres_connection_refusal_is_a_sink_outage`만 실제 연결 거부를 쓴다.
 GitHub Actions 결과는 PR 체크에서 확인한다.
+
+## 5.3 1차 검토(PR #71 review 5175360030) 반영
+
+| 지적 | 반영 | 회귀 테스트 |
+|---|---|---|
+| R1 provider 실행 이후 보호 범위 | `provider_entered` 경계, 6개 실패 경계 추적, 실패 즉시 blocked + notice, 진입 전 거절은 retry 유지, 출력 실패(`ExecutionFailure`)는 관측 결과로 예외 처리, schema preflight를 진입 전으로 이동 | `test_observation_wiring::test_post_entry_failures_all_leave_evidence_and_block[transport,result_persistence,checkpoint]`, `test_refusal_before_entry_is_an_ordinary_retry`, `test_repair_is_refused_until_reconciled_and_then_reruns_once`, `test_executor_research`의 갱신 3건 |
+| R2 reconcile 저장 실패 | PG 커밋 → 로컬 finalize 순서, 같은 결정 재전달 멱등, 다른 결정 거절, 늦은 finalize, 읽을 수 없는 파일 차단, termination 원자 생성 | `test_observation_review::test_failed_reconcile_keeps_the_pending_marker`, `test_reconcile_survives_lost_commit_response_and_local_finalize_failure`, `test_sink_resolved_record_is_finalized_late_by_pending_check`, `test_unreadable_termination_file_blocks_and_is_reported` |
+| R3 스풀 영구 포화 | 세그먼트 회전, 미확인 바이트 상한, ack 후 회수, `.closed` 마커 | `test_continuous_production_and_collection_never_saturates`, `test_sink_outage_bounds_the_spool_and_recovery_resumes_without_loss_or_duplicates`, 기존 L05 자식 프로세스 테스트(세그먼트 대응) |
+| R4 redaction 경계 | 식별자 규칙으로 거절, reason/operator 정책, validator 문장, 격리 defect | `test_reconcile_decision_correlation_and_schema_errors_never_carry_the_canary` |
+| 판단 2 notice 재사용 | `REASONS`·schema enum·producer(`_record_reconciliation_block`) | L04 테스트의 notice 검증(schema, 중복 전달 멱등, 잘못된 수신자 거절) |
+| 판단 3 보류 알림 | 커밋 후 비움, 로컬 파일 지속, 재시작 상속 | `test_pending_alerts_survive_restart_and_replay_after_the_next_commit` |
+
+반영 중 발견한 추가 결함: 수집기가 ack·회수 전에 `sink_recovered`를 emit해 복구 이벤트 자체가
+포화 스풀에서 떨어졌다. ack·회수 뒤로 옮겼다.
+
+기존 동작 변경(Codex 확인 항목): provider 진입 후 transport 예외·checkpoint 실패·persist 실패는 더
+이상 `retry`가 아니라 `blocked`다. `test_executor_research`의 세 테스트가 그 의미로 갱신됐고,
+운영자 재개 경로는 `observe reconcile` → `execution-recovery repair`다.
 
 ## 6. Codex에 보고하는 설계 판단
 

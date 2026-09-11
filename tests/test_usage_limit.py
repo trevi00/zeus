@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from test_app_server import failure as inspection_failure
 from test_app_server import finish, replay
+from test_executor_research import reconcile_and_repair
 from test_executor_research import setup as setup
 from test_integration import pgstore as pgstore
 
@@ -116,7 +117,9 @@ def test_failed_execution_is_persisted_and_restart_does_not_resubmit(setup, monk
 def test_retry_history_survives_terminal_quota_failure(setup, monkeypatch):
     s = setup
     s.config['failure'] = 'shortlist'
-    assert s.executor.execute_one('worker:github')['status'] == 'retry'
+    # A transport fault after provider entry blocks until reconciled and repaired (INV-OBSERVATION-001).
+    assert s.executor.execute_one('worker:github')['status'] == 'blocked'
+    reconcile_and_repair(s, s.task['id'])
     install_rejection(monkeypatch, s)
     failed = s.executor.execute_one('worker:github')
     assert failed['status'] == 'failed' and failed['attempt'] == 2

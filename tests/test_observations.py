@@ -228,10 +228,12 @@ def test_restart_uses_a_new_namespace_and_status_report_is_informational(tmp_pat
     b = second.emit("general.process_started", "started", attributes={"mode": "one"})
     assert a["sequence"]["number"] == b["sequence"]["number"] == 1 and a["event_id"] != b["event_id"]
     directory = SpoolDirectory(tmp_path / "obs")
-    Collector(store, directory, validate=validate_observation).collect()
+    collected = Collector(store, directory, validate=validate_observation).collect()
     report = status_report(store, directory, second)
     assert report["buckets"]["observations"] == 2 and report["authority"] == "informational_only"
-    assert len(report["spool_files"]) == 2 and report["observer"]["process_run_id"] == second.process_run_id
+    # The closed first run's segment was fully acknowledged and reclaimed; the live one stays.
+    assert collected["reclaimed_segments"] == 1
+    assert len(report["spool_files"]) == 1 and report["observer"]["process_run_id"] == second.process_run_id
 
 
 def test_canary_secret_never_reaches_spool_sink_health_or_status(tmp_path, store):
