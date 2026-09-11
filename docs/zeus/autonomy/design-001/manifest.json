@@ -1,0 +1,38 @@
+[
+  {
+    "path": "claude-probe.json",
+    "sha256": "9b50be73fac2d7cc215f2139c30daa43e1498958c0ab0a723198afff0e983207"
+  },
+  {
+    "path": "CLAUDE-TASK.md",
+    "sha256": "9c4b1e3aaba6d10b1562d0c16c91d0c1a9a8f223cef73668066fc8661187d65c"
+  },
+  {
+    "path": "focused-validation.json",
+    "sha256": "565a06d7a48ce1f40d3d210cca76eebcd328fff1fe23a2edf682e52749931f3c"
+  },
+  {
+    "path": "help.txt",
+    "sha256": "ae85d661e9c086f05637ebcd868f5702b477ff6e55e2e65b8ada7807cd51a4b6"
+  },
+  {
+    "path": "issue-observations.json",
+    "sha256": "68beb9aeddaaec0bfa91a44d6aa4d4ebf848ed4430e7458781ccc59e6c06794e"
+  },
+  {
+    "path": "README.md",
+    "sha256": "bb100359bbb3bb7555b1062084cf20ea218019d8f43e32062fcfd09c3636477b"
+  },
+  {
+    "path": "source-manifest.json",
+    "sha256": "1eee457e168554331b8642f8b5c1c567ff804d94069a8cc765d7c865ea13096e"
+  },
+  {
+    "path": "U001-logging-contract.md",
+    "sha256": "b2b46d43ba710641c335ccb7f0c8325ffa9314e78570c1e48c021816e58f93e3"
+  },
+  {
+    "path": "version.txt",
+    "sha256": "63a9a44d5ed72850cbb864978de82be5be0fe617d0f32e623d03fc910bfd2641"
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "issue": 1,
+    "ticket_id": "ZEUS-8f1322ec0a67",
+    "comment_url": "https://github.com/trevi00/zeus/issues/1#issuecomment-5628913137",
+    "observation": {
+      "id": "8510492812ae4e67e10600f1299e311e642ba97578679e085068c32504cf02a5",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "repository": "trevi00/zeus",
+      "number": 1,
+      "url": "https://github.com/trevi00/zeus/issues/1",
+      "state": "OPEN",
+      "title": "[ZEUS-ANALYSIS] Claude 로컬 하네스 전체 분석과 Zeus 흡수",
+      "purpose": "pull",
+      "evidence_ref": "sha256:bedef49ed122377d3a87131a6df97461a38816e18d4cd8c332df358a6c08f4ca",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T03:16:04.230183+00:00",
+      "first_seen": "2026-09-11T03:16:04.230183+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 11,
+    "ticket_id": "ZEUS-3d913005bed0",
+    "comment_url": "https://github.com/trevi00/zeus/issues/11#issuecomment-5628913354",
+    "observation": {
+      "id": "0af5f7aa7e5e4c3caa12c9a41a6cebbcd341aced10afaa15f517205d230a6482",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "repository": "trevi00/zeus",
+      "number": 11,
+      "url": "https://github.com/trevi00/zeus/issues/11",
+      "state": "OPEN",
+      "title": "[FA-010] Git 추적 밖 경험·플러그인·미커밋 노트의 분석 누락",
+      "purpose": "pull",
+      "evidence_ref": "sha256:4c94274ef8876581bafeb5a64b7304894f9277fab0c27e54ffaeb2b726246404",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T03:16:05.850389+00:00",
+      "first_seen": "2026-09-11T03:16:05.850389+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 17,
+    "ticket_id": "ZEUS-e36daeb984c1",
+    "comment_url": "https://github.com/trevi00/zeus/issues/17#issuecomment-5628913578",
+    "observation": {
+      "id": "73e573dd66f858fddbb3c2a06463966cc6d8abd2747c96843c70e8a6064463a9",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "number": 17,
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "state": "OPEN",
+      "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:61b29ca1abc4c12ac4b152ea669e158f002cd706bb4efa8b4d88ba1f085312a4",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T03:16:07.676819+00:00",
+      "first_seen": "2026-09-11T03:16:07.676819+00:00",
+      "sequence": 8
+    }
+  }
+]
