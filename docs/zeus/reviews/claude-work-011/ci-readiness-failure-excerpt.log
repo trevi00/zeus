@@ -1,0 +1,2 @@
+2026-09-11T08:14:32.8859966Z FAILED tests/test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed - psycopg.OperationalError: connection failed: connection to server at "127.0.0.1", port 32769 failed: FATAL:  the database system is starting up
+2026-09-11T08:14:32.8861603Z ERROR tests/test_host_interruption.py::test_postgres_outage_cannot_extend_durable_deadline - psycopg.OperationalError: connection failed: connection to server at "127.0.0.1", port 32778 failed: server closed the connection unexpectedly

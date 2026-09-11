@@ -1,0 +1,1 @@
+{"platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43", "pruned": {"runs": 1, "segments": 1, "files": 0}, "writer_still_open": true, "append_reported_success": true, "visible_segments": 0, "scope": "live writer unlinked by age; later successful append has no collectable path"}

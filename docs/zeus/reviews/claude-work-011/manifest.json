@@ -1,0 +1,78 @@
+[
+  {
+    "path": "boundaries-final.xml",
+    "sha256": "7d7012e38c2b6d13e9de2fd90713a25193c5dd74e176a7c8306b6026478d2d05"
+  },
+  {
+    "path": "boundaries.xml",
+    "sha256": "9cc3c1bd319b7ef9090cecb5abb0e0f289d1b6fbe75ca622f28d163450cb5c75"
+  },
+  {
+    "path": "changed-regressions.xml",
+    "sha256": "961b42bfe798e70592fc885e291d33d6f97a050d0412f6add890b83da4ffef64"
+  },
+  {
+    "path": "check_receipts.py",
+    "sha256": "a693e0b3083e92041a2f06d60ebb8e641bfb3bf47374d909f649dccfc1c6973e"
+  },
+  {
+    "path": "ci-attempt1-jobs.json",
+    "sha256": "f3d290dff3ab2999db81a992c47a522a199f0a8469af28b388722a7b8c660e6a"
+  },
+  {
+    "path": "ci-readiness-failure-excerpt.log",
+    "sha256": "d4f74fd47e8cc0524a30473d0f1af762804ba631d366ca6745be652b4485ba35"
+  },
+  {
+    "path": "ci-runtime-attempt1-jobs.json",
+    "sha256": "20993f54d232cfb054b0cb2a74e135942fcf64e7562ed88c4cbd65ac7d44d119"
+  },
+  {
+    "path": "ci-windows-failure-excerpt.log",
+    "sha256": "4842195a5068d63d11f717c2896d2814899e04ea002c594c26d7f60d01d45623"
+  },
+  {
+    "path": "integration-result.json",
+    "sha256": "eb4a848632707280e1304dd9f8b1910b577b807a4096047c7e3694df451901bd"
+  },
+  {
+    "path": "integration.log",
+    "sha256": "fa96998b44f5cb1465158e04df8f96129e5844f5b7259658c981de47634c34e0"
+  },
+  {
+    "path": "integration.xml",
+    "sha256": "e3d8dd81a2d25b2b867a8c97dc6adca79da0244de87fdf22fa676109862df28c"
+  },
+  {
+    "path": "live-writer-linux.log",
+    "sha256": "e0034e7f8f265394429d027a9270ab6cec2360509644d3c44a7ba6412d8b5a1d"
+  },
+  {
+    "path": "live_writer_linux.py",
+    "sha256": "f37b518d2afafadf345509f2f3d384c984af049e47fa1b34b5cb37dc892153ff"
+  },
+  {
+    "path": "pr-snapshot.json",
+    "sha256": "d67d04631318c47c33974d5c89630d37a59f161fb342f835763cd0f32ffd9dd1"
+  },
+  {
+    "path": "README.md",
+    "sha256": "d3dcc917548057aec04152aea081a0b8977a6ae88c5b499c5ed14516cea4c402"
+  },
+  {
+    "path": "receipt-check.json",
+    "sha256": "ca1d90374e79712c3c1947e9559d241aed649d777edfdf9b5cf9462caeb9b3a3"
+  },
+  {
+    "path": "recent-ci-runs.json",
+    "sha256": "898ca96ff026810999f9ef3141110521991231af292770bd803eff74f4bd7d53"
+  },
+  {
+    "path": "run_integration.py",
+    "sha256": "fd981d32ed2f1afd84b98ceccca770410c7ef5c01b770ffbc9fc7cf4a07752e6"
+  },
+  {
+    "path": "test_boundaries.py",
+    "sha256": "5f741bae33d0f72f5effe26bf6548aa8695c410e5b9358ed6c07e8999f7a5ce1"
+  }
+]
