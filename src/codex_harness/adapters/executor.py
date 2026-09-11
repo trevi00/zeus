@@ -402,9 +402,10 @@ class Executor:
             # termination evidence that was not reconciled; the reservation and its audit record
             # commit together, and a failed audit means no reservation and no provider.
             if lease:
-                # This attempt's own unconfirmed marker (a second stage or a handoff of the same
-                # attempt) is expected; anything else pending belongs to an earlier attempt.
-                pending = [row for row in self.observer.pending_terminations(key)
+                # Early, strict pre-check (a failed sink read raises; it never reads as "none").
+                # The authoritative check is `guard_reservation` inside the reservation transaction.
+                # This attempt's own unconfirmed marker (a second stage or a handoff) is expected.
+                pending = [row for row in self.observer.pending_terminations(key, strict=True)
                            if not (row.get("status") == "unconfirmed"
                                    and (row.get("generation"), row.get("attempt")) == (lease.get("generation"), lease.get("attempt")))]
                 if pending:
@@ -419,7 +420,8 @@ class Executor:
             reservation = (self.invocations.reserve(
                 lease, request=request, budget_seconds=timeout, stage=stage,
                 guard=lambda tx: self.workflow._owned(tx, lease),
-                audit=lambda tx, row: (self.observer.mark_unconfirmed(tx, lease, reservation_id=row["id"]),
+                audit=lambda tx, row: (self.observer.guard_reservation(tx, lease),
+                    self.observer.mark_unconfirmed(tx, lease, reservation_id=row["id"]),
                     self.observer.audit(
                     tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
                     execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
@@ -712,23 +714,32 @@ class Executor:
         except PostExecutionRecordFailure as exc:
             return self._fail_task(task, agent, exc, block=[exc.record_id])
         except Exception as exc:
-            return self._fail_task(task, agent, exc, **self._failure_disposition(task, exc))
+            error, disposition = self._failure_disposition(task, exc)
+            return self._fail_task(task, agent, error, **disposition)
 
-    def _failure_disposition(self, lease, exc) -> dict:
+    def _failure_disposition(self, lease, exc):
         """INV-OBSERVATION-001: how a failure outside `_run` closes or keeps this attempt's marker.
 
         No open marker: nothing was reserved, an ordinary retry. An open marker with a
         runner-observed output failure or a contract rejection of an already persisted answer:
         the outcome was observed, the marker closes with the failure record and the retry stays.
         Anything else with an open marker (an acceptance write, a workspace capture, a decision
-        commit that failed) cannot prove the effects were accepted: the attempt is blocked.
+        commit that failed) cannot prove the effects were accepted: the attempt is blocked, and the
+        failure is published under the same boundary/type/digest wording as failures inside `_run`;
+        the foreign exception text never reaches the task row, the CLI or the diagnosis request.
+        A sink read that fails here is treated as unknown, which blocks.
         """
-        pending = self.observer.pending_terminations(lease["id"])
+        try:
+            pending = self.observer.pending_terminations(lease["id"], strict=True)
+        except Exception:
+            pending = [{"record_id": self.observer.termination_id(lease)}]
         if not pending:
-            return {}
+            return exc, {}
         if isinstance(exc, (ExecutionFailure, ContractError)):
-            return {"closure": "observed_failure"}
-        return {"block": [row.get("record_id") for row in pending]}
+            return exc, {"closure": "observed_failure"}
+        record_id = self.observer.record_termination(
+            lease, reservation_id=None, classification="unknown", stream_hash=None, error=exc, boundary="acceptance")
+        return PostExecutionRecordFailure(record_id, exc, "acceptance"), {"block": [record_id]}
 
     def _record_reconciliation_block(self, tx, bucket, lease, agent, current, record_ids):
         event = {"type": "execution.reconciliation_required", "bucket": bucket, "task_id": lease["id"],
@@ -962,7 +973,8 @@ class Executor:
             return self._fail_decision({**decision, "_bucket": "decisions_pending"}, agent, exc, block=[exc.record_id])
         except Exception as exc:
             lease = {**decision, "_bucket": "decisions_pending"}
-            return self._fail_decision(lease, agent, exc, **self._failure_disposition(lease, exc))
+            error, disposition = self._failure_disposition(lease, exc)
+            return self._fail_decision(lease, agent, error, **disposition)
 
     def _fail_decision(self, lease, agent, error, *, block=None, closure=None):
         try:

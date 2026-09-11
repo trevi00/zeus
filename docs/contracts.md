@@ -561,8 +561,13 @@ health record and alerted with rate limiting, never dropped silently, and never 
 execution path or bypasses reservation and lease limits. The collector consumes complete
 records, quarantines corrupt lines, leaves a truncated tail unconsumed, deduplicates by id and
 content hash, acknowledges an offset only after the sink transaction committed, and reclaims a
-segment only when it is fully acknowledged and no longer being written, so a spool that is
-consumed never saturates and an active segment is never truncated. Correlation, causation and
+segment only when it is fully acknowledged and provably no longer writable — rotated past, closed
+by its writer, or its run lock released by the operating system when the writer died; file age
+alone never finishes a run, so a spool that is consumed never saturates, an active segment is
+never truncated and a live but idle writer keeps its collectable path. Pending alerts replay in
+their own transaction, independent of any spool record. The check that no earlier attempt of a
+task is still unconfirmed is made inside the reservation transaction; a failed read is unknown,
+never permission. Correlation, causation and
 evidence identifiers are opaque handles and are refused, never rewritten, when they are not;
 operator labels follow the same rule and operator free text is redacted and bounded before it is
 stored or returned; identifiers that match a known credential shape are refused as well. The

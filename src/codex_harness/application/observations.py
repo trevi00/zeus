@@ -598,8 +598,32 @@ class Observer:
         self._health()
         return record_id
 
-    def pending_terminations(self, task_id: str) -> list[dict]:
-        """Local pending records plus the sink's; a record the sink already resolved is finalized locally."""
+    @staticmethod
+    def _other_attempt(row: dict, lease: dict) -> bool:
+        return (row.get("generation"), row.get("attempt")) != (lease.get("generation"), lease.get("attempt"))
+
+    def guard_reservation(self, tx, lease: dict) -> None:
+        """Authoritative check, in the reservation transaction itself, that no earlier attempt of this
+        task is still unconfirmed or awaiting reconciliation (INV-OBSERVATION-001).
+
+        A best-effort read outside the transaction can miss rows (a transient query failure, a
+        write that landed in between); this read cannot, and if it fails the reservation fails
+        with it, so no provider starts.
+        """
+        blocking = [row for row in tx.scan(TERMINATION_BUCKET)
+                    if row.get("task_id") == lease["id"] and row.get("bucket", "tasks") == lease.get("_bucket", "tasks")
+                    and row.get("status") in {"unconfirmed", "pending_reconciliation"} and self._other_attempt(row, lease)]
+        blocking += [row for row in self.directory.pending_terminations(lease["id"])
+                     if row.get("unreadable") or self._other_attempt(row, lease)]
+        if blocking:
+            raise ReconciliationRequired(lease["id"], blocking)
+
+    def pending_terminations(self, task_id: str, strict: bool = False) -> list[dict]:
+        """Local pending records plus the sink's; a record the sink already resolved is finalized locally.
+
+        With `strict`, a failed sink read raises instead of returning the local rows only: a
+        caller deciding whether an execution may proceed must not read a partial answer as "none".
+        """
         local = {row.get("record_id", str(index)): row
                  for index, row in enumerate(self.directory.pending_terminations(task_id))}
         rows = dict(local)
@@ -610,6 +634,8 @@ class Observer:
         except Exception as exc:
             self.last_defect = _error_text(exc)
             self._sink("unavailable", exc)
+            if strict:
+                raise
             return [rows[key] for key in sorted(rows)]  # the sink cannot clear a local block
         for record_id, row in sink_rows.items():
             if row.get("task_id") != task_id:
@@ -679,11 +705,33 @@ class Collector:
         self.store, self.directory, self.validate = store, directory, validate
         self.observer, self.batch, self.clock = observer, batch, clock
 
+    def replay_pending_alerts(self) -> int:
+        """Replay pending alerts in their own transaction, independent of any spool record.
+
+        The alerts that matter most are the ones raised when the spool itself could not be
+        written; they exist only in the pending files, so their replay cannot wait for a spool row.
+        """
+        if self.observer is None:
+            return 0
+        self.observer.refresh_inherited_alerts()
+        if not self.observer.pending_alerts and not self.observer.inherited_pending:
+            return 0
+        try:
+            with self.store.transaction() as tx:
+                flushed = self.observer._flush_pending(tx)
+        except Exception as exc:
+            self.observer.last_defect = _error_text(exc)
+            self.observer._sink("unavailable", exc)
+            return 0
+        # The recovery event is emitted at the end of the pass, after acknowledgement and
+        # reclamation, so it does not land on a still-saturated spool.
+        return self.observer._flushed(flushed)
+
     def collect(self, prune: bool = True) -> dict:
         counts = Counter()
         files = []
-        if self.observer is not None:
-            self.observer.refresh_inherited_alerts()
+        counts["alerts_replayed"] = self.replay_pending_alerts()
+        replayed_ok = counts["alerts_replayed"] > 0
         for path in self.directory.spool_files():
             offset = self.directory.acknowledged(path)
             rows, end, tail = [], offset, False
@@ -739,9 +787,12 @@ class Collector:
                 pruned = {"error": type(exc).__name__}
             counts["pruned_runs"] = pruned.get("runs", 0)
             counts["pruned_files"] = pruned.get("segments", 0) + pruned.get("files", 0)
+        if replayed_ok and self.observer is not None and not counts.get("sink_failures"):
+            self.observer._sink("available")
         summary = {**{key: 0 for key in ("files", "records", "inserted", "duplicates", "conflicts", "corrupt",
                                          "refused", "truncated_tail", "unconfirmed_audits", "confirmed_audits",
-                                         "sink_failures", "reclaimed_segments", "pruned_runs", "pruned_files")},
+                                         "sink_failures", "reclaimed_segments", "pruned_runs", "pruned_files",
+                                         "alerts_replayed")},
                    **counts, "per_file": files}
         if self.observer is not None and (summary["records"] or summary["truncated_tail"]):
             self.observer.emit("operations.collection_completed", "observed",
@@ -846,6 +897,7 @@ def status_report(store, directory, observer: Observer | None = None) -> dict:
     return {"buckets": counts, "spool_files": [path.name for path in directory.spool_files()],
             "spool_unacknowledged_bytes": directory.unacknowledged_bytes(),
             "runtime_directory_bytes": directory.total_bytes(),
+            "live_writer_runs": directory.live_runs() if hasattr(directory, "live_runs") else [],
             "limits": {"per_run_unacknowledged_bytes": POLICY.observation_spool_bytes,
                        "segment_bytes": POLICY.observation_segment_bytes,
                        "finished_run_retention_seconds": POLICY.observation_retention_seconds,

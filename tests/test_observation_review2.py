@@ -34,7 +34,7 @@ def test_completion_commit_failure_blocks_instead_of_restarting_the_provider(tmp
     result = s.executor.execute_one("worker:geeknews")
     assert result["status"] == "blocked" and result["error"] == "reconciliation_required" and len(s.starts) == 1
     [pending] = s.observer.pending_terminations(s.task["id"])
-    assert pending["status"] == "unconfirmed" and pending["boundary"] == "reserved"
+    assert pending["status"] == "pending_reconciliation" and pending["boundary"] == "acceptance"
     intercepted.fail_put = None
     assert s.executor.execute_one("worker:geeknews") is None and len(s.starts) == 1
     with store.transaction() as tx:
@@ -227,16 +227,20 @@ def test_dead_run_without_marker_is_finalized_after_retention(tmp_path, store):
     root = tmp_path / "obs"
     o = file_observer(tmp_path, store)
     o.emit("general.process_idle_exit", "observed", attributes={"idle_seconds": 1})
-    # A crash: the descriptor is gone with the process, but no closed marker was written.
+    # A crash: the descriptor and the run lock are gone with the process, but no closed marker was written.
     import os
     os.close(o.spool._descriptor)
     o.spool._descriptor = None
+    o.spool._lock.release()
+    o.spool._lock = None
     directory = SpoolDirectory(root)
     assert not directory.run_finished(o.process_run_id, now=time.time(), retention_seconds=3600)
     assert directory.run_finished(o.process_run_id, now=time.time() + 7200, retention_seconds=3600)
-    Collector(store, directory, validate=validate_observation).collect()
-    assert directory.prune(now=time.time() + 7200, retention_seconds=3600)["segments"] == 1
-    assert directory.spool_files() == []
+    # The released lock proves the writer is gone, so the acknowledged last segment is reclaimed
+    # already during collection; retention only governs the remaining leftovers.
+    assert Collector(store, directory, validate=validate_observation).collect()["reclaimed_segments"] == 1
+    directory.prune(now=time.time() + 7200, retention_seconds=3600)
+    assert directory.spool_files() == [] and directory.known_runs() == set()
 
 
 # ---- R4 residual: credential shapes in identifiers and the failure text path --------------------

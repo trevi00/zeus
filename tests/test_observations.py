@@ -37,6 +37,7 @@ class Interceptor:
         self.store = store
         self.fail_put = None       # predicate(bucket, body) -> bool
         self.fail_transaction = None  # exception instance to raise on entry
+        self.fail_scan = None      # predicate(bucket) -> bool; True raises once per matching scan
 
     @contextmanager
     def transaction(self):
@@ -57,6 +58,11 @@ class _Interceptedtx:
         if self.owner.fail_put is not None and self.owner.fail_put(bucket, body):
             raise OSError("injected sink failure " + CANARY)
         self.tx.put(bucket, key, body)
+
+    def scan(self, bucket):
+        if self.owner.fail_scan is not None and self.owner.fail_scan(bucket):
+            raise OSError("transient marker read outage " + CANARY)
+        return self.tx.scan(bucket)
 
 
 @pytest.fixture(params=["memory", "postgres"])

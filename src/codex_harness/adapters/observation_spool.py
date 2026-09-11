@@ -29,13 +29,40 @@ import tempfile
 import time
 from pathlib import Path
 
+from filelock import FileLock, Timeout
+
 from codex_harness.domain.model import ContractError, canonical, require, utcnow
 from codex_harness.domain.policy import POLICY
 from codex_harness.ports import SpoolFull
 
+
+def run_lock_path(root: Path, process_run_id: str) -> Path:
+    return root / "spool" / (process_run_id + ".lock")
+
+
+def writer_alive(root: Path, process_run_id: str) -> bool:
+    """Liveness proof for a run's writer: its lock is held by a live process.
+
+    The lock is released by the operating system when the holder dies (BSD flock on Linux/WSL,
+    msvcrt region locking on Windows), so a free lock is proof that no writer remains, and a held
+    lock is proof that one does — file age proves neither.
+    """
+    path = run_lock_path(root, process_run_id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    probe = FileLock(str(path), is_singleton=False)
+    try:
+        probe.acquire(timeout=0)
+    except Timeout:
+        return True
+    except OSError:
+        return True  # cannot prove absence: treat the writer as alive
+    probe.release()
+    return False
+
 RECORD_KINDS = ("event", "audit")
 LINE = re.compile(rb"^([0-9a-f]{64}) (event|audit) (.*)$", re.S)
 RECORD_ID = re.compile(r"^[A-Za-z0-9_.:-]{1,200}$")
+IDENTIFIER_NAME = re.compile(r"^[0-9a-f]{32}$")
 # The writer names segments with at least four digits; the reader accepts any width and orders
 # numerically, so index 10000 follows 9999 instead of disappearing or sorting before it.
 SEGMENT = re.compile(r"^(?P<run>[0-9a-f]{32})\.(?P<segment>\d{4,})\.jsonl$")
@@ -140,13 +167,27 @@ class FileSpool:
         self._size = 0            # bytes in the current segment
         self._unacked = 0         # upper bound of unacknowledged bytes across this run's segments
         self.rotations = 0
+        self._lock = None
 
     @property
     def path(self) -> Path:
         return segment_path(self.root, self.process_run_id, self.segment)
 
+    def _hold_lock(self):
+        """The run's lock is the writer's liveness proof; it is held for the life of the process."""
+        if self._lock is None:
+            path = run_lock_path(self.root, self.process_run_id)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            lock = FileLock(str(path), is_singleton=False)
+            try:
+                lock.acquire(timeout=0)
+            except Timeout as exc:
+                raise ContractError("Another live writer holds this observation run") from exc
+            self._lock = lock
+
     def _open(self):
         if self._descriptor is None:
+            self._hold_lock()
             self.path.parent.mkdir(parents=True, exist_ok=True)
             flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_BINARY", 0)
             self._descriptor = os.open(self.path, flags, 0o600)
@@ -209,6 +250,12 @@ class FileSpool:
                          canonical({"closed_at": utcnow(), "segments": self.segment + 1}) + "\n")
         except OSError:
             pass  # a missing marker only delays reclamation of the last segment
+        if self._lock is not None:
+            try:
+                self._lock.release()
+            except OSError:
+                pass
+            self._lock = None
 
 
 class MemorySpool:
@@ -254,21 +301,55 @@ class SpoolDirectory:
         return sorted((path for path in directory.glob("*.jsonl") if segment_identity(path)),
                       key=lambda path: segment_identity(path))
 
-    def run_finished(self, process_run_id: str, now: float | None = None,
-                     retention_seconds: int = POLICY.observation_retention_seconds) -> bool:
-        """A run is finished when it wrote its closed marker or stopped writing longer ago than retention."""
-        if self.closed(process_run_id):
-            return True
+    def writer_alive(self, process_run_id: str) -> bool:
+        return writer_alive(self.root, process_run_id)
+
+    def _run_files(self, process_run_id: str) -> list[Path]:
+        files = [path for path in self.spool_files() if segment_identity(path)[0] == process_run_id]
+        for candidate in (self.root / "spool" / (process_run_id + ".closed"), self.root / "spool" / (process_run_id + ".lock"),
+                          self.root / "health" / (process_run_id + ".json")):
+            if candidate.is_file():
+                files.append(candidate)
+        return files
+
+    def known_runs(self) -> set[str]:
+        runs = {segment_identity(path)[0] for path in self.spool_files()}
+        spool = self.root / "spool"
+        for suffix in (".closed", ".lock"):
+            runs.update(path.name[:-len(suffix)] for path in (spool.glob("*" + suffix) if spool.is_dir() else [])
+                        if IDENTIFIER_NAME.fullmatch(path.name[:-len(suffix)]))
+        health = self.root / "health"
+        runs.update(path.stem for path in (health.glob("*.json") if health.is_dir() else [])
+                    if IDENTIFIER_NAME.fullmatch(path.stem))
+        return runs
+
+    def run_age(self, process_run_id: str, now: float | None = None) -> float | None:
+        """Seconds since the run's newest file (segments, marker, lock, health) was modified."""
         moment = time.time() if now is None else now
         newest = 0.0
-        for path in self.spool_files():
-            identity = segment_identity(path)
-            if identity and identity[0] == process_run_id:
-                try:
-                    newest = max(newest, path.stat().st_mtime)
-                except OSError:
-                    continue
-        return bool(newest) and moment - newest > retention_seconds
+        for path in self._run_files(process_run_id):
+            try:
+                newest = max(newest, path.stat().st_mtime)
+            except OSError:
+                continue
+        return moment - newest if newest else None
+
+    def run_finished(self, process_run_id: str, now: float | None = None,
+                     retention_seconds: int = POLICY.observation_retention_seconds) -> bool:
+        """A run is finished when it wrote its closed marker, or when no live writer holds its lock
+        and its last write is older than the retention window. Age alone never finishes a run: a
+        process that is merely idle, paused or on a moved clock still holds the lock."""
+        if self.closed(process_run_id):
+            return True
+        if self.writer_alive(process_run_id):
+            return False
+        age = self.run_age(process_run_id, now)
+        return age is not None and age > retention_seconds
+
+    def live_runs(self) -> list[str]:
+        """Runs whose writer still holds the lock: never pruned, reported instead."""
+        runs = {segment_identity(path)[0] for path in self.spool_files()}
+        return sorted(run for run in runs if not self.closed(run) and self.writer_alive(run))
 
     def prune(self, now: float | None = None,
               retention_seconds: int = POLICY.observation_retention_seconds) -> dict:
@@ -281,10 +362,7 @@ class SpoolDirectory:
         """
         counts = {"runs": 0, "segments": 0, "files": 0}
         moment = time.time() if now is None else now
-        runs = {segment_identity(path)[0] for path in self.spool_files()}
-        for marker in (self.root / "spool").glob("*.closed") if (self.root / "spool").is_dir() else []:
-            runs.add(marker.stem)
-        for run in sorted(runs):
+        for run in sorted(self.known_runs()):
             if not self.run_finished(run, moment, retention_seconds):
                 continue
             segments = [path for path in self.spool_files() if segment_identity(path)[0] == run]
@@ -306,7 +384,8 @@ class SpoolDirectory:
             if remaining:
                 continue  # still holds unacknowledged records; the collector must consume them first
             counts["runs"] += 1
-            for leftover in (self.root / "spool" / (run + ".closed"), self.root / "health" / (run + ".json")):
+            for leftover in (self.root / "spool" / (run + ".closed"), self.root / "spool" / (run + ".lock"),
+                             self.root / "health" / (run + ".json")):
                 try:
                     os.unlink(leftover)
                     counts["files"] += 1
@@ -360,7 +439,9 @@ class SpoolDirectory:
                     (segment_identity(other) or (None, -1))[1] > number
                     for other in self.spool_files() if other != path and segment_identity(other)
                     and segment_identity(other)[0] == run)
-        return later or self.closed(run)
+        # A rotated-past segment is sealed. The last segment is reclaimable only with proof that
+        # nobody can still append to it: the closed marker, or no live writer holding the run lock.
+        return later or self.closed(run) or not self.writer_alive(run)
 
     def reclaim(self, path: Path) -> bool:
         if not self.reclaimable(path):
