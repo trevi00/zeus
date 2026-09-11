@@ -83,6 +83,9 @@ def test_recreated_task_row_cannot_reissue_generation(backend, request):
     healthy = w.submit(assignment())
     claimed = w.claim('worker:implementation', 'owner-2')
     assert claimed['id'] == healthy['id'], 'the healthy task is still served'
+    # Equal creation timestamps may sort the healthy row first by id. Claim again to
+    # inspect the remaining restored row; it must never receive a new lease.
+    assert w.claim('worker:implementation', 'owner-3') is None
     with store.transaction() as tx:
         recreated = tx.get('tasks', task['id'])
         assert recreated['status'] == 'blocked' and recreated['error'] == 'ExecutionGenerationRegressed'
