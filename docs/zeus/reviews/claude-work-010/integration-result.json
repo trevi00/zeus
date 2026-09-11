@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "project": "zeus-verify-36d72374664446b1b59daf04460fa3a0",
+  "cleanup": "completed",
+  "scope": "Windows isolated PostgreSQL + Redis; fake model transport"
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "label": "windows-11",
+    "head": "0dba6f8100fa8f2ae94d7dad2159ced7edc82dbe",
+    "checks": [
+      {
+        "step": "ruff",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "full-suite-integration",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "disposable-docker-checks",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      }
+    ],
+    "junit_matches": true,
+    "runtime_delta_empty": true,
+    "pyproject_delta": "two-line review archive lint exemption",
+    "identity_stable": true,
+    "summaries": [
+      "All checks passed!",
+      "1519 passed, 14 skipped in 518.30s (0:08:38)",
+      "17 passed in 64.79s (0:01:04)"
+    ]
+  },
+  {
+    "label": "wsl-ubuntu-26.04",
+    "head": "0dba6f8100fa8f2ae94d7dad2159ced7edc82dbe",
+    "checks": [
+      {
+        "step": "ruff",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "full-suite-integration",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "disposable-docker-checks",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      }
+    ],
+    "junit_matches": true,
+    "runtime_delta_empty": true,
+    "pyproject_delta": "two-line review archive lint exemption",
+    "identity_stable": true,
+    "summaries": [
+      "All checks passed!",
+      "1525 passed, 8 skipped in 161.28s (0:02:41)",
+      "17 passed in 55.82s"
+    ]
+  }
+]

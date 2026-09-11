@@ -1,0 +1,50 @@
+[
+  {
+    "path": "boundaries-final.xml",
+    "sha256": "f9eb33e89c2e0f48bed15d76ff38cbe6686e7212528fa53815f4267a2dc9b49d"
+  },
+  {
+    "path": "boundaries.xml",
+    "sha256": "d64d85bc7505b292b3b5e196665d2ca731c1d8ddc2fda02e040a2c83576b2005"
+  },
+  {
+    "path": "changed-regressions.xml",
+    "sha256": "d345405b6f91bcf3820b3048430dc6608217a268c0248d96c98408a8c5beffb0"
+  },
+  {
+    "path": "check_receipts.py",
+    "sha256": "47e1d984cf43eadd069afdf2577877299c14432446ae6464d9bb562cd5364bcb"
+  },
+  {
+    "path": "integration-result.json",
+    "sha256": "949455291e6b2eac06910011a1732eafaeb8c36af85351da05d47b47d5873db9"
+  },
+  {
+    "path": "integration.log",
+    "sha256": "4c9fef8fb43fbcd19d938c688639f967fa145f6ba2a1df0b3dc674221480b18a"
+  },
+  {
+    "path": "integration.xml",
+    "sha256": "bf5f444ae2aedf3e2de53741dac42090d51f959d92323e70069f35e5fd09a208"
+  },
+  {
+    "path": "pr-snapshot.json",
+    "sha256": "0cdba2fa1be337fb9c476df11d55b13e074c31c0b9fef544d40d76036d2d5d62"
+  },
+  {
+    "path": "README.md",
+    "sha256": "c44becfd53d686fa446b38d5a45f8f497a548cf3c1a2121e1d3db071b9903d2e"
+  },
+  {
+    "path": "receipt-check.json",
+    "sha256": "cb504016136025ea6dcff61022995987629b9b25e5449214e15eb25cdc62cb89"
+  },
+  {
+    "path": "run_integration.py",
+    "sha256": "bcbeb4bb2deb15a8d81ba2d19e40c00285eb7a4ee6508e7d8b769fc82dcc1966"
+  },
+  {
+    "path": "test_boundaries.py",
+    "sha256": "8102cca3b58e4d48e1448054fd920f3a4bd8d6b43b2c14febcbfb18361c0a7fa"
+  }
+]
