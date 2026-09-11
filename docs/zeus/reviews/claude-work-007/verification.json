@@ -1,0 +1,40 @@
+{
+  "head": "55031b2517d4ba1a677f7b2b3edc9a301ce25963",
+  "ruff": "passed",
+  "full": {
+    "exit_code": 0,
+    "passed": 1116,
+    "skipped": 342,
+    "log": "full-final.log",
+    "sha256": "dcd1ddf56d168a2d92ca2c1112d678f5b46a8d0edcdb565142b41680e2d7e27b"
+  },
+  "pg_targets": {
+    "exit_code": 0,
+    "head": "55031b2517d4ba1a677f7b2b3edc9a301ce25963",
+    "command": [
+      "C:\\Users\\rudtn\\zeus-review-069b\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_execution_fence.py",
+      "tests/test_environment_evidence.py"
+    ],
+    "environment": "real configured PG, isolated test schemas; DSN omitted",
+    "sha256": "ace7bab90509454dbeeab01600eb9a37d87c037832d7aaadc016abce3313329c"
+  },
+  "docker_targets": {
+    "exit_code": 0,
+    "head": "5060cb3748d76e807a6854a09e91e791ed8342f9",
+    "command": [
+      "C:\\Users\\rudtn\\zeus-review-069b\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_verification.py",
+      "tests/test_host_interruption.py"
+    ],
+    "environment": "HARNESS_INTEGRATION=1; ZEUS_TEST_DOCKER=1; configured PostgreSQL with isolated per-test schemas (DSN omitted)",
+    "sha256": "98dce02c00467549681468bb8fb81caaed0d3887a34c52d7976d8d30a6ffe9fe"
+  },
+  "scope": "Codex Windows full suite (integration off), real PostgreSQL targeted tests, real disposable Docker targeted tests; submitted WSL evidence separately verified."
+}

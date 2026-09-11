@@ -1,0 +1,14 @@
+{
+  "exit_code": 0,
+  "head": "5060cb3748d76e807a6854a09e91e791ed8342f9",
+  "command": [
+    "C:\\Users\\rudtn\\zeus-review-069b\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_verification.py",
+    "tests/test_host_interruption.py"
+  ],
+  "environment": "HARNESS_INTEGRATION=1; ZEUS_TEST_DOCKER=1; configured PostgreSQL with isolated per-test schemas (DSN omitted)",
+  "sha256": "98dce02c00467549681468bb8fb81caaed0d3887a34c52d7976d8d30a6ffe9fe"
+}

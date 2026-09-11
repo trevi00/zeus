@@ -1,0 +1,86 @@
+[
+  {
+    "path": "checks.json",
+    "sha256": "52273d38c9d54201b59666d2b98c9c648d5bedcbdab088e1c9c32808f8422d43"
+  },
+  {
+    "path": "ci.json",
+    "sha256": "e47551b3c025e56b4ee97dca5239290aa899c99fc6611a20a36cbb301650a24c"
+  },
+  {
+    "path": "codex-fixes.patch",
+    "sha256": "94213a875f04f3e5ef0c6493a0240c89cfc65972f4aadf935cccc2558d50df5f"
+  },
+  {
+    "path": "docker-corrected.json",
+    "sha256": "efde1ef9c3ea9cccbd4c6a0fdbd5e89add995ce32f08d3a506b66ea2f1661710"
+  },
+  {
+    "path": "docker-corrected.log",
+    "sha256": "98dce02c00467549681468bb8fb81caaed0d3887a34c52d7976d8d30a6ffe9fe"
+  },
+  {
+    "path": "docker-corrected.py.txt",
+    "sha256": "78a63edb465d660ea8049ca650c4be93c66d85ee4ebf45a182ccad225cec5fb3"
+  },
+  {
+    "path": "docker.log",
+    "sha256": "71ffb44102493efd60d1a54a33af9caa6c37904a65dac94f555b1ec8740affcc"
+  },
+  {
+    "path": "full-corrected.log",
+    "sha256": "440d10d76b24d9915315ca3b699ff0f8f7ef947c942057f98ca78c4955e1a490"
+  },
+  {
+    "path": "full-final.log",
+    "sha256": "dcd1ddf56d168a2d92ca2c1112d678f5b46a8d0edcdb565142b41680e2d7e27b"
+  },
+  {
+    "path": "full.log",
+    "sha256": "df2744212cbd591746b9a5fba564cae765e7598f6f929700936ae9088b73522f"
+  },
+  {
+    "path": "issue-observations.json",
+    "sha256": "041b875e4ad7ac0643c2c4ad47e3197757c862a8bd7c3ee49183a11c6a21ff84"
+  },
+  {
+    "path": "merge.json",
+    "sha256": "ab128eada8a7967e554988d83ebb5d5281d8acb1a49984bfb8884134bfec902e"
+  },
+  {
+    "path": "open-issues.json",
+    "sha256": "f7fc2592e04534fba5ad62194284b9f654b1f9bde17de5a0980420d0590794cb"
+  },
+  {
+    "path": "pg-targets.json",
+    "sha256": "678dea4ddeb6b854ee9759abbf29c87503d1ece4c99b0812b48b71e2dd1fc437"
+  },
+  {
+    "path": "pg-targets.log",
+    "sha256": "ace7bab90509454dbeeab01600eb9a37d87c037832d7aaadc016abce3313329c"
+  },
+  {
+    "path": "pg-targets.py.txt",
+    "sha256": "582ef0e0255e93596dba44f53925311ac773a34a19dc390ab683b5c5f4126d90"
+  },
+  {
+    "path": "probes.py.txt",
+    "sha256": "b92a55b32923e4796038682c7556aaa7879978fa667ac48fac9b5ebe6ac2717d"
+  },
+  {
+    "path": "README.md",
+    "sha256": "344898ed1ed5a97d59364d85211b7aaae880f64fc5eb560413a88130214fa5ab"
+  },
+  {
+    "path": "review.json",
+    "sha256": "7d8cc1bd55c2b73baae4dc02abefab8c36ff30afc02f2a51960eb4ea9a6b233d"
+  },
+  {
+    "path": "submitted-evidence.json",
+    "sha256": "58137c4ee52fbf9c4411e026fa18864a9b61b8fafda5ab635f8e1bca754e43c0"
+  },
+  {
+    "path": "verification.json",
+    "sha256": "e6fb722e44174ef469bbb590ccc90f7407fb190ee7ca97f32f7951d0126d6704"
+  }
+]

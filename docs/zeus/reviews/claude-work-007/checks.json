@@ -1,0 +1,128 @@
+{
+  "synthetic_early_failure_probes": [
+    {
+      "failure": [
+        "compose:up"
+      ],
+      "returned_teardown": {
+        "exit_code": 0,
+        "error": null,
+        "stderr_tail": [],
+        "remaining": [],
+        "scope": "only compose project harness-evidence-probe-b5fc27a9",
+        "dotenv": null,
+        "ok": true,
+        "at": "2026-09-11T00:31:15.246272+00:00"
+      },
+      "disk_teardown": null,
+      "equal": false
+    },
+    {
+      "failure": [
+        "psql"
+      ],
+      "returned_teardown": {
+        "exit_code": 0,
+        "error": null,
+        "stderr_tail": [],
+        "remaining": [],
+        "scope": "only compose project harness-evidence-probe-7e052ec2",
+        "dotenv": "removed (there was no .env before the run)",
+        "ok": true,
+        "at": "2026-09-11T00:31:15.249679+00:00"
+      },
+      "disk_teardown": null,
+      "equal": false
+    }
+  ],
+  "evidence_checks": [
+    {
+      "host": "windows-11",
+      "step": "ruff",
+      "digest_match": true
+    },
+    {
+      "host": "windows-11",
+      "step": "full-suite-integration",
+      "digest_match": true
+    },
+    {
+      "host": "windows-11",
+      "step": "disposable-docker-checks",
+      "digest_match": true
+    },
+    {
+      "host": "windows-11",
+      "input": "runner",
+      "head_blob_matches": true
+    },
+    {
+      "host": "windows-11",
+      "input": "compose",
+      "head_blob_matches": true
+    },
+    {
+      "host": "windows-11",
+      "input": "uv.lock",
+      "head_blob_matches": true
+    },
+    {
+      "host": "windows-11",
+      "input": "pyproject.toml",
+      "head_blob_matches": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "step": "ruff",
+      "digest_match": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "step": "full-suite-integration",
+      "digest_match": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "step": "disposable-docker-checks",
+      "digest_match": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "input": "runner",
+      "head_blob_matches": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "input": "compose",
+      "head_blob_matches": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "input": "uv.lock",
+      "head_blob_matches": true
+    },
+    {
+      "host": "wsl-ubuntu-26.04",
+      "input": "pyproject.toml",
+      "head_blob_matches": true
+    }
+  ],
+  "credential_scan": [
+    {
+      "path": "docs\\zeus\\evidence\\environment-runs-002\\attempt-1-runner-pinned-repository\\windows-11-full-suite-integration.log",
+      "credential_occurrences": 1
+    },
+    {
+      "path": "docs\\zeus\\evidence\\environment-runs-002\\attempt-1-runner-pinned-repository\\windows-11-full-suite.junit.xml",
+      "credential_occurrences": 1
+    },
+    {
+      "path": "docs\\zeus\\evidence\\environment-runs-002\\attempt-2-runner-env-pinned\\windows-11-full-suite-integration.log",
+      "credential_occurrences": 3
+    },
+    {
+      "path": "docs\\zeus\\evidence\\environment-runs-002\\attempt-2-runner-env-pinned\\windows-11-full-suite.junit.xml",
+      "credential_occurrences": 6
+    }
+  ]
+}

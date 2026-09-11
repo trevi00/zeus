@@ -1,0 +1,26 @@
+﻿import importlib.util,json,tempfile,hashlib,subprocess,re
+from pathlib import Path
+R=Path('C:/Users/rudtn/zeus-review-069b');O=Path('.runtime/review-069b');O.mkdir(parents=True,exist_ok=True)
+s=importlib.util.spec_from_file_location('t',R/'tests/test_environment_evidence.py');t=importlib.util.module_from_spec(s);s.loader.exec_module(t)
+results=[]
+for fail in ({'compose:up'},{'psql'}):
+ with tempfile.TemporaryDirectory() as d:
+  p=Path(d);sh=t.FakeShell(p,fail=fail);run=t.evidence.EvidenceRun('probe','out',shell=sh,root=p)
+  r=run.execute();disk=json.loads((p/'out/probe-receipt.json').read_text())
+  results.append({'failure':list(fail),'returned_teardown':r['phases'].get('teardown'),'disk_teardown':disk['phases'].get('teardown'),'equal':r==disk})
+checks=[]
+for host in ('windows-11','wsl-ubuntu-26.04'):
+ p=R/'docs/zeus/evidence/environment-runs-002';r=json.loads((p/(host+'-receipt.json')).read_text())
+ for step in r['steps']:
+  raw=(p/step['log']).read_text(encoding='utf-8');checks.append({'host':host,'step':step['name'],'digest_match':t.evidence.digest_text(raw)==step['stdout_sha256']})
+ for key,path in {'runner':'scripts/environment_evidence.py','compose':'compose.yaml','uv.lock':'uv.lock','pyproject.toml':'pyproject.toml'}.items():
+  raw=subprocess.check_output(['git','show',r['head']+':'+path],cwd=R)
+  checks.append({'host':host,'input':key,'head_blob_matches':'sha256:'+hashlib.sha256(raw).hexdigest()==r['inputs'][key]})
+# Only report presence/count, never values, of DSN credentials in public artifacts.
+hits=[]
+for f in (R/'docs/zeus/evidence/environment-runs-002').rglob('*'):
+ if f.is_file():
+  n=sum(1 for m in re.finditer(r'postgres(?:ql)?://[^\s:/]+:([^\s@]+)@',f.read_text(encoding='utf-8',errors='replace')) if m.group(1) not in ('***','password','secret'))
+  if n:hits.append({'path':str(f.relative_to(R)),'credential_occurrences':n})
+result={'synthetic_early_failure_probes':results,'evidence_checks':checks,'credential_scan':hits}
+(O/'checks.json').write_text(json.dumps(result,indent=2),'utf-8');print(json.dumps(result,indent=2))

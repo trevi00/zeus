@@ -1,0 +1,13 @@
+﻿import os,subprocess,json,hashlib
+from pathlib import Path
+from codex_harness.bootstrap import database_url
+B=Path('.runtime/review-069b');R=Path('C:/Users/rudtn/zeus-review-069b')
+env={**os.environ,'HARNESS_INTEGRATION':'1','ZEUS_TEST_DOCKER':'1','HARNESS_DATABASE_URL':database_url(),'PYTHONIOENCODING':'utf-8'}
+env.pop('ZEUS_DATABASE_URL',None)
+args=[str(R/'.venv/Scripts/python.exe'),'-m','pytest','-q','tests/test_verification.py','tests/test_host_interruption.py']
+r=subprocess.run(args,cwd=R,env=env,capture_output=True)
+data=r.stdout+r.stderr
+secret=database_url().encode();assert secret not in data
+(B/'docker-corrected.log').write_bytes(data)
+(B/'docker-corrected.json').write_text(json.dumps({'exit_code':r.returncode,'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'command':args,'environment':'HARNESS_INTEGRATION=1; ZEUS_TEST_DOCKER=1; configured PostgreSQL with isolated per-test schemas (DSN omitted)','sha256':hashlib.sha256(data).hexdigest()},indent=2),'utf-8')
+print(data.decode('utf-8','replace'));raise SystemExit(r.returncode)

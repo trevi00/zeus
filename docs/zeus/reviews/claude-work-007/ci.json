@@ -1,0 +1,108 @@
+{
+  "closingIssuesReferences": [],
+  "headRefOid": "55031b2517d4ba1a677f7b2b3edc9a301ce25963",
+  "mergeable": "MERGEABLE",
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:42:00Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547507734/job/103103209356",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-11T00:40:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:41:46Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547505078/job/103103200738",
+      "name": "test (ubuntu-latest, 3.12)",
+      "startedAt": "2026-09-11T00:40:43Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:41:49Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547507734/job/103103209387",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-11T00:40:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:42:02Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547505078/job/103103200793",
+      "name": "test (ubuntu-latest, 3.14)",
+      "startedAt": "2026-09-11T00:40:43Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:46:44Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547507734/job/103103209463",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-11T00:40:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:47:51Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547505078/job/103103200704",
+      "name": "test (windows-latest, 3.12)",
+      "startedAt": "2026-09-11T00:40:43Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:47:12Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547507734/job/103103209219",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-11T00:40:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:47:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547505078/job/103103200904",
+      "name": "test (windows-latest, 3.14)",
+      "startedAt": "2026-09-11T00:40:45Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:44:28Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547507734/job/103103209401",
+      "name": "integration",
+      "startedAt": "2026-09-11T00:40:46Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-09-11T00:44:25Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/trevi00/zeus/actions/runs/34547505078/job/103103200505",
+      "name": "integration",
+      "startedAt": "2026-09-11T00:40:43Z",
+      "status": "COMPLETED",
+      "workflowName": "Windows and Linux validation"
+    }
+  ]
+}

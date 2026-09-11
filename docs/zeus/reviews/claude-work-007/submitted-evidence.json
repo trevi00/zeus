@@ -1,0 +1,26 @@
+[
+  {
+    "host": "windows-11",
+    "head": "d925e0112f344c008d18dfeae8f7489583321c7b",
+    "counts": {
+      "passed": 1441,
+      "skipped": 14,
+      "failed": 0,
+      "error": 0
+    },
+    "junit_matches_receipt": true,
+    "all_required_phases_ok": true
+  },
+  {
+    "host": "wsl-ubuntu-26.04",
+    "head": "d925e0112f344c008d18dfeae8f7489583321c7b",
+    "counts": {
+      "passed": 1447,
+      "skipped": 8,
+      "failed": 0,
+      "error": 0
+    },
+    "junit_matches_receipt": true,
+    "all_required_phases_ok": true
+  }
+]

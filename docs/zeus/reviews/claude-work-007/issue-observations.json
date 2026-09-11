@@ -1,0 +1,163 @@
+[
+  {
+    "issue": 12,
+    "ticket_id": "ZEUS-74e61b578afa",
+    "revision": 1,
+    "remaining": "실제 배포 템플릿의 소비자가 producer→validator→reader 결과를 사용하는 기준별 증거.",
+    "comment_url": "https://github.com/trevi00/zeus/issues/12#issuecomment-5627654876",
+    "observation": {
+      "id": "7e3913bbfb084ac6a0a137b2b93e8e59f67ba65bd456231c16f21e0cdecd5131",
+      "ticket_id": "ZEUS-74e61b578afa",
+      "repository": "trevi00/zeus",
+      "number": 12,
+      "url": "https://github.com/trevi00/zeus/issues/12",
+      "state": "OPEN",
+      "title": "[FA-011] 스킬 품질 게이트의 미검사 PASS와 템플릿 계약 불일치",
+      "purpose": "pull",
+      "evidence_ref": "sha256:ebd65e857161cecbe2dd6ed94cda760abf4d7900dff098ed1c2b0cf400509127",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T00:48:18.558598+00:00",
+      "first_seen": "2026-09-11T00:48:18.558598+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 16,
+    "ticket_id": "ZEUS-39d3d0633060",
+    "revision": 1,
+    "remaining": "다중 파일 crash/lost-ack 기준별 결과 대응과 실제 사용자 인수·독립 승인.",
+    "comment_url": "https://github.com/trevi00/zeus/issues/16#issuecomment-5627655104",
+    "observation": {
+      "id": "2070b7fc4b5e0aeb729356cb3fc99b8b5db6bcf68b14080e85b87de7b37a1ecc",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "repository": "trevi00/zeus",
+      "number": 16,
+      "url": "https://github.com/trevi00/zeus/issues/16",
+      "state": "OPEN",
+      "title": "[FA-015] writeback 승인 대상 결속·단일 소비·다중 파일 복구 계약 보강",
+      "purpose": "pull",
+      "evidence_ref": "sha256:640941c9201b2cee9a69e96687ec5a298ba8c645e8714d51ffde2dfc7582d158",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T00:48:20.312674+00:00",
+      "first_seen": "2026-09-11T00:48:20.312674+00:00",
+      "sequence": 5
+    }
+  },
+  {
+    "issue": 17,
+    "ticket_id": "ZEUS-e36daeb984c1",
+    "revision": 1,
+    "remaining": "실제 pane 프로세스의 append/DB commit/ACK/원문 정리 중단·재개와 QA 인수.",
+    "comment_url": "https://github.com/trevi00/zeus/issues/17#issuecomment-5627655386",
+    "observation": {
+      "id": "509466a9342507a290d3f54b9eed4bac29e9e8529ac2d458dfe3d4bcfdfb0c4e",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "number": 17,
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "state": "OPEN",
+      "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:1481883d965e578bd8f8dbb8d87d4a9c3491885bac6dfc46019df6d2b5631277",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T00:48:21.996276+00:00",
+      "first_seen": "2026-09-11T00:48:21.996276+00:00",
+      "sequence": 7
+    }
+  },
+  {
+    "issue": 18,
+    "ticket_id": "ZEUS-3875a025c20d",
+    "revision": 2,
+    "remaining": "현재 PC의 절전·재부팅, WSL/Docker 호스트 중단 복구 및 격리 VM 시계 변경. PG 컨테이너 일시정지·재시작은 이번 증거로 인정하며 재부팅 복구로 확대하지 않음.",
+    "comment_url": "https://github.com/trevi00/zeus/issues/18#issuecomment-5627655613",
+    "observation": {
+      "id": "a06dd2467ad668742c0a284389c36798d9560be026c9c28fd970eef990aaea82",
+      "ticket_id": "ZEUS-3875a025c20d",
+      "repository": "trevi00/zeus",
+      "number": 18,
+      "url": "https://github.com/trevi00/zeus/issues/18",
+      "state": "OPEN",
+      "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:b9892dff29edf87f5f4ddc67aa1022c7a502ebadb1238d4c0016817d57df57e5",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T00:48:23.925825+00:00",
+      "first_seen": "2026-09-11T00:48:23.925825+00:00",
+      "sequence": 3
+    }
+  },
+  {
+    "issue": 21,
+    "ticket_id": "ZEUS-0ecf8213b0da",
+    "revision": 1,
+    "remaining": "실제 PG·프로세스 동시성 결과를 각 시계·권한 실패 기준에 대응하고 남은 인수 증거 확보.",
+    "comment_url": "https://github.com/trevi00/zeus/issues/21#issuecomment-5627655873",
+    "observation": {
+      "id": "29542070b062c27c1e60ebcbd301ad74cd834fa6fb8b155677a1e04faa2a8ea1",
+      "ticket_id": "ZEUS-0ecf8213b0da",
+      "repository": "trevi00/zeus",
+      "number": 21,
+      "url": "https://github.com/trevi00/zeus/issues/21",
+      "state": "OPEN",
+      "title": "[FA-020] 차단기 단일 재시험 예약·세대·저장 성공과 정책 경계 결속",
+      "purpose": "pull",
+      "evidence_ref": "sha256:cdea03788b0f99cd787e25f4df5a096ebdba914edc261b875e5c692eb05de9e0",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T00:48:25.782242+00:00",
+      "first_seen": "2026-09-11T00:48:25.782242+00:00",
+      "sequence": 7
+    }
+  },
+  {
+    "issue": 23,
+    "ticket_id": "ZEUS-a9984f5b7caf",
+    "revision": 1,
+    "remaining": "경로·프로세스 트리·PG 기반 검사는 이번 환경 증거로 인정. 미충족 stale authority/재시작 시나리오를 기준별로 대응하여 종료 증거 완성.",
+    "comment_url": "https://github.com/trevi00/zeus/issues/23#issuecomment-5627656143",
+    "observation": {
+      "id": "b9d6b5834e786f8d568168849ede5b91f7f2261c5466e87d798836767ec72d6d",
+      "ticket_id": "ZEUS-a9984f5b7caf",
+      "repository": "trevi00/zeus",
+      "number": 23,
+      "url": "https://github.com/trevi00/zeus/issues/23",
+      "state": "OPEN",
+      "title": "[FA-022] 증거 검사 unknown·재실행 동일성·실행 권한 결속",
+      "purpose": "pull",
+      "evidence_ref": "sha256:23e29cd626868b2807c8fcc95189325d1d98f7d434d8f37b605eb4f1d4053af5",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T00:48:27.638179+00:00",
+      "first_seen": "2026-09-11T00:48:27.638179+00:00",
+      "sequence": 9
+    }
+  },
+  {
+    "issue": 26,
+    "ticket_id": "ZEUS-9495da500988",
+    "revision": 1,
+    "remaining": "실제 renderer/build 산출물과 사람이 검토한 핵심 SDD 시나리오 인수. Docker 생성·거부·정리 증거는 인정.",
+    "comment_url": "https://github.com/trevi00/zeus/issues/26#issuecomment-5627656343",
+    "observation": {
+      "id": "2647830b4035feb7e172aa48cc6ebc69281af73e8fc5f78363695cb14f6d5ab2",
+      "ticket_id": "ZEUS-9495da500988",
+      "repository": "trevi00/zeus",
+      "number": 26,
+      "url": "https://github.com/trevi00/zeus/issues/26",
+      "state": "OPEN",
+      "title": "[FA-025] 설치·검사 결과와 실제 후보 리비전의 결속",
+      "purpose": "pull",
+      "evidence_ref": "sha256:d406515f307e7773e71cff395d4124ee5122288cf4cbe9aa651b02dcbdb7327f",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T00:48:29.643938+00:00",
+      "first_seen": "2026-09-11T00:48:29.643938+00:00",
+      "sequence": 7
+    }
+  }
+]

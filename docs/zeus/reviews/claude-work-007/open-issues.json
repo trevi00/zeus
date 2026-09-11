@@ -1,0 +1,127 @@
+[
+  {
+    "number": 33,
+    "title": "[FA-032] 프로필 수집·모델 입력·출력의 민감정보 처리와 동의 범위 결속",
+    "url": "https://github.com/trevi00/zeus/issues/33"
+  },
+  {
+    "number": 32,
+    "title": "[FA-031] 마이그레이션 사전 검사의 버전·탐색·모듈 범위와 실제 DB 인수",
+    "url": "https://github.com/trevi00/zeus/issues/32"
+  },
+  {
+    "number": 31,
+    "title": "[FA-030] 스냅샷 무결성 검사의 변경 분모와 엄격한 데이터 검증",
+    "url": "https://github.com/trevi00/zeus/issues/31"
+  },
+  {
+    "number": 30,
+    "title": "[FA-029] 검증 증거에 결속된 티켓 종료·재개와 PG/GitHub 상태 조정",
+    "url": "https://github.com/trevi00/zeus/issues/30"
+  },
+  {
+    "number": 29,
+    "title": "[FA-028] enum·proto 집합 검사를 봉투·RPC·실제 인수와 분리",
+    "url": "https://github.com/trevi00/zeus/issues/29"
+  },
+  {
+    "number": 28,
+    "title": "[FA-027] 선언 그래프·실측 시나리오·필수 검사 분모 분리",
+    "url": "https://github.com/trevi00/zeus/issues/28"
+  },
+  {
+    "number": 27,
+    "title": "[FA-026] 테스트 실행기의 격리·수집 분모·실패 전달",
+    "url": "https://github.com/trevi00/zeus/issues/27"
+  },
+  {
+    "number": 26,
+    "title": "[FA-025] 설치·검사 결과와 실제 후보 리비전의 결속",
+    "url": "https://github.com/trevi00/zeus/issues/26"
+  },
+  {
+    "number": 25,
+    "title": "[FA-024] 계약 추출의 누락·변환 충돌·판정 권위 검증",
+    "url": "https://github.com/trevi00/zeus/issues/25"
+  },
+  {
+    "number": 24,
+    "title": "[FA-023] 구조·어휘 검사의 실제 분모와 인수 권위 분리",
+    "url": "https://github.com/trevi00/zeus/issues/24"
+  },
+  {
+    "number": 23,
+    "title": "[FA-022] 증거 검사 unknown·재실행 동일성·실행 권한 결속",
+    "url": "https://github.com/trevi00/zeus/issues/23"
+  },
+  {
+    "number": 22,
+    "title": "[FA-021] 자동 보정의 실제 평가 분모·소비자 동등성·승인값 결속",
+    "url": "https://github.com/trevi00/zeus/issues/22"
+  },
+  {
+    "number": 21,
+    "title": "[FA-020] 차단기 단일 재시험 예약·세대·저장 성공과 정책 경계 결속",
+    "url": "https://github.com/trevi00/zeus/issues/21"
+  },
+  {
+    "number": 20,
+    "title": "[FA-019] 모델 호출 계약·실측 사용량·실행 예산과 자격 증거 결속",
+    "url": "https://github.com/trevi00/zeus/issues/20"
+  },
+  {
+    "number": 19,
+    "title": "[FA-018] 완료 판정에 실제 평가 실행·대상·시도 신원 결속",
+    "url": "https://github.com/trevi00/zeus/issues/19"
+  },
+  {
+    "number": 18,
+    "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+    "url": "https://github.com/trevi00/zeus/issues/18"
+  },
+  {
+    "number": 17,
+    "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+    "url": "https://github.com/trevi00/zeus/issues/17"
+  },
+  {
+    "number": 16,
+    "title": "[FA-015] writeback 승인 대상 결속·단일 소비·다중 파일 복구 계약 보강",
+    "url": "https://github.com/trevi00/zeus/issues/16"
+  },
+  {
+    "number": 15,
+    "title": "[FA-014] 스펙 템플릿·GWT 검사·인수 테스트 생성의 계약 불일치",
+    "url": "https://github.com/trevi00/zeus/issues/15"
+  },
+  {
+    "number": 14,
+    "title": "[FA-013] 외부 게이트의 문장 귀속·철회·PARTIAL 소비 불일치",
+    "url": "https://github.com/trevi00/zeus/issues/14"
+  },
+  {
+    "number": 13,
+    "title": "[FA-012] 스킬 평가 지표와 실제 후보 선택·본문 주입의 불일치",
+    "url": "https://github.com/trevi00/zeus/issues/13"
+  },
+  {
+    "number": 12,
+    "title": "[FA-011] 스킬 품질 게이트의 미검사 PASS와 템플릿 계약 불일치",
+    "url": "https://github.com/trevi00/zeus/issues/12"
+  },
+  {
+    "number": 11,
+    "title": "[FA-010] Git 추적 밖 경험·플러그인·미커밋 노트의 분석 누락",
+    "url": "https://github.com/trevi00/zeus/issues/11"
+  },
+  {
+    "number": 10,
+    "title": "[FA-009] 테스트의 배선 문자열 검사와 실제 동작 혼동",
+    "url": "https://github.com/trevi00/zeus/issues/10"
+  },
+  {
+    "number": 1,
+    "title": "[ZEUS-ANALYSIS] Claude 로컬 하네스 전체 분석과 Zeus 흡수",
+    "url": "https://github.com/trevi00/zeus/issues/1"
+  }
+]
