@@ -1,0 +1,19 @@
+{
+  "base": "32928ab1d340db9acc49658b3670999e91bcb40f",
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_bus.py",
+    "tests/test_invocation_ledger.py",
+    "tests/test_execution_progress.py",
+    "tests/test_execution_output.py"
+  ],
+  "exit_code": 0,
+  "passed": 47,
+  "skipped": 14,
+  "seconds": 5.21,
+  "evidence": "Observed exec tool result in this analysis turn; raw process log was not separately captured",
+  "authority": "Existing regression subset; not actual Claude or live Redis acceptance"
+}

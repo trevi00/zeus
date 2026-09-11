@@ -1,0 +1,23 @@
+{
+  "scope": "CLI availability/help only. No model request, readiness or qualification established.",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+        "--version"
+      ],
+      "exit_code": 0,
+      "sha256": "63a9a44d5ed72850cbb864978de82be5be0fe617d0f32e623d03fc910bfd2641",
+      "artifact": "version.txt"
+    },
+    {
+      "argv": [
+        "C:\\Users\\rudtn\\.local\\bin\\claude.exe",
+        "--help"
+      ],
+      "exit_code": 0,
+      "sha256": "ae85d661e9c086f05637ebcd868f5702b477ff6e55e2e65b8ada7807cd51a4b6",
+      "artifact": "help.txt"
+    }
+  ]
+}

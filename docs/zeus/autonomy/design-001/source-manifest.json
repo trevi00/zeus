@@ -1,0 +1,125 @@
+{
+  "base": "32928ab1d340db9acc49658b3670999e91bcb40f",
+  "new_primary_source_review_count": 0,
+  "files": [
+    {
+      "path": "src/codex_harness/resources/organization.json",
+      "blob": "3783bcaf510dc6cef33332ad85113a3104922ef3",
+      "sha256": "f6550a19355c69830fba72d34c222a2505d3267986c54f56f8d1a7574b9abb3e",
+      "bytes": 762,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/resources/message.schema.json",
+      "blob": "3d3129e697f9330b8dbf877edf267dce16f1ab15",
+      "sha256": "aa32b4c99b5aeceb617fad618e450b23fbe0b2e9964d9f979cadf71b2a61fb2b",
+      "bytes": 7352,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/ports.py",
+      "blob": "119ff84a2dc3c706377bad6962a7b4faf2f64861",
+      "sha256": "c103e34431a5c6999698e2bef52e337b1455e2d46d8180281fca73dcf0c57ae3",
+      "bytes": 1782,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/adapters/bus.py",
+      "blob": "becdf79dcdbc2c46925fd9fda64671912b3a7f26",
+      "sha256": "7cfc8dd65a55117c289e6555e13d3b6cc6ff57f0f4e6b35a29beb61bd83ac10a",
+      "bytes": 5340,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/cli.py",
+      "blob": "554349198027915e2d2b9d31d6b0ac7655a9658c",
+      "sha256": "37939a5cbe1b99b44d8a787a21630f9e820bd472aee2a5224086791d87ef86ac",
+      "bytes": 31396,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/application/outbox.py",
+      "blob": "09c66be9459e07a1aa4114f56062b3b46dad01da",
+      "sha256": "471b78dce195cf9f809bd05cc8c9a2e85aadb58ca6fafc3f8e66218819d12a40",
+      "bytes": 7201,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "blob": "8082923ca13e99b737cb63306c9a510a6095f711",
+      "sha256": "236577286bf70892aa6cc52514c17bbab89ed1d15d5edfad76bd5a78758ad7c9",
+      "bytes": 55210,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/adapters/app_server.py",
+      "blob": "388bc9ea54b25c0c397dad6361f6091d06da5121",
+      "sha256": "4c2a2850f9aa23ab3eb8acfc64bce31e7df91daf50fb065055eacdf13e4bad57",
+      "bytes": 14233,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/adapters/execution_output.py",
+      "blob": "0a4c7658a36e8ef61975aa682eacaf745683b19c",
+      "sha256": "2d68941254301dccc608e664a2e12826a31e7797fa3ab3faf0d5ec095d7f939d",
+      "bytes": 6081,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/application/execution_notices.py",
+      "blob": "a7a3880f78bb6c0a2bcd399c3c2835c6355b70ea",
+      "sha256": "8d2cf0378f8447ea16ee886bb53c9a257004195f9041e7a6ddace6ea9cad9a3a",
+      "bytes": 5854,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/application/invocation_ledger.py",
+      "blob": "13e26f9bb8fa66db34211850b79a9429723e9a3c",
+      "sha256": "c287a09cd0e113f0d218b1cb59fb56c9dc875802bf7e6c9fff41e17623b1a84d",
+      "bytes": 8652,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/domain/invocation.py",
+      "blob": "459c339090ee5684a47077acb7d9c71e1e2d9c9d",
+      "sha256": "6b1e8fb67a6fc79eabab889e58cb97bb4979f9aafc0e8ea5dd331b6d94fdfd35",
+      "bytes": 6644,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/application/service.py",
+      "blob": "4725d6d10a21d372d9ce8b9afdac3a117bbf6ab0",
+      "sha256": "0fd2eac16a4ee7caa3c7ebe059ebda2fec24a60eef4a6a82c2393f26413ff4bf",
+      "bytes": 12572,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/bootstrap.py",
+      "blob": "b0913e0d85038c8ff4617380ded2866596c6a5a5",
+      "sha256": "48f0fce4801da0bddfc7fb439e6a9b0bdab74de9237012b5d826d336793cbf79",
+      "bytes": 1836,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/supervisor.py",
+      "blob": "fc9ffe34c3c8665897d034c82351ad3da498fde9",
+      "sha256": "e74cd548bda080a72aa4081a4cc1b6e100d2c35c33ac1952969b9641f2f34b2a",
+      "bytes": 10372,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/adapters/knowledge.py",
+      "blob": "9f621a5e3dcf547ec8cb50a957a9f6b221c35f35",
+      "sha256": "4bbae35f25c9a545b5a302927c97634354edfb8c71c87fd248048f49fe1dfc26",
+      "bytes": 16683,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    },
+    {
+      "path": "src/codex_harness/application/experience.py",
+      "blob": "8ea8f2b75d3ba12af2a79d57272f348cddf410d5",
+      "sha256": "51b82bc1e0d906a091d369f98cf891ca899a2d5f321a10f39dcd64835d1056be",
+      "bytes": 3494,
+      "scope": "referenced execution/interface paths; not a whole-file semantic coverage claim"
+    }
+  ]
+}
