@@ -1,0 +1,50 @@
+[
+  {
+    "path": "boundaries-final.xml",
+    "sha256": "82ef631cb2cd149f8a71cf172cfb49cced4c3f4adbf6446c4f860fa258289077"
+  },
+  {
+    "path": "boundaries.xml",
+    "sha256": "43be111f038b9abd098f1ee3854e3ea8ebaefb602676e28fad0ccd880afa9b07"
+  },
+  {
+    "path": "check_receipts.py",
+    "sha256": "bf59990d3805abb984ee070e61bd0b6ff676d87acf75853c07d496016db393ad"
+  },
+  {
+    "path": "existing.xml",
+    "sha256": "bf482d9b3090a304cd15909ee23b334864b81c0c8290fb8ff896da1d7db1a310"
+  },
+  {
+    "path": "integration-result.json",
+    "sha256": "274100006de5222fb63086eb456e17efaf0b012f112dbf037bc83e1b354b128d"
+  },
+  {
+    "path": "integration.log",
+    "sha256": "3fec3e8ad0cd646611f81a4acfcdd2f64692edf86ce323fe8504c117cd961da4"
+  },
+  {
+    "path": "integration.xml",
+    "sha256": "75943f57e8ec1a8dcd262ee1ec022d82475bf340815a7655fa879224c9e93107"
+  },
+  {
+    "path": "pr-snapshot.json",
+    "sha256": "49cea998397a3c0ab0a4a6c4064660e73f253a79da017ce5357d4902742a5725"
+  },
+  {
+    "path": "README.md",
+    "sha256": "62b5278ea5036190755336b26dbe17b2066321fcf635c46f0a119393b7ad8607"
+  },
+  {
+    "path": "receipt-check.json",
+    "sha256": "5c698fcf56858beed91dab36e6ba5d94b7383a0be5cfe257d76582a8e3bc5cfe"
+  },
+  {
+    "path": "run_integration.py",
+    "sha256": "87d24aef701e0c0209d531fa8a239960038feea0b16363221c75bb690eaa9f9c"
+  },
+  {
+    "path": "test_review_boundaries.py",
+    "sha256": "fcfc0cc1612bc9d674ddb05a2e76a6460ec7fa65cde78c8b775932181fdc8eef"
+  }
+]

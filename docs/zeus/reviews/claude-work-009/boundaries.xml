@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="11.141" timestamp="2026-09-11T14:44:26.430488+09:00" hostname="DESKTOP-T38M60T"><testcase classname=".runtime.review-071.test_review_boundaries" name="test_collected_spool_stays_full" time="0.128" /><testcase classname=".runtime.review-071.test_review_boundaries" name="test_failed_reconcile_removes_last_pending_marker" time="0.004"><failure message="codex_harness.domain.model.ContractError: Execution events need role, task_id, bucket, generation and attempt">tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3424/test_failed_reconcile_removes_0')
+
+    def test_failed_reconcile_removes_last_pending_marker(tmp_path):
+        store = Interceptor(MemoryStore())
+        o = observer(tmp_path, store)
+        lease = {'id': 'review-task', '_bucket': 'tasks', 'generation': 1, 'attempt': 1}
+        store.fail_transaction = OSError('sink unavailable')
+&gt;       record_id = o.record_termination(lease, reservation_id=None, classification='unknown',
+                                         stream_hash=None, error=OSError('lost settlement'))
+
+.runtime\review-071\test_review_boundaries.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\codex_harness\application\observations.py:389: in record_termination
+    execution=self.for_lease(lease, provider="codex-app-server", invocation_id=reservation_id),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\codex_harness\application\observations.py:153: in for_lease
+    return lease_identity(lease, process_run_id=self.process_run_id, role=actor, provider=provider,
+src\codex_harness\domain\observation.py:226: in lease_identity
+    return execution_identity("execution", process_run_id=process_run_id, role=role, provider=provider,
+src\codex_harness\domain\observation.py:212: in execution_identity
+    require(type(role) is str and type(task_id) is str and bucket in BUCKETS
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+condition = False
+reason = 'Execution events need role, task_id, bucket, generation and attempt'
+
+    def require(condition: bool, reason: str) -&gt; None:
+        if not condition:
+&gt;           raise ContractError(reason)
+E           codex_harness.domain.model.ContractError: Execution events need role, task_id, bucket, generation and attempt
+
+src\codex_harness\domain\model.py:40: ContractError</failure></testcase><testcase classname=".runtime.review-071.test_review_boundaries" name="test_runtime_exception_allows_second_provider_start" time="0.037" /><testcase classname=".runtime.review-071.test_review_boundaries" name="test_post_settlement_artifact_failure_allows_second_start" time="0.071" /></testsuite></testsuites>
