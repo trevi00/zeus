@@ -32,6 +32,10 @@
     "sha256": "4842195a5068d63d11f717c2896d2814899e04ea002c594c26d7f60d01d45623"
   },
   {
+    "path": "environment-followup.md",
+    "sha256": "ce6c8280ff7c39bdd88b90ac83a5559b4b016fbedeb43b43cece8cca4cefabb7"
+  },
+  {
     "path": "integration-result.json",
     "sha256": "eb4a848632707280e1304dd9f8b1910b577b807a4096047c7e3694df451901bd"
   },
@@ -44,6 +48,10 @@
     "sha256": "e3d8dd81a2d25b2b867a8c97dc6adca79da0244de87fdf22fa676109862df28c"
   },
   {
+    "path": "issue-comment.md",
+    "sha256": "4c7b75abe96d13f5a1c1f8d188f945ac39ab71089689bc2b5808b0ddc667871e"
+  },
+  {
     "path": "live-writer-linux.log",
     "sha256": "e0034e7f8f265394429d027a9270ab6cec2360509644d3c44a7ba6412d8b5a1d"
   },
@@ -54,6 +62,14 @@
   {
     "path": "pr-snapshot.json",
     "sha256": "d67d04631318c47c33974d5c89630d37a59f161fb342f835763cd0f32ffd9dd1"
+  },
+  {
+    "path": "published-issues.json",
+    "sha256": "8545e3523113ba7e2ce879f5ecd47233ad510ca6cd67ba5df0ceab964bb052b4"
+  },
+  {
+    "path": "published-review.json",
+    "sha256": "8a8d101cfe668eb27a9f54c4bd604ba269c3b75b5ab71614061dabd717493200"
   },
   {
     "path": "README.md",
@@ -74,5 +90,9 @@
   {
     "path": "test_boundaries.py",
     "sha256": "5f741bae33d0f72f5effe26bf6548aa8695c410e5b9358ed6c07e8999f7a5ce1"
+  },
+  {
+    "path": "ticket-observations.json",
+    "sha256": "c9ffc7b6df0e99f221cabd14ad3ede41bc4cee3da23bef24cdaabc5bbdba25ad"
   }
 ]

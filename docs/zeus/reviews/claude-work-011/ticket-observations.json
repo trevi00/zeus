@@ -1,0 +1,97 @@
+[
+  {
+    "issue": 1,
+    "observation": {
+      "id": "e40161be65a654c3d561620713a8c47b629fc6e38594a8cd6d561f8586ae6ea7",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "repository": "trevi00/zeus",
+      "number": 1,
+      "url": "https://github.com/trevi00/zeus/issues/1",
+      "state": "OPEN",
+      "title": "[ZEUS-ANALYSIS] Claude 로컬 하네스 전체 분석과 Zeus 흡수",
+      "purpose": "pull",
+      "evidence_ref": "sha256:7f5b6a9abc2092543d32eb7e6caa05bc4b927022354d68ea6ebd8f9f0c2a933b",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T09:04:01.143460+00:00",
+      "first_seen": "2026-09-11T09:04:01.143460+00:00",
+      "sequence": 6
+    }
+  },
+  {
+    "issue": 11,
+    "observation": {
+      "id": "0fe5e252d10ead6450e0cbf6f384054ef9df2130ffd7266827bdb891388bdc1e",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "repository": "trevi00/zeus",
+      "number": 11,
+      "url": "https://github.com/trevi00/zeus/issues/11",
+      "state": "OPEN",
+      "title": "[FA-010] Git 추적 밖 경험·플러그인·미커밋 노트의 분석 누락",
+      "purpose": "pull",
+      "evidence_ref": "sha256:89432834739b03257fea27d34b85f894717f650b3647af4117c561034500d388",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T09:04:01.723167+00:00",
+      "first_seen": "2026-09-11T09:04:01.723167+00:00",
+      "sequence": 6
+    }
+  },
+  {
+    "issue": 16,
+    "observation": {
+      "id": "7136bde82466303175d19b5bd18c7fa68e3b06abd90e43daf49088e372e19e04",
+      "ticket_id": "ZEUS-39d3d0633060",
+      "repository": "trevi00/zeus",
+      "number": 16,
+      "url": "https://github.com/trevi00/zeus/issues/16",
+      "state": "OPEN",
+      "title": "[FA-015] writeback 승인 대상 결속·단일 소비·다중 파일 복구 계약 보강",
+      "purpose": "pull",
+      "evidence_ref": "sha256:be31d40fd683bf8d09fd30a47e44dcfb1ff084a1f08a3cf84e5ec334799620b2",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T09:04:02.364753+00:00",
+      "first_seen": "2026-09-11T09:04:02.364753+00:00",
+      "sequence": 6
+    }
+  },
+  {
+    "issue": 17,
+    "observation": {
+      "id": "55bd9a63969a257c9ce01d113fc5b54c4d8747f91bcf44c263a320055b1552c2",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "number": 17,
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "state": "OPEN",
+      "title": "[FA-016] pane 로그 병합의 세대 역행·손상 원문 소실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:bed1422b6e13858ec29788246e93f6a93010afad07d66356c8db9ba58f0d85c8",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T09:04:03.108582+00:00",
+      "first_seen": "2026-09-11T09:04:03.108582+00:00",
+      "sequence": 11
+    }
+  },
+  {
+    "issue": 18,
+    "observation": {
+      "id": "d3924a82094a524c0a216cc91a3d1e30e1090da8dec57388434397dd28ea22db",
+      "ticket_id": "ZEUS-3875a025c20d",
+      "repository": "trevi00/zeus",
+      "number": 18,
+      "url": "https://github.com/trevi00/zeus/issues/18",
+      "state": "OPEN",
+      "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:7f67b44dcbba1f9fd54c7788f29c9928225b394d35ec072ecb6d4f070561ff69",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T09:04:03.862027+00:00",
+      "first_seen": "2026-09-11T09:04:03.862027+00:00",
+      "sequence": 4
+    }
+  }
+]
