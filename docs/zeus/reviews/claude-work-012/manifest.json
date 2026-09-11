@@ -28,6 +28,10 @@
     "sha256": "6dffdce0f570497d88d69cf58d817ac99fc66f01c4aa1029c22080a046603998"
   },
   {
+    "path": "issue-comment.md",
+    "sha256": "1837b3d9ee451530ed24c699f83bd4d0cf8f961e15335575022df74cdc84e2eb"
+  },
+  {
     "path": "lock-boundaries-linux.log",
     "sha256": "7bc40c7c8d1839bcdfed45f7bde051b5c9c9800bafa20d0c9bebc048fd7c1d74"
   },
@@ -44,6 +48,14 @@
     "sha256": "5e792a0845c6cca0da22626a11ab047ee99cb2ede463950b65f7cef2878aca94"
   },
   {
+    "path": "published-issues.json",
+    "sha256": "ece5b2a7a382adb23276050aeffe5f779932f0f4ffaa0c90de314aaf28216c49"
+  },
+  {
+    "path": "published-review.json",
+    "sha256": "42d5f4994e23e003bb5eb3f4e89663240d1c56d57a6257b2458d81dc533290b3"
+  },
+  {
     "path": "README.md",
     "sha256": "1b394a28f4d1fdec4b5a126374ba5c82325a2310ba40971ed219d45a31e10fda"
   },
@@ -58,5 +70,9 @@
   {
     "path": "test_lock_boundary.py",
     "sha256": "fda2ed6a4a1feb02103042c1cd1eb7e5d8589790f0f6ebd5bd51bca2b91a8db9"
+  },
+  {
+    "path": "ticket-observations.json",
+    "sha256": "0538bd6bb6e39f2c5a9b46e9c73291b3fd733400dfef3b8eb4e40110478b641f"
   }
 ]
