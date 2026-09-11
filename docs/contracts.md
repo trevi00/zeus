@@ -564,7 +564,12 @@ content hash, acknowledges an offset only after the sink transaction committed, 
 segment only when it is fully acknowledged and provably no longer writable — rotated past, closed
 by its writer, or its run lock released by the operating system when the writer died; file age
 alone never finishes a run, so a spool that is consumed never saturates, an active segment is
-never truncated and a live but idle writer keeps its collectable path. Pending alerts replay in
+never truncated and a live but idle writer keeps its collectable path. Only the writer that
+holds the run lock finishes the run: a writer object that never acquired it (a refused second
+writer) writes no closed marker, a closed writer refuses further appends, and a run's lock
+file is unlinked only under that lock. The retention age of a run is measured from the files
+its writer wrote (segments, closed marker, health) before any liveness probe, never from the
+lock or acknowledgement files, so probing cannot defer a dead run's reclamation. Pending alerts replay in
 their own transaction, independent of any spool record. The check that no earlier attempt of a
 task is still unconfirmed is made inside the reservation transaction; a failed read is unknown,
 never permission. Correlation, causation and

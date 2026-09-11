@@ -272,6 +272,12 @@ class Observer:
             self._health()
             self.alert("spool_append_failed", type(exc).__name__, severity="error", spool=False,
                        attributes={"error_type": type(exc).__name__, "dropped": int(self.counters["spool_failures"])})
+        except ContractError as exc:
+            # The spool refused the write for this run (closed by its writer, or the run lock is
+            # held by another live writer): the run's files are not this object's to touch any
+            # more, so nothing is written, the drop is counted, and emit keeps its no-raise contract.
+            self.counters["dropped_run_refused"] += 1
+            self.last_defect = _error_text(exc)
         return False
 
     def _refused(self, event_type, exc):

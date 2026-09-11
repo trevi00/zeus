@@ -182,8 +182,16 @@ def test_second_writer_for_the_same_run_is_refused(tmp_path):
     o = file_observer(tmp_path, MemoryStore())
     o.emit("general.process_idle_exit", "observed", attributes={"idle_seconds": 1})
     other = FileSpool(tmp_path / "obs", o.process_run_id, max_bytes=1000, fsync=False)
-    with pytest.raises(ContractError, match="Another live writer"):
-        other.append("event", {"x": 1})
+    try:
+        with pytest.raises(ContractError, match="Another live writer"):
+            other.append("event", {"x": 1})
+    finally:
+        other.close()  # round 4: ordinary cleanup of the refused writer must not finish the owner's run
+    assert writer_alive(tmp_path / "obs", o.process_run_id) and not o.directory.closed(o.process_run_id)
+    later = o.emit("general.process_idle_exit", "observed", attributes={"idle_seconds": 2})
+    assert later is not None
+    collected = Collector(MemoryStore(), o.directory, validate=validate_observation, observer=o).collect()
+    assert collected["records"] >= 2, "the owner's later record is still collected"
     o.close()
     assert not writer_alive(tmp_path / "obs", o.process_run_id)
 

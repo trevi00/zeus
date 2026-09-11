@@ -168,10 +168,16 @@ class FileSpool:
         self._unacked = 0         # upper bound of unacknowledged bytes across this run's segments
         self.rotations = 0
         self._lock = None
+        self.closed = False
 
     @property
     def path(self) -> Path:
         return segment_path(self.root, self.process_run_id, self.segment)
+
+    @property
+    def owns_run(self) -> bool:
+        """True only while this object holds the run lock: the sole writer allowed to finish the run."""
+        return self._lock is not None
 
     def _hold_lock(self):
         """The run's lock is the writer's liveness proof; it is held for the life of the process."""
@@ -222,6 +228,7 @@ class FileSpool:
 
     def append(self, kind: str, event: dict) -> int:
         """Append one record; returns the offset after it in the current segment. Raises SpoolFull."""
+        require(not self.closed, "This observation run was closed by its writer and cannot be resumed")
         line = encode_record(kind, event)
         self._open()
         if self._size and self._size + len(line) > self.segment_bytes:
@@ -242,20 +249,31 @@ class FileSpool:
         return self._size
 
     def close(self) -> None:
+        """Finish the run: close the active file, write the closed marker, release the lock.
+
+        Only the run's owner (the object holding the lock) may write the marker; an object that
+        never acquired the lock — a refused second writer, or one that never appended — cleans up
+        nothing shared, because the marker would finish another writer's live run. Repeated close
+        is a no-op and a closed object refuses further appends.
+        """
+        if self.closed:
+            return
+        self.closed = True
         if self._descriptor is not None:
             os.close(self._descriptor)
             self._descriptor = None
+        if self._lock is None:
+            return
         try:
             atomic_write(self.root / "spool" / (self.process_run_id + ".closed"),
                          canonical({"closed_at": utcnow(), "segments": self.segment + 1}) + "\n")
         except OSError:
-            pass  # a missing marker only delays reclamation of the last segment
-        if self._lock is not None:
-            try:
-                self._lock.release()
-            except OSError:
-                pass
-            self._lock = None
+            pass  # a missing marker only delays reclamation of the last segment until the lock frees
+        try:
+            self._lock.release()
+        except OSError:
+            pass
+        self._lock = None
 
 
 class MemorySpool:
@@ -305,8 +323,11 @@ class SpoolDirectory:
         return writer_alive(self.root, process_run_id)
 
     def _run_files(self, process_run_id: str) -> list[Path]:
+        """Files the writer itself wrote: segments, closed marker, health. The lock file and the
+        acknowledgement files are excluded: a liveness probe truncates the lock file and a
+        collector writes acknowledgements, and neither is the writer's last durable record."""
         files = [path for path in self.spool_files() if segment_identity(path)[0] == process_run_id]
-        for candidate in (self.root / "spool" / (process_run_id + ".closed"), self.root / "spool" / (process_run_id + ".lock"),
+        for candidate in (self.root / "spool" / (process_run_id + ".closed"),
                           self.root / "health" / (process_run_id + ".json")):
             if candidate.is_file():
                 files.append(candidate)
@@ -324,7 +345,11 @@ class SpoolDirectory:
         return runs
 
     def run_age(self, process_run_id: str, now: float | None = None) -> float | None:
-        """Seconds since the run's newest file (segments, marker, lock, health) was modified."""
+        """Seconds since the writer's newest durable record (segments, marker, health) was modified.
+
+        Reading and probing never move this clock: the age is computed before any lock probe and
+        from writer-owned files only, so a collector that checks more often than the retention
+        window cannot keep deferring a dead run's cleanup."""
         moment = time.time() if now is None else now
         newest = 0.0
         for path in self._run_files(process_run_id):
@@ -341,10 +366,12 @@ class SpoolDirectory:
         process that is merely idle, paused or on a moved clock still holds the lock."""
         if self.closed(process_run_id):
             return True
+        age = self.run_age(process_run_id, now)  # measured before the probe, from writer-owned files
         if self.writer_alive(process_run_id):
             return False
-        age = self.run_age(process_run_id, now)
-        return age is not None and age > retention_seconds
+        if age is None:
+            return True  # nothing the writer wrote remains (a leftover lock file at most) and nobody holds it
+        return age > retention_seconds
 
     def live_runs(self) -> list[str]:
         """Runs whose writer still holds the lock: never pruned, reported instead."""
@@ -384,13 +411,13 @@ class SpoolDirectory:
             if remaining:
                 continue  # still holds unacknowledged records; the collector must consume them first
             counts["runs"] += 1
-            for leftover in (self.root / "spool" / (run + ".closed"), self.root / "spool" / (run + ".lock"),
-                             self.root / "health" / (run + ".json")):
+            for leftover in (self.root / "spool" / (run + ".closed"), self.root / "health" / (run + ".json")):
                 try:
                     os.unlink(leftover)
                     counts["files"] += 1
                 except FileNotFoundError:
                     pass
+            counts["files"] += self._remove_lock_file(run)
             if not self.read_pending_alerts().get(run):
                 for path in (self.root / "pending-alerts").glob(run + "*.json") if (self.root / "pending-alerts").is_dir() else []:
                     try:
@@ -399,6 +426,36 @@ class SpoolDirectory:
                     except FileNotFoundError:
                         pass
         return counts
+
+    def _remove_lock_file(self, process_run_id: str) -> int:
+        """Unlink a finished run's lock file only while holding its lock.
+
+        Deleting a lock file that a live writer holds would let a second writer lock a different
+        inode for the same run, so the file is removed under the lock and never otherwise; a writer
+        that appears between the finish check and this acquire keeps its file. Returns files removed.
+        """
+        path = run_lock_path(self.root, process_run_id)
+        if not path.exists():
+            return 0
+        probe = FileLock(str(path), is_singleton=False)
+        try:
+            probe.acquire(timeout=0)
+        except (Timeout, OSError):
+            return 0  # held by a live writer (or unprovable): leave it
+        removed = 0
+        try:
+            os.unlink(path)  # POSIX: the held inode goes away with the directory entry
+            removed = 1
+        except OSError:
+            pass  # Windows keeps an open file in place; filelock unlinks it on release below
+        finally:
+            try:
+                probe.release()
+            except OSError:
+                pass
+        if removed == 0 and not path.exists():
+            removed = 1
+        return removed
 
     def total_bytes(self) -> int:
         total = 0
