@@ -3,12 +3,14 @@ import json
 import os
 import re
 import secrets
+import socket
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
 from codex_harness.adapters.commands import python_channel_environment, run_process
-from codex_harness.domain.model import canonical, digest, require, utcnow
+from codex_harness.domain.model import ContractError, canonical, digest, require, utcnow
 
 ENVIRONMENT_KEYS = {"PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP", "TMPDIR",
     "HOME", "USERPROFILE", "LOCALAPPDATA", "APPDATA", "LANG", "LC_ALL", "UV_CACHE_DIR",
@@ -71,13 +73,31 @@ class VerificationServices:
                 match = re.fullmatch(r"127\.0\.0\.1:([0-9]+)", value)
                 require(match is not None and 0 < int(match[1]) < 65536, "Unknown verification endpoint")
                 ports[service] = int(match[1])
-            self.artifacts.put(canonical({"project": self.project, "ports": ports,
+            # `up --wait` reports the container healthchecks; the host-side port forward can lag behind
+            # them (observed on WSL2 + Docker Desktop: "Connection refused" right after --wait). Ready
+            # means connectable from here, and the wait is bounded and recorded.
+            ready_after = {service: self._await_endpoint(port) for service, port in ports.items()}
+            self.artifacts.put(canonical({"project": self.project, "ports": ports, "ready_after_seconds": ready_after,
                 "status": "services_ready", "definition_hash": digest(spec)}), "verification-services")
             return {"database_url": f'postgresql://zeus:{self.password}@127.0.0.1:{ports["postgres"]}/zeus',
                     "redis_url": f'redis://127.0.0.1:{ports["redis"]}/0'}
         except BaseException:
             self._cleanup_observed()
             raise
+
+    @staticmethod
+    def _await_endpoint(port, deadline_seconds=30.0):
+        """Block until 127.0.0.1:port accepts a TCP connection; a stack that never becomes reachable is a failure."""
+        started = time.monotonic()
+        while True:
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=2.0):
+                    return round(time.monotonic() - started, 2)
+            except OSError as exc:
+                if time.monotonic() - started >= deadline_seconds:
+                    raise ContractError(f"Verification endpoint 127.0.0.1:{port} not connectable after {deadline_seconds}s: "
+                                        f"{type(exc).__name__}") from exc
+                time.sleep(0.25)
 
     def _cleanup(self):
         self._command("down", "--volumes", "--remove-orphans", "--timeout", "10")

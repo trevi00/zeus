@@ -1,0 +1,154 @@
+............E.E.                                                         [100%]
+==================================== ERRORS ====================================
+________ ERROR at setup of test_postgres_pause_is_not_a_clock_step[12] _________
+
+tmp_path = PosixPath('/tmp/pytest-of-rudtn/pytest-5/test_postgres_pause_is_not_a_c1')
+
+    @pytest.fixture
+    def disposable_service(tmp_path):
+        if os.environ.get('ZEUS_TEST_DOCKER') != '1':
+            pytest.skip('Explicit disposable Docker verification required')
+        service = VerificationServices(tmp_path/'services', FileArtifacts(tmp_path/'artifacts'))
+        with service as endpoints:
+            store = PostgresStore(endpoints['database_url'])
+>           store.migrate()
+
+tests/test_host_interruption.py:169: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/codex_harness/adapters/store.py:86: in migrate
+    return Migrator(self.dsn, config, str(root)).apply("store.migrate")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/codex_harness/adapters/migrations.py:115: in apply
+    with psycopg.connect(self.dsn, connect_timeout=5) as conn:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'psycopg.Connection'>
+conninfo = 'user=zeus password=6fa303067793df71b888a82f0b73acf76a7b2e3ae34381e5 dbname=zeus host=127.0.0.1 port=54520 connect_timeout=5 hostaddr=127.0.0.1'
+autocommit = False, prepare_threshold = 5, context = None, row_factory = None
+cursor_factory = None, kwargs = {'connect_timeout': 5}
+
+    @classmethod
+    def connect(
+        cls,
+        conninfo: str = "",
+        *,
+        autocommit: bool = False,
+        prepare_threshold: int | None = 5,
+        context: AdaptContext | None = None,
+        row_factory: RowFactory[Row] | None = None,
+        cursor_factory: type[Cursor[Row]] | None = None,
+        **kwargs: ConnParam,
+    ) -> Self:
+        """
+        Connect to a database server and return a new `Connection` instance.
+        """
+    
+        params = cls._get_connection_params(conninfo, **kwargs)
+        timeout = timeout_from_conninfo(params)
+        rv = None
+        attempts = conninfo_attempts(params)
+        conn_errors: list[tuple[e.Error, str]] = []
+        for attempt in attempts:
+            tdescr = (attempt.get("host"), attempt.get("port"), attempt.get("hostaddr"))
+            descr = "host: %r, port: %r, hostaddr: %r" % tdescr
+            logger.debug("connection attempt: %s", descr)
+            try:
+                conninfo = make_conninfo("", **attempt)
+                gen = cls._connect_gen(conninfo, timeout=timeout)
+                rv = waiting.wait_conn(gen, interval=_WAIT_INTERVAL)
+            except e.Error as ex:
+                logger.debug("connection failed: %s: %s", descr, str(ex))
+                conn_errors.append((ex, descr))
+            except e._NO_TRACEBACK as ex:
+                raise ex.with_traceback(None)
+            else:
+                logger.debug("connection succeeded: %s", descr)
+                break
+    
+        if not rv:
+            last_ex = conn_errors[-1][0]
+            if len(conn_errors) == 1:
+>               raise last_ex.with_traceback(None)
+E               psycopg.OperationalError: connection failed: connection to server at "127.0.0.1", port 54520 failed: Connection refused
+E               	Is the server running on that host and accepting TCP/IP connections?
+
+.venv/lib/python3.12/site-packages/psycopg/connection.py:122: OperationalError
+____ ERROR at setup of test_postgres_outage_cannot_extend_durable_deadline _____
+
+tmp_path = PosixPath('/tmp/pytest-of-rudtn/pytest-5/test_postgres_outage_cannot_ex0')
+
+    @pytest.fixture
+    def disposable_service(tmp_path):
+        if os.environ.get('ZEUS_TEST_DOCKER') != '1':
+            pytest.skip('Explicit disposable Docker verification required')
+        service = VerificationServices(tmp_path/'services', FileArtifacts(tmp_path/'artifacts'))
+        with service as endpoints:
+            store = PostgresStore(endpoints['database_url'])
+>           store.migrate()
+
+tests/test_host_interruption.py:169: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/codex_harness/adapters/store.py:86: in migrate
+    return Migrator(self.dsn, config, str(root)).apply("store.migrate")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/codex_harness/adapters/migrations.py:115: in apply
+    with psycopg.connect(self.dsn, connect_timeout=5) as conn:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'psycopg.Connection'>
+conninfo = 'user=zeus password=9d86b99d67480ecbafcf6f51fe6fd33ed8dfa8710e2ab88f dbname=zeus host=127.0.0.1 port=54536 connect_timeout=5 hostaddr=127.0.0.1'
+autocommit = False, prepare_threshold = 5, context = None, row_factory = None
+cursor_factory = None, kwargs = {'connect_timeout': 5}
+
+    @classmethod
+    def connect(
+        cls,
+        conninfo: str = "",
+        *,
+        autocommit: bool = False,
+        prepare_threshold: int | None = 5,
+        context: AdaptContext | None = None,
+        row_factory: RowFactory[Row] | None = None,
+        cursor_factory: type[Cursor[Row]] | None = None,
+        **kwargs: ConnParam,
+    ) -> Self:
+        """
+        Connect to a database server and return a new `Connection` instance.
+        """
+    
+        params = cls._get_connection_params(conninfo, **kwargs)
+        timeout = timeout_from_conninfo(params)
+        rv = None
+        attempts = conninfo_attempts(params)
+        conn_errors: list[tuple[e.Error, str]] = []
+        for attempt in attempts:
+            tdescr = (attempt.get("host"), attempt.get("port"), attempt.get("hostaddr"))
+            descr = "host: %r, port: %r, hostaddr: %r" % tdescr
+            logger.debug("connection attempt: %s", descr)
+            try:
+                conninfo = make_conninfo("", **attempt)
+                gen = cls._connect_gen(conninfo, timeout=timeout)
+                rv = waiting.wait_conn(gen, interval=_WAIT_INTERVAL)
+            except e.Error as ex:
+                logger.debug("connection failed: %s: %s", descr, str(ex))
+                conn_errors.append((ex, descr))
+            except e._NO_TRACEBACK as ex:
+                raise ex.with_traceback(None)
+            else:
+                logger.debug("connection succeeded: %s", descr)
+                break
+    
+        if not rv:
+            last_ex = conn_errors[-1][0]
+            if len(conn_errors) == 1:
+>               raise last_ex.with_traceback(None)
+E               psycopg.OperationalError: connection failed: connection to server at "127.0.0.1", port 54536 failed: Connection refused
+E               	Is the server running on that host and accepting TCP/IP connections?
+
+.venv/lib/python3.12/site-packages/psycopg/connection.py:122: OperationalError
+=========================== short test summary info ============================
+ERROR tests/test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[12]
+ERROR tests/test_host_interruption.py::test_postgres_outage_cannot_extend_durable_deadline
+14 passed, 2 errors in 30.14s

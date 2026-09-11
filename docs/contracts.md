@@ -171,7 +171,10 @@ within one clock tick cannot swap.
 Release pytest receives only disposable service endpoints, with inherited Zeus/Harness aliases
 removed. PostgreSQL and Redis use a unique Compose project, localhost-only random ports and
 dedicated storage, without production mounts. Teardown runs on success and failure; stale
-cleanup requires matching generated definitions. This isolates service state, not arbitrary
+cleanup requires matching generated definitions. A service is ready only when its published
+loopback port accepts a connection from the harness process, checked with a bounded wait after
+the container healthchecks and recorded as ready_after_seconds; a stack that never becomes
+connectable fails entry and is cleaned up. This isolates service state, not arbitrary
 candidate code from the host. Actual execution and infrastructure observation errors remain distinct.
 
 ## INV-ENCODING-001
