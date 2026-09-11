@@ -1,0 +1,775 @@
+{
+  "authority": "Next Codex review scope inventory only; zero new semantic-review credit; no source or ledger changes",
+  "base": "50ebc2d3cd9fb2ab24a501d9ffeecfdbd4d0d928",
+  "untracked_analysis_files": [
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/checkpoint-verification.json",
+      "bytes": 8996,
+      "sha256": "cf557b11ceaa64dcadfdc5431377ee1ebb28ad8c5552741b525e752950a1020f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion-prompt.txt",
+      "bytes": 1004,
+      "sha256": "eff506528207de4e75f400b3e82a994ccb395e0c25ded27aa5c51d714d0dcb8b",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion-receipt.json",
+      "bytes": 3141,
+      "sha256": "863f94c265bba95f6d16171fb868500bd5bc87af397ff3564f5ae0ea13a16c3e",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion.json",
+      "bytes": 22789,
+      "sha256": "2a436628dc2f151e7b32de6c6846a94643c1244c53327c35e71c3c8c44347b6f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion.md",
+      "bytes": 20726,
+      "sha256": "0d343321e2dc896aa00f507bda0e79639525fa612086c98d0e877c5a53175cf3",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-discussion.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial-prompt.txt",
+      "bytes": 1761,
+      "sha256": "86c01c0d2852e483322dfacf6405b2f00d8b80a5ce36d143bb903d0fa03b210a",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial-receipt.json",
+      "bytes": 4306,
+      "sha256": "38fa90f42f44814520440ab01f3664e85d63245969c4e1bdeda9184ac0c088f4",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial.json",
+      "bytes": 32619,
+      "sha256": "95a909ec8a74dbf8642131fa99c1411ebc40ecf01f3a00af050bfd9f2758d803",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial.md",
+      "bytes": 30195,
+      "sha256": "172ad5017de78e0909f6fac4350303d7da5aafea62a443fdb016360dc924aed0",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/claude-initial.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/prior-unreviewed.json",
+      "bytes": 20176,
+      "sha256": "71d2538bd97d51da839425c3ba14c2c6f30f4736995bb9626df16161c137e1d8",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/resolution.md",
+      "bytes": 7458,
+      "sha256": "8287be04dcc3c9ea388a282ec5a74b2ca76f68c6cdea02939823ab252c8d4f0c",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/root-followup.md",
+      "bytes": 5352,
+      "sha256": "f55eff43af5a156f6faa515ad0fdc226479e9765ebf614d82478c55e7336c33f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/root-initial.md",
+      "bytes": 3525,
+      "sha256": "c35a83ed31129194588c295a339d2ea14f02dcf3d782adc4a773fb219e9921d7",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/root-supporting.json",
+      "bytes": 7483,
+      "sha256": "bcf300355ba2180dea70e4d855d668d31e19f4473a1272cdb57737db9331e235",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/atlas-system-proposals-joint-001/scope.json",
+      "bytes": 12806,
+      "sha256": "a1c52b28a121ce9622211cedbd963d97d49beb65969fd139ccd22144008568c8",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/artifact-hashes.json",
+      "bytes": 2982,
+      "sha256": "cbf79b0217142c8480708f7e588f3872a681d0e718f9d16139b5e2f18287f9af",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/checkpoint.json",
+      "bytes": 1238,
+      "sha256": "5f65d49ea0d7c76776a3d3f5af4f4d6f894aa1c5cfdc4128a5711a0e191d1d0b",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/file-reviews.md",
+      "bytes": 20662,
+      "sha256": "676f7fd3b176c97bc8a79e7812da08e32d8943b21ffc8f3ebd95b10c75631a47",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/files.json",
+      "bytes": 85205,
+      "sha256": "ce8472fa5b4e7f8c0430175217da3ae377b1383bea0f61807e431929bec09256",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/metadata-history.json",
+      "bytes": 644,
+      "sha256": "a9924e5102c33781c622ffe0e1f9b3c3276b9a9c49d16748b7561ce59f10e8d0",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/prepare.py",
+      "bytes": 2073,
+      "sha256": "86b9b7b602e624d7e89c523020fa9caeeeb117cfd6a9eff36b096f6ff2020472",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/prior-path-ledger.json",
+      "bytes": 11067,
+      "sha256": "eb1de64da72e43066e46c9f18cc27891727bf2de761fa37631498a44a43d16d7",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/read-receipts.json",
+      "bytes": 5031,
+      "sha256": "2bdccd6576ca574493e09798222f098be5c2e456b290c9baf9699dee9b4cb6f8",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/record_review.first.executed.txt",
+      "bytes": 12002,
+      "sha256": "9bcb9b92e5282230d6f53a190707389d3eb70e05cd85d5c5f06b0c5153b2e961",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/record_review.py",
+      "bytes": 12079,
+      "sha256": "45baeebf86883f529e63d06c8fe717df5318c6eeff11f269df93e4ee17643cd0",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/remaining.json",
+      "bytes": 537,
+      "sha256": "cddaaa4714e630a8477ac368fd55e6241a2cb5b19d0d3cfe548154e6fd1fbbbb",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/review.md",
+      "bytes": 2250,
+      "sha256": "f353203ca348745d86ac58e7eadce4f6505af56441df9eac13014cb594b98b26",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/scope.json",
+      "bytes": 3682,
+      "sha256": "871b37c3487ea7427c88e35d290445e75ed049518c176118fcc840acce823c59",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/supporting-evidence.json",
+      "bytes": 4999,
+      "sha256": "869cb5b7dead988af332a7f571550fe0f37c0b385be5d551e3b72920d3496f0d",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/supporting-reuse.json",
+      "bytes": 55237,
+      "sha256": "82c16075b21bca013e460faf170f78b88e5fdc634381dca1140a986dc4610afa",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/supporting-review.md",
+      "bytes": 3343,
+      "sha256": "282a05fca06f25c926b31ee8c766071efec9573931269e53af1d56913ddd52af",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-atlas-system-001/validation.json",
+      "bytes": 593,
+      "sha256": "6ac791fa640ef9afeb1f7be24cea8621f4832fe408e2412b86ed66bcb6c16e05",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/artifact-hashes.json",
+      "bytes": 2666,
+      "sha256": "8c86fe0b69850ee44be082aa6081b3aceebd8c5af979b9009c1df3b9a1049fec",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/checkpoint.json",
+      "bytes": 1232,
+      "sha256": "df869d84be97b7e5994964088bb6a01e7fdde3a1bf1f33807553aae8fd897795",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/file-reviews.md",
+      "bytes": 18787,
+      "sha256": "fd37ccad949d82d5ccd23e0295ce4819f6d6a836eda95f624c7475127f4e805d",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/files.json",
+      "bytes": 85844,
+      "sha256": "370ab7e032137db046a35366e53d8c48c2ec788c210d73f40ed2183c21d5934a",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prepare.py",
+      "bytes": 2255,
+      "sha256": "a081d12e622b038de2e90918122a3771a753461ad144ca6bcc94563883c91bd0",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prior-path-ledger.json",
+      "bytes": 8614,
+      "sha256": "5e7eae1e7d3e95704fdfb20edc0705fa4829cb213b5b4748a59fcc49d3a8b57f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prior-support-status.json",
+      "bytes": 5946,
+      "sha256": "009afc14955aeb3946454d4d97c8231849321e7ab5593dfd25ac49af18cf8dfa",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/read-receipts.json",
+      "bytes": 4349,
+      "sha256": "b76d53a823a92ba12d7e3a6deaed2dbfc1ff8b699c6e18368b7225eb7d7840c4",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/record_review.py",
+      "bytes": 11997,
+      "sha256": "f13fc1369d2050736a8c70de09b16def9cd6d2280364ccdd67406c14ea3f5eae",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/remaining.json",
+      "bytes": 459,
+      "sha256": "1af8a982bd0a014019e3aaba848cf2f013af221be159fbf1a5d3e9ecae0076ec",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/review.md",
+      "bytes": 1636,
+      "sha256": "6eb9ba2169052bbd0a29c3862070a9c4fd30203f80edc646c8eb1667b4ad7529",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/scope.json",
+      "bytes": 2612,
+      "sha256": "03281690f3041c8ffdc8481ae245d4529ea188f8c51a506d232e6e5db7bc3c47",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/supporting-evidence.json",
+      "bytes": 14688,
+      "sha256": "98909f40ddad09154a24065bcfb090aa46d8966944afd460ce9b0805a5557c5f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/supporting-review.md",
+      "bytes": 4185,
+      "sha256": "c990b7fe477c9e1bd4f25cb32c53979080bd66009f8f86f490109682cf773176",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/unavailable-support.json",
+      "bytes": 436,
+      "sha256": "cecc8952edcdeff4482fe39a5570b48cd5d70aa057f73b0faca3e9176d161d9e",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/validation.json",
+      "bytes": 521,
+      "sha256": "d95f6e3e95509802cec0e7a4477fc13d84a968f6b42c93e0a71c48def51c2653",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/artifact-hashes.json",
+      "bytes": 2667,
+      "sha256": "70847a1198c27bded9b85632a40b19a32c161e406568c73286dcaccae71b1cb4",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/checkpoint.json",
+      "bytes": 1297,
+      "sha256": "3310880120238c47c6ba8551818eeda76e94e2f0c4bab1ac1f961f366bea05cf",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/file-reviews.md",
+      "bytes": 23131,
+      "sha256": "d82f3b6faaa3cc688a4f9fff95f4b956af96dd6dd8734c5b4fcbf0e907fb218d",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/files.json",
+      "bytes": 82725,
+      "sha256": "022e05ee0cc0245c43cfd265f415f202f150962e7c59a83af9d5da303b8a1fb3",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/prepare.py",
+      "bytes": 2255,
+      "sha256": "e61962f3307aa8735e26f693ee64a8b66e7e2f05a9bca463e3e66220874caf37",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/prior-path-ledger.json",
+      "bytes": 7809,
+      "sha256": "87b6bcb0c709d5778c77bdcdc74b29db978a21e82a72037fe39a956ad3085878",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/prior-support-status.json",
+      "bytes": 7058,
+      "sha256": "c6f575a37fb589e26020bbec5bbe190fe4860622b852c584ff4264000a467806",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/read-receipts.json",
+      "bytes": 3868,
+      "sha256": "d7aac3f52bf95e0c80b671af110dc1ccbed1c9bf1aeb9ac0c44b900868c57b2f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/record_review.py",
+      "bytes": 13411,
+      "sha256": "0554cc6233c990764034871d24dff145d01a1bb071297b242b6c6e6059cf3ad0",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/remaining.json",
+      "bytes": 488,
+      "sha256": "a88241af8f7ec0269b016a5618f0b1deca0b7676a2e95ad1a239a03659ab1949",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/review.md",
+      "bytes": 2337,
+      "sha256": "fed374dd1f77b90643a67c5cd0b3ec3f229c6329c37db6388a1e20a027cbf16f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/scope.json",
+      "bytes": 2509,
+      "sha256": "58a3b49026405fd9af8a4a28fe25384d2973a9c9c62d0dc44fdd2e1bf0d598d9",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/supporting-evidence.json",
+      "bytes": 38046,
+      "sha256": "3d5ad0963bbfe2e20411709b32988e866d67844ce32fddfef3d44d9ffc148dcf",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/supporting-review.md",
+      "bytes": 4994,
+      "sha256": "d80f89fdec159e12e1c5b3a060ea2de630ab6f59602dfae5310badd7e8fb5a4c",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/unavailable-support.json",
+      "bytes": 5145,
+      "sha256": "55a3bd2214ebd2791a102debe6375fcdc1dd31166a4e9d33bd5aed0d12ff44f3",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-002/validation.json",
+      "bytes": 521,
+      "sha256": "afb16467cea1bcd9e23abcdbeeffc41fe2325be40f401cf315b41125df0c3b25",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/checkpoint.json",
+      "bytes": 2533,
+      "sha256": "ce7de4c4f947fda00e077232c8ff8c78a1181e699ddb7b066edf9318ac2b2d21",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/files.json",
+      "bytes": 95888,
+      "sha256": "c11443e663a8dc2292e108a64698e031fd268689469e6fe74726bb50970faf29",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/record-validation.json",
+      "bytes": 1074,
+      "sha256": "de0ae1439abc0bf44b7675f5b2b5e117b2634c52513d4628f38ccae0d11edb6e",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/record_review.py",
+      "bytes": 15359,
+      "sha256": "e18a72d68f959bb6e84be030bdcc9e79c8e12bcf52c85b405cc79200acfe3eaa",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/remaining.json",
+      "bytes": 1319,
+      "sha256": "99721edd1f677bbf0a80bc058344a1c74c3f5829bf5e135e54733059774b40b2",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/review.md",
+      "bytes": 25415,
+      "sha256": "602e96cbf44e20e4047dd43cf5d6853273877ae1459f5f71f25ee8ac31057b7e",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/supporting-evidence.json",
+      "bytes": 40586,
+      "sha256": "a1ab16d99970d6e48e152b71305cad57a6cd88bd1568dc2e12f4855fd47d5e54",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-pipeline-mobile-001/verification.json",
+      "bytes": 2160,
+      "sha256": "e3d95faff58249e092bb640dc0fe777407cd692af91ac9fba7eb3897bb3088f2",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/checkpoint.json",
+      "bytes": 2230,
+      "sha256": "bdfa067af747c03101d309d5fdc9b5697f23fa33edbbb438e76e13fe122e58f8",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/files.json",
+      "bytes": 73943,
+      "sha256": "c60f63800954811f75e23e0d0c9e5a78fa4a6a6a39f5446072fa3643fc49c197",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/record-validation.json",
+      "bytes": 1069,
+      "sha256": "b647e3b55382b66ddeae4f1a2bc28284e6282082179561efb9c51f960b35847e",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/record_review.py",
+      "bytes": 12149,
+      "sha256": "07721830a50e40dfecfceacaff1b4152a292e30623d683ca679f73e1410336db",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/remaining.json",
+      "bytes": 1264,
+      "sha256": "952937c86e07933d0d78df405f0d5eaeb6ef1037cd8b0be4637da173c21fa139",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/review.md",
+      "bytes": 22163,
+      "sha256": "6eff5649e6321bbed02a31ae174e511a30c710f7c16b48da011c3792b5e5f9f3",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/supporting-evidence.json",
+      "bytes": 35418,
+      "sha256": "87947f21baf3d20ada44b0addcf11604d2a89b6f1d652286039741199fffc88f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/verification.json",
+      "bytes": 1618,
+      "sha256": "e465d32e64b338cacfa62927d68847078972744a69d634cee8bf6f3dc63b7072",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/README.md",
+      "bytes": 1798,
+      "sha256": "ba2554a01e4b939ff0d9c1751f9e75bdecf29793060d767b76cf67f78ed78999",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/build_index.py",
+      "bytes": 9547,
+      "sha256": "894ac3166e0b7584bcf913a2a59164ac60593bb9892341aa9c426c82666cd473",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/checkpoint.json",
+      "bytes": 1104,
+      "sha256": "983d4228779b9654ed873be8d63f5ad37465b290febd0b27183cc916fab6c207",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/files.json",
+      "bytes": 58127,
+      "sha256": "64519e01cf0510008b5f60ce758549c5e6e0febc7a0de906d57e33006e505f2b",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/inventory.json",
+      "bytes": 2186,
+      "sha256": "bbd1bd926342571082b6abcf42b934c71d27f4f17e167958479c937cb7afc582",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/own-checks.md",
+      "bytes": 1014,
+      "sha256": "e9de0b4d13273595dec8136f3c0244a3af7f2eb79c0e86188c2d392d5a87f54b",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/prior-ledger.json",
+      "bytes": 9714,
+      "sha256": "ad0f950558a5b0eb9b9c5113978885a5d94d4892c354c1a6d4d14567648f7044",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/remaining.json",
+      "bytes": 565,
+      "sha256": "31c1bd8db24290aab71b5d16dfbc3cc30ba41a95b7ff4e784cd49afedc1a0baf",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/review.md",
+      "bytes": 22348,
+      "sha256": "27c37c6da0fd3fe7619d3ffdd2138732fd87094447e903f2eadc6437ec69a55a",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/supporting.json",
+      "bytes": 47039,
+      "sha256": "cf5cd410627ca6d09c2c60d1966f8f9768c73edd958ac090a8a819b3a322fd5e",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/validate_index.py",
+      "bytes": 3222,
+      "sha256": "293ebef2469d4c6b6a57bc355f6e395a43def226acbc99b25aa56242954a67c4",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-003/validation.json",
+      "bytes": 444,
+      "sha256": "60fc0de449f5496cdcbb7a7d4aba69ed550aa1d72d717850a4f758890fa0e5bb",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/README.md",
+      "bytes": 1398,
+      "sha256": "3b5cfc45f92940642b69bff433bbbfed6e4a7128d4a1da9d9ff477f05ae74b4c",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/build_index.py",
+      "bytes": 10312,
+      "sha256": "6fc5cd21509d366229dfb68b3c34e5e333cbae773a8568d97baee24270b8f272",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/checkpoint.json",
+      "bytes": 1401,
+      "sha256": "bf428dc6caaf0ed1fc56ee585bbe9821308a2d397d722ba4ec076f196f4f5b3f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/files.json",
+      "bytes": 50769,
+      "sha256": "559b84bdd076fcc88bb5a5878271d5ee77c71fc8e4d08ab3fda3e0eb2e84ced4",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/inventory.json",
+      "bytes": 1854,
+      "sha256": "722fdecb3e63057b6cf63492426e880db9c684522229669042c45dd8b48a2969",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/prior-ledger.json",
+      "bytes": 8035,
+      "sha256": "8686cce8f96b6a806b21c02baf01bc44d26fd03be5c4119657629c83511fc172",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/remaining.json",
+      "bytes": 721,
+      "sha256": "0f0f3689fc7ab29b923c6c805c529f4b7baf7143f6d5f4dd9372212bcda9b65f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/review.md",
+      "bytes": 22703,
+      "sha256": "ce0e4905868e934fd16a6214b4db40506146528481b405e7dc7d4067135df4c8",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/supporting.json",
+      "bytes": 61405,
+      "sha256": "453182d0512e9a6e9ab19cda133572fff5d2271b8e8c779d14b2bf5de5c71331",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/test-limits.md",
+      "bytes": 1342,
+      "sha256": "6f04b7bfcd85f67977983a922a0ee3cfbdc29490df0b6f34a36fcff10d1399ca",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/validate_index.py",
+      "bytes": 4074,
+      "sha256": "ebc12875c69fc5a5b0157d1db8ee502db7981ac5bf8c50c563daad995f23ba47",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-004/validation.json",
+      "bytes": 570,
+      "sha256": "342be336d15d5c85f943970ddbcc8cd0f5add208dd51b0e4306b1a688b34d9ec",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/README.md",
+      "bytes": 1509,
+      "sha256": "93f48939334267da03e419803dd96a77667fa793aefabadf26a3bd60f77baad1",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/build_index.py",
+      "bytes": 10406,
+      "sha256": "a0789847998a891ee6fc4ad5541c2003821afa33b85d27a5060720e60389da5a",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/checkpoint.json",
+      "bytes": 1400,
+      "sha256": "f8859f657ebc92a05d9d56b9720522ddacc9ae87811f6e51805ccb0c94223536",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/files.json",
+      "bytes": 38662,
+      "sha256": "4a33fd3fd7b72a2cf65c2d9c4dd9a1c8ea33f4a5b2affa5cb67dc4cc8497a2c8",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/inventory.json",
+      "bytes": 1390,
+      "sha256": "87e8bd65196164eeb9832065d00f801c0ab98a13d5926954e4070096bb8db9b2",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/prior-ledger.json",
+      "bytes": 5771,
+      "sha256": "e1fb793c587274bcc71171c5e571d183a5fdd5e6cebbc5370d9595db72ca06ef",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/remaining.json",
+      "bytes": 837,
+      "sha256": "ab4cd9cacd5b7634c1a3efe65c69c3a6d56dd319ccee609d2bdbd4030984ef1f",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/review.md",
+      "bytes": 18668,
+      "sha256": "566285cc466ecf5130d1af5decd504d543407206e98586d8b2bc9d1842eff9d1",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/supporting.json",
+      "bytes": 62412,
+      "sha256": "1d05e720e16978d1404faa9a6a49fc5a1adfe1d4c8cac5c4e191bf70214d22c6",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/test-limits.md",
+      "bytes": 945,
+      "sha256": "29b902279a634eb93cf6d41daa766b58b7cabe3ce49c5d3f6ca63249484421ac",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/validate_index.py",
+      "bytes": 4072,
+      "sha256": "ec36b9e3dd0707a1d0c11b1ca8068056432cf4522ed783a6df7fa061f6d0272b",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/harness-proposed-005/validation.json",
+      "bytes": 569,
+      "sha256": "702de0c2c783f2f437e874bdc46856afa700bd593e3aca9642c82f493c78c79a",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial-prompt.txt",
+      "bytes": 1688,
+      "sha256": "ba2da09c909f0c7569241285d24516aa3e64798496ea772e8d9f6d986d932526",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial-receipt.json",
+      "bytes": 4202,
+      "sha256": "2b22b1cf5fd6f715ca124fe279121b50d33397347f2aa4e3a763a83e4d4b4869",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.json",
+      "bytes": 38666,
+      "sha256": "d7bd59311f99bc2f49b923214d529046f752db0f706bc0cac82c7971d813dc53",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.md",
+      "bytes": 36275,
+      "sha256": "cf0f238b8ac3222d90e8d4173f2bb3049e5f4a7864ff0deee54277c8f95a6817",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/root-initial.md",
+      "bytes": 3991,
+      "sha256": "3a16989bba42a1218dd105eb6db68e6f810abae58d27d770e65901dca18bf1b5",
+      "disposition": "pending_codex_content_review"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/scope.json",
+      "bytes": 11438,
+      "sha256": "de789e4d48204c3d21eb194a672517fdbcae05658d6f4b9ff9a6714308940e83",
+      "disposition": "pending_codex_content_review"
+    }
+  ],
+  "modified_ledger_and_progress": [
+    {
+      "path": "docs/full-analysis/coverage.json",
+      "bytes": 840,
+      "sha256": "c2a47cf5cce12ca81344a061cdc9a5cb1821fb326ffd0078192fe3387a5db54d"
+    },
+    {
+      "path": "docs/full-analysis/path-ledger.json",
+      "bytes": 1447813,
+      "sha256": "e5c30d2e628b7729e9dc0c623b6fee0aed3f3d71707f337e4534962860e21171"
+    },
+    {
+      "path": "docs/zeus/goal-progress.md",
+      "bytes": 4055,
+      "sha256": "e01e0e1c7dda413813fafa7a7241e0c2bef9f4e15d367b8c050571ef14ef9a80"
+    }
+  ],
+  "files": 125,
+  "bytes": 1669230
+}

@@ -1,0 +1,48 @@
+{
+  "head": "916a9feb3444c66cedd06859aeb65567f2ba44c7",
+  "ledger_and_partition_unique_paths": 2736,
+  "report_differences": [
+    "committed_revision"
+  ],
+  "unreviewed": 747,
+  "candidate_files": 92,
+  "candidate_folders": 27,
+  "implementation_links": {
+    "records": 45,
+    "citing_full_analysis": 28,
+    "names": [
+      "behavior-assertions-001",
+      "breaker-admission-001",
+      "candidate-target-binding-001",
+      "check-binding-001",
+      "completion-authority-001",
+      "evidence-inspection-001",
+      "execution-fence-001",
+      "experience-claims-001",
+      "gate-verdicts-001",
+      "idempotency-races-001",
+      "integrity-unknown-001",
+      "invocation-ledger-001",
+      "latest-verdict-001",
+      "migration-precheck-001",
+      "observed-assets-001",
+      "output-validation-001",
+      "profile-privacy-001",
+      "progress-event-identity-001",
+      "runner-categories-001",
+      "seam-contracts-001",
+      "seam-scope-001",
+      "seam-view-001",
+      "skill-measurement-targets-001",
+      "skill-metadata-gate-001",
+      "snapshot-integrity-001",
+      "spec-replay-attribution-001",
+      "stack-routing-001",
+      "threshold-approval-001"
+    ]
+  },
+  "drift_records": 112,
+  "currently_matching": 112,
+  "changed_or_missing": [],
+  "authority": "Snapshot cross-check only, not semantic review or source test execution"
+}

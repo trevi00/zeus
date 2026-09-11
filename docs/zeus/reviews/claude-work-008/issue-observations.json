@@ -1,0 +1,44 @@
+[
+  {
+    "issue": 1,
+    "ticket_id": "ZEUS-8f1322ec0a67",
+    "comment_url": "https://github.com/trevi00/zeus/issues/1#issuecomment-5628653395",
+    "observation": {
+      "id": "5734946f58bbc08edce7900e7d2517abd842ddaac848d029eae9488542e489a8",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "repository": "trevi00/zeus",
+      "number": 1,
+      "url": "https://github.com/trevi00/zeus/issues/1",
+      "state": "OPEN",
+      "title": "[ZEUS-ANALYSIS] Claude 로컬 하네스 전체 분석과 Zeus 흡수",
+      "purpose": "pull",
+      "evidence_ref": "sha256:fad28c2ff7fb9d3ca016d64972a80aed59a6444cdbc63fa2510707d812eefb39",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T02:42:33.181205+00:00",
+      "first_seen": "2026-09-11T02:42:33.181205+00:00",
+      "sequence": 2
+    }
+  },
+  {
+    "issue": 11,
+    "ticket_id": "ZEUS-3d913005bed0",
+    "comment_url": "https://github.com/trevi00/zeus/issues/11#issuecomment-5628653599",
+    "observation": {
+      "id": "5cf6945fa63d9d99463732ed975d007955b82a4fcf57b738620f5e5f62317d86",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "repository": "trevi00/zeus",
+      "number": 11,
+      "url": "https://github.com/trevi00/zeus/issues/11",
+      "state": "OPEN",
+      "title": "[FA-010] Git 추적 밖 경험·플러그인·미커밋 노트의 분석 누락",
+      "purpose": "pull",
+      "evidence_ref": "sha256:85ae19d6709f9d3e18daec04f772c7b97bbe71caa9c9c60b06c9ab4ad66c27f6",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-11T02:42:34.900271+00:00",
+      "first_seen": "2026-09-11T02:42:34.900271+00:00",
+      "sequence": 2
+    }
+  }
+]

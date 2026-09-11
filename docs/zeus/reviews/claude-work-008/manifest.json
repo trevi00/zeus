@@ -1,0 +1,34 @@
+[
+  {
+    "path": "acceptance-checks.json",
+    "sha256": "60db70cb5537c44853e27c7e47c4032fa86d86cbddd94b4a9ab8638802f5094a"
+  },
+  {
+    "path": "ci.json",
+    "sha256": "fe61b1da2b913a2ade028a65988c194b23955e2c4bdc032b05565b3e978cab40"
+  },
+  {
+    "path": "issue-observations.json",
+    "sha256": "d74adb118e3769ed64039429919eb36ad9821453c92fc9803cdc4751d4af98c1"
+  },
+  {
+    "path": "merge.json",
+    "sha256": "b036ef7e95cd76823f2a606907c564839dbc70cf2ac7c874b29ab263ffb924ca"
+  },
+  {
+    "path": "next-analysis-scope.json",
+    "sha256": "18665537928d854c23f69ab3968c2ad55aee3760a5e2f8ec2b4819ddaaf64e54"
+  },
+  {
+    "path": "README.md",
+    "sha256": "bc3cfdd9c74633f7cdb36f7327ac03fe0ea96f042969baef7af859502db2c2be"
+  },
+  {
+    "path": "rerun-ledger-crosscheck.json",
+    "sha256": "594c7c6b2233621895043bdfa87f42e6db6aa326aa7b1cdebffadc6d85f2c760"
+  },
+  {
+    "path": "review.json",
+    "sha256": "592bdb90ade966e6ec355f5f599a462185bc4dff95520b1e3fcee4e22214fce9"
+  }
+]
