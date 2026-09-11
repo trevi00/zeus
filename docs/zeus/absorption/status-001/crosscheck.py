@@ -118,6 +118,56 @@ def ledger_diff(committed: dict, live: dict) -> dict:
     }
 
 
+def _argv_values(node: object) -> list[list[str]]:
+    """Collect every `argv` list found anywhere inside a JSON document."""
+    found: list[list[str]] = []
+    if isinstance(node, dict):
+        argv = node.get("argv")
+        if isinstance(argv, list) and all(isinstance(item, str) for item in argv):
+            found.append(argv)
+        for value in node.values():
+            found.extend(_argv_values(value))
+    elif isinstance(node, list):
+        for value in node:
+            found.extend(_argv_values(value))
+    return found
+
+
+def execution_receipts(analysis: Path) -> dict:
+    """Count JSON receipts under docs/full-analysis whose argv starts with `docker`.
+
+    This is a mechanical rule: a `docker` argv is the isolated-execution path
+    used by the existing joint reviews. Receipts that run only the review
+    recorder, ruff, or inert reads are not counted. The rule can miss receipts
+    with another shape; it never proves acceptance.
+    """
+    per_folder: collections.Counter = collections.Counter()
+    for path in analysis.rglob("*.json"):
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if any(argv and argv[0] == "docker" for argv in _argv_values(document)):
+            folder = path.relative_to(analysis).parts[0]
+            per_folder[folder] += 1
+    return {
+        "rule": "JSON file under docs/full-analysis with any argv whose first item is 'docker'",
+        "folders": len(per_folder),
+        "receipts": sum(per_folder.values()),
+        "per_folder": dict(sorted(per_folder.items())),
+    }
+
+
+def implementation_links(repo: Path) -> dict:
+    records = sorted((repo / "docs" / "zeus" / "implementation").glob("*/README.md"))
+    linked = [
+        path.parent.name
+        for path in records
+        if "full-analysis" in path.read_text(encoding="utf-8")
+    ]
+    return {"records": len(records), "citing_full_analysis": len(linked), "names": linked}
+
+
 def git(root: Path, *args: str) -> str:
     return subprocess.run(
         ["git", "-C", str(root), *args], capture_output=True, text=True, check=True
@@ -173,6 +223,8 @@ def main() -> None:
         ),
         "unreviewed": unreviewed_profile(committed_entries),
         "partitions": partition_profile(partitions, committed),
+        "execution_receipts": execution_receipts(analysis),
+        "implementation_links": implementation_links(args.repo),
     }
     if args.live:
         live_entries = load(args.live / "docs" / "full-analysis" / "path-ledger.json")
@@ -199,7 +251,11 @@ def main() -> None:
         )
     print(
         f"committed unreviewed={report['unreviewed']['count']} "
-        f"partitions_with_unreviewed={report['partitions']['partitions_with_unreviewed']}"
+        f"partitions_with_unreviewed={report['partitions']['partitions_with_unreviewed']} "
+        f"docker_receipt_folders={report['execution_receipts']['folders']} "
+        f"docker_receipts={report['execution_receipts']['receipts']} "
+        f"implementation_citing_analysis={report['implementation_links']['citing_full_analysis']}"
+        f"/{report['implementation_links']['records']}"
     )
 
 

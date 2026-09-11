@@ -49,11 +49,21 @@ git blob·bytes·sha256·disposition·review_records)과 `partitions.json`(349 �
   "inventory and summary inspection only; not complete semantic source review"로 적었다.
   `java-typescript-joint-001`은 3개 파일(claude-initial, root-initial, scope)뿐인 미완성이다.
 - `coverage.json`은 `whole_analysis_complete: false`, 2,736 항목 전부
-  `adoption_status: not_approved_not_incorporated`다. 즉 흡수된 자산은 아직 0개다.
-- 원본 실행 기록은 대부분 파티션이 "원본 실행 0건"이다. 실행을 시도한 공동 검토는
-  `baldrix-gsd-runtime-001` 하나이며 격리 Linux의 첫 suite가 60초에 취소됐다
-  (goal-progress.md 기재). 따라서 disposition의 `semantically_reviewed`는 정적 독해
-  완료를 뜻하고, 실행 증거를 뜻하지 않는다.
+  `adoption_status: not_approved_not_incorporated`다. 이것은 원장상 승인·편입된 자산이
+  0개라는 뜻이지, 분석 결과가 Zeus에 반영되지 않았다는 뜻이 아니다. Zeus 구현 기록
+  45개 중 28개가 `docs/full-analysis`의 검토 결과를 근거로 인용한다
+  (`ledger-crosscheck.json` `implementation_links`). 어떤 구현이 어떤 자산의 흡수에
+  해당하는지는 등록부가 없어 원장으로 답할 수 없고, Codex가 확인해야 한다.
+- 원본 실행 증거는 존재한다. Docker 격리 실행 argv를 가진 영수증이 27개 폴더에 92개
+  있다(`execution_receipts`; 규칙은 argv 첫 항목이 `docker`인 JSON, 검토 기록기·ruff·
+  inert 읽기 영수증은 제외). 예: `baldrix-cli-001` 원본 테스트 4건, `harness-lib` 12건,
+  `guardian` smoke 14건, `baldrix-gsd-runtime-001` 7건. gsd-runtime은 첫 suite 60초
+  취소 기록을 유지한 채, 프로세스 회수용 `--init` 한 가지만 바꾼 뒤 원본 Git 테스트
+  13개 통과와 여섯 구성요소 관찰에서 네 가지 불안전 동작을 재현했고, 다섯 시도 전부
+  `verify_evidence.py`로 blob·해시를 검증했다(그 폴더의 resolution.md). 이 증거는
+  FA-014/015/026/032의 참고 근거이며 인수도, 1차 커버리지 가산도 아니다. 따라서
+  "실행 증거 0"이 아니라 "실행 증거는 폴더 단위로 있고, 그것이 인수는 아니다"가 맞다.
+  disposition의 `semantically_reviewed`는 여전히 정적 독해 완료를 뜻한다.
 - 고정 커밋은 현재 로컬 HEAD와 같다(baldrix `cbb5c3e6`, harness `a3f8b3be`,
   guardian `e7ced4a6`, harness-design `20147dde`). 그러나 작업 트리는 고정 커밋에서
   벗어나 있다. 아래 2절의 드리프트 항목 참조.
@@ -116,13 +126,16 @@ harness 미추적 87개는 대부분 `knowledge/lessons`, `knowledge/research`, 
 | 검토 완료 (정적 전문 독해) | 1,183 (라이브 1,206) | 실행 증거 아님 |
 | 본문 검토·추적 미완 | 652 (라이브 669) | |
 | 미검토 | 747 (라이브 707); 층 B/C unreviewed 3,430 | |
-| 실행 미검증 | 정적 검토 전부. 실행 시도 1건(gsd-runtime, 취소) | 실행 증거가 있는 파티션 0 |
+| 실행 미검증 | disposition상 `execution-not-attested` 93, `static_only` 61. Docker 격리 실행 영수증은 27개 폴더 92건 | 영수증은 관찰 증거이며 인수 아님 |
 | 흡수 후보 | 등록부 없음. 28개 공동 resolution.md에 adopt/adapt/defer/reject 판단이 산문으로 있음 | 문자열 hit는 세지 않음 |
-| 구현 완료 (흡수) | 0 | adoption_status 전부 not_approved_not_incorporated |
-| 구현 완료 (Zeus 자체 FA 작업) | 45 implementation 기록, PR #36–#64·#69 병합 | 흡수와 별개 |
+| 흡수 편입 (원장) | 승인·편입 0 | adoption_status 전부 not_approved_not_incorporated |
+| 분석 결과를 근거로 한 Zeus 구현 | implementation 기록 45개 중 28개가 full-analysis 인용, PR #36–#64·#69 병합 | 자산별 흡수 대응은 Codex 확인 필요 |
 | 독립 검토 대기 | 이 PR 1건. 열린 다른 PR 없음 | |
 
 ## 5. 우선순위와 첫 번째 작업 묶음의 수용 기준
+
+아래는 제안이며 착수 승인이 아니다. absorb-002/003을 포함한 후속 작업은 Codex가
+범위와 순서를 판단한 뒤에만 시작한다. 이 PR 뒤에 예고된 자동 착수는 없다.
 
 우선순위 (Codex 판단 전 제안):
 
@@ -184,9 +197,20 @@ harness 미추적 87개는 대부분 `knowledge/lessons`, `knowledge/research`, 
    PR이 동시에 고치면 충돌한다. 제안: 내 묶음은 델타 JSON만 제출하고, 델타를 원장에
    적용하는 스크립트를 함께 넣어 Codex가 병합 시 재실행한다.
 
+## 정정 이력
+
+- 2026-09-11, Codex의 PR #70 검토 댓글 반영. 정정한 것: (1) 5절에 후속 작업은 Codex
+  판단 후에만 착수한다고 명시, (2) "실행 증거가 있는 파티션 0 / gsd-runtime 60초 취소"
+  문장을 철회하고 27개 폴더 92건의 격리 실행 영수증과 gsd-runtime의 `--init` 이후
+  13개 원본 Git 테스트 통과 기록으로 교체, (3) "흡수 구현 0"을 "원장상 편입 0"과
+  "분석 결과를 근거로 한 Zeus 구현 28/45"로 분리. 댓글 원문은 GitHub에 비ASCII
+  문자가 전부 `?`로 저장되어 4번째 지적과 마지막 단락은 읽지 못했고 반영하지 못했다.
+  `crosscheck.py`에 `execution_receipts`·`implementation_links` 집계를 추가했다.
+
 ## 첨부
 
-- `ledger-crosscheck.json`: 커밋 원장 집계, 라이브 원장 전이 40건, 파티션별 unreviewed.
+- `ledger-crosscheck.json`: 커밋 원장 집계, 라이브 원장 전이 40건, 파티션별 unreviewed,
+  Docker 실행 영수증 폴더별 수, full-analysis를 인용하는 구현 기록.
 - `working-tree-drift.json`: 네 원본 저장소의 HEAD, 수정·미추적 항목의 경로·바이트·sha256.
   운영 중인 하네스라 재실행 시 값이 달라질 수 있다(같은 날 두 번 실행에서 baldrix
   `brain/l1/insight-index.jsonl`의 바이트가 달랐다). 이 파일은 관측 시점의 스냅샷이다.
