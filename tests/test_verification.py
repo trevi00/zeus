@@ -9,6 +9,13 @@ from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.verification import VerificationServices, verification_environment
 
 
+@pytest.fixture(autouse=True)
+def fake_endpoint_probe(request, monkeypatch):
+    """Faked compose stacks publish ports nobody listens on; only the real disposable stack test probes them."""
+    if not any(marker in request.node.name for marker in ('real_disposable', 'endpoint_is_ready')):
+        monkeypatch.setattr(VerificationServices, '_await_endpoint', staticmethod(lambda port, deadline_seconds=30.0: 0.0))
+
+
 def test_verification_environment_cannot_inherit_production_endpoints():
     env = verification_environment({"database_url": "isolated-db", "redis_url": "isolated-redis"},
         {"ZEUS_DATABASE_URL": "production", "HARNESS_DATABASE_URL": "production",
@@ -137,3 +144,40 @@ def test_real_disposable_database_and_redis_are_isolated_and_removed(tmp_path):
     assert result.returncode == 0 and not result.stdout.strip()
     result = run_process(["docker", "volume", "ls", "-q", "--filter", "label=com.docker.compose.project=" + service.project])
     assert result.returncode == 0 and not result.stdout.strip()
+
+
+def test_endpoint_is_ready_only_when_connectable_and_the_wait_is_bounded():
+    # Observed on WSL2 + Docker Desktop (evidence run attempt 4): `up --wait` returned with healthy
+    # containers while the host port forward still refused connections for a moment.
+    import socket
+    import threading
+    import time
+
+    from codex_harness.domain.model import ContractError
+
+    probe = socket.socket()
+    probe.bind(("127.0.0.1", 0))
+    port = probe.getsockname()[1]
+    probe.close()  # nothing listens yet: the first attempts must be refused, not treated as ready
+
+    def listen_later():
+        time.sleep(0.6)
+        server = socket.socket()
+        server.bind(("127.0.0.1", port))
+        server.listen(1)
+        server.settimeout(5)
+        try:
+            client, _ = server.accept()
+            client.close()
+        except OSError:
+            pass
+        finally:
+            server.close()
+
+    thread = threading.Thread(target=listen_later, daemon=True)
+    thread.start()
+    waited = VerificationServices._await_endpoint(port, deadline_seconds=10)
+    thread.join(5)
+    assert 0.4 <= waited <= 5, "ready is reported after the listener came up, not before"
+    with pytest.raises(ContractError, match="not connectable after 0.5s"):
+        VerificationServices._await_endpoint(port, deadline_seconds=0.5)

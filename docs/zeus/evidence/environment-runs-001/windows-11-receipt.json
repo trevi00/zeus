@@ -1,0 +1,170 @@
+{
+  "label": "windows-11",
+  "head": "e2e32351d2ebfc6371c8314b0450a22dfcd5d63b",
+  "tree_dirty": false,
+  "started_at": "2026-09-10T16:18:00.229461+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "machine": "AMD64",
+  "python": "3.12.14",
+  "uv": "uv 0.12.5 (210d1f678 2026-08-14 x86_64-pc-windows-msvc)",
+  "docker": "29.7.2",
+  "compose": "5.4.0",
+  "compose_project": "harness-evidence-win",
+  "steps": [
+    {
+      "name": "ruff",
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "env": {},
+      "exit_code": 0,
+      "seconds": 0.2,
+      "summary": "All checks passed!",
+      "stdout_sha256": "sha256:82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "windows-11-ruff.log"
+    },
+    {
+      "name": "full-suite-integration",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "env": {
+        "HARNESS_INTEGRATION": "1"
+      },
+      "exit_code": 0,
+      "seconds": 441.9,
+      "summary": "1433 passed, 14 skipped in 440.87s (0:07:20)",
+      "stdout_sha256": "sha256:dd997bd4cefebc3eb8753987d53a0a6737b7a7fb1466a49b1a36b57f4959ceb2",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "windows-11-full-suite-integration.log"
+    },
+    {
+      "name": "disposable-docker-checks",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_verification.py",
+        "tests/test_host_interruption.py"
+      ],
+      "env": {
+        "HARNESS_INTEGRATION": "1",
+        "ZEUS_TEST_DOCKER": "1"
+      },
+      "exit_code": 0,
+      "seconds": 54.6,
+      "summary": "16 passed in 54.14s",
+      "stdout_sha256": "sha256:8cdcbc6139834acd1e6233e607c5bdb162f0fc2448e97bf1e4c0477f16156524",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "windows-11-disposable-docker-checks.log"
+    }
+  ],
+  "authority": "what ran on this host at this head; not a reboot, a human acceptance or a deployment",
+  "setup": {
+    "exit_code": 0,
+    "stdout_tail": [
+      "  \"repository\": \"C:\\\\Users\\\\rudtn\\\\zeus-pr\\\\main-evidence\",",
+      "  \"env_created\": false",
+      "}"
+    ]
+  },
+  "stack": {
+    "exit_code": 0,
+    "seconds": 4.2,
+    "stderr_tail": [
+      " Container harness-evidence-win-postgres-1 Started ",
+      " Container harness-evidence-win-postgres-1 Waiting ",
+      " Container harness-evidence-win-redis-1 Waiting ",
+      " Container harness-evidence-win-redis-1 Healthy ",
+      " Container harness-evidence-win-postgres-1 Healthy"
+    ]
+  },
+  "containers": [
+    {
+      "Command": "\"docker-entrypoint.s…\"",
+      "CreatedAt": "2026-09-11 01:18:01 +0900 KST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "10b7e65e1124",
+      "Image": "pgvector/pgvector:pg17",
+      "Labels": "com.docker.compose.config-hash=e09a9e9eb519164d78cefe7b9feebf17dfd1d312176ffbb8b3eaeadf2a67f53c,com.docker.compose.oneoff=False,com.docker.compose.project=harness-evidence-win,com.docker.compose.project.working_dir=C:\\Users\\rudtn\\zeus-pr\\main-evidence,com.docker.compose.container-number=1,com.docker.compose.depends_on=,com.docker.compose.image=sha256:dca0d688bbb31d3f851502ffcb9c7791387b4fcc544ae434dab41761e5ece317,com.docker.compose.project.config_files=C:\\Users\\rudtn\\zeus-pr\\main-evidence\\compose.yaml,com.docker.compose.service=postgres,com.docker.compose.version=5.4.0,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=127.0.0.1:55432",
+      "LocalVolumes": "1",
+      "Mounts": "harness-eviden…",
+      "Name": "harness-evidence-win-postgres-1",
+      "Names": "harness-evidence-win-postgres-1",
+      "Networks": "harness-evidence-win_default",
+      "Ports": "127.0.0.1:55432->5432/tcp",
+      "Project": "harness-evidence-win",
+      "Publishers": [
+        {
+          "URL": "127.0.0.1",
+          "TargetPort": 5432,
+          "PublishedPort": 55432,
+          "Protocol": "tcp"
+        }
+      ],
+      "RunningFor": "4 seconds ago",
+      "Service": "postgres",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 seconds (healthy)"
+    },
+    {
+      "Command": "\"docker-entrypoint.s…\"",
+      "CreatedAt": "2026-09-11 01:18:01 +0900 KST",
+      "ExitCode": 0,
+      "Health": "healthy",
+      "ID": "d265f42a571a",
+      "Image": "redis:7.4-alpine",
+      "Labels": "com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=C:\\Users\\rudtn\\zeus-pr\\main-evidence,com.docker.compose.service=redis,desktop.docker.io/ports/6379/tcp=127.0.0.1:56379,com.docker.compose.config-hash=703342dc62d3943f8f8f02599351e4cfeba5a75d920f50671582ccffdcb45b14,com.docker.compose.container-number=1,com.docker.compose.project=harness-evidence-win,com.docker.compose.project.config_files=C:\\Users\\rudtn\\zeus-pr\\main-evidence\\compose.yaml,com.docker.compose.version=5.4.0,desktop.docker.io/ports.scheme=v2,com.docker.compose.depends_on=,com.docker.compose.image=sha256:1db42ccef14898aa29bae778452d567534b59c107129cbc1163fb552de184d3c",
+      "LocalVolumes": "1",
+      "Mounts": "harness-eviden…",
+      "Name": "harness-evidence-win-redis-1",
+      "Names": "harness-evidence-win-redis-1",
+      "Networks": "harness-evidence-win_default",
+      "Ports": "127.0.0.1:56379->6379/tcp",
+      "Project": "harness-evidence-win",
+      "Publishers": [
+        {
+          "URL": "127.0.0.1",
+          "TargetPort": 6379,
+          "PublishedPort": 56379,
+          "Protocol": "tcp"
+        }
+      ],
+      "RunningFor": "4 seconds ago",
+      "Service": "redis",
+      "Size": "0B",
+      "State": "running",
+      "Status": "Up 3 seconds (healthy)"
+    }
+  ],
+  "teardown": {
+    "exit_code": 0,
+    "stderr_tail": [
+      " Network harness-evidence-win_default Removing ",
+      " Volume harness-evidence-win_redis-data Removed ",
+      " Volume harness-evidence-win_postgres-data Removed ",
+      " Network harness-evidence-win_default Removed"
+    ]
+  },
+  "finished_at": "2026-09-10T16:26:22.852974+00:00",
+  "passed": true
+}

@@ -1,0 +1,49 @@
+........................................................................ [  4%]
+...............F........................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+..s..................................................................... [ 29%]
+........................................................................ [ 34%]
+....................................sssss............................... [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+.......................s................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+................................s................s....s....s....s....s.. [ 99%]
+..s...........                                                           [100%]
+================================== FAILURES ===================================
+_______ test_explicit_repository_resolves_config_from_another_directory _______
+
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3374/test_explicit_repository_resol0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CE1BB147A0>
+
+    def test_explicit_repository_resolves_config_from_another_directory(tmp_path, monkeypatch):
+        root = tmp_path / "한글 path"
+        root.mkdir()
+        (root / ".env").write_text(
+            'export HARNESS_DATABASE_URL="postgresql://user:pass@localhost/db" # local\n'
+            "HARNESS_REDIS_URL='redis://localhost:123/1'\nHARNESS_RUNTIME_DIR=state\n",
+            encoding="utf-8-sig")
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("HARNESS_REPOSITORY", str(root))
+        for name in ("HARNESS_DATABASE_URL", "HARNESS_REDIS_URL", "HARNESS_RUNTIME_DIR"):
+            monkeypatch.delenv(name, raising=False)
+        assert repository_root() == root
+>       assert database_url() == "postgresql://user:pass@localhost/db"
+E       AssertionError: assert 'postgresql:/...58047/harness' == 'postgresql:/...@localhost/db'
+E         
+E         - postgresql://user:pass@localhost/db
+E         + postgresql://harness:***@127.0.0.1:58047/harness
+
+C:\Users\rudtn\zeus-pr\main-evidence\tests\test_configuration.py:29: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_configuration.py::test_explicit_repository_resolves_config_from_another_directory
+1 failed, 1439 passed, 14 skipped in 417.62s (0:06:57)
