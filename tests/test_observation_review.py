@@ -196,8 +196,10 @@ def test_reconcile_decision_correlation_and_schema_errors_never_carry_the_canary
     """Counterexamples 5 and 6 inverted: reason, operator, correlation and schema-error paths."""
     o = file_observer(tmp_path, store, alert_window_seconds=0)
     record_id = termination_fixture(o)
-    with pytest.raises(ContractError, match="operator must be an identifier"):
+    with pytest.raises(ContractError, match="operator must be an opaque identifier"):
         o.resolve_termination(record_id, resolution="discard", operator="password=" + CANARY, reason="r")
+    with pytest.raises(ContractError, match="looks like a credential"):
+        o.resolve_termination(record_id, resolution="discard", operator="ghp_" + "A" * 30, reason="r")
     result = o.resolve_termination(record_id, resolution="discard", operator="review", reason="password=" + CANARY)
     resolved_file = (tmp_path / "obs" / "terminations" / "resolved" / (record_id + ".json")).read_text("utf-8")
     assert result["resolution"]["reason"]["redaction_findings"] == 1

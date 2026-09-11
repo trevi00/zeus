@@ -42,6 +42,7 @@ from codex_harness.domain.observation import (
     execution_identity,
     is_business_message,
     lease_identity,
+    opaque_identifier,
     redact_text,
 )
 from codex_harness.domain.policy import POLICY
@@ -75,9 +76,9 @@ class PostExecutionRecordFailure(RuntimeError):
     """
 
     def __init__(self, record_id: str, cause: BaseException, boundary: str):
-        # The cause text travels with the exception into the existing task failure record (which
-        # already keeps raw error text); observation surfaces only ever see the type and digest.
-        super().__init__(f"{boundary} failed after provider entry: {type(cause).__name__}: {cause}; "
+        # The cause object stays attached for callers; its text never enters the message, because
+        # the message becomes the task failure record, the CLI output and the diagnosis request.
+        super().__init__(f"{boundary} failed after provider entry ({_error_text(cause)}); "
                          f"termination record {record_id}")
         self.record_id, self.cause, self.boundary = record_id, cause, boundary
 
@@ -90,6 +91,7 @@ class MemoryDirectory:
         self.terminations: dict[str, dict] = {}
         self.resolved: dict[str, dict] = {}
         self.pending: dict[str, list[dict]] = {}
+        self.acked: dict[str, set] = {}
 
     def write_health(self, process_run_id, record):
         self.health[process_run_id] = record
@@ -98,13 +100,35 @@ class MemoryDirectory:
         return [self.health[key] for key in sorted(self.health)]
 
     def write_pending_alerts(self, process_run_id, records):
+        acked = self.acked.get(process_run_id, set())
+        records = [row for row in records if row.get("event_id") not in acked]
         if records:
             self.pending[process_run_id] = list(records)
         else:
             self.pending.pop(process_run_id, None)
 
+    def acknowledge_pending_alerts(self, origin, event_ids, replayer):
+        self.acked.setdefault(origin, set()).update(event_ids)
+
+    def acknowledged_alerts(self, origin):
+        return set(self.acked.get(origin, set()))
+
     def read_pending_alerts(self):
-        return {key: list(value) for key, value in self.pending.items()}
+        found = {}
+        for key, value in self.pending.items():
+            rows = [row for row in value if row.get("event_id") not in self.acked.get(key, set())]
+            if rows:
+                found[key] = rows
+        return found
+
+    def run_finished(self, process_run_id, now=None, retention_seconds=None):
+        return False
+
+    def prune(self, now=None, retention_seconds=None):
+        return {"runs": 0, "segments": 0, "files": 0}
+
+    def total_bytes(self):
+        return 0
 
     def record_termination(self, record_id, record):
         if record_id in self.terminations:
@@ -156,10 +180,8 @@ def _error_text(error: BaseException) -> str:
 
 
 def _label(value, name: str, limit: int = 80) -> str:
-    """Operator-supplied labels are opaque identifiers, refused when they carry free text."""
-    require(type(value) is str and REFERENCE.fullmatch(value) is not None and len(value) <= limit,
-            f"{name} must be an identifier (letters, digits, . _ : @ + -), at most {limit} characters")
-    return value
+    """Operator-supplied labels are opaque identifiers, refused when free text or credential-shaped."""
+    return opaque_identifier(value, name, limit)
 
 
 def _free_text(value, name: str, limit: int = MAX_REASON_CHARS) -> dict:
@@ -388,18 +410,37 @@ class Observer:
         return flushed
 
     def _flushed(self, flushed) -> int:
-        """Called after the transaction that carried `_flush_pending` committed."""
+        """Called after the transaction that carried `_flush_pending` committed.
+
+        Only the committed (origin, event_id) pairs are acknowledged: our own list drops exactly
+        those ids (an alert added meanwhile stays pending), and a foreign origin's debt is
+        acknowledged in our own ack file, never by rewriting the origin's file, which the origin
+        may still be appending to.
+        """
         if not flushed:
             return 0
-        self.pending_alerts = []
-        self.inherited_pending = {}
+        own = {event_id for origin, event_id in flushed if origin == self.process_run_id}
+        self.pending_alerts = [row for row in self.pending_alerts if row["event_id"] not in own]
         self.counters["alerts_replayed"] += len(flushed)
         self._persist_pending()
-        for origin in {origin for origin, _ in flushed if origin != self.process_run_id}:
+        foreign: dict[str, set] = {}
+        for origin, event_id in flushed:
+            if origin != self.process_run_id:
+                foreign.setdefault(origin, set()).add(event_id)
+        for origin, ids in foreign.items():
             try:
-                self.directory.write_pending_alerts(origin, [])
-            except Exception:
-                self.counters["pending_file_cleanup_failures"] += 1
+                self.directory.acknowledge_pending_alerts(origin, sorted(ids), self.process_run_id)
+            except Exception as exc:
+                # The commit stands but the durable acknowledgement did not: keep the debt so the
+                # next successful transaction replays (idempotently) and acknowledges it again.
+                self.counters["pending_ack_failures"] += 1
+                self.last_defect = _error_text(exc)
+                continue
+            remaining = [row for row in self.inherited_pending.get(origin, []) if row["event_id"] not in ids]
+            if remaining:
+                self.inherited_pending[origin] = remaining
+            else:
+                self.inherited_pending.pop(origin, None)
         return len(flushed)
 
     def _persist_pending(self) -> None:
@@ -410,6 +451,11 @@ class Observer:
             self.last_defect = _error_text(exc)
 
     def _inherit_pending_alerts(self) -> None:
+        """Take a snapshot of other origins' unacknowledged debt; origins may be alive and keep adding.
+
+        Whatever they add after this snapshot stays in their own files and is picked up by the
+        next reader; nothing here deletes or rewrites another origin's file.
+        """
         try:
             found = self.directory.read_pending_alerts()
         except Exception:
@@ -417,6 +463,25 @@ class Observer:
         self.inherited_pending = {run: rows for run, rows in found.items() if run != self.process_run_id and rows}
         if self.inherited_pending:
             self.counters["alerts_inherited"] += sum(len(rows) for rows in self.inherited_pending.values())
+
+    def refresh_inherited_alerts(self) -> int:
+        """Pick up debt other origins added after the last snapshot (called by the collector)."""
+        try:
+            found = self.directory.read_pending_alerts()
+        except Exception:
+            return 0
+        added = 0
+        for run, rows in found.items():
+            if run == self.process_run_id:
+                continue
+            known = {row["event_id"] for row in self.inherited_pending.get(run, [])}
+            fresh = [row for row in rows if row.get("event_id") not in known]
+            if fresh:
+                self.inherited_pending[run] = self.inherited_pending.get(run, []) + fresh
+                added += len(fresh)
+        if added:
+            self.counters["alerts_inherited"] += added
+        return added
 
     def _sink(self, state: str, error: BaseException | None = None) -> None:
         previous, self.sink_state = self.sink_state, state
@@ -456,9 +521,48 @@ class Observer:
         return digest(["termination", lease.get("_bucket", "tasks"), lease["id"], lease.get("generation"),
                        lease.get("attempt")])
 
+    def mark_unconfirmed(self, tx, lease: dict, *, reservation_id) -> dict:
+        """Durable marker written with the reservation, before any provider is entered.
+
+        Until the outcome is accepted (or the attempt is proven never to have entered the
+        provider, or an observed failure is recorded), this attempt's effects are unconfirmed and
+        no later claim of the task may run the provider. It lives in the sink, so a failing
+        termination file or a crash at any later boundary still leaves the block in place.
+        """
+        record_id = self.termination_id(lease)
+        existing = tx.get(TERMINATION_BUCKET, record_id)
+        if existing is not None and existing.get("status") in {"unconfirmed", "pending_reconciliation"}:
+            return existing
+        record = {"record_id": record_id, "status": "unconfirmed", "task_id": lease["id"],
+                  "bucket": lease.get("_bucket", "tasks"), "generation": lease.get("generation"),
+                  "attempt": lease.get("attempt"), "reservation_id": reservation_id, "boundary": "reserved",
+                  "invocation_outcome": "unknown", "stream_hash": None, "error_type": None, "error": None,
+                  "evidence_refs": [], "process_run_id": self.process_run_id, "recorded_at": self.clock(),
+                  "note": "reserved; effects unconfirmed until the outcome is durably accepted"}
+        tx.put(TERMINATION_BUCKET, record_id, record)
+        self.counters["unconfirmed_marked"] += 1
+        return record
+
+    def close_unconfirmed(self, tx, lease: dict, closure: str) -> dict | None:
+        """Clear the marker inside the transaction that durably records the outcome."""
+        require(closure in {"accepted", "observed_failure", "not_entered"}, "Unknown closure")
+        record_id = self.termination_id(lease)
+        existing = tx.get(TERMINATION_BUCKET, record_id)
+        if existing is None or existing.get("status") != "unconfirmed":
+            return existing  # pending_reconciliation and resolved records are never closed here
+        closed = {**existing, "status": "closed", "closure": closure, "closed_at": self.clock()}
+        tx.put(TERMINATION_BUCKET, record_id, closed)
+        self.counters["unconfirmed_closed"] += 1
+        return closed
+
     def record_termination(self, lease: dict, *, reservation_id, classification: str, stream_hash: str | None,
                            error: BaseException, boundary: str = "settlement", evidence_refs=()) -> str:
-        """Redacted minimal evidence that the provider was entered; local first, then the sink if it answers."""
+        """Redacted minimal evidence that the provider was entered; local file and sink, each best effort.
+
+        The durable block itself is the unconfirmed marker written at reservation; this record
+        adds the boundary and evidence. A failing file write is counted and does not stop the sink
+        write; a failing sink write leaves the file; neither failure weakens the block.
+        """
         record_id = self.termination_id(lease)
         record = {"record_id": record_id, "status": "pending_reconciliation", "task_id": lease["id"],
                   "bucket": lease.get("_bucket", "tasks"), "generation": lease.get("generation"),
@@ -472,6 +576,9 @@ class Observer:
             self.directory.record_termination(record_id, record)
         except FileExistsError:
             self.counters["termination_redelivered"] += 1
+        except Exception as exc:
+            self.counters["termination_file_failures"] += 1
+            self.last_defect = _error_text(exc)
         self.counters["terminations"] += 1
         self.emit("development.termination_recorded", "unknown", severity="critical",
                   execution=self.for_lease(lease, provider="codex-app-server", invocation_id=reservation_id),
@@ -482,7 +589,8 @@ class Observer:
                               "record_id": record_id, "boundary": boundary})
         try:
             with self.store.transaction() as tx:
-                if tx.get(TERMINATION_BUCKET, record_id) is None:
+                existing = tx.get(TERMINATION_BUCKET, record_id)
+                if existing is None or existing.get("status") in {"unconfirmed", "closed"}:
                     tx.put(TERMINATION_BUCKET, record_id, record)
         except Exception as exc:
             self.last_defect = _error_text(exc)
@@ -506,7 +614,7 @@ class Observer:
         for record_id, row in sink_rows.items():
             if row.get("task_id") != task_id:
                 continue
-            if row.get("status") == "pending_reconciliation":
+            if row.get("status") in {"pending_reconciliation", "unconfirmed"}:
                 rows.setdefault(record_id, row)
             elif row.get("status") == "resolved" and record_id in local and not local[record_id].get("unreadable"):
                 try:  # the commit happened; only the local finalize was lost
@@ -571,15 +679,24 @@ class Collector:
         self.store, self.directory, self.validate = store, directory, validate
         self.observer, self.batch, self.clock = observer, batch, clock
 
-    def collect(self) -> dict:
+    def collect(self, prune: bool = True) -> dict:
         counts = Counter()
         files = []
+        if self.observer is not None:
+            self.observer.refresh_inherited_alerts()
         for path in self.directory.spool_files():
             offset = self.directory.acknowledged(path)
             rows, end, tail = [], offset, False
             for start, stop, status, kind, event, defect in self.directory.read(path, offset):
                 if status == "truncated_tail":
                     tail = True
+                    run = path.name.split(".")[0]
+                    if self.directory.run_finished(run):
+                        # The writer is gone for good: the partial tail is final and is quarantined
+                        # as corrupt so the segment can be acknowledged and reclaimed.
+                        rows.append(("corrupt", start, stop, kind, None, "truncated tail of a finished run"))
+                        end = stop
+                        tail = False
                     break
                 rows.append((status, start, stop, kind, event, defect))
                 end = stop
@@ -615,9 +732,17 @@ class Collector:
                 # Acknowledge and reclaim first: the recovery event itself must find room in the spool.
                 self.observer._flushed(flushed)
                 self.observer._sink("available")
+        if prune:
+            try:
+                pruned = self.directory.prune()
+            except Exception as exc:
+                pruned = {"error": type(exc).__name__}
+            counts["pruned_runs"] = pruned.get("runs", 0)
+            counts["pruned_files"] = pruned.get("segments", 0) + pruned.get("files", 0)
         summary = {**{key: 0 for key in ("files", "records", "inserted", "duplicates", "conflicts", "corrupt",
                                          "refused", "truncated_tail", "unconfirmed_audits", "confirmed_audits",
-                                         "sink_failures", "reclaimed_segments")}, **counts, "per_file": files}
+                                         "sink_failures", "reclaimed_segments", "pruned_runs", "pruned_files")},
+                   **counts, "per_file": files}
         if self.observer is not None and (summary["records"] or summary["truncated_tail"]):
             self.observer.emit("operations.collection_completed", "observed",
                                attributes={key: int(summary[key]) for key in
@@ -714,11 +839,18 @@ def orphan_report(tx, now: str | None = None) -> dict:
 def status_report(store, directory, observer: Observer | None = None) -> dict:
     with store.transaction() as tx:
         counts = {bucket: len(tx.scan(bucket)) for bucket in BUCKETS}
-        pending = [row for row in tx.scan(TERMINATION_BUCKET) if row.get("status") == "pending_reconciliation"]
+        pending = [row for row in tx.scan(TERMINATION_BUCKET)
+                   if row.get("status") in {"pending_reconciliation", "unconfirmed"}]
         alerts = tx.scan(ALERT_BUCKET)
         orphans = orphan_report(tx)
     return {"buckets": counts, "spool_files": [path.name for path in directory.spool_files()],
             "spool_unacknowledged_bytes": directory.unacknowledged_bytes(),
+            "runtime_directory_bytes": directory.total_bytes(),
+            "limits": {"per_run_unacknowledged_bytes": POLICY.observation_spool_bytes,
+                       "segment_bytes": POLICY.observation_segment_bytes,
+                       "finished_run_retention_seconds": POLICY.observation_retention_seconds,
+                       "note": "the per-run limit bounds live producers; the directory total is the sum over "
+                               "producers plus finished runs inside the retention window, not a hard cap"},
             "process_health": directory.read_health(),
             "pending_alert_files": {run: len(rows) for run, rows in directory.read_pending_alerts().items()},
             "pending_terminations": {"local": directory.pending_terminations(), "sink": pending},

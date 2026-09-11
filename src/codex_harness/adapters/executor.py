@@ -402,7 +402,11 @@ class Executor:
             # termination evidence that was not reconciled; the reservation and its audit record
             # commit together, and a failed audit means no reservation and no provider.
             if lease:
-                pending = self.observer.pending_terminations(key)
+                # This attempt's own unconfirmed marker (a second stage or a handoff of the same
+                # attempt) is expected; anything else pending belongs to an earlier attempt.
+                pending = [row for row in self.observer.pending_terminations(key)
+                           if not (row.get("status") == "unconfirmed"
+                                   and (row.get("generation"), row.get("attempt")) == (lease.get("generation"), lease.get("attempt")))]
                 if pending:
                     raise ReconciliationRequired(key, pending)
             correlation = self.observer.correlation(lease)
@@ -415,12 +419,13 @@ class Executor:
             reservation = (self.invocations.reserve(
                 lease, request=request, budget_seconds=timeout, stage=stage,
                 guard=lambda tx: self.workflow._owned(tx, lease),
-                audit=lambda tx, row: self.observer.audit(
+                audit=lambda tx, row: (self.observer.mark_unconfirmed(tx, lease, reservation_id=row["id"]),
+                    self.observer.audit(
                     tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
                     execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
                     attributes={"reservation_id": row["id"], "stage": stage, "transport": "app_server",
                                 "requested_model": selection.requested_model, "budget_seconds": float(timeout),
-                                "workload": workload}))
+                                "workload": workload})))
                 if lease else None)
             reservation_id = reservation["id"] if reservation else None
             admission = None
@@ -473,6 +478,10 @@ class Executor:
                                                     execution=observed_execution(row["id"]), correlation_id=correlation,
                                                     causation_id=key, reason_code=error_type,
                                                     attributes={"reservation_id": row["id"], "reason": reason})
+                                if not provider_entered:
+                                    # Proven never to have entered: the unconfirmed marker closes with
+                                    # the abandonment, in the same transaction.
+                                    self.observer.close_unconfirmed(tx, lease, "not_entered")
                             self.invocations.abandon(reservation['id'], reason, audit=abandoned)
                         if admission is not None:
                             self.breaker.report(admission, result_of_exception(exc))
@@ -689,7 +698,10 @@ class Executor:
                           "origin": details, "execution_ref": self.artifacts.put(canonical(candidate), "git-rebase")["ref"]}
             else:
                 raise ValueError("Unsupported task action: " + action)
-            current = self.workflow.complete(task, result, commands)
+            # INV-OBSERVATION-001: the outcome and the clearing of this attempt's unconfirmed marker
+            # commit together; a failed acceptance write leaves the marker, and the task blocked.
+            current = self.workflow.complete(task, result, commands,
+                                             accept=lambda tx, row: self.observer.close_unconfirmed(tx, task, "accepted"))
             self.observer.emit("development.task_completed", "succeeded" if current["status"] == "succeeded" else "blocked",
                                execution=self.observer.for_lease(task), correlation_id=self.observer.correlation(task),
                                causation_id=task["id"], evidence_refs=[result["execution_ref"]] if result.get("execution_ref") else [],
@@ -698,28 +710,25 @@ class Executor:
         except ReconciliationRequired as exc:
             return self._block_for_reconciliation(task, agent, exc)
         except PostExecutionRecordFailure as exc:
-            # The failure is recorded like any other (receipt, diagnosis request, notice), then the
-            # task is blocked in place so no later claim can run the provider again unreconciled.
-            failed = self._fail_task(task, agent, exc)
-            return self._block_after_failure(task, agent, exc, failed)
+            return self._fail_task(task, agent, exc, block=[exc.record_id])
         except Exception as exc:
-            return self._fail_task(task, agent, exc)
+            return self._fail_task(task, agent, exc, **self._failure_disposition(task, exc))
 
-    def _block_after_failure(self, lease, agent, exc, failed):
-        """INV-OBSERVATION-001: a retryable failure record becomes a block when termination evidence exists."""
-        bucket = lease.get("_bucket", "tasks")
-        if not isinstance(failed, dict) or failed.get("status") != "retry":
-            return failed
-        with self.service.store.transaction() as tx:
-            current = tx.get(bucket, lease["id"])
-            if (current is None or current.get("status") != "retry"
-                    or (current.get("generation"), current.get("attempt")) != (failed.get("generation"), failed.get("attempt"))
-                    or current.get("failure_receipt") != failed.get("failure_receipt")):
-                return failed  # someone else already moved the execution on; the guard in _run still holds
-            current.update(status="blocked", error="reconciliation_required")
-            tx.put(bucket, lease["id"], current)
-            self._record_reconciliation_block(tx, bucket, lease, agent, current, [exc.record_id])
-            return current
+    def _failure_disposition(self, lease, exc) -> dict:
+        """INV-OBSERVATION-001: how a failure outside `_run` closes or keeps this attempt's marker.
+
+        No open marker: nothing was reserved, an ordinary retry. An open marker with a
+        runner-observed output failure or a contract rejection of an already persisted answer:
+        the outcome was observed, the marker closes with the failure record and the retry stays.
+        Anything else with an open marker (an acceptance write, a workspace capture, a decision
+        commit that failed) cannot prove the effects were accepted: the attempt is blocked.
+        """
+        pending = self.observer.pending_terminations(lease["id"])
+        if not pending:
+            return {}
+        if isinstance(exc, (ExecutionFailure, ContractError)):
+            return {"closure": "observed_failure"}
+        return {"block": [row.get("record_id") for row in pending]}
 
     def _record_reconciliation_block(self, tx, bucket, lease, agent, current, record_ids):
         event = {"type": "execution.reconciliation_required", "bucket": bucket, "task_id": lease["id"],
@@ -771,11 +780,19 @@ class Executor:
         from codex_harness.application.execution_rejections import reconcile
         return reconcile(self.service.store, lease, error, rejection_error)
 
-    def _fail_task(self, task, agent, error):
+    def _fail_task(self, task, agent, error, *, block=None, closure=None):
+        """Record the failure; with `block`, also block the task in the same transaction; with
+        `closure`, close the attempt's unconfirmed marker as an observed failure (INV-OBSERVATION-001)."""
         try:
             # INV-RECURRENCE-001: committing failure must also retain its diagnosis request.
             with self.service.store.transaction() as tx:
                 current = self.workflow.fail_execution(task, error, transaction=tx)
+                if closure:
+                    self.observer.close_unconfirmed(tx, task, closure)
+                if block and current.get("status") == "retry":
+                    current.update(status="blocked", error="reconciliation_required")
+                    tx.put(task.get("_bucket", "tasks"), task["id"], current)
+                    self._record_reconciliation_block(tx, task.get("_bucket", "tasks"), task, agent, current, block)
                 actor = self.service.org.actor(agent)
                 if actor.parent:
                     observation_id = digest({"task": task["id"], "attempt": task["attempt"]})
@@ -924,6 +941,7 @@ class Executor:
                     self._recovered_effect(current, agent, phase, data)
                     current.update(status="inspection_blocked", result=result, completed_at=utcnow())
                     tx.put("decisions_pending", decision["id"], current)
+                    self.observer.close_unconfirmed(tx, lease, "accepted")  # a recorded terminal outcome
                     execution_notice(tx, self.service.org, current, 'decisions_pending', 'inspection_blocked', utcnow())
                 return current
             if result.get("blocked"):
@@ -934,23 +952,31 @@ class Executor:
                     self._recovered_effect(current, agent, phase, data)
                     current.update(status="blocked", result=result, completed_at=utcnow())
                     tx.put("decisions_pending", decision["id"], current)
+                    self.observer.close_unconfirmed(tx, lease, "accepted")  # a recorded terminal outcome
                     execution_notice(tx, self.service.org, current, 'decisions_pending', 'decision_blocked', utcnow())
                 return current
             return self._commit_decision(decision, agent, phase, data, result, lease)
         except ReconciliationRequired as exc:
             return self._block_for_reconciliation({**decision, "_bucket": "decisions_pending"}, agent, exc)
         except PostExecutionRecordFailure as exc:
-            lease = {**decision, "_bucket": "decisions_pending"}
-            try:
-                failed = self.workflow.fail_execution(lease, exc)
-            except ContractError as failure:
-                return self._lost_execution(lease, exc, failure)
-            return self._block_after_failure(lease, agent, exc, failed)
+            return self._fail_decision({**decision, "_bucket": "decisions_pending"}, agent, exc, block=[exc.record_id])
         except Exception as exc:
-            try:
-                return self.workflow.fail_execution({**decision, "_bucket": "decisions_pending"}, exc)
-            except ContractError as failure:
-                return self._lost_execution({**decision, "_bucket": "decisions_pending"}, exc, failure)
+            lease = {**decision, "_bucket": "decisions_pending"}
+            return self._fail_decision(lease, agent, exc, **self._failure_disposition(lease, exc))
+
+    def _fail_decision(self, lease, agent, error, *, block=None, closure=None):
+        try:
+            with self.service.store.transaction() as tx:
+                current = self.workflow.fail_execution(lease, error, transaction=tx)
+                if closure:
+                    self.observer.close_unconfirmed(tx, lease, closure)
+                if block and current.get("status") == "retry":
+                    current.update(status="blocked", error="reconciliation_required")
+                    tx.put("decisions_pending", lease["id"], current)
+                    self._record_reconciliation_block(tx, "decisions_pending", lease, agent, current, block)
+                return current
+        except ContractError as failure:
+            return self._lost_execution(lease, error, failure)
 
     @staticmethod
     def _recovered_effect(current, agent, phase, data):
@@ -972,6 +998,7 @@ class Executor:
             except TicketSuperseded as exc:
                 current.update(status="superseded", result=result, error=str(exc), completed_at=utcnow())
                 tx.put("decisions_pending", decision["id"], current)
+                self.observer.close_unconfirmed(tx, lease, "accepted")  # a recorded terminal outcome
                 execution_notice(tx, self.service.org, current, 'decisions_pending', 'ticket_superseded', utcnow())
                 return current
             message = decision["message"]
@@ -1051,6 +1078,7 @@ class Executor:
             current = self.workflow._owned(tx, lease)
             current.update(status="succeeded", result=result, completed_at=utcnow())
             tx.put("decisions_pending", decision["id"], current)
+            self.observer.close_unconfirmed(tx, lease, "accepted")  # INV-OBSERVATION-001: with the outcome
             if next_message:
                 self.service.org.authorize(next_message)
                 tx.put("outbox", next_message["message_id"], {"message": next_message, "sent": False})

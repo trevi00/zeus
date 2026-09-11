@@ -117,12 +117,16 @@ def test_invalid_evidence_never_completes(setup, failure):
         s.config['final']['source_revision'] = 'b' * 40
     if failure == 'final_missing':
         del s.config['final']['source_revision']
-    assert s.executor.execute_one('worker:github')['status'] == 'retry'
+    # A rejected answer is an observed outcome (retry). 'detail' is an infrastructure error between
+    # two provider calls of one attempt whose effects are still unconfirmed: blocked (INV-OBSERVATION-001).
+    expected = 'blocked' if failure == 'detail' else 'retry'
+    assert s.executor.execute_one('worker:github')['status'] == expected
     with s.service.store.transaction() as tx:
         messages = [r['message'] for r in tx.scan('outbox')]
-        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
-        assert messages[0]['what']['details']['reason_code'] == 'execution_failed'
-        assert tx.get('tasks', s.task['id'])['status'] == 'retry'
+        assert all(m['type'] == 'execution.notice' for m in messages)
+        reasons = sorted(m['what']['details']['reason_code'] for m in messages)
+        assert reasons == (['execution_failed', 'reconciliation_required'] if expected == 'blocked' else ['execution_failed'])
+        assert tx.get('tasks', s.task['id'])['status'] == expected
     if not failure.startswith('final'):
         assert 'final' not in s.calls
 
@@ -157,14 +161,12 @@ def test_retry_after_failure_recollects_and_retrieves_before_final(setup, stage)
     s = setup
     s.config['failure'] = stage
     first = s.executor.execute_one('worker:github')
-    if stage == 'detail':
-        # The failure happens between provider calls: nothing unrecorded, ordinary retry.
-        assert first['status'] == 'retry'
-    else:
-        # The transport failed after the provider was entered: blocked until reconciled.
-        assert first['status'] == 'blocked' and first['error'] == 'reconciliation_required'
-        assert s.executor.execute_one('worker:github') is None
-        reconcile_and_repair(s, s.task['id'])
+    # 'shortlist'/'final': the transport failed after the provider was entered. 'detail': an
+    # infrastructure error between two provider calls of the same attempt, with the attempt's
+    # effects still unconfirmed. Both block until an operator reconciles (INV-OBSERVATION-001).
+    assert first['status'] == 'blocked' and first['error'] == 'reconciliation_required'
+    assert s.executor.execute_one('worker:github') is None
+    reconcile_and_repair(s, s.task['id'])
     s.config['failure'] = None
     s.calls.clear()
     result = s.executor.execute_one('worker:github')

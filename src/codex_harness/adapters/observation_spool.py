@@ -26,6 +26,7 @@ import json
 import os
 import re
 import tempfile
+import time
 from pathlib import Path
 
 from codex_harness.domain.model import ContractError, canonical, require, utcnow
@@ -35,7 +36,9 @@ from codex_harness.ports import SpoolFull
 RECORD_KINDS = ("event", "audit")
 LINE = re.compile(rb"^([0-9a-f]{64}) (event|audit) (.*)$", re.S)
 RECORD_ID = re.compile(r"^[A-Za-z0-9_.:-]{1,200}$")
-SEGMENT = re.compile(r"^(?P<run>[0-9a-f]{32})\.(?P<segment>\d{4})\.jsonl$")
+# The writer names segments with at least four digits; the reader accepts any width and orders
+# numerically, so index 10000 follows 9999 instead of disappearing or sorting before it.
+SEGMENT = re.compile(r"^(?P<run>[0-9a-f]{32})\.(?P<segment>\d{4,})\.jsonl$")
 
 
 def atomic_write(path: Path, text: str) -> None:
@@ -246,7 +249,87 @@ class SpoolDirectory:
     # ---- segments -----------------------------------------------------------------------------
     def spool_files(self) -> list[Path]:
         directory = self.root / "spool"
-        return sorted(path for path in directory.glob("*.jsonl") if segment_identity(path)) if directory.is_dir() else []
+        if not directory.is_dir():
+            return []
+        return sorted((path for path in directory.glob("*.jsonl") if segment_identity(path)),
+                      key=lambda path: segment_identity(path))
+
+    def run_finished(self, process_run_id: str, now: float | None = None,
+                     retention_seconds: int = POLICY.observation_retention_seconds) -> bool:
+        """A run is finished when it wrote its closed marker or stopped writing longer ago than retention."""
+        if self.closed(process_run_id):
+            return True
+        moment = time.time() if now is None else now
+        newest = 0.0
+        for path in self.spool_files():
+            identity = segment_identity(path)
+            if identity and identity[0] == process_run_id:
+                try:
+                    newest = max(newest, path.stat().st_mtime)
+                except OSError:
+                    continue
+        return bool(newest) and moment - newest > retention_seconds
+
+    def prune(self, now: float | None = None,
+              retention_seconds: int = POLICY.observation_retention_seconds) -> dict:
+        """Directory-wide retention for finished runs: reclaim what is acknowledged, drop stale leftovers.
+
+        The per-run byte limit bounds live producers; this bounds what finished producers leave
+        behind (segments, ack files, closed markers, health records, fully acknowledged pending
+        alert files). Unacknowledged segments of a finished run are never deleted here; the
+        collector consumes them first (a truncated tail of a finished run is finalized there).
+        """
+        counts = {"runs": 0, "segments": 0, "files": 0}
+        moment = time.time() if now is None else now
+        runs = {segment_identity(path)[0] for path in self.spool_files()}
+        for marker in (self.root / "spool").glob("*.closed") if (self.root / "spool").is_dir() else []:
+            runs.add(marker.stem)
+        for run in sorted(runs):
+            if not self.run_finished(run, moment, retention_seconds):
+                continue
+            segments = [path for path in self.spool_files() if segment_identity(path)[0] == run]
+            remaining = []
+            for path in segments:
+                try:
+                    size = path.stat().st_size
+                except OSError:
+                    continue
+                if read_acknowledged(path) >= size:
+                    os.unlink(path)
+                    counts["segments"] += 1
+                    try:
+                        os.unlink(path.with_suffix(".ack"))
+                    except FileNotFoundError:
+                        pass
+                else:
+                    remaining.append(path)
+            if remaining:
+                continue  # still holds unacknowledged records; the collector must consume them first
+            counts["runs"] += 1
+            for leftover in (self.root / "spool" / (run + ".closed"), self.root / "health" / (run + ".json")):
+                try:
+                    os.unlink(leftover)
+                    counts["files"] += 1
+                except FileNotFoundError:
+                    pass
+            if not self.read_pending_alerts().get(run):
+                for path in (self.root / "pending-alerts").glob(run + "*.json") if (self.root / "pending-alerts").is_dir() else []:
+                    try:
+                        os.unlink(path)
+                        counts["files"] += 1
+                    except FileNotFoundError:
+                        pass
+        return counts
+
+    def total_bytes(self) -> int:
+        total = 0
+        for path in self.root.rglob("*") if self.root.is_dir() else []:
+            try:
+                if path.is_file():
+                    total += path.stat().st_size
+            except OSError:
+                continue
+        return total
 
     def read(self, path: Path, offset: int = 0):
         return read_records(path, offset)
@@ -320,8 +403,30 @@ class SpoolDirectory:
         return rows
 
     # ---- pending alerts (survive a process restart) --------------------------------------------
+    # Ownership: only the origin process rewrites `<origin>.json`. A process that replays another
+    # origin's debt writes its own `<origin>.acked.<replayer>.json` with the event ids it committed;
+    # readers subtract every ack file from the origin list, so a live origin adding new alerts and a
+    # replayer acknowledging old ones never clobber each other.
+    def _pending_path(self, process_run_id: str) -> Path:
+        return self.root / "pending-alerts" / (process_run_id + ".json")
+
+    def acknowledged_alerts(self, origin: str) -> set[str]:
+        directory = self.root / "pending-alerts"
+        acked: set[str] = set()
+        for path in directory.glob(origin + ".acked.*.json") if directory.is_dir() else []:
+            try:
+                value = json.loads(path.read_text("utf-8"))
+            except (ValueError, OSError):
+                continue
+            if isinstance(value, list):
+                acked.update(item for item in value if type(item) is str)
+        return acked
+
     def write_pending_alerts(self, process_run_id: str, records: list[dict]) -> None:
-        path = self.root / "pending-alerts" / (process_run_id + ".json")
+        """Origin-only write of the origin's own list; already acknowledged ids are dropped."""
+        acked = self.acknowledged_alerts(process_run_id)
+        records = [row for row in records if row.get("event_id") not in acked]
+        path = self._pending_path(process_run_id)
         if not records:
             try:
                 os.unlink(path)
@@ -330,16 +435,34 @@ class SpoolDirectory:
             return
         atomic_write(path, canonical(records) + "\n")
 
+    def acknowledge_pending_alerts(self, origin: str, event_ids, replayer: str) -> None:
+        """Replayer-owned, append-only acknowledgement of committed ids for a foreign origin."""
+        path = self.root / "pending-alerts" / f"{origin}.acked.{replayer}.json"
+        try:
+            existing = json.loads(path.read_text("utf-8"))
+            if not isinstance(existing, list):
+                existing = []
+        except (FileNotFoundError, ValueError, OSError):
+            existing = []
+        merged = sorted(set(item for item in existing if type(item) is str) | set(event_ids))
+        atomic_write(path, canonical(merged) + "\n")
+
     def read_pending_alerts(self) -> dict[str, list[dict]]:
+        """Every origin's still-unacknowledged pending alerts."""
         directory = self.root / "pending-alerts"
         found = {}
         for path in sorted(directory.glob("*.json")) if directory.is_dir() else []:
+            if ".acked." in path.name:
+                continue
             try:
                 value = json.loads(path.read_text("utf-8"))
             except (ValueError, OSError):
                 continue
             if isinstance(value, list) and all(isinstance(row, dict) for row in value):
-                found[path.stem] = value
+                acked = self.acknowledged_alerts(path.stem)
+                rows = [row for row in value if row.get("event_id") not in acked]
+                if rows:
+                    found[path.stem] = rows
         return found
 
     # ---- termination evidence -------------------------------------------------------------------

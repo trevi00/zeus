@@ -64,7 +64,8 @@ class ExecutionRecovery:
         if row.get('error') != 'reconciliation_required':
             return
         pending = [record for record in tx.scan('observation_terminations')
-                   if record.get('task_id') == row['id'] and record.get('status') == 'pending_reconciliation']
+                   if record.get('task_id') == row['id']
+                   and record.get('status') in {'pending_reconciliation', 'unconfirmed'}]
         require(not pending, 'Termination records are still pending reconciliation')
 
     def _related(self, tx, bucket, row):

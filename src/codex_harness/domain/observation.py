@@ -164,6 +164,16 @@ def redact_value(value, *, max_chars: int = MAX_STRING_CHARS):
     return {"invalid_type": type(value).__name__}, 0, 0
 
 
+def opaque_identifier(value, name: str, limit: int = 200) -> str:
+    """An identifier is refused when it does not look like an opaque handle or when it looks like
+    a credential (a character-set rule is not a secret check; the redactor's shapes are)."""
+    require(type(value) is str and REFERENCE.fullmatch(value) is not None and len(value) <= limit,
+            f"{name} must be an opaque identifier (letters, digits, . _ : @ + -), at most {limit} characters")
+    _, findings = redact_text(value)
+    require(findings == 0, f"{name} looks like a credential and is refused")
+    return value
+
+
 def _typed(kind, value):
     if kind == _N:
         return value is None or (type(value) is str)
@@ -207,8 +217,8 @@ def execution_identity(kind: str, *, process_run_id: str, role=None, provider=No
                 "session_id": session_id, "bucket": bucket, "task_id": task_id, "generation": generation,
                 "attempt": attempt, "invocation_id": invocation_id, "revision": revision}
     for key in ("role", "provider", "session_id", "task_id", "invocation_id", "revision"):
-        require(identity[key] is None or (type(identity[key]) is str and bool(identity[key].strip())),
-                f"execution.{key} must be text or null, never a placeholder")
+        if identity[key] is not None:
+            opaque_identifier(identity[key], f"execution.{key}", 255)
     for key in ("generation", "attempt"):
         require(identity[key] is None or (type(identity[key]) is int and identity[key] >= 0),
                 f"execution.{key} must be a non-negative integer or null")
@@ -269,15 +279,18 @@ def build_event(*, event_type: str, outcome: str, execution: dict, sequence: dic
             "Sequence must name the process run and say whether a number was assigned")
     require(isinstance(source, dict) and type(source.get("component")) is str and bool(source["component"]),
             "Source component required")
-    require(correlation_id is None or (type(correlation_id) is str and REFERENCE.fullmatch(correlation_id) is not None),
-            "correlation_id must be an opaque identifier or null, never free text or a placeholder")
-    require(causation_id is None or (type(causation_id) is str and REFERENCE.fullmatch(causation_id) is not None),
-            "causation_id must be an opaque identifier or null, never free text or a placeholder")
-    require(reason_code is None or (type(reason_code) is str and REASON_CODE.fullmatch(reason_code) is not None),
-            "reason_code must be an identifier or null")
-    require(isinstance(evidence_refs, (list, tuple)) and len(evidence_refs) <= MAX_EVIDENCE_REFS
-            and all(type(ref) is str and REFERENCE.fullmatch(ref) is not None for ref in evidence_refs),
-            "Evidence references must be opaque identifiers")
+    if correlation_id is not None:
+        opaque_identifier(correlation_id, "correlation_id")
+    if causation_id is not None:
+        opaque_identifier(causation_id, "causation_id")
+    if reason_code is not None:
+        require(type(reason_code) is str and REASON_CODE.fullmatch(reason_code) is not None,
+                "reason_code must be an identifier or null")
+        opaque_identifier(reason_code, "reason_code", 80)
+    require(isinstance(evidence_refs, (list, tuple)) and len(evidence_refs) <= MAX_EVIDENCE_REFS,
+            "Evidence references must be a short list")
+    for ref in evidence_refs:
+        opaque_identifier(ref, "evidence_ref")
     _timestamp(observed_at, "observed_at")
     require(observed_at is not None, "observed_at is the collection moment and is required")
     _timestamp(occurred_at, "occurred_at")

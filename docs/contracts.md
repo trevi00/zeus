@@ -565,12 +565,18 @@ segment only when it is fully acknowledged and no longer being written, so a spo
 consumed never saturates and an active segment is never truncated. Correlation, causation and
 evidence identifiers are opaque handles and are refused, never rewritten, when they are not;
 operator labels follow the same rule and operator free text is redacted and bounded before it is
-stored or returned. Once the provider is entered, every failure up to the durable checkpoint
-(transport, progress, cleanup, settlement, breaker report, result persistence, checkpoint) leaves
-redacted termination evidence naming its boundary, records the failure, blocks the task and
-notifies the lead through the existing execution notice; a refusal proven to precede entry stays
-an ordinary retry, and a runner-observed output failure whose evidence is already persisted is an
-observed outcome. Reconciliation commits the operator's decision and audit to the sink before the
+stored or returned; identifiers that match a known credential shape are refused as well. The
+reservation transaction also writes a durable unconfirmed marker for the attempt, before any
+provider is entered; the marker closes only in the transaction that durably accepts the outcome
+(task completion, decision commit or a recorded terminal decision), in the abandonment of a
+refusal proven to precede entry, or with the failure record of an observed rejection of an
+already persisted answer. Any other failure while the marker is open — transport, progress,
+cleanup, settlement, breaker report, result persistence, checkpoint, acceptance write, workspace
+capture — records the failure, blocks the task and notifies the lead through the existing
+execution notice in one transaction, and adds redacted termination evidence naming its boundary
+where it can; a failing evidence file or sink does not weaken the block. Failure records built
+from a foreign exception carry its type and digest, never its text. Reconciliation commits the
+operator's decision and audit to the sink before the
 local blocking record is finalized, is idempotent for the same decision and refuses a different
 one; re-queuing goes through execution recovery, which refuses while any termination record is
 pending. Pending alerts are persisted locally, cleared only after the transaction that carried

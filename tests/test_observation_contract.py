@@ -64,8 +64,10 @@ def test_execution_branch_needs_identity_and_system_branch_needs_explicit_nulls(
         execution_identity("execution", process_run_id=RUN, role="worker:github", task_id="t")
     with pytest.raises(ContractError, match="explicit null"):
         execution_identity("system", process_run_id=RUN, task_id="t")
-    with pytest.raises(ContractError, match="placeholder"):
+    with pytest.raises(ContractError, match="opaque identifier"):
         execution_identity("system", process_run_id=RUN, revision="")
+    with pytest.raises(ContractError, match="looks like a credential"):
+        execution_identity("system", process_run_id=RUN, revision="ghp_" + "A" * 30)
     tampered = deepcopy(system_event())
     tampered["execution"]["task_id"] = "injected"
     with pytest.raises(ContractError):
