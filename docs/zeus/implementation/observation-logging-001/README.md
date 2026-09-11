@@ -220,6 +220,21 @@ GitHub Actions(head 1b5d70f): pull_request run 34590777031 10/10 통과. push ru
 `server closed the connection unexpectedly`로 연결 실패(이전 라운드와 같은 readiness 부류, 이 PR이 바꾸지 않은 파일).
 `gh run rerun --failed` 후 2차 시도 통과(10/10). 재실행 사실은 실패 이력에 그대로 남긴다.
 
+5차 검토 반영 후 (런타임·테스트 head `b794ac3`, `environment-runs-008`):
+
+| 호스트 | 결과 |
+|---|---|
+| Windows 11 (Python 3.12.14) | **통과**: ruff; full-suite-integration 1573 passed, 14 skipped (478s); disposable-docker 17 passed (58s). 관측 테스트 9파일 129 passed, skip 0 (contract 16, review 16, review2 24, review3 14, review4 10, **review5 6**, spool 5, wiring 19, observations 19). 격리 스택 `harness-evidence-windows-11-df58228c`. 영수증 tracked_changes [], untracked [] |
+| WSL Ubuntu 26.04 (WSL2 kernel 6.18, Python 3.12.14, filelock 3.32.5 `UnixFileLock`) | **통과**: ruff; full-suite-integration 1579 passed, 8 skipped (154s); disposable-docker 17 passed (53s). 관측 129 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-7b2f6315`. Codex의 `startup_gc_race_linux.py`를 같은 head에서 실행하면 79행 `assert pruned['segments'] == 1`에서 멈춘다(작성자가 lifecycle 잠금 앞에서 멈춘 동안 GC는 아직 등록되지 않은 run을 보지 못해 아무것도 지우지 않음 = "GC 먼저" 순서의 안전 결과; 임시 디렉터리, 산출물 없음) |
+
+회귀가 무는지 확인(Windows 작업본): 수정 전 어댑터 `git show 1b5d70f:src/codex_harness/adapters/observation_spool.py`를 잠시 되돌리고
+lock 호출 순번만 수정 전 기준(run 잠금이 첫 호출)으로 맞춘 사본으로 같은 테스트를 돌리면
+`test_gc_waits_for_a_registering_writer_and_keeps_its_active_segment`·`test_collector_reclaim_waits_for_registration_and_refuses_the_active_segment`가
+"GC blocks on the lifecycle lock while a writer is registering"에서 실패한다(2 failed). 복원 후 2 passed. 통상 스위트(Windows, 커밋 전):
+1197 passed, 390 skipped.
+
+GitHub Actions(head b794ac3): push run 34626619023·pull_request run 34626624878 모두 attempt 1에서 10/10 통과(재실행 없음).
+
 공개 산출물 검사(모든 라운드): 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
 (러너가 실행별 비밀번호를 scrub한 뒤 기록). 이 검사는 grep으로 했고 결과를 PR 본문에 적었다.
 
