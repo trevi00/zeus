@@ -1,0 +1,6 @@
+{
+  "path": "windows-11-full-suite.junit.xml",
+  "reason": "Remove expired disposable-run database password from JUnit failure details; original bytes are not republished. This is a sanitized derivative, not an unchanged original.",
+  "original_sha256": "d91e8f20881295f41c6396879e2f548921bc2385efa2fcc8b258595c6e77a4bc",
+  "sanitized_sha256": "84568bf5719c29c9be7787d657a614e8107e37439e92057b23ff7664b00eddbf"
+}

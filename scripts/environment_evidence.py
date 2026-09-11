@@ -228,6 +228,8 @@ class EvidenceRun:
                                           'summary': summary, 'stdout_sha256': digest_text(result['stdout']),
                                           'stderr_sha256': digest_text(result['stderr']), 'log': log.name})
             if name == 'full-suite-integration' and junit.exists():
+                junit.write_text(self.scrub(junit.read_text(encoding='utf-8')), encoding='utf-8', newline='\n')
+                self.receipt['junit_sha256'] = digest_file(junit)
                 self.receipt['per_file'] = per_file(junit)
         return self.phase('steps', {'count': len(self.receipt['steps']), 'expected': len(plan)}, all_ok and len(self.receipt['steps']) == len(plan))
 
@@ -266,12 +268,12 @@ class EvidenceRun:
         created = False
         try:
             if not self.preflight() or not self.claim_project():
-                return self.finish(required)
+                return self.receipt
             created = True
             if not self.stack_up():
-                return self.finish(required)
+                return self.receipt
             if not self.identity('identity_before'):
-                return self.finish(required)
+                return self.receipt
             self.steps()
             self.identity('identity_after')
             self.identity_stable()
@@ -283,7 +285,8 @@ class EvidenceRun:
                     self.teardown()
                 except Exception as exc:
                     self.receipt['phases']['teardown'] = {'ok': False, 'type': type(exc).__name__, 'message': str(exc)[:500], 'at': now()}
-        return self.finish(required)
+            self.finish(required)
+        return self.receipt
 
     def finish(self, required):
         phases = self.receipt['phases']
@@ -291,7 +294,7 @@ class EvidenceRun:
         self.receipt['passed'] = all(phases.get(name, {}).get('ok') is True for name in required) and 'error' not in phases
         self.receipt['finished_at'] = now()
         self.out.mkdir(parents=True, exist_ok=True)
-        (self.out / f'{self.label}-receipt.json').write_text(json.dumps(self.receipt, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        (self.out / f'{self.label}-receipt.json').write_text(self.scrub(json.dumps(self.receipt, ensure_ascii=False, indent=2)) + '\n', encoding='utf-8')
         return self.receipt
 
 

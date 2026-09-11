@@ -197,3 +197,34 @@ def test_main_exits_non_zero_when_the_receipt_did_not_pass(tmp_path, monkeypatch
     assert receipt['passed'] is False and receipt['phases']['preflight']['ok'] is False and 'stack_up' not in receipt['phases']
     with pytest.raises(ValueError, match='lowercase token'):
         evidence.EvidenceRun('Bad Label', 'out', shell=FakeShell(tmp_path), root=tmp_path)
+
+
+@pytest.mark.parametrize('failure', ['compose:up', 'psql'])
+def test_early_failure_persists_teardown_in_the_final_receipt(tmp_path, monkeypatch, failure):
+    receipt, _ = run(tmp_path, monkeypatch, fail={failure})
+    saved = json.loads((tmp_path / 'out/host-a-receipt.json').read_text('utf-8'))
+    assert saved == receipt
+    assert saved['phases']['teardown']['ok'] is True
+    assert saved['finished_at'] >= saved['phases']['teardown']['at']
+
+
+def test_junit_failure_details_do_not_publish_the_run_password(tmp_path, monkeypatch):
+    original = FakeShell.answer
+
+    def with_failure(self, key, argv):
+        output = original(self, key, argv)
+        if key == 'pytest:full':
+            junit = Path(next(a.split('=', 1)[1] for a in argv if a.startswith('--junitxml=')))
+            password = self.dotenv_seen.split('POSTGRES_PASSWORD=')[1].splitlines()[0]
+            self.password_seen = password
+            junit.write_text('<testsuites><testsuite><testcase classname="tests.test_secret" name="failure">'
+                             '<failure message="' + password + '">' + password + '</failure>'
+                             '</testcase></testsuite></testsuites>', encoding='utf-8')
+        return output
+
+    monkeypatch.setattr(FakeShell, 'answer', with_failure)
+    receipt, shell = run(tmp_path, monkeypatch)
+    junit = tmp_path / 'out/host-a-full-suite.junit.xml'
+    assert shell.password_seen not in junit.read_text('utf-8')
+    assert receipt['junit_sha256'] == evidence.digest_file(junit)
+    assert receipt['per_file']['test_secret.py']['failed'] == 1
