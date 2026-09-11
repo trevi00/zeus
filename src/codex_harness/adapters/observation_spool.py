@@ -40,24 +40,53 @@ def run_lock_path(root: Path, process_run_id: str) -> Path:
     return root / "spool" / (process_run_id + ".lock")
 
 
+LIFECYCLE_TIMEOUT = 10.0  # seconds a writer or collector waits for the directory lifecycle lock
+
+
+def lifecycle_lock(root: Path) -> FileLock:
+    """The directory's lifecycle lock: serializes writer registration (run lock + active segment),
+    writer close, liveness probes and garbage collection of a run's files.
+
+    A run's own lock proves its writer is alive, but a decision taken from that proof and the file
+    changes that follow it are two steps; a writer that registers between them (opens the run lock
+    file, acquires it, opens its first segment) would have its active file deleted by a collector
+    still acting on the earlier answer. Both sides therefore work under this one lock: a writer
+    registers or finishes inside it, a collector decides and deletes inside it. The lock is one
+    object per path in this process (reentrant within a thread), exclusive across threads and
+    processes, independent of any run's lifetime and never removed by run garbage collection.
+    """
+    path = Path(root) / "spool" / ".lifecycle.lock"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return FileLock(str(path), is_singleton=True)
+
+
 def writer_alive(root: Path, process_run_id: str) -> bool:
     """Liveness proof for a run's writer: its lock is held by a live process.
 
     The lock is released by the operating system when the holder dies (BSD flock on Linux/WSL,
-    msvcrt region locking on Windows), so a free lock is proof that no writer remains, and a held
-    lock is proof that one does — file age proves neither.
+    LockFileEx region locking on Windows), so a free lock is proof that no writer remains, and a
+    held lock is proof that one does — file age proves neither. The probe runs under the lifecycle
+    lock so it never overlaps a writer's registration; a busy lifecycle lock is not proof of
+    absence and answers "alive".
     """
     path = run_lock_path(root, process_run_id)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    probe = FileLock(str(path), is_singleton=False)
+    guard = lifecycle_lock(root)
     try:
-        probe.acquire(timeout=0)
-    except Timeout:
+        guard.acquire(timeout=LIFECYCLE_TIMEOUT)
+    except (Timeout, OSError):
         return True
-    except OSError:
-        return True  # cannot prove absence: treat the writer as alive
-    probe.release()
-    return False
+    try:
+        probe = FileLock(str(path), is_singleton=False)
+        try:
+            probe.acquire(timeout=0)
+        except Timeout:
+            return True
+        except OSError:
+            return True  # cannot prove absence: treat the writer as alive
+        probe.release()
+        return False
+    finally:
+        guard.release()
 
 RECORD_KINDS = ("event", "audit")
 LINE = re.compile(rb"^([0-9a-f]{64}) (event|audit) (.*)$", re.S)
@@ -192,12 +221,23 @@ class FileSpool:
             self._lock = lock
 
     def _open(self):
+        """Open the active segment. Registration (run lock + first open) and every later segment
+        open happen under the directory lifecycle lock, so a collector never sees a run between
+        'no owner' and 'owner with an active file'."""
         if self._descriptor is None:
-            self._hold_lock()
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_BINARY", 0)
-            self._descriptor = os.open(self.path, flags, 0o600)
-            self._size = os.fstat(self._descriptor).st_size
+            guard = lifecycle_lock(self.root)
+            try:
+                guard.acquire(timeout=LIFECYCLE_TIMEOUT)
+            except Timeout as exc:
+                raise ContractError("The observation directory is busy; this run cannot register now") from exc
+            try:
+                self._hold_lock()
+                self.path.parent.mkdir(parents=True, exist_ok=True)
+                flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_BINARY", 0)
+                self._descriptor = os.open(self.path, flags, 0o600)
+                self._size = os.fstat(self._descriptor).st_size
+            finally:
+                guard.release()
         return self._descriptor
 
     def segments(self) -> list[Path]:
@@ -264,6 +304,18 @@ class FileSpool:
             self._descriptor = None
         if self._lock is None:
             return
+        guard = lifecycle_lock(self.root)
+        try:
+            guard.acquire(timeout=LIFECYCLE_TIMEOUT)
+        except (Timeout, OSError):
+            guard = None  # finishing is safe unserialized: appends are refused and the run lock is still held
+        try:
+            self._finish()
+        finally:
+            if guard is not None:
+                guard.release()
+
+    def _finish(self) -> None:
         try:
             atomic_write(self.root / "spool" / (self.process_run_id + ".closed"),
                          canonical({"closed_at": utcnow(), "segments": self.segment + 1}) + "\n")
@@ -387,45 +439,59 @@ class SpoolDirectory:
         alert files). Unacknowledged segments of a finished run are never deleted here; the
         collector consumes them first (a truncated tail of a finished run is finalized there).
         """
-        counts = {"runs": 0, "segments": 0, "files": 0}
+        counts = {"runs": 0, "segments": 0, "files": 0, "skipped": 0}
         moment = time.time() if now is None else now
         for run in sorted(self.known_runs()):
-            if not self.run_finished(run, moment, retention_seconds):
+            guard = lifecycle_lock(self.root)
+            try:
+                guard.acquire(timeout=LIFECYCLE_TIMEOUT)
+            except (Timeout, OSError):
+                counts["skipped"] += 1  # a writer is registering or finishing: decide this run next time
                 continue
-            segments = [path for path in self.spool_files() if segment_identity(path)[0] == run]
-            remaining = []
-            for path in segments:
+            try:
+                self._prune_run(run, moment, retention_seconds, counts)
+            finally:
+                guard.release()
+        return counts
+
+    def _prune_run(self, run: str, moment: float, retention_seconds: int, counts: dict) -> None:
+        """Decide and delete for one run while holding the lifecycle lock: the finish check and every
+        file change it justifies are one step from a registering writer's point of view."""
+        if not self.run_finished(run, moment, retention_seconds):
+            return
+        segments = [path for path in self.spool_files() if segment_identity(path)[0] == run]
+        remaining = []
+        for path in segments:
+            try:
+                size = path.stat().st_size
+            except OSError:
+                continue
+            if read_acknowledged(path) >= size:
+                os.unlink(path)
+                counts["segments"] += 1
                 try:
-                    size = path.stat().st_size
-                except OSError:
-                    continue
-                if read_acknowledged(path) >= size:
+                    os.unlink(path.with_suffix(".ack"))
+                except FileNotFoundError:
+                    pass
+            else:
+                remaining.append(path)
+        if remaining:
+            return  # still holds unacknowledged records; the collector must consume them first
+        counts["runs"] += 1
+        for leftover in (self.root / "spool" / (run + ".closed"), self.root / "health" / (run + ".json")):
+            try:
+                os.unlink(leftover)
+                counts["files"] += 1
+            except FileNotFoundError:
+                pass
+        counts["files"] += self._remove_lock_file(run)
+        if not self.read_pending_alerts().get(run):
+            for path in (self.root / "pending-alerts").glob(run + "*.json") if (self.root / "pending-alerts").is_dir() else []:
+                try:
                     os.unlink(path)
-                    counts["segments"] += 1
-                    try:
-                        os.unlink(path.with_suffix(".ack"))
-                    except FileNotFoundError:
-                        pass
-                else:
-                    remaining.append(path)
-            if remaining:
-                continue  # still holds unacknowledged records; the collector must consume them first
-            counts["runs"] += 1
-            for leftover in (self.root / "spool" / (run + ".closed"), self.root / "health" / (run + ".json")):
-                try:
-                    os.unlink(leftover)
                     counts["files"] += 1
                 except FileNotFoundError:
                     pass
-            counts["files"] += self._remove_lock_file(run)
-            if not self.read_pending_alerts().get(run):
-                for path in (self.root / "pending-alerts").glob(run + "*.json") if (self.root / "pending-alerts").is_dir() else []:
-                    try:
-                        os.unlink(path)
-                        counts["files"] += 1
-                    except FileNotFoundError:
-                        pass
-        return counts
 
     def _remove_lock_file(self, process_run_id: str) -> int:
         """Unlink a finished run's lock file only while holding its lock.
@@ -501,17 +567,27 @@ class SpoolDirectory:
         return later or self.closed(run) or not self.writer_alive(run)
 
     def reclaim(self, path: Path) -> bool:
-        if not self.reclaimable(path):
-            return False
+        """Delete a reclaimable segment; the check and the unlink are one step under the lifecycle
+        lock, so a writer registering in between cannot lose its active file."""
+        guard = lifecycle_lock(self.root)
         try:
-            os.unlink(path)
-        except FileNotFoundError:
-            pass
+            guard.acquire(timeout=LIFECYCLE_TIMEOUT)
+        except (Timeout, OSError):
+            return False  # a writer is registering or finishing: reclaim next time
         try:
-            os.unlink(path.with_suffix(".ack"))
-        except FileNotFoundError:
-            pass
-        return True
+            if not self.reclaimable(path):
+                return False
+            try:
+                os.unlink(path)
+            except FileNotFoundError:
+                pass
+            try:
+                os.unlink(path.with_suffix(".ack"))
+            except FileNotFoundError:
+                pass
+            return True
+        finally:
+            guard.release()
 
     def unacknowledged_bytes(self) -> int:
         total = 0

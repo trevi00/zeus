@@ -125,7 +125,7 @@ class MemoryDirectory:
         return False
 
     def prune(self, now=None, retention_seconds=None):
-        return {"runs": 0, "segments": 0, "files": 0}
+        return {"runs": 0, "segments": 0, "files": 0, "skipped": 0}
 
     def total_bytes(self):
         return 0

@@ -569,7 +569,14 @@ holds the run lock finishes the run: a writer object that never acquired it (a r
 writer) writes no closed marker, a closed writer refuses further appends, and a run's lock
 file is unlinked only under that lock. The retention age of a run is measured from the files
 its writer wrote (segments, closed marker, health) before any liveness probe, never from the
-lock or acknowledgement files, so probing cannot defer a dead run's reclamation. Pending alerts replay in
+lock or acknowledgement files, so probing cannot defer a dead run's reclamation. A writer's
+registration (run lock plus active segment), its close, every liveness probe and every
+deletion by the collector run under one directory lifecycle lock that no run's garbage
+collection removes: the collector decides and deletes as one step, a writer registers as one
+step, so a writer either registers before the decision and keeps its active file or starts
+after the deletions on a valid path; a successful append never leaves a record without a
+collectable path, and a busy lifecycle lock defers collection and refuses registration
+explicitly instead of guessing. Pending alerts replay in
 their own transaction, independent of any spool record. The check that no earlier attempt of a
 task is still unconfirmed is made inside the reservation transaction; a failed read is unknown,
 never permission. Correlation, causation and

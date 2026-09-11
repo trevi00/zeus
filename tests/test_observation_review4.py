@@ -71,7 +71,7 @@ def test_refused_writer_close_leaves_the_owners_run_alive(tmp_path):
         assert directory.writer_alive(run)
         assert not directory.run_finished(run)
         assert not directory.reclaimable(owner.path)
-        assert directory.prune() == {"runs": 0, "segments": 0, "files": 0} and owner.path.exists()
+        assert directory.prune() == {"runs": 0, "segments": 0, "files": 0, "skipped": 0} and owner.path.exists()
         assert owner.append("event", {"x": 3}) > 0, "the owner keeps writing into its own run"
         assert directory.spool_files() == [owner.path], "the later record has a collectable path"
         assert directory.live_runs() == [run]
@@ -188,7 +188,7 @@ def test_prune_leaves_a_live_writer_intact_whatever_its_file_ages_say(tmp_path):
             pass  # Windows keeps the held lock file exclusively open
         assert directory.writer_alive(run)
         assert not directory.run_finished(run, now=time.time() + 8 * 86400)
-        assert directory.prune(now=time.time() + 8 * 86400) == {"runs": 0, "segments": 0, "files": 0}
+        assert directory.prune(now=time.time() + 8 * 86400) == {"runs": 0, "segments": 0, "files": 0, "skipped": 0}
         assert path.exists() and run_lock_path(root, run).exists()
     finally:
         child.kill()
