@@ -81,10 +81,15 @@ def test_recreated_task_row_cannot_reissue_generation(backend, request):
         tx.put('tasks', task['id'], {**row, 'status': 'queued', 'generation': 0, 'attempt': 0,
                                      'lease_owner': None, 'lease_until': None})
     healthy = w.submit(assignment())
+    # Force the healthy task to sort first, reproducing the formerly intermittent order.
+    with store.transaction() as tx:
+        healthy_row = tx.get('tasks', healthy['id'])
+        healthy_row['created_at'] = (datetime.fromisoformat(row['created_at']) - timedelta(seconds=1)).isoformat()
+        tx.put('tasks', healthy['id'], healthy_row)
     claimed = w.claim('worker:implementation', 'owner-2')
     assert claimed['id'] == healthy['id'], 'the healthy task is still served'
-    # Equal creation timestamps may sort the healthy row first by id. Claim again to
-    # inspect the remaining restored row; it must never receive a new lease.
+    # Release the per-agent running slot before inspecting the remaining restored row.
+    w.complete(claimed, {'summary': 'healthy task completed'})
     assert w.claim('worker:implementation', 'owner-3') is None
     with store.transaction() as tx:
         recreated = tx.get('tasks', task['id'])
