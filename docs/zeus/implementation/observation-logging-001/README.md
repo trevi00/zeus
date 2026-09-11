@@ -146,7 +146,21 @@ ack/health/termination은 임시 파일 + `os.replace`(양쪽 모두 원자)로 
 
 ### 5.2 실행 기록
 
-(호스트 실행 후 기입)
+| 실행 | 명령 | 결과 |
+|---|---|---|
+| Windows 11, 통상 스위트 (head `88a9817`) | `uv run ruff check .` / `uv run pytest -q` | All checks passed / 4 failed, 1147 passed, 358 skipped → 스텁 서명 2개 수정 후 `uv run pytest -q tests/test_dispatch_fairness.py tests/test_supervisor.py` 8 passed |
+| Windows 11, 호스트 증거 1차 (head `88a9817`) | `uv run python scripts/environment_evidence.py --label windows-11 --out docs/zeus/evidence/environment-runs-003` | **실패**: full-suite-integration 1 failed, 1494 passed, 14 skipped (`test_real_postgres_connection_refusal_is_a_sink_outage`: 알림 행이 `pending`으로 저장됨). 러너·로그·JUnit은 `attempt-1-alert-row-kept-pending-status/`에 보존 |
+| 결함 수정 (head `e367003`) | `_record_alert`가 저장 행에 `recorded` 상태를 쓰도록 변경; 메모리 테스트가 반환값이 아니라 저장 행을 읽도록 변경 | `uv run pytest -q tests/test_observation_*.py tests/test_observations.py` 35 passed, 16 skipped |
+| Windows 11, 호스트 증거 2차 (head `e367003`) | 같은 러너 | **통과**: ruff 0.1s; full-suite-integration 1495 passed, 14 skipped (420.2s); disposable-docker-checks 17 passed (61.8s). 관측 테스트 파일별: contract 16, spool 5, observations 19, wiring 11 passed, skip 0. 격리 스택 `harness-evidence-windows-11-793e601e`, 임시 포트, 종료 후 정리. 영수증 `windows-11-receipt.json`(tracked_changes [], untracked []) |
+| WSL Ubuntu 26.04 (WSL2 kernel 6.18), 호스트 증거 (head `e367003`) | `~/.local/bin/uv run python scripts/environment_evidence.py --label wsl-ubuntu-26.04 --out docs/zeus/evidence/environment-runs-003` (WSL fs 클론 `~/zeus-evidence`, 같은 커밋) | **통과**: ruff; full-suite-integration 1501 passed, 8 skipped (140.8s); disposable-docker-checks 17 passed (53.6s). 관측 테스트 파일별: contract 16, spool 5, observations 19, wiring 11 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-bf2f7d72`. 영수증 `wsl-ubuntu-26.04-receipt.json`(tracked_changes [], untracked []) |
+
+공개 산출물 검사: 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
+(러너가 실행별 비밀번호를 scrub한 뒤 기록). 이 검사는 grep으로 했고 결과를 PR 본문에 적었다.
+
+실행하지 않은 것: 실제 Claude/Codex 모델 호출(범위 밖, fake transport만 사용), 네이티브 Linux(WSL2만),
+호스트 재부팅·Docker Desktop 재시작, 사람 인수. 단위 테스트의 PG 쓰기 실패·연결 단절은 Interceptor
+주입이며, `test_real_postgres_connection_refusal_is_a_sink_outage`만 실제 연결 거부를 쓴다.
+GitHub Actions 결과는 PR 체크에서 확인한다.
 
 ## 6. Codex에 보고하는 설계 판단
 
