@@ -133,13 +133,14 @@ def _argv_values(node: object) -> list[list[str]]:
     return found
 
 
-def execution_receipts(analysis: Path) -> dict:
-    """Count JSON receipts under docs/full-analysis whose argv starts with `docker`.
+def docker_argv_candidates(analysis: Path) -> dict:
+    """Count JSON files under docs/full-analysis containing an argv that starts with `docker`.
 
-    This is a mechanical rule: a `docker` argv is the isolated-execution path
-    used by the existing joint reviews. Receipts that run only the review
-    recorder, ruff, or inert reads are not counted. The rule can miss receipts
-    with another shape; it never proves acceptance.
+    This is a discovery rule only. It does not check that the command was
+    executed (`executed=false` plans count), that it ran anything (a `docker
+    version` observation counts), that the run succeeded, or that two files are
+    not the same receipt. The result is a candidate list for later comparison,
+    never a count of executions, isolated runs, or tests.
     """
     per_folder: collections.Counter = collections.Counter()
     for path in analysis.rglob("*.json"):
@@ -151,9 +152,10 @@ def execution_receipts(analysis: Path) -> dict:
             folder = path.relative_to(analysis).parts[0]
             per_folder[folder] += 1
     return {
+        "meaning": "JSON files where a docker argv was found; not executions, not tests",
         "rule": "JSON file under docs/full-analysis with any argv whose first item is 'docker'",
         "folders": len(per_folder),
-        "receipts": sum(per_folder.values()),
+        "candidate_files": sum(per_folder.values()),
         "per_folder": dict(sorted(per_folder.items())),
     }
 
@@ -223,7 +225,7 @@ def main() -> None:
         ),
         "unreviewed": unreviewed_profile(committed_entries),
         "partitions": partition_profile(partitions, committed),
-        "execution_receipts": execution_receipts(analysis),
+        "docker_argv_candidates": docker_argv_candidates(analysis),
         "implementation_links": implementation_links(args.repo),
     }
     if args.live:
@@ -252,8 +254,8 @@ def main() -> None:
     print(
         f"committed unreviewed={report['unreviewed']['count']} "
         f"partitions_with_unreviewed={report['partitions']['partitions_with_unreviewed']} "
-        f"docker_receipt_folders={report['execution_receipts']['folders']} "
-        f"docker_receipts={report['execution_receipts']['receipts']} "
+        f"docker_argv_candidate_folders={report['docker_argv_candidates']['folders']} "
+        f"docker_argv_candidate_files={report['docker_argv_candidates']['candidate_files']} "
         f"implementation_citing_analysis={report['implementation_links']['citing_full_analysis']}"
         f"/{report['implementation_links']['records']}"
     )

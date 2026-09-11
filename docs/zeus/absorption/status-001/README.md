@@ -1,7 +1,9 @@
 # 로컬 Claude 하네스 흡수: 첫 현황 보고 (status-001)
 
-역할: Claude가 분석·설계·구현·테스트·증거 작성·PR 제출을 맡고, Codex가 범위·설계·증거를
-독립 검토하고 병합과 이슈 종료를 판단한다. 이 문서는 구현자의 보고이며 인수 승인이 아니다.
+역할: Codex가 원본 분석·자산 평가·흡수 대상 선정·설계·수용 기준·독립 검토·병합과 이슈
+종료 판단을 담당한다. Claude는 Codex 명세에 따른 구현·테스트·실행 증거·PR 제출을 담당한다.
+이 문서는 Claude가 이미 수행한 현황 조사를 Codex에 인계하는 자료이며, 새로운 독립 분석이나
+설계의 시작이 아니고 인수 승인도 아니다. 5절과 6절의 후보·초안·질문은 Codex의 판단 재료다.
 기준 리비전: Zeus `main` `50ebc2d` (`ledger-crosscheck.json`의 `committed_revision`).
 관련 이슈: [#1](https://github.com/trevi00/zeus/issues/1), [#11](https://github.com/trevi00/zeus/issues/11).
 이 묶음은 문서와 읽기 전용 점검 스크립트만 담는다. 원장(`docs/full-analysis/*.json`)은 바꾸지 않았다.
@@ -28,8 +30,11 @@ git blob·bytes·sha256·disposition·review_records)과 `partitions.json`(349 �
 
 | 구분 | 커밋 `main` 50ebc2d | 라이브 트리 `C:\Users\rudtn\zeus` (미커밋) | `docs/full-analysis/README.md` 본문 |
 |---|---|---|---|
-| 기록 있음 | 1,989 | 2,029 | 1,828 |
+| 기록 있음 (unreviewed가 아닌 disposition) | 1,989 | 2,029 | 1,828 |
 | unreviewed | 747 | 707 | 908 |
+
+"기록 있음"은 disposition이 `unreviewed`가 아닌 경로의 수다. 그 안에는 호출·시험 추적
+미완(652)과 실행 미증명(154)이 포함되므로 전체 의미 분석 완료 수가 아니다.
 
 불일치와 그 원인:
 
@@ -44,26 +49,30 @@ git blob·bytes·sha256·disposition·review_records)과 `partitions.json`(349 �
   원장은 그중 2개(`baldrix-atlas-system-001`, `harness-proposed-003`)만 참조한다.
   나머지 8개(`atlas-system-proposals-joint-001`, `baldrix-java-001/002`,
   `baldrix-typescript-001`, `baldrix-pipeline-mobile-001`, `harness-proposed-004/005`,
-  `java-typescript-joint-001`)는 어느 원장에도 없다. Codex 자신의 인벤토리
-  (`docs/zeus/reviews/claude-work-002/unpublished-analysis-inventory.json`)도 이를
-  "inventory and summary inspection only; not complete semantic source review"로 적었다.
-  `java-typescript-joint-001`은 3개 파일(claude-initial, root-initial, scope)뿐인 미완성이다.
+  `java-typescript-joint-001`)는 어느 원장에도 없다. Codex의 과거 인벤토리
+  (`docs/zeus/reviews/claude-work-002/unpublished-analysis-inventory.json`)에 있는
+  "inventory and summary inspection only" 표시는 그 인벤토리 작성 당시의 검토 범위를
+  설명한 것이다. 이를 미커밋 폴더 자체의 품질이나 진척 판정으로 읽지 않는다. 개별 기록과
+  원본의 대조는 Codex 확인 대기로 남긴다. `java-typescript-joint-001`에는 현재 3개 파일
+  (claude-initial, root-initial, scope)만 있다는 것이 여기서 관측한 전부다.
 - `coverage.json`은 `whole_analysis_complete: false`, 2,736 항목 전부
   `adoption_status: not_approved_not_incorporated`다. 이것은 원장상 승인·편입된 자산이
   0개라는 뜻이지, 분석 결과가 Zeus에 반영되지 않았다는 뜻이 아니다. Zeus 구현 기록
   45개 중 28개가 `docs/full-analysis`의 검토 결과를 근거로 인용한다
   (`ledger-crosscheck.json` `implementation_links`). 어떤 구현이 어떤 자산의 흡수에
   해당하는지는 등록부가 없어 원장으로 답할 수 없고, Codex가 확인해야 한다.
-- 원본 실행 증거는 존재한다. Docker 격리 실행 argv를 가진 영수증이 27개 폴더에 92개
-  있다(`execution_receipts`; 규칙은 argv 첫 항목이 `docker`인 JSON, 검토 기록기·ruff·
-  inert 읽기 영수증은 제외). 예: `baldrix-cli-001` 원본 테스트 4건, `harness-lib` 12건,
-  `guardian` smoke 14건, `baldrix-gsd-runtime-001` 7건. gsd-runtime은 첫 suite 60초
-  취소 기록을 유지한 채, 프로세스 회수용 `--init` 한 가지만 바꾼 뒤 원본 Git 테스트
-  13개 통과와 여섯 구성요소 관찰에서 네 가지 불안전 동작을 재현했고, 다섯 시도 전부
+- 검증된 원본 실행 증거는 `baldrix-gsd-runtime-001`에 있다. 첫 suite 60초 취소 기록을
+  유지한 채, 프로세스 회수용 `--init` 한 가지만 바꾼 뒤 원본 Git 테스트 13개 통과와
+  여섯 구성요소 관찰에서 네 가지 불안전 동작을 재현했고, 다섯 시도 전부
   `verify_evidence.py`로 blob·해시를 검증했다(그 폴더의 resolution.md). 이 증거는
-  FA-014/015/026/032의 참고 근거이며 인수도, 1차 커버리지 가산도 아니다. 따라서
-  "실행 증거 0"이 아니라 "실행 증거는 폴더 단위로 있고, 그것이 인수는 아니다"가 맞다.
-  disposition의 `semantically_reviewed`는 여전히 정적 독해 완료를 뜻한다.
+  FA-014/015/026/032의 참고 근거이며 인수도, 1차 커버리지 가산도 아니다.
+- 그 밖의 실행 증거 후보는 아직 세지 않았다. `ledger-crosscheck.json`의
+  `docker_argv_candidates`는 `docs/full-analysis` 아래 JSON 중 argv 첫 항목이 `docker`인
+  파일을 찾은 것으로, 27개 폴더 92개 파일이다. 이 수는 "Docker argv가 발견된 JSON 파일
+  후보"이며 성공 실행·격리 실행·테스트 수가 아니다. `executed=false`인 실행 계획, `docker
+  version` 관측, inert 읽기, 중복 영수증이 규칙만으로는 걸러지지 않는다. 후보를 실제
+  실행 증거로 올리는 대조는 Codex 확인 대기다. disposition의 `semantically_reviewed`는
+  정적 독해 완료를 뜻한다.
 - 고정 커밋은 현재 로컬 HEAD와 같다(baldrix `cbb5c3e6`, harness `a3f8b3be`,
   guardian `e7ced4a6`, harness-design `20147dde`). 그러나 작업 트리는 고정 커밋에서
   벗어나 있다. 아래 2절의 드리프트 항목 참조.
@@ -126,18 +135,19 @@ harness 미추적 87개는 대부분 `knowledge/lessons`, `knowledge/research`, 
 | 검토 완료 (정적 전문 독해) | 1,183 (라이브 1,206) | 실행 증거 아님 |
 | 본문 검토·추적 미완 | 652 (라이브 669) | |
 | 미검토 | 747 (라이브 707); 층 B/C unreviewed 3,430 | |
-| 실행 미검증 | disposition상 `execution-not-attested` 93, `static_only` 61. Docker 격리 실행 영수증은 27개 폴더 92건 | 영수증은 관찰 증거이며 인수 아님 |
+| 실행 미검증 | disposition상 `execution-not-attested` 93, `static_only` 61. 검증된 실행 증거는 gsd-runtime-001. Docker argv 후보 파일 27개 폴더 92개는 미대조 | 후보는 실행 수가 아님 |
 | 흡수 후보 | 등록부 없음. 28개 공동 resolution.md에 adopt/adapt/defer/reject 판단이 산문으로 있음 | 문자열 hit는 세지 않음 |
 | 흡수 편입 (원장) | 승인·편입 0 | adoption_status 전부 not_approved_not_incorporated |
 | 분석 결과를 근거로 한 Zeus 구현 | implementation 기록 45개 중 28개가 full-analysis 인용, PR #36–#64·#69 병합 | 자산별 흡수 대응은 Codex 확인 필요 |
 | 독립 검토 대기 | 이 PR 1건. 열린 다른 PR 없음 | |
 
-## 5. 우선순위와 첫 번째 작업 묶음의 수용 기준
+## 5. 인계: 우선순위 후보와 수용 기준 초안 (Codex가 확정)
 
-아래는 제안이며 착수 승인이 아니다. absorb-002/003을 포함한 후속 작업은 Codex가
-범위와 순서를 판단한 뒤에만 시작한다. 이 PR 뒤에 예고된 자동 착수는 없다.
+아래는 현황 조사에서 나온 후보와 초안이며, 흡수 대상 선정·설계·수용 기준은 Codex가
+정한다. absorb-002/003을 포함한 후속 작업은 Codex 명세가 나온 뒤에만 시작한다.
+이 PR 뒤에 예고된 자동 착수는 없다.
 
-우선순위 (Codex 판단 전 제안):
+우선순위 후보:
 
 1. **status-001 (이 PR)**: 분모 고정과 드리프트 매니페스트. 문서만.
 2. **absorb-002 흡수 결정 등록부**: 자산별 `adopt/adapt/defer/reject` 레코드 형식과
@@ -154,8 +164,8 @@ harness 미추적 87개는 대부분 `knowledge/lessons`, `knowledge/research`, 
 4. 실행 증거: `execution-not-attested` 93과 `static_only` 61은 격리 Docker 실행 계획이
    필요하다. 어떤 하위 시스템을 먼저 실행할지는 6절 질문 6.
 
-첫 번째 파티션 묶음(absorb-003, `baldrix:atlas/autopilot:001` + `atlas/debate-engine:001`
-+ `atlas/dge-cycle:001`, 37 경로)의 수용 기준:
+첫 번째 파티션 묶음 후보(absorb-003, `baldrix:atlas/autopilot:001` + `atlas/debate-engine:001`
++ `atlas/dge-cycle:001`, 37 경로)에 적용할 수용 기준 초안:
 
 - 문제와 수용 기준 → 원본 근거 → 설계 → 구현 → 검증 순서의 README.
 - `files.json`: 37 경로 전부 path-ledger의 blob·bytes·sha256과 일치, 각 파일에 disposition.
@@ -205,12 +215,21 @@ harness 미추적 87개는 대부분 `knowledge/lessons`, `knowledge/research`, 
   13개 원본 Git 테스트 통과 기록으로 교체, (3) "흡수 구현 0"을 "원장상 편입 0"과
   "분석 결과를 근거로 한 Zeus 구현 28/45"로 분리. 댓글 원문은 GitHub에 비ASCII
   문자가 전부 `?`로 저장되어 4번째 지적과 마지막 단락은 읽지 못했고 반영하지 못했다.
-  `crosscheck.py`에 `execution_receipts`·`implementation_links` 집계를 추가했다.
+  `crosscheck.py`에 Docker argv 집계와 `implementation_links` 집계를 추가했다.
+- 2026-09-11, Codex의 두 번째 댓글(정상 UTF-8) 반영. (1) 첫 문단의 역할을 Codex가
+  분석·평가·선정·설계·수용 기준·독립 검토·병합 판단, Claude가 명세에 따른 구현·테스트·
+  실행 증거·PR 제출로 정정하고 이 문서를 인계 자료로 규정. (2) PR 본문을 문서와 같게
+  갱신. (3) 직전 정정의 "격리 실행 영수증 27개 폴더 92건"을 철회. 집계 키를
+  `docker_argv_candidates`로 바꾸고 "Docker argv가 발견된 JSON 파일 후보"로만 표기.
+  Codex가 임시 파일로 재현한 대로 `executed=false` 계획이나 `docker version` 관측도
+  세어지므로 실행·격리·테스트 수가 아니다. 검증된 GSD 결과만 실행 증거로 유지.
+  (4) "기록 있음"을 의미 분석 완료로 읽지 않도록 정의를 적고, 과거 인벤토리의 summary
+  inspection 표시를 미커밋 폴더의 품질 판정으로 확대한 문장을 철회.
 
 ## 첨부
 
 - `ledger-crosscheck.json`: 커밋 원장 집계, 라이브 원장 전이 40건, 파티션별 unreviewed,
-  Docker 실행 영수증 폴더별 수, full-analysis를 인용하는 구현 기록.
+  Docker argv가 발견된 JSON 파일 후보의 폴더별 수, full-analysis를 인용하는 구현 기록.
 - `working-tree-drift.json`: 네 원본 저장소의 HEAD, 수정·미추적 항목의 경로·바이트·sha256.
   운영 중인 하네스라 재실행 시 값이 달라질 수 있다(같은 날 두 번 실행에서 baldrix
   `brain/l1/insight-index.jsonl`의 바이트가 달랐다). 이 파일은 관측 시점의 스냅샷이다.

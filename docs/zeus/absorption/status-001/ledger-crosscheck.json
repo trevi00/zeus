@@ -1,5 +1,5 @@
 {
- "committed_revision": "8503e181d3583cbe61c5f018b7d96930e1ab81c3",
+ "committed_revision": "d33d270b467d865dac44e573cc31982494b16560",
  "coverage_tracked_paths": 2736,
  "coverage_whole_analysis_complete": false,
  "committed_dispositions": {
@@ -846,10 +846,11 @@
    }
   ]
  },
- "execution_receipts": {
+ "docker_argv_candidates": {
+  "meaning": "JSON files where a docker argv was found; not executions, not tests",
   "rule": "JSON file under docs/full-analysis with any argv whose first item is 'docker'",
   "folders": 27,
-  "receipts": 92,
+  "candidate_files": 92,
   "per_folder": {
    "baldrix-breakers-001": 3,
    "baldrix-calibration-001": 2,
