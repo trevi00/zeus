@@ -1,0 +1,95 @@
+............E....                                                        [100%]
+==================================== ERRORS ====================================
+_________ ERROR at setup of test_postgres_pause_is_not_a_clock_step[2] _________
+
+port = 49784, deadline_seconds = 30.0
+
+    @staticmethod
+    def _await_endpoint(port, deadline_seconds=30.0):
+        """Block until 127.0.0.1:port accepts a TCP connection; a stack that never becomes reachable is a failure."""
+        started = time.monotonic()
+        while True:
+            try:
+>               with socket.create_connection(("127.0.0.1", port), timeout=2.0):
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/codex_harness/adapters/verification.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/socket.py:865: in create_connection
+    raise exceptions[0]
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+address = ('127.0.0.1', 49784), timeout = 2.0, source_address = None
+all_errors = False
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None, *, all_errors=False):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default. When a connection
+        cannot be created, raises the last error if *all_errors* is False,
+        and an ExceptionGroup of all errors if *all_errors* is True.
+        """
+    
+        host, port = address
+        exceptions = []
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               ConnectionRefusedError: [Errno 111] Connection refused
+
+../.local/share/uv/python/cpython-3.12.14-linux-x86_64-gnu/lib/python3.12/socket.py:850: ConnectionRefusedError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-rudtn/pytest-13/test_postgres_pause_is_not_a_c0')
+
+    @pytest.fixture
+    def disposable_service(tmp_path):
+        if os.environ.get('ZEUS_TEST_DOCKER') != '1':
+            pytest.skip('Explicit disposable Docker verification required')
+        service = VerificationServices(tmp_path/'services', FileArtifacts(tmp_path/'artifacts'))
+>       with service as endpoints:
+             ^^^^^^^
+
+tests/test_host_interruption.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/codex_harness/adapters/verification.py:79: in __enter__
+    ready_after = {service: self._await_endpoint(port) for service, port in ports.items()}
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+port = 49784, deadline_seconds = 30.0
+
+    @staticmethod
+    def _await_endpoint(port, deadline_seconds=30.0):
+        """Block until 127.0.0.1:port accepts a TCP connection; a stack that never becomes reachable is a failure."""
+        started = time.monotonic()
+        while True:
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=2.0):
+                    return round(time.monotonic() - started, 2)
+            except OSError as exc:
+                if time.monotonic() - started >= deadline_seconds:
+>                   raise ContractError(f"Verification endpoint 127.0.0.1:{port} not connectable after {deadline_seconds}s: "
+                                        f"{type(exc).__name__}") from exc
+E                   codex_harness.domain.model.ContractError: Verification endpoint 127.0.0.1:49784 not connectable after 30.0s: ConnectionRefusedError
+
+src/codex_harness/adapters/verification.py:98: ContractError
+=========================== short test summary info ============================
+ERROR tests/test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2]
+16 passed, 1 error in 85.37s (0:01:25)

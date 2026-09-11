@@ -184,7 +184,21 @@ GitHub Actions (head `9b7156d`): ubuntu 3.12/3.14와 integration 잡은 통과, 
 | Windows 11 | **통과**: ruff; full-suite-integration 1519 passed, 14 skipped (518s); disposable-docker 17 passed. 관측 테스트 5파일 75 passed, skip 0 (contract 16, review 16, spool 5, wiring 19, observations 19). 격리 스택 `harness-evidence-windows-11-6cd2beee`. 영수증 tracked_changes [], untracked [] |
 | WSL Ubuntu 26.04 (WSL2) | **통과**: ruff; full-suite-integration 1525 passed, 8 skipped (161s); disposable-docker 17 passed. 관측 테스트 5파일 75 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-b8b459cc`. 영수증 tracked_changes [], untracked [] |
 
-공개 산출물 검사(두 라운드 모두): 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
+2차 검토 반영 후 (head `3d6e757`, `environment-runs-005`):
+
+| 호스트 | 결과 |
+|---|---|
+| Windows 11 | **통과**: ruff; full-suite-integration 1543 passed, 14 skipped (554s); disposable-docker 17 passed. 관측 테스트 6파일 99 passed, skip 0 (contract 16, review 16, review2 24, spool 5, wiring 19, observations 19). 격리 스택 `harness-evidence-windows-11-f2713619` |
+| WSL Ubuntu 26.04, 1차 | full-suite-integration **1549 passed, 8 skipped** (173s), 관측 99 passed. disposable-docker-checks **1 error**: `test_host_interruption::test_postgres_pause_is_not_a_clock_step[2]`의 일회용 스택 endpoint가 30초 안에 연결되지 않음(readiness, 이 PR 범위 밖). 산출물은 `attempt-1-wsl-disposable-docker-readiness/`에 보존 |
+| WSL Ubuntu 26.04, 2차 | **통과**: ruff; full-suite-integration 1549 passed, 8 skipped (162s); disposable-docker 17 passed. 관측 99 passed, skip 0. 격리 스택 `harness-evidence-wsl-ubuntu-26-04-f5da1cdc` |
+
+GitHub Actions(head 3d6e757): push run 10/10 통과; pull_request run은 integration 잡 1개가 일회용 PostgreSQL이
+"the database system is starting up" 상태에서 `test_verification`·`test_host_interruption`에 연결 실패해 실패 →
+같은 잡 재실행 후 통과(재실행 run 34577826760 success). 이 두 파일은 이 PR이 바꾸지 않았고, 같은 readiness
+결함은 WSL 1차 disposable-docker 오류와 동일 부류다. 원인 해결은 이 PR의 명세 범위 밖이며 별도 항목으로
+Codex에 보고한다.
+
+공개 산출물 검사(모든 라운드): 두 호스트의 JUnit XML과 통합 로그에서 canary 문자열 `CANARY-` 0건, `password=` 0건
 (러너가 실행별 비밀번호를 scrub한 뒤 기록). 이 검사는 grep으로 했고 결과를 PR 본문에 적었다.
 
 실행하지 않은 것: 실제 Claude/Codex 모델 호출(범위 밖, fake transport만 사용), 네이티브 Linux(WSL2만),
