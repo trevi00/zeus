@@ -42,8 +42,9 @@ class ExecutionRecovery:
         elif operation == 'repair':
             require(row['status'] == 'blocked' and row.get('error') in
                     {'InvalidRetryBudget', 'InvalidExecutionDeadline', 'InvalidExecutionLease',
-                     'InvalidExecutionClock', 'ClockDiscontinuity', 'RecoveryContextChanged'},
-                    'Only corrupt controls or changed recovery context can be repaired')
+                     'InvalidExecutionClock', 'ClockDiscontinuity', 'RecoveryContextChanged',
+                     'reconciliation_required'},
+                    'Only corrupt controls, changed recovery context or a reconciled termination can be repaired')
         else:
             require(operation == 'resume', 'Invalid recovery operation')
             if row['status'] == 'expired' and budget is None:
@@ -54,6 +55,18 @@ class ExecutionRecovery:
             require((row['status'] == 'failed' and row.get('error') == 'attempt budget exhausted'
                      and row['attempt'] >= limit) or row['status'] == 'expired',
                     'Only budget or deadline exhaustion can resume')
+
+    @staticmethod
+    def _reconciled(tx, row):
+        """INV-OBSERVATION-001: a block for unrecorded provider effects is repaired only after the
+        operator resolved every termination record the sink knows for this task. A local-only
+        record that never reached the sink still stops the executor at the next run."""
+        if row.get('error') != 'reconciliation_required':
+            return
+        pending = [record for record in tx.scan('observation_terminations')
+                   if record.get('task_id') == row['id']
+                   and record.get('status') in {'pending_reconciliation', 'unconfirmed'}]
+        require(not pending, 'Termination records are still pending reconciliation')
 
     def _related(self, tx, bucket, row):
         try:
@@ -140,6 +153,7 @@ class ExecutionRecovery:
         with self.store.transaction() as tx:
             row = self._row(tx, bucket, task_id)
             self._eligible(row, operation)
+            self._reconciled(tx, row)
             self._ceiling(row, bucket, max_attempts, deadline)
             related = self._related(tx, bucket, row)
         packet = {'version': 1, 'bucket': bucket, 'task_id': task_id, 'operation': operation,
@@ -209,6 +223,7 @@ class ExecutionRecovery:
             require(due is None or due > now, 'Recovery deadline must be future')
             require(digest(row) == packet['expected_hash'], 'Recovery snapshot changed')
             self._eligible(row, packet['operation'])
+            self._reconciled(tx, row)
             self._ceiling(row, packet['bucket'], packet['max_attempts'], packet['deadline'])
             related = self._related(tx, packet['bucket'], row)
             require(digest(related) == packet['related_hash'], 'Related recovery state changed')

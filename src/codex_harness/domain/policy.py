@@ -29,6 +29,11 @@ class RuntimePolicy:
     release_max_attempts: int = 3
     release_lease_seconds: int = 1200
     health_failure_threshold: int = 3
+    observation_spool_bytes: int = 32 * 1024 * 1024
+    observation_segment_bytes: int = 4 * 1024 * 1024
+    observation_retention_seconds: int = 7 * 86400
+    observation_alert_window_seconds: int = 300
+    observation_collect_batch: int = 1000
 
     def snapshot(self) -> dict:
         return asdict(self)

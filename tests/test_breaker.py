@@ -26,6 +26,7 @@ from codex_harness.application.breaker import (
     result_of,
     result_of_exception,
 )
+from codex_harness.application.observations import PostExecutionRecordFailure
 from codex_harness.application.workflow import Workflow
 from codex_harness.bootstrap import organization
 from codex_harness.domain.breaker import decide, fold_failures, parse_policy, parse_state
@@ -290,9 +291,13 @@ def test_executor_admits_per_call_and_refuses_while_open(setup, monkeypatch):
     key = breaker_key('codex-app-server', 'final_validation')
     for _ in range(2):
         lease_row = s.executor.workflow.claim('worker:github', 'outage-owner')
-        with pytest.raises(ContractError, match='fixture outage'):
+        # INV-OBSERVATION-001: an outage after provider entry is reported with termination evidence;
+        # the breaker still counts it as a failure of that call.
+        with pytest.raises(PostExecutionRecordFailure, match='fixture outage') as raised:
             s.executor._run('worker:github', lease_row['id'], 'Breaker', {}, str(s.executor.git.repository), SCHEMA, lease=lease_row)
         s.executor.workflow.fail(lease_row, 'fixture outage')
+        s.executor.observer.resolve_termination(raised.value.record_id, resolution='rerun', operator='test',
+                                                reason='outage fixture reconciled')
     assert len(calls) == 2 and s.executor.breaker.inspect(key)['state'] == 'open'
     lease_row = s.executor.workflow.claim('worker:github', 'blocked-owner')
     with pytest.raises(ContractError, match='Breaker refuses admission'):

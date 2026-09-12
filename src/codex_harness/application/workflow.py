@@ -256,6 +256,7 @@ class Workflow:
             current["lease_until"] = lease_until
             pin_clock(current, task.get('_bucket', 'tasks'), now, datetime.fromisoformat(lease_until), renew=True)
             tx.put(task.get("_bucket", "tasks"), task["id"], current)
+            return current
 
     def remaining_seconds(self, task, maximum):
         import time
@@ -273,7 +274,9 @@ class Workflow:
                 raise ExecutionTimeError('deadline_exceeded')
             return remaining
 
-    def complete(self, task: dict, result: dict, commands: list[dict] | None = None) -> dict:
+    def complete(self, task: dict, result: dict, commands: list[dict] | None = None, accept=None) -> dict:
+        """`accept(tx, current)` runs inside the same transaction that durably records the outcome
+        (INV-OBSERVATION-001): the execution's unconfirmed marker is cleared only with the acceptance."""
         require(isinstance(result, dict), "Task result must be an object")
         with self._execution_transaction(task) as tx:
             current = self._owned(tx, task)
@@ -284,10 +287,14 @@ class Workflow:
                 current.update(status="superseded", result=result, error=str(exc), completed_at=utcnow())
                 tx.put("tasks", task["id"], current)
                 execution_notice(tx, self.org, current, 'tasks', 'ticket_superseded', utcnow())
+                if accept is not None:
+                    accept(tx, current)
                 return current
             self._attempt_outcome(current, "succeeded", utcnow())
             current.update(status="succeeded", result=result, completed_at=utcnow())
             tx.put("tasks", task["id"], current)
+            if accept is not None:
+                accept(tx, current)
             message = task["message"]
             report = envelope("task.result", task["agent"], message["who"]["sender"],
                               message["what"]["action"], {"task_id": task["id"], "result": result},

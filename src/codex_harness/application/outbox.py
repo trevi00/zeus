@@ -5,19 +5,34 @@ from codex_harness.domain.model import ContractError, digest, require, utcnow
 from codex_harness.ports import MessageDeliveryError
 
 
-def _quarantine(tx, identity, item, source_hash, reason, delivery):
+def _quarantine(tx, identity, item, source_hash, reason, delivery, audit=None):
     key = digest({"id": identity, "source_hash": source_hash})
     if tx.get("outbox_quarantine", key) is None:
         tx.put("outbox_quarantine", key, {"id": key, "source_id": identity, "source_hash": source_hash,
                "source": item, "reason": reason, "at": utcnow()})
         tx.put("events", key, {"type": "outbox.quarantined", "outbox_id": identity,
                "evidence_id": key, "error_type": reason, "at": utcnow()})
+        if audit is not None:
+            # INV-OBSERVATION-001: the quarantine is recorded in the same transaction; the
+            # observation carries the reason and identities, never the poison source bytes.
+            audit(tx, "general.message_quarantined", "blocked", identity=["outbox_quarantine", key],
+                  reason_code=reason, attributes={"outbox_id": identity, "reason": reason, "quarantine_id": key})
     tx.put("outbox_delivery", identity, {**delivery, "id": identity, "status": "quarantined",
            "source_hash": source_hash, "quarantine_id": key, "updated_at": utcnow()})
     return "quarantined", None
 
 
-def _prepare(tx, identity, org, bus):
+def _message_facts(item):
+    message = item.get("message") if isinstance(item, dict) else None
+    if not isinstance(message, dict):
+        return {}
+    who = message.get("who") if isinstance(message.get("who"), dict) else {}
+    facts = {"message_type": message.get("type"), "recipient": who.get("recipient"),
+             "correlation_id": message.get("correlation_id"), "causation_id": message.get("message_id")}
+    return {k: v for k, v in facts.items() if type(v) is str and v}
+
+
+def _prepare(tx, identity, org, bus, audit=None):
     item = tx.get("outbox", identity)
     delivery = tx.get("outbox_delivery", identity) or {}
     source_hash = digest(item)
@@ -41,7 +56,7 @@ def _prepare(tx, identity, org, bus):
                 "AttemptedMessageIdentityReused")
     except ContractError:
         # Schema errors can contain arbitrary source text; retain that only in the source copy.
-        return _quarantine(tx, identity, item, source_hash, reason, delivery)
+        return _quarantine(tx, identity, item, source_hash, reason, delivery, audit)
     if delivery.get("delivered_entry_id"):
         tx.put("outbox", identity, {**item, "sent": True})
         tx.put("outbox_delivery", identity, {**delivery, "status": "delivered", "updated_at": utcnow()})
@@ -58,7 +73,7 @@ def _prepare(tx, identity, org, bus):
     return "prepared", {"identity": identity, "source_hash": source_hash, "attempt_id": attempt_id}
 
 
-def _publish(tx, prepared, bus):
+def _publish(tx, prepared, bus, audit=None):
     identity, attempt_id = prepared["identity"], prepared["attempt_id"]
     item = tx.get("outbox", identity)
     delivery = tx.get("outbox_delivery", identity)
@@ -92,10 +107,25 @@ def _publish(tx, prepared, bus):
     if result != "published":
         tx.put("events", attempt_id, {"type": "outbox." + result, "outbox_id": identity,
                "evidence_id": attempt_id, "error_type": attempt["error_type"], "at": attempt["finished_at"]})
+    if audit is not None:
+        # INV-OBSERVATION-001: a transport acknowledgement (stream entry id) is a delivery fact,
+        # recorded with the attempt in the same transaction; it is never a task completion.
+        facts = _message_facts(item)
+        common = {"outbox_id": identity, "attempt_id": attempt_id, "attempt_number": attempt["number"]}
+        if result == "published":
+            audit(tx, "general.message_published", "succeeded", identity=["outbox_attempt", attempt_id, "published"],
+                  correlation_id=facts.get("correlation_id"), causation_id=facts.get("causation_id"),
+                  attributes={**common, "stream_entry_id": entry_id,
+                              **{k: facts[k] for k in ("message_type", "recipient") if k in facts}})
+        else:
+            audit(tx, "general.message_delivery_" + result, "failed" if result == "retry" else "unknown",
+                  identity=["outbox_attempt", attempt_id, result], severity="warning" if result == "retry" else "error",
+                  correlation_id=facts.get("correlation_id"), causation_id=facts.get("causation_id"),
+                  reason_code=attempt["error_type"], attributes={**common, "error_type": attempt["error_type"]})
     return result, fatal
 
 
-def relay(store, org, bus, limit=100):
+def relay(store, org, bus, limit=100, audit=None):
     require(type(limit) is int and 1 <= limit <= 1000, "Outbox batch limit must be 1..1000")
     counts = dict.fromkeys(("published", "quarantined", "quarantined_existing", "retry", "skipped", "legacy_sent", "error"), 0)
     with store.transaction() as tx:
@@ -115,7 +145,7 @@ def relay(store, org, bus, limit=100):
             owns_cursor = False
     for row in rows:
         with store.transaction() as tx:
-            result, prepared = _prepare(tx, row["id"], org, bus)
+            result, prepared = _prepare(tx, row["id"], org, bus, audit)
             if not prepared:
                 counts[result] += 1
                 advance(tx, row["id"])
@@ -123,7 +153,7 @@ def relay(store, org, bus, limit=100):
             continue
         fatal = None
         with store.transaction() as tx:
-            result, fatal = _publish(tx, prepared, bus)
+            result, fatal = _publish(tx, prepared, bus, audit)
             counts[result] += 1
             advance(tx, row["id"])
         if fatal:

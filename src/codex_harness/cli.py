@@ -16,7 +16,14 @@ from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.contracts import validate_message
 from codex_harness.adapters.knowledge import PostgresKnowledge
 from codex_harness.application.workflow import Workflow
-from codex_harness.bootstrap import build, build_executor, database_url, organization, redis_url
+from codex_harness.bootstrap import (
+    build,
+    build_executor,
+    build_observer,
+    database_url,
+    organization,
+    redis_url,
+)
 from codex_harness.domain.model import (
     ContextItem,
     ContractError,
@@ -73,33 +80,58 @@ def _generation(service, agent: str) -> int:
         return (tx.get("sessions", agent) or {"generation": 0})["generation"]
 
 
-def serve(service, agent: str, once: bool, execute: bool = False) -> None:
+def serve(service, agent: str, once: bool, execute: bool = False, observer=None) -> None:
     service.org.actor(agent)
     bus = RedisBus(redis_url())
     consumer = f"{agent}:{uuid4()}"
     last_activity = time.monotonic()
     workflow = Workflow(service.store, service.org)
-    executor = build_executor(service) if execute else None
+    # INV-OBSERVATION-001: one process run, one spool; message receipt, ledger acceptance and the
+    # transport acknowledgement are three separate general-log facts, none of them a task result.
+    observer = observer or build_observer(service.store, "cli.serve", agent)
+    executor = build_executor(service, observer=observer) if execute else None
     prefer_decisions = True
-    emit({"status": "listening", "agent_id": agent, "autonomous": execute})
+    observer.emit("general.process_started", "started",
+                  attributes={"agent": agent, "autonomous": execute, "platform": sys.platform,
+                              "python": sys.version.split()[0], "mode": "serve"})
+    emit({"status": "listening", "agent_id": agent, "autonomous": execute,
+          "process_run_id": observer.process_run_id})
     while True:
         row = bus.receive(agent, consumer)
         if row:
             entry_id, fields = row
+            message = None
             try:
                 message = bus.decode(fields)
+                observer.emit("general.message_received", "observed", correlation_id=message["correlation_id"],
+                              causation_id=message["message_id"],
+                              attributes={"stream_entry_id": entry_id, "message_id": message["message_id"],
+                                          "message_type": message["type"], "sender": message["who"]["sender"],
+                                          "recipient": message["who"]["recipient"]})
                 require(message["who"]["recipient"] == agent, "Message routed to wrong agent")
                 service.org.authorize(message)
                 if message["type"] == "incident.report":
                     result = service.record_incident(message)
                 else:
                     result = workflow.handle(message)
-                service.flush_outbox(bus)
+                observer.emit("general.message_accepted", "succeeded", correlation_id=message["correlation_id"],
+                              causation_id=message["message_id"],
+                              attributes={"message_id": message["message_id"], "message_type": message["type"],
+                                          "result_kind": type(result).__name__})
+                service.flush_outbox(bus, audit=observer.audit_system)
                 bus.ack(agent, entry_id)
+                observer.emit("general.message_acknowledged", "observed", correlation_id=message["correlation_id"],
+                              causation_id=message["message_id"],
+                              attributes={"stream_entry_id": entry_id, "message_id": message["message_id"]})
                 emit({"message_id": message["message_id"], "result": result})
                 last_activity = time.monotonic()
             except (ContractError, json.JSONDecodeError, KeyError) as exc:
                 bus.dead_letter(agent, entry_id, fields, str(exc))
+                observer.emit("general.message_rejected", "blocked", severity="warning",
+                              correlation_id=message.get("correlation_id") if isinstance(message, dict) else None,
+                              reason_code=type(exc).__name__,
+                              attributes={"stream_entry_id": entry_id, "error_type": type(exc).__name__,
+                                          "dead_letter": True})
                 emit({"rejected": entry_id, "reason": str(exc)})
         if executor:
             # Give both durable queues turns, even under a continuous task backlog.
@@ -109,13 +141,35 @@ def serve(service, agent: str, once: bool, execute: bool = False) -> None:
             prefer_decisions = not prefer_decisions
             if result:
                 emit({"execution": result})
-                service.flush_outbox(bus)
+                service.flush_outbox(bus, audit=observer.audit_system)
                 last_activity = time.monotonic()
         if once:
             break
         if time.monotonic() - last_activity >= POLICY.idle_seconds:
+            observer.emit("general.process_idle_exit", "observed",
+                          attributes={"agent": agent, "idle_seconds": POLICY.idle_seconds})
+            observer.close()
             emit({"status": "idle_exit", "agent": agent, "at": utcnow()})
             return
+    observer.close()
+
+
+def observe_command(service, args):
+    from codex_harness.adapters.observation_spool import SpoolDirectory
+    from codex_harness.application.observations import status_report
+    from codex_harness.bootstrap import build_collector, observation_root
+    if args.observe_command == "collect":
+        observer = build_observer(service.store, "cli.observe")
+        result = build_collector(service.store, observer).collect()
+        observer.close()
+        emit(result)
+    elif args.observe_command == "status":
+        emit(status_report(service.store, SpoolDirectory(observation_root())))
+    else:
+        observer = build_observer(service.store, "cli.observe", "operator")
+        emit(observer.resolve_termination(args.record_id, resolution=args.resolution, operator=args.operator,
+                                          reason=args.reason))
+        observer.close()
 
 
 def parser() -> argparse.ArgumentParser:
@@ -212,7 +266,19 @@ def parser() -> argparse.ArgumentParser:
                                            "execution_failures", "execution_recoveries", "execution_notices", "execution_notice_errors",
                                            "execution_rejections",
                                            "execution_time_events",
+                                           "invocation_reservations",
+                                           "observations", "observation_audit", "observation_quarantine",
+                                           "observation_alerts", "observation_collections", "observation_terminations",
                                            "tasks", "decisions_pending", "releases", "deployment", "release_queue"])
+    observe = commands.add_parser("observe", help="Observation logs: collect the spool, report status, reconcile")
+    observe_commands = observe.add_subparsers(dest="observe_command", required=True)
+    observe_commands.add_parser("collect", help="Move durable spool records into PostgreSQL and acknowledge them")
+    observe_commands.add_parser("status", help="Counts, process health, pending terminations, orphans; read-only")
+    reconcile = observe_commands.add_parser("reconcile", help="Operator decision for a pending termination record")
+    reconcile.add_argument("record_id")
+    reconcile.add_argument("--resolution", choices=["rerun", "discard"], required=True)
+    reconcile.add_argument("--operator", required=True, help="Audit label, not authenticated identity")
+    reconcile.add_argument("--reason", required=True)
     rollback = commands.add_parser("rollback-hook")
     rollback.add_argument("hook_id")
     rollback.add_argument("--reason", required=True)
@@ -447,12 +513,16 @@ def main() -> None:
             emit(ArtifactMaintenance(service.store, executor.artifacts).collect(apply=args.apply))
         elif args.command == "ticket":
             ticket_command(service, args)
+        elif args.command == "observe":
+            observe_command(service, args)
         elif args.command == "demo":
             emit(demo(service, args.scope))
         elif args.command == "incident":
             emit(service.record_incident(validate_message(json.loads(Path(args.file).read_text(encoding="utf-8")))))
         elif args.command == "flush":
-            emit(service.flush_outbox(RedisBus(redis_url())))
+            observer = build_observer(service.store, "cli.flush")
+            emit(service.flush_outbox(RedisBus(redis_url()), audit=observer.audit_system))
+            observer.close()
         elif args.command == "send":
             message = validate_message(json.loads(Path(args.file).read_text(encoding="utf-8")))
             service.org.authorize(message)
@@ -486,9 +556,11 @@ def main() -> None:
             emit({"message_id": message["message_id"], "correlation_id": message["correlation_id"],
                   "stream_id": RedisBus(redis_url()).publish(message)})
         elif args.command == "execute-one":
-            executor = build_executor(service)
+            observer = build_observer(service.store, "cli.execute-one", args.agent)
+            executor = build_executor(service, observer=observer)
             emit(executor.execute_one(args.agent) or executor.decide_one(args.agent) or {"status": "idle"})
-            service.flush_outbox(RedisBus(redis_url()))
+            service.flush_outbox(RedisBus(redis_url()), audit=observer.audit_system)
+            observer.close()
         elif args.command == "cancel":
             Workflow(service.store, service.org).cancel(args.task_id, "conductor", args.reason)
             emit({"cancelled": args.task_id})

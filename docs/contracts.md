@@ -532,6 +532,76 @@ list, with the comparison stated; a self-report never certifies the presence or 
 tool use. Zeus keeps no lexical, filename or boilerplate grade; structural validity and
 observed tool use are evidence for review, never SDD acceptance or model qualification.
 
+## INV-OBSERVATION-001
+
+General, development and operations logs share one versioned observation contract
+(`observation.schema.json`, `urn:zeus:observation:1`) that is a different contract from the
+six-W business message: an observation has no who/what/how sections, cannot be validated,
+routed or handled as an assignment, and grants no workflow authority; the outbox relay
+quarantines one disguised as a message. Every record names its execution (role, provider,
+process run, task, bucket, generation, attempt, invocation, revision) or is a system event whose
+task and session are explicit nulls, never placeholders; the schema validates the two branches
+separately. `occurred_at` is the event's own time or null and `observed_at` is the collection
+moment; order is (process_run_id, sequence) and causality is causation_id plus the existing task,
+message and generation identities, never the wall clock. The outcome vocabulary distinguishes
+started, succeeded, failed, aborted, blocked, unknown and observed; a provider exit code or a
+transport acknowledgement never produces a success outcome, and a stream entry id is recorded as
+a delivery fact beside the attempt, not as a task completion. Attributes are allow-listed and
+typed per event type and size-bounded; prompts, environment, credentials, private keys and model
+reasoning are excluded by construction and every string is redacted before any durable or public
+surface (spool, sink, health record, alert, CLI); foreign error messages are recorded as their
+type and digest, not their text. The same event id with the same content hash is a redelivery;
+the same id with different content is isolated in quarantine with an alert and never overwrites
+the first record. Mandatory transitions (invocation reserved, settled, abandoned; outbox publish,
+retry, error, quarantine; reconciliation) are append-only audit rows written inside the business
+transaction, so the reservation does not commit — and no provider starts — without its audit.
+Diagnostic records go to a bounded per-process durable spool whose sequence number advances
+only on a successful append; a full or failing spool is counted, written to the protected local
+health record and alerted with rate limiting, never dropped silently, and never blocks the
+execution path or bypasses reservation and lease limits. The collector consumes complete
+records, quarantines corrupt lines, leaves a truncated tail unconsumed, deduplicates by id and
+content hash, acknowledges an offset only after the sink transaction committed, and reclaims a
+segment only when it is fully acknowledged and provably no longer writable — rotated past, closed
+by its writer, or its run lock released by the operating system when the writer died; file age
+alone never finishes a run, so a spool that is consumed never saturates, an active segment is
+never truncated and a live but idle writer keeps its collectable path. Only the writer that
+holds the run lock finishes the run: a writer object that never acquired it (a refused second
+writer) writes no closed marker, a closed writer refuses further appends, and a run's lock
+file is unlinked only under that lock. The retention age of a run is measured from the files
+its writer wrote (segments, closed marker, health) before any liveness probe, never from the
+lock or acknowledgement files, so probing cannot defer a dead run's reclamation. A writer's
+registration (run lock plus active segment), its close, every liveness probe and every
+deletion by the collector run under one directory lifecycle lock that no run's garbage
+collection removes: the collector decides and deletes as one step, a writer registers as one
+step, so a writer either registers before the decision and keeps its active file or starts
+after the deletions on a valid path; a successful append never leaves a record without a
+collectable path, and a busy lifecycle lock defers collection and refuses registration
+explicitly instead of guessing. Pending alerts replay in
+their own transaction, independent of any spool record. The check that no earlier attempt of a
+task is still unconfirmed is made inside the reservation transaction; a failed read is unknown,
+never permission. Correlation, causation and
+evidence identifiers are opaque handles and are refused, never rewritten, when they are not;
+operator labels follow the same rule and operator free text is redacted and bounded before it is
+stored or returned; identifiers that match a known credential shape are refused as well. The
+reservation transaction also writes a durable unconfirmed marker for the attempt, before any
+provider is entered; the marker closes only in the transaction that durably accepts the outcome
+(task completion, decision commit or a recorded terminal decision), in the abandonment of a
+refusal proven to precede entry, or with the failure record of an observed rejection of an
+already persisted answer. Any other failure while the marker is open — transport, progress,
+cleanup, settlement, breaker report, result persistence, checkpoint, acceptance write, workspace
+capture — records the failure, blocks the task and notifies the lead through the existing
+execution notice in one transaction, and adds redacted termination evidence naming its boundary
+where it can; a failing evidence file or sink does not weaken the block. Failure records built
+from a foreign exception carry its type and digest, never its text. Reconciliation commits the
+operator's decision and audit to the sink before the
+local blocking record is finalized, is idempotent for the same decision and refuses a different
+one; re-queuing goes through execution recovery, which refuses while any termination record is
+pending. Pending alerts are persisted locally, cleared only after the transaction that carried
+them committed, and inherited by the next process run. The invocation ledger closes an orphaned
+reservation as unsettled_unknown. Health, status, orphan and alert reports are informational
+only. Unit fault injection and MemoryStore exercise these boundaries; they are not operational
+evidence.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

@@ -28,8 +28,13 @@ class InvocationLedger:
         require(type(capacity) is int and capacity > 0, 'Invocation capacity must be positive')
         self.store, self.capacity = store, capacity
 
-    def reserve(self, lease, *, request, budget_seconds, guard=None, stage=None):
-        """Reserve one model invocation of the current attempt (stages reserve one each, in turn)."""
+    def reserve(self, lease, *, request, budget_seconds, guard=None, stage=None, audit=None):
+        """Reserve one model invocation of the current attempt (stages reserve one each, in turn).
+
+        `audit(tx, row)` runs in the same transaction after the row is written (INV-OBSERVATION-001):
+        when the audit record cannot be written the reservation does not commit either, so no
+        provider starts without its mandatory audit.
+        """
         require(isinstance(lease, dict) and type(lease.get('generation')) is int and type(lease.get('attempt')) is int
                 and type(lease.get('id')) is str, 'Reservation requires a typed execution lease')
         require(type(budget_seconds) in (int, float) and budget_seconds > 0, 'Reservation budget must be positive')
@@ -61,6 +66,8 @@ class InvocationLedger:
                    'budget_seconds': budget_seconds, 'status': 'reserved', 'reserved_at': now,
                    'usage': dict(UNKNOWN_USAGE), 'outcome': None}
             tx.put(BUCKET, key, row)
+            if audit is not None:
+                audit(tx, row)
             return row
 
     @staticmethod
@@ -90,7 +97,7 @@ class InvocationLedger:
         with self.store.transaction() as tx:
             return self._reclaim_dead(tx, utcnow())
 
-    def settle(self, reservation_id, *, outcome, usage, evidence_ref=None):
+    def settle(self, reservation_id, *, outcome, usage, evidence_ref=None, audit=None):
         outcome_check(outcome)
         require(isinstance(usage, dict) and usage.get('source') in {'unknown', 'thread/tokenUsage/updated'}
                 and (usage['source'] == 'unknown') == (usage.get('total_tokens') is None),
@@ -108,9 +115,11 @@ class InvocationLedger:
                        elapsed_seconds=elapsed, evidence_ref=evidence_ref,
                        within_budget=elapsed <= row['budget_seconds'])
             tx.put(BUCKET, reservation_id, row)
+            if audit is not None:
+                audit(tx, row)
             return row
 
-    def abandon(self, reservation_id, reason):
+    def abandon(self, reservation_id, reason, audit=None):
         require(type(reason) is str and bool(reason), 'Abandon reason required')
         with self.store.transaction() as tx:
             row = tx.get(BUCKET, reservation_id)
@@ -119,6 +128,8 @@ class InvocationLedger:
                 return row
             row.update(status='unsettled_unknown', usage=dict(UNKNOWN_USAGE), closed_at=utcnow(), reason=reason)
             tx.put(BUCKET, reservation_id, row)
+            if audit is not None:
+                audit(tx, row)
             return row
 
     def summary(self):

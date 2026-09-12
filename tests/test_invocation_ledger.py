@@ -16,6 +16,7 @@ from test_workflow import assignment
 
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.invocation_ledger import BUCKET, InvocationLedger, reservation_key
+from codex_harness.application.observations import PostExecutionRecordFailure
 from codex_harness.application.workflow import Workflow
 from codex_harness.bootstrap import organization
 from codex_harness.domain.invocation import (
@@ -278,9 +279,12 @@ def test_executor_abandons_the_reservation_when_the_transport_raises(setup, monk
             raise OSError('Explicit transport fault fixture')
 
     monkeypatch.setattr('codex_harness.adapters.executor.AppServer', Runtime)
-    with pytest.raises(OSError):
+    # INV-OBSERVATION-001: the fault happened after provider entry, so it surfaces as a
+    # post-execution record failure carrying the transport error as its cause.
+    with pytest.raises(PostExecutionRecordFailure) as raised:
         s.executor._run('worker:github', lease['id'], 'Invocation ledger', {}, str(s.executor.git.repository),
                         SCHEMA, lease=lease)
+    assert isinstance(raised.value.cause, OSError) and raised.value.boundary == 'transport'
     with s.service.store.transaction() as tx:
         rows = tx.scan(BUCKET)
     assert len(rows) == 1 and rows[0]['status'] == 'unsettled_unknown' and rows[0]['reason'] == 'exception:OSError'

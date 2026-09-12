@@ -117,12 +117,16 @@ def test_invalid_evidence_never_completes(setup, failure):
         s.config['final']['source_revision'] = 'b' * 40
     if failure == 'final_missing':
         del s.config['final']['source_revision']
-    assert s.executor.execute_one('worker:github')['status'] == 'retry'
+    # A rejected answer is an observed outcome (retry). 'detail' is an infrastructure error between
+    # two provider calls of one attempt whose effects are still unconfirmed: blocked (INV-OBSERVATION-001).
+    expected = 'blocked' if failure == 'detail' else 'retry'
+    assert s.executor.execute_one('worker:github')['status'] == expected
     with s.service.store.transaction() as tx:
         messages = [r['message'] for r in tx.scan('outbox')]
-        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
-        assert messages[0]['what']['details']['reason_code'] == 'execution_failed'
-        assert tx.get('tasks', s.task['id'])['status'] == 'retry'
+        assert all(m['type'] == 'execution.notice' for m in messages)
+        reasons = sorted(m['what']['details']['reason_code'] for m in messages)
+        assert reasons == (['execution_failed', 'reconciliation_required'] if expected == 'blocked' else ['execution_failed'])
+        assert tx.get('tasks', s.task['id'])['status'] == expected
     if not failure.startswith('final'):
         assert 'final' not in s.calls
 
@@ -138,11 +142,31 @@ def test_stage_interruptions_use_only_matching_recovery(setup, stage):
     assert 'checkpoint' in matching[1]['required']['recovery']['sources']
 
 
+def reconcile_and_repair(s, task_id, resolution='rerun'):
+    """INV-OBSERVATION-001: a failure after provider entry blocks the task; the operator reconciles
+    the termination record, then re-queues through the existing execution-recovery repair path."""
+    from codex_harness.application.execution_recovery import ExecutionRecovery
+    [record] = s.executor.observer.pending_terminations(task_id)
+    s.executor.observer.resolve_termination(record['record_id'], resolution=resolution, operator='test-operator',
+                                            reason='explicit test decision')
+    recovery = ExecutionRecovery(s.service.store, s.service.org, s.artifacts)
+    evidence = s.artifacts.put('operator reviewed the termination record', 'test-evidence')['ref']
+    packet = recovery.prepare('tasks', task_id, operation='repair', max_attempts=3, deadline=None,
+                              reason='reconciled', evidence_refs=[evidence], operator='test-operator')
+    return recovery.apply(packet)
+
+
 @pytest.mark.parametrize('stage', ['shortlist', 'detail', 'final'])
 def test_retry_after_failure_recollects_and_retrieves_before_final(setup, stage):
     s = setup
     s.config['failure'] = stage
-    assert s.executor.execute_one('worker:github')['status'] == 'retry'
+    first = s.executor.execute_one('worker:github')
+    # 'shortlist'/'final': the transport failed after the provider was entered. 'detail': an
+    # infrastructure error between two provider calls of the same attempt, with the attempt's
+    # effects still unconfirmed. Both block until an operator reconciles (INV-OBSERVATION-001).
+    assert first['status'] == 'blocked' and first['error'] == 'reconciliation_required'
+    assert s.executor.execute_one('worker:github') is None
+    reconcile_and_repair(s, s.task['id'])
     s.config['failure'] = None
     s.calls.clear()
     result = s.executor.execute_one('worker:github')
@@ -212,12 +236,16 @@ def test_stale_session_generation_rejects_checkpoint(setup):
             tx.put('sessions', 'worker:github', {'generation': 7, 'checkpoint': {}})
     s.config['callback'] = advance
     result = s.executor.execute_one('worker:github')
-    assert result['status'] == 'retry' and 'Stale session' in result['error']
+    # The checkpoint failed after the provider ran: the failure is recorded, then the task is blocked.
+    assert result['status'] == 'blocked' and result['error'] == 'reconciliation_required'
+    assert 'Stale session' in result['attempt_outcomes'][-1]['error']
     with s.service.store.transaction() as tx:
         messages = [r['message'] for r in tx.scan('outbox')]
-        assert len(messages) == 1 and messages[0]['type'] == 'execution.notice'
-        assert messages[0]['what']['details']['reason_code'] == 'execution_failed'
+        assert [m['type'] for m in messages] == ['execution.notice', 'execution.notice']
+        assert sorted(m['what']['details']['reason_code'] for m in messages) == ['execution_failed', 'reconciliation_required']
         assert tx.get('sessions', 'worker:github')['generation'] == 7
+    [pending] = s.executor.observer.pending_terminations(s.task['id'])
+    assert pending['boundary'] == 'checkpoint' and pending['invocation_outcome'] == 'accepted'
 
 
 def test_preflight_failure_uses_existing_execution_failure_reporting(setup):
@@ -230,7 +258,8 @@ def test_preflight_failure_uses_existing_execution_failure_reporting(setup):
 
     s.config['callback'] = reject_schema
     result = s.executor.execute_one('worker:github')
-    assert result['status'] == 'retry' and CAUSE in result['error']
+    # Raised from inside the transport after entry: recorded as a failure, then blocked.
+    assert result['status'] == 'blocked' and CAUSE in result['attempt_outcomes'][-1]['error']
     with s.service.store.transaction() as tx:
         failures = [r for r in tx.scan('decisions_pending') if r['phase'] == 'diagnose']
         assert len(failures) == 1

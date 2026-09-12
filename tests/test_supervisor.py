@@ -34,7 +34,7 @@ def test_once_success_is_distinct_from_error(tmp_path, monkeypatch):
     monkeypatch.setattr(supervisor, "release_thread", None)
     monkeypatch.setattr(supervisor, "source_thread", None)
     calls = []
-    monkeypatch.setattr(supervisor, "tick", lambda *args: calls.append(args))
+    monkeypatch.setattr(supervisor, "tick", lambda *args: calls.append(args[:2]))
     supervisor.main()
     assert calls == [(False, False)]
 

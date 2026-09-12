@@ -1,0 +1,49 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+.....s.................................................................. [ 28%]
+........................................................................ [ 33%]
+.......................................sssss............................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+.................................F...................................... [ 52%]
+........................................................................ [ 57%]
+.....s.................................................................. [ 62%]
+........................................................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 90%]
+........................................................................ [ 95%]
+..............s.................s....s....s....s....s....s...........    [100%]
+================================== FAILURES ===================================
+___________ test_real_postgres_connection_refusal_is_a_sink_outage ____________
+
+tmp_path = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/pytest-of-rudtn/pytest-3416/test_real_postgres_connection_0')
+isolated_pgstore = <codex_harness.adapters.store.PostgresStore object at 0x000001D1FD7276E0>
+
+    def test_real_postgres_connection_refusal_is_a_sink_outage(tmp_path, isolated_pgstore):
+        """L06 with an actual failed connection: the alert path meets psycopg's OperationalError, not a fake."""
+        unreachable = PostgresStore("postgresql://harness:x@127.0.0.1:1/harness?connect_timeout=1")
+        o = file_observer(tmp_path, unreachable, alert_window_seconds=0)
+        record = o.alert("sink_unavailable", "postgres", attributes={"sink": "postgres", "error_type": "probe", "pending": 0})
+        assert record["notification"]["status"] == "pending" and o.sink_state == "unavailable"
+        o.store = isolated_pgstore
+        later = o.alert("spool_saturated", "k", attributes={"bytes": 1, "limit_bytes": 1, "dropped": 1})
+        assert later["notification"]["status"] == "recorded" and not o.pending_alerts
+        with isolated_pgstore.transaction() as tx:
+            statuses = sorted(a["notification"]["status"] for a in tx.scan("observation_alerts"))
+>       assert statuses == ["recorded", "recorded_after_recovery"]
+E       AssertionError: assert ['pending', '...ter_recovery'] == ['recorded', ...ter_recovery']
+E         
+E         At index 0 diff: 'pending' != 'recorded'
+E         Left contains one more item: 'recorded_after_recovery'
+E         Use -v to get more diff
+
+tests\test_observations.py:271: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_observations.py::test_real_postgres_connection_refusal_is_a_sink_outage
+1 failed, 1494 passed, 14 skipped in 411.44s (0:06:51)
