@@ -27,7 +27,7 @@ def _object(pairs):
     return result
 
 
-def completed_output(text, schema):
+def completed_output(text, schema, label='codex'):
     """Validate explicit text input; a completed transport turn is not acceptance.
 
     The result always carries `structural`: which checks ran, which did not, and the preflight
@@ -73,7 +73,7 @@ def completed_output(text, schema):
                              'note': 'checked means the named check ran and passed; unchecked means it never ran'}}
     if reason:
         result['output_schema'] = schema
-        result['failure'] = {'cause': 'codex-output-' + reason.replace('_', '-'), 'owner': owner,
+        result['failure'] = {'cause': label + '-output-' + reason.replace('_', '-'), 'owner': owner,
                              'output_reason': reason, 'schema_hash': digest(schema) if _encodable(schema) else None,
                              **detail}
     return result
@@ -89,6 +89,15 @@ def _encodable(value):
 
 def tool_usage(result):
     """Runner-observed tool items beside any self-report; a declaration never certifies the observation."""
+    observed_by_adapter = result.get('tool_usage_observed') if isinstance(result, dict) else None
+    if isinstance(observed_by_adapter, dict):
+        answer = result.get('answer') if isinstance(result, dict) else None
+        declared = answer.get('tool_calls') if isinstance(answer, dict) else None
+        counted = len(observed_by_adapter.get('completed') or [])
+        comparison = ('not_declared' if not isinstance(declared, list)
+                      else 'consistent' if len(declared) == counted else 'differs')
+        return {'runner_observed': observed_by_adapter, 'self_reported': declared if isinstance(declared, list) else None,
+                'comparison': comparison, 'source': observed_by_adapter.get('source', 'provider stream')}
     events = result.get('events', []) if isinstance(result, dict) else []
     observed = {kind: [] for kind in TOOL_ITEMS}
     for event in events:
@@ -116,7 +125,7 @@ def persist_result(artifacts, result, *, key, agent, lease, basis_revision, cont
                       basis_revision=basis_revision, context_ref=context_ref)
     receipt = artifacts.put(evidence_json(result), 'execution:' + key)
     if result.get('failure') and not result.get('inspection_blocked'):
-        failure = {**result['failure'], 'scope': agent + '/codex-turn',
+        failure = {**result['failure'], 'scope': agent + '/' + ('claude-turn' if result.get('transport') == 'claude_cli' else 'codex-turn'),
                    'execution_ref': receipt['ref'], 'task_id': key,
                    'attempt': lease.get('attempt') if lease else None,
                    'thread_id': result['thread_id'], 'turn_id': result['turn_id'],

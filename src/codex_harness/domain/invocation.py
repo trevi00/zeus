@@ -16,7 +16,17 @@ SUPPORT = {
     'app_server': {'model': 'supported', 'timeout': 'supported', 'output_schema': 'supported',
                    'read_only': 'supported', 'system': 'unsupported', 'temperature': 'unsupported',
                    'max_output_tokens': 'unsupported', 'response_format': 'unsupported'},
+    # `unconfirmed` is the honest third state: the transport has a mechanism for the option but this
+    # harness has not verified that the mechanism enforces the option's meaning. Asking for it is
+    # refused rather than assumed, and asking for its absence is accepted because nothing is claimed.
+    'claude_cli': {'model': 'supported', 'timeout': 'supported', 'output_schema': 'supported',
+                   'max_budget_usd': 'supported', 'permission_mode': 'supported',
+                   'read_only': 'unconfirmed', 'session_resume': 'unsupported',
+                   'system': 'unsupported', 'temperature': 'unsupported',
+                   'max_output_tokens': 'unsupported', 'response_format': 'unsupported'},
 }
+SUPPORT_STATES = ('supported', 'unsupported', 'unconfirmed')
+USAGE_SOURCES = ('unknown', 'thread/tokenUsage/updated', 'claude/result.usage')
 OUTCOMES = ('accepted', 'empty_answer', 'invalid_output', 'tool_only', 'interrupted', 'inspection_blocked',
             'provider_failure')
 AVAILABILITY = ('executable_missing', 'executable_found', 'version_confirmed')
@@ -35,6 +45,8 @@ def parse_request(transport, options):
     require(not unknown, 'Unknown invocation options: ' + ', '.join(unknown))
     unsupported = sorted(key for key, value in options.items() if matrix[key] == 'unsupported' and value is not None)
     require(not unsupported, f'Options not supported by {transport} (not ignored): ' + ', '.join(unsupported))
+    unproven = sorted(key for key, value in options.items() if matrix[key] == 'unconfirmed' and value)
+    require(not unproven, f'Options {transport} cannot prove it applies (not assumed): ' + ', '.join(unproven))
     accepted = {}
     if 'model' in options:
         require(type(options['model']) is str and bool(options['model'].strip()), 'model must be a non-empty string')
@@ -51,7 +63,18 @@ def parse_request(transport, options):
     if 'read_only' in options:
         require(type(options['read_only']) is bool, 'read_only must be a boolean')
         accepted['read_only'] = options['read_only']
-    return {'transport': transport, 'options': accepted, 'unsupported': [k for k, v in matrix.items() if v == 'unsupported']}
+    if 'max_budget_usd' in options:
+        budget = options['max_budget_usd']
+        require(type(budget) in (int, float) and math.isfinite(budget) and budget > 0,
+                'max_budget_usd must be finite and positive')
+        accepted['max_budget_usd'] = float(budget)
+    if 'permission_mode' in options:
+        require(type(options['permission_mode']) is str and bool(options['permission_mode'].strip()),
+                'permission_mode must be a non-empty string')
+        accepted['permission_mode'] = options['permission_mode']
+    return {'transport': transport, 'options': accepted,
+            'unsupported': [k for k, v in matrix.items() if v == 'unsupported'],
+            'unconfirmed': [k for k, v in matrix.items() if v == 'unconfirmed']}
 
 
 def availability(probe):
@@ -76,14 +99,17 @@ def classify_result(result):
     require(isinstance(result, dict), 'Invocation result must be an object')
     if result.get('failure'):
         cause = str(result['failure'].get('cause', ''))
-        return 'invalid_output' if cause.startswith('codex-output-') else 'provider_failure'
+        return 'invalid_output' if '-output-' in cause else 'provider_failure'
     if result.get('inspection_blocked'):
         return 'inspection_blocked'
     if result.get('interrupted'):
         return 'interrupted'
     if result.get('answer') is not None:
         return 'accepted'
-    if not (result.get('model_answer_text') or '') and _tool_items(result.get('events', [])):
+    observed_tools = result.get('tool_items')
+    if observed_tools is None:
+        observed_tools = _tool_items(result.get('events', []))
+    if not (result.get('model_answer_text') or '') and observed_tools:
         return 'tool_only'
     return 'empty_answer'
 
@@ -103,13 +129,48 @@ def stream_hash(events):
     return 'sha256:' + hashlib.sha256(canonical(events).encode('utf-8', 'surrogatepass')).hexdigest()
 
 
-def usage_record(result):
+CLAUDE_USAGE_PARTS = ('input_tokens', 'output_tokens', 'cache_creation_input_tokens',
+                      'cache_read_input_tokens')
+
+
+def _claude_usage(result, record):
+    """Claude Code reports usage once, in its terminal result message.
+
+    Only that message is read. Assistant messages and any redelivered or partial message carry
+    counts for the same work, so adding them would count it twice; the basis says which totals the
+    number contains, and a missing part stays null rather than becoming a zero that sums cleanly.
+    """
+    usage = result.get('usage') if isinstance(result, dict) else None
+    parts = {}
+    for name in CLAUDE_USAGE_PARTS:
+        value = usage.get(name) if isinstance(usage, dict) else None
+        parts[name] = value if type(value) is int and value >= 0 else None
+    known = [value for value in parts.values() if value is not None]
+    cost = (result.get('cost') or {}).get('reported_usd') if isinstance(result, dict) else None
+    record.update(parts=parts, reported_cost_usd=cost if type(cost) in (int, float) else None,
+                  cost_source='provider_estimate' if type(cost) in (int, float) else 'unknown',
+                  cost_note='the provider\'s own estimate for this run, never a billed amount')
+    if known:
+        record.update(source='claude/result.usage', total_tokens=sum(known), last_tokens=None,
+                      basis='result_total_including_cache',
+                      usage_note='the terminal result message only; no message is added twice')
+    else:
+        record.update(source='unknown', total_tokens=None, last_tokens=None, basis=None,
+                      usage_note='the provider reported no usage; unknown is not zero')
+    return record
+
+
+def usage_record(result, transport='app_server'):
     """Measured usage with its source; absent usage is `unknown`, never zero."""
     events = result.get('events', []) if isinstance(result, dict) else []
     usage = result.get('usage') if isinstance(result, dict) else None
-    record = {'requested_model': result.get('requested_model'), 'confirmed_model': confirmed_model(events),
-              'model_confirmation': 'transport_reported' if confirmed_model(events) else 'unknown',
+    reported = result.get('reported_model') if isinstance(result, dict) else None
+    confirmed = reported if transport == 'claude_cli' else confirmed_model(events)
+    record = {'requested_model': result.get('requested_model'), 'confirmed_model': confirmed,
+              'model_confirmation': 'transport_reported' if confirmed else 'unknown',
               'stream_hash': stream_hash(events), 'event_count': len(events)}
+    if transport == 'claude_cli':
+        return _claude_usage(result, record)
     def count(part):
         value = usage.get(part, {}).get('totalTokens') if isinstance(usage, dict) and isinstance(usage.get(part), dict) else None
         return value if type(value) is int and value >= 0 else None

@@ -34,6 +34,10 @@ class RuntimePolicy:
     observation_retention_seconds: int = 7 * 86400
     observation_alert_window_seconds: int = 300
     observation_collect_batch: int = 1000
+    claude_line_bytes: int = 1024 * 1024
+    claude_stream_bytes: int = 8 * 1024 * 1024
+    claude_event_queue: int = 2000
+    claude_events_retained: int = 400
 
     def snapshot(self) -> dict:
         return asdict(self)

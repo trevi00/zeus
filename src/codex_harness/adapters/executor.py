@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from codex_harness.adapters.app_server import AppServer
+from codex_harness.adapters.claude_cli import ClaudeCodeRuntime, claude_settings
 from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector
 from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
@@ -16,6 +17,7 @@ from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.output_schema import preflight
 from codex_harness.adapters.project_skills import project_context
+from codex_harness.adapters.providers import host_policy
 from codex_harness.adapters.skill_history import (
     finalize_delivery,
     prepare_history,
@@ -57,6 +59,7 @@ from codex_harness.domain.model import (
 from codex_harness.domain.model_routing import select_model
 from codex_harness.domain.observation import invocation_outcome, new_process_run_id
 from codex_harness.domain.policy import POLICY
+from codex_harness.domain.provider_stream import CODEX_PROGRESS, CodexStream, stream_for
 from codex_harness.domain.research import require_dispatch
 
 
@@ -80,65 +83,14 @@ DIAGNOSIS = object_schema({"confirmed": {"type": "boolean"}, "root_cause": TEXT,
                           "scope": TEXT, "reason": TEXT})
 
 
-def progress_occurrence(event: dict):
-    """The event's own UTC occurrence time, or None; the collection moment never stands in for it."""
-    params = event.get("params") if isinstance(event.get("params"), dict) else {}
-    item = params.get("item") if isinstance(params.get("item"), dict) else {}
-    for candidate in (params.get("completedAtMs"), item.get("completedAtMs"), event.get("emittedAtMs")):
-        if type(candidate) is int and 0 < candidate < 10**14:
-            return datetime.fromtimestamp(candidate / 1000, tz=timezone.utc).isoformat()
-    return None
-
-
-PROGRESS_EVENTS = {"item/completed", "thread/tokenUsage/updated"}
-
-
-def progress_event_shape(event) -> str | None:
-    """Name what is wrong with a runtime event before anything reads into it; None means well-formed.
-
-    Review counterexample (PR #49): `method=[]` raised inside set membership and `item="garbage"`
-    advanced the sequence. A progress event is a dict whose method is text, whose params is a dict,
-    and whose per-method payload has the identifiers the reader will use.
-    """
-    if not isinstance(event, dict):
-        return "event is not an object"
-    method = event.get("method")
-    if not isinstance(method, str) or not method:
-        return "method is not text"
-    params = event.get("params", {})
-    if not isinstance(params, dict):
-        return "params is not an object"
-    if method == "item/completed":
-        item = params.get("item")
-        if not isinstance(item, dict):
-            return "item is not an object"
-        if not isinstance(item.get("id"), str) or not item["id"]:
-            return "item.id missing"
-        if not isinstance(item.get("type"), str) or not item["type"]:
-            return "item.type missing"
-        if "status" in item and not isinstance(item["status"], str):
-            return "item.status is not text"
-    elif method == "thread/tokenUsage/updated":
-        if not isinstance(params.get("tokenUsage"), dict):
-            return "tokenUsage is not an object"
-    return None
-
-
-def progress_event_id(event: dict, receipt_ref: str) -> str:
-    """Unique per delivered event: runtime item identity when present, else the retained bytes."""
-    params = event.get("params") if isinstance(event.get("params"), dict) else {}
-    item = params.get("item") if isinstance(params.get("item"), dict) else {}
-    if isinstance(item.get("id"), str) and item["id"]:
-        return f"{event.get('method')}:{item['id']}:{item.get('status')}"
-    return f"{event.get('method')}:{receipt_ref}"
-
-
-def _item_field(event, name: str):
-    """A text field of a runtime event's item, or None; never a placeholder for a malformed event."""
-    params = event.get("params") if isinstance(event, dict) and isinstance(event.get("params"), dict) else {}
-    item = params.get("item") if isinstance(params.get("item"), dict) else {}
-    value = item.get(name)
-    return value if type(value) is str and value else None
+# The Codex App Server reader keeps these module-level names: it is the default transport and
+# other modules read it directly. A second provider brings its own reader rather than being bent
+# into this protocol, so nothing downstream can mistake one provider's line for another's.
+progress_occurrence = CodexStream.occurrence
+progress_event_shape = CodexStream.shape
+progress_event_id = CodexStream.event_id
+_item_field = CodexStream.item_field
+PROGRESS_EVENTS = set(CODEX_PROGRESS)
 
 
 def artifact_reader_handle(root, reference: str) -> dict:
@@ -162,8 +114,10 @@ class Executor:
     """Infrastructure composition for role-specific, independently executed Codex tasks."""
 
     def __init__(self, service, git, artifacts, knowledge=None, research=None, release_runner=None, audit_runner=None,
-                 observer=None):
+                 observer=None, execution_policy=None):
         self.service, self.git, self.artifacts = service, git, artifacts
+        # Read on first use: a malformed host configuration must refuse an execution, not a process.
+        self._execution_policy = execution_policy
         self.knowledge, self.research, self.release_runner = knowledge, research, release_runner
         self.workflow = Workflow(service.store, service.org)
         self.invocations = InvocationLedger(service.store)
@@ -179,10 +133,43 @@ class Executor:
             from codex_harness.adapters.audit_execution import AuditExecution
             self.audit_execution = AuditExecution(self, audit_runner)
 
+    @property
+    def execution_policy(self):
+        """The packaged execution policy bound to this host's configuration."""
+        if self._execution_policy is None:
+            self._execution_policy = host_policy()
+        return self._execution_policy
+
+    def _open_runtime(self, assignment, model: str):
+        """Open the transport this assignment names. Nothing here falls back to another provider."""
+        if assignment.transport == "app_server":
+            return AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration())
+        require(assignment.transport == "claude_cli", "Unsupported provider transport: " + assignment.transport)
+        return ClaudeCodeRuntime(model=model, runtime=assignment.runtime,
+                                 executable=assignment.controls.get("executable"),
+                                 max_budget_usd=assignment.controls.get("max_budget_usd"),
+                                 settings_document=claude_settings(assignment.runtime))
+
     def _run(self, agent: str, key: str, objective: str, evidence: dict, cwd: str,
              schema: dict, read_only: bool = False, heartbeat=None, lease=None, stage=None,
-             workload: str = "final_validation", importance: str | None = None) -> dict:
+             workload: str = "final_validation", importance: str | None = None,
+             action: str | None = None) -> dict:
+        # Codex model routing still decides every Codex model and names no other provider's model.
+        # Which provider runs at all comes from the packaged policy and the host configuration;
+        # the assignment message and the task details never take part (INV-CLAUDE-WORKER-001).
         selection = select_model(workload, importance)
+        assignment = self.execution_policy.select(role=agent, action=action, workload=workload,
+                                                  read_only=read_only)
+        stream = stream_for(assignment.transport)
+        if assignment.model_source == "explicit_setting":
+            requested_model = assignment.configured_model
+            model_receipt = {"policy": assignment.policy_version, "workload": workload,
+                             "importance": selection.importance, "requested_model": requested_model,
+                             "model_source": "explicit_setting",
+                             "note": "configured explicitly; Codex routing never names this provider's model"}
+        else:
+            requested_model = selection.requested_model
+            model_receipt = selection.receipt()
         raw = self.artifacts.put(canonical(evidence), "task:" + key)
         basis_revision = self.git._git("rev-parse", "HEAD", cwd=cwd)
         with self.service.store.transaction() as tx:
@@ -255,6 +242,7 @@ class Executor:
         # INV-SESSION-001: task identity is stable, but recovery belongs to one
         # stage, evidence set and harness revision; never replay shortlist as final.
         binding = {"stage": stage, "evidence_ref": raw["ref"], "basis_revision": basis_revision}
+        workspace_identity = digest({"worktree": cwd, "basis_revision": basis_revision})
         if skill_selection.get('manifest_ref'):
             binding['project_skills_ref'] = skill_selection['manifest_ref']
         context_bound = bool(stage or skill_selection.get('manifest_ref'))
@@ -269,15 +257,24 @@ class Executor:
             return ((not context_bound and not previous.get('project_skills_ref'))
                     or previous == binding)
 
+        def bound(value):
+            """INV-CLAUDE-WORKER-001: a session belongs to one provider and one workspace. A record
+            written before providers were recorded is a Codex record, because that is what it was."""
+            previous_provider = value.get("provider", self.execution_policy.policy.default_provider)
+            previous_workspace = value.get("worktree")
+            return (previous_provider == assignment.provider
+                    and (previous_workspace is None or previous_workspace == cwd)
+                    and matches(value))
+
         with self.service.store.transaction() as tx:
             checkpoint = tx.get("sessions", agent)
             progress = tx.get("execution_progress", key)
         generation = (checkpoint or {}).get("generation", 0)
         recovery = {}
         if (checkpoint and checkpoint["checkpoint"].get("task_id") == key
-                and matches(checkpoint["checkpoint"])):
+                and bound(checkpoint["checkpoint"])):
             recovery["checkpoint"] = checkpoint
-        if progress and matches(progress):
+        if progress and bound(progress):
             recovery["progress"] = progress
         for handoff in range(4):
             # @invariant INV-CONTEXT-001: every actual prompt, including recovery,
@@ -328,31 +325,32 @@ class Executor:
                 # FA-016: a malformed runtime event is retained as evidence and counted, never
                 # dropped, and never allowed to overwrite the well-formed progress state. The shape
                 # is checked before any field is read (review, PR #49).
-                defect = progress_event_shape(event)
+                defect = stream.shape(event)
                 malformed = defect is not None
-                if malformed or event["method"] in PROGRESS_EVENTS:
+                if malformed or stream.is_progress(event):
                     with self.service.store.transaction() as tx:
                         prior = tx.get("execution_progress", key) or {}
                     receipt = self.artifacts.put(evidence_json({"event": event if not malformed else repr(event),
                                                                 "malformed": malformed, "defect": defect,
-                                                                "previous": prior.get("last_record") if matches(prior) else None}),
+                                                                "previous": prior.get("last_record") if bound(prior) else None}),
                                                  "runtime-event:" + key)
                     def note_progress(progress_sequence):
                         self.observer.emit("development.progress_recorded", "observed",
                                            execution=observed_execution(reservation_id), correlation_id=correlation,
-                                           causation_id=key, occurred_at=None if malformed else progress_occurrence(event),
+                                           causation_id=key, occurred_at=None if malformed else stream.occurrence(event),
                                            severity="warning" if malformed else "debug", evidence_refs=[receipt["ref"]],
                                            attributes={"progress_sequence": progress_sequence,
-                                                       "method": str(event.get("method")) if isinstance(event, dict) else "malformed",
-                                                       "item_type": _item_field(event, "type"),
-                                                       "item_status": _item_field(event, "status"),
+                                                       "method": stream.label(event),
+                                                       "item_type": stream.item_type(event),
+                                                       "item_status": stream.item_status(event),
                                                        "receipt_ref": receipt["ref"], "malformed": malformed, "defect": defect})
                     with self.service.store.transaction() as tx:
                         if lease:
                             self.workflow._owned(tx, lease)
                         previous = tx.get("execution_progress", key) or {"id": key, "recent": []}
-                        if not matches(previous):
+                        if not bound(previous):
                             previous = {"id": key, "recent": []}
+                        previous["provider"] = assignment.provider
                         if context_bound:
                             previous["research_binding"] = binding
                         if malformed:
@@ -366,21 +364,20 @@ class Executor:
                             return
                         # Occurrence time comes from the event itself; collection time is ours.
                         # They are kept apart so replay never reorders by the merge moment.
-                        occurred = progress_occurrence(event)
+                        occurred = stream.occurrence(event)
                         collected = utcnow()  # one clock read: `at` and `collected_at` are the same moment
                         previous["sequence"] = previous.get("sequence", 0) + 1
                         previous["recent"] = (previous["recent"] + [receipt["ref"]])[-6:]
                         previous["last_record"] = receipt["ref"]
                         previous.update(agent=agent, context_ref=context_ref["ref"], at=collected,
                                         collected_at=collected, occurred_at=occurred,
-                                        event_id=progress_event_id(event, receipt["ref"]),
+                                        event_id=stream.event_id(event, receipt["ref"]),
                                         generation=lease.get("generation") if lease else None,
                                         attempt=lease.get("attempt") if lease else None,
-                                        last_event=event.get("method"), worktree=cwd)
-                        item = event.get("params", {}).get("item")
-                        if isinstance(item, dict) and isinstance(item.get("id"), str):
-                            previous["last_completed"] = {"id": item["id"], "type": item.get("type"),
-                                                          "status": item.get("status"), "evidence": receipt["ref"],
+                                        last_event=stream.label(event), worktree=cwd)
+                        item = stream.completed_item(event)
+                        if item is not None:
+                            previous["last_completed"] = {**item, "evidence": receipt["ref"],
                                                           "sequence": previous["sequence"], "occurred_at": occurred}
                         tx.put("execution_progress", key, previous)
                     note_progress(previous.get("sequence"))
@@ -392,8 +389,19 @@ class Executor:
                 timeout = self.workflow.remaining_seconds(lease, timeout)
             # INV-INVOCATION-001: the request is checked against the transport's support matrix and
             # the attempt is reserved (ownership re-proven in the same transaction) before any call.
-            request = parse_request('app_server', {'model': selection.requested_model, 'timeout': timeout,
-                                                   'output_schema': schema, 'read_only': read_only})
+            if assignment.transport == "claude_cli":
+                ceiling = assignment.controls.get("timeout_seconds")
+                timeout = min(timeout, ceiling) if ceiling else timeout
+                options = {"model": requested_model, "timeout": timeout, "output_schema": schema,
+                           "read_only": read_only,
+                           "max_budget_usd": assignment.controls.get("max_budget_usd"),
+                           "permission_mode": assignment.runtime.get("permission_mode")}
+            else:
+                options = {"model": requested_model, "timeout": timeout, "output_schema": schema,
+                           "read_only": read_only}
+            # The reservation carries which policy chose this provider, so a receipt can be read back
+            # to the configuration that produced it.
+            request = {**parse_request(assignment.transport, options), "assignment": assignment.receipt()}
             # INV-OUTPUT-001 / INV-OBSERVATION-001: a schema the subset refuses is a configuration
             # error; it is refused here, before any provider is entered, so it never needs a
             # termination record.
@@ -414,7 +422,7 @@ class Executor:
 
             def observed_execution(invocation_id=None):
                 if lease:
-                    return self.observer.for_lease(lease, provider="codex-app-server", invocation_id=invocation_id,
+                    return self.observer.for_lease(lease, provider=assignment.identity, invocation_id=invocation_id,
                                                    revision=basis_revision)
                 return self.observer.system(revision=basis_revision, role=agent)
             reservation = (self.invocations.reserve(
@@ -425,8 +433,8 @@ class Executor:
                     self.observer.audit(
                     tx, "development.invocation_reserved", "started", identity=["reservation", row["id"], "reserved"],
                     execution=observed_execution(row["id"]), correlation_id=correlation, causation_id=key,
-                    attributes={"reservation_id": row["id"], "stage": stage, "transport": "app_server",
-                                "requested_model": selection.requested_model, "budget_seconds": float(timeout),
+                    attributes={"reservation_id": row["id"], "stage": stage, "transport": assignment.transport,
+                                "requested_model": requested_model, "budget_seconds": float(timeout),
                                 "workload": workload})))
                 if lease else None)
             reservation_id = reservation["id"] if reservation else None
@@ -446,21 +454,35 @@ class Executor:
                     lease, reservation_id=reservation_id, classification=classification, stream_hash=stream_hash,
                     error=exc, boundary=boundary)
                 return PostExecutionRecordFailure(record_id, exc, boundary)
+            def mark_entered():
+                # Initialization inside a provider can already touch the workspace, so from here on
+                # nothing is a refusal that never ran: it is an execution whose effect is unknown.
+                nonlocal provider_entered
+                if provider_entered:
+                    return
+                provider_entered = True
+                self.observer.emit("development.provider_started", "started",
+                                   execution=observed_execution(reservation_id),
+                                   correlation_id=correlation, causation_id=key,
+                                   attributes={"reservation_id": reservation_id, "transport": assignment.transport,
+                                               "requested_model": requested_model, "read_only": read_only,
+                                               "timeout_seconds": float(timeout), "context_ref": context_ref["ref"]})
+
             try:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
                 # probe slot; breaker refusal must release the invocation reservation.
-                admission = self.breaker.admit(breaker_key('codex-app-server', workload), lease) if lease else None
-                with AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration()) as runtime:
-                    provider_entered = True
-                    self.observer.emit("development.provider_started", "started",
-                                       execution=observed_execution(reservation_id),
-                                       correlation_id=correlation, causation_id=key,
-                                       attributes={"reservation_id": reservation_id, "transport": "app_server",
-                                                   "requested_model": selection.requested_model, "read_only": read_only,
-                                                   "timeout_seconds": float(timeout), "context_ref": context_ref["ref"]})
+                admission = self.breaker.admit(breaker_key(assignment.identity, workload), lease) if lease else None
+                opened = self._open_runtime(assignment, requested_model)
+                # A transport whose construction is itself the external effect says so; one that
+                # starts its process later reports the exact moment through `on_enter`.
+                entry_on_open = getattr(opened, "enters_on_open", True)
+                with opened as runtime:
+                    if entry_on_open:
+                        mark_entered()
                     result = runtime.run(prompt, cwd, schema, timeout,
                                          on_event=observe, read_only=read_only, on_tick=lambda: observe(None),
-                                         model=selection.requested_model)
+                                         model=requested_model,
+                                         **({} if entry_on_open else {"on_enter": mark_entered}))
             except Exception as exc:
                 if result is None or not (result.get("inspection_blocked") or result.get("failure")):
                     self.observer.emit("development.provider_failed", "failed", severity="error",
@@ -503,9 +525,11 @@ class Executor:
                 if context_bound:
                     result.update(elapsed_seconds=time.monotonic() - started,
                                   context_ref=context_ref["ref"], research_binding=binding)
-                result["model_selection"] = selection.receipt()
+                result["model_selection"] = model_receipt
+                result["execution_assignment"] = assignment.receipt()
                 result['invocation'] = {'request': request, 'outcome': classify_result(result),
-                                        'usage': usage_record({**result, 'requested_model': selection.requested_model}),
+                                        'usage': usage_record({**result, 'requested_model': requested_model},
+                                                              assignment.transport),
                                         'reservation': reservation['id'] if reservation else None}
                 usage = result['invocation']['usage']
                 classification = result['invocation']['outcome']
@@ -549,7 +573,16 @@ class Executor:
                          "context_ref": context_ref["ref"], "evidence_ref": evidence_ref["ref"],
                          "thread_id": result["thread_id"], "usage": result["usage"],
                          "message_cursor": key, "decisions": result["answer"],
-                         "handoff_reason": "context_threshold" if result["rotate"] else "task_boundary"}
+                         "handoff_reason": "context_threshold" if result["rotate"] else "task_boundary",
+                         # INV-CLAUDE-WORKER-001: what this session was, so a later attempt can tell
+                         # whether the record it found belongs to the execution it is about to run.
+                         "provider": assignment.provider, "provider_identity": assignment.identity,
+                         "provider_session_id": result["thread_id"], "transport": assignment.transport,
+                         "agent": agent, "generation": lease.get("generation") if lease else None,
+                         "attempt": lease.get("attempt") if lease else None,
+                         "invocation": reservation_id, "workspace_identity": workspace_identity,
+                         "policy_digest": assignment.policy_digest, "config_digest": assignment.config_digest,
+                         "session_resume": assignment.session_resume}
                 if context_bound:
                     state["research_binding"] = binding
                 session = self.service.checkpoint(agent, generation, state, execution=lease)
@@ -677,7 +710,7 @@ class Executor:
                 result = self._run(agent, task["id"], "Implement the assigned plan, run meaningful tests, "
                                    "and leave changes ready for independent review", details,
                                    workspace["path"], IMPLEMENTATION, False, heartbeat, task,
-                                   workload="implementation",
+                                   workload="implementation", action="implement",
                                    importance=details.get("plan", {}).get("origin", {}).get("importance"))
                 heartbeat()
                 result["candidate"] = self.git.capture(workspace)
