@@ -452,8 +452,12 @@ def call(args, out, stack=None):
     receipt["passed"] = accepted and (receipt["mode"] == "fixture" or receipt["task_verified"])
     receipt["accepted_by_harness"] = accepted
     passed = receipt["passed"]
-    ordinal = already_made(out, args.label) + (1 if receipt["mode"] == "real" and receipt.get("executed") else 0)
-    suffix = f"call{ordinal}" if receipt["mode"] == "real" else "fixture"
+    if receipt["mode"] == "fixture":
+        suffix = "fixture"
+    elif receipt.get("executed"):
+        suffix = f"call{already_made(out, args.label) + 1}"
+    else:
+        suffix = "not-executed"  # a refusal is a record of its own, never an unnumbered call
     path = out / f"{args.label}-{suffix}-receipt.json"
     path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({k: receipt.get(k) for k in ("label", "mode", "executed", "accepted_by_harness",
