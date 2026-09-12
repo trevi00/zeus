@@ -1,0 +1,61 @@
+{
+  "version": "provider-policy.v1",
+  "default_provider": "codex",
+  "note": "Git-managed execution policy. The packaged file says what a provider MAY run; host configuration says what is enabled. An assignment message, a task detail or a model output never selects a provider.",
+  "providers": {
+    "codex": {
+      "identity": "codex-app-server",
+      "transport": "app_server",
+      "model_source": "model_routing",
+      "session_resume": "supported",
+      "enable_setting": null,
+      "controls": {}
+    },
+    "claude": {
+      "identity": "claude-code-cli",
+      "transport": "claude_cli",
+      "model_source": "explicit_setting",
+      "session_resume": "unsupported",
+      "enable_setting": "ZEUS_CLAUDE_ASSIGNMENTS",
+      "model_setting": "ZEUS_CLAUDE_MODEL",
+      "model_pattern": "^(claude-[a-z0-9][a-z0-9._-]*|fable|opus|sonnet|haiku)$",
+      "controls": {
+        "max_budget_usd": {"setting": "ZEUS_CLAUDE_MAX_BUDGET_USD", "kind": "number", "required": true,
+                           "minimum": 0.01, "maximum": 20},
+        "timeout_seconds": {"setting": "ZEUS_CLAUDE_TIMEOUT_SECONDS", "kind": "integer", "required": false,
+                            "minimum": 30, "maximum": 3600},
+        "executable": {"setting": "ZEUS_CLAUDE_EXECUTABLE", "kind": "path", "required": false}
+      },
+      "runtime": {
+        "output_format": "stream-json",
+        "input_format": "text",
+        "verbose": true,
+        "partial_messages": false,
+        "permission_mode": "acceptEdits",
+        "permission_prompts": "none",
+        "setting_sources": "",
+        "strict_mcp_config": true,
+        "session": "explicit_uuid_per_attempt",
+        "tools": ["Bash", "Read", "Edit", "Write", "Glob", "Grep"],
+        "allowed_tools": ["Read", "Edit", "Write", "Glob", "Grep",
+                          "Bash(python -m pytest *)", "Bash(python -m unittest *)",
+                          "Bash(python -m compileall *)", "Bash(git status *)", "Bash(git diff *)"],
+        "disallowed_tools": ["Task", "WebFetch", "WebSearch", "mcp__*"],
+        "uncontrolled_inheritance": [
+          "managed (administrator) settings still apply",
+          "CLAUDE.md discovery in the working directory and home is context, not execution",
+          "the host's existing authentication (subscription or API credentials) is used unchanged"
+        ]
+      }
+    }
+  },
+  "assignments": [
+    {
+      "provider": "claude",
+      "roles": ["worker:implementation"],
+      "actions": ["implement"],
+      "workloads": ["implementation"],
+      "read_only": false
+    }
+  ]
+}

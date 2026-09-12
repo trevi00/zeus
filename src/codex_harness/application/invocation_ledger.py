@@ -10,7 +10,7 @@ back-filled to zero and a dead execution never holds capacity (review, PR #51).
 """
 from datetime import datetime, timezone
 
-from codex_harness.domain.invocation import outcome_check
+from codex_harness.domain.invocation import USAGE_SOURCES, outcome_check
 from codex_harness.domain.model import digest, require, utcnow
 from codex_harness.domain.policy import POLICY
 
@@ -99,7 +99,7 @@ class InvocationLedger:
 
     def settle(self, reservation_id, *, outcome, usage, evidence_ref=None, audit=None):
         outcome_check(outcome)
-        require(isinstance(usage, dict) and usage.get('source') in {'unknown', 'thread/tokenUsage/updated'}
+        require(isinstance(usage, dict) and usage.get('source') in USAGE_SOURCES
                 and (usage['source'] == 'unknown') == (usage.get('total_tokens') is None),
                 'Usage must name its source; unknown usage carries no count')
         with self.store.transaction() as tx:

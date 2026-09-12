@@ -602,6 +602,54 @@ reservation as unsettled_unknown. Health, status, orphan and alert reports are i
 only. Unit fault injection and MemoryStore exercise these boundaries; they are not operational
 evidence.
 
+## INV-CLAUDE-WORKER-001
+
+Zeus runs one default provider and admits a second only where a policy in the repository permits
+that exact role, action, workload and read-only shape and the host configuration enables it. The
+assignment message, the task details and any model output take no part in that decision. A
+configuration naming a pairing the packaged policy does not permit is refused whole rather than
+narrowed, and a permitted, enabled pairing whose required controls are missing is refused rather
+than handed to the default provider, because an operator reading the receipt would otherwise
+believe the provider they asked for had run. A provider's model is never derived from another
+provider's routing policy: it is configured explicitly, and the requested model, the model the
+provider reported and an unreported model stay three separate facts. Each transport declares every
+request option as supported, unsupported or unconfirmed; an unsupported option present in a
+request is refused by name, and an option the transport cannot prove it applies is refused when
+asked for rather than assumed.
+
+The prompt reaches a provider over its input stream, never through an argument vector or a shell
+string, and the recorded command replaces every value that could carry schema, context or
+configuration text with its digest. Both output streams are drained concurrently under a per-line
+byte limit, a total byte limit and a bounded queue, with one monotonic deadline for the whole run
+and a tick and cancel check that keep working while no output arrives and while the child ignores
+its input. Entry is the moment the process starts, because initialization inside a provider can
+already change the workspace: every failure after it leaves termination evidence and blocks, and
+only a failure before it stays an ordinary retry. Termination stops the process tree this harness
+started and then proves the exit, by the group on POSIX and by the tree kill on Windows; an
+unproven termination is an unknown outcome that blocks rather than a failure that may be retried,
+and no pipe is closed while a thread is still blocked inside it.
+
+A result is named from what was observed. A clean exit, an assistant sentence, tool activity with
+no answer, an absent terminal message, two conflicting terminal messages, a truncated stream, a
+refused permission and a budget stop are distinct outcomes and none of them is acceptance. The
+provider's claim that it honoured the output schema is not the check: the schema is validated
+locally against the same subset every transport uses. Usage is read once, from the terminal
+message, so a redelivered or partial message is never counted twice; each part names what it
+counts, an absent count stays unknown rather than zero, and a reported cost is recorded as the
+provider's estimate, never as a billed amount. A provider's stream is execution data: six-W
+messages are produced by the workflow from a verified sender and recipient, and a six-W envelope
+inside a model's output is text with no authority. A session belongs to one provider, task,
+attempt and workspace and is resumed across none of them; native resume is declared unsupported
+and a new attempt recovers from the authoritative checkpoint through the same context compiler.
+A child inherits only what it needs to start and to authenticate the way the host already does;
+the harness's own database and cache credentials are withheld, the host's stored settings are
+neither read into the run nor modified by it, and the effective configuration, CLI version,
+executable identity, working revision and permission policy are recorded as names and digests,
+never as values. Foreign diagnostic text travels outward as a digest only. Changing a task's
+provider clears no block, no reservation and no attempt budget. Running a provider's CLI directly
+on the host is not strong isolation, and no claim here says an effect that already happened can
+be undone.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
