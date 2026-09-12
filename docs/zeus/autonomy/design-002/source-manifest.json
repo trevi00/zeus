@@ -1,0 +1,66 @@
+{
+  "basis": "02efbd081cceee24aa487105618e2bf8947568be",
+  "scope": "bounded execution-path analysis; not full reference coverage",
+  "files": [
+    {
+      "path": "src/codex_harness/ports.py",
+      "sha256": "f876339d5f7306f55a953f06864a28d602019fb42fe782bfdf898c52f4e0406d",
+      "git_blob": "d734adccfb6afda53c07380d3df3f7ca70b09079"
+    },
+    {
+      "path": "src/codex_harness/bootstrap.py",
+      "sha256": "eb756ead093ff2cbf95465b9b66cfe0dc4cf866e8377c3492ee72ce89bd16e98",
+      "git_blob": "4aab7f938b20a1c676fcbae73fb05989ce2fb4df"
+    },
+    {
+      "path": "src/codex_harness/cli.py",
+      "sha256": "3b1c82ebdc33645b1285af2cae472340bd2829891172e1eaebfcc49d27d1e439",
+      "git_blob": "44dcb7afc970a4de0fccec923809216634ad6890"
+    },
+    {
+      "path": "src/codex_harness/resources/organization.json",
+      "sha256": "f6550a19355c69830fba72d34c222a2505d3267986c54f56f8d1a7574b9abb3e",
+      "git_blob": "3783bcaf510dc6cef33332ad85113a3104922ef3"
+    },
+    {
+      "path": "src/codex_harness/adapters/bus.py",
+      "sha256": "7cfc8dd65a55117c289e6555e13d3b6cc6ff57f0f4e6b35a29beb61bd83ac10a",
+      "git_blob": "becdf79dcdbc2c46925fd9fda64671912b3a7f26"
+    },
+    {
+      "path": "src/codex_harness/adapters/executor.py",
+      "sha256": "a883aa85cf4850b856d566a2732e0a476dee615138d1c205aa54186e4131e427",
+      "git_blob": "95baca69984ac3ba17609897a159cb0c3d37fc56"
+    },
+    {
+      "path": "src/codex_harness/adapters/app_server.py",
+      "sha256": "4c2a2850f9aa23ab3eb8acfc64bce31e7df91daf50fb065055eacdf13e4bad57",
+      "git_blob": "388bc9ea54b25c0c397dad6361f6091d06da5121"
+    },
+    {
+      "path": "src/codex_harness/adapters/commands.py",
+      "sha256": "82200f42fd48962545232654b2132757130bdd7afeb916e220bd8546e63dcd71",
+      "git_blob": "6640b7e8c8940e5db8c1046063c728850a37af74"
+    },
+    {
+      "path": "src/codex_harness/adapters/execution_output.py",
+      "sha256": "2d68941254301dccc608e664a2e12826a31e7797fa3ab3faf0d5ec095d7f939d",
+      "git_blob": "0a4c7658a36e8ef61975aa682eacaf745683b19c"
+    },
+    {
+      "path": "src/codex_harness/domain/invocation.py",
+      "sha256": "6b1e8fb67a6fc79eabab889e58cb97bb4979f9aafc0e8ea5dd331b6d94fdfd35",
+      "git_blob": "459c339090ee5684a47077acb7d9c71e1e2d9c9d"
+    },
+    {
+      "path": "src/codex_harness/domain/model_routing.py",
+      "sha256": "d0ae2ae1718ca860a09e56b0b594533d50ff4d47d8394b354620c5fc321ec3e8",
+      "git_blob": "05164d82b3bea32a164953921847052cbcb4d25a"
+    },
+    {
+      "path": "src/codex_harness/application/invocation_ledger.py",
+      "sha256": "2de5104d2995c0b515c223d11ea6188f1b84f5dbde11e125a3916bf18c09aa3b",
+      "git_blob": "12fc0d437a9e860ab45a1fd47c0ec3c165ce75ca"
+    }
+  ]
+}
