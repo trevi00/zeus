@@ -182,6 +182,16 @@ provider가 시작 시 보고한 것(`system/init`)을 `effective_configuration`
 `tests/test_claude_cli_process.py`는 실제 자식 프로세스를 띄우므로 Windows와 WSL에서 각각 돌린다. 이 파일의 자식은
 프로토콜 시험용이며 모델 실측이 아니다(어댑터가 launcher를 기록해 영수증에서 구분된다).
 
+호스트 증거 `docs/zeus/evidence/environment-runs-009/` (head `b37cca8`, 두 호스트 Python 3.12.14, 격리 스택·임시
+포트·실행 후 정리):
+
+| 호스트 | 결과 |
+|---|---|
+| Windows 11 | ruff 통과 / full-suite-integration **1656 passed, 14 skipped** (643s) / disposable-docker 17 passed. 신규 3파일 **83 passed, skip 0** (assignment 19, cli_process 32, execution 32). U001 관측 129건도 그대로 통과. 8개 단계 전부 ok, 영수증 tracked_changes [], untracked [] |
+| WSL Ubuntu 26.04 (WSL2 6.18) | ruff 통과 / full-suite-integration **1662 passed, 8 skipped** (219s) / disposable-docker 17 passed. 신규 3파일 **83 passed, skip 0**. 프로세스 그룹 종료·자손 확인이 실제 Linux에서 통과 |
+
+두 호스트의 JUnit·로그에서 canary 문자열 0건, `password=` 0건.
+
 ### 5.3 구현 중 발견해 고친 결함
 
 1. **확인되지 않은 종료에서 실행이 행에 걸렸다.** `run()`의 정리 단계가 리더 스레드가 `readline()`에 묶여 있는 동안
