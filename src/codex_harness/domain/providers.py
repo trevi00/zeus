@@ -18,6 +18,7 @@ import re
 from dataclasses import dataclass, field
 
 from codex_harness.domain.model import ContractError, digest, require
+from codex_harness.domain.provider_stream import STREAMS
 
 POLICY_VERSION = "provider-policy.v1"
 MODEL_SOURCES = ("model_routing", "explicit_setting")
@@ -86,6 +87,8 @@ def parse_policy(document) -> ProviderPolicy:
         for key in ("identity", "transport", "model_source"):
             require(_token(body.get(key)), f"Provider {name} must declare {key}")
         require(body["model_source"] in MODEL_SOURCES, f"Provider {name} has an unknown model source")
+        require(body["transport"] in STREAMS,
+                f"Provider {name} names a transport nothing can read: " + body["transport"])
         require(body.get("session_resume") in RESUME_STATES, f"Provider {name} must declare session_resume")
         enable = body.get("enable_setting")
         require(enable is None or (type(enable) is str and SETTING_NAME.fullmatch(enable)),

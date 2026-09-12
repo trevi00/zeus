@@ -192,6 +192,11 @@ provider가 시작 시 보고한 것(`system/init`)을 `effective_configuration`
    관측이므로 `empty_answer`/`tool_only`로 갈랐다.
 3. 이물 stderr가 실패 dict에 실려 바깥(작업 행·notice)으로 나갈 수 있었다. digest와 바이트 수만 나가고, 축약·redaction된
    꼬리는 접근 제한 영수증에만 남긴다.
+4. **실제 호출 상한이 호스트별이 아니라 디렉터리별이었다.** Windows 2회가 WSL 몫까지 써버려, WSL 실행이 잘못된 사유로
+   거절됐다. 호스트별 상한(기본 2)과 전체 상한(기본 4)으로 갈랐다. WSL 실행이 이 결함을 드러냈다.
+5. **Linux에서 PATH가 interop으로 Windows 실행 파일에 닿는데 러너가 그걸 받아들였다.** 그대로 뒀다면 WSL 영수증이
+   Windows 프로세스를 잰 결과를 Linux 측정처럼 보이게 했을 것이다. 이제 `executable_kind`로 판별해 거절하며,
+   `--allow-interop`을 명시해야만 실행되고 그때 영수증이 무엇을 뜻하는지도 함께 남는다.
 
 ### 5.4 실제 Claude 호출 (Windows)
 
@@ -231,10 +236,12 @@ provider가 시작 시 보고한 것(`system/init`)을 `effective_configuration`
 
 ### 5.6 실행하지 않은 것
 
-- **WSL 실제 Claude 호출**: WSL(Ubuntu 26.04)에 Claude Code가 설치돼 있지 않다(`claude: command not found`,
-  node 없음). 설치는 사용자 기기 변경과 계정 인증이 필요해 임의로 하지 않았다. `scripts/claude_real_call.py`가
-  WSL에서 `not_executed_reason`을 담은 영수증을 남긴다. Windows 실행 파일을 WSL에서 interop으로 부르는 방법은
-  Windows 프로세스를 재는 것이라 Linux 프로세스 경계의 증거가 되지 않으므로 쓰지 않았다.
+- **WSL 실제 Claude 호출**: WSL(Ubuntu 26.04)에 Claude Code가 설치돼 있지 않다(로그인 셸에서 `claude: command not
+  found`, node 없음). PATH가 interop으로 `/mnt/c/.../claude.exe`에 닿기는 하지만 그건 Windows 프로세스를 재는 것이라
+  Linux 프로세스 경계의 증거가 되지 않는다. 러너가 이를 `windows_binary_via_interop`로 판별해 거절하고 그 사유를
+  영수증(`wsl-ubuntu-26.04-not-executed-receipt.json`)에 남긴다. WSL에 설치하는 일은 사용자 기기 변경과 계정 인증이
+  필요해 임의로 하지 않았다. **필요하면 Codex/사용자가 결정할 항목이다.** 프로세스·스트림·종료 경계 자체는 WSL에서
+  프로토콜 자식으로 실측했다(§5.2).
 - 실제 모델 호출은 호스트당 2회 상한 안에서 Windows 2회만 했다. 러너가 영수증 개수로 상한을 강제한다.
 - 네트워크 게시·제품 배포·실금전 작업·운영 교체·전체 무인 반복은 범위 밖이며 하지 않았다.
 - Windows에서 임시 작업 디렉터리 삭제가 완전히 끝나지 않는다(`workdir_removed: false`). 시스템 임시 디렉터리 안이라

@@ -237,6 +237,7 @@ class ClaudeCodeRuntime:
         # `read_only` has a mechanism here (tool and permission restrictions) whose effect this
         # adapter has not independently verified, so it is refused rather than claimed.
         require(not read_only, "claude_cli cannot prove a read-only execution; it is not assigned reviews")
+        require(self.process is None, "This transport object already ran; every attempt builds its own")
         require(model is None or model == self.model,
                 "The requested model differs from the configured Claude model")
         session_id = session_id or str(uuid4())
@@ -264,8 +265,6 @@ class ClaudeCodeRuntime:
         deadline = time.monotonic() + float(timeout)
         events, state = [], _StreamState(limits)
         started = time.monotonic()
-        if on_enter is not None:
-            on_enter()  # the external effect begins with the next statement
         flags = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt"
                  else {"start_new_session": True})
         try:
@@ -273,7 +272,11 @@ class ClaudeCodeRuntime:
                                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                             env=environment, **flags)
         except OSError as exc:
+            # Nothing was created, so this is still a refusal the caller may retry.
             raise ContractError("Claude Code CLI could not be started: " + type(exc).__name__) from exc
+        if on_enter is not None:
+            # The process exists: from here on its initialization can already change the workspace.
+            on_enter()
         process = self.process
         inbox: queue.Queue = queue.Queue(maxsize=limits["queue_events"])
         writer = threading.Thread(target=_write_prompt, args=(process, prompt, state), daemon=True,
