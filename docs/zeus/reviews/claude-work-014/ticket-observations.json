@@ -1,0 +1,50 @@
+[
+  {
+    "id": "f8595020c9d402f7f683bb14e2c48689f9cb1a71a3a70534900935eceaee4bbf",
+    "ticket_id": "ZEUS-e36daeb984c1",
+    "repository": "trevi00/zeus",
+    "number": 17,
+    "url": "https://github.com/trevi00/zeus/issues/17",
+    "state": "OPEN",
+    "title": "[FA-016] pane \ub85c\uadf8 \ubcd1\ud569\uc758 \uc138\ub300 \uc5ed\ud589\u00b7\uc190\uc0c1 \uc6d0\ubb38 \uc18c\uc2e4 \ubc29\uc9c0",
+    "purpose": "pull",
+    "evidence_ref": "sha256:b45d1645ccd8c4be0337f5bcb35e9735998177f24fe39f9fbdef9e15f8e5df26",
+    "marker_present": true,
+    "authority": "external_observation_only",
+    "at": "2026-09-12T02:23:06.557814+00:00",
+    "first_seen": "2026-09-12T02:23:06.557814+00:00",
+    "sequence": 14
+  },
+  {
+    "id": "3b0fe4bda20387411fb65c3b628fd2b1bc27501711d930f9676a96b4841de6f3",
+    "ticket_id": "ZEUS-8f1322ec0a67",
+    "repository": "trevi00/zeus",
+    "number": 1,
+    "url": "https://github.com/trevi00/zeus/issues/1",
+    "state": "OPEN",
+    "title": "[ZEUS-ANALYSIS] Claude \ub85c\uceec \ud558\ub124\uc2a4 \uc804\uccb4 \ubd84\uc11d\uacfc Zeus \ud761\uc218",
+    "purpose": "pull",
+    "evidence_ref": "sha256:6094067fe1ff71521f0bddc76a45e38c55bdecacba605fc9a3d80e3e4288f8dd",
+    "marker_present": true,
+    "authority": "external_observation_only",
+    "at": "2026-09-12T02:23:08.351592+00:00",
+    "first_seen": "2026-09-12T02:23:08.351592+00:00",
+    "sequence": 9
+  },
+  {
+    "id": "9afd88a735eb2360814233701446bf1a2aa1153f9947f7a8bd9858ab2eda7558",
+    "ticket_id": "ZEUS-3d913005bed0",
+    "repository": "trevi00/zeus",
+    "number": 11,
+    "url": "https://github.com/trevi00/zeus/issues/11",
+    "state": "OPEN",
+    "title": "[FA-010] Git \ucd94\uc801 \ubc16 \uacbd\ud5d8\u00b7\ud50c\ub7ec\uadf8\uc778\u00b7\ubbf8\ucee4\ubc0b \ub178\ud2b8\uc758 \ubd84\uc11d \ub204\ub77d",
+    "purpose": "pull",
+    "evidence_ref": "sha256:8b5f659d2c94e9455cac63faed66b9bb967fe4fcc091008246af3b81fa4eeb75",
+    "marker_present": true,
+    "authority": "external_observation_only",
+    "at": "2026-09-12T02:23:11.135964+00:00",
+    "first_seen": "2026-09-12T02:23:11.135964+00:00",
+    "sequence": 9
+  }
+]
