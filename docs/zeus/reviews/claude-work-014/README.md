@@ -1,0 +1,38 @@
+# PR #71 6차 검토: U001 수용
+
+검토 대상: `c52ee77a540bbb41704ab9e7521cc08c708c4303` (런타임 `b794ac319b1012294c8d25ae7ee3b86f126e57fb`).
+
+5차 검토의 마지막 P1인 GC 종료 판정과 작성자 등록 사이의 경합이 해소됐다. 이번 변경과 이전에 수용한 회귀 범위에서 병합을 막는 결함을 찾지 못했다. U001을 수용하며 U002 착수·운영 전환·연결 이슈 전체 종료와는 구분한다.
+
+## 판단
+
+작성자의 run 잠금 확보와 활성 세그먼트 open, GC의 종료 판정부터 삭제, reclaim의 판정부터 unlink가 디렉터리 lifecycle 잠금 아래에서 직렬화된다. 중첩 probe는 같은 경로의 singleton 잠금을 재진입한다. 회전 이후 파일 open도 보호한다. run GC는 lifecycle 잠금 경로를 삭제하지 않는다.
+
+close는 fd를 닫고 이후 append를 거절한 뒤 마커를 쓴다. lifecycle 획득 실패 때도 이미 파일이 닫히고 run 잠금을 보유한 소유자만 종료를 진행하는 예외를 확인했다. 이는 등록이 보호 없이 진행되는 예외가 아니다. README 5.7에 해당 동작이 명시돼 있다.
+
+이전의 authoritative 예약 표식, 미확정 실행 차단·reconcile, pending-only 알림 재생, redaction, 소유자만 close, 조회에 영향받지 않는 보존 시각 설계를 유지한다.
+
+## 독립 검증
+
+- Windows 일회용 PostgreSQL + Redis: 관측 테스트 9파일 **129 passed, 0 skipped** (46.57초). 서비스 정리 완료. 모델 transport는 테스트 공급원이며 실제 모델 실행 증거가 아니다.
+- Ruff 전체 검사 통과.
+- 독립 `lifecycle_check.py`: 실제 Windows 파일 잠금과 WSL Unix flock에서 작성자 우선 / GC 우선 두 순서를 강제했다. 특히 GC 우선은 **같은 run ID**의 남은 잠금 파일을 정리하는 동안 작성자가 대기하는 경계다. 양쪽 모두 append된 두 레코드 `[1, 2]`를 실제 파일에서 읽었다.
+- WSL에서 이전 비소유자 close 및 보존 시각 반례의 안전 결과도 재확인했다.
+- 최종 head CI 10/10 SUCCESS. 최종 head와 런타임 head의 push/pull_request 4개 run 모두 attempt 1 성공.
+
+독립 스크립트의 barrier는 실제 잠금 함수 앞에서 실행 순서만 제어한다. 임시 파일·OS 잠금은 실제이며 운영 프로세스는 건드리지 않았다. WSL 스크립트는 고정된 Windows venv의 순수 Python filelock 소스만 경로에 추가해 Unix 백엔드를 사용한다.
+
+## 제출 증거 대조
+
+environment-runs-008의 각 단계 stdout/stderr digest, JUnit byte digest, identity_stable을 검증했다. 영수증 head와 최종 head 사이 src/scripts/uv.lock/pyproject.toml 차이는 없다.
+
+- 제출 Windows 전체: 1573 passed / 14 skipped, Docker 17 passed.
+- 제출 WSL 전체: 1579 passed / 8 skipped, Docker 17 passed.
+
+위 전체 스위트는 Claude 제출 증거이며 이번 독립 전체 스위트 재실행으로 표현하지 않는다. 독립 실행 범위는 위 129건과 파일 잠금 검사다. 제출 README의 실패 시도와 무효인 첫 되돌림 검증 기록도 유지한다.
+
+## 이슈와 다음 단계
+
+#1·#11은 전체 reference 및 미커밋 자산의 의미 분석이 남아 있어 OPEN을 유지한다. #17은 이 PR의 진단 스풀 수용만으로 원본 로그 파이프라인 전체의 append/DB commit/ack/정리 강제 중단·재개 및 실행 종료·QA 증거 조건을 모두 충족했다고 판정하지 않는다. 이 조건에 대한 개별 종료 증거 대조가 남는다. U001 수용 결과는 이슈 댓글과 로컬 원장의 외부 관측에 반영한다.
+
+다음 구현 단위 U002는 Codex가 실제 Claude 팀원 어댑터의 실행·메시지·실패·수용 기준을 설계해 인계한 뒤 시작한다. 이번 병합으로 무인 운영이나 실제 모델 자격 이전이 완료된 것은 아니다.
