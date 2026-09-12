@@ -136,6 +136,15 @@ def preflight(args) -> dict:
     executable = resolve_claude(args.executable)
     if not executable:
         return {"ready": False, "mode": "real", "reason": "Claude Code CLI is not installed on this host"}
+    # On Linux, PATH can reach a Windows executable through interop. Running it measures a Windows
+    # process from a Linux shell, which is not evidence about Linux process handling, so it is
+    # refused unless a caller says outright that is what they want.
+    interop = os.name != "nt" and (executable.lower().endswith(".exe") or executable.startswith("/mnt/"))
+    kind = "windows_binary_via_interop" if interop else ("host_native" if os.name == "nt" else "posix_native")
+    if interop and not args.allow_interop:
+        return {"ready": False, "mode": "real", "executable": executable, "executable_kind": kind,
+                "reason": ("the only Claude Code reachable here is a Windows executable through interop; "
+                           "running it would measure a Windows process, not this host")}
     version = run_process([executable, "--version"], timeout=60)
     if version.returncode != 0:
         return {"ready": False, "mode": "real", "executable": executable,
@@ -151,14 +160,15 @@ def preflight(args) -> dict:
         return {"ready": False, "mode": "real", "executable": executable,
                 "reason": "the installed CLI lacks required controls: " + ", ".join(missing)}
     return {"ready": True, "mode": "real", "executable": executable, "launcher": [],
-            "version": version.stdout.strip(),
+            "executable_kind": kind, "version": version.stdout.strip(),
             "flags": sorted({flag for flag in required if flag in help_text.stdout})}
 
 
-def already_made(out: Path, maximum: int = 0) -> int:
-    """Real calls already recorded in this directory; the ceiling is per output directory.
+def already_made(out: Path, label: str | None = None) -> int:
+    """Real calls already recorded here: all of them, or only this host's.
 
-    Every call keeps its own receipt, so a later run can neither hide nor overwrite an earlier one.
+    Every call keeps its own receipt, so a later run can neither hide nor overwrite an earlier one,
+    and the ceiling is counted from what is on disk rather than from anyone's memory.
     """
     count = 0
     for path in sorted(out.glob("*-receipt.json")):
@@ -166,7 +176,7 @@ def already_made(out: Path, maximum: int = 0) -> int:
             body = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
-        if body.get("mode") == "real" and body.get("executed"):
+        if body.get("mode") == "real" and body.get("executed") and (label is None or body.get("label") == label):
             count += 1
     return count
 
@@ -334,7 +344,11 @@ def main(argv=None):
     parser.add_argument("--model", default=os.environ.get("ZEUS_CLAUDE_MODEL"))
     parser.add_argument("--budget", default=os.environ.get("ZEUS_CLAUDE_MAX_BUDGET_USD", "1"))
     parser.add_argument("--timeout", type=int, default=300)
-    parser.add_argument("--max-calls", type=int, default=2)
+    parser.add_argument("--max-calls", type=int, default=2, help="real calls allowed for this host")
+    parser.add_argument("--max-total-calls", type=int, default=4,
+                        help="real calls allowed across every host in this output directory")
+    parser.add_argument("--allow-interop", action="store_true",
+                        help="permit a Windows executable reached from Linux; it measures Windows, not this host")
     parser.add_argument("--executable", default=None)
     parser.add_argument("--database-url", default=None)
     parser.add_argument("--redis-url", default=None)
@@ -388,8 +402,8 @@ def call(args, out, stack=None):
                "started_at": now(), "executed": False,
                "host": {"platform": sys.platform, "python": sys.version.split()[0],
                         "git": run(["git", "--version"], timeout=60)["stdout"].strip()},
-               "limits": {"max_calls_per_directory": args.max_calls, "timeout_seconds": args.timeout,
-                          "max_budget_usd": args.budget},
+               "limits": {"max_calls_per_host": args.max_calls, "max_calls_total": args.max_total_calls,
+                          "timeout_seconds": args.timeout, "max_budget_usd": args.budget},
                "authority": ("one assigned task executed on this host through the configured provider; "
                              "not a qualification, not a billed amount, not an operational change")}
     if stack is not None:
@@ -400,9 +414,12 @@ def call(args, out, stack=None):
         receipt["not_executed_reason"] = ready["reason"]
     elif not args.model:
         receipt["not_executed_reason"] = "no explicit model was configured; a model is never derived"
-    elif ready["mode"] == "real" and already_made(out, args.max_calls) >= args.max_calls:
-        receipt["not_executed_reason"] = (f"{args.max_calls} real calls are already recorded in "
-                                          f"{args.out}; the ceiling is deliberate")
+    elif ready["mode"] == "real" and already_made(out, args.label) >= args.max_calls:
+        receipt["not_executed_reason"] = (f"{args.max_calls} real calls are already recorded for "
+                                          f"{args.label}; the per-host ceiling is deliberate")
+    elif ready["mode"] == "real" and already_made(out) >= args.max_total_calls:
+        receipt["not_executed_reason"] = (f"{args.max_total_calls} real calls are already recorded in "
+                                          f"{args.out}; the overall ceiling is deliberate")
     else:
         os.environ["ZEUS_CLAUDE_ASSIGNMENTS"] = "worker:implementation/implement"
         os.environ["ZEUS_CLAUDE_MODEL"] = args.model
@@ -435,7 +452,7 @@ def call(args, out, stack=None):
     receipt["passed"] = accepted and (receipt["mode"] == "fixture" or receipt["task_verified"])
     receipt["accepted_by_harness"] = accepted
     passed = receipt["passed"]
-    ordinal = already_made(out) + (1 if receipt["mode"] == "real" and receipt.get("executed") else 0)
+    ordinal = already_made(out, args.label) + (1 if receipt["mode"] == "real" and receipt.get("executed") else 0)
     suffix = f"call{ordinal}" if receipt["mode"] == "real" else "fixture"
     path = out / f"{args.label}-{suffix}-receipt.json"
     path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
