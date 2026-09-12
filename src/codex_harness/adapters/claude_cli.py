@@ -398,13 +398,23 @@ class ClaudeCodeRuntime:
                 record.update(exit_code=process.returncode, confirmed=True)
             except (subprocess.TimeoutExpired, ProcessLookupError, PermissionError, OSError) as exc:
                 record.update(confirmed=False, escalation_error=type(exc).__name__)
-        if os.name != "nt" and record["confirmed"] and group is not None:
-            # A leader that exited proves nothing about its descendants; the group does.
-            record["group_empty"] = _group_empty(group, deadline=time.monotonic() + 10)
-            record["confirmed"] = record["group_empty"] is True
-        if os.name == "nt" and record["confirmed"]:
-            record["descendants"] = ("taskkill /T reported " + str(record["signal_result"]))
-            record["confirmed"] = record["signal_result"] in (0, 128)  # 128: the tree was already gone
+        # What counts as proof differs by platform, and the difference is recorded rather than
+        # smoothed over. The exit of the process this adapter started is proven the same way on
+        # both: `wait` returned an exit code. What the kill *command* reported is evidence about
+        # the descendants, never a reason to call a proven exit unknown - a loaded host can make
+        # `taskkill` time out or answer oddly long after the tree is gone.
+        if os.name != "nt":
+            if record["confirmed"] and group is not None:
+                # A leader that exited proves nothing about its descendants; the group does.
+                record["group_empty"] = _group_empty(group, deadline=time.monotonic() + 10)
+                record["descendants"] = {"method": "process group", "result": record["group_empty"],
+                                         "confirmed": record["group_empty"] is True}
+                record["confirmed"] = record["group_empty"] is True
+        else:
+            record["descendants"] = {
+                "method": "taskkill /T /F", "result": record["signal_result"],
+                "confirmed": record["signal_result"] in (0, 128),  # 128: the tree was already gone
+                "note": "Windows exposes no group to poll; the tree kill's own result is the evidence"}
         self._termination = record
         return record
 

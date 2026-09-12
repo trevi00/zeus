@@ -260,9 +260,15 @@ def test_c06_cancelling_ends_the_run_without_waiting_for_the_deadline(tmp_path):
 
 def test_c06_the_descendants_of_the_child_are_killed_with_it(tmp_path):
     result, _, _, runtime = execute("tree", tmp_path, timeout=5)
-    assert result["process"]["confirmed"], "the adapter proved the tree it started is gone"
+    assert result["process"]["confirmed"], "the adapter proved the process it started is gone"
+    assert result["process"]["exit_code"] is not None, "the exit is proven by an exit code"
+    descendants = result["process"]["descendants"]
     if os.name != "nt":
-        assert result["process"]["group_empty"] is True
+        assert result["process"]["group_empty"] is True and descendants["confirmed"] is True
+    else:
+        # Windows has no group to poll, so the tree kill's result is recorded beside the proven
+        # parent exit rather than being allowed to turn that exit into an unknown outcome.
+        assert descendants["method"] == "taskkill /T /F" and "result" in descendants
     marker = Path(observation(tmp_path)["grandchild_marker"])
     assert marker.exists(), "the grandchild was alive and writing before the kill"
     time.sleep(1.5)
