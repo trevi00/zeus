@@ -107,6 +107,12 @@ unconfirmed 표식은 진입 전에 함께 커밋되고, 진입 후 실패는 U0
 필요하다. 부모의 종료는 그가 남긴 것에 대해 아무것도 증명하지 않고, 부모가 사라진 뒤 "그런 프로세스 없음"을 돌려준
 종료 명령은 아무것도 죽이지 않았다. 트리를 증명하지 못하면 unknown이며 `ContractError`로 올라가 blocked가 된다.
 
+**경계 수립에 실패해도 이미 만든 것은 내 것이다.** 프로세스는 소속이 증명되기 **전에** 이미 존재하므로, 그를
+받아들인 적 없는 job을 종료해도 아무것도 끝나지 않는다. 정리는 이 모듈이 쥔 핸들로도 죽이고 **프로세스 자신의 종료
+코드**로 답한다. 그 코드가 있으면 "아무것도 남기지 않은 시작"이고, 없으면 그건 다른 종류의 실패라서 이름을 달리
+말한다(`TreeOwnershipLeak`). 남지 않은 거절은 재시도 가능하지만, **남았을지 모르는 것은 진입으로 읽어 차단한다** —
+재시도는 첫 번째 옆에 두 번째를 놓는 일이기 때문이다. 실행되지 못한 프로세스의 파이프도 이 경로에서 닫는다.
+
 **리더 스레드가 읽는 중인 파이프는 닫지 않는다.** 이건 구현 중 실제로 밟은 결함이다(§5.3).
 
 ### 3.6 이벤트와 결과 (C03)
@@ -298,6 +304,37 @@ host (ceiling 2)`로 거절된다. 이미 쓴 Windows 2회는 커밋된 영수�
 
 부수적으로 프로토콜 자식이 요청과 다른 모델을 보고하고 있었다. 새 모델 검사가 그걸 먼저 잡았고, 자식이 실제 CLI처럼
 요청받은 모델을 보고하도록 고친 뒤 불일치는 전용 시나리오로 분리했다.
+
+### 5.5b 2차 독립 검토(review 5203595381) 반영
+
+Codex가 R2·R3·R4와 lint 결정을 수용하고 **R1의 실패 정리 한 건**을 남겼다. 실제 `Popen` 위에서 `_assign` 반환값만
+False로 주입해 재현했고, `the process could not be placed in its job object`를 받은 **뒤에도 `process.poll() is
+None`**이었다.
+
+| 지적 | 무엇이 틀렸나 | 고친 방식 |
+|---|---|---|
+| Job 배정 실패 시 suspended 프로세스를 남김 | 정리가 `TerminateJobObject`만 했다. 배정에 실패한 프로세스는 **그 job의 구성원이 아니므로** 빈 job을 종료해도 죽지 않는다. 반복 실패하면 정지 프로세스가 쌓인다 | 정리(`_abandon_windows_spawn`)가 job 종료에 더해 **`Popen`이 쥔 핸들로 직접 죽이고**, `wait`로 **프로세스 자신의 종료 코드**를 읽는다. 파이프도 이 경로에서 닫는다. 종료 코드를 못 읽으면 `TreeOwnershipLeak`로 갈라, 어댑터가 `on_enter()`를 부른 뒤 거절한다 → 실행기가 termination 증거를 남기고 `blocked`/`reconciliation_required`로 만든다 |
+
+**이 결함을 이 자리에서 다시 확인했다.** 수정을 되돌린 채 새 회귀를 돌리자 실제로 정지 프로세스 2건(pid 21600,
+10304)이 남았고, 확인 후 종료해 0으로 만들었다. 복원 후 같은 회귀는 통과하며 남는 프로세스는 없다.
+
+회귀 5건(`tests/test_claude_review_boundaries.py`, `tests/test_claude_execution.py`):
+
+- `test_r1_a_boundary_failure_leaves_no_created_process_behind[assign|resume]` — **실제 `CREATE_SUSPENDED` 생성
+  뒤 해당 경계 호출만 거짓으로 주입한다.** spawn 전체를 스텁으로 바꾸면 정리 대상 프로세스가 아예 안 생기므로 그렇게
+  하지 않았다. `process.poll()`과 Windows에 직접 물은 pid 생존, 그리고 세 파이프가 닫혔는지를 함께 본다.
+- `test_r1_a_created_process_that_cannot_be_proven_gone_is_not_a_clean_refusal` — 종료 코드를 못 읽는 경우에만
+  `TreeOwnershipLeak`가 되는지. (프로세스는 실제로 죽이고 증명만 감춘다.)
+- `test_r1_a_leaked_process_enters_the_run_instead_of_refusing_it` — 누수는 `on_enter()`를 부른다. 대조로
+  `test_r1_a_tree_that_cannot_be_owned_never_starts`는 **부르지 않는다**를 함께 단언한다.
+- `test_a_created_process_that_cannot_be_proven_gone_blocks_instead_of_being_retried` — 실행기에서 provider 시작
+  0회인데도 `blocked`/`reconciliation_required`가 되고 다음 claim이 거절된다. 대조로
+  `test_a_boundary_failure_that_left_nothing_stays_a_refusal_that_may_be_retried`.
+
+**되돌려 확인했다.** 수정을 되돌리면 이 다섯 건이 전부 실패한다(경계 2건 + 누수 분류 1건 + 어댑터 1건 + 실행기 1건).
+
+Windows 전용 시험 3건은 POSIX에서 skip된다(`os.name != "nt"`). 그래서 WSL의 claude 스위트는 이번부터 skip 3이며,
+그 사실을 §5.2 표에 그대로 적었다.
 
 ### 5.6 실제 Claude 호출 (Windows)
 

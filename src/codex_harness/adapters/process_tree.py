@@ -14,6 +14,13 @@ until it is empty whether or not the leader exited first.
 
 Two receipts come out, never one: what happened to the process this harness started, and what
 happened to the tree. Only the pair is a termination, and what cannot be proven stays unproven.
+
+A boundary that fails owns what it has already made. The process exists before its membership is
+proven, so ending a job that never accepted it ends nothing and the created process stays behind
+suspended, holding a pid, once per attempt. The cleanup therefore kills through the handle this
+module holds as well, and answers with the process's own exit status. With that status the failure
+is a start that left nothing; without it the failure is a different thing entirely, and it says so
+by name.
 """
 from __future__ import annotations
 
@@ -108,7 +115,21 @@ if os.name == "nt":  # pragma: no cover - exercised on Windows hosts
 
 
 class TreeOwnershipError(RuntimeError):
-    """The boundary could not be established, so nothing was left running outside one."""
+    """The boundary could not be established, and nothing this harness created is still there."""
+
+
+class TreeOwnershipLeak(TreeOwnershipError):
+    """The boundary failed and a process this harness created could not be proven gone.
+
+    This is deliberately a different answer from `TreeOwnershipError`. "Nothing started" may be
+    retried; "something was created and I cannot say it is gone" may not, because a retry would add
+    a second one to whatever the first one is. The detail says what was attempted and what the
+    process's own exit status was, so the refusal names a thing an operator can go and look at.
+    """
+
+    def __init__(self, message: str, *, detail: dict):
+        super().__init__(message)
+        self.detail = detail
 
 
 def _windows_job():
@@ -164,6 +185,42 @@ def _resume(pid) -> bool:
     return resumed > 0
 
 
+def _abandon_windows_spawn(job, process, *, timeout: float = 10.0) -> dict:
+    """End what was created when the boundary failed, and say plainly what is left.
+
+    Terminating the job kills the job's members, and a process whose assignment failed is not one:
+    the job is empty and the process outlives it, suspended, holding a pid. The handle `Popen` owns
+    is the one thing that is certainly ours, so the kill goes through that as well. What answers is
+    the process's own exit status, never the return value of a call that asked for the kill.
+    """
+    record = {"pid": process.pid, "job_terminated": bool(_kernel32.TerminateJobObject(job, 1)),
+              "killed_by_own_handle": None}
+    if process.poll() is None:
+        try:
+            process.kill()  # TerminateProcess through our handle; a suspended process dies too
+            record["killed_by_own_handle"] = True
+        except OSError as exc:
+            record["killed_by_own_handle"] = type(exc).__name__
+    try:
+        process.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        record["waited_out"] = True
+    record["exit_code"] = process.returncode
+    record["left_running"] = process.poll() is None
+    return record
+
+
+def _close_pipes(process) -> None:
+    """Give back the pipe ends of a process that never ran; nothing is going to read them."""
+    for stream in (process.stdin, process.stdout, process.stderr):
+        if stream is None:
+            continue
+        try:
+            stream.close()
+        except OSError:
+            pass
+
+
 def _active_in_job(job):
     accounting = _BASIC_ACCOUNTING()
     if not _kernel32.QueryInformationJobObject(job, JobObjectBasicAccountingInformation,
@@ -206,14 +263,19 @@ class ProcessTree:
                 raise TreeOwnershipError("the process could not be placed in its job object")
             if not _resume(process.pid):
                 raise TreeOwnershipError("the process could not be resumed inside its job object")
-        except BaseException:
-            if process is not None and process.poll() is None:
-                _kernel32.TerminateJobObject(job, 1)
-                try:
-                    process.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    pass
+        except BaseException as exc:
+            # The process was created before the boundary was proven, so the cleanup cannot assume
+            # the job owns it. It kills through our own handle as well and then reads the exit
+            # status. Only an exit status lets this stay a start that left nothing behind.
+            cleanup = None
+            if process is not None:
+                cleanup = _abandon_windows_spawn(job, process)
+                _close_pipes(process)
             _kernel32.CloseHandle(job)
+            if cleanup is not None and cleanup["left_running"]:
+                raise TreeOwnershipLeak(
+                    "the boundary failed and the process created for it could not be proven gone",
+                    detail={"cause": type(exc).__name__ + ": " + str(exc), "cleanup": cleanup}) from exc
             raise
         return cls(process, job=job, group=None,
                    boundary={"kind": "job_object", "owned_from_spawn": True,

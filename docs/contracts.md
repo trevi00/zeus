@@ -637,7 +637,14 @@ receipts, one for the process this harness started and one for the tree, and onl
 end a run: a parent that exited proves nothing about what it left behind, and a kill command that
 reports "no such process" after the parent is gone has killed nothing. An unproven tree is an
 unknown outcome that blocks rather than a failure that may be retried, and no pipe is closed while
-a thread is still blocked inside it.
+a thread is still blocked inside it. A boundary that fails owns what it has already made: the
+process exists before its membership is proven, so ending a job that never accepted it ends
+nothing, and the cleanup kills through the handle this harness holds and then reads the process's
+own exit status. Only that status lets the failure be called a start that left nothing behind. When
+it cannot be read the refusal changes kind rather than degree: a created process that cannot be
+proven gone enters the run and blocks for reconciliation, because a retry would place a second one
+beside whatever the first one is. The pipes of a process that never ran are closed on that path
+too.
 
 A result is named from what was observed. A clean exit, an assistant sentence, tool activity with
 no answer, an absent terminal message, two conflicting terminal messages, a truncated stream, a

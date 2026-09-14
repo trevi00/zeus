@@ -376,6 +376,53 @@ def test_an_unconfirmed_termination_blocks_the_task_with_termination_evidence(tm
                    for a in tx.scan("observation_audit"))
 
 
+def refusing_spawn(error):
+    """Replace only the boundary's answer, so the executor's side of it can be read."""
+    def spawn(cls, *args, **kwargs):
+        raise error
+
+    return classmethod(spawn)
+
+
+def test_a_created_process_that_cannot_be_proven_gone_blocks_instead_of_being_retried(
+        tmp_path, monkeypatch, store):
+    """Nothing ran, and it still blocks.
+
+    The process never reached its first instruction, so there is no output and no workspace change.
+    What there is, is a pid this run created and could not account for, and a retry would put a
+    second one beside it. That is an unknown outcome, which stops the task, rather than a refusal
+    that started nothing, which may be run again.
+    """
+    from codex_harness.adapters.process_tree import TreeOwnershipLeak
+
+    monkeypatch.setattr("codex_harness.adapters.claude_cli.ProcessTree.spawn",
+                        refusing_spawn(TreeOwnershipLeak(
+                            "fixture: the boundary failed",
+                            detail={"cause": "fixture", "cleanup": {"pid": 424242,
+                                                                    "left_running": True}})))
+    s = build(tmp_path, monkeypatch, store)
+    row = run(s)
+    assert s.starts() == 0, "the provider never reached its first instruction"
+    assert row["status"] == "blocked" and row["error"] == "reconciliation_required"
+    [pending] = s.observer.pending_terminations(s.task["id"])
+    assert pending["status"] == "pending_reconciliation" and pending["boundary"] == "transport"
+    assert run(s) is None and s.starts() == 0, "an unaccounted process does not permit another run"
+
+
+def test_a_boundary_failure_that_left_nothing_stays_a_refusal_that_may_be_retried(
+        tmp_path, monkeypatch, store):
+    """The contrast that gives the line above its meaning: same failure point, different answer."""
+    from codex_harness.adapters.process_tree import TreeOwnershipError
+
+    monkeypatch.setattr("codex_harness.adapters.claude_cli.ProcessTree.spawn",
+                        refusing_spawn(TreeOwnershipError("fixture: no boundary, nothing created")))
+    s = build(tmp_path, monkeypatch, store)
+    row = run(s)
+    assert s.starts() == 0
+    assert row["status"] != "blocked", "nothing was created, so nothing needs reconciling"
+    assert s.observer.pending_terminations(s.task["id"]) == []
+
+
 def test_the_reservation_records_which_option_effects_were_verified_here(tmp_path, monkeypatch, store):
     """A receipt must not let a spend ceiling read as a spend guarantee."""
     s = build(tmp_path, monkeypatch, store)

@@ -36,7 +36,7 @@ from uuid import uuid4
 
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.execution_output import completed_output
-from codex_harness.adapters.process_tree import ProcessTree
+from codex_harness.adapters.process_tree import ProcessTree, TreeOwnershipLeak
 from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.observation import redact_text
 from codex_harness.domain.policy import POLICY
@@ -285,8 +285,19 @@ class ClaudeCodeRuntime:
             self.tree = ProcessTree.spawn(argv, cwd=workspace, env=environment,
                                           stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                           stderr=subprocess.PIPE)
+        except TreeOwnershipLeak as exc:
+            # A process was created and could not be proven gone. It had not run an instruction —
+            # it was still suspended — but a pid this run made is unaccounted for, and a retry
+            # would put a second one beside it. So this enters rather than refuses: the executor
+            # records termination evidence and blocks the task until an operator has looked.
+            if on_enter is not None:
+                on_enter()
+            raise ContractError(
+                "Claude Code CLI could not be started and a process it created could not be proven "
+                "gone: " + json.dumps(exc.detail, ensure_ascii=False, sort_keys=True)) from exc
         except Exception as exc:
-            # Nothing is left running outside a boundary, so this is still a refusal to retry.
+            # The boundary failed with nothing created or nothing left, so this is a refusal that
+            # may be retried. That claim is the cleanup's exit status, not an assumption.
             raise ContractError("Claude Code CLI could not be started: " + type(exc).__name__) from exc
         self.process = self.tree.process
         if on_enter is not None:

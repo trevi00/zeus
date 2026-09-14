@@ -91,11 +91,14 @@ def test_r1_a_tree_that_cannot_be_owned_never_starts(tmp_path, monkeypatch):
     monkeypatch.setattr(process_tree.ProcessTree, "spawn",
                         classmethod(lambda cls, *a, **kw: (_ for _ in ()).throw(
                             process_tree.TreeOwnershipError("fixture: no boundary"))))
+    entered = []
     runtime = transport("normal")
     with runtime as opened:
         with pytest.raises(ContractError, match="could not be started"):
-            opened.run("prompt", str(tmp_path), SCHEMA, timeout=10)
+            opened.run("prompt", str(tmp_path), SCHEMA, timeout=10,
+                       on_enter=lambda: entered.append("entered"))
     assert runtime.process is None
+    assert entered == [], "nothing was created, so the run never entered and may be retried"
 
 
 # ---- R2: how the process ended is a fact the terminal message does not settle ---------------------
@@ -258,3 +261,116 @@ def test_r4_the_ceilings_come_from_the_packaged_policy(tmp_path):
     with tempfile.TemporaryDirectory() as name:
         ledger = CallBudget(root=Path(name))
         assert ledger.summary()["ledger"] == name and ledger.counts()["all_hosts"] == 0
+
+
+# ---- second review: a boundary failure owns what it already created ------------------------------
+
+WINDOWS_ONLY = pytest.mark.skipif(os.name != "nt",
+                                  reason="the job object, and the failure path that misses it, are Windows")
+
+
+def windows_alive(pid: int) -> bool:
+    """Whether a pid is a running process, asked of Windows rather than of a command's output."""
+    import ctypes
+    from ctypes import wintypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+    kernel32.GetExitCodeProcess.restype = wintypes.BOOL
+    kernel32.GetExitCodeProcess.argtypes = (wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD))
+    kernel32.CloseHandle.restype = wintypes.BOOL
+    kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+    handle = kernel32.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+    if not handle:
+        return False
+    try:
+        code = wintypes.DWORD()
+        if not kernel32.GetExitCodeProcess(handle, ctypes.byref(code)):
+            return False
+        return code.value == 259  # STILL_ACTIVE
+    finally:
+        kernel32.CloseHandle(handle)
+
+
+@WINDOWS_ONLY
+@pytest.mark.parametrize("boundary", ["assign", "resume"])
+def test_r1_a_boundary_failure_leaves_no_created_process_behind(tmp_path, monkeypatch, boundary):
+    """Codex's second counterexample: the process is really created, then the boundary is refused.
+
+    Terminating an empty job kills nothing, so a process whose assignment failed used to stay behind
+    suspended, holding a pid, and every retry added another. Only the real spawn can show this: a
+    stub for the whole of `spawn` never creates the process that has to be cleaned up. So the
+    process here is genuine and only the one boundary call is refused.
+    """
+    from codex_harness.adapters import process_tree
+
+    abandoned = {}
+    real_cleanup = process_tree._abandon_windows_spawn
+
+    def watched(job, process, **kwargs):
+        abandoned["process"] = process
+        return real_cleanup(job, process, **kwargs)
+
+    monkeypatch.setattr(process_tree, "_abandon_windows_spawn", watched)
+    if boundary == "assign":
+        monkeypatch.setattr(process_tree, "_assign", lambda job, pid: False)
+    else:
+        monkeypatch.setattr(process_tree, "_resume", lambda pid: False)
+
+    argv = [sys.executable, "-c", "import time; time.sleep(120)"]
+    with pytest.raises(process_tree.TreeOwnershipError) as raised:
+        process_tree.ProcessTree.spawn(argv, cwd=str(tmp_path), stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    assert not isinstance(raised.value, process_tree.TreeOwnershipLeak), str(raised.value)
+
+    process = abandoned["process"]
+    assert process.poll() is not None, "the created process is still running"
+    assert not windows_alive(process.pid), "Windows still knows the pid as a running process"
+    pipes = (process.stdin, process.stdout, process.stderr)
+    assert all(stream.closed for stream in pipes), "the pipes of a process that never ran stayed open"
+
+
+@WINDOWS_ONLY
+def test_r1_a_created_process_that_cannot_be_proven_gone_is_not_a_clean_refusal(tmp_path, monkeypatch):
+    """When the cleanup cannot produce an exit status the answer changes kind, not degree.
+
+    The process is really killed here; only the proof is withheld, so the test can ask what the
+    refusal says without leaving anything behind to say it about.
+    """
+    from codex_harness.adapters import process_tree
+
+    real_cleanup = process_tree._abandon_windows_spawn
+
+    def unprovable(job, process, **kwargs):
+        record = real_cleanup(job, process, **kwargs)
+        return {**record, "left_running": True, "exit_code": None}
+
+    monkeypatch.setattr(process_tree, "_assign", lambda job, pid: False)
+    monkeypatch.setattr(process_tree, "_abandon_windows_spawn", unprovable)
+    argv = [sys.executable, "-c", "import time; time.sleep(120)"]
+    with pytest.raises(process_tree.TreeOwnershipLeak) as raised:
+        process_tree.ProcessTree.spawn(argv, cwd=str(tmp_path), stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    assert "could not be proven gone" in str(raised.value)
+    assert raised.value.detail["cleanup"]["left_running"] is True
+    assert raised.value.detail["cause"], "the refusal names the boundary failure underneath it"
+
+
+def test_r1_a_leaked_process_enters_the_run_instead_of_refusing_it(tmp_path, monkeypatch):
+    """Entering is the conservative reading: a pid this run made is unaccounted for."""
+    from codex_harness.adapters import process_tree
+
+    def leak(cls, *args, **kwargs):
+        raise process_tree.TreeOwnershipLeak(
+            "fixture: the boundary failed and the process could not be proven gone",
+            detail={"cause": "fixture", "cleanup": {"pid": 424242, "left_running": True}})
+
+    monkeypatch.setattr(process_tree.ProcessTree, "spawn", classmethod(leak))
+    entered = []
+    runtime = transport("normal")
+    with runtime as opened:
+        with pytest.raises(ContractError, match="could not be proven gone"):
+            opened.run("prompt", str(tmp_path), SCHEMA, timeout=10,
+                       on_enter=lambda: entered.append("entered"))
+    assert entered == ["entered"], "a leaked process must not be read as a run that never started"
