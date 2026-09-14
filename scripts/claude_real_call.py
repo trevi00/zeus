@@ -252,6 +252,11 @@ def execute(args, receipt: dict, workdir: Path, ready: dict) -> dict:
             "reservations": [{"id": r["id"], "status": r["status"], "outcome": r["outcome"],
                               "usage": r["usage"], "transport": r["request"]["transport"],
                               "assignment": r["request"].get("assignment"),
+                              # Which option effects this harness checked, and which it passed to
+                              # the provider: a spend ceiling in the request is not a spend result.
+                              "effect_verified_here": r["request"].get("effect_verified_here"),
+                              "effect_left_to_provider": r["request"].get("effect_left_to_provider"),
+                              "unconfirmed_options": r["request"].get("unconfirmed"),
                               "within_budget": r.get("within_budget")} for r in reservations],
             "terminations": [{"record_id": r.get("record_id"), "status": r.get("status")} for r in terminations],
             "audit_events": sorted({a["event_type"] for a in audit}),
