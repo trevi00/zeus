@@ -225,29 +225,28 @@ Codex가 정하고 그때 호출 1회로 확인하면 된다.
 `tests/test_claude_cli_process.py`는 실제 자식 프로세스를 띄우므로 Windows와 WSL에서 각각 돌린다. 이 파일의 자식은
 프로토콜 시험용이며 모델 실측이 아니다(어댑터가 launcher를 기록해 영수증에서 구분된다).
 
-호스트 증거 `docs/zeus/evidence/environment-runs-009/` (두 호스트 Python 3.12.14, 격리 스택·임시 포트·실행 후 정리):
-
-아래는 **1차 독립 검토의 네 건을 고친 head `bfabcbd`에서 다시 잰 것**이다. 검토 전 head(`75b19cb`/`c0d6aa4`)의
-측정은 더 이상 이 브랜치의 상태가 아니므로 대체했다.
+호스트 증거 (두 호스트 Python 3.12.14, 격리 스택·임시 포트·실행 후 정리). **`environment-runs-010/`이 현재
+상태이고, `environment-runs-009/`는 1차 검토 반영 head `bfabcbd`의 것으로 남겨 뒀다.** 아래는 2차 검토의 R1 잔여를
+고친 head `1df7972`에서 잰 것이다.
 
 | 호스트 | head | 결과 |
 |---|---|---|
-| Windows 11 | `bfabcbd` | ruff 통과 / full-suite-integration **1691 passed, 14 skipped** (565s) / disposable-docker 17 passed. claude 4파일 **118 passed, skip 0** (assignment 19, cli_process 36, execution 44, review_boundaries 19). 8개 단계 전부 ok, 영수증 tracked_changes [], untracked [] |
-| WSL Ubuntu 26.04 (WSL2 6.18) | `bfabcbd` | ruff 통과 / full-suite-integration **1697 passed, 8 skipped** (221s) / disposable-docker 17 passed. claude 4파일 **118 passed, skip 0**. 새 `ProcessTree`의 POSIX 경로(새 세션·spawn 시점 그룹 id·그룹이 빌 때까지 폴링)가 실제 Linux에서 통과. 8개 단계 전부 ok, 깨끗한 트리 |
+| Windows 11 | `1df7972` | ruff 통과 / full-suite-integration **1699 passed, 14 skipped** (544s) / disposable-docker 17 passed. claude 4파일 **126 passed, skip 0** (assignment 19, cli_process 36, execution 48, review_boundaries 23). 8개 단계 전부 ok, 영수증 tracked_changes [], untracked [] |
+| WSL Ubuntu 26.04 (WSL2 6.18) | `1df7972` | ruff 통과 / full-suite-integration **1702 passed, 11 skipped** (233s) / disposable-docker 17 passed. claude 4파일 **126 passed, skip 3**. **skip 3은 Windows job object 전용 경계 시험**(§5.5b)이며, POSIX에 같은 실패 경로가 없다는 뜻이다. 새 `ProcessTree`의 POSIX 경로는 그대로 통과한다. 8개 단계 전부 ok, 깨끗한 트리 |
 
-두 호스트의 JUnit·로그에서 canary 문자열 0건, `password=` 0건. Windows가 WSL보다 2.5배 걸리는 것은 이전 회차와 같다.
+두 호스트의 JUnit·로그에서 canary 문자열 0건, `password=` 0건. Windows가 WSL보다 2.3배 걸리는 것은 이전 회차와 같다.
+직전 회차(`environment-runs-009/`, head `bfabcbd`)는 Windows 1691/14, WSL 1697/8, 양쪽 claude 118 passed였다.
 
-**WSL disposable-docker 단계의 발생률을 그대로 적는다.** 이 호스트에서 지금까지 **6회 시도 중 3회**가 같은
+**WSL disposable-docker 단계의 발생률을 그대로 적는다.** 이 호스트에서 지금까지 **8회 시도 중 4회**가 같은
 원인으로 실패했다. 일회용 PostgreSQL 컨테이너가 게시한 포트가 `verification.py:98`의 30초 연결 기한 안에 붙지
 않는다(`ConnectionRefusedError`). 실패가 난 테스트 이름은 두 가지였다 —
-`test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2]` 2회, 이번 회차의
-`test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed` 1회. **같은 부류로 묶은
-근거는 이름이 아니라 실패 지점이다**: 셋 다 같은 파일의 같은 기한에서 끊겼고, 두 파일 모두 이 브랜치가 건드리지
-않았으며(`git diff origin/main...HEAD`에 없음), 전체 스위트는 6회 모두 통과했다. U001 때 #16/#18에 기록된 readiness
-부류와 같다. 초록이 나올 때까지 돌려 고른 것이 아니라 시도 전부를 세어 적었고, 실패 산출물은
-`attempt-1-wsl-disposable-docker-readiness/`(head `75b19cb`)와
-`attempt-2-wsl-disposable-docker-readiness/`(head `bfabcbd`)에 그대로 보존했다. 원인 해결은 이 명세의 범위 밖이므로
-하지 않았다.
+`test_host_interruption.py::test_postgres_pause_is_not_a_clock_step`이 3회,
+`test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed`가 1회. **같은 부류로 묶은
+근거는 이름이 아니라 실패 지점이다**: 넷 다 같은 파일의 같은 기한에서 끊겼고, 두 테스트 파일 모두 이 브랜치가
+건드리지 않았으며(`git diff origin/main...HEAD`에 없음), 전체 스위트는 8회 모두 통과했다. U001 때 #16/#18에 기록된
+readiness 부류와 같다. 초록이 나올 때까지 돌려 고른 것이 아니라 시도 전부를 세어 적었고, 실패 산출물은 전부
+보존했다 — `environment-runs-009/attempt-1-…`(head `75b19cb`), `…/attempt-2-…`(head `bfabcbd`),
+`environment-runs-010/attempt-1-…`(head `1df7972`). 원인 해결은 이 명세의 범위 밖이므로 하지 않았다.
 
 ### 5.3 구현 중 발견해 고친 결함
 
