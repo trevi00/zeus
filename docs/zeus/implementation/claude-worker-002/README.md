@@ -204,15 +204,21 @@ Codex가 정하고 그때 호출 1회로 확인하면 된다.
 `tests/test_claude_cli_process.py`는 실제 자식 프로세스를 띄우므로 Windows와 WSL에서 각각 돌린다. 이 파일의 자식은
 프로토콜 시험용이며 모델 실측이 아니다(어댑터가 launcher를 기록해 영수증에서 구분된다).
 
-호스트 증거 `docs/zeus/evidence/environment-runs-009/` (head `b37cca8`, 두 호스트 Python 3.12.14, 격리 스택·임시
-포트·실행 후 정리):
+호스트 증거 `docs/zeus/evidence/environment-runs-009/` (두 호스트 Python 3.12.14, 격리 스택·임시 포트·실행 후 정리):
 
-| 호스트 | 결과 |
-|---|---|
-| Windows 11 | ruff 통과 / full-suite-integration **1656 passed, 14 skipped** (643s) / disposable-docker 17 passed. 신규 3파일 **83 passed, skip 0** (assignment 19, cli_process 32, execution 32). U001 관측 129건도 그대로 통과. 8개 단계 전부 ok, 영수증 tracked_changes [], untracked [] |
-| WSL Ubuntu 26.04 (WSL2 6.18) | ruff 통과 / full-suite-integration **1662 passed, 8 skipped** (219s) / disposable-docker 17 passed. 신규 3파일 **83 passed, skip 0**. 프로세스 그룹 종료·자손 확인이 실제 Linux에서 통과 |
+| 호스트 | head | 결과 |
+|---|---|---|
+| Windows 11 | `75b19cb` | ruff 통과 / full-suite-integration **1664 passed, 14 skipped** (646s) / disposable-docker 17 passed. 신규 3파일 **91 passed, skip 0** (assignment 19, cli_process 36, execution 36). U001 관측 129건도 그대로 통과. 8개 단계 전부 ok, 영수증 tracked_changes [], untracked [] |
+| WSL Ubuntu 26.04 (WSL2 6.18) | `c0d6aa4` | ruff 통과 / full-suite-integration **1670 passed, 8 skipped** (212s) / disposable-docker 17 passed. 신규 3파일 **91 passed, skip 0**. 프로세스 그룹 종료·자손 확인이 실제 Linux에서 통과. 8개 단계 전부 ok, 깨끗한 트리 |
 
 두 호스트의 JUnit·로그에서 canary 문자열 0건, `password=` 0건.
+
+**WSL disposable-docker 단계의 발생률을 그대로 적는다.** 이 호스트에서 4회 시도 중 **2회**가
+`test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2]`에서 실패했다. 일회용 PostgreSQL 컨테이너가
+게시한 포트가 `verification.py`의 30초 연결 기한 안에 붙지 않는다(`ConnectionRefusedError`). 실패는 모두 다른 스택을
+막 내린 직후에 나왔고, 전체 스위트(1670 passed)는 4회 모두 통과했다. 이 파일은 이 브랜치가 건드리지 않았고 U001 때
+#16/#18에 기록된 readiness 부류와 같다. 초록이 나올 때까지 돌려 고른 것이 아니라 시도 전부를 세어 적었으며, 1차 실패
+산출물은 `attempt-1-wsl-disposable-docker-readiness/`에 보존했다. 원인 해결은 이 명세의 범위 밖이므로 하지 않았다.
 
 ### 5.3 구현 중 발견해 고친 결함
 
