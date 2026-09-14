@@ -4,9 +4,12 @@
   "integration-result.json": "c6ceb805b08ed2ac59b3a2166e21bf3429beee1962aa09c54ed360e171e58759",
   "integration.log": "dfefa73bea3698a0b38e0704ff464fc0be1dbf1fbcdfaaa7dd5b57639a9290b8",
   "integration.xml": "ed82a7e054ff0d1c2d9fb52dfca7191212c85deca0152b83e056c5744ae65189",
+  "issue-comment.md": "4ef66715d1db0de9608616e8784818e39d9db69793d081e07c5e9a7ce5ab559d",
   "ownership-failure.json": "d74a8e8784dbf25a89ffd52c439bf2cdab87c823ff0a29b540e9c57261a29ad7",
   "ownership_failure.py": "5cdaa1d83da243d3f8a231a27ff0e3f266c060a4a454c433be1083e500b5c29f",
   "pr-snapshot.json": "16189fabf72ea558afe2fc2d55dff5170c6ef77594d462bf8f255f2d4581a722",
+  "published-issues.json": "63e445fdf56254ea29e2a3b04c86f902d4d033be5abacacb28ed3d0816e84913",
+  "published-review.json": "4c7e32eed53b59507470337fdc14b42b59b9fcd7603750d3a3416b09a0fc57aa",
   "README.md": "327c3e040f242e55bf003b9c78a29247399add1d9ce1e67ae16f2a2b26b4a39e",
   "receipt-check.json": "8971e4a9284eeea8c2b5b6d0e72771063da3b526f5039065541a2b185ecd3974",
   "run_integration.py": "f6636f12c3300f8357af5e3b54b0ca6a72ae603d4385399cf8e3ea7d3aa5064c"
