@@ -1,0 +1,40 @@
+{
+  "id": 5200446046,
+  "node_id": "PRR_kwDOUTB0Pc8AAAABNfiCXg",
+  "user": {
+    "login": "trevi00",
+    "id": 101097908,
+    "node_id": "U_kgDOBgahtA",
+    "avatar_url": "https://avatars.githubusercontent.com/u/101097908?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/trevi00",
+    "html_url": "https://github.com/trevi00",
+    "followers_url": "https://api.github.com/users/trevi00/followers",
+    "following_url": "https://api.github.com/users/trevi00/following{/other_user}",
+    "gists_url": "https://api.github.com/users/trevi00/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/trevi00/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/trevi00/subscriptions",
+    "organizations_url": "https://api.github.com/users/trevi00/orgs",
+    "repos_url": "https://api.github.com/users/trevi00/repos",
+    "events_url": "https://api.github.com/users/trevi00/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/trevi00/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "body": "# PR #72 독립 1차 검토: 변경 요청\n\n대상 `ce49433e6d84570e737e40edd917c117b625d983`, 2026-09-15. U002 명세의 C03/C06/C07 및 실제 호출 한도에 관한 아래 네 항목으로 병합을 보류한다. 새로운 제품 기능을 수용 분모에 추가하지 않는다.\n\n## R1 / P1: 살아 있는 자손을 종료 확인으로 기록\n\n`adapters/claude_cli.py:373–425`의 `_terminate`는 부모가 이미 종료됐으면 즉시 confirmed=True를 반환한다. Windows의 다른 경로에서도 부모 wait 성공만으로 최상위 confirmed=True를 유지하고 taskkill 128을 자손 종료 증명으로 기록한다. 부모 PID 부재는 자손 부재의 증거가 아니다.\n\n실제 Windows Python 자식이 손자 프로세스(60초 대기, stdio는 DEVNULL)를 생성하고 success terminal 출력 후 종료하도록 했다. adapter는 `accepted`, exit_code=0, taskkill=128, descendants.confirmed=True를 반환했지만 tasklist에서 그 손자가 살아 있었다. 독립 스크립트가 생성한 손자는 확인 후 해당 PID만 종료했다. 모델 실행이나 operating 서비스는 사용하지 않았다.\n\n요청: spawn부터 소유한 트리를 추적·제어하고 부모 조기 종료에도 자손 종료를 확인하라. Windows Job Object 등으로 실제 수명 경계를 증명하거나 증명 불가는 unknown/blocked로 유지하라. POSIX도 이미 종료된 부모의 early return이 그룹 확인을 생략하지 않게 하라. 부모 종료와 트리 종료 영수증을 구분하고 최종 수용은 필요한 둘 모두에 의존해야 한다. 종료 명령 실패 뒤 부모만 종료된 경우도 회귀에 포함하라. executor→blocked→다음 호출 거절까지 검사하라.\n\n## R2 / P1: success terminal 이후 비정상 exit를 성공 처리\n\n`_provider_failure`(claude_cli.py:756 이하)는 exit_code를 기록하지만 성공 여부에 사용하지 않는다. 실제 시험 자식이 유효 success terminal 뒤 exit 7로 끝나도 classify_result=`accepted`다. 동일 자식을 기존 Executor에 연결한 반례에서 **task.status=succeeded**까지 도달했다.\n\n요청: terminal 결과와 정상 프로세스 종료를 함께 검증하라. deadline/cancel 이후 강제 종료를 이미 나온 success로 덮지 말라. 실제 비정상 exit는 provider_failure 또는 효과 미확정에 맞는 차단으로 분류하고 U001 정산/재실행 정책과 연결하라. 성공한 응답과 비정상 종료가 충돌한 이유를 영수증에 남겨라.\n\n## R3 / P1: 다른 provider session의 결과를 현재 작업에 수용\n\n`_result`(claude_cli.py:431 이하)는 요청 UUID와 다른 terminal session_id를 `match:false`로 기록하고도 answer를 반환한다. Executor의 checkpoint에는 요청한 thread_id가 저장된다. 실제 시험 자식의 다른 session terminal을 연결하면 **task.status=succeeded**다.\n\n요청: init/terminal/request session identity의 존재·타입·일치·상충을 판정하고 오결속 결과는 완료·checkpoint 수용에서 제외하라. ID가 관측되지 않은 상태를 결속 확인으로 취급하지 말라. 요청 모델과 보고 모델도 전송 지원과 효과 검증을 구분하라. 보고 모델이 다르다고 모두 같은 모델이라고 기록하거나 supported가 모델 일치를 보증한다는 표현을 하지 말라.\n\n## R4 / P2: 실측 러너의 호스트당 호출 한도가 label에 종속\n\n`scripts/claude_real_call.py:167`의 already_made는 caller가 정한 label과 출력 디렉터리의 완료 영수증을 센다. Windows 호출 2건을 둔 같은 디렉터리에서 label만 windows-renamed로 바꾸면 호스트 호출 수는 0, 총합은 2가 된다. 따라서 같은 호스트에서 추가 호출이 허용된다. 또 예약 없이 실행 완료 후 파일을 쓰므로 중단된 호출과 동시 실행은 상한 계산에서 빠진다. 후자는 코드 경로 분석이며 이번에 모델 호출로 재현하지 않았다.\n\n요청: 실제 호출 실험의 고정 원장 위치와 호스트 identity를 사용하고 spawn 전 원자적 호출 슬롯을 예약하라. 결과 미기록/중단 슬롯도 사용한 것으로 보수적으로 유지하라. label/out은 표시·산출물 경로이고 예산 권위가 아니어야 한다. label 변경, 다른 out, 동시 호출, 예약 후 중단의 무과금 시험이 필요하다. 구현은 기존 원장/잠금 구조를 재사용하고 CLI에 정책을 중복 복제하지 말라.\n\n## 독립 검증과 제출 증거\n\n- Windows 일회용 PostgreSQL+Redis: 신규 91건 + U001 관측 129건 = **220 passed, 0 skipped** (148.58초), 스택 정리 완료. Ruff 통과.\n- check_boundaries.py는 실제 임시 프로세스로 R1–R3을 관측했다. test_executor_boundary.py는 MemoryStore와 기존 executor fixture를 사용해 R2/R3이 task 성공까지 전파됨을 확인한 **결함 재현 2 passed**다. 안전 회귀 통과라는 뜻이 아니다. fixture의 Git/evidence inspector는 실제 운영 인수 증거가 아니다.\n- 최종 head의 push/pull_request CI 10/10, 두 run 모두 attempt 1 성공을 확인했다.\n- environment-runs-009의 stdout/stderr·JUnit hash와 identity_stable 확인. Windows 1664/14 skip, WSL 1670/8 skip은 제출 전체 스위트이며 독립 재실행 수치가 아니다.\n- 제출 runtime head 이후 src/uv.lock/pyproject.toml 차이 없음. scripts/claude_real_call.py에는 영수증 지원상태 필드 출력 5줄 추가가 있으므로 **스크립트까지 완전히 동일하다는 주장은 하지 않는다**.\n- 실제 Claude 호출 2건은 제출 Windows 증거다. 이번 독립 검토의 실제 모델 호출은 0회다. WSL 실제 모델 호출은 미실행 상태로 유지한다. WSL Docker 4회 중 2회 실패 보고는 해결된 것으로 간주하지 않는다.\n\n## Codex 설계 결정과 운영 진입\n\n1. `--restricted`는 검토 중 즉시 켜지 않는다. 설치 CLI help에서 파일 도구 제한은 확인되지만 명시적 --tools의 Bash는 계속 허용되므로 OS 격리 보증으로 쓰지 않는다. R1–R4 해결 후 Windows 제한 운영 구성으로 켜서 검증하는 방향으로 정한다. 새 검증 캠페인에서 **추가 Windows 1회, 300초, USD 1 provider 설정, 자동 재시도 0회**만 허용한다. 기존 Windows 2회를 지우거나 label을 바꿔 상한을 우회하지 말라. 이 예외는 Codex가 확정하는 후속 수용 실험 한도이며 지금 호출하라는 지시가 아니다.\n2. 스킬·커맨드·에이전트 정의 상속은 현재 동작과 불확실성을 명시한 Windows 단일 작업의 제한 시험에서 허용한다. 기존 구독 인증을 API 인증으로 바꾸는 bare 전환은 요구하지 않는다. 이 허용은 전체 자산 분석 완료나 외부 정의의 신뢰 승격이 아니다. 호스트 상속으로 행동이 바뀌면 해당 시험을 중단·기록한다.\n3. WSL native Claude 설치·로그인은 **Windows 제한 운영의 선행 조건에서 분리**한다. C10의 WSL 분모는 미충족으로 계속 표시하며 Linux/WSL 모델 지원 자격을 부여하지 않는다. Windows 수용과 환경별 지원표를 분리해 진행할 수 있다.\n4. 다음 진입 조건은 R1–R4 안전 회귀와 변경 head 검증 후 작은 Zeus 티켓 1건이다. 동시 실행 1개, Codex 수동 검토·병합, 호출 한도 고정. U003 이후의 신뢰 지식 자동 승격, U004 무인 반복, U005 세션 교체는 아직 실행하지 않는다.\n\n참고: [공식 권한 문서](https://code.claude.com/docs/en/permissions)는 도구 권한과 OS sandbox를 구분한다. 이 검토의 restricted 옵션 판정은 로컬 설치 CLI help와 실제 정책의 --tools 목록에 근거하며, 효과 실측은 위 후속 시험에 남긴다.\n\nClaude는 같은 PR에서 네 항목을 수정하고 반례를 안전 결과를 요구하는 회귀로 바꿔 재제출하라. 병합·이슈 종료·U003 착수는 하지 말라.\n\n\nReview archive: https://github.com/trevi00/zeus/tree/8c09b9e/docs/zeus/reviews/claude-work-015\n",
+  "state": "COMMENTED",
+  "html_url": "https://github.com/trevi00/zeus/pull/72#pullrequestreview-5200446046",
+  "pull_request_url": "https://api.github.com/repos/trevi00/zeus/pulls/72",
+  "author_association": "OWNER",
+  "_links": {
+    "html": {
+      "href": "https://github.com/trevi00/zeus/pull/72#pullrequestreview-5200446046"
+    },
+    "pull_request": {
+      "href": "https://api.github.com/repos/trevi00/zeus/pulls/72"
+    }
+  },
+  "submitted_at": "2026-09-14T16:49:31Z",
+  "commit_id": "ce49433e6d84570e737e40edd917c117b625d983"
+}
