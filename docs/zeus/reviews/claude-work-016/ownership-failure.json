@@ -1,0 +1,6 @@
+{
+  "error": "the process could not be placed in its job object",
+  "still_alive_after_refusal": [
+    true
+  ]
+}

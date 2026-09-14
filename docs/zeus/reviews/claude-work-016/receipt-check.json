@@ -1,0 +1,66 @@
+[
+  {
+    "label": "windows-11",
+    "head": "bfabcbdc3265de2e5de1165bdfc2239a549c68f9",
+    "checks": [
+      {
+        "step": "ruff",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "full-suite-integration",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "disposable-docker-checks",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      }
+    ],
+    "junit_matches": true,
+    "runtime_delta_empty": true,
+    "identity_stable": true,
+    "summaries": [
+      "All checks passed!",
+      "1691 passed, 14 skipped in 565.33s (0:09:25)",
+      "17 passed in 56.16s"
+    ]
+  },
+  {
+    "label": "wsl-ubuntu-26.04",
+    "head": "bfabcbdc3265de2e5de1165bdfc2239a549c68f9",
+    "checks": [
+      {
+        "step": "ruff",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "full-suite-integration",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      },
+      {
+        "step": "disposable-docker-checks",
+        "exit_code": 0,
+        "stdout_matches": true,
+        "stderr_matches": true
+      }
+    ],
+    "junit_matches": true,
+    "runtime_delta_empty": true,
+    "identity_stable": true,
+    "summaries": [
+      "All checks passed!",
+      "1697 passed, 8 skipped in 220.88s (0:03:40)",
+      "17 passed in 48.90s"
+    ]
+  }
+]
