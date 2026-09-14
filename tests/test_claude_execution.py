@@ -388,3 +388,48 @@ def test_the_reservation_records_which_option_effects_were_verified_here(tmp_pat
     assert request["effect_left_to_provider"] == ["max_budget_usd", "permission_mode"]
     assert request["unconfirmed"] == ["read_only"]
     assert request["assignment"]["policy_version"] == "provider-policy.v1"
+
+
+# ---- first review: a refused provider result must not reach task success --------------------------
+
+@pytest.mark.parametrize("scenario,cause", [
+    ("nonzero", "claude-provider-exit-conflict"),
+    ("wrong_session", "claude-provider-session-conflicting"),
+    ("wrong_model", "claude-provider-model-mismatch"),
+])
+def test_a_result_the_transport_refuses_never_becomes_a_finished_task(tmp_path, monkeypatch, store,
+                                                                      scenario, cause):
+    """Codex drove these to `task.status=succeeded`. The transport refuses them now, and the
+    refusal has to survive the whole executor path rather than stopping at the adapter."""
+    s = build(tmp_path, monkeypatch, store, scenario=scenario)
+    row = run(s)
+    assert s.starts() == 1
+    assert row["status"] != "succeeded", "a refused result is not a finished task"
+    with store.transaction() as tx:
+        assert tx.get("tasks", s.task["id"])["status"] != "succeeded"
+        settled = [a for a in tx.scan("observation_audit")
+                   if a["event_type"] == "development.invocation_settled"]
+    assert settled and settled[0]["attributes"]["invocation_outcome"] == "provider_failure"
+    finished = [r for r in s.observer.spool.records()
+                if r["event_type"] == "development.provider_finished"]
+    assert finished and finished[0]["attributes"]["invocation_outcome"] == "provider_failure"
+
+
+def test_a_surviving_grandchild_would_be_an_unknown_outcome_and_the_tree_is_proven_gone(
+        tmp_path, monkeypatch, store):
+    """The provider leaves a detached grandchild behind. The task may finish only because the
+    boundary took the grandchild with it; the marker file is what says so."""
+    import time
+    from pathlib import Path as _Path
+
+    s = build(tmp_path, monkeypatch, store, scenario="orphan")
+    row = run(s)
+    assert row["status"] == "succeeded" and s.starts() == 1
+    receipt = receipt_of(s, row)
+    assert receipt["process"]["tree"]["confirmed"] is True
+    assert receipt["process"]["parent"]["confirmed"] is True
+    marker = _Path(json.loads((s.workspace / "stub-observation.json").read_text("utf-8"))["orphan_marker"])
+    before = marker.read_bytes() if marker.exists() else b""
+    time.sleep(1.5)
+    after = marker.read_bytes() if marker.exists() else b""
+    assert before == after, "nothing the provider started is still running"

@@ -38,6 +38,9 @@ from uuid import uuid4
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from codex_harness.adapters.call_budget import CallBudget  # noqa: E402
+from codex_harness.domain.model import ContractError  # noqa: E402
+
 MODULE = '''"""A tiny helper the assigned task has to finish."""
 
 
@@ -164,12 +167,17 @@ def preflight(args) -> dict:
             "flags": sorted({flag for flag in required if flag in help_text.stdout})}
 
 
-def already_made(out: Path, label: str | None = None) -> int:
-    """Real calls already recorded here: all of them, or only this host's.
+def call_budget_policy() -> dict:
+    """The ceilings, from the packaged execution policy. This runner defines none of its own."""
+    from codex_harness.adapters.providers import packaged_policy
 
-    Every call keeps its own receipt, so a later run can neither hide nor overwrite an earlier one,
-    and the ceiling is counted from what is on disk rather than from anyone's memory.
-    """
+    budget = packaged_policy().provider("claude").runtime.get("experiment_call_budget") or {}
+    return {"per_host": int(budget.get("per_host", 0)), "total": int(budget.get("total", 0)),
+            "note": budget.get("note")}
+
+
+def receipts_here(out: Path, label: str | None = None) -> int:
+    """Receipts in this directory. A count for the reader; never the thing that limits a call."""
     count = 0
     for path in sorted(out.glob("*-receipt.json")):
         try:
@@ -349,9 +357,6 @@ def main(argv=None):
     parser.add_argument("--model", default=os.environ.get("ZEUS_CLAUDE_MODEL"))
     parser.add_argument("--budget", default=os.environ.get("ZEUS_CLAUDE_MAX_BUDGET_USD", "1"))
     parser.add_argument("--timeout", type=int, default=300)
-    parser.add_argument("--max-calls", type=int, default=2, help="real calls allowed for this host")
-    parser.add_argument("--max-total-calls", type=int, default=4,
-                        help="real calls allowed across every host in this output directory")
     parser.add_argument("--allow-interop", action="store_true",
                         help="permit a Windows executable reached from Linux; it measures Windows, not this host")
     parser.add_argument("--executable", default=None)
@@ -402,13 +407,16 @@ def with_isolated_stack(args, out):
 
 
 def call(args, out, stack=None):
+    ceilings = call_budget_policy()
+    slot = None
 
     receipt = {"label": args.label, "mode": "fixture" if args.fixture else "real",
                "started_at": now(), "executed": False,
                "host": {"platform": sys.platform, "python": sys.version.split()[0],
                         "git": run(["git", "--version"], timeout=60)["stdout"].strip()},
-               "limits": {"max_calls_per_host": args.max_calls, "max_calls_total": args.max_total_calls,
-                          "timeout_seconds": args.timeout, "max_budget_usd": args.budget},
+               "limits": {**ceilings, "timeout_seconds": args.timeout,
+                          "max_budget_usd": args.budget,
+                          "ceiling_source": "the packaged execution policy, counted in a per-machine ledger"},
                "authority": ("one assigned task executed on this host through the configured provider; "
                              "not a qualification, not a billed amount, not an operational change")}
     if stack is not None:
@@ -419,13 +427,25 @@ def call(args, out, stack=None):
         receipt["not_executed_reason"] = ready["reason"]
     elif not args.model:
         receipt["not_executed_reason"] = "no explicit model was configured; a model is never derived"
-    elif ready["mode"] == "real" and already_made(out, args.label) >= args.max_calls:
-        receipt["not_executed_reason"] = (f"{args.max_calls} real calls are already recorded for "
-                                          f"{args.label}; the per-host ceiling is deliberate")
-    elif ready["mode"] == "real" and already_made(out) >= args.max_total_calls:
-        receipt["not_executed_reason"] = (f"{args.max_total_calls} real calls are already recorded in "
-                                          f"{args.out}; the overall ceiling is deliberate")
     else:
+        if ready["mode"] == "real":
+            # The slot is taken before anything can start a process, in a ledger that lives outside
+            # every checkout and identifies this machine from its own facts. Renaming the run or
+            # writing elsewhere changes nothing here.
+            budget = CallBudget()
+            try:
+                slot = budget.reserve(purpose="u002-c10-acceptance", provider="claude",
+                                      model=args.model, per_host=ceilings["per_host"],
+                                      total=ceilings["total"])
+            except ContractError as refusal:
+                receipt["not_executed_reason"] = str(refusal)
+                receipt["call_budget"] = {**budget.counts(), "ceilings": ceilings}
+            else:
+                receipt["call_budget"] = {"slot": slot["id"], "ceilings": ceilings,
+                                          "ledger": str(budget.root),
+                                          "counts_at_reservation": slot["counts_at_reservation"],
+                                          "host": slot["host"]}
+    if receipt.get("not_executed_reason") is None and ready["ready"] and args.model:
         os.environ["ZEUS_CLAUDE_ASSIGNMENTS"] = "worker:implementation/implement"
         os.environ["ZEUS_CLAUDE_MODEL"] = args.model
         os.environ["ZEUS_CLAUDE_MAX_BUDGET_USD"] = str(args.budget)
@@ -447,6 +467,9 @@ def call(args, out, stack=None):
                     break
                 time.sleep(1)
             receipt["workdir_removed"] = not workdir.exists()
+            if slot is not None:
+                CallBudget().settle(slot["id"], outcome=str(receipt.get("execution", {}).get("status")),
+                                    detail={"label": args.label, "executed": bool(receipt.get("executed"))})
 
     receipt["finished_at"] = now()
     measured = receipt.get("runner_measured", {}).get("tests_after", {})
@@ -460,7 +483,7 @@ def call(args, out, stack=None):
     if receipt["mode"] == "fixture":
         suffix = "fixture"
     elif receipt.get("executed"):
-        suffix = f"call{already_made(out, args.label) + 1}"
+        suffix = f"call{receipts_here(out, args.label) + 1}"
     else:
         suffix = "not-executed"  # a refusal is a record of its own, never an unnumbered call
     path = out / f"{args.label}-{suffix}-receipt.json"

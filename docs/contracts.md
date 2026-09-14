@@ -628,14 +628,28 @@ byte limit, a total byte limit and a bounded queue, with one monotonic deadline 
 and a tick and cancel check that keep working while no output arrives and while the child ignores
 its input. Entry is the moment the process starts, because initialization inside a provider can
 already change the workspace: every failure after it leaves termination evidence and blocks, and
-only a failure before it stays an ordinary retry. Termination stops the process tree this harness
-started and then proves the exit, by the group on POSIX and by the tree kill on Windows; an
-unproven termination is an unknown outcome that blocks rather than a failure that may be retried,
-and no pipe is closed while a thread is still blocked inside it.
+only a failure before it stays an ordinary retry. The process tree is owned from the moment it is
+created rather than hunted afterwards: on Windows the process starts suspended, joins a job object
+that kills its members when it closes, is verified to be a member, and only then runs, so nothing
+it starts is outside the boundary; on POSIX it starts in a new session and the group id is taken at
+spawn rather than read back from a process that may already be gone. Termination produces two
+receipts, one for the process this harness started and one for the tree, and only both together
+end a run: a parent that exited proves nothing about what it left behind, and a kill command that
+reports "no such process" after the parent is gone has killed nothing. An unproven tree is an
+unknown outcome that blocks rather than a failure that may be retried, and no pipe is closed while
+a thread is still blocked inside it.
 
 A result is named from what was observed. A clean exit, an assistant sentence, tool activity with
 no answer, an absent terminal message, two conflicting terminal messages, a truncated stream, a
-refused permission and a budget stop are distinct outcomes and none of them is acceptance. Output
+refused permission and a budget stop are distinct outcomes and none of them is acceptance. What a
+terminal message reports and how the process ended are two facts and the earlier one never settles
+the later: a success followed by a non-zero exit, or by a stop this harness had to perform, is not
+a finished run. An answer belongs to the session this attempt opened or to no attempt here, so the
+identifiers the provider reports at startup and at the end are compared with the one that was
+requested, and absent, disagreeing or conflicting identifiers each refuse the answer rather than
+passing as a binding. The model the provider reports is compared with the model that was asked
+for; an exact name that comes back different is refused, and an alias cannot be decided here and
+is recorded as undecided rather than as agreement. Output
 that was read but never examined is lost output whichever way it was lost, by a byte limit, by a
 full queue or by a reader that died, and a run that lost output is recorded as such rather than as
 a shorter record of a clean one; a startup report the provider never sent is recorded as absent
@@ -656,7 +670,12 @@ executable identity, working revision and permission policy are recorded as name
 never as values. Foreign diagnostic text travels outward as a digest only. Changing a task's
 provider clears no block, no reservation and no attempt budget. Running a provider's CLI directly
 on the host is not strong isolation, and no claim here says an effect that already happened can
-be undone.
+be undone. Real provider calls made for acceptance experiments are limited by a ledger, not by an
+argument: the ceilings come from the packaged policy, the ledger sits at one fixed place per
+machine outside any checkout, the host is identified from the machine's own facts, a slot is taken
+under a lock before any process can start, and a slot that was reserved and never settled stays
+counted because an interrupted experiment may already have reached the provider. A run's label and
+output directory are names and places, never budget authority.
 
 # SDD preparation contracts
 

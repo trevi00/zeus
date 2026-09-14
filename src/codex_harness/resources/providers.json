@@ -20,11 +20,25 @@
       "model_setting": "ZEUS_CLAUDE_MODEL",
       "model_pattern": "^(claude-[a-z0-9][a-z0-9._-]*|fable|opus|sonnet|haiku)$",
       "controls": {
-        "max_budget_usd": {"setting": "ZEUS_CLAUDE_MAX_BUDGET_USD", "kind": "number", "required": true,
-                           "minimum": 0.01, "maximum": 20},
-        "timeout_seconds": {"setting": "ZEUS_CLAUDE_TIMEOUT_SECONDS", "kind": "integer", "required": false,
-                            "minimum": 30, "maximum": 3600},
-        "executable": {"setting": "ZEUS_CLAUDE_EXECUTABLE", "kind": "path", "required": false}
+        "max_budget_usd": {
+          "setting": "ZEUS_CLAUDE_MAX_BUDGET_USD",
+          "kind": "number",
+          "required": true,
+          "minimum": 0.01,
+          "maximum": 20
+        },
+        "timeout_seconds": {
+          "setting": "ZEUS_CLAUDE_TIMEOUT_SECONDS",
+          "kind": "integer",
+          "required": false,
+          "minimum": 30,
+          "maximum": 3600
+        },
+        "executable": {
+          "setting": "ZEUS_CLAUDE_EXECUTABLE",
+          "kind": "path",
+          "required": false
+        }
       },
       "runtime": {
         "output_format": "stream-json",
@@ -38,26 +52,58 @@
         "restricted": false,
         "restricted_note": "--restricted confines the file tools to the working directories and ignores the host's user, project and local settings without changing how it authenticates. It is off because turning it on changes what the verified configuration is, and verifying it costs a real call this bundle's per-host ceiling no longer allows.",
         "session": "explicit_uuid_per_attempt",
-        "tools": ["Bash", "Read", "Edit", "Write", "Glob", "Grep"],
-        "allowed_tools": ["Read", "Edit", "Write", "Glob", "Grep",
-                          "Bash(python -m pytest *)", "Bash(python -m unittest *)",
-                          "Bash(python -m compileall *)", "Bash(git status *)", "Bash(git diff *)"],
-        "disallowed_tools": ["Task", "WebFetch", "WebSearch", "mcp__*"],
+        "tools": [
+          "Bash",
+          "Read",
+          "Edit",
+          "Write",
+          "Glob",
+          "Grep"
+        ],
+        "allowed_tools": [
+          "Read",
+          "Edit",
+          "Write",
+          "Glob",
+          "Grep",
+          "Bash(python -m pytest *)",
+          "Bash(python -m unittest *)",
+          "Bash(python -m compileall *)",
+          "Bash(git status *)",
+          "Bash(git diff *)"
+        ],
+        "disallowed_tools": [
+          "Task",
+          "WebFetch",
+          "WebSearch",
+          "mcp__*"
+        ],
         "uncontrolled_inheritance": [
           "managed (administrator) settings still apply",
           "CLAUDE.md discovery in the working directory and home is context, not execution",
           "the host's existing authentication (subscription or API credentials) is used unchanged",
           "skills, custom commands and subagent definitions in the host's home still load; only --bare excludes them and it would require an API key instead of the existing login"
-        ]
+        ],
+        "experiment_call_budget": {
+          "per_host": 2,
+          "total": 4,
+          "note": "Real provider calls allowed for acceptance experiments. Counted in a per-machine ledger outside any checkout, reserved before a process can start, and kept if a run is interrupted. A run's label and output directory are names, not authority."
+        }
       }
     }
   },
   "assignments": [
     {
       "provider": "claude",
-      "roles": ["worker:implementation"],
-      "actions": ["implement"],
-      "workloads": ["implementation"],
+      "roles": [
+        "worker:implementation"
+      ],
+      "actions": [
+        "implement"
+      ],
+      "workloads": [
+        "implementation"
+      ],
       "read_only": false
     }
   ]

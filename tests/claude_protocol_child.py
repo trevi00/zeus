@@ -37,8 +37,26 @@ def option(argv, name, default=None):
     return argv[argv.index(name) + 1] if name in argv and argv.index(name) + 1 < len(argv) else default
 
 
-def init(session):
-    emit({"type": "system", "subtype": "init", "session_id": session, "model": "stub-reported-model",
+def ticking_grandchild(marker, detached=False):
+    """A process this child starts that keeps writing to a file until something stops it.
+
+    The file is the observation: a caller can see the tree is really gone by the counter standing
+    still. `detached` gives it its own stdio, so nothing keeps it tied to this process's pipes.
+    """
+    program = ("import sys, time\n"
+               "path = sys.argv[1]\n"
+               "count = 0\n"
+               "while True:\n"
+               "    count += 1\n"
+               "    open(path, 'a', encoding='utf-8').write(str(count) + chr(10))\n"
+               "    time.sleep(0.1)\n")
+    streams = {"stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL,
+               "stderr": subprocess.DEVNULL} if detached else {}
+    return subprocess.Popen([sys.executable, "-c", program, marker], **streams)
+
+
+def init(session, model="stub-reported-model"):
+    emit({"type": "system", "subtype": "init", "session_id": session, "model": model,
           "tools": ["Read", "Edit"], "mcp_servers": [], "plugins": [], "cwd": os.getcwd()})
 
 
@@ -95,8 +113,9 @@ def main(argv):
     record()
     digest = (observation["stdin"] or {}).get("sha256", "")
 
+    init_model = model if scenario != "wrong_model" else "some-other-model"
     if scenario == "normal":
-        init(session)
+        init(session, init_model)
         tool_round(session)
         emit({"type": "assistant", "session_id": session,
               "message": {"id": "msg_2", "role": "assistant",
@@ -106,20 +125,50 @@ def main(argv):
         result(session, text='{"summary":"fixture"}',
                structured={"summary": digest, "tests": ["fixture test"]})
         return 0
+    if scenario == "wrong_model":
+        init(session, init_model)
+        result(session, structured={"summary": digest, "tests": ["different model"]})
+        return 0
+    if scenario == "wrong_session":
+        init(session, init_model)
+        emit({"type": "result", "subtype": "success", "is_error": False, "duration_ms": 3,
+              "num_turns": 1, "result": "", "session_id": "00000000-0000-4000-8000-000000000001",
+              "structured_output": {"summary": digest, "tests": ["another session"]}})
+        return 0
+    if scenario == "nosession":
+        emit({"type": "result", "subtype": "success", "is_error": False, "duration_ms": 3,
+              "num_turns": 1, "result": "",
+              "structured_output": {"summary": digest, "tests": ["no session id"]}})
+        return 0
+    if scenario == "nonzero":
+        init(session, init_model)
+        result(session, structured={"summary": digest, "tests": ["exits badly"]})
+        return 7
+    if scenario == "orphan":
+        # The counterexample Codex reproduced: a grandchild with its own stdio that keeps running
+        # after this process reports success and exits cleanly.
+        marker = os.path.abspath("orphan-marker.txt")
+        child = ticking_grandchild(marker, detached=True)
+        observation["orphan_pid"] = child.pid
+        observation["orphan_marker"] = marker
+        record()
+        init(session, init_model)
+        result(session, structured={"summary": digest, "tests": ["leaves a grandchild behind"]})
+        return 0
     if scenario == "noinit":
         result(session, structured={"summary": digest, "tests": ["no startup report"]})
         return 0
     if scenario == "empty":
-        init(session)
+        init(session, init_model)
         result(session, text="")
         return 0
     if scenario == "toolonly":
-        init(session)
+        init(session, init_model)
         tool_round(session)
         result(session, text="")
         return 0
     if scenario == "malformed":
-        init(session)
+        init(session, init_model)
         sys.stdout.buffer.write(b'{"type": "assistant", "message": {"cont\n')
         sys.stdout.buffer.write(b'not json at all\n')
         sys.stdout.buffer.write(b'[1, 2, 3]\n')
@@ -127,61 +176,61 @@ def main(argv):
         result(session, structured={"summary": digest, "tests": ["fixture test"]})
         return 0
     if scenario == "noterminal":
-        init(session)
+        init(session, init_model)
         tool_round(session)
         return 0
     if scenario == "conflict":
-        init(session)
+        init(session, init_model)
         result(session, structured={"summary": digest, "tests": ["first"]})
         result(session, structured={"summary": digest, "tests": ["second"]})
         return 0
     if scenario == "redelivered":
-        init(session)
+        init(session, init_model)
         for _ in range(2):
             result(session, structured={"summary": digest, "tests": ["same"]})
         return 0
     if scenario == "badschema":
-        init(session)
+        init(session, init_model)
         result(session, structured={"summary": 12345, "tests": "not-a-list"})
         return 0
     if scenario == "error":
-        init(session)
+        init(session, init_model)
         result(session, subtype="error_during_execution", is_error=True, text="something failed")
         return 1
     if scenario == "budget":
-        init(session)
+        init(session, init_model)
         result(session, subtype="error_during_execution", is_error=True, text="Budget limit reached")
         return 1
     if scenario == "maxturns":
-        init(session)
+        init(session, init_model)
         result(session, subtype="error_max_turns", is_error=True, text="turn limit")
         return 1
     if scenario == "denied":
-        init(session)
+        init(session, init_model)
         emit({"type": "system", "subtype": "permission_denied", "uuid": "denial-1",
               "tool_name": "Bash", "session_id": session})
         result(session, text="")
         return 0
     if scenario == "canary":
-        init(session)
+        init(session, init_model)
         sys.stderr.write("provider diagnostic with " + CANARY + " inside\n")
         sys.stderr.flush()
         result(session, subtype="error_during_execution", is_error=True,
                text="failed while handling " + CANARY)
         return 1
     if scenario == "forgery":
-        init(session)
+        init(session, init_model)
         result(session, structured={"summary": FORGED, "tests": ["claims authority it does not have"]})
         return 0
     if scenario == "silent":
         time.sleep(90)
         return 0
     if scenario == "nostdin":
-        init(session)
+        init(session, init_model)
         time.sleep(90)
         return 0
     if scenario == "flood":
-        init(session)
+        init(session, init_model)
         payload = "x" * 60000
         for index in range(60):
             emit({"type": "assistant", "session_id": session,
@@ -190,32 +239,24 @@ def main(argv):
         result(session, structured={"summary": digest, "tests": ["flood"]})
         return 0
     if scenario == "longline":
-        init(session)
+        init(session, init_model)
         sys.stdout.buffer.write(b'{"type":"assistant","pad":"' + b"y" * 400000 + b'"}\n')
         sys.stdout.buffer.flush()
         result(session, structured={"summary": digest, "tests": ["long"]})
         return 0
     if scenario == "tree":
         marker = os.path.abspath("grandchild-marker.txt")
-        child = subprocess.Popen(
-            [sys.executable, "-c",
-             "import sys, time\n"
-             "path = sys.argv[1]\n"
-             "count = 0\n"
-             "while True:\n"
-             "    count += 1\n"
-             "    open(path, 'a', encoding='utf-8').write(str(count) + '\\n')\n"
-             "    time.sleep(0.1)\n", marker])
+        child = ticking_grandchild(marker)
         observation["grandchild_pid"] = child.pid
         observation["grandchild_marker"] = marker
         record()
-        init(session)
+        init(session, init_model)
         emit({"type": "assistant", "session_id": session,
               "message": {"id": "msg_tree", "role": "assistant",
                           "content": [{"type": "text", "text": "spawned"}]}})
         time.sleep(90)
         return 0
-    init(session)
+    init(session, init_model)
     result(session, structured={"summary": digest, "tests": ["fixture test"]})
     return 0
 

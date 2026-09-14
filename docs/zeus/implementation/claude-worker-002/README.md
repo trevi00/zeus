@@ -92,11 +92,20 @@ PG 예약·감사 → 실행 → 독립 증거 검사 → outbox 경로에 연�
 hook·초기화가 이미 작업 트리를 건드렸을 수 있으므로 어떤 예외도 "진입 안 함"으로 읽지 않는다. 예약·필수 감사·
 unconfirmed 표식은 진입 전에 함께 커밋되고, 진입 후 실패는 U001의 termination·blocked·reconcile을 그대로 탄다.
 
-### 3.5 프로세스 종료 (C06)
+### 3.5 프로세스 트리 소유와 종료 (C06)
 
-자기가 만든 트리만 종료하고 **종료를 증명**한다. POSIX는 `killpg` 후 프로세스 그룹이 비었는지 최대 10초 폴링하고,
-Windows는 `taskkill /T /F`의 반환값(0 또는 128=이미 없음)과 부모 종료를 함께 본다. 증명 실패는 unknown이며
-`ContractError`로 올라가 blocked가 된다(다음 실행 불가). 전역 kill·운영 서비스 재시작은 없다.
+**트리를 뒤늦게 쫓지 않고 생성 순간부터 소유한다**(`adapters/process_tree.py`).
+
+- **Windows**: 프로세스를 `CREATE_SUSPENDED`로 만들고, 닫히면 구성원을 모두 죽이는 job object에 넣고,
+  `IsProcessInJob`으로 **소속을 확인한 뒤에야** 재개한다. 그래서 자식은 경계 밖에서 한 명령도 실행하지 않으며 그가
+  만드는 모든 프로세스가 같은 job에 들어간다. 종료는 `TerminateJobObject` 후 job 자신의 회계(`ActiveProcesses`)가
+  0이 될 때까지 본다.
+- **POSIX**: 새 세션으로 시작해 프로세스 그룹이 경계이고, **그룹 id를 spawn 시점에 붙잡는다**(이미 죽은 프로세스에게
+  되물으면 답이 없다). 그룹이 빌 때까지 신호 0으로 폴링한다.
+
+**영수증은 둘이다.** 이 하네스가 시작한 프로세스에 대한 것(`parent`)과 트리에 대한 것(`tree`). 수용은 **둘 다**
+필요하다. 부모의 종료는 그가 남긴 것에 대해 아무것도 증명하지 않고, 부모가 사라진 뒤 "그런 프로세스 없음"을 돌려준
+종료 명령은 아무것도 죽이지 않았다. 트리를 증명하지 못하면 unknown이며 `ContractError`로 올라가 blocked가 된다.
 
 **리더 스레드가 읽는 중인 파이프는 닫지 않는다.** 이건 구현 중 실제로 밟은 결함이다(§5.3).
 
@@ -108,7 +117,10 @@ Claude 이벤트의 `method` 라벨은 `claude/<원본타입>[/<subtype>]`으로
 
 | 관측 | 결과 |
 |---|---|
-| 정상 구조화 출력 | `accepted` (단, schema는 **여기서** 검증) |
+| 정상 구조화 출력 + 스스로 코드 0으로 종료 + 세션 일치 | `accepted` (단, schema는 **여기서** 검증) |
+| success terminal 뒤 0이 아닌 종료, 또는 러너가 강제 종료해야 했던 실행 | `provider_failure` (`claude-provider-exit-conflict`) |
+| 다른 세션의 결과, 보고 없음, init과 terminal의 세션 불일치 | `provider_failure` (`claude-provider-session-*`) |
+| 정확한 모델명을 요청했는데 다른 모델이 보고됨 | `provider_failure` (`claude-provider-model-mismatch`). 별칭 요청은 판정 불가로 기록 |
 | exit 0, 출력 없음 | `empty_answer` |
 | 도구만 돌고 출력 없음 | `tool_only` |
 | terminal 없음 / 상충 terminal / 잘린 스트림 / 시작 실패 | `provider_failure` (`claude-provider-*`) |
@@ -170,7 +182,9 @@ Codex가 정하고 그때 호출 1회로 확인하면 된다.
 | `src/codex_harness/domain/providers.py` | 신규 | 정책·설정 파싱과 provider 선택, 세 가지 거절 |
 | `src/codex_harness/domain/provider_stream.py` | 신규 | provider별 이벤트 reader (Codex는 기존 로직 그대로 이동) |
 | `src/codex_harness/adapters/providers.py` | 신규 | 패키지 정책 로드 + 호스트 설정 결합 |
-| `src/codex_harness/adapters/claude_cli.py` | 신규 | Claude Code CLI 전송, 프로세스·스트림·종료·분류 |
+| `src/codex_harness/adapters/claude_cli.py` | 신규 | Claude Code CLI 전송, 스트림·분류·세션 결속 |
+| `src/codex_harness/adapters/process_tree.py` | 신규 | 생성 순간부터 소유하는 프로세스 트리(Windows job object / POSIX 그룹), parent·tree 두 영수증 |
+| `src/codex_harness/adapters/call_budget.py` | 신규 | 실측 호출 원장: 기계당 고정 위치, 호스트 identity, spawn 전 원자적 슬롯 |
 | `src/codex_harness/adapters/executor.py` | 수정 | provider 선택, 진입 시점 축, provider별 stream, 세션 결속 |
 | `src/codex_harness/domain/invocation.py` | 수정 | `claude_cli` 지원표, `unconfirmed` 상태, provider별 usage |
 | `src/codex_harness/domain/policy.py` | 수정 | 스트림 한도 4개 |
@@ -180,6 +194,7 @@ Codex가 정하고 그때 호출 1회로 확인하면 된다.
 | `scripts/claude_real_call.py` | 신규 | C10 실측 러너(픽스처 모드 포함, 호출 상한 자체 강제) |
 | `tests/claude_protocol_child.py` | 신규 | 프로토콜 시험 자식(장애 주입 도구) |
 | `tests/test_claude_assignment.py` / `test_claude_cli_process.py` / `test_claude_execution.py` | 신규 | C01–C09 |
+| `tests/test_claude_review_boundaries.py` | 신규 | 1차 독립 검토 R1–R4의 반례를 안전 결과로 뒤집은 회귀 |
 | `docs/contracts.md` | 수정 | `INV-CLAUDE-WORKER-001` |
 
 ## 5. 검증
@@ -258,7 +273,25 @@ Codex 검토 전에 스스로 같은 각도로 공격해 다섯 가지를 고쳤
 5. **증명하지 못한 종료가 작업을 막는다는 것을 어댑터 수준에서만 시험했다.** 실행기 경로로 끝까지 가는 회귀를 넣어,
    provider가 한 번 돌고 `blocked`/`reconciliation_required`가 되며 다음 claim이 거절되는 것을 확인한다.
 
-### 5.5 실제 Claude 호출 (Windows)
+### 5.5 1차 독립 검토(review 5200446046) 반영
+
+Codex가 실제 임시 프로세스로 네 곳을 재현했다. 전부 영수증이 아는 것보다 많이 말하던 자리다.
+
+| 지적 | 반영 | 회귀(`tests/test_claude_review_boundaries.py`) |
+|---|---|---|
+| **R1** 살아 있는 자손을 종료 확인으로 기록 | 트리를 **생성 순간부터 소유**한다(§3.5). Windows는 suspended 생성 → job object 배정 → 소속 확인 → 재개, 종료는 job 회계가 0이 될 때까지. POSIX는 spawn 시점에 잡은 그룹을 빌 때까지 폴링하며 **부모가 먼저 죽어도 생략하지 않는다**. 영수증이 `parent`/`tree` 둘로 갈리고 수용은 둘 다 필요하다 | `test_r1_a_grandchild_that_outlives_its_parent_is_killed_...`(Codex 반례와 같은 detached 손자, marker 파일이 멈추는지로 관측), `..._receipt_and_the_tree_receipt_are_separate`, `..._an_unproven_tree_is_unknown_even_when_the_parent_exited_cleanly`, `..._a_tree_that_cannot_be_owned_never_starts` |
+| **R2** success terminal 뒤 exit 7을 성공 처리 | terminal이 보고한 것과 프로세스가 끝난 방식은 **두 사실**이고 앞의 것이 뒤의 것을 결정하지 않는다. 스스로 0으로 끝나지 않았거나 러너가 강제 종료해야 했으면 `claude-provider-exit-conflict` | `test_r2_a_success_message_followed_by_a_non_zero_exit_...`, `..._a_run_this_runner_had_to_stop_is_not_clean_...`, 실행기 전파 `test_a_result_the_transport_refuses_never_becomes_a_finished_task[nonzero]` |
+| **R3** 다른 세션 id의 결과를 수용 | init·terminal의 세션 id를 요청한 id와 대조한다. 없음·불일치·상충 모두 결속 실패로 답을 거절한다(`claude-provider-session-*`). 모델도 같은 방식으로 갈라 정확한 이름의 불일치는 거절하고 **별칭은 판정 불가로 기록**한다 | `test_r3_a_result_from_another_session_...`, `..._an_unobserved_identifier_is_never_read_as_a_match`, `..._a_reported_model_that_differs_...`, `..._an_alias_request_is_recorded_as_undecidable_...`, 실행기 전파 2건 |
+| **R4** label 변경으로 호출 한도 우회 | 상한이 **패키지 정책**에서 오고, 세는 곳은 체크아웃 밖 **기계당 고정 원장**(`~/.zeus/claude-call-budget`)이며, 호스트는 기계 자신의 사실로 식별한다. 슬롯은 **잠금 아래 spawn 전에** 잡고, 예약 후 정산되지 않은 슬롯은 계속 센다. `--max-calls` 류 플래그는 제거했다 | `test_r4_renaming_the_run_does_not_return_the_budget`, `..._a_slot_is_taken_before_anything_starts_...`, `..._two_runners_cannot_both_take_the_last_slot`(실제 별도 프로세스), `..._an_unreadable_slot_is_a_taken_slot`, `..._the_host_is_identified_by_the_machine_...` |
+
+실제 확인: 라벨을 `windows-renamed`로 바꾸고 다른 출력 디렉터리를 줘도 `2 real calls are already recorded for this
+host (ceiling 2)`로 거절된다. 이미 쓴 Windows 2회는 커밋된 영수증에서 원장으로 **한 번 이관**했다(지우거나 라벨을
+바꿔 우회하지 않았다). 이관 사실은 각 슬롯의 `detail.imported_receipt`에 남는다.
+
+부수적으로 프로토콜 자식이 요청과 다른 모델을 보고하고 있었다. 새 모델 검사가 그걸 먼저 잡았고, 자식이 실제 CLI처럼
+요청받은 모델을 보고하도록 고친 뒤 불일치는 전용 시나리오로 분리했다.
+
+### 5.6 실제 Claude 호출 (Windows)
 
 `docs/zeus/evidence/claude-real-call-001/` (호출별 영수증, 러너가 상한 2회를 스스로 강제한다).
 
@@ -275,7 +308,7 @@ Codex 검토 전에 스스로 같은 각도로 공격해 다섯 가지를 고쳤
 증거 검사기가 기계적으로 재생하지 못했다(1회차 `verified_mismatch 1`, 2회차 `not_checked 2`, 두 번 다 verdict
 `incomplete`). 하네스는 그 주장을 증거로 승격하지 않았고, 통과를 말하는 근거는 **러너가 직접 돌린 pytest**다.
 
-### 5.6 통제한 것과 통제하지 못한 것 (2회차 `system/init` 실측)
+### 5.7 통제한 것과 통제하지 못한 것 (2회차 `system/init` 실측)
 
 | 상속 경로 | 결과 |
 |---|---|
@@ -294,7 +327,7 @@ Codex 검토 전에 스스로 같은 각도로 공격해 다섯 가지를 고쳤
 **재현성을 이유로 인증 방식을 몰래 바꾸지 않는다**는 명세에 따라 쓰지 않았다. `Task`를 거부해 서브에이전트 실행
 경로는 닫혀 있지만, 로드된 커맨드·스킬 정의 자체는 남는다. 이 한 칸이 이번 범위에서 통제하지 못한 경로다.
 
-### 5.7 실행하지 않은 것
+### 5.8 실행하지 않은 것
 
 - **WSL 실제 Claude 호출**: WSL(Ubuntu 26.04)에 Claude Code가 설치돼 있지 않다(로그인 셸에서 `claude: command not
   found`, node 없음). PATH가 interop으로 `/mnt/c/.../claude.exe`에 닿기는 하지만 그건 Windows 프로세스를 재는 것이라

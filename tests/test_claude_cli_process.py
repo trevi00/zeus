@@ -184,7 +184,7 @@ def test_c04_usage_comes_only_from_the_terminal_message_and_names_its_parts(tmp_
                                "cache_creation_input_tokens": 5, "cache_read_input_tokens": 7}
     # 120 + 30 + 5 + 7 counted once, although two identical result messages arrived.
     assert record["total_tokens"] == 162 and record["basis"] == "result_total_including_cache"
-    assert record["confirmed_model"] == "stub-reported-model"
+    assert record["confirmed_model"] == "claude-stub-redelivered"
     assert record["requested_model"] == "claude-stub-redelivered"
     assert record["reported_cost_usd"] == 0.0123 and record["cost_source"] == "provider_estimate"
     assert "never a billed amount" in record["cost_note"]
@@ -260,15 +260,14 @@ def test_c06_cancelling_ends_the_run_without_waiting_for_the_deadline(tmp_path):
 
 def test_c06_the_descendants_of_the_child_are_killed_with_it(tmp_path):
     result, _, _, runtime = execute("tree", tmp_path, timeout=5)
-    assert result["process"]["confirmed"], "the adapter proved the process it started is gone"
-    assert result["process"]["exit_code"] is not None, "the exit is proven by an exit code"
-    descendants = result["process"]["descendants"]
-    if os.name != "nt":
-        assert result["process"]["group_empty"] is True and descendants["confirmed"] is True
+    assert result["process"]["confirmed"], "the parent and the tree were both proven gone"
+    assert result["process"]["parent"]["confirmed"] and result["process"]["exit_code"] is not None
+    tree = result["process"]["tree"]
+    assert tree["confirmed"] is True
+    if os.name == "nt":
+        assert tree["method"] == "job_object" and tree["active_processes"] == 0
     else:
-        # Windows has no group to poll, so the tree kill's result is recorded beside the proven
-        # parent exit rather than being allowed to turn that exit into an unknown outcome.
-        assert descendants["method"] == "taskkill /T /F" and "result" in descendants
+        assert tree["method"] == "process_group" and tree["group_empty"] is True
     marker = Path(observation(tmp_path)["grandchild_marker"])
     assert marker.exists(), "the grandchild was alive and writing before the kill"
     time.sleep(1.5)

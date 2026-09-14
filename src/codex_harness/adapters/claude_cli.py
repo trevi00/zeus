@@ -28,7 +28,6 @@ import os
 import queue
 import re
 import shutil
-import signal
 import subprocess
 import threading
 import time
@@ -37,6 +36,7 @@ from uuid import uuid4
 
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.execution_output import completed_output
+from codex_harness.adapters.process_tree import ProcessTree
 from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.observation import redact_text
 from codex_harness.domain.policy import POLICY
@@ -45,6 +45,9 @@ from codex_harness.domain.provider_stream import ClaudeStream
 IDENTITY = ClaudeStream.identity
 TRANSPORT = ClaudeStream.transport
 SESSION_ID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+# Names that stand for "whatever the latest model of this family is". A provider that answers with
+# a concrete model has not disagreed with an alias, and this harness cannot decide the pairing.
+MODEL_ALIASES = ("fable", "opus", "sonnet", "haiku", "default")
 FLAG = re.compile(r"--[a-zA-Z][a-zA-Z0-9-]*")
 
 # The child inherits only what it needs to start and to authenticate as this host already does.
@@ -139,6 +142,7 @@ class ClaudeCodeRuntime:
         self.help_digest = None
         self.capabilities = ()
         self.process = None
+        self.tree = None
         self.session_id = None
         self._termination = None
 
@@ -172,8 +176,11 @@ class ClaudeCodeRuntime:
         return self
 
     def __exit__(self, *_):
-        if self.process is not None and self.process.poll() is None:
-            self._terminate("context_exit")
+        if self.tree is not None:
+            if self.process is not None and self.process.poll() is None:
+                self._terminate("context_exit")
+            self.tree.close()  # on Windows the job's kill-on-close is the last guarantee
+            self.tree = None
 
     # ---- command construction -------------------------------------------------------------------
     def _planned_flags(self) -> list:
@@ -272,15 +279,16 @@ class ClaudeCodeRuntime:
         deadline = time.monotonic() + float(timeout)
         events, state = [], _StreamState(limits)
         started = time.monotonic()
-        flags = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt"
-                 else {"start_new_session": True})
         try:
-            self.process = subprocess.Popen(argv, cwd=workspace, stdin=subprocess.PIPE,
-                                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                            env=environment, **flags)
-        except OSError as exc:
-            # Nothing was created, so this is still a refusal the caller may retry.
+            # The boundary exists before the process runs, so a grandchild cannot be created
+            # outside it and then be missed when the parent's exit is mistaken for the tree's.
+            self.tree = ProcessTree.spawn(argv, cwd=workspace, env=environment,
+                                          stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                          stderr=subprocess.PIPE)
+        except Exception as exc:
+            # Nothing is left running outside a boundary, so this is still a refusal to retry.
             raise ContractError("Claude Code CLI could not be started: " + type(exc).__name__) from exc
+        self.process = self.tree.process
         if on_enter is not None:
             # The process exists: from here on its initialization can already change the workspace.
             on_enter()
@@ -339,6 +347,13 @@ class ClaudeCodeRuntime:
                     if on_event is not None:
                         on_event(normalized)
         finally:
+            if reason == "stream_closed" and process.poll() is None:
+                # Its output ended; give it a moment to end by itself so the receipt can say
+                # whether it exited on its own or had to be stopped.
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
             termination = self._terminate(reason or "completed")
             # A pipe is closed only once the thread that was reading or writing it has finished.
             # Closing one while a thread is blocked inside it waits for that thread's buffer lock,
@@ -362,68 +377,25 @@ class ClaudeCodeRuntime:
 
     # ---- termination ----------------------------------------------------------------------------
     def _terminate(self, reason: str) -> dict:
-        """Stop only the tree this adapter started, then prove it is gone."""
-        process = self.process
-        record = {"reason": reason, "method": None, "exit_code": None, "confirmed": False,
-                  "escalated": False, "group_empty": None, "signal_result": None}
-        if process is None:
-            record.update(method="never_started", confirmed=True)
+        """End the tree this adapter owns and report the parent and the tree separately.
+
+        A parent that exited proves nothing about what it left behind, so the tree keeps its own
+        receipt and acceptance needs both. Nothing here can turn a surviving descendant into a
+        finished run, and nothing a kill command reports can withdraw an exit code already in hand.
+        """
+        if self.tree is None:
+            record = {"reason": reason, "parent": {"confirmed": True, "never_started": True},
+                      "tree": {"confirmed": True, "method": "never_started"}, "confirmed": True,
+                      "boundary": None, "note": "no process was created"}
             self._termination = record
             return record
-        if process.poll() is not None:
-            record.update(method="already_exited", exit_code=process.returncode, confirmed=True)
-            self._termination = record
-            return record
-        group = None
-        if os.name == "nt":
-            record["method"] = "taskkill_tree"
-            try:
-                killed = subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                                        capture_output=True, timeout=30)
-                record["signal_result"] = killed.returncode
-            except (OSError, subprocess.SubprocessError) as exc:
-                record["signal_result"] = type(exc).__name__
-        else:
-            record["method"] = "killpg"
-            try:
-                group = os.getpgid(process.pid)
-                os.killpg(group, signal.SIGTERM)
-                record["signal_result"] = 0
-            except (ProcessLookupError, PermissionError, OSError) as exc:
-                record["signal_result"] = type(exc).__name__
-        try:
-            process.wait(timeout=20)
-            record.update(exit_code=process.returncode, confirmed=True)
-        except subprocess.TimeoutExpired:
-            record["escalated"] = True
-            try:
-                if os.name == "nt":
-                    process.kill()
-                else:
-                    os.killpg(group if group is not None else os.getpgid(process.pid), signal.SIGKILL)
-                process.wait(timeout=20)
-                record.update(exit_code=process.returncode, confirmed=True)
-            except (subprocess.TimeoutExpired, ProcessLookupError, PermissionError, OSError) as exc:
-                record.update(confirmed=False, escalation_error=type(exc).__name__)
-        # What counts as proof differs by platform, and the difference is recorded rather than
-        # smoothed over. The exit of the process this adapter started is proven the same way on
-        # both: `wait` returned an exit code. What the kill *command* reported is evidence about
-        # the descendants, never a reason to call a proven exit unknown - a loaded host can make
-        # `taskkill` time out or answer oddly long after the tree is gone.
-        if os.name != "nt":
-            if record["confirmed"] and group is not None:
-                # A leader that exited proves nothing about its descendants; the group does.
-                record["group_empty"] = _group_empty(group, deadline=time.monotonic() + 10)
-                record["descendants"] = {"method": "process group", "result": record["group_empty"],
-                                         "confirmed": record["group_empty"] is True}
-                record["confirmed"] = record["group_empty"] is True
-        else:
-            record["descendants"] = {
-                "method": "taskkill /T /F", "result": record["signal_result"],
-                "confirmed": record["signal_result"] in (0, 128),  # 128: the tree was already gone
-                "note": "Windows exposes no group to poll; the tree kill's own result is the evidence"}
-        self._termination = record
-        return record
+        record = self.tree.terminate(reason)
+        parent = record["parent"]
+        flattened = {**record, "exit_code": parent.get("exit_code"),
+                     "escalated": bool(parent.get("escalated")),
+                     "ended_on_its_own": bool(parent.get("ended_on_its_own"))}
+        self._termination = flattened
+        return flattened
 
     # ---- result ---------------------------------------------------------------------------------
     def _result(self, *, events, terminal, conflict, state, termination, command, schema, elapsed,
@@ -433,14 +405,15 @@ class ClaudeCodeRuntime:
         reported_session = _text(raw_terminal, "session_id") or state.init_session
         usage = raw_terminal.get("usage") if isinstance(raw_terminal, dict) else None
         cost = raw_terminal.get("total_cost_usd") if isinstance(raw_terminal, dict) else None
+        binding = _session_binding(session_id, state.init_session, reported_session)
+        agreement = _model_agreement(self.model, reported_model)
         result = {
             "provider": IDENTITY, "transport": TRANSPORT, "answer": None, "model_answer_text": "",
             "events": events, "thread_id": session_id, "turn_id": None, "usage": usage if isinstance(usage, dict) else None,
             "rotate": False, "interrupted": False, "requested_model": self.model,
-            "reported_model": reported_model,
-            "session": {"requested": session_id, "reported": reported_session,
-                        "match": None if reported_session is None else reported_session == session_id,
-                        "resume": "unsupported", "basis": "a fresh session id for every attempt"},
+            "reported_model": reported_model, "model_agreement": agreement,
+            "session": {**binding, "resume": "unsupported",
+                        "basis": "a fresh session id for every attempt"},
             "cost": {"reported_usd": cost if type(cost) in (int, float) else None,
                      "source": "provider_estimate" if type(cost) in (int, float) else "unknown",
                      "note": "the provider's own estimate for this run, not a billed amount"},
@@ -462,7 +435,8 @@ class ClaudeCodeRuntime:
             "terminal": _terminal_report(terminal, conflict, state),
         }
         failure = _provider_failure(terminal=terminal, conflict=conflict, state=state,
-                                    termination=termination, reason=reason)
+                                    termination=termination, reason=reason, binding=binding,
+                                    agreement=agreement)
         if failure:
             result["failure"] = failure
             return result
@@ -483,21 +457,6 @@ class ClaudeCodeRuntime:
             return result
         result["answer"] = validated["answer"]
         return result
-
-
-def _group_empty(group: int, deadline: float) -> bool | None:
-    while True:
-        try:
-            os.killpg(group, 0)
-        except ProcessLookupError:
-            return True
-        except PermissionError:
-            return None
-        except OSError:
-            return None
-        if time.monotonic() >= deadline:
-            return False
-        time.sleep(0.1)
 
 
 def _write_prompt(process, prompt: str, state: "_StreamState") -> None:
@@ -753,7 +712,67 @@ def _answer_text(raw_terminal) -> tuple[str, str]:
     return (text if type(text) is str else ""), "result_text"
 
 
-def _provider_failure(*, terminal, conflict, state: _StreamState, termination, reason) -> dict | None:
+def _session_binding(requested: str, init_session, terminal_session) -> dict:
+    """Which session the answer belongs to.
+
+    An identifier nobody reported is unknown, and unknown is not a match: an answer that cannot be
+    tied to the session this attempt opened may belong to another execution entirely.
+    """
+    reported = {name: value for name, value in
+                (("init", init_session), ("terminal", terminal_session)) if value is not None}
+    distinct = set(reported.values())
+    if not reported:
+        state = "unreported"
+    elif len(distinct) > 1:
+        state = "conflicting"
+    elif distinct == {requested}:
+        state = "match"
+    else:
+        state = "mismatch"
+    return {"requested": requested, "reported": reported or None, "state": state,
+            "match": state == "match",
+            "basis": "the provider's own session identifiers, compared with the one this attempt opened"}
+
+
+def _model_agreement(requested: str, reported) -> dict:
+    """Whether the model that answered is the one asked for, or whether that cannot be decided.
+
+    An alias names a family, so a concrete answer to an alias has not disagreed with anything and
+    this harness does not pretend to have checked it. An exact name that comes back different has.
+    """
+    if reported is None:
+        state = "unreported"
+    elif reported == requested:
+        state = "match"
+    elif requested in MODEL_ALIASES:
+        state = "alias_not_decidable"
+    else:
+        state = "mismatch"
+    return {"requested": requested, "reported": reported, "state": state,
+            "decided_here": state in {"match", "mismatch"},
+            "basis": "the model this attempt asked for, beside the one the provider reported"}
+
+
+def _process_conflict(termination, reason) -> str | None:
+    """Why this run's ending contradicts a successful result, or None when it does not.
+
+    A terminal message says what the provider meant to report. How the process ended says what
+    actually happened. A success that arrived before a non-zero exit, or before this runner had to
+    stop the process, is not a clean run, and the earlier message does not settle the later fact.
+    """
+    parent = termination.get("parent") or {}
+    if reason in {"deadline", "cancelled"}:
+        return f"the run was stopped ({reason}); a result that arrived first does not make it clean"
+    if not parent.get("ended_on_its_own"):
+        return "the provider had to be terminated rather than ending on its own"
+    code = parent.get("exit_code")
+    if code not in (0, None):
+        return f"the provider reported success and then exited with code {code}"
+    return None
+
+
+def _provider_failure(*, terminal, conflict, state: _StreamState, termination, reason,
+                      binding=None, agreement=None) -> dict | None:
     """Name what the provider did wrong, before any answer is read out of it."""
     # A failure travels outward (task row, notice, diagnosis request). Foreign diagnostic text
     # never goes with it: the digest and the byte count identify the same stderr in the artifact.
@@ -792,6 +811,18 @@ def _provider_failure(*, terminal, conflict, state: _StreamState, termination, r
             cause = "claude-provider-error-result"
         return {**shared, "cause": cause, "result_subtype": subtype,
                 "detail": "the provider reported an unsuccessful result"}
+    if binding is not None and not binding["match"]:
+        # The answer cannot be tied to the session this attempt opened, so it is not this
+        # attempt's answer whatever it says.
+        return {**shared, "cause": "claude-provider-session-" + binding["state"],
+                "session": binding,
+                "detail": "the result does not belong to the session this attempt opened"}
+    if agreement is not None and agreement["state"] == "mismatch":
+        return {**shared, "cause": "claude-provider-model-mismatch", "model": agreement,
+                "detail": "the provider reported a different model than the one this attempt asked for"}
+    ending = _process_conflict(termination, reason)
+    if ending:
+        return {**shared, "cause": "claude-provider-exit-conflict", "detail": ending}
     if lost:
         return {**shared, "cause": "claude-provider-stream-truncated", "detail": lost}
     return None
