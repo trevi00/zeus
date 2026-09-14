@@ -17,7 +17,8 @@ import time
 
 FLAGS = ("--print", "--output-format", "--input-format", "--verbose", "--model", "--session-id",
          "--permission-mode", "--permission-prompts", "--strict-mcp-config", "--setting-sources",
-         "--tools", "--settings", "--max-budget-usd", "--json-schema", "--version", "--help")
+         "--tools", "--settings", "--max-budget-usd", "--json-schema", "--restricted",
+         "--version", "--help")
 # The same synthetic secret the observation tests use: a provider that prints this must not put it
 # into any log, notice or public row.
 CANARY = "CANARY-7e1d9c3b5a2f4e6d8c0b1a2f3e4d5c6b"
@@ -104,6 +105,9 @@ def main(argv):
         sys.stderr.flush()
         result(session, text='{"summary":"fixture"}',
                structured={"summary": digest, "tests": ["fixture test"]})
+        return 0
+    if scenario == "noinit":
+        result(session, structured={"summary": digest, "tests": ["no startup report"]})
         return 0
     if scenario == "empty":
         init(session)

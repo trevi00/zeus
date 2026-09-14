@@ -299,6 +299,13 @@ def test_the_request_matrix_refuses_what_this_transport_cannot_prove(tmp_path):
     assert accepted["unconfirmed"] == ["read_only"]
     assert set(accepted["unsupported"]) == {"session_resume", "system", "temperature",
                                             "max_output_tokens", "response_format"}
+    # A spend ceiling is passed to the provider and enforced by it; this harness does not verify
+    # that it stopped anything, and the request says which side each effect belongs to.
+    assert set(accepted["declared"]) == {"max_budget_usd", "permission_mode"}
+    assert accepted["effect_verified_here"] == ["model", "output_schema", "timeout"]
+    assert accepted["effect_left_to_provider"] == ["max_budget_usd", "permission_mode"]
+    codex = parse_request("app_server", {"model": "gpt-6-astra", "timeout": 30})
+    assert codex["declared"] == [] and codex["effect_left_to_provider"] == []
     with pytest.raises(ContractError, match="cannot prove it applies"):
         parse_request("claude_cli", {"model": "claude-fable-5-1", "read_only": True})
     with pytest.raises(ContractError, match="not supported by claude_cli"):
@@ -323,3 +330,70 @@ def test_a_missing_cli_is_a_refusal_that_never_starts_anything():
     with pytest.raises(ContractError, match="not installed"):
         runtime.__enter__()
     assert runtime.process is None
+
+
+# ---- self-review: what is recorded when the provider tells us nothing, and when we lose output ----
+
+def test_a_missing_startup_report_is_not_a_report_of_nothing(tmp_path):
+    """An absent `system/init` says nothing about what loaded, which is not the same as an empty list."""
+    reported, _, _, _ = execute("normal", tmp_path)
+    silent, _, _, _ = execute("noinit", tmp_path)
+    assert reported["effective_configuration"]["reported"] is True
+    assert reported["effective_configuration"]["mcp_servers"] == []
+    assert silent["effective_configuration"]["reported"] is False
+    assert "mcp_servers" not in silent["effective_configuration"]
+    assert classify_result(silent) == "accepted", "a missing startup report is not a bad answer"
+
+
+def test_output_that_was_read_but_never_examined_is_lost_output(tmp_path):
+    """The queue is the third way to lose provider output, beside a byte limit and a dead reader.
+
+    The readers must never wait on a full queue, because a child blocked on its own pipe is worse
+    than a dropped line; so a consumer slower than the provider loses lines, and that loss is the
+    failure rather than a quietly shorter record."""
+    runtime = transport("flood", limits={"queue_events": 2, "retained_events": 5})
+    with runtime as opened:
+        result = opened.run("bounded queue fixture", str(tmp_path), SCHEMA, timeout=30,
+                            on_event=lambda event: time.sleep(0.02))
+    assert result["stream"]["counts"].get("queue_full", 0) > 0
+    assert classify_result(result) == "provider_failure"
+    assert "never examined" in result["failure"]["lost_output"]
+    assert result["process"]["confirmed"], "the child was not left blocked on its pipe"
+
+
+def test_each_way_of_losing_output_is_named(tmp_path):
+    """The rule itself, without needing three different hostile children to reach it."""
+    from codex_harness.adapters.claude_cli import _lost_output, _StreamState
+    limits = {"line_bytes": 10, "stream_bytes": 10, "queue_events": 1, "retained_events": 1}
+    assert _lost_output(_StreamState(limits)) is None
+    truncated = _StreamState(limits)
+    truncated.truncated = True
+    assert "output limit" in _lost_output(truncated)
+    overflowed = _StreamState(limits)
+    overflowed.count("queue_full")
+    assert "never examined" in _lost_output(overflowed)
+    broken = _StreamState(limits)
+    broken.reader_errors.append({"stream": "stdout", "error": "OSError"})
+    assert "stdout reader failed" in _lost_output(broken)
+    # A dead stderr reader loses diagnostics, not the record of what the provider did.
+    noisy = _StreamState(limits)
+    noisy.reader_errors.append({"stream": "stderr", "error": "OSError"})
+    assert _lost_output(noisy) is None
+
+
+def test_the_stronger_containment_control_is_available_and_off(tmp_path):
+    """`--restricted` is wired and declared, and stays off until a real call has verified it."""
+    from codex_harness.adapters.providers import packaged_policy
+
+    packaged = packaged_policy().provider("claude").runtime
+    assert packaged["restricted"] is False and packaged["restricted_note"]
+    assert any("skills, custom commands" in row for row in packaged["uncontrolled_inheritance"])
+    off = transport("normal")
+    assert "--restricted" not in off._planned_flags()
+    on = ClaudeCodeRuntime(model="claude-stub-normal", runtime={**RUNTIME, "restricted": True},
+                           executable=str(CHILD), launcher=[sys.executable], max_budget_usd=1.0,
+                           settings_document=claude_settings(RUNTIME))
+    assert "--restricted" in on._planned_flags()
+    with on as opened:
+        argv, manifest = opened._command(schema=SCHEMA, session_id="00000000-0000-4000-8000-000000000002")
+    assert "--restricted" in argv and "--restricted" in manifest

@@ -16,16 +16,21 @@ SUPPORT = {
     'app_server': {'model': 'supported', 'timeout': 'supported', 'output_schema': 'supported',
                    'read_only': 'supported', 'system': 'unsupported', 'temperature': 'unsupported',
                    'max_output_tokens': 'unsupported', 'response_format': 'unsupported'},
-    # `unconfirmed` is the honest third state: the transport has a mechanism for the option but this
-    # harness has not verified that the mechanism enforces the option's meaning. Asking for it is
-    # refused rather than assumed, and asking for its absence is accepted because nothing is claimed.
+    # Four states, because "the transport takes this option" and "this harness knows the option
+    # took effect" are different claims and only one of them is ours to make.
+    #   supported   - passed, and the effect is checked here (the deadline this runner enforces, the
+    #                 schema it validates, the model it compares against what the provider reported)
+    #   declared    - passed, and the effect belongs to the provider; this harness does not verify it
+    #                 and the receipt says so, so a spend ceiling is never read as a spend guarantee
+    #   unconfirmed - a mechanism exists but no claim is made, so asking for it is refused
+    #   unsupported - refused when present, by name
     'claude_cli': {'model': 'supported', 'timeout': 'supported', 'output_schema': 'supported',
-                   'max_budget_usd': 'supported', 'permission_mode': 'supported',
+                   'max_budget_usd': 'declared', 'permission_mode': 'declared',
                    'read_only': 'unconfirmed', 'session_resume': 'unsupported',
                    'system': 'unsupported', 'temperature': 'unsupported',
                    'max_output_tokens': 'unsupported', 'response_format': 'unsupported'},
 }
-SUPPORT_STATES = ('supported', 'unsupported', 'unconfirmed')
+SUPPORT_STATES = ('supported', 'declared', 'unsupported', 'unconfirmed')
 USAGE_SOURCES = ('unknown', 'thread/tokenUsage/updated', 'claude/result.usage')
 OUTCOMES = ('accepted', 'empty_answer', 'invalid_output', 'tool_only', 'interrupted', 'inspection_blocked',
             'provider_failure')
@@ -74,7 +79,11 @@ def parse_request(transport, options):
         accepted['permission_mode'] = options['permission_mode']
     return {'transport': transport, 'options': accepted,
             'unsupported': [k for k, v in matrix.items() if v == 'unsupported'],
-            'unconfirmed': [k for k, v in matrix.items() if v == 'unconfirmed']}
+            'unconfirmed': [k for k, v in matrix.items() if v == 'unconfirmed'],
+            'declared': [k for k, v in matrix.items() if v == 'declared'],
+            # Which of the options this request actually carries had their effect checked here.
+            'effect_verified_here': sorted(k for k in accepted if matrix[k] == 'supported'),
+            'effect_left_to_provider': sorted(k for k in accepted if matrix[k] == 'declared')}
 
 
 def availability(probe):

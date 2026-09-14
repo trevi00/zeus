@@ -50,7 +50,7 @@ def store(request):
     return MemoryStore() if request.param == "memory" else request.getfixturevalue("isolated_pgstore")
 
 
-def build(tmp_path, monkeypatch, store, *, scenario="normal", claude=True):
+def build(tmp_path, monkeypatch, store, *, scenario="normal", claude=True, patch_runtime=None):
     """One implement assignment for worker:implementation, optionally configured onto Claude."""
     for name in ("ZEUS_CLAUDE_ASSIGNMENTS", "ZEUS_CLAUDE_MODEL", "ZEUS_CLAUDE_MAX_BUDGET_USD"):
         monkeypatch.delenv(name, raising=False)
@@ -63,7 +63,10 @@ def build(tmp_path, monkeypatch, store, *, scenario="normal", claude=True):
 
     def claude_factory(**kwargs):
         kwargs.pop("executable", None)
-        return ClaudeCodeRuntime(executable=str(CHILD), launcher=[sys.executable], **kwargs)
+        runtime = ClaudeCodeRuntime(executable=str(CHILD), launcher=[sys.executable], **kwargs)
+        if patch_runtime is not None:
+            patch_runtime(runtime)
+        return runtime
 
     codex_starts = []
 
@@ -345,3 +348,43 @@ def test_c09_a_provider_failure_carries_a_digest_not_the_providers_text(tmp_path
     assert CANARY not in json.dumps(failure, default=str)
     notices = [row for row in json.loads(json.dumps(task, default=str)).get("attempt_outcomes", [])]
     assert CANARY not in json.dumps(notices)
+
+
+# ---- self-review: an execution whose end could not be proven is unknown, and unknown blocks -------
+
+def test_an_unconfirmed_termination_blocks_the_task_with_termination_evidence(tmp_path, monkeypatch, store):
+    """The provider ran. Whether its tree is gone could not be proven, so the attempt is not a
+    failure to retry: it is an unknown that stops the task until an operator reconciles it."""
+    def unprovable(runtime):
+        real = runtime._terminate
+
+        def masked(reason):
+            record = real(reason)  # the tree is still really stopped; only the proof is withheld
+            return {**record, "confirmed": False, "group_empty": False}
+
+        runtime._terminate = masked
+
+    s = build(tmp_path, monkeypatch, store, patch_runtime=unprovable)
+    row = run(s)
+    assert s.starts() == 1, "the provider ran exactly once"
+    assert row["status"] == "blocked" and row["error"] == "reconciliation_required"
+    [pending] = s.observer.pending_terminations(s.task["id"])
+    assert pending["status"] == "pending_reconciliation" and pending["boundary"] == "transport"
+    assert run(s) is None and s.starts() == 1, "an unknown outcome does not permit another run"
+    with store.transaction() as tx:
+        assert any(a["event_type"] == "development.reconciliation_required"
+                   for a in tx.scan("observation_audit"))
+
+
+def test_the_reservation_records_which_option_effects_were_verified_here(tmp_path, monkeypatch, store):
+    """A receipt must not let a spend ceiling read as a spend guarantee."""
+    s = build(tmp_path, monkeypatch, store)
+    assert run(s)["status"] == "succeeded"
+    with store.transaction() as tx:
+        [reservation] = tx.scan("invocation_reservations")
+    request = reservation["request"]
+    assert request["transport"] == "claude_cli"
+    assert request["effect_verified_here"] == ["model", "output_schema", "timeout"]
+    assert request["effect_left_to_provider"] == ["max_budget_usd", "permission_mode"]
+    assert request["unconfirmed"] == ["read_only"]
+    assert request["assignment"]["policy_version"] == "provider-policy.v1"

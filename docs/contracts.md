@@ -613,9 +613,13 @@ than handed to the default provider, because an operator reading the receipt wou
 believe the provider they asked for had run. A provider's model is never derived from another
 provider's routing policy: it is configured explicitly, and the requested model, the model the
 provider reported and an unreported model stay three separate facts. Each transport declares every
-request option as supported, unsupported or unconfirmed; an unsupported option present in a
-request is refused by name, and an option the transport cannot prove it applies is refused when
-asked for rather than assumed.
+request option as supported, declared, unsupported or unconfirmed, because "the transport takes
+this option" and "this harness knows the option took effect" are different claims. Supported means
+the effect is checked here; declared means the option is passed and its effect belongs to the
+provider; unconfirmed means a mechanism exists but no claim is made, so asking for it is refused;
+unsupported is refused by name when present. Every request records which of its options had their
+effect verified here and which were left to the provider, so a spend ceiling is never read back as
+a spend guarantee.
 
 The prompt reaches a provider over its input stream, never through an argument vector or a shell
 string, and the recorded command replaces every value that could carry schema, context or
@@ -631,7 +635,11 @@ and no pipe is closed while a thread is still blocked inside it.
 
 A result is named from what was observed. A clean exit, an assistant sentence, tool activity with
 no answer, an absent terminal message, two conflicting terminal messages, a truncated stream, a
-refused permission and a budget stop are distinct outcomes and none of them is acceptance. The
+refused permission and a budget stop are distinct outcomes and none of them is acceptance. Output
+that was read but never examined is lost output whichever way it was lost, by a byte limit, by a
+full queue or by a reader that died, and a run that lost output is recorded as such rather than as
+a shorter record of a clean one; a startup report the provider never sent is recorded as absent
+rather than as a report of nothing. The
 provider's claim that it honoured the output schema is not the check: the schema is validated
 locally against the same subset every transport uses. Usage is read once, from the terminal
 message, so a redelivered or partial message is never counted twice; each part names what it

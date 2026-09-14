@@ -54,15 +54,25 @@ PG 예약·감사 → 실행 → 독립 증거 검사 → outbox 경로에 연�
 
 ### 3.3 어댑터 계약 (C02, C03)
 
-`SUPPORT`에 `claude_cli` 행과 **세 번째 상태 `unconfirmed`**를 추가했다.
+`SUPPORT`에 `claude_cli` 행과 **상태 두 개**를 추가했다. "전송이 이 옵션을 받는다"와 "그 옵션이 실제로 먹혔음을 이
+하네스가 안다"는 다른 주장이고, 둘 중 하나만 우리 것이기 때문이다.
 
-| 옵션 | app_server | claude_cli | 근거 |
-|---|---|---|---|
-| model / timeout / output_schema | supported | supported | |
-| max_budget_usd / permission_mode | (없음) | supported | CLI가 직접 받는다 |
-| read_only | supported | **unconfirmed** | 도구·권한 제한이라는 기제는 있으나 그 효과를 이 하네스가 검증하지 않았다. 참으로 요청하면 거절하고, 거짓이면 주장하는 바가 없으므로 수용한다 |
-| session_resume | (없음) | unsupported | native resume는 이번 범위가 아니다 |
-| system / temperature / max_output_tokens / response_format | unsupported | unsupported | 있으면 이름과 함께 거절 |
+| 상태 | 뜻 | 요청에 있으면 |
+|---|---|---|
+| `supported` | 전달하고 **효과를 여기서 확인**한다(우리가 거는 deadline, 우리가 검증하는 schema, 요청 모델과 보고 모델 비교) | 수용 |
+| `declared` | 전달하지만 효과는 **provider의 몫**이고 이 하네스는 검증하지 않는다 | 수용하되 영수증에 그렇게 적는다 |
+| `unconfirmed` | 기제는 있으나 주장하지 않는다 | 참이면 거절 |
+| `unsupported` | 이 전송에 없다 | 이름과 함께 거절 |
+
+| 옵션 | app_server | claude_cli |
+|---|---|---|
+| model / timeout / output_schema | supported | supported |
+| max_budget_usd / permission_mode | (없음) | **declared** — CLI가 받고 CLI가 강제한다. 예산 상한이 지출 보증으로 읽히지 않게 한다 |
+| read_only | supported | **unconfirmed** — 도구·권한 제한이라는 기제는 있으나 효과를 검증하지 않았다 |
+| session_resume | (없음) | unsupported |
+| system / temperature / max_output_tokens / response_format | unsupported | unsupported |
+
+모든 요청은 `effect_verified_here`와 `effect_left_to_provider`를 함께 기록하고, 그 값이 예약 행에 그대로 남는다.
 
 프로세스 입출력:
 
@@ -108,6 +118,12 @@ Claude 이벤트의 `method` 라벨은 `claude/<원본타입>[/<subtype>]`으로
 
 잘못된 줄은 개별적으로 세고 격리하며 뒤따르는 정상 terminal을 막지 않는다.
 
+**읽었으나 보지 못한 출력도 잃은 출력이다.** 바이트 한도, 가득 찬 큐, 죽은 stdout 리더 — 셋 다 provider가 무엇을
+했는지의 기록이 불완전하다는 같은 결과를 낳으므로 하나의 실패(`claude-provider-stream-truncated`)로 모으고, 어느
+쪽이었는지는 사유로 적는다. 리더는 큐가 가득 차도 **절대 기다리지 않는다**(자식이 자기 파이프에 막히는 편이 더 나쁘다).
+그래서 소비자가 느리면 줄이 버려지고, 그 버려짐 자체가 실패로 드러난다. 모든 provider 실패는 `lost_output`을 달고
+다니므로 "deadline에 끝났다"가 "출력을 잃었다"를 덮지 않는다.
+
 ### 3.7 usage와 비용 (C04)
 
 **terminal result 메시지에서만** 읽는다. assistant 메시지와 재전달·부분 메시지는 같은 작업의 수를 다시 들고 있으므로
@@ -138,7 +154,13 @@ API 키로 바꾸지 않는다.
 JSON 하나뿐이고, 그 값은 명령 기록에서 digest로 치환된다.
 
 provider가 시작 시 보고한 것(`system/init`)을 `effective_configuration`으로 남긴다. 이것이 "통제가 실제로 걸렸는가"의
-근거다(§5.4에 실측값).
+근거다(§5.5에 실측값). **보고가 아예 오지 않은 경우는 `reported: false`로 적고 빈 목록을 만들지 않는다.** 없는 보고와
+"아무것도 없다는 보고"는 다른 사실이고, 후자로 적으면 확인하지 않은 것을 확인한 것처럼 읽힌다.
+
+더 강한 격리 통제 `--restricted`(CLI 2.1.248+)는 파일 도구를 작업 디렉터리로 가두고 호스트의 user/project/local 설정
+파일을 무시하면서 **인증 방식은 건드리지 않는다**. 배선과 기능 점검까지 넣었으나 정책에서 **꺼둔 상태**다. 켜면 검증된
+구성이 달라지는데, 그 검증에 드는 실제 호출 1회를 이번 묶음의 호스트당 상한이 더는 허용하지 않기 때문이다. 켤지는
+Codex가 정하고 그때 호출 1회로 확인하면 된다.
 
 ## 4. 바뀐 파일
 
@@ -214,7 +236,23 @@ provider가 시작 시 보고한 것(`system/init`)을 `effective_configuration`
    Windows 프로세스를 잰 결과를 Linux 측정처럼 보이게 했을 것이다. 이제 `executable_kind`로 판별해 거절하며,
    `--allow-interop`을 명시해야만 실행되고 그때 영수증이 무엇을 뜻하는지도 함께 남는다.
 
-### 5.4 실제 Claude 호출 (Windows)
+### 5.4 제출 후 자체 적대적 검토에서 조인 것
+
+Codex 검토 전에 스스로 같은 각도로 공격해 다섯 가지를 고쳤다. 전부 "확인하지 않은 것을 확인한 것처럼 읽히는" 형태였다.
+
+1. **예산 상한이 지출 보증으로 읽힐 수 있었다.** `max_budget_usd`·`permission_mode`를 `supported`로 적어 두면 "옵션이
+   먹혔다"는 주장이 되는데, 나는 CLI가 그 플래그를 받는다는 것만 확인했지 상한에서 실제로 멈추는지는 재지 않았다.
+   상태 `declared`를 만들어 갈랐고, 모든 요청이 `effect_verified_here`/`effect_left_to_provider`를 기록한다.
+2. **오지 않은 시작 보고가 "아무것도 없다는 보고"로 보였다.** init 이벤트가 없으면 `mcp_servers` 키 자체가 없어야 하는데
+   구조상 빈 목록처럼 읽힐 여지가 있었다. `reported: false`를 앞에 두고 아무 항목도 만들지 않는다.
+3. **잃은 출력의 경로가 하나만 실패였다.** 바이트 한도 초과만 실패였고, 큐가 가득 차 버려진 줄과 죽은 stdout 리더는
+   조용히 짧은 기록이 됐다. 셋을 한 실패로 모으고 사유를 구분하며, 모든 provider 실패가 `lost_output`을 달게 했다.
+4. **`--restricted`를 쓰지 않는다는 사실이 어디에도 없었다.** 인증을 바꾸지 않으면서 파일 도구를 작업 디렉터리로 가두는
+   더 강한 통제가 존재한다. 배선·기능 점검까지 넣고 정책에서 끈 채로, 끈 이유(검증 호출 1회가 상한 밖)를 적었다.
+5. **증명하지 못한 종료가 작업을 막는다는 것을 어댑터 수준에서만 시험했다.** 실행기 경로로 끝까지 가는 회귀를 넣어,
+   provider가 한 번 돌고 `blocked`/`reconciliation_required`가 되며 다음 claim이 거절되는 것을 확인한다.
+
+### 5.5 실제 Claude 호출 (Windows)
 
 `docs/zeus/evidence/claude-real-call-001/` (호출별 영수증, 러너가 상한 2회를 스스로 강제한다).
 
@@ -231,7 +269,7 @@ provider가 시작 시 보고한 것(`system/init`)을 `effective_configuration`
 증거 검사기가 기계적으로 재생하지 못했다(1회차 `verified_mismatch 1`, 2회차 `not_checked 2`, 두 번 다 verdict
 `incomplete`). 하네스는 그 주장을 증거로 승격하지 않았고, 통과를 말하는 근거는 **러너가 직접 돌린 pytest**다.
 
-### 5.5 통제한 것과 통제하지 못한 것 (2회차 `system/init` 실측)
+### 5.6 통제한 것과 통제하지 못한 것 (2회차 `system/init` 실측)
 
 | 상속 경로 | 결과 |
 |---|---|
@@ -250,7 +288,7 @@ provider가 시작 시 보고한 것(`system/init`)을 `effective_configuration`
 **재현성을 이유로 인증 방식을 몰래 바꾸지 않는다**는 명세에 따라 쓰지 않았다. `Task`를 거부해 서브에이전트 실행
 경로는 닫혀 있지만, 로드된 커맨드·스킬 정의 자체는 남는다. 이 한 칸이 이번 범위에서 통제하지 못한 경로다.
 
-### 5.6 실행하지 않은 것
+### 5.7 실행하지 않은 것
 
 - **WSL 실제 Claude 호출**: WSL(Ubuntu 26.04)에 Claude Code가 설치돼 있지 않다(로그인 셸에서 `claude: command not
   found`, node 없음). PATH가 interop으로 `/mnt/c/.../claude.exe`에 닿기는 하지만 그건 Windows 프로세스를 재는 것이라

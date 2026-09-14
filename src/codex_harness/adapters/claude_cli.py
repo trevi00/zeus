@@ -185,6 +185,8 @@ class ClaudeCodeRuntime:
             flags.append("--permission-prompts")
         if self.runtime.get("strict_mcp_config"):
             flags.append("--strict-mcp-config")
+        if self.runtime.get("restricted"):
+            flags.append("--restricted")
         if self.runtime.get("setting_sources") is not None:
             flags.append("--setting-sources")
         if self.runtime.get("tools"):
@@ -216,6 +218,11 @@ class ClaudeCodeRuntime:
             add("--permission-prompts", str(self.runtime["permission_prompts"]))
         if self.runtime.get("strict_mcp_config"):
             add("--strict-mcp-config")
+        if self.runtime.get("restricted"):
+            # Confines the file tools to the working directories and ignores the host's user,
+            # project and local settings, without touching how the host authenticates. Off until a
+            # real call has verified it end to end (see the implementation record).
+            add("--restricted")
         if self.runtime.get("setting_sources") is not None:
             add("--setting-sources", str(self.runtime["setting_sources"]))
         if self.runtime.get("tools"):
@@ -439,12 +446,16 @@ class ClaudeCodeRuntime:
                      "note": "the provider's own estimate for this run, not a billed amount"},
             "command": command, "process": {**termination, "elapsed_seconds": elapsed, "stop_reason": reason},
             "effective_configuration": {
-                **state.effective,
+                # A provider that never sent its startup report tells us nothing about what it
+                # loaded. That is recorded as `reported: false` rather than as empty lists, because
+                # an absent report and a report of nothing are different facts.
+                "reported": False, **state.effective,
                 "hook_events_observed": sum(1 for event in events
                                             if str(event.get("subtype") or "").startswith("hook")),
                 "requested_controls": {key: command["limits"].get(key) for key in ("deadline_seconds",)},
                 "note": ("what the provider reported it loaded at startup, beside the controls this "
-                         "run passed; an empty list is the provider's report, not this runner's claim")},
+                         "run passed; an empty list is the provider's report, not this runner's claim, "
+                         "and nothing here is reported when `reported` is false")},
             "stream": state.report(),
             "tool_items": ClaudeStream.tool_items(events),
             "tool_usage_observed": state.tools(),
@@ -590,6 +601,7 @@ class _StreamState:
             # change what a run does, so the controls that are supposed to exclude them are checked
             # against the provider's own report rather than assumed to have worked.
             self.effective = {
+                "reported": True,
                 "model": _text(raw, "model"), "permission_mode": _text(raw, "permissionMode"),
                 "api_key_source": _text(raw, "apiKeySource"),
                 "output_style": _text(raw, "output_style"),
@@ -745,9 +757,13 @@ def _provider_failure(*, terminal, conflict, state: _StreamState, termination, r
     """Name what the provider did wrong, before any answer is read out of it."""
     # A failure travels outward (task row, notice, diagnosis request). Foreign diagnostic text
     # never goes with it: the digest and the byte count identify the same stderr in the artifact.
+    lost = _lost_output(state)
     shared = {"kind": "provider", "owner": "provider", "stop_reason": reason,
               "exit_code": termination.get("exit_code"), "stderr_digest": digest(state.stderr_tail),
-              "stderr_bytes": state.stderr_bytes}
+              "stderr_bytes": state.stderr_bytes,
+              # Carried on every failure, not only the one it causes: a run that ended at its
+              # deadline *and* lost output should not read as a clean timeout.
+              "lost_output": lost}
     if conflict is not None:
         return {**shared, "cause": "claude-provider-conflicting-terminal",
                 "detail": "two different result messages arrived for one run"}
@@ -757,9 +773,8 @@ def _provider_failure(*, terminal, conflict, state: _StreamState, termination, r
                     "detail": "the execution budget elapsed before a terminal result"}
         if reason == "cancelled":
             return {**shared, "cause": "claude-provider-cancelled", "detail": "the run was cancelled"}
-        if state.truncated:
-            return {**shared, "cause": "claude-provider-stream-truncated",
-                    "detail": "the output limit was reached before a terminal result"}
+        if lost:
+            return {**shared, "cause": "claude-provider-stream-truncated", "detail": lost}
         if not state.saw_any_line:
             return {**shared, "cause": "claude-provider-startup-failed",
                     "detail": "the process produced no stream line"}
@@ -777,7 +792,19 @@ def _provider_failure(*, terminal, conflict, state: _StreamState, termination, r
             cause = "claude-provider-error-result"
         return {**shared, "cause": cause, "result_subtype": subtype,
                 "detail": "the provider reported an unsuccessful result"}
+    if lost:
+        return {**shared, "cause": "claude-provider-stream-truncated", "detail": lost}
+    return None
+
+
+def _lost_output(state: _StreamState) -> str | None:
+    """Whether provider output went unread, and why. Three different accidents, one consequence:
+    the record of what the provider did is incomplete, so this run is not something to accept."""
     if state.truncated:
-        return {**shared, "cause": "claude-provider-stream-truncated",
-                "detail": "the output limit was reached; the retained stream is incomplete"}
+        return "the output limit was reached; the retained stream is incomplete"
+    if state.counts.get("queue_full"):
+        return "the event queue overflowed; lines were read but never examined"
+    failed = [error["stream"] for error in state.reader_errors if error.get("stream") == "stdout"]
+    if failed:
+        return "the stdout reader failed before the stream ended"
     return None

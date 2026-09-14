@@ -35,6 +35,8 @@
         "permission_prompts": "none",
         "setting_sources": "",
         "strict_mcp_config": true,
+        "restricted": false,
+        "restricted_note": "--restricted confines the file tools to the working directories and ignores the host's user, project and local settings without changing how it authenticates. It is off because turning it on changes what the verified configuration is, and verifying it costs a real call this bundle's per-host ceiling no longer allows.",
         "session": "explicit_uuid_per_attempt",
         "tools": ["Bash", "Read", "Edit", "Write", "Glob", "Grep"],
         "allowed_tools": ["Read", "Edit", "Write", "Glob", "Grep",
@@ -44,7 +46,8 @@
         "uncontrolled_inheritance": [
           "managed (administrator) settings still apply",
           "CLAUDE.md discovery in the working directory and home is context, not execution",
-          "the host's existing authentication (subscription or API credentials) is used unchanged"
+          "the host's existing authentication (subscription or API credentials) is used unchanged",
+          "skills, custom commands and subagent definitions in the host's home still load; only --bare excludes them and it would require an API key instead of the existing login"
         ]
       }
     }
