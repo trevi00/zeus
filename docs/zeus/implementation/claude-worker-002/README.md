@@ -221,19 +221,27 @@ Codex가 정하고 그때 호출 1회로 확인하면 된다.
 
 호스트 증거 `docs/zeus/evidence/environment-runs-009/` (두 호스트 Python 3.12.14, 격리 스택·임시 포트·실행 후 정리):
 
+아래는 **1차 독립 검토의 네 건을 고친 head `bfabcbd`에서 다시 잰 것**이다. 검토 전 head(`75b19cb`/`c0d6aa4`)의
+측정은 더 이상 이 브랜치의 상태가 아니므로 대체했다.
+
 | 호스트 | head | 결과 |
 |---|---|---|
-| Windows 11 | `75b19cb` | ruff 통과 / full-suite-integration **1664 passed, 14 skipped** (646s) / disposable-docker 17 passed. 신규 3파일 **91 passed, skip 0** (assignment 19, cli_process 36, execution 36). U001 관측 129건도 그대로 통과. 8개 단계 전부 ok, 영수증 tracked_changes [], untracked [] |
-| WSL Ubuntu 26.04 (WSL2 6.18) | `c0d6aa4` | ruff 통과 / full-suite-integration **1670 passed, 8 skipped** (212s) / disposable-docker 17 passed. 신규 3파일 **91 passed, skip 0**. 프로세스 그룹 종료·자손 확인이 실제 Linux에서 통과. 8개 단계 전부 ok, 깨끗한 트리 |
+| Windows 11 | `bfabcbd` | ruff 통과 / full-suite-integration **1691 passed, 14 skipped** (565s) / disposable-docker 17 passed. claude 4파일 **118 passed, skip 0** (assignment 19, cli_process 36, execution 44, review_boundaries 19). 8개 단계 전부 ok, 영수증 tracked_changes [], untracked [] |
+| WSL Ubuntu 26.04 (WSL2 6.18) | `bfabcbd` | ruff 통과 / full-suite-integration **1697 passed, 8 skipped** (221s) / disposable-docker 17 passed. claude 4파일 **118 passed, skip 0**. 새 `ProcessTree`의 POSIX 경로(새 세션·spawn 시점 그룹 id·그룹이 빌 때까지 폴링)가 실제 Linux에서 통과. 8개 단계 전부 ok, 깨끗한 트리 |
 
-두 호스트의 JUnit·로그에서 canary 문자열 0건, `password=` 0건.
+두 호스트의 JUnit·로그에서 canary 문자열 0건, `password=` 0건. Windows가 WSL보다 2.5배 걸리는 것은 이전 회차와 같다.
 
-**WSL disposable-docker 단계의 발생률을 그대로 적는다.** 이 호스트에서 4회 시도 중 **2회**가
-`test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2]`에서 실패했다. 일회용 PostgreSQL 컨테이너가
-게시한 포트가 `verification.py`의 30초 연결 기한 안에 붙지 않는다(`ConnectionRefusedError`). 실패는 모두 다른 스택을
-막 내린 직후에 나왔고, 전체 스위트(1670 passed)는 4회 모두 통과했다. 이 파일은 이 브랜치가 건드리지 않았고 U001 때
-#16/#18에 기록된 readiness 부류와 같다. 초록이 나올 때까지 돌려 고른 것이 아니라 시도 전부를 세어 적었으며, 1차 실패
-산출물은 `attempt-1-wsl-disposable-docker-readiness/`에 보존했다. 원인 해결은 이 명세의 범위 밖이므로 하지 않았다.
+**WSL disposable-docker 단계의 발생률을 그대로 적는다.** 이 호스트에서 지금까지 **6회 시도 중 3회**가 같은
+원인으로 실패했다. 일회용 PostgreSQL 컨테이너가 게시한 포트가 `verification.py:98`의 30초 연결 기한 안에 붙지
+않는다(`ConnectionRefusedError`). 실패가 난 테스트 이름은 두 가지였다 —
+`test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2]` 2회, 이번 회차의
+`test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed` 1회. **같은 부류로 묶은
+근거는 이름이 아니라 실패 지점이다**: 셋 다 같은 파일의 같은 기한에서 끊겼고, 두 파일 모두 이 브랜치가 건드리지
+않았으며(`git diff origin/main...HEAD`에 없음), 전체 스위트는 6회 모두 통과했다. U001 때 #16/#18에 기록된 readiness
+부류와 같다. 초록이 나올 때까지 돌려 고른 것이 아니라 시도 전부를 세어 적었고, 실패 산출물은
+`attempt-1-wsl-disposable-docker-readiness/`(head `75b19cb`)와
+`attempt-2-wsl-disposable-docker-readiness/`(head `bfabcbd`)에 그대로 보존했다. 원인 해결은 이 명세의 범위 밖이므로
+하지 않았다.
 
 ### 5.3 구현 중 발견해 고친 결함
 
@@ -293,7 +301,8 @@ host (ceiling 2)`로 거절된다. 이미 쓴 Windows 2회는 커밋된 영수�
 
 ### 5.6 실제 Claude 호출 (Windows)
 
-`docs/zeus/evidence/claude-real-call-001/` (호출별 영수증, 러너가 상한 2회를 스스로 강제한다).
+`docs/zeus/evidence/claude-real-call-001/` (호출별 영수증). 두 호출 모두 R4 이전에 이뤄졌고, 그때의 상한은 러너가
+영수증 개수로 세던 것이다. 지금은 기계당 원장이 세며 이 2회는 그 원장으로 이관돼 있다(§5.5).
 
 | 항목 | 1회차 | 2회차 |
 |---|---|---|
@@ -335,7 +344,8 @@ host (ceiling 2)`로 거절된다. 이미 쓴 Windows 2회는 커밋된 영수�
   영수증(`wsl-ubuntu-26.04-not-executed-receipt.json`)에 남긴다. WSL에 설치하는 일은 사용자 기기 변경과 계정 인증이
   필요해 임의로 하지 않았다. **필요하면 Codex/사용자가 결정할 항목이다.** 프로세스·스트림·종료 경계 자체는 WSL에서
   프로토콜 자식으로 실측했다(§5.2).
-- 실제 모델 호출은 호스트당 2회 상한 안에서 Windows 2회만 했다. 러너가 영수증 개수로 상한을 강제한다.
+- 실제 모델 호출은 호스트당 2회 상한 안에서 Windows 2회만 했다. 상한은 패키지 정책에서 오고 체크아웃 밖 원장이
+  세므로, 라벨이나 출력 경로를 바꿔도 남은 호출이 생기지 않는다(§5.5).
 - 네트워크 게시·제품 배포·실금전 작업·운영 교체·전체 무인 반복은 범위 밖이며 하지 않았다.
 - Windows에서 임시 작업 디렉터리 삭제가 완전히 끝나지 않는다(`workdir_removed: false`). 시스템 임시 디렉터리 안이라
   증거 디렉터리는 깨끗하지만, 사실대로 영수증에 남긴다.

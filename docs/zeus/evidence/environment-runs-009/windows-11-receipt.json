@@ -1,12 +1,12 @@
 {
   "label": "windows-11",
-  "compose_project": "harness-evidence-windows-11-6abfafaf",
-  "started_at": "2026-09-14T15:18:26.373177+00:00",
+  "compose_project": "harness-evidence-windows-11-18201203",
+  "started_at": "2026-09-14T17:13:40.055828+00:00",
   "phases": {
     "preflight": {
       "git_ok": true,
       "ok": true,
-      "at": "2026-09-14T15:18:26.842712+00:00"
+      "at": "2026-09-14T17:13:40.373125+00:00"
     },
     "claim_project": {
       "found": {
@@ -17,98 +17,98 @@
       "errors": [],
       "refusal": null,
       "ok": true,
-      "at": "2026-09-14T15:18:27.018581+00:00"
+      "at": "2026-09-14T17:13:40.487882+00:00"
     },
     "stack_up": {
-      "seconds": 4.5,
+      "seconds": 4.0,
       "services": {
         "postgres": {
-          "container": "6a208b4141f0dea207df5b1969c759556360301c3209df4f3262a2f9bfb96d28",
-          "host_port": 54346
+          "container": "7d857e4a127a3a8c0657b1c043c6e7ae10d344a28fd0eed670ee31ba0fe8d73f",
+          "host_port": 50911
         },
         "redis": {
-          "container": "091b9d719c4189b0ba6eaa972d61505c6a6a9571140721d7e031a8639f562d30",
-          "host_port": 54347
+          "container": "0b98b86f19a85094852a4a58eea0ca2a92cadb18b247cf741fbc55b44571cb89",
+          "host_port": 50910
         }
       },
-      "database_url": "postgresql://harness:***@127.0.0.1:54346/harness",
-      "redis_url": "redis://127.0.0.1:54347/0",
+      "database_url": "postgresql://harness:***@127.0.0.1:50911/harness",
+      "redis_url": "redis://127.0.0.1:50910/0",
       "dropped_inherited": [
         "ZEUS_TICKET_TRUST_COMMIT"
       ],
       "pinning": {
         "mechanism": "repository .env (settings() reads it when no ZEUS_/HARNESS_ variable is set)",
         "dotenv_before_sha256": null,
-        "dotenv_run_sha256": "sha256:32332f7748b469a8989ab1087b25ec4fb62bb6d49808f87a392e7287e1bf0c57",
+        "dotenv_run_sha256": "sha256:e384c6f487f5b52d112f8068a99f365f44e8e05821a9485cf2b911f954281dd5",
         "dotenv_run": [
           "POSTGRES_PASSWORD=***",
-          "HARNESS_DATABASE_URL=postgresql://harness:***@127.0.0.1:54346/harness",
-          "HARNESS_REDIS_URL=redis://127.0.0.1:54347/0",
-          "COMPOSE_PROJECT_NAME=harness-evidence-windows-11-6abfafaf",
-          "ZEUS_REDIS_NAMESPACE=harness-evidence-windows-11-6abfafaf"
+          "HARNESS_DATABASE_URL=postgresql://harness:***@127.0.0.1:50911/harness",
+          "HARNESS_REDIS_URL=redis://127.0.0.1:50910/0",
+          "COMPOSE_PROJECT_NAME=harness-evidence-windows-11-18201203",
+          "ZEUS_REDIS_NAMESPACE=harness-evidence-windows-11-18201203"
         ]
       },
       "ok": true,
-      "at": "2026-09-14T15:18:32.262337+00:00"
+      "at": "2026-09-14T17:13:45.026970+00:00"
     },
     "identity_before": {
       "postgres": {
-        "container": "6a208b4141f0dea207df5b1969c759556360301c3209df4f3262a2f9bfb96d28",
-        "system_identifier": "7685410649169362983",
+        "container": "7d857e4a127a3a8c0657b1c043c6e7ae10d344a28fd0eed670ee31ba0fe8d73f",
+        "system_identifier": "7685440340043706406",
         "xact_commit": 4
       },
       "redis": {
-        "container": "091b9d719c4189b0ba6eaa972d61505c6a6a9571140721d7e031a8639f562d30",
-        "run_id": "df61272f05a07caef958ca485d4858152c4fd9ea",
+        "container": "0b98b86f19a85094852a4a58eea0ca2a92cadb18b247cf741fbc55b44571cb89",
+        "run_id": "8a0e042341d379596688009a4c318d3da49a79b7",
         "total_commands_processed": 1
       },
       "ok": true,
-      "at": "2026-09-14T15:18:32.639428+00:00"
+      "at": "2026-09-14T17:13:45.380742+00:00"
     },
     "steps": {
       "count": 3,
       "expected": 3,
       "ok": true,
-      "at": "2026-09-14T15:30:24.229794+00:00"
+      "at": "2026-09-14T17:24:07.969074+00:00"
     },
     "identity_after": {
       "postgres": {
-        "container": "6a208b4141f0dea207df5b1969c759556360301c3209df4f3262a2f9bfb96d28",
-        "system_identifier": "7685410649169362983",
-        "xact_commit": 12810
+        "container": "7d857e4a127a3a8c0657b1c043c6e7ae10d344a28fd0eed670ee31ba0fe8d73f",
+        "system_identifier": "7685440340043706406",
+        "xact_commit": 12946
       },
       "redis": {
-        "container": "091b9d719c4189b0ba6eaa972d61505c6a6a9571140721d7e031a8639f562d30",
-        "run_id": "df61272f05a07caef958ca485d4858152c4fd9ea",
-        "total_commands_processed": 12748
+        "container": "0b98b86f19a85094852a4a58eea0ca2a92cadb18b247cf741fbc55b44571cb89",
+        "run_id": "8a0e042341d379596688009a4c318d3da49a79b7",
+        "total_commands_processed": 12719
       },
       "ok": true,
-      "at": "2026-09-14T15:30:24.755673+00:00"
+      "at": "2026-09-14T17:24:08.315748+00:00"
     },
     "identity_stable": {
       "same_services": true,
       "traffic": {
-        "postgres_xact_commit": 12806,
-        "redis_commands": 12747
+        "postgres_xact_commit": 12942,
+        "redis_commands": 12718
       },
       "note": "the tests ran with both aliases pinned to this stack; the counters of this stack moved",
       "ok": true,
-      "at": "2026-09-14T15:30:24.755673+00:00"
+      "at": "2026-09-14T17:24:08.315748+00:00"
     },
     "teardown": {
       "exit_code": 0,
       "error": null,
       "stderr_tail": [
-        " Network harness-evidence-windows-11-6abfafaf_default Removing ",
-        " Volume harness-evidence-windows-11-6abfafaf_redis-data Removed ",
-        " Volume harness-evidence-windows-11-6abfafaf_postgres-data Removed ",
-        " Network harness-evidence-windows-11-6abfafaf_default Removed"
+        " Network harness-evidence-windows-11-18201203_default Removing ",
+        " Volume harness-evidence-windows-11-18201203_redis-data Removed ",
+        " Volume harness-evidence-windows-11-18201203_postgres-data Removed ",
+        " Network harness-evidence-windows-11-18201203_default Removed"
       ],
       "remaining": [],
-      "scope": "only compose project harness-evidence-windows-11-6abfafaf",
+      "scope": "only compose project harness-evidence-windows-11-18201203",
       "dotenv": "removed (there was no .env before the run)",
       "ok": true,
-      "at": "2026-09-14T15:30:25.997813+00:00"
+      "at": "2026-09-14T17:24:09.405383+00:00"
     }
   },
   "steps": [
@@ -152,9 +152,9 @@
       "ok": true,
       "timed_out": false,
       "error": null,
-      "seconds": 646.1,
-      "summary": "1664 passed, 14 skipped in 645.19s (0:10:45)",
-      "stdout_sha256": "sha256:8d1da4d255418a38c177c5a51208ee2a6dfea9705c5e1e1e6a00776f9923a38f",
+      "seconds": 565.9,
+      "summary": "1691 passed, 14 skipped in 565.33s (0:09:25)",
+      "stdout_sha256": "sha256:51219608549fca1e217c7f880910e37d129850523f541236799a9d1c83a75534",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "log": "windows-11-full-suite-integration.log"
     },
@@ -180,16 +180,16 @@
       "ok": true,
       "timed_out": false,
       "error": null,
-      "seconds": 65.3,
-      "summary": "17 passed in 64.60s (0:01:04)",
-      "stdout_sha256": "sha256:b7149c2b4da3bd8f3e3b9f04244c28651772707ce703cd8c2b3d63322dd3727e",
+      "seconds": 56.6,
+      "summary": "17 passed in 56.16s",
+      "stdout_sha256": "sha256:6c98d04b2b2e54754b92c591cd8e5b857ae6f58ca71afcc7c999c0a6ce6672c2",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "log": "windows-11-disposable-docker-checks.log"
     }
   ],
   "passed": true,
   "authority": "what ran on this host at this head against the stack this run created; not a reboot, a human acceptance or a deployment",
-  "head": "75b19cb40a817ed3a0977674de4a8c11573bc581",
+  "head": "bfabcbdc3265de2e5de1165bdfc2239a549c68f9",
   "tracked_changes": [],
   "untracked": [],
   "diff_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -206,7 +206,7 @@
   "uv": "uv 0.12.5 (210d1f678 2026-08-14 x86_64-pc-windows-msvc)",
   "docker": "29.7.2",
   "compose": "5.4.0",
-  "junit_sha256": "sha256:dec3d80c8c7cbbc4c3f4cfc27f89e76e2eeb173fc113a020460a30c96ed7cbdd",
+  "junit_sha256": "sha256:c1f9291b0f6b15c39ac2287569af8adcbcf52681ab724f2009920bd261c88ba0",
   "per_file": {
     "test_app_server.py": {
       "passed": 24,
@@ -257,7 +257,13 @@
       "error": 0
     },
     "test_claude_execution.py": {
-      "passed": 36,
+      "passed": 44,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_claude_review_boundaries.py": {
+      "passed": 19,
       "skipped": 0,
       "failed": 0,
       "error": 0
@@ -825,5 +831,5 @@
     "identity_stable",
     "teardown"
   ],
-  "finished_at": "2026-09-14T15:30:25.997813+00:00"
+  "finished_at": "2026-09-14T17:24:09.405383+00:00"
 }
