@@ -1,0 +1,7 @@
+{
+  "pytest_exit": 1,
+  "project": "zeus-verify-33cc1961c1934d8591fa26c6a4f634b4",
+  "remaining_containers": "",
+  "model_calls": 0,
+  "transport": "real PG/Redis, API boundary delay/error injection, no model"
+}

@@ -1,0 +1,10 @@
+.........s.............F                                                 [100%]
+================================== FAILURES ===================================
+______________ test_timed_out_attempts_do_not_accumulate_live_io ______________
+.runtime\review-101b\test_ownership.py:34: in test_timed_out_attempts_do_not_accumulate_live_io
+    assert live == 0, f'three timed-out calls left {live} live worker threads and socket reads'
+E   AssertionError: three timed-out calls left 3 live worker threads and socket reads
+E   assert 3 == 0
+=========================== short test summary info ===========================
+FAILED .runtime/review-101b/test_ownership.py::test_timed_out_attempts_do_not_accumulate_live_io
+1 failed, 22 passed, 1 skipped in 9.47s
