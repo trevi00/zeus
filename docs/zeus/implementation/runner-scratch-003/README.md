@@ -113,7 +113,40 @@ preserved complete: true — execution-artifact.json 13265B, candidate.diff 2795
 
 **되돌려 확인했다.** 새 정리를 옛 5회 루프로 되돌리면 첫 두 건이 실패한다.
 
-## 6. 하지 않은 것
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-011/`, head `6d2bc2b`)
+
+| 호스트 | ruff | full-suite-integration | disposable-docker | `test_scratch_cleanup` |
+|---|---|---|---|---|
+| Windows 11 | 통과 | **1712 passed, 14 skipped** (541s) | **17 passed** | **13 passed, skip 0** |
+| WSL Ubuntu 26.04 | 통과 | **1714 passed, 12 skipped** (229s) | **실패** (아래) | **13 collected, 12 passed, skip 1** |
+
+WSL의 skip 1은 읽기 전용 속성이 삭제를 막는 것이 Windows에서만 일어나기 때문이다. 그 차이 자체가 §1의 측정이다.
+두 호스트 로그·JUnit에서 canary 0건, `password=` 0건.
+
+### 6.1 WSL disposable-docker 단계는 이번 회차에 초록이 나오지 않았다
+
+**3회 연속 실패했고, 네 번째를 돌리지 않았다.** 초록이 나올 때까지 돌리는 것은 고르는 일이므로 하지 않는다.
+
+| 시도 | 실패한 검사 | 지점 |
+|---|---|---|
+| 1 | `test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed` | `verification.py:98`, 포트 연결 기한 30.0s |
+| 2 | `test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2]` | 동일 |
+| 3 | `test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed` | 동일 |
+
+세 번 모두 같은 파일의 같은 30초 기한에서 `ConnectionRefusedError`로 끊겼다. 세 시도의 산출물은
+`attempt-1/2/3-wsl-disposable-docker-readiness/`에 전부 보존했다.
+
+**이 브랜치 탓인지 갈랐다.** `git diff --name-only origin/main...HEAD`가 바꾸는 파일은 7개이고
+`verification.py`·`test_verification.py`·`test_host_interruption.py`는 **그 안에 없다.** 새 코드
+(`scratch.py`)는 이 세 검사가 전혀 부르지 않으며, **전체 스위트는 세 번 모두 통과했다**(1714 passed) — 새 테스트
+13건 포함. 실패는 disposable-docker 단계에서만 났다.
+
+**다만 발생률이 달라진 것은 감추지 않는다.** 직전 회차까지 이 호스트는 8회 중 4회 실패였고, 이번 3회를 더하면
+**11회 중 7회**이며 오늘은 **3연속**이다. "기존 flake와 같다"는 실패 지점이 같다는 뜻이지 빈도가 같다는 뜻이 아니다.
+빈도가 왜 올라갔는지는 **재지 않았고**, 이 명세의 범위(러너의 증거 보존·임시 폴더 정리) 밖이다. Codex가 별건으로
+다룰지 정하면 된다. 관련 기록은 #16/#18.
+
+## 7. 하지 않은 것
 
 - 다른 실행이 남긴 임시 폴더 7개를 지우지 않았다. 남의 파일이다.
 - 전체 임시 폴더 삭제·재부팅·프로세스 전역 kill 없음.
