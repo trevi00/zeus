@@ -1,12 +1,12 @@
 {
   "label": "wsl-ubuntu-26.04",
-  "compose_project": "harness-evidence-wsl-ubuntu-26-04-6c0e8ad5",
-  "started_at": "2026-09-15T07:45:31.062481+00:00",
+  "compose_project": "harness-evidence-wsl-ubuntu-26-04-3bafb0d1",
+  "started_at": "2026-09-15T09:12:14.750985+00:00",
   "phases": {
     "preflight": {
       "git_ok": true,
       "ok": true,
-      "at": "2026-09-15T07:45:31.216754+00:00"
+      "at": "2026-09-15T09:12:14.996506+00:00"
     },
     "claim_project": {
       "found": {
@@ -17,96 +17,96 @@
       "errors": [],
       "refusal": null,
       "ok": true,
-      "at": "2026-09-15T07:45:31.273446+00:00"
+      "at": "2026-09-15T09:12:15.053013+00:00"
     },
     "stack_up": {
       "seconds": 4.0,
       "services": {
         "postgres": {
-          "container": "c8981bba912043542d7bd9735723c977b7b05ad7d8437a833f3960464361e97c",
-          "host_port": 53718
+          "container": "1d4e7a36e631694a05d70c2897959578f1d101ed7d6192cfa3936d30ebf3ba79",
+          "host_port": 57928
         },
         "redis": {
-          "container": "2cde77ddbaed9ed7c0a8bff2523a0beb745ce71e2f61663cbe518a57721f811d",
-          "host_port": 53719
+          "container": "3a4188737b809417f6c4178548730f6cc47ed44e0c75bb2c53d8a35091ed0c46",
+          "host_port": 57927
         }
       },
-      "database_url": "postgresql://harness:***@127.0.0.1:53718/harness",
-      "redis_url": "redis://127.0.0.1:53719/0",
+      "database_url": "postgresql://harness:***@127.0.0.1:57928/harness",
+      "redis_url": "redis://127.0.0.1:57927/0",
       "dropped_inherited": [],
       "pinning": {
         "mechanism": "repository .env (settings() reads it when no ZEUS_/HARNESS_ variable is set)",
         "dotenv_before_sha256": "sha256:94ff4cee3b497c58a92f4fddece862c978afbab73c42d8ea4bb5948ebc0514a8",
-        "dotenv_run_sha256": "sha256:7d2d9ab8866d84e4ac6777babce0ecccf19779d6033b9c6de53666ecaf29c163",
+        "dotenv_run_sha256": "sha256:df87da9be7fa5d2c3db86edbac5e05b9bf2f022eccf021c669a7f2ce2f13fc49",
         "dotenv_run": [
           "POSTGRES_PASSWORD=***",
-          "HARNESS_DATABASE_URL=postgresql://harness:***@127.0.0.1:53718/harness",
-          "HARNESS_REDIS_URL=redis://127.0.0.1:53719/0",
-          "COMPOSE_PROJECT_NAME=harness-evidence-wsl-ubuntu-26-04-6c0e8ad5",
-          "ZEUS_REDIS_NAMESPACE=harness-evidence-wsl-ubuntu-26-04-6c0e8ad5"
+          "HARNESS_DATABASE_URL=postgresql://harness:***@127.0.0.1:57928/harness",
+          "HARNESS_REDIS_URL=redis://127.0.0.1:57927/0",
+          "COMPOSE_PROJECT_NAME=harness-evidence-wsl-ubuntu-26-04-3bafb0d1",
+          "ZEUS_REDIS_NAMESPACE=harness-evidence-wsl-ubuntu-26-04-3bafb0d1"
         ]
       },
       "ok": true,
-      "at": "2026-09-15T07:45:35.544913+00:00"
+      "at": "2026-09-15T09:12:19.308345+00:00"
     },
     "identity_before": {
       "postgres": {
-        "container": "c8981bba912043542d7bd9735723c977b7b05ad7d8437a833f3960464361e97c",
-        "system_identifier": "7685665012701683750",
+        "container": "1d4e7a36e631694a05d70c2897959578f1d101ed7d6192cfa3936d30ebf3ba79",
+        "system_identifier": "7685687362825949222",
         "xact_commit": 4
       },
       "redis": {
-        "container": "2cde77ddbaed9ed7c0a8bff2523a0beb745ce71e2f61663cbe518a57721f811d",
-        "run_id": "e85fef82b4828f998975ea5f55198018cd457dd5",
+        "container": "3a4188737b809417f6c4178548730f6cc47ed44e0c75bb2c53d8a35091ed0c46",
+        "run_id": "f90a447fa13c294b57c67f7acd1e9b252b90c1ea",
         "total_commands_processed": 1
       },
       "ok": true,
-      "at": "2026-09-15T07:45:35.873548+00:00"
+      "at": "2026-09-15T09:12:19.612110+00:00"
     },
     "steps": {
       "count": 3,
       "expected": 3,
       "ok": true,
-      "at": "2026-09-15T07:50:25.335514+00:00"
+      "at": "2026-09-15T09:17:20.282334+00:00"
     },
     "identity_after": {
       "postgres": {
-        "container": "c8981bba912043542d7bd9735723c977b7b05ad7d8437a833f3960464361e97c",
-        "system_identifier": "7685665012701683750",
-        "xact_commit": 13772
+        "container": "1d4e7a36e631694a05d70c2897959578f1d101ed7d6192cfa3936d30ebf3ba79",
+        "system_identifier": "7685687362825949222",
+        "xact_commit": 13774
       },
       "redis": {
-        "container": "2cde77ddbaed9ed7c0a8bff2523a0beb745ce71e2f61663cbe518a57721f811d",
-        "run_id": "e85fef82b4828f998975ea5f55198018cd457dd5",
-        "total_commands_processed": 12675
+        "container": "3a4188737b809417f6c4178548730f6cc47ed44e0c75bb2c53d8a35091ed0c46",
+        "run_id": "f90a447fa13c294b57c67f7acd1e9b252b90c1ea",
+        "total_commands_processed": 12679
       },
       "ok": true,
-      "at": "2026-09-15T07:50:25.609450+00:00"
+      "at": "2026-09-15T09:17:20.570753+00:00"
     },
     "identity_stable": {
       "same_services": true,
       "traffic": {
-        "postgres_xact_commit": 13768,
-        "redis_commands": 12674
+        "postgres_xact_commit": 13770,
+        "redis_commands": 12678
       },
       "note": "the tests ran with both aliases pinned to this stack; the counters of this stack moved",
       "ok": true,
-      "at": "2026-09-15T07:50:25.609491+00:00"
+      "at": "2026-09-15T09:17:20.570776+00:00"
     },
     "teardown": {
       "exit_code": 0,
       "error": null,
       "stderr_tail": [
-        " Volume harness-evidence-wsl-ubuntu-26-04-6c0e8ad5_redis-data Removing ",
-        " Volume harness-evidence-wsl-ubuntu-26-04-6c0e8ad5_postgres-data Removed ",
-        " Volume harness-evidence-wsl-ubuntu-26-04-6c0e8ad5_redis-data Removed ",
-        " Network harness-evidence-wsl-ubuntu-26-04-6c0e8ad5_default Removed"
+        " Volume harness-evidence-wsl-ubuntu-26-04-3bafb0d1_postgres-data Removing ",
+        " Volume harness-evidence-wsl-ubuntu-26-04-3bafb0d1_redis-data Removed ",
+        " Volume harness-evidence-wsl-ubuntu-26-04-3bafb0d1_postgres-data Removed ",
+        " Network harness-evidence-wsl-ubuntu-26-04-3bafb0d1_default Removed"
       ],
       "remaining": [],
-      "scope": "only compose project harness-evidence-wsl-ubuntu-26-04-6c0e8ad5",
+      "scope": "only compose project harness-evidence-wsl-ubuntu-26-04-3bafb0d1",
       "dotenv": "restored to its previous content",
       "ok": true,
-      "at": "2026-09-15T07:50:27.252308+00:00"
+      "at": "2026-09-15T09:17:22.155403+00:00"
     }
   },
   "steps": [
@@ -141,7 +141,7 @@
         "-q",
         "-p",
         "no:cacheprovider",
-        "--junitxml=/home/rudtn/zeus-evidence/docs/zeus/evidence/environment-runs-015/wsl-ubuntu-26.04-full-suite.junit.xml"
+        "--junitxml=/home/rudtn/zeus-evidence/docs/zeus/evidence/environment-runs-016/wsl-ubuntu-26.04-full-suite.junit.xml"
       ],
       "env_added": {
         "HARNESS_INTEGRATION": "1"
@@ -150,9 +150,9 @@
       "ok": true,
       "timed_out": false,
       "error": null,
-      "seconds": 236.5,
-      "summary": "1742 passed, 12 skipped in 236.02s (0:03:56)",
-      "stdout_sha256": "sha256:4569e280e69ac869537ae23824ae3ac53fb637150497e55e46e4f2bc604981f6",
+      "seconds": 242.7,
+      "summary": "1747 passed, 12 skipped in 242.15s (0:04:02)",
+      "stdout_sha256": "sha256:b401acc61eb0b54a8a1de0f6411c319020ec68de4fe3f894ccf86a22f00df08a",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "log": "wsl-ubuntu-26.04-full-suite-integration.log"
     },
@@ -178,16 +178,16 @@
       "ok": true,
       "timed_out": false,
       "error": null,
-      "seconds": 52.9,
-      "summary": "22 passed in 52.66s",
-      "stdout_sha256": "sha256:a2d90f9365a688edf95eaffa5b2dafe0e17857f0e9b5b9e25e510f53c693b9e0",
+      "seconds": 58.0,
+      "summary": "27 passed in 57.71s",
+      "stdout_sha256": "sha256:c317455c765be6f7a2fcd373cebbe38de43bdefa0b40ac923729247c00ed01ee",
       "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "log": "wsl-ubuntu-26.04-disposable-docker-checks.log"
     }
   ],
   "passed": true,
   "authority": "what ran on this host at this head against the stack this run created; not a reboot, a human acceptance or a deployment",
-  "head": "2b3455b9d9d746d1302cab08a262cdf1cc936674",
+  "head": "786b9357ccdcfa22ffdc1e17d718f00b97f155d0",
   "tracked_changes": [
     " D docs/zeus/evidence/readiness-004/windows-11-readiness-after-fix.json",
     " D docs/zeus/evidence/readiness-004/windows-11-readiness-probe.json",
@@ -234,7 +234,7 @@
   "uv": "uv 0.12.12 (x86_64-unknown-linux-gnu)",
   "docker": "29.7.2",
   "compose": "5.4.0",
-  "junit_sha256": "sha256:8b8ff1b34161b80d98e1766736bbc5afa16b8fbb7ff80d359e062deafe6b39b0",
+  "junit_sha256": "sha256:f244c0a9858b08cc480799e909e6756f8983ba534132e40c19be3e443cb0acbe",
   "per_file": {
     "test_app_server.py": {
       "passed": 24,
@@ -837,7 +837,7 @@
       "error": 0
     },
     "test_verification.py": {
-      "passed": 15,
+      "passed": 20,
       "skipped": 1,
       "failed": 0,
       "error": 0
@@ -871,5 +871,5 @@
     "identity_stable",
     "teardown"
   ],
-  "finished_at": "2026-09-15T07:50:27.252341+00:00"
+  "finished_at": "2026-09-15T09:17:22.155466+00:00"
 }

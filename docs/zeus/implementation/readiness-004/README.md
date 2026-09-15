@@ -130,16 +130,16 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-015/`, head `2b3455b`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-016/`, head `786b935`)
 
 | 호스트 | ruff | full-suite-integration | disposable-docker |
 |---|---|---|---|
-| Windows 11 | 통과 | **1740 passed, 14 skipped** (602s) | **22 passed** |
-| WSL Ubuntu 26.04 | 통과 | **1742 passed, 12 skipped** (237s) | **22 passed** |
+| Windows 11 | 통과 | **1745 passed, 14 skipped** (568s) | **27 passed** |
+| WSL Ubuntu 26.04 | 통과 | **1747 passed, 12 skipped** (243s) | **27 passed** |
 
-disposable-docker가 17건에서 **22건**으로 늘어난 것이 준비 관련 회귀 6건 중 5건이다(1건은 실행 시간이 짧아 전체
-스위트에서 함께 돈다). 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고,
-**이것을 증상 A의 해결 근거로 쓰지 않는다**(§2.3).
+disposable-docker가 17 → 22 → **27**로 늘어난 것이 준비 회귀 11건이다(1차 6건 중 5건 + 2차 5건). 두 호스트 로그·
+JUnit에서 canary 0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의 해결 근거로 쓰지 않는다**
+(§2.3).
 
 ## 7. 하지 않은 것
 
