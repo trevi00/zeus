@@ -19,9 +19,9 @@ def fresh_attempt_registry():
     """The owner is process-wide by design, so each check starts from a known state."""
     from codex_harness.adapters.verification import ATTEMPTS
 
-    ATTEMPTS.owed.clear()
+    ATTEMPTS.slots.clear()
     yield
-    ATTEMPTS.owed.clear()
+    ATTEMPTS.slots.clear()
 
 
 @pytest.fixture(autouse=True)
@@ -715,3 +715,173 @@ def test_a_resource_registered_after_reclamation_began_is_still_closed(tmp_path)
     assert first.closed, "the resource present at the sweep was closed"
     assert late.closed, "and so was the one that arrived after it"
     assert ATTEMPTS.outstanding() == [], "nothing was left owed"
+
+
+# ---- fifth review: the state transitions, from reservation to release ----------------------------
+
+class Stubborn:
+    """A resource whose close always fails. Calling close is not the same as being shut."""
+
+    def __init__(self, pair):
+        self.pair = pair          # a real socketpair half, so "not shut" is a real fact
+        self.attempts = 0
+
+    def close(self):
+        self.attempts += 1
+        raise OSError("this resource refuses to close")
+
+    def shut_for_real(self):
+        self.pair.close()
+
+
+def test_a_running_attempt_occupies_its_slot_before_its_worker_starts(tmp_path):
+    """The limit has to count work that is still running, not only work already given up on."""
+    import threading
+
+    from codex_harness.adapters.verification import UNRECLAIMED_LIMIT
+    from codex_harness.domain.model import ContractError
+
+    released = threading.Event()
+
+    def never_ends(register):
+        released.wait(30)
+        return "late"
+
+    try:
+        for index in range(UNRECLAIMED_LIMIT):
+            services = VerificationServices(tmp_path / f"stack-{index}",
+                                            FileArtifacts(tmp_path / "artifacts"))
+            with pytest.raises(TimeoutError):
+                services._bounded(never_ends, 0.05)
+        assert len(ATTEMPTS.outstanding()) == UNRECLAIMED_LIMIT
+
+        nextstack = VerificationServices(tmp_path / "stack-next", FileArtifacts(tmp_path / "artifacts"))
+        with pytest.raises(ContractError, match="refusing to start another"):
+            nextstack._bounded(never_ends, 0.05)
+        assert len(ATTEMPTS.outstanding()) == UNRECLAIMED_LIMIT, "the refusal started nothing"
+    finally:
+        released.set()
+
+
+def test_starting_reserves_the_slot_so_running_work_counts_against_the_limit():
+    """Codex's counterexample, driven at the owner: four starts, and the fourth must be refused.
+
+    Going through `_bounded` hides this, because a timeout records the attempt on the way out. The
+    fault is in `start` itself: it checked a count that only unreclaimed work had ever been added
+    to, so work that was still running was not in the denominator.
+    """
+    import threading
+
+    from codex_harness.adapters.verification import UNRECLAIMED_LIMIT
+    from codex_harness.domain.model import ContractError
+
+    released = threading.Event()
+
+    def never_ends(register):
+        released.wait(30)
+        return "late"
+
+    started = []
+    try:
+        for _ in range(UNRECLAIMED_LIMIT):
+            started.append(ATTEMPTS.start(never_ends, "reserve"))
+        assert all(attempt.thread.is_alive() for attempt in started), "all of them are running"
+
+        with pytest.raises(ContractError, match="refusing to start another"):
+            ATTEMPTS.start(never_ends, "reserve")
+        assert len(ATTEMPTS.slots) == UNRECLAIMED_LIMIT, "and nothing extra was started"
+    finally:
+        released.set()
+        for attempt in started:
+            attempt.thread.join(5)
+
+
+def test_a_resource_that_will_not_close_is_kept_and_the_attempt_stays_owed(tmp_path):
+    """Codex's counterexample: a close that fails used to drop the resource and read as reclaimed."""
+    import socket
+    import threading
+    import time
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    left, right = socket.socketpair()
+    stubborn = Stubborn(left)
+    hold = threading.Event()
+
+    def work(register):
+        register(stubborn)
+        hold.wait(30)            # long enough to miss the deadline; the worker itself is fine
+        return "done"
+
+    try:
+        with pytest.raises(TimeoutError):
+            services._bounded(work, 0.05)
+        hold.set()               # the worker ends; only the resource refuses to close
+
+        deadline = time.monotonic() + 5
+        while stubborn.attempts == 0 and time.monotonic() < deadline:
+            time.sleep(0.05)
+        held = ATTEMPTS.outstanding()
+        assert held, "an attempt whose resource would not close is still owed"
+        [record] = held
+        assert record["reclaimed"] is False
+        assert record["resources_still_held"] == 1, "the resource is kept, not dropped"
+        assert record["resources"][0]["closed"] is False
+        assert record["resources"][0]["error"] == "OSError"
+        assert record["resources"][0]["close_attempts"] >= 1, "closing was tried, and did not work"
+        assert left.fileno() != -1, "and the socket really is still open"
+    finally:
+        hold.set()
+        stubborn.shut_for_real()
+        left.close()
+        right.close()
+
+
+def test_a_resource_registered_after_the_reclaim_window_is_still_taken_back(tmp_path):
+    """The window bounds the caller's wait. It does not end ownership."""
+    import threading
+    import time
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    window_over, keep_running = threading.Event(), threading.Event()
+    late = Recorded()
+
+    def work(register):
+        window_over.wait(30)     # registers only after the caller has given up waiting
+        register(late)
+        keep_running.wait(30)
+        return "late"
+
+    try:
+        with pytest.raises(TimeoutError):
+            services._bounded(work, 0.05)
+        assert ATTEMPTS.outstanding(), "the attempt is still owned after the window"
+
+        window_over.set()
+        deadline = time.monotonic() + 10
+        while not late.closed and time.monotonic() < deadline:
+            ATTEMPTS.sweep()     # as a later attempt starting would
+            time.sleep(0.05)
+        assert late.closed, "a resource registered after the window was still taken back"
+    finally:
+        window_over.set()
+        keep_running.set()
+
+
+def test_a_slot_is_released_only_when_everything_it_owns_is_finished(tmp_path):
+    """Normal completion: the worker ends, what it opened is shut, and the slot goes back."""
+    import socket
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    left, right = socket.socketpair()
+
+    def work(register):
+        register(left)
+        left.close()             # the ordinary path closes what it opened
+        return "answered"
+
+    try:
+        assert services._bounded(work, 5) == "answered"
+        assert ATTEMPTS.outstanding() == [], "the slot went back once nothing was owed"
+        assert left.fileno() == -1
+    finally:
+        right.close()
