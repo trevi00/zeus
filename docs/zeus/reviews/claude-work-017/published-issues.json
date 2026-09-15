@@ -1,0 +1,82 @@
+[
+  {
+    "issue": 20,
+    "comment_url": "https://github.com/trevi00/zeus/issues/20#issuecomment-5672646381",
+    "observation": {
+      "id": "0cafd882cd93316a3d3ff6d71c53d696b8288a9a8a6b84dc1cdb61791e845f7d",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "repository": "trevi00/zeus",
+      "number": 20,
+      "url": "https://github.com/trevi00/zeus/issues/20",
+      "state": "OPEN",
+      "title": "[FA-019] \ubaa8\ub378 \ud638\ucd9c \uacc4\uc57d\u00b7\uc2e4\uce21 \uc0ac\uc6a9\ub7c9\u00b7\uc2e4\ud589 \uc608\uc0b0\uacfc \uc790\uaca9 \uc99d\uac70 \uacb0\uc18d",
+      "purpose": "pull",
+      "evidence_ref": "sha256:65f1d6da5f4f69e8b5e86f9341bd7b587fa50d2d5407840b8fdb4824c815779c",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-15T00:11:36.128702+00:00",
+      "first_seen": "2026-09-15T00:11:36.128702+00:00",
+      "sequence": 9
+    }
+  },
+  {
+    "issue": 17,
+    "comment_url": "https://github.com/trevi00/zeus/issues/17#issuecomment-5672646640",
+    "observation": {
+      "id": "553477a1626d2070be57a0d54a7403f7cde740137e9a4a1934952c1138fe1d89",
+      "ticket_id": "ZEUS-e36daeb984c1",
+      "repository": "trevi00/zeus",
+      "number": 17,
+      "url": "https://github.com/trevi00/zeus/issues/17",
+      "state": "OPEN",
+      "title": "[FA-016] pane \ub85c\uadf8 \ubcd1\ud569\uc758 \uc138\ub300 \uc5ed\ud589\u00b7\uc190\uc0c1 \uc6d0\ubb38 \uc18c\uc2e4 \ubc29\uc9c0",
+      "purpose": "pull",
+      "evidence_ref": "sha256:fd39636c51fc50818a0a52844b4614bc5535b920b4fee76a8a319102bdeec91c",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-15T00:11:37.977016+00:00",
+      "first_seen": "2026-09-15T00:11:37.977016+00:00",
+      "sequence": 18
+    }
+  },
+  {
+    "issue": 1,
+    "comment_url": "https://github.com/trevi00/zeus/issues/1#issuecomment-5672646884",
+    "observation": {
+      "id": "15aff1fd5ab800cbcb1180ed101e3bf14b95ca5e3f6fae850a0d9cb49e18c996",
+      "ticket_id": "ZEUS-8f1322ec0a67",
+      "repository": "trevi00/zeus",
+      "number": 1,
+      "url": "https://github.com/trevi00/zeus/issues/1",
+      "state": "OPEN",
+      "title": "[ZEUS-ANALYSIS] Claude \ub85c\uceec \ud558\ub124\uc2a4 \uc804\uccb4 \ubd84\uc11d\uacfc Zeus \ud761\uc218",
+      "purpose": "pull",
+      "evidence_ref": "sha256:728180c28b589ff55c7d719742d4f4d495c928cd273d6ddef1ab60bae14abb1f",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-15T00:11:39.714553+00:00",
+      "first_seen": "2026-09-15T00:11:39.714553+00:00",
+      "sequence": 13
+    }
+  },
+  {
+    "issue": 11,
+    "comment_url": "https://github.com/trevi00/zeus/issues/11#issuecomment-5672647141",
+    "observation": {
+      "id": "ff9483cd9059406d8fc4bb74a44974f9559009d464aa8a3fc0b516a6f043643b",
+      "ticket_id": "ZEUS-3d913005bed0",
+      "repository": "trevi00/zeus",
+      "number": 11,
+      "url": "https://github.com/trevi00/zeus/issues/11",
+      "state": "OPEN",
+      "title": "[FA-010] Git \ucd94\uc801 \ubc16 \uacbd\ud5d8\u00b7\ud50c\ub7ec\uadf8\uc778\u00b7\ubbf8\ucee4\ubc0b \ub178\ud2b8\uc758 \ubd84\uc11d \ub204\ub77d",
+      "purpose": "pull",
+      "evidence_ref": "sha256:a19f50c9aa5b0a3c8cbcee04a7e039a0f10218b5ca823e71adf9a2b6915dd806",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-15T00:11:41.608080+00:00",
+      "first_seen": "2026-09-15T00:11:41.608080+00:00",
+      "sequence": 13
+    }
+  }
+]
