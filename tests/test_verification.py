@@ -155,8 +155,10 @@ def test_real_disposable_database_and_redis_are_isolated_and_removed(tmp_path):
 # a window where the published port already accepts TCP and PostgreSQL still refuses the session -
 # 43 refusals in 12 Windows starts, 144 in 12 WSL starts - and the refusals are the two symptoms CI
 # recorded, `server closed the connection unexpectedly` and `FATAL: the database system is starting
-# up`. On WSL the container healthcheck went green inside that window in 3 of 12 starts, so neither
-# `up --wait` nor an open socket can stand in for the service being able to answer.
+# up`. On WSL the healthcheck was *observed* green before the first observed answer in 3 of 12
+# starts; the probe polls health and then requests in turn, so that ordering is not evidence that
+# the server could not have answered earlier. What the 24 starts do establish is that an open socket
+# is not an answer, and that is the whole of what these checks rest on.
 
 
 def listener(behaviour):
@@ -221,7 +223,9 @@ def test_readiness_names_the_refusals_it_saw_without_quoting_them(tmp_path):
     port, stop, thread = listener("close_immediately")
     try:
         with pytest.raises(ContractError) as raised:
-            services._await_service("postgres", port, deadline_seconds=0.6)
+            # Long enough that the refusals are classified rather than the whole attempt being cut
+            # short: the point here is the naming, not the bound.
+            services._await_service("postgres", port, deadline_seconds=3.0)
     finally:
         stop.set()
         thread.join(3)
@@ -253,9 +257,10 @@ def test_readiness_waits_for_the_answer_rather_than_the_socket(tmp_path, monkeyp
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     port, stop, thread = listener("close_immediately")
     answers_at = time.monotonic() + 0.5
-    monkeypatch.setattr(VerificationServices, "_container_identity", lambda self, service: "our-service")
+    monkeypatch.setattr(VerificationServices, "_container_identity",
+                        lambda self, service, seconds=30: "our-service")
 
-    def answer(self, service, port_):
+    def answer(self, service, port_, seconds=30):
         if time.monotonic() < answers_at:
             raise RuntimeError("FATAL: the database system is starting up")
         return "our-service"
@@ -279,8 +284,10 @@ def test_readiness_refuses_a_service_that_is_not_this_projects(tmp_path, monkeyp
 
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     port, stop, thread = listener("close_immediately")
-    monkeypatch.setattr(VerificationServices, "_answer", lambda self, service, port_: "somebody-elses")
-    monkeypatch.setattr(VerificationServices, "_container_identity", lambda self, service: "ours")
+    monkeypatch.setattr(VerificationServices, "_answer",
+                        lambda self, service, port_, seconds=30: "somebody-elses")
+    monkeypatch.setattr(VerificationServices, "_container_identity",
+                        lambda self, service, seconds=30: "ours")
     try:
         with pytest.raises(ContractError, match="not this project's postgres"):
             services._await_service("postgres", port, deadline_seconds=5)
@@ -291,8 +298,10 @@ def test_readiness_refuses_a_service_that_is_not_this_projects(tmp_path, monkeyp
 
 def test_readiness_binds_the_receipt_to_what_answered(tmp_path, monkeypatch):
     """The stored receipt says how long each service took and which instance answered."""
-    monkeypatch.setattr(VerificationServices, "_answer", lambda self, service, port_: "identity-" + service)
-    monkeypatch.setattr(VerificationServices, "_container_identity", lambda self, service: "identity-" + service)
+    monkeypatch.setattr(VerificationServices, "_answer",
+                        lambda self, service, port_, seconds=30: "identity-" + service)
+    monkeypatch.setattr(VerificationServices, "_container_identity",
+                        lambda self, service, seconds=30: "identity-" + service)
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     port, stop, thread = listener("close_immediately")
     try:
@@ -302,3 +311,144 @@ def test_readiness_binds_the_receipt_to_what_answered(tmp_path, monkeypatch):
         thread.join(3)
     assert report["identity"] == "identity-redis"
     assert set(report) >= {"tcp_after", "ready_after", "identity", "refusals_during_startup", "note"}
+
+
+# ---- second review: the deadline covers every stage, and nothing rides back on the exception -----
+
+def test_readiness_refuses_an_answer_that_arrives_after_the_deadline(tmp_path, monkeypatch):
+    """A late answer is not a ready that arrived late. Codex's counterexample, inverted.
+
+    The check used to look at the clock only after a refusal, so an answer returning past the
+    deadline broke out of the loop and was accepted.
+    """
+    import time
+
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+
+    def slow_answer(self, service, port_, seconds=30):
+        time.sleep(0.3)
+        return "our-service"
+
+    monkeypatch.setattr(VerificationServices, "_answer", slow_answer)
+    monkeypatch.setattr(VerificationServices, "_container_identity",
+                        lambda self, service, seconds=30: "our-service")
+    try:
+        with pytest.raises(ContractError, match="did not answer within"):
+            services._await_service("postgres", port, deadline_seconds=0.05)
+    finally:
+        stop.set()
+        thread.join(3)
+
+
+def test_readiness_refuses_a_success_that_completed_past_the_deadline(tmp_path, monkeypatch):
+    """The other half of the same rule, reached deterministically.
+
+    Above, the attempt is abandoned at its bound. Here it is allowed to return - the bound is
+    removed - and it still must not be accepted, because it finished after the deadline.
+    """
+    import time
+
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    monkeypatch.setattr(VerificationServices, "_bounded",
+                        staticmethod(lambda work, seconds: work()))  # no bound: let it return late
+
+    def slow_but_successful(self, service, port_, seconds=30):
+        time.sleep(0.3)
+        return "our-service"
+
+    monkeypatch.setattr(VerificationServices, "_answer", slow_but_successful)
+    monkeypatch.setattr(VerificationServices, "_container_identity",
+                        lambda self, service, seconds=30: "our-service")
+    try:
+        with pytest.raises(ContractError, match="answered after its"):
+            services._await_service("postgres", port, deadline_seconds=0.05)
+    finally:
+        stop.set()
+        thread.join(3)
+
+
+def test_readiness_returns_even_when_the_service_stops_answering(tmp_path, monkeypatch):
+    """Accepted, authenticated, and then silent: the call still comes back inside its bound."""
+    import threading
+    import time
+
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    released = threading.Event()
+
+    def never_answers(self, service, port_, seconds=30):
+        released.wait(30)          # a server that took the session and then went quiet
+        return "our-service"
+
+    monkeypatch.setattr(VerificationServices, "_answer", never_answers)
+    started = time.monotonic()
+    try:
+        with pytest.raises(ContractError, match="did not answer within"):
+            services._await_service("postgres", port, deadline_seconds=0.5)
+    finally:
+        released.set()
+        stop.set()
+        thread.join(3)
+    assert time.monotonic() - started < 10, "the wait was bounded, not held by the other end"
+
+
+def test_readiness_refuses_when_the_container_identity_cannot_be_read_in_time(tmp_path, monkeypatch):
+    """The docker lookup spends the same deadline; it does not get a fresh one of its own."""
+    import time
+
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    monkeypatch.setattr(VerificationServices, "_answer",
+                        lambda self, service, port_, seconds=30: "our-service")
+
+    def slow_lookup(self, service, seconds=30):
+        time.sleep(5)
+        return "our-service"
+
+    monkeypatch.setattr(VerificationServices, "_container_identity", slow_lookup)
+    started = time.monotonic()
+    try:
+        with pytest.raises(ContractError, match="container identity"):
+            services._await_service("postgres", port, deadline_seconds=1.0)
+    finally:
+        stop.set()
+        thread.join(3)
+    assert time.monotonic() - started < 4, "the lookup was bounded by what was left, not by its own timeout"
+
+
+def test_readiness_failure_carries_nothing_back_on_the_exception_chain(tmp_path, monkeypatch):
+    """A traceback prints the chain, so the chain must not hold the provider's own words."""
+    import traceback
+
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    sentinel = "SENTINEL-ORIGINAL-ERROR-TEXT-b4f1"
+
+    def refuse(self, service, port_, seconds=30):
+        raise RuntimeError("connection failed: " + sentinel)
+
+    monkeypatch.setattr(VerificationServices, "_answer", refuse)
+    try:
+        with pytest.raises(ContractError) as raised:
+            services._await_service("postgres", port, deadline_seconds=0.3)
+    finally:
+        stop.set()
+        thread.join(3)
+
+    rendered = "".join(traceback.format_exception(type(raised.value), raised.value,
+                                                  raised.value.__traceback__))
+    assert sentinel not in rendered, "the original text reached the traceback"
+    assert services.password not in rendered
+    assert "refusals" in str(raised.value), "what is reported is the classification and its count"

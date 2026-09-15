@@ -4,6 +4,7 @@ import os
 import re
 import secrets
 import socket
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -37,13 +38,13 @@ class VerificationServices:
         self.directory = self.root / self.project
         self.password = secrets.token_hex(24)
 
-    def _command(self, *args):
+    def _command(self, *args, timeout=150):
         env = {key: value for key, value in os.environ.items()
                if key.upper() in ENVIRONMENT_KEYS or key in {"DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_CONFIG"}}
         env["ZEUS_VERIFY_PASSWORD"] = self.password
         result = run_process(["docker", "compose", "--project-name", self.project,
                               "--file", str(self.directory / "compose.json"), *args],
-                             cwd=str(self.directory), env=env, timeout=150)
+                             cwd=str(self.directory), env=env, timeout=max(1, int(timeout)))
         if result.returncode:
             raise RuntimeError("Isolated verification services unavailable: " + args[0])
         return result.stdout.strip()
@@ -76,10 +77,13 @@ class VerificationServices:
             # `up --wait` reports the container healthchecks, and a healthcheck is not the same claim
             # as "this service can answer me". Measured over 24 stacks on two hosts (the probe and
             # its records are in docs/zeus/evidence/readiness-004): every single start has a window
-            # where the published port already accepts TCP and PostgreSQL still refuses the session,
-            # and on WSL the healthcheck went green *inside* that window in 3 of 12 starts. So ready
-            # is neither "healthy" nor "the socket opened": it is this service answering a real
-            # request, and being the service this project started.
+            # where the published port already accepts TCP and PostgreSQL still refuses the session.
+            # In 3 of 12 WSL starts the healthcheck was *observed* green before the first observed
+            # answer; the probe polls health and then requests in turn, so that ordering does not
+            # establish that the server could not have answered at the health moment. What it does
+            # establish is that an open socket is not an answer. So ready is neither "healthy" nor
+            # "the socket opened": it is this service answering a real request, inside the deadline,
+            # and being the service this project started.
             readiness = {service: self._await_service(service, port) for service, port in ports.items()}
             self.artifacts.put(canonical({"project": self.project, "ports": ports,
                 "ready_after_seconds": {name: row["ready_after"] for name, row in readiness.items()},
@@ -108,82 +112,143 @@ class VerificationServices:
     def _await_tcp(self, port, deadline, refusals):
         """The socket opening. Necessary, and on its own not evidence of anything else."""
         while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return False
             try:
-                with socket.create_connection(("127.0.0.1", port), timeout=2.0):
+                with socket.create_connection(("127.0.0.1", port), timeout=min(2.0, remaining)):
                     return True
             except OSError as exc:
-                refusals[self._refusal_kind(exc)] = refusals.get(self._refusal_kind(exc), 0) + 1
+                kind = self._refusal_kind(exc)
+                refusals[kind] = refusals.get(kind, 0) + 1
                 if time.monotonic() >= deadline:
                     return False
                 time.sleep(0.1)
 
-    def _answer(self, service, port):
+    @staticmethod
+    def _bounded(work, seconds):
+        """Run one attempt and come back inside `seconds`, whatever the other end decides to do.
+
+        A server can accept a connection, authenticate, and then simply stop answering. No client
+        timeout covers every stage of that, so the whole attempt is given a thread of its own and
+        the wait is on the thread. An attempt that outlives its share of the deadline is abandoned
+        here and reported as a refusal; it never becomes a ready that arrived late.
+        """
+        outcome = {}
+
+        def attempt():
+            try:
+                outcome["value"] = work()
+            except BaseException as exc:  # carried as a value, never re-raised into the caller
+                outcome["error"] = exc
+
+        worker = threading.Thread(target=attempt, daemon=True)
+        worker.start()
+        worker.join(max(0.0, seconds))
+        if worker.is_alive():
+            raise TimeoutError("the attempt did not finish within its share of the deadline")
+        if "error" in outcome:
+            raise outcome["error"]
+        return outcome["value"]
+
+    def _answer(self, service, port, seconds):
         """One real request, and the service's own identity in the reply. Raises on any refusal."""
         if service == "postgres":
             import psycopg
 
             dsn = f"postgresql://zeus:{self.password}@127.0.0.1:{port}/zeus"
-            with psycopg.connect(dsn, connect_timeout=3) as connection:
+            bound = max(1, int(seconds * 1000))
+            with psycopg.connect(dsn, connect_timeout=max(1, int(seconds)),
+                                 options=f"-c statement_timeout={bound}") as connection:
                 identity = connection.execute("SELECT system_identifier FROM pg_control_system()").fetchone()[0]
             return str(identity)
         import redis
 
-        client = redis.Redis(host="127.0.0.1", port=port, socket_timeout=3)
+        client = redis.Redis(host="127.0.0.1", port=port, socket_timeout=max(0.5, seconds),
+                             socket_connect_timeout=max(0.5, seconds))
         try:
             client.ping()
             return str(client.info("server").get("run_id"))
         finally:
             client.close()
 
-    def _container_identity(self, service):
+    def _container_identity(self, service, seconds):
         """The same identity asked of the container this project started, over docker rather than TCP.
 
         The published port is chosen by the daemon and ports get reused. Asking both sides and
-        requiring the same answer is what makes "the service is up" mean "our service is up".
+        requiring the same answer is what makes "the service is up" mean "our service is up". This
+        lookup spends the deadline it shares with everything else; it does not get one of its own.
         """
         if service == "postgres":
             value = self._command("exec", "-T", "postgres", "psql", "-U", "zeus", "-d", "zeus",
-                                  "-tAc", "select system_identifier from pg_control_system()")
+                                  "-tAc", "select system_identifier from pg_control_system()",
+                                  timeout=seconds)
             return value.strip()
-        info = self._command("exec", "-T", "redis", "redis-cli", "info", "server")
+        info = self._command("exec", "-T", "redis", "redis-cli", "info", "server", timeout=seconds)
         for line in info.splitlines():
             if line.startswith("run_id:"):
                 return line.split(":", 1)[1].strip()
         return ""
 
-    def _await_service(self, service, port, deadline_seconds=30.0):
-        """Ready means this service answered us, and it is the one this project started.
+    def _refuse(self, summary, refusals):
+        """The only thing that leaves here: a summary, and counts by kind.
 
-        The bound is unchanged. What is bounded is stronger: a stack that opens a port and then
-        cannot serve inside the deadline is a failure with a named reason, not a stack that is
-        called ready because a socket connected.
+        `raise ... from exc` would keep the original on the exception chain, and a traceback prints
+        the chain. The provider's own words - which is where a credential would be if one ever got
+        into one - stay out of it, so the refusal is built from the classification alone and the
+        chain is suppressed.
+        """
+        raise ContractError(f"{summary}; refusals: {canonical(refusals)}") from None
+
+    def _await_service(self, service, port, deadline_seconds=30.0):
+        """Ready means this service answered us inside the deadline, and it is the one we started.
+
+        One deadline covers every stage - the socket, the authentication, the query, receiving the
+        result, and asking the container the same question over docker. No stage gets a fresh bound,
+        and an answer that arrives after the deadline is not a ready that arrived late: it is a
+        failure with a named reason.
         """
         started = time.monotonic()
         deadline = started + deadline_seconds
         refusals = {}
-        tcp_after = None
         if not self._await_tcp(port, deadline, refusals):
-            raise ContractError(f"Verification endpoint 127.0.0.1:{port} for {service} never accepted a "
-                                f"connection within {deadline_seconds}s; refusals: {canonical(refusals)}")
+            self._refuse(f"Verification endpoint 127.0.0.1:{port} for {service} never accepted a "
+                         f"connection within {deadline_seconds}s", refusals)
         tcp_after = round(time.monotonic() - started, 2)
-        while True:
+        identity = None
+        while identity is None:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                self._refuse(f"Verification service {service} on 127.0.0.1:{port} accepted a connection "
+                             f"but did not answer within {deadline_seconds}s", refusals)
             try:
-                identity = self._answer(service, port)
-                break
-            except Exception as exc:
+                identity = self._bounded(lambda: self._answer(service, port, remaining), remaining)
+            except BaseException as exc:
                 kind = self._refusal_kind(exc)
                 refusals[kind] = refusals.get(kind, 0) + 1
                 if time.monotonic() >= deadline:
-                    raise ContractError(
-                        f"Verification service {service} on 127.0.0.1:{port} accepted a connection but did "
-                        f"not answer within {deadline_seconds}s; refusals: {canonical(refusals)}") from exc
+                    self._refuse(f"Verification service {service} on 127.0.0.1:{port} accepted a connection "
+                                 f"but did not answer within {deadline_seconds}s", refusals)
                 time.sleep(0.1)
-        expected = self._container_identity(service)
-        require(bool(identity) and identity == expected,
-                f"The service answering 127.0.0.1:{port} is not this project's {service}")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            # The answer itself was late. Ready is about being usable in time, not about eventually.
+            self._refuse(f"Verification service {service} on 127.0.0.1:{port} answered after its "
+                         f"{deadline_seconds}s deadline had passed", refusals)
+        try:
+            expected = self._bounded(lambda: self._container_identity(service, remaining), remaining)
+        except BaseException as exc:
+            kind = self._refusal_kind(exc)
+            refusals[kind] = refusals.get(kind, 0) + 1
+            self._refuse(f"The container identity for {service} could not be read within the "
+                         f"{deadline_seconds}s deadline", refusals)
+        if not identity or identity != expected:
+            self._refuse(f"The service answering 127.0.0.1:{port} is not this project's {service}",
+                         refusals)
         return {"tcp_after": tcp_after, "ready_after": round(time.monotonic() - started, 2),
                 "identity": identity, "refusals_during_startup": refusals,
-                "note": "ready is a real answer from the container this project started, not an open socket"}
+                "note": "ready is a real answer from the container this project started, inside one "
+                        "deadline that covers every stage"}
 
     def _cleanup(self):
         self._command("down", "--volumes", "--remove-orphans", "--timeout", "10")

@@ -100,9 +100,14 @@ class Cycle:
         """Bring the stack up and watch every measure advance on one clock, from the same moment.
 
         `up --wait` is deliberately not used. It blocks until the healthchecks pass, so a probe that
-        starts afterwards can only ever see a window that has already closed - which is why the
-        existing readiness check looks fine on a fast host and fails on a slow one. Here the health
-        report is one of the things being timed, not the thing that gates the timing.
+        starts afterwards can only ever see a window that has already closed. Here the health report
+        is one of the things being timed, not the thing that gates the timing.
+
+        What this is not: watching from the same instant the stack starts. The clock starts before
+        `compose up`, but the watching begins after `up -d` returns, and health is polled before the
+        service requests in each pass. So an observation of health preceding an observation of an
+        answer is an ordering of observations, not evidence about what the server could have done in
+        between.
         """
         import os
 
