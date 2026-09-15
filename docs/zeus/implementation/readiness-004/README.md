@@ -169,15 +169,16 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-017/`, head `02bc123`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-018/`, head `85a19de`)
 
 | 호스트 | ruff | full-suite-integration | disposable-docker |
 |---|---|---|---|
-| Windows 11 | 통과 | **1748 passed, 14 skipped** (607s) | **30 passed** |
-| WSL Ubuntu 26.04 | 통과 | **1750 passed, 12 skipped** (282s) | **30 passed** |
+| Windows 11 | 통과 | **1751 passed, 14 skipped** (663s) | **33 passed** |
+| WSL Ubuntu 26.04 | 통과 | **1753 passed, 12 skipped** (309s) | **33 passed** |
 
-disposable-docker가 17 → 22 → 27 → **30**으로 늘어난 것이 준비·회수 회귀 14건이다. 두 호스트 로그·JUnit에서 canary
-0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의 해결 근거로 쓰지 않는다**(§2.3).
+disposable-docker가 17 → 22 → 27 → 30 → **33**으로 늘어난 것이 준비·회수 회귀 17건이다. 회수 회귀는 실제 스레드와
+소켓을 쓰므로 이 단계가 길어졌다(Windows 110s, WSL 118s). 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건.
+양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의 해결 근거로 쓰지 않는다**(§2.3).
 
 ## 7. 하지 않은 것
 
