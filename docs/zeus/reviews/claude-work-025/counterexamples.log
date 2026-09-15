@@ -1,0 +1,24 @@
+.........s...................FFF                                         [100%]
+================================== FAILURES ===================================
+_______________ test_start_reserves_capacity_before_work_begins _______________
+.runtime\review-101d\test_owner.py:19: in test_start_reserves_capacity_before_work_begins
+    assert live <= UNRECLAIMED_LIMIT, f'{live} active attempts exceed cap before any reclaim completes'
+E   AssertionError: 4 active attempts exceed cap before any reclaim completes
+E   assert 4 <= 3
+_______________ test_failed_close_retains_real_socket_ownership _______________
+.runtime\review-101d\test_owner.py:50: in test_failed_close_retains_real_socket_ownership
+    assert not report['reclaimed'] and owner.outstanding(), 'failed close was dropped and reported reclaimed'
+E   AssertionError: failed close was dropped and reported reclaimed
+E   assert (not True)
+_______ test_resource_registered_after_reclaim_window_is_still_managed ________
+.runtime\review-101d\test_owner.py:82: in test_resource_registered_after_reclaim_window_is_still_managed
+    assert closed.wait(0.3), 'reclaim drain ended and later registration has no closer'
+E   AssertionError: reclaim drain ended and later registration has no closer
+E   assert False
+E    +  where False = wait(0.3)
+E    +    where wait = <threading.Event at 0x1ef9d7fbef0: unset>.wait
+=========================== short test summary info ===========================
+FAILED .runtime/review-101d/test_owner.py::test_start_reserves_capacity_before_work_begins
+FAILED .runtime/review-101d/test_owner.py::test_failed_close_retains_real_socket_ownership
+FAILED .runtime/review-101d/test_owner.py::test_resource_registered_after_reclaim_window_is_still_managed
+3 failed, 28 passed, 1 skipped in 55.15s
