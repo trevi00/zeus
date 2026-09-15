@@ -1,0 +1,42 @@
+[
+  {
+    "issue": 18,
+    "comment_url": "https://github.com/trevi00/zeus/issues/18#issuecomment-5676968124",
+    "observation": {
+      "id": "38ec7d7dcbe0fe23fd17acfdd46e1557266a2bee431fe78b9969b4ad375186f3",
+      "ticket_id": "ZEUS-3875a025c20d",
+      "repository": "trevi00/zeus",
+      "number": 18,
+      "url": "https://github.com/trevi00/zeus/issues/18",
+      "state": "OPEN",
+      "title": "[FA-017] 첫 재시도 후 작업 재개 누락·회고 상태 유실 방지",
+      "purpose": "pull",
+      "evidence_ref": "sha256:4ee6a41b6cac6b08796a696385c741b21ab33491c0aaf93a2b747028c7c019aa",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-15T08:13:30.685522+00:00",
+      "first_seen": "2026-09-15T08:13:30.685522+00:00",
+      "sequence": 10
+    }
+  },
+  {
+    "issue": 20,
+    "comment_url": "https://github.com/trevi00/zeus/issues/20#issuecomment-5676968497",
+    "observation": {
+      "id": "659ba030f11eb364c5d6b5f5e5b97ef3aafaa769b4a74518f7fc2491b8e390de",
+      "ticket_id": "ZEUS-15c0d970315a",
+      "repository": "trevi00/zeus",
+      "number": 20,
+      "url": "https://github.com/trevi00/zeus/issues/20",
+      "state": "OPEN",
+      "title": "[FA-019] 모델 호출 계약·실측 사용량·실행 예산과 자격 증거 결속",
+      "purpose": "pull",
+      "evidence_ref": "sha256:711c57ba83a13176debb2b99d9790fbcd229f078c0ae1bd2c931a53358e63cec",
+      "marker_present": true,
+      "authority": "external_observation_only",
+      "at": "2026-09-15T08:13:32.898632+00:00",
+      "first_seen": "2026-09-15T08:13:32.898632+00:00",
+      "sequence": 15
+    }
+  }
+]
