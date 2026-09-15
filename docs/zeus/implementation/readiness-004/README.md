@@ -255,16 +255,16 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-020/`, head `a6a2454`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-021/`, head `e28d9e8`)
 
 | 호스트 | ruff | full-suite-integration | disposable-docker |
 |---|---|---|---|
-| Windows 11 | 통과 | **1760 passed, 14 skipped** (666s) | **42 passed** |
-| WSL Ubuntu 26.04 | 통과 | **1762 passed, 12 skipped** (337s) | **42 passed** |
+| Windows 11 | 통과 | **1773 passed, 14 skipped** (678s) | **42 passed** |
+| WSL Ubuntu 26.04 | 통과 | **1775 passed, 12 skipped** (344s) | **42 passed** |
 
-disposable-docker가 17 → 22 → 27 → 30 → 33 → 38 → **42**로 늘어난 것이 준비·소유권·상태 회귀 26건이다. 실제
-스레드·소켓·socketpair로 상태 전이와 조회 실패를 강제하므로 이 단계가 2분 반이다. 두 호스트 로그·JUnit에서 canary
-0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의 해결 근거로 쓰지 않는다**(§2.3).
+전체 스위트가 늘어난 13건이 `tests/test_port_diagnosis.py`다(도커 없이 도는 판정·관측 검사라 disposable 단계는 42로
+그대로다). 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의
+해결 근거로 쓰지 않는다**(§2.3).
 
 ## 7. 하지 않은 것
 
