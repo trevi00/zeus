@@ -207,17 +207,16 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-019/`, head `b4be9d5`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-020/`, head `a6a2454`)
 
 | 호스트 | ruff | full-suite-integration | disposable-docker |
 |---|---|---|---|
-| Windows 11 | 통과 | **1756 passed, 14 skipped** (704s) | **38 passed** |
-| WSL Ubuntu 26.04 | 통과 | **1758 passed, 12 skipped** (333s) | **38 passed** |
+| Windows 11 | 통과 | **1760 passed, 14 skipped** (666s) | **42 passed** |
+| WSL Ubuntu 26.04 | 통과 | **1762 passed, 12 skipped** (337s) | **42 passed** |
 
-disposable-docker가 17 → 22 → 27 → 30 → 33 → **38**로 늘어난 것이 준비·소유권 회귀 22건이다. 소유권 회귀는 실제
-스레드·소켓·socketpair로 상태 전이를 강제하므로 이 단계가 2분대로 길어졌다(Windows 137s, WSL 143s). 두 호스트
-로그·JUnit에서 canary 0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의 해결 근거로 쓰지
-않는다**(§2.3).
+disposable-docker가 17 → 22 → 27 → 30 → 33 → 38 → **42**로 늘어난 것이 준비·소유권·상태 회귀 26건이다. 실제
+스레드·소켓·socketpair로 상태 전이와 조회 실패를 강제하므로 이 단계가 2분 반이다. 두 호스트 로그·JUnit에서 canary
+0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의 해결 근거로 쓰지 않는다**(§2.3).
 
 ## 7. 하지 않은 것
 
