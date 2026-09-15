@@ -825,7 +825,7 @@ def test_a_resource_that_will_not_close_is_kept_and_the_attempt_stays_owed(tmp_p
         [record] = held
         assert record["reclaimed"] is False
         assert record["resources_still_held"] == 1, "the resource is kept, not dropped"
-        assert record["resources"][0]["closed"] is False
+        assert record["resources"][0]["state"] != "closed", "closing failed, so it is not closed"
         assert record["resources"][0]["error"] == "OSError"
         assert record["resources"][0]["close_attempts"] >= 1, "closing was tried, and did not work"
         assert left.fileno() != -1, "and the socket really is still open"
@@ -883,5 +883,137 @@ def test_a_slot_is_released_only_when_everything_it_owns_is_finished(tmp_path):
         assert services._bounded(work, 5) == "answered"
         assert ATTEMPTS.outstanding() == [], "the slot went back once nothing was owed"
         assert left.fileno() == -1
+    finally:
+        right.close()
+
+
+# ---- sixth review: reserved is not finished, running is not reclaimable, unknown is not closed ----
+
+class Unreadable:
+    """A resource that refuses both to close and to say whether it is closed."""
+
+    def __init__(self, pair):
+        self.pair = pair
+        self.asked = 0
+
+    def fileno(self):
+        self.asked += 1
+        raise OSError("this resource will not say")
+
+    def close(self):
+        raise OSError("this resource will not close")
+
+    def shut_for_real(self):
+        self.pair.close()
+
+
+def test_starting_one_attempt_does_not_reclaim_another_that_is_still_running(tmp_path):
+    """Codex's counterexample: B's start used to cancel A and close A's resources.
+
+    Collection ran on whichever thread started the next attempt and swept anything not yet settled -
+    and a healthy, running attempt is not settled, it is simply not finished.
+    """
+    import threading
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    holding, finish = Recorded(), threading.Event()
+    started = []
+
+    def slow(register):
+        register(holding)
+        finish.wait(30)
+        return "done"
+
+    def quick(register):
+        return "done"
+
+    try:
+        started.append(ATTEMPTS.start(slow, "A"))
+        deadline = time.monotonic() + 5
+        while not started[0].held and time.monotonic() < deadline:
+            time.sleep(0.02)
+
+        assert services._bounded(quick, 5) == "done", "B runs normally"
+
+        assert not holding.closed, "A's resource was not closed by B starting"
+        assert started[0].state == "running", "and A is still running, not cancelled"
+    finally:
+        finish.set()
+        started[0].thread.join(5)
+        ATTEMPTS.sweep()
+
+
+def test_a_reservation_is_not_mistaken_for_a_finished_attempt(tmp_path):
+    """A thread that has not started is not alive, and that is not the same as being done."""
+    from codex_harness.adapters.verification import _Attempt
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    reserved = _Attempt("a-test", "reserve", lambda register: "done")
+    try:
+        assert reserved.state == "reserved"
+        assert reserved.settled() is False, "a reservation is never collectable"
+        assert reserved.reclaimable() is False, "and it is never swept"
+
+        ATTEMPTS.slots[reserved.id] = reserved
+        ATTEMPTS.sweep()
+        assert reserved.id in ATTEMPTS.slots, "so collection cannot delete it"
+
+        # And a run started beside it still works, with the reservation left alone.
+        assert services._bounded(lambda register: "beside", 5) == "beside"
+        assert reserved.id in ATTEMPTS.slots
+    finally:
+        ATTEMPTS.slots.pop(reserved.id, None)
+
+
+def test_a_resource_that_cannot_say_whether_it_is_shut_is_not_called_closed(tmp_path):
+    """Codex's counterexample: a failed `fileno` used to read as evidence of being closed."""
+    import socket
+    import threading
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    left, right = socket.socketpair()
+    unreadable = Unreadable(left)
+    hold = threading.Event()
+
+    def work(register):
+        register(unreadable)
+        hold.wait(30)
+        return "done"
+
+    try:
+        with pytest.raises(TimeoutError):
+            services._bounded(work, 0.05)
+        hold.set()
+
+        deadline = time.monotonic() + 5
+        while unreadable.asked == 0 and time.monotonic() < deadline:
+            time.sleep(0.05)
+        held = ATTEMPTS.outstanding()
+        assert held, "an attempt whose resource cannot be read is still owed"
+        [record] = held
+        assert record["resources"][0]["state"] == "unknown", "not knowing is its own answer"
+        assert record["reclaimed"] is False
+        assert left.fileno() != -1, "and the socket really is still open"
+    finally:
+        hold.set()
+        unreadable.shut_for_real()
+        right.close()
+
+
+def test_a_resource_with_a_readable_state_still_releases_its_slot(tmp_path):
+    """The contrast: something that can say it is shut is believed, and the slot goes back."""
+    import socket
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    left, right = socket.socketpair()
+
+    def work(register):
+        register(left)
+        left.close()
+        return "answered"
+
+    try:
+        assert services._bounded(work, 5) == "answered"
+        assert ATTEMPTS.outstanding() == []
     finally:
         right.close()
