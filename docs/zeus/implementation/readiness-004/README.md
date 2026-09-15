@@ -176,17 +176,20 @@ identity 조회 지연 거절, **예외 체인에 원문이 없는 것**. 되돌
 **되돌려 확인했다.** 새 회귀 4건 중 3건이 이전 head에서 실패한다. 네 번째(읽을 수 있는 상태면 슬롯이 돌아온다)는
 **대조**이며 이전 코드에서도 통과한다 — 그때는 조회 실패까지 닫힘으로 읽었으니 더 쉽게 통과했다. 그대로 적는다.
 
-## 3.6 미해결 증상에 진단을 붙였다 — 같은 포트, 같은 순간, 세 지점
+## 3.6 미해결 증상에 진단을 붙였다 — 같은 포트, 겹치는 관측 창, 세 지점
 
 §2.3의 증상 A는 여전히 미확정이다. **그 이유가 관측 방식에 있었다**: 매번 **한쪽에서만** 봤다. "connection refused"
 하나로는 DB가 못 떴는지, 포트가 게시되지 않았는지, 이쪽에서 닿을 수 없는 곳에 게시됐는지를 가를 수 없다.
 
-이 PC의 WSL은 **NAT 모드**다. 그 모드에서 WSL과 Windows의 localhost는 같은 것이 아니고 Docker Desktop이 둘 사이를
-따로 전달한다. 그러니 "어느 구간"이 바로 물어야 할 질문이다.
+이 PC의 WSL이 **NAT 모드**라는 것은 운영자가 조회해 알려준 **참조 사실**(2026-09-15 관측)이지 이 수집이 잰 값이
+아니다. 그 모드에서 WSL과 Windows의 localhost는 같은 것이 아니고 Docker Desktop이 둘 사이를 따로 전달하므로 "어느
+구간"이 물어야 할 질문이 된다 — 다만 **수집 자체는 네트워킹 모드를 재지 않는다.** 그래서 `context()`는 그 문장을
+관측으로 적지 않고 `wsl_networking_mode: "not measured by this capture"`와 **출처·날짜가 붙은 참조**로 갈라 적는다.
 
-`src/codex_harness/adapters/port_diagnosis.py`는 준비가 실패한 **그 순간에** 같은 포트를 세 곳에서 **동시에** 묻는다.
-차례로 물으면 중간에 열린 포트가 처음과 끝에 다르게 답하고, 그 차이가 **시간이 아니라 장소처럼** 보이기 때문에 동시가
-중요하다.
+`src/codex_harness/adapters/port_diagnosis.py`는 준비가 실패한 **직후에** 같은 포트를 세 곳에 묻는다. 셋을 **함께**
+출발시키는 이유는 차례로 물으면 중간에 열린 포트가 처음과 끝에 다르게 답하고 그 차이가 **시간이 아니라 장소처럼**
+보이기 때문이다. 그러나 이것은 **한 순간이 아니라 겹치는 세 관측 창**이다. 그래서 각 지점의 관측 시작·종료와
+실패로부터 수집까지의 지연을 기록하고, 결과도 "그 순간의 원인"이 아니라 **"그 관측 창에서 본 것"**으로 적는다.
 
 | 관측 | 무엇을 묻나 |
 |---|---|
@@ -201,14 +204,39 @@ identity 조회 지연 거절, **예외 체인에 원문이 없는 것**. 되돌
 | 컨테이너 실패 | 서비스 자체 |
 | 컨테이너 성공, Windows 실패 | 게시와 전달 경로 |
 | Windows 성공, WSL 실패 | WSL에서 그 포트로 가는 경로 |
-| 셋 다 성공 | 그 순간에는 아무것도 거절하지 않았다 |
+| 셋 다 성공 | 그 관측 창 동안에는 아무것도 거절하지 않았다 |
 | 물을 수 없었던 지점이 있음 | **undetermined** — 못 물은 것은 실패가 아니다 |
 
-**기한을 늘리거나 초록이 나올 때까지 돌리지 않는다.** 이 포착은 준비 기한이 **이미 실패한 뒤에만** 돌므로 통과할 실행을
-느리게 하지 않고, 자체 한도(10초)를 가진다. 실패 시 `ContractError` 요약과 영수증(`verification-readiness`)에
-결과가 함께 남는다.
+### 3.6.1 "물었다"와 "답을 얻었다"를 갈랐다 — 두 번째 제출의 결함
 
-### 3.6.1 실측 (`docs/zeus/evidence/readiness-004/*-three-vantage-capture.json`)
+독립 검토가 잡은 첫 결함은 마지막 줄이 **말만 그렇고 코드는 아니었다**는 것이다. 판정은 `container is False`를 먼저
+보았으므로 `(False, 미관측, True)`를 `service`로 단정했고, `docker exec`가 **돌긴 했으나 실패한** 경우(컨테이너가
+없음, 데몬 무응답, 클라이언트 없음)를 `reachable=False`로 적어 **DB 장애로 결론**냈다. 물어보지도 못한 것을 고장이라
+부른 것이다.
+
+이제 각 지점은 **두 사실을 따로** 적는다 — 탐침이 돌아 이 코드가 아는 모양의 답을 냈는가(`observed`), 그리고 그
+답이 무엇이었는가(`reachable`). 답으로 인정하는 모양은 명시된 것뿐이다: `pg_isready`가 출력한다고 문서화된 문장,
+`redis-cli`의 `PONG`, 로컬 탐침이 출력하도록 지시받은 `open`/`shut` 두 단어. 그 밖은 전부 `observed=False`에
+**이유 이름**(`command_failed`·`unrecognised_reply`·`no_container`·`did_not_finish`)만 남고 **명령의 원문은
+기록에 넣지 않는다** — 옛 코드는 출력 80자를 영수증에 복사했고, 오류 메시지에 자격 정보가 섞이면 그대로 따라 들어갈
+자리였다. 그리고 `narrow`는 **다른 어떤 규칙보다 먼저** 미관측을 검사해, 하나라도 미관측이면 `undetermined`다.
+
+### 3.6.2 기한 하나, 결과 확정 한 번 — 두 번째 결함
+
+두 번째 결함은 기한이 **반환은 해도 멈추지는 않았다**는 것이다. 컨테이너 id 조회는 자기만의 10초를 갖고 수집 **밖에서**
+돌아 아무도 합을 이름 붙이지 않았고, 늦게 끝난 탐침은 이미 **반환·저장된 기록을 덮어썼다.**
+
+이제 `DIAGNOSIS_SECONDS = 10초` 하나가 **id 조회 + 세 탐침 + `context()` + 결과 확정**을 전부 덮는다. 조회는 남은
+예산을 받아 그 안에서 돈다. 반환값은 잠금 안에서 **한 번 뜬 사본**이라, 기한 뒤에 답이 도착해도 그것이 쓰이는 곳은
+반환된 기록이 아니다. 남은 작업은 `still_running`에 **이름으로** 남고(데몬 스레드이므로 프로세스와 함께 끝난다),
+각 지점의 `looked_from`·`looked_until`과 실패→수집 지연 `delay_from_failure_seconds`가 함께 기록된다.
+
+**준비 기한(30초)은 커지지 않는다.** 이 수집은 준비가 **이미 실패한 뒤에만** 돌므로 통과할 실행을 느리게 하지 않는다.
+세 한도는 각각 다른 이름이고 서로 더해지지 않는다 — 준비 30초, 회수 `RECLAIM_SECONDS` 5초, 진단
+`DIAGNOSIS_SECONDS` 10초. **기한을 늘리거나 초록이 나올 때까지 돌리지 않는다.** 실패 시 `ContractError` 요약과
+영수증(`verification-readiness`)에 결과가 함께 남는다.
+
+### 3.6.3 실측 (`docs/zeus/evidence/readiness-004/*-three-vantage-capture.json`)
 
 두 호스트에서 실제 스택을 띄우고 두 경우를 잡았다. 양방향 interop이 살아 있어(WSL→`powershell.exe`,
 Windows→`wsl.exe`) 어느 쪽에서 돌려도 세 지점이 전부 답했다.
@@ -236,9 +264,10 @@ Windows→`wsl.exe`) 어느 쪽에서 돌려도 세 지점이 전부 답했다.
 **이 12회에서는 새 검사가 할 일이 없었다.** `up --wait`가 창을 먼저 닫았기 때문이다. identity 대조는 12회 모두
 통과했다(postgres system_identifier, redis run_id).
 
-그러므로 **전후 발생률이 좋아졌다고 주장하지 않는다.** 여기서 말할 수 있는 것은 두 가지뿐이다 — 창은 24/24로
-존재하고, health가 그 창 안에서 초록이 되는 일이 WSL에서 3/12로 일어났다. 새 검사는 **그 조건에서만 값을 하는
-보험**이며, 이번 12회는 그 조건이 오지 않았다.
+그러므로 **전후 발생률이 좋아졌다고 주장하지 않는다.** 여기서 말할 수 있는 것은 하나뿐이다 — TCP는 받아들이는데
+서비스는 답하지 못하는 창이 **24/24로 존재한다**. §2.2에서 되돌린 대로, **"health가 그 창 안에서 초록이 됐다"고는
+말하지 않는다.** WSL 3건은 health를 **먼저 관측했다**는 순서일 뿐이고, 그 셋 모두 health 관측 뒤의 거절은 0이다.
+새 검사는 **그 창이 `up --wait`보다 늦게 닫힐 때만 값을 하는 보험**이며, 이번 12회는 그 조건이 오지 않았다.
 
 ## 5. 회귀 (`tests/test_verification.py`, 준비 관련 6건)
 
@@ -254,6 +283,28 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 | `test_readiness_binds_the_receipt_to_what_answered` | 영수증이 시간과 identity를 함께 든다 |
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
+
+### 5.1 진단 회귀 (`tests/test_port_diagnosis.py` 27건 + `tests/test_verification.py` 2건)
+
+이전 head(`db42fb2`)의 모듈로 갈아 끼워 새 검사를 돌렸다. **17건이 실패하지만 전부가 반례는 아니다.** 실제로 틀린
+답을 얻어낸 것과 키·서명이 바뀌어 실패한 것을 갈라 적는다.
+
+**행동 반례 11건** — 이전 코드가 *틀린 답*을 낸다.
+
+| 검사 | 이전 head가 낸 답 |
+|---|---|
+| `…never_becomes_a_verdict[False-None-True]` | `service` (컨테이너만 보고 단정) |
+| `…never_becomes_a_verdict[True-False-None]` | `publication` |
+| `…never_becomes_a_verdict[None-True-False]` | `wsl_path` |
+| `…docker_exec_that_ran_and_failed_is_not_a_database_that_refused` | `reachable=False` → **DB 장애** |
+| `…does_not_recognise_is_not_an_answer_and_is_not_quoted` | 출력 원문(`FATAL: password …`)이 기록에 복사됨 |
+| `…pg_isready_documents_are_the_only_ones…` ×3 | 종료코드만 읽어 세 경우 모두 **반대로** 판정 |
+| `…prints_something_else_observes_nothing` | `wsl.exe` 미설치를 **"WSL이 못 닿는다"**로 판정 |
+| `…late_cannot_edit_the_record_that_was_handed_back` | 늦은 답이 **반환된 기록을 덮어씀** |
+| `…capture_of_a_failed_readiness_has_a_bound_of_its_own` | id 조회가 수집 밖에서 자기 10초를 씀(10.2s 대 3.1s) |
+
+**모양·서명 변경 6건** — 새 키(`observed`/`why`/`deadline_seconds`)나 새 인자(`container_lookup`/`failed_at`,
+`context(seconds)`)를 요구해 실패한다. **반례로 세지 않는다.**
 
 ## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-021/`, head `e28d9e8`)
 

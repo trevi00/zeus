@@ -1017,3 +1017,59 @@ def test_a_resource_with_a_readable_state_still_releases_its_slot(tmp_path):
         assert ATTEMPTS.outstanding() == []
     finally:
         right.close()
+
+
+def test_the_capture_of_a_failed_readiness_has_a_bound_of_its_own(tmp_path, monkeypatch):
+    """The defect this bites: the container-id lookup ran before the capture's budget started.
+
+    It had a fixed 10s timeout of its own, outside the capture, so the real cost of diagnosing was
+    that lookup plus the capture and nobody named the sum. Now one budget covers the lookup, the
+    three probes, the context and the finalising, and the readiness deadline - which has already
+    been missed by the time any of this runs - is not touched by it.
+    """
+    from codex_harness.adapters import port_diagnosis, verification
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    monkeypatch.setattr(verification, "DIAGNOSIS_SECONDS", 3.0, raising=False)
+    for name in ("_tcp_in_container", "_tcp_from_windows", "_tcp_from_wsl"):
+        monkeypatch.setattr(port_diagnosis, name,
+                            lambda *args, **kwargs: {"reachable": True, "observed": True,
+                                                     "how": "stub"})
+
+    asked = []
+
+    def slow_docker(*args, timeout=None, **kwargs):
+        """A `docker ps` that hangs, and honours whatever bound it was actually given."""
+        asked.append(timeout)
+        time.sleep(min(timeout if timeout else 10.0, 10.0))
+        return "abc123"
+
+    monkeypatch.setattr(services, "_command", slow_docker)
+
+    started = time.monotonic()
+    record = services._diagnose("postgres", 55432)
+    spent = time.monotonic() - started
+
+    assert asked and asked[0] <= 3.0, \
+        f"the lookup got its own bound of {asked[0]}s instead of what was left of the capture's"
+    assert spent <= 5.0, f"the capture cost {spent:.1f}s, which is not one named bound of 3s"
+    assert record["deadline_seconds"] == 3.0
+    assert record["container_lookup"]["seconds"] > 0
+
+
+def test_a_capture_that_itself_fails_narrows_nothing_and_still_names_its_bound(tmp_path,
+                                                                              monkeypatch):
+    from codex_harness.adapters import port_diagnosis, verification
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+
+    def explode(port, **kwargs):
+        raise RuntimeError("the capture could not start")
+
+    monkeypatch.setattr(port_diagnosis, "observe", explode)
+
+    record = services._diagnose("redis", 56379)
+
+    assert record["verdict"] == "undetermined"
+    assert record["deadline_seconds"] == verification.DIAGNOSIS_SECONDS
+    assert "nothing is narrowed" in record["means"]

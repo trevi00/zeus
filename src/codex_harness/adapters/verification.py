@@ -21,6 +21,10 @@ RECLAIM_SECONDS = 5.0
 # object and a run makes many, so a per-object count would reset with every new stack and bound
 # nothing; this is the number that has to hold.
 UNRECLAIMED_LIMIT = 3
+# The whole cost of a three-sided capture: the container-id lookup, the three probes, reading the
+# context and finalising the record. A third bound, named apart from the two above and never added
+# to the readiness deadline - readiness has already failed by the time any capture is taken.
+DIAGNOSIS_SECONDS = 10.0
 
 
 # What a resource's own state says. "I could not find out" is a third answer, and it is not closed.
@@ -501,25 +505,37 @@ class VerificationServices:
                 return line.split(":", 1)[1].strip()
         return ""
 
-    def _diagnose(self, service, port):
-        """Catch the moment the refusal happened, from all three sides at once.
+    def _diagnose(self, service, port, failed_at=None):
+        """Take a capture from all three sides, inside one bound of its own.
 
         This is the thing the WSL symptom has never had. Every record of it was taken from one
         side, and one "connection refused" cannot say whether the database never came up, the port
-        was never published, or it was published where that side cannot reach. It runs only after a
-        readiness deadline has already been missed, so it lengthens nothing that was going to pass.
+        was never published, or it was published where that side cannot reach.
+
+        Two bounds, named separately and never added together. Readiness is `deadline_seconds` and
+        is over before this is called - by the time a capture is taken, readiness has already
+        failed, so nothing here can make a readiness that was going to pass take longer. What this
+        costs is `DIAGNOSIS_SECONDS`, and it covers everything: looking up the container id, the
+        three probes, reading the context, and finalising the record. The lookup is inside that
+        budget because a lookup that hangs is time spent just as surely as a probe that hangs.
         """
         from codex_harness.adapters import port_diagnosis
 
+        def lookup(seconds):
+            if seconds <= 0:
+                return None
+            try:
+                return self._command("ps", "-q", service, timeout=seconds).strip() or None
+            except Exception:
+                return None
+
         try:
-            container = self._command("ps", "-q", service, timeout=10).strip()
-        except Exception:
-            container = ""
-        try:
-            return port_diagnosis.observe(port, service=service, container=container or None)
+            return port_diagnosis.observe(port, service=service, container_lookup=lookup,
+                                          seconds=DIAGNOSIS_SECONDS, failed_at=failed_at)
         except Exception as exc:
             return {"port": port, "service": service, "verdict": "undetermined",
                     "error": type(exc).__name__,
+                    "deadline_seconds": DIAGNOSIS_SECONDS,
                     "means": "the capture itself did not run; nothing is narrowed"}
 
     def _refuse(self, summary, refusals, diagnosis=None):
@@ -550,10 +566,11 @@ class VerificationServices:
         deadline = started + deadline_seconds
         refusals = {}
         if not self._await_tcp(port, deadline, refusals):
-            # This is the unexplained symptom. The capture is taken here, at the moment it failed.
+            # This is the unexplained symptom. The capture starts here, as close to the missed
+            # deadline as the code can get; how close is measured, not assumed.
             self._refuse(f"Verification endpoint 127.0.0.1:{port} for {service} never accepted a "
                          f"connection within {deadline_seconds}s", refusals,
-                         self._diagnose(service, port))
+                         self._diagnose(service, port, failed_at=deadline))
         tcp_after = round(time.monotonic() - started, 2)
         identity = None
         while identity is None:
@@ -570,7 +587,7 @@ class VerificationServices:
                 if time.monotonic() >= deadline:
                     self._refuse(f"Verification service {service} on 127.0.0.1:{port} accepted a connection "
                                  f"but did not answer within {deadline_seconds}s", refusals,
-                                 self._diagnose(service, port))
+                                 self._diagnose(service, port, failed_at=deadline))
                 time.sleep(0.1)
         remaining = deadline - time.monotonic()
         if remaining <= 0:
