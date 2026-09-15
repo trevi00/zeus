@@ -195,25 +195,23 @@ Codex가 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 네 곳
 2건은 대조이며 **이전 코드에서도 통과한다** — 보존 실패 시 정산이 도달하는 것과 깨끗한 실행이 통과하는 것은 이미
 2차에서 수용된 동작이라, 여기서 새로 무는 것이 아니라 **깨지지 않았음을 지키는** 회귀다. 복원하면 36건 전부 통과한다.
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-013/`, head `ed30106`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-014/`, head `e3dc374`)
 
 | 호스트 | ruff | full-suite-integration | disposable-docker | 회귀 |
 |---|---|---|---|---|
-| Windows 11 | 통과 | **1732 passed, 14 skipped** (597s) | **17 passed** | `test_runner_evidence` **20 passed**, `test_scratch_cleanup` **13 passed**, skip 0 |
-| WSL Ubuntu 26.04 | 통과 | **1734 passed, 12 skipped** (247s) | **17 passed** | `test_runner_evidence` **20 passed**, `test_scratch_cleanup` 13 중 skip 1 |
+| Windows 11 | 통과 | **1735 passed, 14 skipped** (599s) | **17 passed** | `test_runner_evidence` **23 passed**, `test_scratch_cleanup` **13 passed**, skip 0 |
+| WSL Ubuntu 26.04 | 통과 | **1737 passed, 12 skipped** (234s) | **17 passed** | `test_runner_evidence` **23 passed**, `test_scratch_cleanup` 13 중 skip 1 |
 
-회귀 20건은 두 호스트에서 **전부 실제로 돌았다**(skip 0). 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 러너를
-`--fixture`로 끝까지 구동하며, **실제 모델 호출 0회**다. WSL의 skip 1은 읽기 전용 속성이 삭제를 막는 것이 Windows에서만
-일어나기 때문이고, 그 차이 자체가 §1의 측정이다. 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건.
+회귀 23건은 두 호스트에서 **전부 실제로 돌았다**(skip 0). 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 러너를
+끝까지 구동하며, **실제 모델 호출 0회, 운영 원장 변경 0**이다. 정산 회귀는 `tmp_path` 아래 별도 시험 원장만 쓴다.
+WSL의 skip 1은 읽기 전용 속성이 삭제를 막는 것이 Windows에서만 일어나기 때문이고, 그 차이 자체가 §1의 측정이다.
+두 호스트 로그·JUnit에서 canary 0건, `password=` 0건.
 
-### 6.1 WSL disposable-docker 단계는 이번 회차에 통과했다
+### 6.1 WSL disposable-docker
 
-직전 네 회차에서 실패하던 단계가 이번 1회 시도에서 **17 passed**로 끝났다. 초록이 나올 때까지 돌린 것이 아니라
-**1회 돌린 결과가 이것**이다.
-
-**이것을 고쳤다고 말하지 않는다.** 이 브랜치는 `verification.py`도 그 두 테스트 파일도 건드리지 않았고, 원인은 여전히
-미확정이다. 한 번 통과한 것은 한 번의 관측이며, 누적하면 이 호스트는 **13회 중 8회 실패**다. Codex가 별도 작업
-(`docs/zeus/reviews/claude-work-018/READINESS-FOLLOWUP.md`)으로 다루기로 한 판단은 그대로다.
+이번 회차도 1회 시도에서 **17 passed**로 끝나, 연속 2회 통과다. **고쳤다고 말하지 않는다** — 이 브랜치는
+`verification.py`도 그 두 테스트 파일도 건드리지 않았고 원인은 미확정이다. 누적하면 이 호스트는 **14회 중 8회 실패**다.
+Codex가 별도 작업으로 다루기로 한 판단은 그대로다.
 
 ## 7. 하지 않은 것
 
