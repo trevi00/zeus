@@ -14,11 +14,160 @@ from codex_harness.adapters.commands import python_channel_environment, run_proc
 from codex_harness.domain.model import ContractError, canonical, digest, require, utcnow
 
 # A deadline that has already been missed gets one more bounded chance to take the attempt back.
-# It is not part of the readiness deadline and never extends it; it only bounds the taking back.
+# It is not part of the readiness deadline and never extends it; it only bounds the taking back -
+# and it covers the closing as well as the waiting, because a close can hang too.
 RECLAIM_SECONDS = 5.0
-# How many attempts this object may still own without having reclaimed them before it refuses to
-# start more. Repetition must not be able to grow threads and sockets without limit.
+# How many attempts may be owed across this whole process before another is refused. A stack is one
+# object and a run makes many, so a per-object count would reset with every new stack and bound
+# nothing; this is the number that has to hold.
 UNRECLAIMED_LIMIT = 3
+
+
+class _Attempt:
+    """One piece of work, the resources it opened, and whether anyone still owes them."""
+
+    def __init__(self, identifier, name, work):
+        self.id = identifier
+        self.lock = threading.Lock()
+        self.resources = []      # opened and still ours to close
+        self.late = []           # registered after cancellation began; still ours to close
+        self.cancelled = False
+        self.closed = 0
+        self.outcome = {}
+        self.thread = threading.Thread(target=self._run, args=(work,), daemon=True,
+                                       name=f"verification-attempt-{name}-{identifier}")
+
+    def _run(self, work):
+        try:
+            self.outcome["value"] = work(self.register)
+        except BaseException as exc:  # carried as a value, never re-raised into the caller
+            self.outcome["error"] = exc
+
+    def register(self, resource):
+        """Take ownership of something the attempt opened, whenever it opens it.
+
+        A single snapshot of a list misses whatever is registered after it is taken, and a
+        connection can be returned in exactly that gap. So registration and cancellation share a
+        lock, and anything arriving after cancellation joins the queue the reclaim is draining.
+        """
+        with self.lock:
+            (self.late if self.cancelled else self.resources).append(resource)
+
+    def wait(self, seconds):
+        """The worker is already running; this only decides how long the caller gives it."""
+        self.thread.join(max(0.0, seconds))
+        return not self.thread.is_alive()
+
+    def result(self):
+        if "error" in self.outcome:
+            raise self.outcome["error"]
+        return self.outcome.get("value")
+
+    def take_back(self, deadline):
+        """Cancel, then keep draining until the worker is done. Runs inside the reclaim window.
+
+        Draining once is not enough. The worker is still running while the first sweep happens, and
+        a connection it opens a moment later would land after that snapshot and never be closed. So
+        the sweep repeats for as long as the worker lives, and once more after it ends.
+        """
+        with self.lock:
+            self.cancelled = True
+        while True:
+            self._sweep()
+            self.thread.join(0.05)
+            if not self.thread.is_alive():
+                self._sweep()   # anything registered in the moment before it finished
+                return
+            if time.monotonic() >= deadline:
+                return
+
+    def _sweep(self):
+        with self.lock:
+            pending = list(self.resources) + list(self.late)
+            self.resources, self.late = [], []
+        for resource in pending:
+            self.closed += _close(resource)
+
+    def record(self, reclaimed):
+        with self.lock:
+            outstanding = len(self.resources) + len(self.late)
+        return {"attempt": self.id, "thread": self.thread.name, "closed": self.closed,
+                "resources_still_held": outstanding, "reclaimed": reclaimed,
+                "reclaim_deadline_seconds": RECLAIM_SECONDS,
+                "recovery": "ends when this process ends; the compose stack is removed by teardown "
+                            "independently of it"}
+
+
+def _close(resource):
+    """Close what the attempt opened, in the order most likely to release a blocked call."""
+    for name in ("cancel", "close", "terminate", "kill"):
+        action = getattr(resource, name, None)
+        if action is None:
+            continue
+        try:
+            action()
+        except Exception:
+            continue
+        if name in ("close", "terminate", "kill"):
+            return 1
+    return 0
+
+
+class _Attempts:
+    """Every attempt this process started. It outlives the objects that start them, which is the
+    point: a count kept on a per-stack object resets with the next stack and bounds nothing."""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.owed = {}
+        self.started = 0
+
+    def start(self, work, name):
+        with self.lock:
+            if len(self.owed) >= UNRECLAIMED_LIMIT:
+                raise ContractError(
+                    f"{len(self.owed)} attempts in this process have not been reclaimed "
+                    f"({sorted(self.owed)}); refusing to start another. They end when this process "
+                    f"ends; each compose stack is removed by its own teardown regardless.")
+            self.started += 1
+            identifier = f"a{self.started:04d}"
+        attempt = _Attempt(identifier, name, work)
+        attempt.thread.start()
+        return attempt
+
+    def reclaim(self, attempt, seconds):
+        """Take the attempt back inside one window that covers the closing and the waiting.
+
+        The closing itself can hang - a client's `close` is a call like any other - so it does not
+        run on the caller's thread. It runs in a reclaim worker, and the caller waits on that worker
+        for the window. What the window does not finish stays owed, including the reclaim worker.
+        """
+        deadline = time.monotonic() + seconds
+        worker = threading.Thread(target=attempt.take_back, args=(deadline,), daemon=True,
+                                  name=f"verification-reclaim-{attempt.id}")
+        worker.start()
+        worker.join(max(0.0, seconds))
+        reclaimed = not worker.is_alive() and not attempt.thread.is_alive()
+        report = attempt.record(reclaimed)
+        report["reclaim_thread"] = worker.name
+        report["reclaim_thread_finished"] = not worker.is_alive()
+        if reclaimed and report["resources_still_held"] == 0:
+            return report
+        with self.lock:
+            self.owed[attempt.id] = report
+        report["owed_in_process"] = len(self.owed)
+        return report
+
+    def release(self, attempt_id):
+        with self.lock:
+            self.owed.pop(attempt_id, None)
+
+    def outstanding(self):
+        with self.lock:
+            return [dict(record) for record in self.owed.values()]
+
+
+ATTEMPTS = _Attempts()
 
 ENVIRONMENT_KEYS = {"PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP", "TMPDIR",
     "HOME", "USERPROFILE", "LOCALAPPDATA", "APPDATA", "LANG", "LC_ALL", "UV_CACHE_DIR",
@@ -44,8 +193,6 @@ class VerificationServices:
         self.project = "zeus-verify-" + uuid4().hex
         self.directory = self.root / self.project
         self.password = secrets.token_hex(24)
-        # Attempts this object started, could not take back, and therefore still owns.
-        self.unreclaimed = []
 
     def _command(self, *args, timeout=150):
         env = {key: value for key, value in os.environ.items()
@@ -135,71 +282,24 @@ class VerificationServices:
                 time.sleep(0.1)
 
     def _bounded(self, work, seconds):
-        """Run one attempt, come back inside `seconds`, and take back what the attempt opened.
+        """Run one attempt, come back inside `seconds`, and leave nothing unowned behind.
 
-        Coming back is not the same as letting go. A worker thread cannot be cancelled from outside,
-        and `daemon=True` only says it will not hold the interpreter open at exit - it does not end a
-        thread sitting in `recv`. Abandoning it leaves a thread and a live socket behind, and a
-        deadline that is hit repeatedly leaves one of each every time.
-
-        So the attempt registers what it opens as it opens it, and when the deadline passes this
-        closes those things. Closing the socket is what actually ends the blocked call, and the
-        thread then finishes on its own. That is checked here rather than assumed: the worker is
-        joined again inside a separate, named reclaim window.
-
-        What cannot be reclaimed is not forgotten. It is counted, described, and it limits how many
-        further attempts may be started, so repetition cannot grow this without bound.
+        Coming back is not the same as letting go, and letting go is not the same as taking back.
+        This reserves a slot from the process-wide owner, runs the attempt, and on a missed deadline
+        hands it to that owner to reclaim inside a separate window. What cannot be reclaimed stays
+        recorded there - with the ids, what was closed, and how it ends - and counts against every
+        later attempt in this process, not just the ones this object makes.
         """
-        resources, outcome = [], {}
-
-        def attempt():
-            try:
-                outcome["value"] = work(resources.append)
-            except BaseException as exc:  # carried as a value, never re-raised into the caller
-                outcome["error"] = exc
-
-        if len(self.unreclaimed) >= UNRECLAIMED_LIMIT:
-            raise ContractError(
-                f"{len(self.unreclaimed)} earlier attempts for project {self.project} could not be "
-                f"reclaimed; refusing to start another. Recover by ending this process; the stack "
-                f"itself is removed by the usual teardown.")
-        worker = threading.Thread(target=attempt, daemon=True,
-                                  name=f"verification-attempt-{self.project[-8:]}")
-        worker.start()
-        worker.join(max(0.0, seconds))
-        if not worker.is_alive():
-            if "error" in outcome:
-                raise outcome["error"]
-            return outcome["value"]
-
-        closed = self._close_all(resources)
-        worker.join(RECLAIM_SECONDS)
-        if worker.is_alive():
-            # Still holding on. Ownership stays here as a recorded fact with a recovery path, and
-            # the count is what stops a repeated deadline from piling these up silently.
-            self.unreclaimed.append({"thread": worker.name, "resources": len(resources),
-                                     "closed": closed, "reclaim_seconds": RECLAIM_SECONDS,
-                                     "recovery": "ends when this process ends; the stack is removed "
-                                                 "by teardown independently of it"})
+        attempt = ATTEMPTS.start(work, f"{self.project[-8:]}")
+        finished = attempt.wait(max(0.0, seconds))
+        if finished:
+            return attempt.result()
+        report = ATTEMPTS.reclaim(attempt, RECLAIM_SECONDS)
+        if not report["reclaimed"]:
+            # Recorded where a reader will find it, on the failing path as well as the passing one.
+            self.artifacts.put(canonical({"project": self.project, "status": "attempt_unreclaimed",
+                                          **report}), "verification-unreclaimed")
         raise TimeoutError("the attempt did not finish within its share of the deadline")
-
-    @staticmethod
-    def _close_all(resources):
-        """Close what the attempt opened, in the order most likely to release a blocked call."""
-        closed = 0
-        for resource in list(resources):
-            for name in ("cancel", "close", "terminate", "kill"):
-                action = getattr(resource, name, None)
-                if action is None:
-                    continue
-                try:
-                    action()
-                    closed += 1
-                except Exception:
-                    continue
-                if name in ("close", "terminate", "kill"):
-                    break
-        return closed
 
     def _answer(self, service, port, seconds, register=None):
         """One real request, and the service's own identity in the reply. Raises on any refusal.
@@ -313,7 +413,7 @@ class VerificationServices:
                 "identity": identity, "refusals_during_startup": refusals,
                 "readiness_deadline_seconds": deadline_seconds,
                 "reclaim_deadline_seconds": RECLAIM_SECONDS,
-                "unreclaimed_attempts": list(self.unreclaimed),
+                "unreclaimed_attempts": ATTEMPTS.outstanding(),
                 "note": "ready is a real answer from the container this project started, inside one "
                         "readiness deadline covering every stage; the reclaim deadline is separate "
                         "and only bounds taking back an attempt that already missed the first one"}

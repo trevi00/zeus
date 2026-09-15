@@ -7,7 +7,21 @@ from types import SimpleNamespace
 import pytest
 
 from codex_harness.adapters.artifacts import FileArtifacts
-from codex_harness.adapters.verification import VerificationServices, verification_environment
+from codex_harness.adapters.verification import (
+    ATTEMPTS,
+    VerificationServices,
+    verification_environment,
+)
+
+
+@pytest.fixture(autouse=True)
+def fresh_attempt_registry():
+    """The owner is process-wide by design, so each check starts from a known state."""
+    from codex_harness.adapters.verification import ATTEMPTS
+
+    ATTEMPTS.owed.clear()
+    yield
+    ATTEMPTS.owed.clear()
 
 
 @pytest.fixture(autouse=True)
@@ -521,7 +535,7 @@ def test_a_timed_out_attempt_takes_back_its_thread_and_its_socket(tmp_path):
         assert len(sockets) == 3, "three real attempts were made"
         for client in sockets:
             assert client.fileno() == -1, "the socket the attempt opened was closed, not abandoned"
-        assert services.unreclaimed == [], "every worker was taken back inside the reclaim window"
+        assert ATTEMPTS.outstanding() == [], "every worker was taken back inside the reclaim window"
         deadline = time.monotonic() + 5
         while threading.active_count() > before and time.monotonic() < deadline:
             time.sleep(0.05)
@@ -538,7 +552,6 @@ def test_an_attempt_that_cannot_be_taken_back_is_counted_and_then_refused(tmp_pa
     from codex_harness.adapters.verification import UNRECLAIMED_LIMIT
     from codex_harness.domain.model import ContractError
 
-    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     released = threading.Event()
 
     def unreclaimable(register):
@@ -547,13 +560,19 @@ def test_an_attempt_that_cannot_be_taken_back_is_counted_and_then_refused(tmp_pa
 
     try:
         for index in range(UNRECLAIMED_LIMIT):
+            # A new object every time, exactly as a run of stacks makes one per stack. The count
+            # that matters is the process's, so it must not start over with each of them.
+            services = VerificationServices(tmp_path / f"verification-{index}",
+                                            FileArtifacts(tmp_path / "artifacts"))
             with pytest.raises(TimeoutError):
                 services._bounded(unreclaimable, 0.05)
-            assert len(services.unreclaimed) == index + 1, "what is still held is counted"
+            assert len(ATTEMPTS.outstanding()) == index + 1, "what is still held is counted"
 
-        assert services.unreclaimed[0]["recovery"], "and it says how it ends"
+        assert ATTEMPTS.outstanding()[0]["recovery"], "and it says how it ends"
+        fresh = VerificationServices(tmp_path / "verification-next",
+                                     FileArtifacts(tmp_path / "artifacts"))
         with pytest.raises(ContractError, match="refusing to start another"):
-            services._bounded(unreclaimable, 0.05)
+            fresh._bounded(unreclaimable, 0.05)
     finally:
         released.set()
 
@@ -578,3 +597,121 @@ def test_readiness_receipt_separates_the_two_deadlines_and_names_what_is_held(tm
     assert report["reclaim_deadline_seconds"] == RECLAIM_SECONDS
     assert report["unreclaimed_attempts"] == []
     assert "reclaim deadline is separate" in report["note"]
+
+
+# ---- fourth review: one owner, one window over the closing too, and no gap in registration -------
+
+class Hanging:
+    """A resource whose `close` stops, the way a client's close is a call like any other."""
+
+    def __init__(self, released):
+        self.released = released
+        self.closed = False
+
+    def close(self):
+        self.released.wait(30)
+        self.closed = True
+
+
+class Recorded:
+    """A resource that only records that it was closed."""
+
+    def __init__(self):
+        self.closed = False
+
+    def close(self):
+        self.closed = True
+
+
+def test_the_unreclaimed_limit_is_the_processs_and_does_not_reset_with_a_new_object(tmp_path):
+    """A run makes one object per stack, so a count kept on the object would bound nothing."""
+    import threading
+
+    from codex_harness.adapters.verification import UNRECLAIMED_LIMIT
+    from codex_harness.domain.model import ContractError
+
+    released = threading.Event()
+
+    def unreclaimable(register):
+        released.wait(30)
+        return "late"
+
+    try:
+        for index in range(UNRECLAIMED_LIMIT):
+            services = VerificationServices(tmp_path / f"stack-{index}",
+                                            FileArtifacts(tmp_path / "artifacts"))
+            with pytest.raises(TimeoutError):
+                services._bounded(unreclaimable, 0.05)
+        assert len(ATTEMPTS.outstanding()) == UNRECLAIMED_LIMIT
+
+        # A brand new object, as the next stack would make. The debt is still owed.
+        nextstack = VerificationServices(tmp_path / "stack-next", FileArtifacts(tmp_path / "artifacts"))
+        with pytest.raises(ContractError, match="refusing to start another"):
+            nextstack._bounded(unreclaimable, 0.05)
+    finally:
+        released.set()
+
+
+def test_a_close_that_hangs_does_not_hold_the_caller(tmp_path):
+    """The reclaim window covers the closing, not only the waiting that follows it."""
+    import threading
+    import time
+
+    from codex_harness.adapters.verification import RECLAIM_SECONDS
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    released = threading.Event()
+    hanging = Hanging(released)
+    done = threading.Event()
+
+    def work(register):
+        register(hanging)
+        done.wait(30)
+        return "late"
+
+    started = time.monotonic()
+    try:
+        with pytest.raises(TimeoutError):
+            services._bounded(work, 0.02)
+        elapsed = time.monotonic() - started
+        assert elapsed < RECLAIM_SECONDS + 3, "the caller came back; the stuck close did not hold it"
+        assert not hanging.closed, "the close really was stuck, so the counterexample reached it"
+        held = ATTEMPTS.outstanding()
+        assert held and held[0]["reclaim_thread_finished"] is False, "the stuck reclaim is recorded too"
+        assert held[0]["recovery"]
+    finally:
+        released.set()
+        done.set()
+
+
+def test_a_resource_registered_after_reclamation_began_is_still_closed(tmp_path):
+    """Registration and cancellation share a lock, so there is no gap after the sweep to fall into."""
+    import threading
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    swept, late = threading.Event(), Recorded()
+    first = Recorded()
+
+    def work(register):
+        register(first)
+        swept.wait(10)          # released once the first sweep has taken its snapshot
+        register(late)          # arrives after it
+        return "done"
+
+    original = Recorded.close
+
+    def close_and_release(self):
+        original(self)
+        if self is first:
+            swept.set()
+
+    Recorded.close = close_and_release
+    try:
+        with pytest.raises(TimeoutError):
+            services._bounded(work, 0.05)
+    finally:
+        Recorded.close = original
+
+    assert first.closed, "the resource present at the sweep was closed"
+    assert late.closed, "and so was the one that arrived after it"
+    assert ATTEMPTS.outstanding() == [], "nothing was left owed"
