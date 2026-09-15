@@ -208,7 +208,8 @@ def result_of(result):
         return 'unknown'
     failure = result.get('failure')
     if failure:
-        return 'failure' if str(failure.get('cause', '')).startswith('codex-provider-') else 'unknown'
+        # `<provider>-provider-<cause>` is the provider's own failure; an output defect is not.
+        return 'failure' if '-provider-' in str(failure.get('cause', '')) else 'unknown'
     if result.get('inspection_blocked') or result.get('interrupted') or result.get('answer') is None:
         return 'unknown'
     return 'success'
@@ -216,7 +217,8 @@ def result_of(result):
 
 def result_of_exception(error):
     """A transport that died or timed out is a provider failure; anything else proves nothing."""
-    return 'failure' if isinstance(error, ContractError) and str(error).startswith('Codex') else 'unknown'
+    return ('failure' if isinstance(error, ContractError) and str(error).startswith(('Codex', 'Claude'))
+            else 'unknown')
 
 
 __all__ = ['Breaker', 'DEFAULT_POLICY', 'breaker_key', 'result_of', 'result_of_exception']

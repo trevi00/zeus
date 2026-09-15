@@ -602,6 +602,88 @@ reservation as unsettled_unknown. Health, status, orphan and alert reports are i
 only. Unit fault injection and MemoryStore exercise these boundaries; they are not operational
 evidence.
 
+## INV-CLAUDE-WORKER-001
+
+Zeus runs one default provider and admits a second only where a policy in the repository permits
+that exact role, action, workload and read-only shape and the host configuration enables it. The
+assignment message, the task details and any model output take no part in that decision. A
+configuration naming a pairing the packaged policy does not permit is refused whole rather than
+narrowed, and a permitted, enabled pairing whose required controls are missing is refused rather
+than handed to the default provider, because an operator reading the receipt would otherwise
+believe the provider they asked for had run. A provider's model is never derived from another
+provider's routing policy: it is configured explicitly, and the requested model, the model the
+provider reported and an unreported model stay three separate facts. Each transport declares every
+request option as supported, declared, unsupported or unconfirmed, because "the transport takes
+this option" and "this harness knows the option took effect" are different claims. Supported means
+the effect is checked here; declared means the option is passed and its effect belongs to the
+provider; unconfirmed means a mechanism exists but no claim is made, so asking for it is refused;
+unsupported is refused by name when present. Every request records which of its options had their
+effect verified here and which were left to the provider, so a spend ceiling is never read back as
+a spend guarantee.
+
+The prompt reaches a provider over its input stream, never through an argument vector or a shell
+string, and the recorded command replaces every value that could carry schema, context or
+configuration text with its digest. Both output streams are drained concurrently under a per-line
+byte limit, a total byte limit and a bounded queue, with one monotonic deadline for the whole run
+and a tick and cancel check that keep working while no output arrives and while the child ignores
+its input. Entry is the moment the process starts, because initialization inside a provider can
+already change the workspace: every failure after it leaves termination evidence and blocks, and
+only a failure before it stays an ordinary retry. The process tree is owned from the moment it is
+created rather than hunted afterwards: on Windows the process starts suspended, joins a job object
+that kills its members when it closes, is verified to be a member, and only then runs, so nothing
+it starts is outside the boundary; on POSIX it starts in a new session and the group id is taken at
+spawn rather than read back from a process that may already be gone. Termination produces two
+receipts, one for the process this harness started and one for the tree, and only both together
+end a run: a parent that exited proves nothing about what it left behind, and a kill command that
+reports "no such process" after the parent is gone has killed nothing. An unproven tree is an
+unknown outcome that blocks rather than a failure that may be retried, and no pipe is closed while
+a thread is still blocked inside it. A boundary that fails owns what it has already made: the
+process exists before its membership is proven, so ending a job that never accepted it ends
+nothing, and the cleanup kills through the handle this harness holds and then reads the process's
+own exit status. Only that status lets the failure be called a start that left nothing behind. When
+it cannot be read the refusal changes kind rather than degree: a created process that cannot be
+proven gone enters the run and blocks for reconciliation, because a retry would place a second one
+beside whatever the first one is. The pipes of a process that never ran are closed on that path
+too.
+
+A result is named from what was observed. A clean exit, an assistant sentence, tool activity with
+no answer, an absent terminal message, two conflicting terminal messages, a truncated stream, a
+refused permission and a budget stop are distinct outcomes and none of them is acceptance. What a
+terminal message reports and how the process ended are two facts and the earlier one never settles
+the later: a success followed by a non-zero exit, or by a stop this harness had to perform, is not
+a finished run. An answer belongs to the session this attempt opened or to no attempt here, so the
+identifiers the provider reports at startup and at the end are compared with the one that was
+requested, and absent, disagreeing or conflicting identifiers each refuse the answer rather than
+passing as a binding. The model the provider reports is compared with the model that was asked
+for; an exact name that comes back different is refused, and an alias cannot be decided here and
+is recorded as undecided rather than as agreement. Output
+that was read but never examined is lost output whichever way it was lost, by a byte limit, by a
+full queue or by a reader that died, and a run that lost output is recorded as such rather than as
+a shorter record of a clean one; a startup report the provider never sent is recorded as absent
+rather than as a report of nothing. The
+provider's claim that it honoured the output schema is not the check: the schema is validated
+locally against the same subset every transport uses. Usage is read once, from the terminal
+message, so a redelivered or partial message is never counted twice; each part names what it
+counts, an absent count stays unknown rather than zero, and a reported cost is recorded as the
+provider's estimate, never as a billed amount. A provider's stream is execution data: six-W
+messages are produced by the workflow from a verified sender and recipient, and a six-W envelope
+inside a model's output is text with no authority. A session belongs to one provider, task,
+attempt and workspace and is resumed across none of them; native resume is declared unsupported
+and a new attempt recovers from the authoritative checkpoint through the same context compiler.
+A child inherits only what it needs to start and to authenticate the way the host already does;
+the harness's own database and cache credentials are withheld, the host's stored settings are
+neither read into the run nor modified by it, and the effective configuration, CLI version,
+executable identity, working revision and permission policy are recorded as names and digests,
+never as values. Foreign diagnostic text travels outward as a digest only. Changing a task's
+provider clears no block, no reservation and no attempt budget. Running a provider's CLI directly
+on the host is not strong isolation, and no claim here says an effect that already happened can
+be undone. Real provider calls made for acceptance experiments are limited by a ledger, not by an
+argument: the ceilings come from the packaged policy, the ledger sits at one fixed place per
+machine outside any checkout, the host is identified from the machine's own facts, a slot is taken
+under a lock before any process can start, and a slot that was reserved and never settled stays
+counted because an interrupted experiment may already have reached the provider. A run's label and
+output directory are names and places, never budget authority.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

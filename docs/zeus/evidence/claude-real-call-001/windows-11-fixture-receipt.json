@@ -1,0 +1,677 @@
+{
+  "label": "windows-11",
+  "mode": "fixture",
+  "started_at": "2026-09-14T17:04:18.038496+00:00",
+  "executed": true,
+  "host": {
+    "platform": "win32",
+    "python": "3.12.14",
+    "git": "git version 2.55.0.windows.3"
+  },
+  "limits": {
+    "per_host": 2,
+    "total": 4,
+    "note": "Real provider calls allowed for acceptance experiments. Counted in a per-machine ledger outside any checkout, reserved before a process can start, and kept if a run is interrupted. A run's label and output directory are names, not authority.",
+    "timeout_seconds": 120,
+    "max_budget_usd": "1",
+    "ceiling_source": "the packaged execution policy, counted in a per-machine ledger"
+  },
+  "authority": "one assigned task executed on this host through the configured provider; not a qualification, not a billed amount, not an operational change",
+  "stack": {
+    "compose_project": "harness-evidence-windows-11-claude-call-55b21b07",
+    "services": {
+      "postgres": {
+        "container": "7ab729be214e3d2cb69cc2dbcaa060c0d326018ecccba670b108b9b8082b725d",
+        "host_port": 58720
+      },
+      "redis": {
+        "container": "b15ed417cc872f20cb0a98b579d5c44cd8008458b142e2d4b9e14597a98f1415",
+        "host_port": 58721
+      }
+    },
+    "isolated": true
+  },
+  "preflight": {
+    "ready": true,
+    "mode": "fixture",
+    "executable": "C:\\Users\\rudtn\\zeus-pr\\absorb-002\\tests\\claude_protocol_child.py",
+    "launcher": [
+      "C:\\Users\\rudtn\\zeus-pr\\absorb-002\\.venv\\Scripts\\python.exe"
+    ],
+    "version": "fixture",
+    "flags": [],
+    "note": "the protocol child; this receipt is not evidence about a model"
+  },
+  "configuration": {
+    "assignments": "worker:implementation/implement",
+    "model": "claude-stub-normal",
+    "max_budget_usd": "1",
+    "timeout_seconds": "120"
+  },
+  "task_repository": {
+    "path": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-claude-call-rd3vxdg5\\repository",
+    "head": "27340865f4b72b634d92d749b2b3bedc54c0efad",
+    "tests_before": {
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-pr\\absorb-002\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "test_slug.py"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "summary": "3 failed in 0.07s",
+      "stdout_tail": [
+        ">       raise NotImplementedError",
+        "E       NotImplementedError",
+        "slug.py:5: NotImplementedError",
+        "=========================== short test summary info ===========================",
+        "FAILED test_slug.py::test_lowercases_and_joins_words - NotImplementedError",
+        "FAILED test_slug.py::test_collapses_separators_and_trims - NotImplementedError",
+        "FAILED test_slug.py::test_drops_characters_that_are_not_words - NotImplemente...",
+        "3 failed in 0.07s"
+      ],
+      "stderr_tail": []
+    }
+  },
+  "database": {
+    "schema": "claude_call_f3df5c4f4dc5",
+    "isolated": true
+  },
+  "assignment": {
+    "task_id": "c2ba91da-bfa5-4136-abdd-faf45dd244f5",
+    "agent": "worker:implementation",
+    "correlation_id": "claude-real-call-4fefbe00",
+    "action": "implement"
+  },
+  "execution": {
+    "seconds": 1.5,
+    "status": "succeeded",
+    "error": null
+  },
+  "postgres": {
+    "task": {
+      "id": "c2ba91da-bfa5-4136-abdd-faf45dd244f5",
+      "status": "succeeded",
+      "attempt": 1,
+      "generation": 1,
+      "agent": "worker:implementation"
+    },
+    "reservations": [
+      {
+        "id": "1a19e44896d86d010a3ea6ce2ad319709ee6c20da206d812465468273a1679a7",
+        "status": "settled",
+        "outcome": "accepted",
+        "usage": {
+          "basis": "result_total_including_cache",
+          "parts": {
+            "input_tokens": 120,
+            "output_tokens": 30,
+            "cache_read_input_tokens": 7,
+            "cache_creation_input_tokens": 5
+          },
+          "source": "claude/result.usage",
+          "cost_note": "the provider's own estimate for this run, never a billed amount",
+          "usage_note": "the terminal result message only; no message is added twice",
+          "cost_source": "provider_estimate",
+          "event_count": 6,
+          "last_tokens": null,
+          "stream_hash": "sha256:c4bba0a0fae7349e376faebc3c2db4566f88abb944134bbd167de3fc0f3715bb",
+          "total_tokens": 162,
+          "confirmed_model": "claude-stub-normal",
+          "requested_model": "claude-stub-normal",
+          "reported_cost_usd": 0.0123,
+          "model_confirmation": "transport_reported"
+        },
+        "transport": "claude_cli",
+        "assignment": {
+          "role": "worker:implementation",
+          "action": "implement",
+          "controls": {
+            "max_budget_usd": 1.0,
+            "timeout_seconds": 120
+          },
+          "identity": "claude-code-cli",
+          "provider": "claude",
+          "workload": "implementation",
+          "read_only": false,
+          "transport": "claude_cli",
+          "selected_by": "host_configuration",
+          "model_source": "explicit_setting",
+          "config_digest": "f95ab3886bb53eec32ef80e80da113c29bff4e2c438c0c7af5305f4505746b08",
+          "policy_digest": "d81e4fa1a514ec874bac8d97456ed85126d3718a40e7c1cc8e50404124c8427c",
+          "policy_version": "provider-policy.v1",
+          "session_resume": "unsupported"
+        },
+        "effect_verified_here": [
+          "model",
+          "output_schema",
+          "timeout"
+        ],
+        "effect_left_to_provider": [
+          "max_budget_usd",
+          "permission_mode"
+        ],
+        "unconfirmed_options": [
+          "read_only"
+        ],
+        "within_budget": true
+      }
+    ],
+    "terminations": [
+      {
+        "record_id": "5007a00a987aad06b464112414c97fe2c51d3c6fecfeb48bd99495d4d2880bd6",
+        "status": "closed"
+      }
+    ],
+    "audit_events": [
+      "development.invocation_reserved",
+      "development.invocation_settled"
+    ],
+    "session": {
+      "provider": "claude",
+      "provider_identity": "claude-code-cli",
+      "provider_session_id": "6c3f0956-b010-41a7-ae09-e29abf1a7297",
+      "transport": "claude_cli",
+      "workspace_identity": "35cc97d1e009ad6972232f4ccb59f07ea87e6b061a4f4726f122c89d4cca3e4e",
+      "policy_digest": "d81e4fa1a514ec874bac8d97456ed85126d3718a40e7c1cc8e50404124c8427c",
+      "config_digest": "f95ab3886bb53eec32ef80e80da113c29bff4e2c438c0c7af5305f4505746b08",
+      "session_resume": "unsupported",
+      "generation": 1,
+      "attempt": 1
+    }
+  },
+  "six_w_result": [
+    {
+      "type": "task.result",
+      "sender": "worker:implementation",
+      "recipient": "lead:improvement",
+      "action": "implement",
+      "correlation_id": "claude-real-call-4fefbe00",
+      "task_id": "c2ba91da-bfa5-4136-abdd-faf45dd244f5"
+    }
+  ],
+  "model_self_report": {
+    "summary": "c7007df0bf219b4646f29feff63a44ea73acaae599251227124bf6f30e8527e7",
+    "tests_claimed": [
+      "fixture test"
+    ],
+    "note": "the model's own words; nothing here is a measurement"
+  },
+  "runner_measured": {
+    "worktree": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-claude-call-rd3vxdg5\\workspaces\\c2ba91da-bfa5-4136-abdd-faf45dd244f5",
+    "candidate_revision": "91090e1cad79621a90d831467efecd105505335f",
+    "diff_stat": [
+      " stub-observation.json | 1 +",
+      " stub-runs.log         | 1 +",
+      " 2 files changed, 2 insertions(+)"
+    ],
+    "changed_files": [
+      "stub-observation.json",
+      "stub-runs.log"
+    ],
+    "tests_after": {
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-pr\\absorb-002\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "test_slug.py"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "summary": "3 failed in 0.07s",
+      "stdout_tail": [
+        ">       raise NotImplementedError",
+        "E       NotImplementedError",
+        "slug.py:5: NotImplementedError",
+        "=========================== short test summary info ===========================",
+        "FAILED test_slug.py::test_lowercases_and_joins_words - NotImplementedError",
+        "FAILED test_slug.py::test_collapses_separators_and_trims - NotImplementedError",
+        "FAILED test_slug.py::test_drops_characters_that_are_not_words - NotImplemente...",
+        "3 failed in 0.07s"
+      ],
+      "stderr_tail": []
+    },
+    "test_file_unchanged": true,
+    "evidence_inspection": {
+      "verdict": "incomplete",
+      "denominator": {
+        "error": 0,
+        "claims": 1,
+        "checked": 0,
+        "missing": 0,
+        "unknown": 0,
+        "not_checked": 1,
+        "flake_pattern": 0,
+        "replay_failed": 0,
+        "verified_mismatch": 0
+      },
+      "inspection_id": "0ef7f93fb62dd178d368005009c781a283e3d310abc6192a8fd5933d0d3e88bd"
+    },
+    "note": "this runner ran the tests itself in the worktree the execution produced"
+  },
+  "provider_receipt": {
+    "execution_ref": "sha256:47a4326627991ce4cdaad34bee92181358cf4e662d4cdfb7f5f89c4d2aa8e6dc",
+    "command": {
+      "argv_length": 27,
+      "cli_version": "9.9.9-zeus-protocol-stub (fixture)",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-claude-call-rd3vxdg5\\workspaces\\c2ba91da-bfa5-4136-abdd-faf45dd244f5",
+      "environment": {
+        "authentication_present": [],
+        "inherited": [
+          "APPDATA",
+          "COMSPEC",
+          "HOME",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "OS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "PROGRAMW6432",
+          "PYTHONIOENCODING",
+          "SHELL",
+          "SYSTEMROOT",
+          "TEMP",
+          "TERM",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "note": "names only; no value from the host environment is recorded or logged",
+        "withheld_zeus_names": [
+          "ZEUS_CLAUDE_ASSIGNMENTS",
+          "ZEUS_CLAUDE_MAX_BUDGET_USD",
+          "ZEUS_CLAUDE_MODEL",
+          "ZEUS_CLAUDE_TIMEOUT_SECONDS",
+          "ZEUS_TICKET_TRUST_COMMIT"
+        ]
+      },
+      "executable": "C:\\Users\\rudtn\\zeus-pr\\absorb-002\\tests\\claude_protocol_child.py",
+      "help_digest": "47f5940a2af23ff069866c58c1d797536599ca065080f139b3683e1ee30527c4",
+      "launcher": [
+        "C:\\Users\\rudtn\\zeus-pr\\absorb-002\\.venv\\Scripts\\python.exe"
+      ],
+      "limits": {
+        "deadline_seconds": 120.0,
+        "line_bytes": 1048576,
+        "queue_events": 2000,
+        "retained_events": 400,
+        "stream_bytes": 8388608
+      },
+      "max_budget_usd": 1.0,
+      "measurement": "fixture interpreter in front of the executable; a protocol test, not a provider measurement",
+      "prompt_bytes": 3355,
+      "prompt_sha256": "943e5b01a231d29ff26883fe694e80f4c0e7058fa24921651fec1505c08b1f95",
+      "prompt_transport": "stdin",
+      "requested_model": "claude-stub-normal",
+      "schema_sha256": "628c7517106e5b680211a267655d3bf79bbca36bb923321d420a01b06f0774a9",
+      "session_id": "6c3f0956-b010-41a7-ae09-e29abf1a7297",
+      "settings_sha256": "1927d42ddf4d5bc33440066592759eb728ef16af193c0b031f745776ca32512b",
+      "uncontrolled_inheritance": [
+        "managed (administrator) settings still apply",
+        "CLAUDE.md discovery in the working directory and home is context, not execution",
+        "the host's existing authentication (subscription or API credentials) is used unchanged",
+        "skills, custom commands and subagent definitions in the host's home still load; only --bare excludes them and it would require an API key instead of the existing login"
+      ]
+    },
+    "argv_manifest": [
+      "C:\\Users\\rudtn\\zeus-pr\\absorb-002\\.venv\\Scripts\\python.exe",
+      "<claude-executable>",
+      "--print",
+      "--output-format",
+      "stream-json",
+      "--input-format",
+      "text",
+      "--verbose",
+      "--model",
+      "claude-stub-normal",
+      "--session-id",
+      "6c3f0956-b010-41a7-ae09-e29abf1a7297",
+      "--permission-mode",
+      "acceptEdits",
+      "--permission-prompts",
+      "none",
+      "--strict-mcp-config",
+      "--setting-sources",
+      "",
+      "--tools",
+      "Bash,Read,Edit,Write,Glob,Grep",
+      "--settings",
+      "<8816c234bb44ee03d552e00c9caa3ecaccbe0ef77283319ed93ad2372edaa9eb>",
+      "--max-budget-usd",
+      "1.00",
+      "--json-schema",
+      "<cf8954479463291fd9185dd9403237efdf83f0774258d5d77557c6dc7e577d98>"
+    ],
+    "process": {
+      "boundary": {
+        "created_suspended": true,
+        "kind": "job_object",
+        "limit": "a process created with CREATE_BREAKAWAY_FROM_JOB would leave this job; the child is resumed only after it is a member",
+        "owned_from_spawn": true,
+        "verified_member": true
+      },
+      "confirmed": true,
+      "elapsed_seconds": 0.1879999999946449,
+      "ended_on_its_own": true,
+      "escalated": false,
+      "exit_code": 0,
+      "note": "a terminated parent is not a terminated tree; acceptance needs both",
+      "parent": {
+        "already_exited": true,
+        "confirmed": true,
+        "ended_on_its_own": true,
+        "escalated": false,
+        "exit_code": 0,
+        "pid": 28352,
+        "signalled": null
+      },
+      "reason": "stream_closed",
+      "stop_reason": "stream_closed",
+      "tree": {
+        "active_processes": 0,
+        "confirmed": true,
+        "evidence": "the job's own accounting of how many of its processes are alive",
+        "method": "job_object"
+      }
+    },
+    "terminal": {
+      "basis": "the first result message is terminal; an identical repeat is a redelivery",
+      "conflicting": false,
+      "conflicting_subtype": null,
+      "duration_ms": 12,
+      "is_error": false,
+      "num_turns": 1,
+      "permission_denials": null,
+      "present": true,
+      "redelivered": 0,
+      "subtype": "success"
+    },
+    "stream": {
+      "bytes": {
+        "stderr": 25,
+        "stdout": 1413
+      },
+      "bytes_total": 1438,
+      "counts": {},
+      "dropped_retained_events": 0,
+      "effective_configuration": {
+        "agents": 0,
+        "api_key_source": null,
+        "capabilities": [],
+        "keys_reported": [
+          "cwd",
+          "mcp_servers",
+          "model",
+          "plugins",
+          "session_id",
+          "subtype",
+          "tools",
+          "type"
+        ],
+        "mcp_server_errors": 0,
+        "mcp_servers": [],
+        "model": "claude-stub-normal",
+        "output_style": null,
+        "permission_mode": null,
+        "plugin_errors": 0,
+        "plugins": [],
+        "reported": true,
+        "slash_commands": 0,
+        "tools": [
+          "Read",
+          "Edit"
+        ]
+      },
+      "limits": {
+        "deadline_seconds": 120.0,
+        "line_bytes": 1048576,
+        "queue_events": 2000,
+        "retained_events": 400,
+        "stream_bytes": 8388608
+      },
+      "malformed_lines": 0,
+      "permission_denials": [],
+      "reader_errors": [],
+      "redelivered_terminals": 0,
+      "stderr_bytes": 23,
+      "stderr_digest": "e76539604c32de3309114b5f17e233118f039d744ca235f015dc5acdac4894f7",
+      "stdin": {
+        "bytes": 3355,
+        "state": "written"
+      },
+      "truncated": false
+    },
+    "invocation": {
+      "outcome": "accepted",
+      "request": {
+        "assignment": {
+          "action": "implement",
+          "config_digest": "f95ab3886bb53eec32ef80e80da113c29bff4e2c438c0c7af5305f4505746b08",
+          "controls": {
+            "max_budget_usd": 1.0,
+            "timeout_seconds": 120
+          },
+          "identity": "claude-code-cli",
+          "model_source": "explicit_setting",
+          "policy_digest": "d81e4fa1a514ec874bac8d97456ed85126d3718a40e7c1cc8e50404124c8427c",
+          "policy_version": "provider-policy.v1",
+          "provider": "claude",
+          "read_only": false,
+          "role": "worker:implementation",
+          "selected_by": "host_configuration",
+          "session_resume": "unsupported",
+          "transport": "claude_cli",
+          "workload": "implementation"
+        },
+        "declared": [
+          "max_budget_usd",
+          "permission_mode"
+        ],
+        "effect_left_to_provider": [
+          "max_budget_usd",
+          "permission_mode"
+        ],
+        "effect_verified_here": [
+          "model",
+          "output_schema",
+          "timeout"
+        ],
+        "options": {
+          "max_budget_usd": 1.0,
+          "model": "claude-stub-normal",
+          "output_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "summary": {
+                "type": "string"
+              },
+              "tests": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "summary",
+              "tests"
+            ],
+            "type": "object"
+          },
+          "permission_mode": "acceptEdits",
+          "read_only": false,
+          "timeout": 120
+        },
+        "transport": "claude_cli",
+        "unconfirmed": [
+          "read_only"
+        ],
+        "unsupported": [
+          "session_resume",
+          "system",
+          "temperature",
+          "max_output_tokens",
+          "response_format"
+        ]
+      },
+      "reservation": "1a19e44896d86d010a3ea6ce2ad319709ee6c20da206d812465468273a1679a7",
+      "usage": {
+        "basis": "result_total_including_cache",
+        "confirmed_model": "claude-stub-normal",
+        "cost_note": "the provider's own estimate for this run, never a billed amount",
+        "cost_source": "provider_estimate",
+        "event_count": 6,
+        "last_tokens": null,
+        "model_confirmation": "transport_reported",
+        "parts": {
+          "cache_creation_input_tokens": 5,
+          "cache_read_input_tokens": 7,
+          "input_tokens": 120,
+          "output_tokens": 30
+        },
+        "reported_cost_usd": 0.0123,
+        "requested_model": "claude-stub-normal",
+        "source": "claude/result.usage",
+        "stream_hash": "sha256:c4bba0a0fae7349e376faebc3c2db4566f88abb944134bbd167de3fc0f3715bb",
+        "total_tokens": 162,
+        "usage_note": "the terminal result message only; no message is added twice"
+      }
+    },
+    "session": {
+      "basis": "a fresh session id for every attempt",
+      "match": true,
+      "reported": {
+        "init": "6c3f0956-b010-41a7-ae09-e29abf1a7297",
+        "terminal": "6c3f0956-b010-41a7-ae09-e29abf1a7297"
+      },
+      "requested": "6c3f0956-b010-41a7-ae09-e29abf1a7297",
+      "resume": "unsupported",
+      "state": "match"
+    },
+    "effective_configuration": {
+      "agents": 0,
+      "api_key_source": null,
+      "capabilities": [],
+      "hook_events_observed": 0,
+      "keys_reported": [
+        "cwd",
+        "mcp_servers",
+        "model",
+        "plugins",
+        "session_id",
+        "subtype",
+        "tools",
+        "type"
+      ],
+      "mcp_server_errors": 0,
+      "mcp_servers": [],
+      "model": "claude-stub-normal",
+      "note": "what the provider reported it loaded at startup, beside the controls this run passed; an empty list is the provider's report, not this runner's claim, and nothing here is reported when `reported` is false",
+      "output_style": null,
+      "permission_mode": null,
+      "plugin_errors": 0,
+      "plugins": [],
+      "reported": true,
+      "requested_controls": {
+        "deadline_seconds": 120.0
+      },
+      "slash_commands": 0,
+      "tools": [
+        "Read",
+        "Edit"
+      ]
+    },
+    "cost": {
+      "note": "the provider's own estimate for this run, not a billed amount",
+      "reported_usd": 0.0123,
+      "source": "provider_estimate"
+    },
+    "answer_source": "structured_output",
+    "execution_assignment": {
+      "action": "implement",
+      "config_digest": "f95ab3886bb53eec32ef80e80da113c29bff4e2c438c0c7af5305f4505746b08",
+      "controls": {
+        "max_budget_usd": 1.0,
+        "timeout_seconds": 120
+      },
+      "identity": "claude-code-cli",
+      "model_source": "explicit_setting",
+      "policy_digest": "d81e4fa1a514ec874bac8d97456ed85126d3718a40e7c1cc8e50404124c8427c",
+      "policy_version": "provider-policy.v1",
+      "provider": "claude",
+      "read_only": false,
+      "role": "worker:implementation",
+      "selected_by": "host_configuration",
+      "session_resume": "unsupported",
+      "transport": "claude_cli",
+      "workload": "implementation"
+    },
+    "model_selection": {
+      "importance": "unknown",
+      "model_source": "explicit_setting",
+      "note": "configured explicitly; Codex routing never names this provider's model",
+      "policy": "provider-policy.v1",
+      "requested_model": "claude-stub-normal",
+      "workload": "implementation"
+    },
+    "tool_usage": {
+      "comparison": "not_declared",
+      "runner_observed": {
+        "completed": [
+          "toolu_fixture_1"
+        ],
+        "failed": [],
+        "source": "provider stream lines observed by this runner; a summary in the answer certifies nothing",
+        "started": [
+          "toolu_fixture_1"
+        ]
+      },
+      "self_reported": null,
+      "source": "provider stream lines observed by this runner; a summary in the answer certifies nothing"
+    }
+  },
+  "observations": {
+    "files": 1,
+    "records": 11,
+    "inserted": 11,
+    "duplicates": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "refused": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0,
+    "confirmed_audits": 2,
+    "sink_failures": 0,
+    "reclaimed_segments": 0,
+    "pruned_runs": 0,
+    "pruned_files": 0,
+    "alerts_replayed": 0
+  },
+  "redis": {
+    "namespace": "zeus-claude-real-call-167c019f",
+    "examined": 1,
+    "limit": 100,
+    "published": 1,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 0,
+    "legacy_sent": 0,
+    "error": 0,
+    "stream_entries_present": true
+  },
+  "workdir_removed": false,
+  "finished_at": "2026-09-14T17:04:26.026064+00:00",
+  "task_verified": false,
+  "passed": true,
+  "accepted_by_harness": true
+}

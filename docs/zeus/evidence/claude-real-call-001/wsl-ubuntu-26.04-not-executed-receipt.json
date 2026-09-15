@@ -1,0 +1,30 @@
+{
+  "label": "wsl-ubuntu-26.04",
+  "mode": "real",
+  "started_at": "2026-09-12T10:26:16.676505+00:00",
+  "executed": false,
+  "host": {
+    "platform": "linux",
+    "python": "3.12.14",
+    "git": "git version 2.53.0"
+  },
+  "limits": {
+    "max_calls_per_host": 2,
+    "max_calls_total": 4,
+    "timeout_seconds": 300,
+    "max_budget_usd": "1"
+  },
+  "authority": "one assigned task executed on this host through the configured provider; not a qualification, not a billed amount, not an operational change",
+  "preflight": {
+    "ready": false,
+    "mode": "real",
+    "executable": "/mnt/c/Users/rudtn/.local/bin/claude.exe",
+    "executable_kind": "windows_binary_via_interop",
+    "reason": "the only Claude Code reachable here is a Windows executable through interop; running it would measure a Windows process, not this host"
+  },
+  "not_executed_reason": "the only Claude Code reachable here is a Windows executable through interop; running it would measure a Windows process, not this host",
+  "finished_at": "2026-09-12T10:26:16.832016+00:00",
+  "task_verified": false,
+  "passed": false,
+  "accepted_by_harness": false
+}
