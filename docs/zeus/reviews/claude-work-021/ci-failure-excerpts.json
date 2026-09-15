@@ -1,0 +1,20 @@
+[
+  {
+    "run": "34936634459",
+    "retrieval_exit": 0,
+    "selected_failure_lines": [
+      "integration\tRun uv run pytest -q tests/test_verification.py tests/test_host_interruption.py\t2026-09-15T06:28:43.3264146Z E               psycopg.OperationalError: connection failed: connection to server at \"127.0.0.1\", port 32771 failed: server closed the connection unexpectedly",
+      "integration\tRun uv run pytest -q tests/test_verification.py tests/test_host_interruption.py\t2026-09-15T06:28:43.3265367Z .venv/lib/python3.13/site-packages/psycopg/connection.py:122: OperationalError",
+      "integration\tRun uv run pytest -q tests/test_verification.py tests/test_host_interruption.py\t2026-09-15T06:28:43.3266696Z ERROR tests/test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2] - psycopg.OperationalError: connection failed: connection to server at \"127.0.0.1\", port 32771 failed: server closed the connection unexpectedly"
+    ]
+  },
+  {
+    "run": "34936631645",
+    "retrieval_exit": 0,
+    "selected_failure_lines": [
+      "integration\tRun uv run pytest -q tests/test_verification.py tests/test_host_interruption.py\t2026-09-15T06:28:53.0560757Z E               psycopg.OperationalError: connection failed: connection to server at \"127.0.0.1\", port 32782 failed: FATAL:  the database system is starting up",
+      "integration\tRun uv run pytest -q tests/test_verification.py tests/test_host_interruption.py\t2026-09-15T06:28:53.0561993Z .venv/lib/python3.13/site-packages/psycopg/connection.py:122: OperationalError",
+      "integration\tRun uv run pytest -q tests/test_verification.py tests/test_host_interruption.py\t2026-09-15T06:28:53.0564062Z ERROR tests/test_host_interruption.py::test_host_probe_never_falls_back_to_public_tasks - psycopg.OperationalError: connection failed: connection to server at \"127.0.0.1\", port 32782 failed: FATAL:  the database system is starting up"
+    ]
+  }
+]
