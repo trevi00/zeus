@@ -1,0 +1,46 @@
+.........s.......................................FFFFFF........          [100%]
+================================== FAILURES ===================================
+__________ test_missing_container_is_unobserved_not_service_failure ___________
+.runtime\review-101g\test_diagnosis.py:12: in test_missing_container_is_unobserved_not_service_failure
+    assert result['reachable'] is None and result['asked'] is False, result
+E   AssertionError: {'reachable': False, 'how': 'docker exec', 'asked': True, 'asked_port': '5432', ...}
+E   assert (False is None)
+_____________ test_missing_vantage_prevents_localization[values0] _____________
+.runtime\review-101g\test_diagnosis.py:18: in test_missing_vantage_prevents_localization
+    assert diagnosis.narrow(observations) == 'undetermined'
+E   AssertionError: assert 'service' == 'undetermined'
+E     
+E     - undetermined
+E     + service
+_____________ test_missing_vantage_prevents_localization[values1] _____________
+.runtime\review-101g\test_diagnosis.py:18: in test_missing_vantage_prevents_localization
+    assert diagnosis.narrow(observations) == 'undetermined'
+E   AssertionError: assert 'publication' == 'undetermined'
+E     
+E     - undetermined
+E     + publication
+_____________ test_missing_vantage_prevents_localization[values2] _____________
+.runtime\review-101g\test_diagnosis.py:18: in test_missing_vantage_prevents_localization
+    assert diagnosis.narrow(observations) == 'undetermined'
+E   AssertionError: assert 'wsl_path' == 'undetermined'
+E     
+E     - undetermined
+E     + wsl_path
+____________________ test_context_is_inside_capture_budget ____________________
+.runtime\review-101g\test_diagnosis.py:33: in test_context_is_inside_capture_budget
+    assert elapsed < 0.2, (elapsed, result['seconds'])
+E   AssertionError: (0.29699999996228144, 0.0)
+E   assert 0.29699999996228144 < 0.2
+____________ test_returned_observations_are_frozen_after_deadline _____________
+.runtime\review-101g\test_diagnosis.py:58: in test_returned_observations_are_frozen_after_deadline
+    assert result['observations']['wsl']['reachable'] is None, result
+E   AssertionError: {'port': 59999, 'service': 'postgres', 'observations': {'container': {'reachable': True}, 'windows': {'reachable': True}, 'wsl': {'reachable': True}}, 'verdict': 'undetermined', ...}
+E   assert True is None
+=========================== short test summary info ===========================
+FAILED .runtime/review-101g/test_diagnosis.py::test_missing_container_is_unobserved_not_service_failure
+FAILED .runtime/review-101g/test_diagnosis.py::test_missing_vantage_prevents_localization[values0]
+FAILED .runtime/review-101g/test_diagnosis.py::test_missing_vantage_prevents_localization[values1]
+FAILED .runtime/review-101g/test_diagnosis.py::test_missing_vantage_prevents_localization[values2]
+FAILED .runtime/review-101g/test_diagnosis.py::test_context_is_inside_capture_budget
+FAILED .runtime/review-101g/test_diagnosis.py::test_returned_observations_are_frozen_after_deadline
+6 failed, 56 passed, 1 skipped in 98.12s (0:01:38)
