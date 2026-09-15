@@ -1,0 +1,26 @@
+.........s................FFF                                            [100%]
+================================== FAILURES ===================================
+_____________ test_new_instances_do_not_reset_live_attempt_limit ______________
+.runtime\review-101c\test_reclaim.py:31: in test_new_instances_do_not_reset_live_attempt_limit
+    assert live <= UNRECLAIMED_LIMIT, f'new instances reset the cap: {live} workers remain alive'
+E   AssertionError: new instances reset the cap: 4 workers remain alive
+E   assert 4 <= 3
+_______________ test_blocking_close_is_inside_reclaim_deadline ________________
+.runtime\review-101c\test_reclaim.py:68: in test_blocking_close_is_inside_reclaim_deadline
+    assert finished.wait(0.3), 'close is synchronous outside both readiness and reclaim bounds'
+E   AssertionError: close is synchronous outside both readiness and reclaim bounds
+E   assert False
+E    +  where False = wait(0.3)
+E    +    where wait = <threading.Event at 0x1bcc9772ba0: unset>.wait
+______________ test_registration_after_reclaim_started_is_closed ______________
+.runtime\review-101c\test_reclaim.py:107: in test_registration_after_reclaim_started_is_closed
+    assert closed.is_set(), 'late registered resource was never closed or retried'
+E   AssertionError: late registered resource was never closed or retried
+E   assert False
+E    +  where False = is_set()
+E    +    where is_set = <threading.Event at 0x1bcc97b34a0: unset>.is_set
+=========================== short test summary info ===========================
+FAILED .runtime/review-101c/test_reclaim.py::test_new_instances_do_not_reset_live_attempt_limit
+FAILED .runtime/review-101c/test_reclaim.py::test_blocking_close_is_inside_reclaim_deadline
+FAILED .runtime/review-101c/test_reclaim.py::test_registration_after_reclaim_started_is_closed
+3 failed, 25 passed, 1 skipped in 35.15s
