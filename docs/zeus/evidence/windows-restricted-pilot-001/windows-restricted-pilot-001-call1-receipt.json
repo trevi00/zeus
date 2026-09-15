@@ -1,0 +1,772 @@
+{
+  "label": "windows-restricted-pilot-001",
+  "mode": "real",
+  "started_at": "2026-09-15T01:14:57.088913+00:00",
+  "executed": true,
+  "host": {
+    "platform": "win32",
+    "python": "3.12.14",
+    "git": "git version 2.55.0.windows.3"
+  },
+  "limits": {
+    "per_host": 3,
+    "total": 3,
+    "note": "Pilot 001: preserve the existing two slots and permit exactly one additional Windows call; 300 seconds, USD 1 declared provider limit, no automatic retry. This configuration is not promoted to main.",
+    "timeout_seconds": 300,
+    "max_budget_usd": "1",
+    "ceiling_source": "the packaged execution policy, counted in a per-machine ledger"
+  },
+  "authority": "one assigned task executed on this host through the configured provider; not a qualification, not a billed amount, not an operational change",
+  "stack": {
+    "compose_project": "harness-evidence-windows-restricted-pilot-001-claude-call-b57f812a",
+    "services": {
+      "postgres": {
+        "container": "077e4b4e76cd78c5b3028285a5656437304e66ebf16c39e897d407a96f2f5ca5",
+        "host_port": 49680
+      },
+      "redis": {
+        "container": "665dfa654ec260992c8c2687098ac238d89f1a87a7256fea9c1ac2ee7c4b98d9",
+        "host_port": 49679
+      }
+    },
+    "isolated": true
+  },
+  "preflight": {
+    "ready": true,
+    "mode": "real",
+    "executable": "C:\\Users\\rudtn\\.local\\bin\\claude.EXE",
+    "launcher": [],
+    "executable_kind": "host_native",
+    "version": "2.1.270 (Claude Code)",
+    "flags": [
+      "--json-schema",
+      "--max-budget-usd",
+      "--model",
+      "--output-format",
+      "--permission-mode",
+      "--print",
+      "--session-id"
+    ]
+  },
+  "call_budget": {
+    "slot": "f6906ce3ac484c0385f50e0e01a47079",
+    "ceilings": {
+      "per_host": 3,
+      "total": 3,
+      "note": "Pilot 001: preserve the existing two slots and permit exactly one additional Windows call; 300 seconds, USD 1 declared provider limit, no automatic retry. This configuration is not promoted to main."
+    },
+    "ledger": "C:\\Users\\rudtn\\.zeus\\claude-call-budget",
+    "counts_at_reservation": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 2,
+      "all_hosts": 2,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc"
+  },
+  "configuration": {
+    "assignments": "worker:implementation/implement",
+    "model": "claude-fable-5-1",
+    "max_budget_usd": "1",
+    "timeout_seconds": "300"
+  },
+  "task_repository": {
+    "path": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-claude-call-budohr7j\\repository",
+    "head": "a4a03ce3f856eb2c618046a5fad5115e60f6f216",
+    "tests_before": {
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-pilot-001\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "test_slug.py"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "summary": "3 failed in 0.08s",
+      "stdout_tail": [
+        ">       raise NotImplementedError",
+        "E       NotImplementedError",
+        "slug.py:5: NotImplementedError",
+        "=========================== short test summary info ===========================",
+        "FAILED test_slug.py::test_lowercases_and_joins_words - NotImplementedError",
+        "FAILED test_slug.py::test_collapses_separators_and_trims - NotImplementedError",
+        "FAILED test_slug.py::test_drops_characters_that_are_not_words - NotImplemente...",
+        "3 failed in 0.08s"
+      ],
+      "stderr_tail": []
+    }
+  },
+  "database": {
+    "schema": "claude_call_a5dd95b8d93c",
+    "isolated": true
+  },
+  "assignment": {
+    "task_id": "b987d675-c28d-490a-be5c-b3b6e680237a",
+    "agent": "worker:implementation",
+    "correlation_id": "claude-real-call-7b8cf571",
+    "action": "implement"
+  },
+  "execution": {
+    "seconds": 27.1,
+    "status": "succeeded",
+    "error": null
+  },
+  "postgres": {
+    "task": {
+      "id": "b987d675-c28d-490a-be5c-b3b6e680237a",
+      "status": "succeeded",
+      "attempt": 1,
+      "generation": 1,
+      "agent": "worker:implementation"
+    },
+    "reservations": [
+      {
+        "id": "11f273311704604fbf1d26d490bbab020f01f019a21fa72beeb1307a0e56c2f5",
+        "status": "settled",
+        "outcome": "accepted",
+        "usage": {
+          "basis": "result_total_including_cache",
+          "parts": {
+            "input_tokens": 130,
+            "output_tokens": 1718,
+            "cache_read_input_tokens": 44839,
+            "cache_creation_input_tokens": 12638
+          },
+          "source": "claude/result.usage",
+          "cost_note": "the provider's own estimate for this run, never a billed amount",
+          "usage_note": "the terminal result message only; no message is added twice",
+          "cost_source": "provider_estimate",
+          "event_count": 27,
+          "last_tokens": null,
+          "stream_hash": "sha256:e3001e8660dee8a33f4fa7e1e7f62bbf505c919bdf8e4d5990716fd8a3c7a918",
+          "total_tokens": 59325,
+          "confirmed_model": "claude-fable-5-1",
+          "requested_model": "claude-fable-5-1",
+          "reported_cost_usd": 0.35318874999999994,
+          "model_confirmation": "transport_reported"
+        },
+        "transport": "claude_cli",
+        "assignment": {
+          "role": "worker:implementation",
+          "action": "implement",
+          "controls": {
+            "max_budget_usd": 1.0,
+            "timeout_seconds": 300
+          },
+          "identity": "claude-code-cli",
+          "provider": "claude",
+          "workload": "implementation",
+          "read_only": false,
+          "transport": "claude_cli",
+          "selected_by": "host_configuration",
+          "model_source": "explicit_setting",
+          "config_digest": "232f4e2bdd83ba832107aac46804204fbe60035249d047a6f8e2452417cb6558",
+          "policy_digest": "ddaed9026a8e02ea30bfb630967116405833bb026cff1ed8bb5d335b606d53ba",
+          "policy_version": "provider-policy.v1",
+          "session_resume": "unsupported"
+        },
+        "effect_verified_here": [
+          "model",
+          "output_schema",
+          "timeout"
+        ],
+        "effect_left_to_provider": [
+          "max_budget_usd",
+          "permission_mode"
+        ],
+        "unconfirmed_options": [
+          "read_only"
+        ],
+        "within_budget": true
+      }
+    ],
+    "terminations": [
+      {
+        "record_id": "87c5e696bd52f372377f07df77690b4d33c5edebbfd3281bae0fce142b1e2b84",
+        "status": "closed"
+      }
+    ],
+    "audit_events": [
+      "development.invocation_reserved",
+      "development.invocation_settled"
+    ],
+    "session": {
+      "provider": "claude",
+      "provider_identity": "claude-code-cli",
+      "provider_session_id": "5720fe52-ef12-4413-b3f4-7281866d45be",
+      "transport": "claude_cli",
+      "workspace_identity": "a795ba3e29cc3ed594ee3989275cd4ead82a8dad89ea677a7459a3649e46efb9",
+      "policy_digest": "ddaed9026a8e02ea30bfb630967116405833bb026cff1ed8bb5d335b606d53ba",
+      "config_digest": "232f4e2bdd83ba832107aac46804204fbe60035249d047a6f8e2452417cb6558",
+      "session_resume": "unsupported",
+      "generation": 1,
+      "attempt": 1
+    }
+  },
+  "six_w_result": [
+    {
+      "type": "task.result",
+      "sender": "worker:implementation",
+      "recipient": "lead:improvement",
+      "action": "implement",
+      "correlation_id": "claude-real-call-7b8cf571",
+      "task_id": "b987d675-c28d-490a-be5c-b3b6e680237a"
+    }
+  ],
+  "model_self_report": {
+    "summary": "Implemented `slugify` in slug.py using only the standard library (`re`). The function lowercases the input, replaces every run of characters that are not ASCII letters or digits with a single hyphen, and strips leading/trailing hyphens. This satisfies all three cases in test_slug.py: \"Hello World\" -> \"hello-world\", \"  Zeus   Harness--Release  \" -> \"zeus-harness-release\", and \"Release 2.0 (final)!\" -> \"release-2-0-final\". Only slug.py was modified (confirmed via `git status --short` and `git diff`); test_slug.py was untouched. Changes are left uncommitted in the working tree for independent review. Note: one Bash invocation was auto-denied because it contained an appended `echo \"exit=$?\"`; the pytest run was repeated without it and succeeded (3 passed in 0.02s).",
+    "tests_claimed": [
+      "python -m pytest -q  (run from the workspace root; result: 3 passed in 0.02s)",
+      "git status --short && git diff  (verified only slug.py changed)"
+    ],
+    "note": "the model's own words; nothing here is a measurement"
+  },
+  "runner_measured": {
+    "worktree": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-claude-call-budohr7j\\workspaces\\b987d675-c28d-490a-be5c-b3b6e680237a",
+    "candidate_revision": "55e1054d2bf713431ab9047cd763190cf0e96786",
+    "diff_stat": [
+      " slug.py | 11 ++++++++++-",
+      " 1 file changed, 10 insertions(+), 1 deletion(-)"
+    ],
+    "changed_files": [
+      "slug.py"
+    ],
+    "tests_after": {
+      "argv": [
+        "C:\\Users\\rudtn\\zeus-pilot-001\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "test_slug.py"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "summary": "3 passed in 0.01s",
+      "stdout_tail": [
+        "...                                                                      [100%]",
+        "3 passed in 0.01s"
+      ],
+      "stderr_tail": []
+    },
+    "test_file_unchanged": true,
+    "evidence_inspection": {
+      "verdict": "incomplete",
+      "denominator": {
+        "error": 0,
+        "claims": 2,
+        "checked": 0,
+        "missing": 0,
+        "unknown": 0,
+        "not_checked": 1,
+        "flake_pattern": 0,
+        "replay_failed": 0,
+        "verified_mismatch": 1
+      },
+      "inspection_id": "f7e9252e8d37e914ba7c531f182054e0bf1f43166cf18dd5a6dae9157cec532a"
+    },
+    "note": "this runner ran the tests itself in the worktree the execution produced"
+  },
+  "provider_receipt": {
+    "execution_ref": "sha256:01e26809ce5952dd231c15a8d610ebdd6b83a909f7393a038f366cfd4e280de5",
+    "command": {
+      "argv_length": 27,
+      "cli_version": "2.1.270 (Claude Code)",
+      "cwd": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-claude-call-budohr7j\\workspaces\\b987d675-c28d-490a-be5c-b3b6e680237a",
+      "environment": {
+        "authentication_present": [],
+        "inherited": [
+          "APPDATA",
+          "COMSPEC",
+          "HOMEDRIVE",
+          "HOMEPATH",
+          "LANG",
+          "LC_ALL",
+          "LC_CTYPE",
+          "LOCALAPPDATA",
+          "NUMBER_OF_PROCESSORS",
+          "OS",
+          "PATH",
+          "PATHEXT",
+          "PROCESSOR_ARCHITECTURE",
+          "PROGRAMDATA",
+          "PROGRAMFILES",
+          "PROGRAMFILES(X86)",
+          "PROGRAMW6432",
+          "PYTHONIOENCODING",
+          "SYSTEMROOT",
+          "TEMP",
+          "TERM",
+          "TMP",
+          "USERPROFILE",
+          "WINDIR"
+        ],
+        "note": "names only; no value from the host environment is recorded or logged",
+        "withheld_zeus_names": [
+          "ZEUS_CLAUDE_ASSIGNMENTS",
+          "ZEUS_CLAUDE_MAX_BUDGET_USD",
+          "ZEUS_CLAUDE_MODEL",
+          "ZEUS_CLAUDE_TIMEOUT_SECONDS",
+          "ZEUS_TICKET_TRUST_COMMIT"
+        ]
+      },
+      "executable": "C:\\Users\\rudtn\\.local\\bin\\claude.EXE",
+      "help_digest": "832c05bb38683a7992c54c7b01bd65ac131e0fafdb03b92619fe928c2fdef974",
+      "launcher": [],
+      "limits": {
+        "deadline_seconds": 300.0,
+        "line_bytes": 1048576,
+        "queue_events": 2000,
+        "retained_events": 400,
+        "stream_bytes": 8388608
+      },
+      "max_budget_usd": 1.0,
+      "measurement": "host executable",
+      "prompt_bytes": 3350,
+      "prompt_sha256": "1280b308c12e4a27f4b0bf5e5875b2ca8fcd21fb26dbdc83d1acc06be70e8fe6",
+      "prompt_transport": "stdin",
+      "requested_model": "claude-fable-5-1",
+      "schema_sha256": "628c7517106e5b680211a267655d3bf79bbca36bb923321d420a01b06f0774a9",
+      "session_id": "5720fe52-ef12-4413-b3f4-7281866d45be",
+      "settings_sha256": "1927d42ddf4d5bc33440066592759eb728ef16af193c0b031f745776ca32512b",
+      "uncontrolled_inheritance": [
+        "managed (administrator) settings still apply",
+        "CLAUDE.md discovery in the working directory and home is context, not execution",
+        "the host's existing authentication (subscription or API credentials) is used unchanged",
+        "skills, custom commands and subagent definitions in the host's home still load; only --bare excludes them and it would require an API key instead of the existing login"
+      ]
+    },
+    "argv_manifest": [
+      "<claude-executable>",
+      "--print",
+      "--output-format",
+      "stream-json",
+      "--input-format",
+      "text",
+      "--verbose",
+      "--model",
+      "claude-fable-5-1",
+      "--session-id",
+      "5720fe52-ef12-4413-b3f4-7281866d45be",
+      "--permission-mode",
+      "acceptEdits",
+      "--permission-prompts",
+      "none",
+      "--strict-mcp-config",
+      "--restricted",
+      "--setting-sources",
+      "",
+      "--tools",
+      "Bash,Read,Edit,Write,Glob,Grep",
+      "--settings",
+      "<8816c234bb44ee03d552e00c9caa3ecaccbe0ef77283319ed93ad2372edaa9eb>",
+      "--max-budget-usd",
+      "1.00",
+      "--json-schema",
+      "<cf8954479463291fd9185dd9403237efdf83f0774258d5d77557c6dc7e577d98>"
+    ],
+    "process": {
+      "boundary": {
+        "created_suspended": true,
+        "kind": "job_object",
+        "limit": "a process created with CREATE_BREAKAWAY_FROM_JOB would leave this job; the child is resumed only after it is a member",
+        "owned_from_spawn": true,
+        "verified_member": true
+      },
+      "confirmed": true,
+      "elapsed_seconds": 25.64100000000326,
+      "ended_on_its_own": true,
+      "escalated": false,
+      "exit_code": 0,
+      "note": "a terminated parent is not a terminated tree; acceptance needs both",
+      "parent": {
+        "already_exited": true,
+        "confirmed": true,
+        "ended_on_its_own": true,
+        "escalated": false,
+        "exit_code": 0,
+        "pid": 30056,
+        "signalled": null
+      },
+      "reason": "stream_closed",
+      "stop_reason": "stream_closed",
+      "tree": {
+        "active_processes": 0,
+        "confirmed": true,
+        "evidence": "the job's own accounting of how many of its processes are alive",
+        "method": "job_object"
+      }
+    },
+    "terminal": {
+      "basis": "the first result message is terminal; an identical repeat is a redelivery",
+      "conflicting": false,
+      "conflicting_subtype": null,
+      "duration_ms": 23625,
+      "is_error": false,
+      "num_turns": 9,
+      "permission_denials": [
+        {
+          "tool_input": {
+            "command": "cd \"C:/Users/rudtn/AppData/Local/Temp/zeus-claude-call-budohr7j/workspaces/b987d675-c28d-490a-be5c-b3b6e680237a\" && python -m pytest -q 2>&1; echo \"exit=$?\"",
+            "description": "Run pytest on the workspace"
+          },
+          "tool_name": "Bash",
+          "tool_use_id": "toolu_01Bg15G84AfHhPwAyptVGWUM"
+        }
+      ],
+      "present": true,
+      "redelivered": 0,
+      "subtype": "success"
+    },
+    "stream": {
+      "bytes": {
+        "stderr": 0,
+        "stdout": 38509
+      },
+      "bytes_total": 38509,
+      "counts": {},
+      "dropped_retained_events": 0,
+      "effective_configuration": {
+        "agents": 5,
+        "api_key_source": "none",
+        "capabilities": [
+          "interrupt_receipt_v1",
+          "interrupt_cancel_queued_v1",
+          "msg_lifecycle_v1"
+        ],
+        "keys_reported": [
+          "agents",
+          "analytics_disabled",
+          "apiKeySource",
+          "capabilities",
+          "claude_code_version",
+          "cwd",
+          "fast_mode_disabled_reason",
+          "fast_mode_state",
+          "mcp_servers",
+          "messaging_socket_path",
+          "model",
+          "output_style",
+          "permissionMode",
+          "plugins",
+          "powershell_path",
+          "product_feedback_disabled",
+          "session_id",
+          "skills",
+          "slash_commands",
+          "subtype",
+          "terminal_slash_commands",
+          "tools",
+          "type",
+          "uuid"
+        ],
+        "mcp_server_errors": 0,
+        "mcp_servers": [],
+        "model": "claude-fable-5-1",
+        "output_style": "default",
+        "permission_mode": "acceptEdits",
+        "plugin_errors": 0,
+        "plugins": [],
+        "reported": true,
+        "slash_commands": 53,
+        "tools": [
+          "Bash",
+          "Edit",
+          "Glob",
+          "Grep",
+          "Read",
+          "StructuredOutput",
+          "Write"
+        ]
+      },
+      "limits": {
+        "deadline_seconds": 300.0,
+        "line_bytes": 1048576,
+        "queue_events": 2000,
+        "retained_events": 400,
+        "stream_bytes": 8388608
+      },
+      "malformed_lines": 0,
+      "permission_denials": [
+        {
+          "id": "62ad13b9-73a7-40f0-af17-cfbbde58ac3c",
+          "status": "denied"
+        }
+      ],
+      "reader_errors": [],
+      "redelivered_terminals": 0,
+      "stderr_bytes": 0,
+      "stderr_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "stdin": {
+        "bytes": 3350,
+        "state": "written"
+      },
+      "truncated": false
+    },
+    "invocation": {
+      "outcome": "accepted",
+      "request": {
+        "assignment": {
+          "action": "implement",
+          "config_digest": "232f4e2bdd83ba832107aac46804204fbe60035249d047a6f8e2452417cb6558",
+          "controls": {
+            "max_budget_usd": 1.0,
+            "timeout_seconds": 300
+          },
+          "identity": "claude-code-cli",
+          "model_source": "explicit_setting",
+          "policy_digest": "ddaed9026a8e02ea30bfb630967116405833bb026cff1ed8bb5d335b606d53ba",
+          "policy_version": "provider-policy.v1",
+          "provider": "claude",
+          "read_only": false,
+          "role": "worker:implementation",
+          "selected_by": "host_configuration",
+          "session_resume": "unsupported",
+          "transport": "claude_cli",
+          "workload": "implementation"
+        },
+        "declared": [
+          "max_budget_usd",
+          "permission_mode"
+        ],
+        "effect_left_to_provider": [
+          "max_budget_usd",
+          "permission_mode"
+        ],
+        "effect_verified_here": [
+          "model",
+          "output_schema",
+          "timeout"
+        ],
+        "options": {
+          "max_budget_usd": 1.0,
+          "model": "claude-fable-5-1",
+          "output_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "summary": {
+                "type": "string"
+              },
+              "tests": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "summary",
+              "tests"
+            ],
+            "type": "object"
+          },
+          "permission_mode": "acceptEdits",
+          "read_only": false,
+          "timeout": 300
+        },
+        "transport": "claude_cli",
+        "unconfirmed": [
+          "read_only"
+        ],
+        "unsupported": [
+          "session_resume",
+          "system",
+          "temperature",
+          "max_output_tokens",
+          "response_format"
+        ]
+      },
+      "reservation": "11f273311704604fbf1d26d490bbab020f01f019a21fa72beeb1307a0e56c2f5",
+      "usage": {
+        "basis": "result_total_including_cache",
+        "confirmed_model": "claude-fable-5-1",
+        "cost_note": "the provider's own estimate for this run, never a billed amount",
+        "cost_source": "provider_estimate",
+        "event_count": 27,
+        "last_tokens": null,
+        "model_confirmation": "transport_reported",
+        "parts": {
+          "cache_creation_input_tokens": 12638,
+          "cache_read_input_tokens": 44839,
+          "input_tokens": 130,
+          "output_tokens": 1718
+        },
+        "reported_cost_usd": 0.35318874999999994,
+        "requested_model": "claude-fable-5-1",
+        "source": "claude/result.usage",
+        "stream_hash": "sha256:e3001e8660dee8a33f4fa7e1e7f62bbf505c919bdf8e4d5990716fd8a3c7a918",
+        "total_tokens": 59325,
+        "usage_note": "the terminal result message only; no message is added twice"
+      }
+    },
+    "session": {
+      "basis": "a fresh session id for every attempt",
+      "match": true,
+      "reported": {
+        "init": "5720fe52-ef12-4413-b3f4-7281866d45be",
+        "terminal": "5720fe52-ef12-4413-b3f4-7281866d45be"
+      },
+      "requested": "5720fe52-ef12-4413-b3f4-7281866d45be",
+      "resume": "unsupported",
+      "state": "match"
+    },
+    "effective_configuration": {
+      "agents": 5,
+      "api_key_source": "none",
+      "capabilities": [
+        "interrupt_receipt_v1",
+        "interrupt_cancel_queued_v1",
+        "msg_lifecycle_v1"
+      ],
+      "hook_events_observed": 0,
+      "keys_reported": [
+        "agents",
+        "analytics_disabled",
+        "apiKeySource",
+        "capabilities",
+        "claude_code_version",
+        "cwd",
+        "fast_mode_disabled_reason",
+        "fast_mode_state",
+        "mcp_servers",
+        "messaging_socket_path",
+        "model",
+        "output_style",
+        "permissionMode",
+        "plugins",
+        "powershell_path",
+        "product_feedback_disabled",
+        "session_id",
+        "skills",
+        "slash_commands",
+        "subtype",
+        "terminal_slash_commands",
+        "tools",
+        "type",
+        "uuid"
+      ],
+      "mcp_server_errors": 0,
+      "mcp_servers": [],
+      "model": "claude-fable-5-1",
+      "note": "what the provider reported it loaded at startup, beside the controls this run passed; an empty list is the provider's report, not this runner's claim, and nothing here is reported when `reported` is false",
+      "output_style": "default",
+      "permission_mode": "acceptEdits",
+      "plugin_errors": 0,
+      "plugins": [],
+      "reported": true,
+      "requested_controls": {
+        "deadline_seconds": 300.0
+      },
+      "slash_commands": 53,
+      "tools": [
+        "Bash",
+        "Edit",
+        "Glob",
+        "Grep",
+        "Read",
+        "StructuredOutput",
+        "Write"
+      ]
+    },
+    "cost": {
+      "note": "the provider's own estimate for this run, not a billed amount",
+      "reported_usd": 0.35318874999999994,
+      "source": "provider_estimate"
+    },
+    "answer_source": "structured_output",
+    "execution_assignment": {
+      "action": "implement",
+      "config_digest": "232f4e2bdd83ba832107aac46804204fbe60035249d047a6f8e2452417cb6558",
+      "controls": {
+        "max_budget_usd": 1.0,
+        "timeout_seconds": 300
+      },
+      "identity": "claude-code-cli",
+      "model_source": "explicit_setting",
+      "policy_digest": "ddaed9026a8e02ea30bfb630967116405833bb026cff1ed8bb5d335b606d53ba",
+      "policy_version": "provider-policy.v1",
+      "provider": "claude",
+      "read_only": false,
+      "role": "worker:implementation",
+      "selected_by": "host_configuration",
+      "session_resume": "unsupported",
+      "transport": "claude_cli",
+      "workload": "implementation"
+    },
+    "model_selection": {
+      "importance": "unknown",
+      "model_source": "explicit_setting",
+      "note": "configured explicitly; Codex routing never names this provider's model",
+      "policy": "provider-policy.v1",
+      "requested_model": "claude-fable-5-1",
+      "workload": "implementation"
+    },
+    "tool_usage": {
+      "comparison": "not_declared",
+      "runner_observed": {
+        "completed": [
+          "toolu_012X7fSpcVqqbCH1uFPZUojr",
+          "toolu_01MJNYsrR3bBiFFiFDjhdsJy",
+          "toolu_01Xhq3UFCuhEpVXxAcFuztX1",
+          "toolu_015dmE1T8YEXDFYcF4f9GYbP",
+          "toolu_01Bg15G84AfHhPwAyptVGWUM",
+          "toolu_01TuUG79qqsn6WDxeVeQ81wN",
+          "toolu_01Mo1ahX5at3uiDDoet9fqUg",
+          "toolu_0178C347AUwsAA3fTuiQhYWD"
+        ],
+        "failed": [
+          "toolu_01Bg15G84AfHhPwAyptVGWUM"
+        ],
+        "source": "provider stream lines observed by this runner; a summary in the answer certifies nothing",
+        "started": [
+          "toolu_012X7fSpcVqqbCH1uFPZUojr",
+          "toolu_01MJNYsrR3bBiFFiFDjhdsJy",
+          "toolu_01Xhq3UFCuhEpVXxAcFuztX1",
+          "toolu_015dmE1T8YEXDFYcF4f9GYbP",
+          "toolu_01Bg15G84AfHhPwAyptVGWUM",
+          "toolu_01TuUG79qqsn6WDxeVeQ81wN",
+          "toolu_01Mo1ahX5at3uiDDoet9fqUg",
+          "toolu_0178C347AUwsAA3fTuiQhYWD"
+        ]
+      },
+      "self_reported": null,
+      "source": "provider stream lines observed by this runner; a summary in the answer certifies nothing"
+    }
+  },
+  "observations": {
+    "files": 1,
+    "records": 20,
+    "inserted": 20,
+    "duplicates": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "refused": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0,
+    "confirmed_audits": 2,
+    "sink_failures": 0,
+    "reclaimed_segments": 0,
+    "pruned_runs": 0,
+    "pruned_files": 0,
+    "alerts_replayed": 0
+  },
+  "redis": {
+    "namespace": "zeus-claude-real-call-cdc383f2",
+    "examined": 1,
+    "limit": 100,
+    "published": 1,
+    "quarantined": 0,
+    "quarantined_existing": 0,
+    "retry": 0,
+    "skipped": 0,
+    "legacy_sent": 0,
+    "error": 0,
+    "stream_entries_present": true
+  },
+  "workdir_removed": false,
+  "finished_at": "2026-09-15T01:15:31.692281+00:00",
+  "task_verified": true,
+  "passed": true,
+  "accepted_by_harness": true
+}

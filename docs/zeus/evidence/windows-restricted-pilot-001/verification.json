@@ -1,0 +1,22 @@
+{
+  "head": "fe65e286ad88cffe0a473374d07b5f40eb89b4dd",
+  "receipt_sha256": "2c370d1b07a71fe29c4a8fa5c8f62c8b733c244d416a3cae92c1e7ed3c928d02",
+  "checks": {
+    "passed": true,
+    "only_slug": true,
+    "test_unchanged": true,
+    "tests_pass": true,
+    "restricted": true,
+    "session_bound": true,
+    "tree_empty": true,
+    "normal_exit": true,
+    "redis_result": true,
+    "observations": true,
+    "budget_preserved": true,
+    "disposable_containers_removed": true
+  },
+  "model_calls_this_pilot": 1,
+  "global_slot_count_on_this_ledger": 3,
+  "workdir_removed": false,
+  "evidence_inspection": "incomplete"
+}
