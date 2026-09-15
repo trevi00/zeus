@@ -260,22 +260,24 @@ def test_evidence_is_verified_on_disk_before_the_scratch_is_removed(tmp_path):
     assert (tmp_path / "kept" / "runner-tests-after.log").read_text(encoding="utf-8").startswith("3 passed")
 
 
-def test_a_preserved_copy_that_cannot_be_written_is_reported_not_assumed(tmp_path, monkeypatch):
-    """A failure to keep evidence is the one thing that must not be silent."""
+def test_a_preserved_copy_that_cannot_be_written_is_reported_not_assumed(tmp_path):
+    """A failure to keep evidence is the one thing that must not be silent.
+
+    The obstacle is real rather than injected: the destination name is already taken by a directory,
+    so the exclusive create cannot have it.
+    """
     root = tmp_path / "scratch"
     root.mkdir()
     scratch = Scratch(root)
     source = root / "diff.txt"
     source.write_text("diff --git a/slug.py b/slug.py\n", encoding="utf-8")
+    (tmp_path / "kept" / "diff.txt").mkdir(parents=True)
 
-    def refuse(self, data):
-        raise OSError("the destination is full")
-
-    monkeypatch.setattr(Path, "write_bytes", refuse)
     report = scratch.preserve(tmp_path / "kept", [{"name": "diff.txt", "source": source}])
 
     assert report["complete"] is False and report["kept"] == []
     assert report["failures"][0]["name"] == "diff.txt"
+    assert source.exists(), "the original is not removed when its copy could not be made"
 
 
 def test_a_sibling_directory_is_never_touched(tmp_path):

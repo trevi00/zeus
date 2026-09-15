@@ -131,7 +131,12 @@ class Scratch:
                     payload = str(entry["text"]).encode("utf-8")
                     origin = "produced by the runner"
                 target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(payload)
+                # Exclusive: evidence already on disk belongs to a run that already finished, and
+                # its receipt still names that file's digest. A second run writes beside it or
+                # fails; it never writes through it, not even partially.
+                descriptor = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                with os.fdopen(descriptor, "wb") as stream:
+                    stream.write(payload)
                 expected = "sha256:" + hashlib.sha256(payload).hexdigest()
                 observed = file_digest(target)  # read back: the copy is the thing being claimed
                 if observed != expected or target.stat().st_size != len(payload):

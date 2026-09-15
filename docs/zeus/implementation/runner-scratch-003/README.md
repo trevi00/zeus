@@ -90,6 +90,10 @@ preserved complete: true — execution-artifact.json 13265B, candidate.diff 2795
 
 실행 후 남은 것: 이 실행의 임시 폴더 0개, compose 컨테이너 0개, 자식 프로세스 0개. 다른 실행의 폴더 7개는 그대로 두었다.
 
+**단, 정상 종료일 때만 지운다.** 예외로 끝난 실행은 무엇이 만들어졌는지 완전히 알 수 없으므로 scratch를 남기고
+영수증의 `recovery`가 그 경로를 가리킨다(§5.5 R2). 검토 반례를 되돌려 확인하는 동안 실제로 폴더 2개가 남았고,
+**내가 만든 것만** 골라 새 정리로 지웠다(각각 읽기 전용 12개를 풀었다). 다른 실행의 7개는 건드리지 않았다.
+
 ## 5. 테스트 (`tests/test_scratch_cleanup.py`, 13건)
 
 전부 **실제 임시 파일과 실제 git**으로 돈다. 유료 모델은 한 번도 부르지 않는다 — 여기서 재는 것은 파일시스템 동작이고,
@@ -112,6 +116,37 @@ preserved complete: true — execution-artifact.json 13265B, candidate.diff 2795
 | 없는 root로는 만들 수 없다 | |
 
 **되돌려 확인했다.** 새 정리를 옛 5회 루프로 되돌리면 첫 두 건이 실패한다.
+
+## 5.5 독립 검토(review 5204956724) 반영 — R1~R4
+
+Codex가 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 네 곳을 재현했다. **네 건의 공통 성질은 "증거가 보존됐다"는
+판정을 증거 아닌 것이 내리고 있었다는 것이다.** 전부 실제 결함으로 인정하고 고쳤다.
+
+| 지적 | 무엇이 틀렸나 | 고친 방식 |
+|---|---|---|
+| **R1** 같은 라벨 재실행이 이전 증거를 덮어씀 | 증거 경로가 `<label>-evidence`로 고정이고 고정 이름에 `write_bytes`했다. 첫 영수증은 그 파일의 digest를 계속 인용하는데 두 번째 실행이 그 위에 썼다 | 실행 시작 시 만든 **run id**(시각+난수)에 **영수증과 증거를 함께 결속**한다. 증거는 `<label>-evidence/<run_id>/`, 영수증 이름에도 run id가 들어간다. 파일 개수로 번호를 매기지 않으므로 동시 실행도 서로를 못 만난다. `preserve`는 `O_EXCL`로 만들어 **이미 있는 이름에는 부분적으로도 쓰지 않는다** |
+| **R2** 실행 후 수집 실패에서 실제 artifact가 삭제됨 | 보존 목록은 실행이 끝까지 간 뒤에야 채워졌다. 그 전에 예외가 나면 "목록이 없다 → 보존할 것이 없다 → complete"가 되고 finally가 scratch를 지웠다 | **완료 여부를 장부가 아니라 파일시스템이 정한다.** `swept_evidence`가 `artifacts/`·`observations/` 아래 실제 파일을 전부 쓸어 담는다. 쓸어 담은 것이 있는데 하나도 못 지켰으면 incomplete다. 그리고 **예외로 끝난 실행은 무조건 scratch를 남긴다** — 무엇이 만들어졌는지 완전히 알 수 없기 때문이다 |
+| **R3** 실패한 diff를 검증된 빈 증거로 기록 | `git diff`의 stdout만 보존하고 exit code·timeout·stderr를 보지 않았다. exit 128에 빈 stdout이면 **성공한 빈 diff와 구별되지 않는다** | 증거를 만드는 명령은 `command_record`로 **출력과 종료 상태를 함께** 보존한다. 실패했으면 `candidate.diff`를 만들지 않고 `candidate.diff.failed.json`을 남긴 뒤 incomplete로 기록한다. 성공한 빈 diff·비정상 종료·시간 초과가 서로 다른 결과다 |
+| **R4** 보존 실패인데 passed=true / exit=0 | 최종 판정에 보존 상태가 들어 있지 않았다. 무인 호출자는 성공으로 읽는다 | **두 주장을 갈랐다.** `task_succeeded`(작업 자체)와 `evidence_complete`(러너가 증거를 아직 쥐고 있는가). `passed`는 둘 다 참일 때만이고, 증거가 불완전하면 **비정상 종료(1)** 하며 `recovery`에 남은 scratch 경로와 실패 목록을 적는다. 출력 디렉터리가 거절해 영수증을 못 써도 요약을 출력하고 1로 끝난다(원장 정산은 그 전에 이미 끝나 있다) |
+
+**되돌려 확인했다.** 수정을 검토 시점 코드(`b9d5345`)로 되돌리면 새 회귀 **12건이 전부 실패**한다(실제 격리 스택 위에서).
+복원하면 25건(신규 12 + 기존 13) 전부 통과한다.
+
+기존 `test_a_preserved_copy_that_cannot_be_written_is_reported_not_assumed`는 `Path.write_bytes`를 가로채고 있었는데
+새 코드가 `os.open`으로 쓰므로 무력해졌다. 주입 대신 **실제 장애**로 바꿨다 — 목적지 이름을 디렉터리가 이미 차지하게
+해서 배타적 생성이 진짜로 실패하게 한다.
+
+### 5.5.1 새 회귀 (`tests/test_runner_evidence.py`, 12건)
+
+전부 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 러너를 `--fixture`로 끝까지 돌린다. 유료 모델 호출 0회.
+
+- R1 — 재실행이 첫 증거의 digest를 그대로 두는가, 같은 이름에 두 번 쓰면 `FileExistsError`가 나는가, 영수증과 증거가
+  같은 run id를 다는가
+- R2 — 실행 직후 수집 예외를 주입해도 **디스크의 artifact가 살아남는가**(쓸어 담기가 장부가 놓친 것을 찾는가),
+  "만들어진 증거 없음"과 "목록 없음"이 다른 답인가, 쓸어 담았는데 못 지키면 incomplete인가
+- R3 — 실패한 diff가 verified가 아닌가, **성공한 빈 diff는 여전히 complete인가**(대조), 시간 초과가 별개인가
+- R4 — 필수 증거를 잃은 실행이 passed가 아니고 exit도 0이 아닌가, 작업 성공과 증거 완결이 **두 값으로** 남는가,
+  영수증을 못 써도 보고하고 실패하는가
 
 ## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-011/`, head `6d2bc2b`)
 
