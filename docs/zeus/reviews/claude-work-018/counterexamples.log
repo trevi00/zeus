@@ -1,0 +1,39 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+______________ test_repeated_label_preserves_first_receipt_bytes ______________
+.runtime\review-073\test_counterexamples.py:33: in test_repeated_label_preserves_first_receipt_bytes
+    assert file_digest(Path(original['path'])) == original['sha256'], 'second run overwrote first receipt evidence'
+E   AssertionError: second run overwrote first receipt evidence
+E   assert 'sha256:16367...0e0c55644c7c4' == 'sha256:a7937...d99541461a08e'
+E     
+E     - sha256:a7937b64b8caa58f03721bb6bacf5c78cb235febe0e70b1b84cd99541461a08e
+E     + sha256:16367aacb67a4a017c8da8ab95682ccb390863780f7114dda0a0e0c55644c7c4
+______________ test_post_execution_failure_keeps_actual_artifact ______________
+.runtime\review-073\test_counterexamples.py:57: in test_post_execution_failure_keeps_actual_artifact
+    assert seen['artifact'].exists() or receipt['preserved']['kept'], (
+E   AssertionError: actual artifact deleted while preservation says complete/no evidence
+E   assert (False or [])
+E    +  where False = exists()
+E    +    where exists = WindowsPath('C:/Users/rudtn/AppData/Local/Temp/zeus-claude-call-lrrc0in0/artifacts/4793c3b14293ad4266ea1ad5f8fc7538dd92372ebab579c9bac0754b19595f00.txt').exists
+---------------------------- Captured stdout call -----------------------------
+{"label": "review", "mode": "fixture", "executed": false, "accepted_by_harness": false, "task_verified": false, "passed": false, "not_executed_reason": null}
+_________________ test_failed_diff_collection_is_not_complete _________________
+.runtime\review-073\test_counterexamples.py:76: in test_failed_diff_collection_is_not_complete
+    assert receipt['preserved']['complete'] is False, 'failed git diff exported as verified empty evidence'
+E   AssertionError: failed git diff exported as verified empty evidence
+E   assert True is False
+---------------------------- Captured stdout call -----------------------------
+{"label": "review", "mode": "fixture", "executed": true, "accepted_by_harness": true, "task_verified": false, "passed": true, "not_executed_reason": null}
+_________________ test_failed_preservation_is_not_passing_run _________________
+.runtime\review-073\test_counterexamples.py:92: in test_failed_preservation_is_not_passing_run
+    assert code != 0 and receipt['passed'] is False, 'required evidence unavailable but runner exits 0/passed'
+E   AssertionError: required evidence unavailable but runner exits 0/passed
+E   assert (0 != 0)
+---------------------------- Captured stdout call -----------------------------
+{"label": "review", "mode": "fixture", "executed": true, "accepted_by_harness": true, "task_verified": false, "passed": true, "not_executed_reason": null}
+=========================== short test summary info ===========================
+FAILED .runtime/review-073/test_counterexamples.py::test_repeated_label_preserves_first_receipt_bytes
+FAILED .runtime/review-073/test_counterexamples.py::test_post_execution_failure_keeps_actual_artifact
+FAILED .runtime/review-073/test_counterexamples.py::test_failed_diff_collection_is_not_complete
+FAILED .runtime/review-073/test_counterexamples.py::test_failed_preservation_is_not_passing_run
+4 failed in 8.97s
