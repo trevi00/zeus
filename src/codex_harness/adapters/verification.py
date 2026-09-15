@@ -73,12 +73,18 @@ class VerificationServices:
                 match = re.fullmatch(r"127\.0\.0\.1:([0-9]+)", value)
                 require(match is not None and 0 < int(match[1]) < 65536, "Unknown verification endpoint")
                 ports[service] = int(match[1])
-            # `up --wait` reports the container healthchecks; the host-side port forward can lag behind
-            # them (observed on WSL2 + Docker Desktop: "Connection refused" right after --wait). Ready
-            # means connectable from here, and the wait is bounded and recorded.
-            ready_after = {service: self._await_endpoint(port) for service, port in ports.items()}
-            self.artifacts.put(canonical({"project": self.project, "ports": ports, "ready_after_seconds": ready_after,
-                "status": "services_ready", "definition_hash": digest(spec)}), "verification-services")
+            # `up --wait` reports the container healthchecks, and a healthcheck is not the same claim
+            # as "this service can answer me". Measured over 24 stacks on two hosts (the probe and
+            # its records are in docs/zeus/evidence/readiness-004): every single start has a window
+            # where the published port already accepts TCP and PostgreSQL still refuses the session,
+            # and on WSL the healthcheck went green *inside* that window in 3 of 12 starts. So ready
+            # is neither "healthy" nor "the socket opened": it is this service answering a real
+            # request, and being the service this project started.
+            readiness = {service: self._await_service(service, port) for service, port in ports.items()}
+            self.artifacts.put(canonical({"project": self.project, "ports": ports,
+                "ready_after_seconds": {name: row["ready_after"] for name, row in readiness.items()},
+                "readiness": readiness, "status": "services_ready",
+                "definition_hash": digest(spec)}), "verification-services")
             return {"database_url": f'postgresql://zeus:{self.password}@127.0.0.1:{ports["postgres"]}/zeus',
                     "redis_url": f'redis://127.0.0.1:{ports["redis"]}/0'}
         except BaseException:
@@ -86,18 +92,98 @@ class VerificationServices:
             raise
 
     @staticmethod
-    def _await_endpoint(port, deadline_seconds=30.0):
-        """Block until 127.0.0.1:port accepts a TCP connection; a stack that never becomes reachable is a failure."""
-        started = time.monotonic()
+    def _refusal_kind(error):
+        """Name a refusal without carrying the text that produced it; no credential travels here."""
+        message = str(error).lower()
+        if "starting up" in message:
+            return "starting_up"          # the server took the session and said it cannot serve yet
+        if "closed the connection" in message or "connection reset" in message:
+            return "closed_unexpectedly"  # the session was accepted and then dropped
+        if "refused" in message:
+            return "refused"              # nothing is listening on the published port yet
+        if "timeout" in message or "timed out" in message:
+            return "timed_out"
+        return "other"
+
+    def _await_tcp(self, port, deadline, refusals):
+        """The socket opening. Necessary, and on its own not evidence of anything else."""
         while True:
             try:
                 with socket.create_connection(("127.0.0.1", port), timeout=2.0):
-                    return round(time.monotonic() - started, 2)
+                    return True
             except OSError as exc:
-                if time.monotonic() - started >= deadline_seconds:
-                    raise ContractError(f"Verification endpoint 127.0.0.1:{port} not connectable after {deadline_seconds}s: "
-                                        f"{type(exc).__name__}") from exc
-                time.sleep(0.25)
+                refusals[self._refusal_kind(exc)] = refusals.get(self._refusal_kind(exc), 0) + 1
+                if time.monotonic() >= deadline:
+                    return False
+                time.sleep(0.1)
+
+    def _answer(self, service, port):
+        """One real request, and the service's own identity in the reply. Raises on any refusal."""
+        if service == "postgres":
+            import psycopg
+
+            dsn = f"postgresql://zeus:{self.password}@127.0.0.1:{port}/zeus"
+            with psycopg.connect(dsn, connect_timeout=3) as connection:
+                identity = connection.execute("SELECT system_identifier FROM pg_control_system()").fetchone()[0]
+            return str(identity)
+        import redis
+
+        client = redis.Redis(host="127.0.0.1", port=port, socket_timeout=3)
+        try:
+            client.ping()
+            return str(client.info("server").get("run_id"))
+        finally:
+            client.close()
+
+    def _container_identity(self, service):
+        """The same identity asked of the container this project started, over docker rather than TCP.
+
+        The published port is chosen by the daemon and ports get reused. Asking both sides and
+        requiring the same answer is what makes "the service is up" mean "our service is up".
+        """
+        if service == "postgres":
+            value = self._command("exec", "-T", "postgres", "psql", "-U", "zeus", "-d", "zeus",
+                                  "-tAc", "select system_identifier from pg_control_system()")
+            return value.strip()
+        info = self._command("exec", "-T", "redis", "redis-cli", "info", "server")
+        for line in info.splitlines():
+            if line.startswith("run_id:"):
+                return line.split(":", 1)[1].strip()
+        return ""
+
+    def _await_service(self, service, port, deadline_seconds=30.0):
+        """Ready means this service answered us, and it is the one this project started.
+
+        The bound is unchanged. What is bounded is stronger: a stack that opens a port and then
+        cannot serve inside the deadline is a failure with a named reason, not a stack that is
+        called ready because a socket connected.
+        """
+        started = time.monotonic()
+        deadline = started + deadline_seconds
+        refusals = {}
+        tcp_after = None
+        if not self._await_tcp(port, deadline, refusals):
+            raise ContractError(f"Verification endpoint 127.0.0.1:{port} for {service} never accepted a "
+                                f"connection within {deadline_seconds}s; refusals: {canonical(refusals)}")
+        tcp_after = round(time.monotonic() - started, 2)
+        while True:
+            try:
+                identity = self._answer(service, port)
+                break
+            except Exception as exc:
+                kind = self._refusal_kind(exc)
+                refusals[kind] = refusals.get(kind, 0) + 1
+                if time.monotonic() >= deadline:
+                    raise ContractError(
+                        f"Verification service {service} on 127.0.0.1:{port} accepted a connection but did "
+                        f"not answer within {deadline_seconds}s; refusals: {canonical(refusals)}") from exc
+                time.sleep(0.1)
+        expected = self._container_identity(service)
+        require(bool(identity) and identity == expected,
+                f"The service answering 127.0.0.1:{port} is not this project's {service}")
+        return {"tcp_after": tcp_after, "ready_after": round(time.monotonic() - started, 2),
+                "identity": identity, "refusals_during_startup": refusals,
+                "note": "ready is a real answer from the container this project started, not an open socket"}
 
     def _cleanup(self):
         self._command("down", "--volumes", "--remove-orphans", "--timeout", "10")

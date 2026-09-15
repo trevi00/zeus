@@ -1,0 +1,1765 @@
+{
+  "label": "windows-11",
+  "started_at": "2026-09-15T07:20:57.942026+00:00",
+  "platform": "win32",
+  "plan": {
+    "cycles_per_condition": 6,
+    "conditions": [
+      "standalone",
+      "after_teardown"
+    ],
+    "note": "fixed before the first run; every attempt is recorded, including passes"
+  },
+  "docker": "29.7.2",
+  "cycles": [
+    {
+      "project": "zeus-probe-5a55234002a4",
+      "condition": "standalone",
+      "cycle": 1,
+      "started_at": "2026-09-15T07:20:58.007416+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.5,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 1.031,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53005
+        },
+        {
+          "at": 1.375,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53004
+        },
+        {
+          "at": 1.375,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.375,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.39,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.531,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.593,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 3.015,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 3.015,
+          "event": "teardown_started"
+        },
+        {
+          "at": 3.859,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "decb5e1f9c3657708da282a58d9648d9d045edf3107f4eb41896800fa756b0a3",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 2
+          },
+          "port": 53005,
+          "tcp": {
+            "ok": true,
+            "at": 1.375
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.593,
+            "refusals": [
+              {
+                "at": 1.375,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53005 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.531,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53005 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658685393661990"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "7e43b1d1dfe967e2be9f9e0b720d16adba7473d5fa4bb42285ad1d1ad156a870",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53004,
+          "tcp": {
+            "ok": true,
+            "at": 1.375
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.39,
+            "refusals": [],
+            "run_id": "eeaba0e9c9f5961917d355bcc69ac3dffb81f3b0"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 3.859,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:01.872890+00:00"
+    },
+    {
+      "project": "zeus-probe-f212e7b6cf30",
+      "condition": "standalone",
+      "cycle": 2,
+      "started_at": "2026-09-15T07:21:04.874427+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.516,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.922,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53390
+        },
+        {
+          "at": 1.281,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53391
+        },
+        {
+          "at": 1.281,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.281,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.297,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.609,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.953,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 2.984,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 2.984,
+          "event": "teardown_started"
+        },
+        {
+          "at": 3.828,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "5df8606892735cb0693b899eaebaa33baafd11db72f7effabe845f967e121a65",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 2
+          },
+          "port": 53390,
+          "tcp": {
+            "ok": true,
+            "at": 1.281
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.609,
+            "refusals": [
+              {
+                "at": 1.281,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53390 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.453,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53390 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.5,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53390 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.547,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53390 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658714791923751"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "9ca79f3c9d62e5e22698ba0f18935de28c6b8eb591c24cca15ce6b19505654c1",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53391,
+          "tcp": {
+            "ok": true,
+            "at": 1.281
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.297,
+            "refusals": [],
+            "run_id": "da3ed03f94318b37ddf7ca8f1182391625a76fb0"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 3.828,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:08.699436+00:00"
+    },
+    {
+      "project": "zeus-probe-ed36b8e6d75b",
+      "condition": "standalone",
+      "cycle": 3,
+      "started_at": "2026-09-15T07:21:11.699960+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.469,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.813,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53406
+        },
+        {
+          "at": 1.156,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53405
+        },
+        {
+          "at": 1.156,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.156,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.188,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.5,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.797,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.844,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.844,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.703,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "e36ecdc963e25b7ed9b9e2480ebd2c5960906d0e96a862e85f30fc18f8dff098",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53406,
+          "tcp": {
+            "ok": true,
+            "at": 1.156
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.5,
+            "refusals": [
+              {
+                "at": 1.156,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53406 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.328,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53406 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.391,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53406 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.438,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53406 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658743991369766"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "e44276b403e9077eaf5cb0c9275e16b71d2fd9df2d8df33f46e8cebd6913d6f9",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53405,
+          "tcp": {
+            "ok": true,
+            "at": 1.156
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.188,
+            "refusals": [],
+            "run_id": "f78a6dd6f483dcfc0567cd898fbbbf84b4cd0d85"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.703,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:14.404673+00:00"
+    },
+    {
+      "project": "zeus-probe-46fd86e69686",
+      "condition": "standalone",
+      "cycle": 4,
+      "started_at": "2026-09-15T07:21:17.405567+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.485,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.828,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53419
+        },
+        {
+          "at": 1.172,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53420
+        },
+        {
+          "at": 1.172,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.172,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.188,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.485,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.782,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.813,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.813,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.703,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "46fbb700ce9c88ceb67ab98808cddc2a1fca862720df2625b3148af5b37e4f68",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53419,
+          "tcp": {
+            "ok": true,
+            "at": 1.172
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.485,
+            "refusals": [
+              {
+                "at": 1.172,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53419 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.313,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53419 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.375,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53419 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.422,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53419 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658768353640487"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "aa7c6f34904cbbe8af664c25f4f2d1d7c3519cd2c997a7b9a3e30c5b4a3502d1",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53420,
+          "tcp": {
+            "ok": true,
+            "at": 1.172
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.188,
+            "refusals": [],
+            "run_id": "724a0d2df67de93d3f736711b012c57f6d541a8b"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.703,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:20.109502+00:00"
+    },
+    {
+      "project": "zeus-probe-e4496492cff0",
+      "condition": "standalone",
+      "cycle": 5,
+      "started_at": "2026-09-15T07:21:23.109904+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.469,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.813,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53433
+        },
+        {
+          "at": 1.157,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53432
+        },
+        {
+          "at": 1.157,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.157,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.188,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.5,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.797,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.844,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.844,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.625,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "be70aac9c1dd69eafc2601b33f46f14414b0108138b9263bcf2474e338f919e6",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53433,
+          "tcp": {
+            "ok": true,
+            "at": 1.157
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.5,
+            "refusals": [
+              {
+                "at": 1.157,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53433 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.313,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53433 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.391,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53433 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.438,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53433 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658792927154215"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "e91fe324108af557472557c9ce08bc925dd99f09dc3040241cd78f7d856485b7",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53432,
+          "tcp": {
+            "ok": true,
+            "at": 1.157
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.188,
+            "refusals": [],
+            "run_id": "21edeefc47d418b38b9a72c9c2921300c213cd2f"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.625,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:25.742533+00:00"
+    },
+    {
+      "project": "zeus-probe-c1ca2e677ada",
+      "condition": "standalone",
+      "cycle": 6,
+      "started_at": "2026-09-15T07:21:28.743640+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.469,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.797,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53446
+        },
+        {
+          "at": 1.141,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53447
+        },
+        {
+          "at": 1.141,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.141,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.141,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.484,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.781,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.828,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.828,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.625,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "f2a6e56d2e0c6d5b63f3a2386bf6e6e064a503c20897eb81d0693d4f1952be7c",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53446,
+          "tcp": {
+            "ok": true,
+            "at": 1.141
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.484,
+            "refusals": [
+              {
+                "at": 1.141,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53446 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.297,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53446 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.359,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53446 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.422,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53446 failed: FATAL: the database system is starting up"
+              }
+            ],
+            "system_identifier": "7685658817115684902"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "3a015989ed7b537974184a53960394a583c463ad8fab263ae05b722f8230b41e",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53447,
+          "tcp": {
+            "ok": true,
+            "at": 1.141
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.141,
+            "refusals": [],
+            "run_id": "ab1c5a034f2c1e98251304c49059b7ca5135e84f"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.625,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:31.372199+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-32554f5ec3fc",
+      "condition": "after_teardown",
+      "cycle": 1,
+      "started_at": "2026-09-15T07:21:34.372957+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.469,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.828,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53462
+        },
+        {
+          "at": 1.172,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53463
+        },
+        {
+          "at": 1.172,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.188,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.188,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.484,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.781,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.813,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.813,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.688,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "5b6222e6ff876b73996653dbd1bb2ab462a35b25c6d63f3f99c47989bc137f65",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53462,
+          "tcp": {
+            "ok": true,
+            "at": 1.172
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.484,
+            "refusals": [
+              {
+                "at": 1.188,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53462 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.344,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53462 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.406,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53462 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658841178345511"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "37fe59b4165b589cf23cb4f876e57f5ea26cb30e35d900a5e6e74afb17098223",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53463,
+          "tcp": {
+            "ok": true,
+            "at": 1.188
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.188,
+            "refusals": [],
+            "run_id": "c6e062c95d6a3bc432d8a7c81dfd90be68e7198c"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.688,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:37.058666+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-e16dadc80074",
+      "condition": "after_teardown",
+      "cycle": 2,
+      "started_at": "2026-09-15T07:21:37.058666+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.484,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.828,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 65417
+        },
+        {
+          "at": 1.187,
+          "event": "port_published",
+          "service": "redis",
+          "port": 65416
+        },
+        {
+          "at": 1.187,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.203,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.203,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.531,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.828,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.875,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.875,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.734,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "577a6b9ee95ce83ac94b9a62436ac0f0d032f413232626430b2a3ed0ee0882df",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65417,
+          "tcp": {
+            "ok": true,
+            "at": 1.187
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.531,
+            "refusals": [
+              {
+                "at": 1.203,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65417 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.343,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65417 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.39,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65417 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.437,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65417 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658852934844454"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "407a5657db48bb7ef548383c3ab02ac4c70608c36ca19f3e6383684b1ba30892",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65416,
+          "tcp": {
+            "ok": true,
+            "at": 1.203
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.203,
+            "refusals": [],
+            "run_id": "7e03ecf01182893318109d60a6fff8fc35da9683"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.734,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:39.805808+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-415f27d72d49",
+      "condition": "after_teardown",
+      "cycle": 3,
+      "started_at": "2026-09-15T07:21:39.805808+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.468,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.828,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 65429
+        },
+        {
+          "at": 1.187,
+          "event": "port_published",
+          "service": "redis",
+          "port": 65430
+        },
+        {
+          "at": 1.187,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.187,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.187,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.484,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.765,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.812,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.812,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.671,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "51a9f7f6e7cf4622a457b2feaca06dcd1e584256ec684cc2e715657d9a58d948",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65429,
+          "tcp": {
+            "ok": true,
+            "at": 1.187
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.484,
+            "refusals": [
+              {
+                "at": 1.187,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65429 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.359,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65429 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.421,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65429 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658864639954982"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "6891cf05e06b92ae835abbe1270072c6fa583919603c2a61401daf12bfbc164b",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65430,
+          "tcp": {
+            "ok": true,
+            "at": 1.187
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.187,
+            "refusals": [],
+            "run_id": "a1d8ce9ddcb4a0b2f512e21593ca2defd39e8f24"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.671,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:42.480368+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-cf2d4acb5a11",
+      "condition": "after_teardown",
+      "cycle": 4,
+      "started_at": "2026-09-15T07:21:42.480368+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.516,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.844,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 65443
+        },
+        {
+          "at": 1.204,
+          "event": "port_published",
+          "service": "redis",
+          "port": 65444
+        },
+        {
+          "at": 1.204,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.204,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.204,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.532,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.829,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.875,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.875,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.672,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "3067b648888a7fc2dc67d3fbbfc37d1e8a9b5bd102177780e8616c4e12f8f555",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65443,
+          "tcp": {
+            "ok": true,
+            "at": 1.204
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.532,
+            "refusals": [
+              {
+                "at": 1.204,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65443 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.344,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65443 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.391,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65443 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.454,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65443 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658876307787814"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "4071a263a3bd09cee2995701c2541c5d4d28332bae84884770dedb81b2cb36a8",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65444,
+          "tcp": {
+            "ok": true,
+            "at": 1.204
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.204,
+            "refusals": [],
+            "run_id": "935ef1f970e28f64bcd53c30ed39c68433324ac3"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.672,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:45.149945+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-a1f9a059ee23",
+      "condition": "after_teardown",
+      "cycle": 5,
+      "started_at": "2026-09-15T07:21:45.149945+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.5,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.844,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 65457
+        },
+        {
+          "at": 1.188,
+          "event": "port_published",
+          "service": "redis",
+          "port": 65456
+        },
+        {
+          "at": 1.188,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.188,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.203,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.532,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.828,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.875,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.875,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.688,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "ad0ffc6370a469806b82a79abd7435dcf9f9263cd57f005dafac3ce843528cda",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65457,
+          "tcp": {
+            "ok": true,
+            "at": 1.188
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.532,
+            "refusals": [
+              {
+                "at": 1.188,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65457 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.344,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65457 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.391,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65457 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.469,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65457 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658887742726182"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "2963f2629c02066465a17730cc31c7233fe8da811a6450f35f0c4368f81a67b5",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65456,
+          "tcp": {
+            "ok": true,
+            "at": 1.188
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.203,
+            "refusals": [],
+            "run_id": "aea39b0576a47807c6b9105d66a01661da278c16"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.688,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:47.837748+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-cf3c9e7bc880",
+      "condition": "after_teardown",
+      "cycle": 6,
+      "started_at": "2026-09-15T07:21:47.838276+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.515,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.875,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 65469
+        },
+        {
+          "at": 1.265,
+          "event": "port_published",
+          "service": "redis",
+          "port": 65470
+        },
+        {
+          "at": 1.265,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.265,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.265,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.531,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.875,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.906,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.906,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.719,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "4b6e84a2ed762840f2860bed67c9d71e5971c63f740e0c4b8f38858befbdf1e8",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65469,
+          "tcp": {
+            "ok": true,
+            "at": 1.265
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.531,
+            "refusals": [
+              {
+                "at": 1.265,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65469 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.406,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65469 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.469,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 65469 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685658899269013542"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "1041b126d5c9641ac9dbaed2e26470b305a09b2f13c03a847860069b6e62284f",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 65470,
+          "tcp": {
+            "ok": true,
+            "at": 1.265
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.265,
+            "refusals": [],
+            "run_id": "c9b48cbd7745c87a5c38da0be27bddb21fc02cd7"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.719,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:21:50.562700+00:00"
+    }
+  ],
+  "finished_at": "2026-09-15T07:21:50.562700+00:00",
+  "summary": {
+    "cycles": 12,
+    "by_condition": {
+      "standalone": {
+        "runs": 6,
+        "tcp_never_accepted": 0,
+        "never_answered": 0,
+        "tcp_to_answer_seconds": [
+          {
+            "service": "postgres",
+            "seconds": 0.218
+          },
+          {
+            "service": "redis",
+            "seconds": 0.015
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.328
+          },
+          {
+            "service": "redis",
+            "seconds": 0.016
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.344
+          },
+          {
+            "service": "redis",
+            "seconds": 0.032
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.313
+          },
+          {
+            "service": "redis",
+            "seconds": 0.016
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.343
+          },
+          {
+            "service": "redis",
+            "seconds": 0.031
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.343
+          },
+          {
+            "service": "redis",
+            "seconds": 0.0
+          }
+        ],
+        "healthy_to_answer_seconds": [
+          -1.422,
+          -1.375,
+          -0.297,
+          -0.297,
+          -0.297,
+          -0.297
+        ],
+        "refusal_kinds": [
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53005 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53390 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53406 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53419 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53433 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53446 fai"
+        ]
+      },
+      "after_teardown": {
+        "runs": 6,
+        "tcp_never_accepted": 0,
+        "never_answered": 0,
+        "tcp_to_answer_seconds": [
+          {
+            "service": "postgres",
+            "seconds": 0.312
+          },
+          {
+            "service": "redis",
+            "seconds": 0.0
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.344
+          },
+          {
+            "service": "redis",
+            "seconds": 0.0
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.297
+          },
+          {
+            "service": "redis",
+            "seconds": 0.0
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.328
+          },
+          {
+            "service": "redis",
+            "seconds": 0.0
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.344
+          },
+          {
+            "service": "redis",
+            "seconds": 0.015
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.266
+          },
+          {
+            "service": "redis",
+            "seconds": 0.0
+          }
+        ],
+        "healthy_to_answer_seconds": [
+          -0.297,
+          -0.297,
+          -0.281,
+          -0.297,
+          -0.296,
+          -0.344
+        ],
+        "refusal_kinds": [
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53462 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 65417 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 65429 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 65443 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 65457 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 65469 fai"
+        ]
+      }
+    }
+  }
+}

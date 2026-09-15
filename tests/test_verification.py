@@ -12,8 +12,11 @@ from codex_harness.adapters.verification import VerificationServices, verificati
 @pytest.fixture(autouse=True)
 def fake_endpoint_probe(request, monkeypatch):
     """Faked compose stacks publish ports nobody listens on; only the real disposable stack test probes them."""
-    if not any(marker in request.node.name for marker in ('real_disposable', 'endpoint_is_ready')):
-        monkeypatch.setattr(VerificationServices, '_await_endpoint', staticmethod(lambda port, deadline_seconds=30.0: 0.0))
+    if not any(marker in request.node.name for marker in ('real_disposable', 'readiness', 'ready_')):
+        monkeypatch.setattr(VerificationServices, '_await_service',
+                            lambda self, service, port, deadline_seconds=30.0: {
+                                "tcp_after": 0.0, "ready_after": 0.0, "identity": "fixture",
+                                "refusals_during_startup": {}})
 
 
 def test_verification_environment_cannot_inherit_production_endpoints():
@@ -146,38 +149,156 @@ def test_real_disposable_database_and_redis_are_isolated_and_removed(tmp_path):
     assert result.returncode == 0 and not result.stdout.strip()
 
 
-def test_endpoint_is_ready_only_when_connectable_and_the_wait_is_bounded():
-    # Observed on WSL2 + Docker Desktop (evidence run attempt 4): `up --wait` returned with healthy
-    # containers while the host port forward still refused connections for a moment.
+# ---- readiness: what "ready" is allowed to mean --------------------------------------------------
+#
+# Measured over 24 disposable stacks on two hosts (docs/zeus/evidence/readiness-004): every start has
+# a window where the published port already accepts TCP and PostgreSQL still refuses the session -
+# 43 refusals in 12 Windows starts, 144 in 12 WSL starts - and the refusals are the two symptoms CI
+# recorded, `server closed the connection unexpectedly` and `FATAL: the database system is starting
+# up`. On WSL the container healthcheck went green inside that window in 3 of 12 starts, so neither
+# `up --wait` nor an open socket can stand in for the service being able to answer.
+
+
+def listener(behaviour):
+    """A real socket that accepts and then behaves as named, so the window can be reproduced here."""
     import socket
     import threading
-    import time
+
+    server = socket.socket()
+    server.bind(("127.0.0.1", 0))
+    server.listen(8)
+    port = server.getsockname()[1]
+    stop = threading.Event()
+
+    def serve():
+        server.settimeout(0.2)
+        while not stop.is_set():
+            try:
+                client, _ = server.accept()
+            except OSError:
+                continue
+            if behaviour == "close_immediately":
+                client.close()          # "server closed the connection unexpectedly"
+            else:
+                stop.wait(0.05)
+                client.close()
+        server.close()
+
+    thread = threading.Thread(target=serve, daemon=True)
+    thread.start()
+    return port, stop, thread
+
+
+def test_readiness_refuses_a_port_that_accepts_and_cannot_answer(tmp_path):
+    """The CI symptom, reproduced without Docker: the socket opens and the service never serves.
+
+    Before this, readiness returned as soon as the connection was accepted, and the caller met the
+    refusal instead - which is exactly what `test_host_interruption` met twice in CI.
+    """
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    try:
+        with pytest.raises(ContractError, match="accepted a connection but did not answer"):
+            services._await_service("postgres", port, deadline_seconds=1.0)
+    finally:
+        stop.set()
+        thread.join(3)
+
+
+def test_readiness_names_the_refusals_it_saw_without_quoting_them(tmp_path):
+    """The two CI symptoms are told apart by name, and no credential travels with them."""
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    assert services._refusal_kind(Exception("FATAL: the database system is starting up")) == "starting_up"
+    assert services._refusal_kind(Exception("server closed the connection unexpectedly")) == "closed_unexpectedly"
+    assert services._refusal_kind(ConnectionRefusedError("Connection refused")) == "refused"
+    assert services._refusal_kind(TimeoutError("timed out")) == "timed_out"
+    assert services._refusal_kind(Exception("something else")) == "other"
 
     from codex_harness.domain.model import ContractError
 
+    port, stop, thread = listener("close_immediately")
+    try:
+        with pytest.raises(ContractError) as raised:
+            services._await_service("postgres", port, deadline_seconds=0.6)
+    finally:
+        stop.set()
+        thread.join(3)
+    message = str(raised.value)
+    assert "closed_unexpectedly" in message, "the refusal is named"
+    assert services.password not in message, "and the password is not in the refusal"
+
+
+def test_readiness_still_refuses_a_port_that_never_accepts(tmp_path):
+    """The WSL symptom is unchanged: nothing listening inside the bound is a bounded failure."""
+    import socket
+
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     probe = socket.socket()
     probe.bind(("127.0.0.1", 0))
     port = probe.getsockname()[1]
-    probe.close()  # nothing listens yet: the first attempts must be refused, not treated as ready
+    probe.close()
 
-    def listen_later():
-        time.sleep(0.6)
-        server = socket.socket()
-        server.bind(("127.0.0.1", port))
-        server.listen(1)
-        server.settimeout(5)
-        try:
-            client, _ = server.accept()
-            client.close()
-        except OSError:
-            pass
-        finally:
-            server.close()
+    with pytest.raises(ContractError, match="never accepted a connection"):
+        services._await_service("redis", port, deadline_seconds=0.5)
 
-    thread = threading.Thread(target=listen_later, daemon=True)
-    thread.start()
-    waited = VerificationServices._await_endpoint(port, deadline_seconds=10)
-    thread.join(5)
-    assert 0.4 <= waited <= 5, "ready is reported after the listener came up, not before"
-    with pytest.raises(ContractError, match="not connectable after 0.5s"):
-        VerificationServices._await_endpoint(port, deadline_seconds=0.5)
+
+def test_readiness_waits_for_the_answer_rather_than_the_socket(tmp_path, monkeypatch):
+    """Ready is reported when the service answers, not when the connection is accepted."""
+    import time
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    answers_at = time.monotonic() + 0.5
+    monkeypatch.setattr(VerificationServices, "_container_identity", lambda self, service: "our-service")
+
+    def answer(self, service, port_):
+        if time.monotonic() < answers_at:
+            raise RuntimeError("FATAL: the database system is starting up")
+        return "our-service"
+
+    monkeypatch.setattr(VerificationServices, "_answer", answer)
+    try:
+        report = services._await_service("postgres", port, deadline_seconds=10)
+    finally:
+        stop.set()
+        thread.join(3)
+
+    assert report["ready_after"] >= 0.4, "ready waited for the answer, not the socket"
+    assert report["tcp_after"] < report["ready_after"], "and the socket opened first, as it always does"
+    assert report["refusals_during_startup"].get("starting_up"), "the window it waited through is recorded"
+    assert report["identity"] == "our-service"
+
+
+def test_readiness_refuses_a_service_that_is_not_this_projects(tmp_path, monkeypatch):
+    """Published ports are chosen by the daemon and reused. Answering is not enough; it must be ours."""
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    monkeypatch.setattr(VerificationServices, "_answer", lambda self, service, port_: "somebody-elses")
+    monkeypatch.setattr(VerificationServices, "_container_identity", lambda self, service: "ours")
+    try:
+        with pytest.raises(ContractError, match="not this project's postgres"):
+            services._await_service("postgres", port, deadline_seconds=5)
+    finally:
+        stop.set()
+        thread.join(3)
+
+
+def test_readiness_binds_the_receipt_to_what_answered(tmp_path, monkeypatch):
+    """The stored receipt says how long each service took and which instance answered."""
+    monkeypatch.setattr(VerificationServices, "_answer", lambda self, service, port_: "identity-" + service)
+    monkeypatch.setattr(VerificationServices, "_container_identity", lambda self, service: "identity-" + service)
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    try:
+        report = services._await_service("redis", port, deadline_seconds=5)
+    finally:
+        stop.set()
+        thread.join(3)
+    assert report["identity"] == "identity-redis"
+    assert set(report) >= {"tcp_after", "ready_after", "identity", "refusals_during_startup", "note"}
