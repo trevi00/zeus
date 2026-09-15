@@ -501,7 +501,28 @@ class VerificationServices:
                 return line.split(":", 1)[1].strip()
         return ""
 
-    def _refuse(self, summary, refusals):
+    def _diagnose(self, service, port):
+        """Catch the moment the refusal happened, from all three sides at once.
+
+        This is the thing the WSL symptom has never had. Every record of it was taken from one
+        side, and one "connection refused" cannot say whether the database never came up, the port
+        was never published, or it was published where that side cannot reach. It runs only after a
+        readiness deadline has already been missed, so it lengthens nothing that was going to pass.
+        """
+        from codex_harness.adapters import port_diagnosis
+
+        try:
+            container = self._command("ps", "-q", service, timeout=10).strip()
+        except Exception:
+            container = ""
+        try:
+            return port_diagnosis.observe(port, service=service, container=container or None)
+        except Exception as exc:
+            return {"port": port, "service": service, "verdict": "undetermined",
+                    "error": type(exc).__name__,
+                    "means": "the capture itself did not run; nothing is narrowed"}
+
+    def _refuse(self, summary, refusals, diagnosis=None):
         """The only thing that leaves here: a summary, and counts by kind.
 
         `raise ... from exc` would keep the original on the exception chain, and a traceback prints
@@ -509,6 +530,12 @@ class VerificationServices:
         into one - stay out of it, so the refusal is built from the classification alone and the
         chain is suppressed.
         """
+        if diagnosis is not None:
+            self.artifacts.put(canonical({"project": self.project, "status": "readiness_failed",
+                                          "diagnosis": diagnosis}), "verification-readiness")
+            raise ContractError(f"{summary}; refusals: {canonical(refusals)}; "
+                                f"where it broke: {diagnosis.get('verdict')} "
+                                f"({diagnosis.get('means')})") from None
         raise ContractError(f"{summary}; refusals: {canonical(refusals)}") from None
 
     def _await_service(self, service, port, deadline_seconds=30.0):
@@ -523,8 +550,10 @@ class VerificationServices:
         deadline = started + deadline_seconds
         refusals = {}
         if not self._await_tcp(port, deadline, refusals):
+            # This is the unexplained symptom. The capture is taken here, at the moment it failed.
             self._refuse(f"Verification endpoint 127.0.0.1:{port} for {service} never accepted a "
-                         f"connection within {deadline_seconds}s", refusals)
+                         f"connection within {deadline_seconds}s", refusals,
+                         self._diagnose(service, port))
         tcp_after = round(time.monotonic() - started, 2)
         identity = None
         while identity is None:
@@ -540,7 +569,8 @@ class VerificationServices:
                 refusals[kind] = refusals.get(kind, 0) + 1
                 if time.monotonic() >= deadline:
                     self._refuse(f"Verification service {service} on 127.0.0.1:{port} accepted a connection "
-                                 f"but did not answer within {deadline_seconds}s", refusals)
+                                 f"but did not answer within {deadline_seconds}s", refusals,
+                                 self._diagnose(service, port))
                 time.sleep(0.1)
         remaining = deadline - time.monotonic()
         if remaining <= 0:

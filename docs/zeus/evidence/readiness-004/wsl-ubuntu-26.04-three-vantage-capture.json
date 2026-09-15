@@ -1,0 +1,81 @@
+{
+  "label": "wsl-ubuntu-26.04",
+  "context": {
+    "platform": "linux",
+    "kernel": "6.18.33.2-microsoft-standard-WSL2",
+    "docker_context": "default",
+    "docker_host": false,
+    "note": "on this machine WSL is in NAT mode, where the two loopbacks are different networks and Docker Desktop forwards between them"
+  },
+  "port_that_is_up": {
+    "port": 55094,
+    "service": "postgres",
+    "observations": {
+      "wsl": {
+        "reachable": true,
+        "how": "socket from this process",
+        "seconds": 0.0
+      },
+      "container": {
+        "reachable": true,
+        "how": "docker exec",
+        "asked": true,
+        "asked_port": "5432",
+        "of": "the container's own loopback",
+        "answer": "127.0.0.1:5432 - accepting connections"
+      },
+      "windows": {
+        "reachable": true,
+        "how": "powershell.exe over interop",
+        "asked": true
+      }
+    },
+    "verdict": "all_reachable",
+    "means": "every vantage reached the port at this moment, so whatever refused earlier was not refusing when this was taken",
+    "seconds": 0.32,
+    "context": {
+      "platform": "linux",
+      "kernel": "6.18.33.2-microsoft-standard-WSL2",
+      "docker_context": "default",
+      "docker_host": false,
+      "note": "on this machine WSL is in NAT mode, where the two loopbacks are different networks and Docker Desktop forwards between them"
+    },
+    "note": "one moment, three vantages; this narrows where a refusal happened and diagnoses nothing on its own"
+  },
+  "port_never_published": {
+    "port": 59999,
+    "service": "postgres",
+    "observations": {
+      "wsl": {
+        "reachable": false,
+        "how": "socket from this process",
+        "error": "ConnectionRefusedError",
+        "seconds": 0.001
+      },
+      "container": {
+        "reachable": true,
+        "how": "docker exec",
+        "asked": true,
+        "asked_port": "5432",
+        "of": "the container's own loopback",
+        "answer": "127.0.0.1:5432 - accepting connections"
+      },
+      "windows": {
+        "reachable": false,
+        "how": "powershell.exe over interop",
+        "asked": true
+      }
+    },
+    "verdict": "publication",
+    "means": "the container answered, and the published port did not; the forwarding path between them is where this broke",
+    "seconds": 2.28,
+    "context": {
+      "platform": "linux",
+      "kernel": "6.18.33.2-microsoft-standard-WSL2",
+      "docker_context": "default",
+      "docker_host": false,
+      "note": "on this machine WSL is in NAT mode, where the two loopbacks are different networks and Docker Desktop forwards between them"
+    },
+    "note": "one moment, three vantages; this narrows where a refusal happened and diagnoses nothing on its own"
+  }
+}
