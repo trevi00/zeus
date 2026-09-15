@@ -1,7 +1,9 @@
 {
-  "docs\\zeus\\evidence\\windows-restricted-pilot-001\\verification.json": "bc626d750f77799403d0c43c037df387121219bad2ed4999eb445edbf3fb8474",
-  "docs\\zeus\\evidence\\windows-restricted-pilot-001\\windows-restricted-pilot-001-call1-receipt.json": "2c370d1b07a71fe29c4a8fa5c8f62c8b733c244d416a3cae92c1e7ed3c928d02",
+  "docs\\zeus\\operations\\windows-pilot-001\\issue-comment.md": "8642412236b18e2a58c8424d1f9cdaa32a5278ac5060e5b845b0161f1e372746",
+  "docs\\zeus\\operations\\windows-pilot-001\\issue-observations.json": "b034ea65d17f60fe2b7bd6d3abf79b60d9a16cb28ed4236692cd30c5e28fea4a",
   "docs\\zeus\\operations\\windows-pilot-001\\NEXT-CLAUDE-TASK.md": "4d3659977d4bf1a43e78888e52ec72e80084c6048dfc9c7f32fb45fb48f8bb75",
   "docs\\zeus\\operations\\windows-pilot-001\\PLAN.md": "4fe224ee6cca7f6d084f34311777bb3d58583f278b3acaf8a506200387471b3e",
-  "docs\\zeus\\operations\\windows-pilot-001\\README.md": "0c5cb45bbbc898ee43c68e1a0a598da6734cd49425f4c2298df78bd82c8a7561"
+  "docs\\zeus\\operations\\windows-pilot-001\\README.md": "0c5cb45bbbc898ee43c68e1a0a598da6734cd49425f4c2298df78bd82c8a7561",
+  "docs\\zeus\\evidence\\windows-restricted-pilot-001\\verification.json": "bc626d750f77799403d0c43c037df387121219bad2ed4999eb445edbf3fb8474",
+  "docs\\zeus\\evidence\\windows-restricted-pilot-001\\windows-restricted-pilot-001-call1-receipt.json": "2c370d1b07a71fe29c4a8fa5c8f62c8b733c244d416a3cae92c1e7ed3c928d02"
 }
