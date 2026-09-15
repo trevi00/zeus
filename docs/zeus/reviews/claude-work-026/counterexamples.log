@@ -1,0 +1,27 @@
+.........s...........................FFF                                 [100%]
+================================== FAILURES ===================================
+__________ test_starting_another_attempt_does_not_cancel_active_work __________
+.runtime\review-101e\test_states.py:28: in test_starting_another_attempt_does_not_cancel_active_work
+    assert not closed.wait(0.2), 'starting unrelated work reclaimed an active, non-timed-out attempt'
+E   AssertionError: starting unrelated work reclaimed an active, non-timed-out attempt
+E   assert not True
+E    +  where True = wait(0.2)
+E    +    where wait = <threading.Event at 0x25f256ed130: set>.wait
+_______________ test_reserved_slot_survives_until_worker_starts _______________
+.runtime\review-101e\test_states.py:60: in test_reserved_slot_survives_until_worker_starts
+    assert 'a0001' in owner.slots, 'a reserved but not-started worker was misread as settled and removed'
+E   AssertionError: a reserved but not-started worker was misread as settled and removed
+E   assert 'a0001' in {'a0002': <codex_harness.adapters.verification._Attempt object at 0x0000025F256EE840>}
+E    +  where {'a0002': <codex_harness.adapters.verification._Attempt object at 0x0000025F256EE840>} = <codex_harness.adapters.verification._Attempts object at 0x0000025F256ED4C0>.slots
+______________ test_failed_closed_probe_is_not_positive_closure _______________
+.runtime\review-101e\test_states.py:89: in test_failed_closed_probe_is_not_positive_closure
+    assert attempt.id in owner.slots, 'inspection failure was accepted as closed and freed the slot'
+E   AssertionError: inspection failure was accepted as closed and freed the slot
+E   assert 'a0001' in {}
+E    +  where 'a0001' = <codex_harness.adapters.verification._Attempt object at 0x0000025F256ED5B0>.id
+E    +  and   {} = <codex_harness.adapters.verification._Attempts object at 0x0000025F256EC1A0>.slots
+=========================== short test summary info ===========================
+FAILED .runtime/review-101e/test_states.py::test_starting_another_attempt_does_not_cancel_active_work
+FAILED .runtime/review-101e/test_states.py::test_reserved_slot_survives_until_worker_starts
+FAILED .runtime/review-101e/test_states.py::test_failed_closed_probe_is_not_positive_closure
+3 failed, 36 passed, 1 skipped in 80.17s (0:01:20)

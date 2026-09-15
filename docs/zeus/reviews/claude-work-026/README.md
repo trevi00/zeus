@@ -1,0 +1,41 @@
+# PR #101 5차 독립 검토: 상태 구분과 종료 확인
+
+대상 `42f0d3aaf83a4a3c2e45b396d6a3a029d6e48454`, 런타임 `b4be9d5af99928e413d9477833f59c438ef597ec`. 이전 세 반례는 통과했다. 그러나 수집 함수가 예약·실행 중 상태를 종료 상태와 구분하지 않고, 자원 조회 실패를 종료 증거로 삼아 병합을 보류한다.
+
+## R1 · P1 · 수집이 예약을 지우거나 정상 실행을 취소한다
+
+_Attempts._collect는 start/finish/outstanding에서 실행되고, settled가 아닌 모든 시도에 reclaimer를 붙인다. 하지만 정상 실행 중 작업도 아직 settled가 아니다. 새 작업 B를 시작하면 A의 기한이 지나지 않았는데 A의 자원을 닫고 cancelled=true로 바꾼다.
+
+또한 start가 슬롯을 예약한 다음 잠금을 풀고 thread.start를 호출하는 사이에 다른 start가 _collect를 실행할 수 있다. 이때 아직 시작하지 않은 thread는 is_alive=false이며 held가 비어 있어 settled=true가 되어 예약이 삭제된다. 제거된 A는 이후 실제로 실행되어 소유자 분모에서 빠진다.
+
+두 독립 반례:
+
+1. A가 자원을 등록하고 정상 대기하는 중 B를 시작했더니 A.close가 호출됐다. A의 timeout/reclaim은 요청하지 않았다.
+2. A의 thread.start 직전만 barrier로 멈춘 뒤 B를 시작했더니 예약 a0001이 사라졌다. barrier 해제 후 A는 실행됐다.
+
+### 수정할 회수 가능 조건
+
+- RESERVED: 슬롯을 점유하며 시작 성공/실패가 정해질 때까지 settled=false. is_alive=false만으로 완료 판단 금지.
+- RUNNING: 명시적 취소/준비 기한 만료 전에는 다른 시도의 start/finish/outstanding 때문에 회수를 시작하지 않는다.
+- WORKER_FINISHED: 실제 실행의 finally에서 완료 사실을 기록한다. 남은 자원이 있으면 회수 가능하다.
+- CANCELLED/RECLAIMING/UNRECLAIMED: 기존 유계 회수·늦은 등록·소유권 유지 규칙을 적용한다.
+- RELEASED: 시작 실패로 worker가 존재하지 않음이 확인되거나, 실제 worker 종료 + reclaimer 종료 + 자원 종료 확인 뒤에만 전이한다.
+
+수집은 이 상태에 따라 행동해야 한다. 회수 여부를 단순히 "아직 settled가 아님"으로 결정하지 않는다. 상태 기록·조회와 예약 제거를 같은 동기화 계약으로 묶는다.
+
+## R2 · P1 · 종료 확인의 예외가 closed=true가 된다
+
+_Held._evidence와 _looks_shut은 fileno 조회가 예외를 던지면 True를 반환한다. 조회 실패는 종료의 긍정적 증거가 아니다. _looks_shut은 지원하는 확인 수단이 없어도 마지막에 True를 반환한다.
+
+반례는 실제 열린 socketpair를 가진 자원에서 fileno 조회와 close가 오류를 내도록 했다. worker 종료 후 owner.finish가 슬롯을 해제했지만 소켓은 열린 상태였다. 자격증명이나 실제 DB 장애가 아닌, 자원 조회 실패의 경계 주입이다. 시험 뒤 소켓을 직접 닫았다.
+
+종료 판정은 CLOSED/OPEN/UNKNOWN을 구분한다. 확인 실패·미지원은 UNKNOWN으로 유지하고 자원/슬롯을 보관·보고한다. 특정 라이브러리의 특정 종료 신호를 증거로 쓸 경우 해당 타입과 신호를 명시적으로 처리한다. 모든 fileno 예외를 종료로 취급하거나 근거 없는 clean-close fallback을 두지 않는다. 이 확인 작업도 앞서 정한 호출자 비차단 계약을 유지해야 한다.
+
+## 독립 검증
+
+- Windows **36 passed, 1 skipped, 3 failed**. 제출 회귀 및 이전 Codex 반례는 통과. 실패 세 건은 R1의 두 순서와 R2의 조회 실패다.
+- 실제 thread/Event/socketpair와 명시적 경계 오류 주입으로 재현했다. 시험 후 소유 worker/reclaimer/소켓을 정리했다. 검증 러너의 실제 PG/Redis 프로젝트 잔여 컨테이너 0. 실제 모델 호출 0. 전체 Ruff 통과.
+- environment-runs-019 두 호스트 stdout/stderr/JUnit hash·identity_stable·런타임→최종 head src/scripts/uv.lock 차이 없음 확인. 제공 전체 스위트를 독립 전체 재실행 수치로 표현하지 않는다.
+- CI 34972064838/34972056785 모두 attempt=1/SUCCESS, 최종 10개 check 통과.
+
+Claude는 위 두 상태 판정을 같은 PR에서 수정한다. 이미 수용된 서비스 응답/identity, 기한, 예외 체인 억제, 측정 해석은 유지한다. 이슈 종료·운영 승격·U003 착수는 하지 않는다.
