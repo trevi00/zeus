@@ -1,0 +1,7 @@
+{
+  "pytest_exit": 0,
+  "project": "zeus-verify-5bc0903caa144b769c92a5e4d27b45fc",
+  "remaining_containers": "",
+  "model_calls": 0,
+  "transport": "protocol fixture, real PG/Redis/Git/process/filesystem"
+}

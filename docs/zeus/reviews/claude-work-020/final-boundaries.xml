@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="6.113" timestamp="2026-09-15T14:36:24.933476+09:00" hostname="DESKTOP-T38M60T"><testcase classname=".runtime.review-073c.test_final_boundaries" name="test_scandir_denial_is_not_empty" time="0.008"><failure message="AssertionError: Path.rglob suppresses the scandir denial and reports empty&#10;assert True is False">.runtime\review-073c\test_final_boundaries.py:31: in test_scandir_denial_is_not_empty
+    assert report['complete'] is False, 'Path.rglob suppresses the scandir denial and reports empty'
+E   AssertionError: Path.rglob suppresses the scandir denial and reports empty
+E   assert True is False</failure></testcase><testcase classname=".runtime.review-073c.test_final_boundaries" name="test_real_isolated_ledger_failure_accounting[preservation]" time="3.085" /><testcase classname=".runtime.review-073c.test_final_boundaries" name="test_real_isolated_ledger_failure_accounting[settlement]" time="2.886"><failure message="AssertionError: settlement failed but runner reports success&#10;assert (0 != 0)">.runtime\review-073c\test_final_boundaries.py:81: in test_real_isolated_ledger_failure_accounting
+    assert code != 0 and receipt['passed'] is False, 'settlement failed but runner reports success'
+E   AssertionError: settlement failed but runner reports success
+E   assert (0 != 0)</failure></testcase></testsuite></testsuites>

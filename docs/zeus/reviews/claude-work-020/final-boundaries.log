@@ -1,0 +1,18 @@
+F.F                                                                      [100%]
+================================== FAILURES ===================================
+______________________ test_scandir_denial_is_not_empty _______________________
+.runtime\review-073c\test_final_boundaries.py:31: in test_scandir_denial_is_not_empty
+    assert report['complete'] is False, 'Path.rglob suppresses the scandir denial and reports empty'
+E   AssertionError: Path.rglob suppresses the scandir denial and reports empty
+E   assert True is False
+__________ test_real_isolated_ledger_failure_accounting[settlement] ___________
+.runtime\review-073c\test_final_boundaries.py:81: in test_real_isolated_ledger_failure_accounting
+    assert code != 0 and receipt['passed'] is False, 'settlement failed but runner reports success'
+E   AssertionError: settlement failed but runner reports success
+E   assert (0 != 0)
+---------------------------- Captured stdout call -----------------------------
+{"label": "review", "run_id": "20260915T053628Z-e045e188", "mode": "fixture", "executed": true, "accepted_by_harness": true, "task_verified": false, "task_succeeded": true, "evidence_complete": true, "runner_complete": true, "passed": true, "not_executed_reason": null, "receipt": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-unknown\\pytest-13\\test_real_isolated_ledger_fail1\\review-fixture-20260915T053628Z-e045e188-receipt.json"}
+=========================== short test summary info ===========================
+FAILED .runtime/review-073c/test_final_boundaries.py::test_scandir_denial_is_not_empty
+FAILED .runtime/review-073c/test_final_boundaries.py::test_real_isolated_ledger_failure_accounting[settlement]
+2 failed, 1 passed in 6.16s
