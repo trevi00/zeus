@@ -175,6 +175,26 @@ Codex가 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 네 곳
 - C — 작업 완료 뒤 경계 오류가 passed를 거짓으로 만들고 exit 1인가(`task_succeeded`는 참으로 남는가),
   **깨끗한 실행은 여전히 통과하는가**(대조)
 
+## 5.7 3차 독립 검토(review 5205932884) 반영 — 열거와 정산
+
+기존 반례와 제출 회귀 41건은 통과했고 두 건이 남았다. **둘 다 "실패를 기록은 하는데 그 기록이 아무것도 바꾸지
+않는다"였다.**
+
+| 지적 | 무엇이 틀렸나 | 고친 방식 |
+|---|---|---|
+| **R1** 열거 거절이 `rglob` 안에서 숨겨짐 | `Path.rglob` 호출을 try로 감쌌지만 **표준 라이브러리가 내부 디렉터리 열거의 `PermissionError`를 삼킨다.** 실제 artifact가 있는 디렉터리의 `os.scandir`만 거절시키면 rglob는 **빈 결과**를 돌려주고 `complete=true` / "보존할 것 없음"이 된다. 내 회귀는 `Path.rglob` 자체를 던지게 바꿔 이 경계를 **지나쳐 갔다** | 열거를 **직접 관측 가능한 방식**으로 다시 썼다(`Scratch.list_evidence`). `os.scandir`로 직접 순회하며 **디렉터리마다 실패를 값으로 돌려준다.** 루트 판정도 `is_dir()` 대신 `os.stat`을 try로 감싸 **접근 불가가 부재로 축약되지 않게** 했다. 파일 크기를 못 읽는 경우도 "빈 파일"이 아니라 오류로 적는다. 링크·경로 이탈 정책은 그대로다 |
+| **R2** 정산 실패를 기록하고도 성공으로 종료 | `call_budget_settled=false`를 영수증에 적으면서 `runner_complete`는 그것을 보지 않았다. 슬롯이 `reserved`인 채로 `passed=true`, `exit=0`이 된다 | `runner_complete`에 **정산 실패를 포함**했다. `recovery.call_budget`이 슬롯 id·정산 여부·오류를 가리키며, **슬롯은 보수적으로 계속 집계**하고 자동 재호출이나 삭제는 하지 않는다 |
+
+**제출했던 `test_b_the_call_ledger_is_settled_even_when_preservation_throws`가 정산에 진입하지 않았다는 지적도
+맞다.** fixture 모드에서는 슬롯을 예약하지 않으므로 `slot=None`이었고, `settled` 변수에 대한 단언도 없었다. 이름이
+증명하지 않는 것을 말하고 있었다. **예약→정산 경로에 실제로 들어가는 회귀 3건으로 교체했다** — `tmp_path` 아래 진짜
+`CallBudget` 파일 원장을 만들고 preflight만 real 모드로 바꿔 분기에 진입시키되, provider는 여전히 프로토콜 자식이다.
+유료 호출 0회, 운영 원장 변경 0.
+
+**되돌려 확인했다.** 두 수정을 되돌리면 새 5건 중 **3건이 실패**한다(열거 거절, 크기 판독 불가, 정산 실패). 나머지
+2건은 대조이며 **이전 코드에서도 통과한다** — 보존 실패 시 정산이 도달하는 것과 깨끗한 실행이 통과하는 것은 이미
+2차에서 수용된 동작이라, 여기서 새로 무는 것이 아니라 **깨지지 않았음을 지키는** 회귀다. 복원하면 36건 전부 통과한다.
+
 ## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-013/`, head `ed30106`)
 
 | 호스트 | ruff | full-suite-integration | disposable-docker | 회귀 |

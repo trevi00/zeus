@@ -281,6 +281,57 @@ class Scratch:
                                        "winerror": getattr(exc, "winerror", None),
                                        "operation": "rmdir"})
 
+    # ---- looking at what is there ------------------------------------------------------------------
+    def list_evidence(self, name: str) -> dict:
+        """Every file under one of this scratch's directories, and every refusal to look.
+
+        `Path.rglob` is not usable here. It walks with a generator that suppresses the directory
+        listing errors underneath it, so a directory this process is not allowed to read comes back
+        as a directory with nothing in it - and "I was not allowed to look" would be recorded as
+        "there was nothing to keep". Scanning directly means every refusal is a value this function
+        returns rather than one the standard library swallows on its way past.
+
+        Links are not followed, which is the same policy the removal uses: what is on the other side
+        of one is not this run's evidence.
+        """
+        base = self.root / name
+        files, errors = [], []
+        try:
+            mode = os.stat(base).st_mode
+        except FileNotFoundError:
+            return {"files": [], "errors": [], "exists": False}
+        except OSError as exc:
+            # Not being able to tell whether it is there is not the same as it not being there.
+            errors.append({"path": name, "error": type(exc).__name__, "message": str(exc)[:200],
+                           "operation": "stat"})
+            return {"files": [], "errors": errors, "exists": None}
+        if not stat.S_ISDIR(mode):
+            return {"files": [], "errors": [], "exists": False}
+        pending = [base]
+        while pending:
+            current = pending.pop()
+            try:
+                with os.scandir(current) as entries:
+                    children = list(entries)
+            except OSError as exc:
+                errors.append({"path": self._relative(current), "error": type(exc).__name__,
+                               "message": str(exc)[:200], "operation": "scandir"})
+                continue
+            for entry in children:
+                path = Path(entry.path)
+                try:
+                    if entry.is_symlink() or entry.is_junction():
+                        continue
+                    if entry.is_dir(follow_symlinks=False):
+                        pending.append(path)
+                        continue
+                except OSError as exc:
+                    errors.append({"path": self._relative(path), "error": type(exc).__name__,
+                                   "message": str(exc)[:200], "operation": "classify"})
+                    continue
+                files.append(path)
+        return {"files": sorted(files), "errors": errors, "exists": True}
+
     def _relative(self, path: Path) -> str:
         try:
             return str(Path(path).relative_to(self.root))

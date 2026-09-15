@@ -441,19 +441,21 @@ def swept_evidence(scratch) -> dict:
     entries, total, capped, errors, seen = [], 0, False, [], 0
     for name in SWEPT_DIRECTORIES:
         directory = scratch.root / name
-        if not directory.is_dir():
-            continue
-        try:
-            found_here = sorted(p for p in directory.rglob("*") if p.is_file())
-        except OSError as exc:
-            # Not being able to look is not the same as there being nothing to see.
-            errors.append({"directory": name, "error": type(exc).__name__, "message": str(exc)[:200]})
-            continue
-        for found in found_here:
+        # `Scratch.list_evidence` scans directly instead of using `Path.rglob`, because rglob walks
+        # with a generator that swallows the listing error underneath it: a directory this process
+        # may not read comes back as an empty one, and "not allowed to look" would be filed as
+        # "nothing to keep". Every refusal is a value here.
+        listing = scratch.list_evidence(name)
+        errors.extend({"directory": name, **failure} for failure in listing["errors"])
+        for found in listing["files"]:
             seen += 1
             try:
                 size = found.stat().st_size
-            except OSError:
+            except OSError as exc:
+                # The file is there; its size is not readable. Copying may still fail, and that is
+                # reported by the copy, but this is not silently treated as an empty file.
+                errors.append({"directory": name, "path": str(found), "error": type(exc).__name__,
+                               "message": str(exc)[:200], "operation": "size"})
                 size = 0
             if total + size > SWEEP_BYTE_CAP:
                 capped = True
@@ -670,11 +672,20 @@ def call(args, out, stack=None):
     # A third claim, and the one an unattended caller should read. The task may have finished and
     # every copy may have been kept, and this run can still have ended somewhere it did not plan to
     # be - which means something between those two facts went unobserved.
-    receipt["runner_complete"] = receipt["evidence_complete"] and not receipt.get("error")
+    # A reserved slot that was never settled keeps being counted against every later run, so a run
+    # that could not settle one has left something behind exactly as surely as a lost file has.
+    receipt["runner_complete"] = (receipt["evidence_complete"] and not receipt.get("error")
+                                  and receipt.get("call_budget_settled") is not False)
     receipt["passed"] = receipt["task_succeeded"] and receipt["runner_complete"]
     if not receipt["runner_complete"]:
         receipt["recovery"] = {
             "error": receipt.get("error"),
+            "call_budget": ({"slot": (receipt.get("call_budget") or {}).get("slot"),
+                             "settled": receipt.get("call_budget_settled"),
+                             "error": receipt.get("call_budget_settle_error"),
+                             "note": "the slot stays counted until an operator settles it; it is "
+                                     "never removed or re-called automatically"}
+                            if receipt.get("call_budget_settled") is False else None),
             "scratch": receipt.get("workdir_cleanup", {}).get("root"),
             "destination": receipt.get("preserved", {}).get("destination"),
             "failures": receipt.get("preserved", {}).get("failures"),
@@ -691,7 +702,8 @@ def call(args, out, stack=None):
     path = out / f"{args.label}-{suffix}-{run_id}-receipt.json"
     summary = {k: receipt.get(k) for k in ("label", "run_id", "mode", "executed", "accepted_by_harness",
                                            "task_verified", "task_succeeded", "evidence_complete",
-                                           "runner_complete", "passed", "not_executed_reason")}
+                                           "runner_complete", "call_budget_settled", "passed",
+                                           "not_executed_reason")}
     try:
         out.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

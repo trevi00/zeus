@@ -18,6 +18,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -26,6 +27,7 @@ import pytest
 from codex_harness.adapters.scratch import Scratch, file_digest
 
 ROOT = Path(__file__).resolve().parents[1]
+CHILD = ROOT / "tests" / "claude_protocol_child.py"
 
 
 def runner():
@@ -361,21 +363,60 @@ def test_a_a_scratch_that_really_is_empty_is_still_accepted(tmp_path):
 
 
 def test_a_an_evidence_directory_that_cannot_be_listed_is_not_an_empty_one(tmp_path, monkeypatch):
-    """Not being able to look is a different answer from there being nothing to see."""
+    """Not being able to look is a different answer from there being nothing to see.
+
+    The refusal is injected where the operating system would raise it, at the directory scan, with a
+    real artifact sitting inside. `Path.rglob` cannot be used to observe this: it walks with a
+    generator that suppresses the listing error underneath it and hands back an empty directory, so
+    a check written against rglob passes over the very boundary it means to test.
+    """
     module = runner()
     scratch = Scratch.create("zeus-claude-call-")
     try:
-        (scratch.root / "artifacts").mkdir()
+        artifact = scratch.root / "artifacts" / "execution.txt"
+        artifact.parent.mkdir()
+        artifact.write_text('{"process": {"exit_code": 0}}', encoding="utf-8")
+        blinded = artifact.parent.resolve()
+        real_scandir = os.scandir
 
-        def refuse(self, pattern):
-            raise OSError("the directory refused to be listed")
+        def refuse_that_directory(path="."):
+            if Path(path).resolve() == blinded:
+                raise PermissionError(13, "the directory refused to be listed")
+            return real_scandir(path)
 
-        monkeypatch.setattr(Path, "rglob", refuse)
+        monkeypatch.setattr(os, "scandir", refuse_that_directory)
         report = module.preserve_evidence(scratch, {}, tmp_path, "review", "run-blind")
         monkeypatch.undo()
 
-        assert report["complete"] is False
+        assert artifact.exists(), "the file was there the whole time"
+        assert report["complete"] is False, "an unreadable directory was read as an empty one"
         assert report["swept"]["errors"], "the failure to enumerate is recorded"
+        assert report["swept"]["errors"][0]["error"] == "PermissionError"
+    finally:
+        scratch.remove()
+
+
+def test_a_a_file_whose_size_cannot_be_read_is_still_evidence(tmp_path, monkeypatch):
+    """A file that refuses to be measured is not a file that is not there."""
+    module = runner()
+    scratch = Scratch.create("zeus-claude-call-")
+    try:
+        artifact = scratch.root / "artifacts" / "execution.txt"
+        artifact.parent.mkdir()
+        artifact.write_text("{}", encoding="utf-8")
+        real_stat = Path.stat
+
+        def refuse_size(self, **kwargs):
+            if self.name == "execution.txt":
+                raise PermissionError(13, "the size refused to be read")
+            return real_stat(self, **kwargs)
+
+        monkeypatch.setattr(Path, "stat", refuse_size)
+        report = module.preserve_evidence(scratch, {}, tmp_path, "review", "run-unmeasured")
+        monkeypatch.undo()
+
+        assert report["swept"]["seen"] == 1, "the file was seen even though it could not be measured"
+        assert any(failure.get("operation") == "size" for failure in report["swept"]["errors"])
     finally:
         scratch.remove()
 
@@ -401,25 +442,95 @@ def test_b_a_destination_that_cannot_be_created_is_reported_and_the_scratch_is_k
     Scratch(Path(receipt["workdir_cleanup"]["root"])).remove()
 
 
-def test_b_the_call_ledger_is_settled_even_when_preservation_throws(tmp_path, live, monkeypatch):
-    """A reserved slot that is never settled keeps counting, whatever else went wrong."""
+def reserving_run(module, live, monkeypatch, ledger_root: Path, settle=None):
+    """Drive the runner down the branch that reserves and settles a call slot.
+
+    The slot branch is chosen by preflight's mode, so preflight is what is replaced - not the work.
+    The provider is still the protocol child, the ledger is a real `CallBudget` under the test's own
+    directory, and no paid call is made. This is what the earlier version of this check missed: it
+    ran in fixture mode, where no slot is ever reserved, so it proved nothing about settling one.
+    """
+    from codex_harness.adapters.call_budget import CallBudget
+    from codex_harness.adapters.claude_cli import ClaudeCodeRuntime
+
+    class TestLedger(CallBudget):
+        def __init__(self, root=None):
+            super().__init__(root=ledger_root)
+
+        def settle(self, slot_id, **kwargs):
+            if settle is not None:
+                return settle(self, slot_id, **kwargs)
+            return super().settle(slot_id, **kwargs)
+
+    def protocol_child(**kwargs):
+        kwargs.pop("executable", None)
+        return ClaudeCodeRuntime(executable=str(CHILD), launcher=[sys.executable], **kwargs)
+
+    monkeypatch.setattr(module, "CallBudget", TestLedger)
+    monkeypatch.setattr("codex_harness.adapters.executor.ClaudeCodeRuntime", protocol_child)
+    monkeypatch.setattr(module, "preflight", lambda args: {
+        "ready": True, "mode": "real", "executable": str(CHILD), "launcher": [sys.executable],
+        "version": "protocol child", "flags": [], "executable_kind": "test_fixture",
+        "note": "the protocol child driven down the reserving branch; no provider is called"})
+    return TestLedger
+
+
+def test_b_a_slot_that_cannot_be_settled_fails_the_run(tmp_path, live, monkeypatch):
+    """A reserved slot that was never settled keeps counting, so the run has left something behind."""
+    ledger_root = tmp_path / "ledger"
+
+    def refuse(self, slot_id, **kwargs):
+        raise OSError("the ledger refused to record the outcome")
+
     module = runner()
-    settled = {}
-
-    def refuse(self, destination, entries):
-        raise OSError("preservation itself failed")
-
-    monkeypatch.setattr(Scratch, "preserve", refuse)
-    monkeypatch.setattr(module.CallBudget, "settle",
-                        lambda self, slot_id, **kwargs: settled.setdefault("slot", slot_id))
+    ledger = reserving_run(module, live, monkeypatch, ledger_root, settle=refuse)
     code = module.call(live, tmp_path)
     receipt = only_receipt(tmp_path)
     monkeypatch.undo()
 
+    assert receipt["call_budget"]["slot"], "the counterexample must actually reserve a slot"
+    assert receipt["call_budget_settled"] is False and receipt["call_budget_settle_error"]
+    assert receipt["runner_complete"] is False and receipt["passed"] is False
+    assert code != 0, "an unsettled slot must not exit as a success"
+    assert receipt["recovery"]["call_budget"]["slot"] == receipt["call_budget"]["slot"]
+    slots = ledger(root=ledger_root).slots()
+    assert [row["status"] for row in slots] == ["reserved"], "the slot stays counted, and is not removed"
+    if not receipt["workdir_removed"]:
+        Scratch(Path(receipt["workdir_cleanup"]["root"])).remove()
+
+
+def test_b_the_ledger_is_settled_even_when_preservation_fails(tmp_path, live, monkeypatch):
+    """The contrast Codex asked for: preservation fails, the slot is still settled."""
+    ledger_root = tmp_path / "ledger"
+    module = runner()
+    ledger = reserving_run(module, live, monkeypatch, ledger_root)
+    monkeypatch.setattr(Scratch, "preserve",
+                        lambda self, destination, entries: (_ for _ in ()).throw(
+                            OSError("preservation itself failed")))
+    code = module.call(live, tmp_path)
+    receipt = only_receipt(tmp_path)
+    monkeypatch.undo()
+
+    assert receipt["call_budget_settled"] is True
     assert receipt["preserved"]["complete"] is False
-    assert receipt["preserved"]["failures"][0]["name"] == "preservation"
     assert code != 0 and receipt["recovery"]["scratch"]
+    slots = ledger(root=ledger_root).slots()
+    assert [row["status"] for row in slots] == ["used"]
     Scratch(Path(receipt["workdir_cleanup"]["root"])).remove()
+
+
+def test_b_a_settled_slot_on_a_clean_run_still_passes(tmp_path, live, monkeypatch):
+    """And the ordinary path is unchanged: the slot is used and the run passes."""
+    ledger_root = tmp_path / "ledger"
+    module = runner()
+    ledger = reserving_run(module, live, monkeypatch, ledger_root)
+    code = module.call(live, tmp_path)
+    receipt = only_receipt(tmp_path)
+    monkeypatch.undo()
+
+    assert receipt["call_budget_settled"] is True and receipt["runner_complete"] is True
+    assert code == 0 and receipt["workdir_removed"] is True
+    assert [row["status"] for row in ledger(root=ledger_root).slots()] == ["used"]
 
 
 # ---- second review: an unplanned ending is a failed run ------------------------------------------
