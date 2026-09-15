@@ -26,10 +26,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import shutil
 import subprocess
 import sys
-import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -39,6 +37,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from codex_harness.adapters.call_budget import CallBudget  # noqa: E402
+from codex_harness.adapters.scratch import Scratch  # noqa: E402
 from codex_harness.domain.model import ContractError  # noqa: E402
 
 MODULE = '''"""A tiny helper the assigned task has to finish."""
@@ -291,6 +290,17 @@ def execute(args, receipt: dict, workdir: Path, ready: dict) -> dict:
         after = run([sys.executable, "-m", "pytest", "-q", "test_slug.py"], cwd=str(workspace), timeout=600)
         unchanged = run(["git", "diff", "--exit-code", repository["head"], "HEAD", "--", "test_slug.py"],
                         cwd=str(workspace), timeout=120)
+        # The whole diff and the whole log, not their tails: the scratch that holds them is about to
+        # go, and a summary cannot be re-read by somebody checking this later.
+        patch = run(["git", "diff", repository["head"], "HEAD"], cwd=str(workspace), timeout=120)
+        receipt["preservable"] = {
+            "candidate_revision": candidate.get("revision"),
+            "base_revision": repository["head"],
+            "diff_text": patch["stdout"],
+            "tests_after_stdout": after["stdout"], "tests_after_stderr": after["stderr"],
+            "execution_artifact": (str(artifacts.root / (result["execution_ref"][7:] + ".txt"))
+                                   if result.get("execution_ref") else None),
+        }
         receipt["runner_measured"] = {
             "worktree": str(workspace), "candidate_revision": candidate.get("revision"),
             "diff_stat": [line for line in diff["stdout"].splitlines() if line.strip()],
@@ -406,6 +416,42 @@ def with_isolated_stack(args, out):
             leftover.unlink(missing_ok=True)
 
 
+
+def preserve_evidence(scratch, receipt: dict, out: Path, label: str) -> dict:
+    """Move the evidence out of the scratch and prove it arrived, before the scratch is removed.
+
+    `execution_ref` points into the scratch. A receipt that keeps the reference and drops the bytes
+    cannot be re-read by anyone, so the artifact is copied out and the receipt is told where the
+    copy is. The diff, the candidate revision and this runner's own test log go with it: those are
+    the measurements the acceptance rests on.
+    """
+    source = receipt.pop("preservable", None) or {}
+    destination = out / f"{label}-evidence"
+    entries = []
+    if source.get("execution_artifact"):
+        entries.append({"name": "execution-artifact.json", "source": source["execution_artifact"]})
+    if source.get("diff_text") is not None:
+        entries.append({"name": "candidate.diff", "text": source["diff_text"]})
+    if source.get("tests_after_stdout") is not None:
+        entries.append({"name": "runner-tests-after.log",
+                        "text": (source.get("tests_after_stdout") or "")
+                                + ("\n--- stderr ---\n" + source["tests_after_stderr"]
+                                   if source.get("tests_after_stderr") else "")})
+    if not entries:
+        return {"complete": True, "kept": [], "failures": [], "destination": str(destination),
+                "note": "the run produced no execution evidence to keep"}
+    report = scratch.preserve(destination, entries)
+    report["revisions"] = {"base": source.get("base_revision"),
+                           "candidate": source.get("candidate_revision")}
+    by_name = {entry["name"]: entry for entry in report["kept"]}
+    if "execution-artifact.json" in by_name:
+        kept = by_name["execution-artifact.json"]
+        receipt.setdefault("provider_receipt", {})["preserved_copy"] = {
+            "path": kept["path"], "sha256": kept["sha256"],
+            "note": "execution_ref pointed inside the scratch; this copy outlives it"}
+    return report
+
+
 def call(args, out, stack=None):
     ceilings = call_budget_policy()
     slot = None
@@ -453,20 +499,27 @@ def call(args, out, stack=None):
         receipt["configuration"] = {"assignments": os.environ["ZEUS_CLAUDE_ASSIGNMENTS"],
                                     "model": args.model, "max_budget_usd": str(args.budget),
                                     "timeout_seconds": str(args.timeout)}
-        # The throwaway repository, worktree and spool live outside the evidence directory: what
-        # is kept is the receipt, not the scratch space the run needed to produce it.
-        workdir = Path(tempfile.mkdtemp(prefix="zeus-claude-call-"))
+        # The throwaway repository, worktree and spool live outside the evidence directory. What
+        # is kept is the receipt and the evidence it points at - and those leave the scratch, and
+        # are verified on disk, before any of it is removed.
+        scratch = Scratch.create(prefix="zeus-claude-call-")
+        workdir = scratch.root
         try:
             execute(args, receipt, workdir, ready)
         except Exception as exc:
             receipt["error"] = {"type": type(exc).__name__, "message": str(exc)[:2000]}
         finally:
-            for _ in range(5):  # Windows releases a just-closed pack file a moment late
-                shutil.rmtree(workdir, ignore_errors=True)
-                if not workdir.exists():
-                    break
-                time.sleep(1)
-            receipt["workdir_removed"] = not workdir.exists()
+            receipt["preserved"] = preserve_evidence(scratch, receipt, out, args.label)
+            if receipt["preserved"]["complete"]:
+                removal = scratch.remove()
+            else:
+                # Evidence that could not be kept is the one reason to keep the scratch: removing it
+                # would destroy the only remaining copy.
+                removal = {"root": str(scratch.root), "removed": False, "refusals": [],
+                           "recleanable": True,
+                           "skipped_because": "the evidence could not be preserved, so the scratch is kept"}
+            receipt["workdir_cleanup"] = removal
+            receipt["workdir_removed"] = removal["removed"]
             if slot is not None:
                 CallBudget().settle(slot["id"], outcome=str(receipt.get("execution", {}).get("status")),
                                     detail={"label": args.label, "executed": bool(receipt.get("executed"))})

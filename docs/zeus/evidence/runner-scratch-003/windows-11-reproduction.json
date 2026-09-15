@@ -1,0 +1,147 @@
+{
+  "platform": "win32",
+  "python": "3.12.14",
+  "git": "git version 2.55.0.windows.3",
+  "cases": [
+    {
+      "case": "packed_git_repository_no_open_handles",
+      "built": {
+        "repository": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-repro-packed-ajo86yzy\\repository",
+        "worktree": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-repro-packed-ajo86yzy\\workspaces\\task-1"
+      },
+      "read_only_files_before": {
+        "count": 4,
+        "sample": [
+          "repository\\.git\\objects\\info\\commit-graph",
+          "repository\\.git\\objects\\pack\\pack-6602153fbf44ff4062c32bdd1a62f475855f7942.idx",
+          "repository\\.git\\objects\\pack\\pack-6602153fbf44ff4062c32bdd1a62f475855f7942.pack",
+          "repository\\.git\\objects\\pack\\pack-6602153fbf44ff4062c32bdd1a62f475855f7942.rev"
+        ]
+      },
+      "rmtree_ignore_errors_attempts": [
+        {
+          "attempt": 1,
+          "exists": true
+        },
+        {
+          "attempt": 2,
+          "exists": true
+        },
+        {
+          "attempt": 3,
+          "exists": true
+        },
+        {
+          "attempt": 4,
+          "exists": true
+        },
+        {
+          "attempt": 5,
+          "exists": true
+        }
+      ],
+      "removed": false,
+      "refusals": [
+        {
+          "path": "repository\\.git\\objects\\info\\commit-graph",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        },
+        {
+          "path": "repository\\.git\\objects\\pack\\pack-6602153fbf44ff4062c32bdd1a62f475855f7942.idx",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        },
+        {
+          "path": "repository\\.git\\objects\\pack\\pack-6602153fbf44ff4062c32bdd1a62f475855f7942.pack",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        },
+        {
+          "path": "repository\\.git\\objects\\pack\\pack-6602153fbf44ff4062c32bdd1a62f475855f7942.rev",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        }
+      ],
+      "left_behind_by_this_script": false
+    },
+    {
+      "case": "one_file_held_open_by_this_process",
+      "built": {
+        "repository": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-repro-open-yakgp9h3\\repository",
+        "worktree": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\zeus-repro-open-yakgp9h3\\workspaces\\task-1"
+      },
+      "held_open": "workspaces\\task-1\\held-open.log",
+      "rmtree_ignore_errors_attempts": [
+        {
+          "attempt": 1,
+          "exists": true
+        },
+        {
+          "attempt": 2,
+          "exists": true
+        },
+        {
+          "attempt": 3,
+          "exists": true
+        },
+        {
+          "attempt": 4,
+          "exists": true
+        },
+        {
+          "attempt": 5,
+          "exists": true
+        }
+      ],
+      "removed": false,
+      "refusals": [
+        {
+          "path": "repository\\.git\\objects\\info\\commit-graph",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        },
+        {
+          "path": "repository\\.git\\objects\\pack\\pack-67114b87d97d51d25fb4f6c2f523138baa3d5041.idx",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        },
+        {
+          "path": "repository\\.git\\objects\\pack\\pack-67114b87d97d51d25fb4f6c2f523138baa3d5041.pack",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        },
+        {
+          "path": "repository\\.git\\objects\\pack\\pack-67114b87d97d51d25fb4f6c2f523138baa3d5041.rev",
+          "errno": "EACCES",
+          "winerror": 5,
+          "read_only_attribute": true,
+          "cause": "read_only_attribute"
+        },
+        {
+          "path": "workspaces\\task-1\\held-open.log",
+          "errno": "EACCES",
+          "winerror": 32,
+          "read_only_attribute": false,
+          "cause": "in_use_or_denied"
+        }
+      ],
+      "removed_after_the_handle_closed": true,
+      "left_behind_by_this_script": false
+    }
+  ]
+}

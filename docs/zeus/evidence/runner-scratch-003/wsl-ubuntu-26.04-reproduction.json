@@ -1,0 +1,48 @@
+{
+  "platform": "linux",
+  "python": "3.14.4",
+  "git": "git version 2.53.0",
+  "cases": [
+    {
+      "case": "packed_git_repository_no_open_handles",
+      "built": {
+        "repository": "/tmp/zeus-repro-packed-r9zwn84u/repository",
+        "worktree": "/tmp/zeus-repro-packed-r9zwn84u/workspaces/task-1"
+      },
+      "read_only_files_before": {
+        "count": 4,
+        "sample": [
+          "repository/.git/objects/info/commit-graph",
+          "repository/.git/objects/pack/pack-2f7170bd624a57aaa54d1f37e2c974f489a1ec23.idx",
+          "repository/.git/objects/pack/pack-2f7170bd624a57aaa54d1f37e2c974f489a1ec23.pack",
+          "repository/.git/objects/pack/pack-2f7170bd624a57aaa54d1f37e2c974f489a1ec23.rev"
+        ]
+      },
+      "rmtree_ignore_errors_attempts": [
+        {
+          "attempt": 1,
+          "exists": false
+        }
+      ],
+      "removed": true,
+      "left_behind_by_this_script": false
+    },
+    {
+      "case": "one_file_held_open_by_this_process",
+      "built": {
+        "repository": "/tmp/zeus-repro-open-aof50hyr/repository",
+        "worktree": "/tmp/zeus-repro-open-aof50hyr/workspaces/task-1"
+      },
+      "held_open": "workspaces/task-1/held-open.log",
+      "rmtree_ignore_errors_attempts": [
+        {
+          "attempt": 1,
+          "exists": false
+        }
+      ],
+      "removed": true,
+      "removed_after_the_handle_closed": true,
+      "left_behind_by_this_script": false
+    }
+  ]
+}
