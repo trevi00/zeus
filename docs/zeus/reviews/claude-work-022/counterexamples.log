@@ -1,0 +1,25 @@
+.........s......FF                                                       [100%]
+================================== FAILURES ===================================
+___________________ test_answer_after_deadline_is_not_ready ___________________
+.runtime\review-101\test_review.py:31: in test_answer_after_deadline_is_not_ready
+    with pytest.raises(ContractError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ContractError
+______________ test_refusal_traceback_does_not_include_raw_error ______________
+.runtime\review-101\test_review.py:49: in test_refusal_traceback_does_not_include_raw_error
+    assert marker not in rendered, 'raw provider error is retained in the public exception chain'
+E   AssertionError: raw provider error is retained in the public exception chain
+E   assert 'REVIEW_RAW_...IAL_SENTINEL' not in 'Traceback (..."other":2}\n'
+E     
+E     'REVIEW_RAW_CREDENTIAL_SENTINEL' is contained here:
+E       imeError: REVIEW_RAW_CREDENTIAL_SENTINEL
+E       
+E       The above exception was the direct cause of the following exception:
+E       
+E       Traceback (most recent call last):...
+E     
+E     ...Full output truncated (5 lines hidden), use '-vv' to show
+=========================== short test summary info ===========================
+FAILED .runtime/review-101/test_review.py::test_answer_after_deadline_is_not_ready
+FAILED .runtime/review-101/test_review.py::test_refusal_traceback_does_not_include_raw_error
+2 failed, 15 passed, 1 skipped in 5.48s

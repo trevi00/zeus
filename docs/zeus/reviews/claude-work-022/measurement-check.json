@@ -1,0 +1,49 @@
+[
+  {
+    "source": "docs\\zeus\\evidence\\readiness-004\\windows-11-readiness-probe.json",
+    "sha256": "36d450d591689805f5bdc84d8ae272f48895d364c9b1dfde38965d420fd90e97",
+    "label": "windows-11",
+    "cycles": 12,
+    "conditions": {
+      "standalone": 6,
+      "after_teardown": 6
+    },
+    "positive_observation_gaps": []
+  },
+  {
+    "source": "docs\\zeus\\evidence\\readiness-004\\wsl-ubuntu-26.04-readiness-probe.json",
+    "sha256": "f29f4cd948d094368621d06965b1f2371be867b8224e5ce6c318502ce18a592b",
+    "label": "wsl-ubuntu-26.04",
+    "cycles": 12,
+    "conditions": {
+      "standalone": 6,
+      "after_teardown": 6
+    },
+    "positive_observation_gaps": [
+      {
+        "condition": "standalone",
+        "cycle": 3,
+        "health_observed": 1.53,
+        "answer_observed": 1.561,
+        "last_refusal": 1.458,
+        "refusals_after_health": 0
+      },
+      {
+        "condition": "standalone",
+        "cycle": 4,
+        "health_observed": 1.516,
+        "answer_observed": 1.542,
+        "last_refusal": 1.445,
+        "refusals_after_health": 0
+      },
+      {
+        "condition": "standalone",
+        "cycle": 5,
+        "health_observed": 1.511,
+        "answer_observed": 1.538,
+        "last_refusal": 1.44,
+        "refusals_after_health": 0
+      }
+    ]
+  }
+]
