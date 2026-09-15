@@ -13,6 +13,13 @@ from uuid import uuid4
 from codex_harness.adapters.commands import python_channel_environment, run_process
 from codex_harness.domain.model import ContractError, canonical, digest, require, utcnow
 
+# A deadline that has already been missed gets one more bounded chance to take the attempt back.
+# It is not part of the readiness deadline and never extends it; it only bounds the taking back.
+RECLAIM_SECONDS = 5.0
+# How many attempts this object may still own without having reclaimed them before it refuses to
+# start more. Repetition must not be able to grow threads and sockets without limit.
+UNRECLAIMED_LIMIT = 3
+
 ENVIRONMENT_KEYS = {"PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP", "TMPDIR",
     "HOME", "USERPROFILE", "LOCALAPPDATA", "APPDATA", "LANG", "LC_ALL", "UV_CACHE_DIR",
     "PROGRAMDATA", "PROGRAMFILES", "PROGRAMFILES(X86)", "HOMEDRIVE", "HOMEPATH", "ALLUSERSPROFILE",
@@ -37,6 +44,8 @@ class VerificationServices:
         self.project = "zeus-verify-" + uuid4().hex
         self.directory = self.root / self.project
         self.password = secrets.token_hex(24)
+        # Attempts this object started, could not take back, and therefore still owns.
+        self.unreclaimed = []
 
     def _command(self, *args, timeout=150):
         env = {key: value for key, value in os.environ.items()
@@ -125,47 +134,98 @@ class VerificationServices:
                     return False
                 time.sleep(0.1)
 
-    @staticmethod
-    def _bounded(work, seconds):
-        """Run one attempt and come back inside `seconds`, whatever the other end decides to do.
+    def _bounded(self, work, seconds):
+        """Run one attempt, come back inside `seconds`, and take back what the attempt opened.
 
-        A server can accept a connection, authenticate, and then simply stop answering. No client
-        timeout covers every stage of that, so the whole attempt is given a thread of its own and
-        the wait is on the thread. An attempt that outlives its share of the deadline is abandoned
-        here and reported as a refusal; it never becomes a ready that arrived late.
+        Coming back is not the same as letting go. A worker thread cannot be cancelled from outside,
+        and `daemon=True` only says it will not hold the interpreter open at exit - it does not end a
+        thread sitting in `recv`. Abandoning it leaves a thread and a live socket behind, and a
+        deadline that is hit repeatedly leaves one of each every time.
+
+        So the attempt registers what it opens as it opens it, and when the deadline passes this
+        closes those things. Closing the socket is what actually ends the blocked call, and the
+        thread then finishes on its own. That is checked here rather than assumed: the worker is
+        joined again inside a separate, named reclaim window.
+
+        What cannot be reclaimed is not forgotten. It is counted, described, and it limits how many
+        further attempts may be started, so repetition cannot grow this without bound.
         """
-        outcome = {}
+        resources, outcome = [], {}
 
         def attempt():
             try:
-                outcome["value"] = work()
+                outcome["value"] = work(resources.append)
             except BaseException as exc:  # carried as a value, never re-raised into the caller
                 outcome["error"] = exc
 
-        worker = threading.Thread(target=attempt, daemon=True)
+        if len(self.unreclaimed) >= UNRECLAIMED_LIMIT:
+            raise ContractError(
+                f"{len(self.unreclaimed)} earlier attempts for project {self.project} could not be "
+                f"reclaimed; refusing to start another. Recover by ending this process; the stack "
+                f"itself is removed by the usual teardown.")
+        worker = threading.Thread(target=attempt, daemon=True,
+                                  name=f"verification-attempt-{self.project[-8:]}")
         worker.start()
         worker.join(max(0.0, seconds))
-        if worker.is_alive():
-            raise TimeoutError("the attempt did not finish within its share of the deadline")
-        if "error" in outcome:
-            raise outcome["error"]
-        return outcome["value"]
+        if not worker.is_alive():
+            if "error" in outcome:
+                raise outcome["error"]
+            return outcome["value"]
 
-    def _answer(self, service, port, seconds):
-        """One real request, and the service's own identity in the reply. Raises on any refusal."""
+        closed = self._close_all(resources)
+        worker.join(RECLAIM_SECONDS)
+        if worker.is_alive():
+            # Still holding on. Ownership stays here as a recorded fact with a recovery path, and
+            # the count is what stops a repeated deadline from piling these up silently.
+            self.unreclaimed.append({"thread": worker.name, "resources": len(resources),
+                                     "closed": closed, "reclaim_seconds": RECLAIM_SECONDS,
+                                     "recovery": "ends when this process ends; the stack is removed "
+                                                 "by teardown independently of it"})
+        raise TimeoutError("the attempt did not finish within its share of the deadline")
+
+    @staticmethod
+    def _close_all(resources):
+        """Close what the attempt opened, in the order most likely to release a blocked call."""
+        closed = 0
+        for resource in list(resources):
+            for name in ("cancel", "close", "terminate", "kill"):
+                action = getattr(resource, name, None)
+                if action is None:
+                    continue
+                try:
+                    action()
+                    closed += 1
+                except Exception:
+                    continue
+                if name in ("close", "terminate", "kill"):
+                    break
+        return closed
+
+    def _answer(self, service, port, seconds, register=None):
+        """One real request, and the service's own identity in the reply. Raises on any refusal.
+
+        Whatever is opened is handed to `register` the moment it exists, so a deadline elsewhere can
+        close it. A connection this call never registers is a connection nobody can take back.
+        """
+        register = register if register is not None else (lambda resource: None)
         if service == "postgres":
             import psycopg
 
             dsn = f"postgresql://zeus:{self.password}@127.0.0.1:{port}/zeus"
             bound = max(1, int(seconds * 1000))
-            with psycopg.connect(dsn, connect_timeout=max(1, int(seconds)),
-                                 options=f"-c statement_timeout={bound}") as connection:
+            connection = psycopg.connect(dsn, connect_timeout=max(1, int(seconds)),
+                                         options=f"-c statement_timeout={bound}")
+            register(connection)
+            try:
                 identity = connection.execute("SELECT system_identifier FROM pg_control_system()").fetchone()[0]
+            finally:
+                connection.close()
             return str(identity)
         import redis
 
         client = redis.Redis(host="127.0.0.1", port=port, socket_timeout=max(0.5, seconds),
                              socket_connect_timeout=max(0.5, seconds))
+        register(client)
         try:
             client.ping()
             return str(client.info("server").get("run_id"))
@@ -222,7 +282,8 @@ class VerificationServices:
                 self._refuse(f"Verification service {service} on 127.0.0.1:{port} accepted a connection "
                              f"but did not answer within {deadline_seconds}s", refusals)
             try:
-                identity = self._bounded(lambda: self._answer(service, port, remaining), remaining)
+                identity = self._bounded(
+                    lambda register: self._answer(service, port, remaining, register), remaining)
             except BaseException as exc:
                 kind = self._refusal_kind(exc)
                 refusals[kind] = refusals.get(kind, 0) + 1
@@ -236,7 +297,10 @@ class VerificationServices:
             self._refuse(f"Verification service {service} on 127.0.0.1:{port} answered after its "
                          f"{deadline_seconds}s deadline had passed", refusals)
         try:
-            expected = self._bounded(lambda: self._container_identity(service, remaining), remaining)
+            # `run_process` bounds and kills its own child, so this attempt has nothing of its own
+            # to register; the thread ends when the subprocess does.
+            expected = self._bounded(lambda register: self._container_identity(service, remaining),
+                                     remaining)
         except BaseException as exc:
             kind = self._refusal_kind(exc)
             refusals[kind] = refusals.get(kind, 0) + 1
@@ -247,8 +311,12 @@ class VerificationServices:
                          refusals)
         return {"tcp_after": tcp_after, "ready_after": round(time.monotonic() - started, 2),
                 "identity": identity, "refusals_during_startup": refusals,
+                "readiness_deadline_seconds": deadline_seconds,
+                "reclaim_deadline_seconds": RECLAIM_SECONDS,
+                "unreclaimed_attempts": list(self.unreclaimed),
                 "note": "ready is a real answer from the container this project started, inside one "
-                        "deadline that covers every stage"}
+                        "readiness deadline covering every stage; the reclaim deadline is separate "
+                        "and only bounds taking back an attempt that already missed the first one"}
 
     def _cleanup(self):
         self._command("down", "--volumes", "--remove-orphans", "--timeout", "10")

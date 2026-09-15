@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
@@ -260,7 +261,7 @@ def test_readiness_waits_for_the_answer_rather_than_the_socket(tmp_path, monkeyp
     monkeypatch.setattr(VerificationServices, "_container_identity",
                         lambda self, service, seconds=30: "our-service")
 
-    def answer(self, service, port_, seconds=30):
+    def answer(self, service, port_, seconds=30, register=None):
         if time.monotonic() < answers_at:
             raise RuntimeError("FATAL: the database system is starting up")
         return "our-service"
@@ -285,7 +286,7 @@ def test_readiness_refuses_a_service_that_is_not_this_projects(tmp_path, monkeyp
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     port, stop, thread = listener("close_immediately")
     monkeypatch.setattr(VerificationServices, "_answer",
-                        lambda self, service, port_, seconds=30: "somebody-elses")
+                        lambda self, service, port_, seconds=30, register=None: "somebody-elses")
     monkeypatch.setattr(VerificationServices, "_container_identity",
                         lambda self, service, seconds=30: "ours")
     try:
@@ -299,7 +300,7 @@ def test_readiness_refuses_a_service_that_is_not_this_projects(tmp_path, monkeyp
 def test_readiness_binds_the_receipt_to_what_answered(tmp_path, monkeypatch):
     """The stored receipt says how long each service took and which instance answered."""
     monkeypatch.setattr(VerificationServices, "_answer",
-                        lambda self, service, port_, seconds=30: "identity-" + service)
+                        lambda self, service, port_, seconds=30, register=None: "identity-" + service)
     monkeypatch.setattr(VerificationServices, "_container_identity",
                         lambda self, service, seconds=30: "identity-" + service)
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
@@ -328,7 +329,7 @@ def test_readiness_refuses_an_answer_that_arrives_after_the_deadline(tmp_path, m
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     port, stop, thread = listener("close_immediately")
 
-    def slow_answer(self, service, port_, seconds=30):
+    def slow_answer(self, service, port_, seconds=30, register=None):
         time.sleep(0.3)
         return "our-service"
 
@@ -355,10 +356,11 @@ def test_readiness_refuses_a_success_that_completed_past_the_deadline(tmp_path, 
 
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     port, stop, thread = listener("close_immediately")
+    # No bound, and the attempt registers nothing: the point here is a late return, not reclamation.
     monkeypatch.setattr(VerificationServices, "_bounded",
-                        staticmethod(lambda work, seconds: work()))  # no bound: let it return late
+                        lambda self, work, seconds: work(lambda resource: None))
 
-    def slow_but_successful(self, service, port_, seconds=30):
+    def slow_but_successful(self, service, port_, seconds=30, register=None):
         time.sleep(0.3)
         return "our-service"
 
@@ -384,7 +386,7 @@ def test_readiness_returns_even_when_the_service_stops_answering(tmp_path, monke
     port, stop, thread = listener("close_immediately")
     released = threading.Event()
 
-    def never_answers(self, service, port_, seconds=30):
+    def never_answers(self, service, port_, seconds=30, register=None):
         released.wait(30)          # a server that took the session and then went quiet
         return "our-service"
 
@@ -409,7 +411,7 @@ def test_readiness_refuses_when_the_container_identity_cannot_be_read_in_time(tm
     services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
     port, stop, thread = listener("close_immediately")
     monkeypatch.setattr(VerificationServices, "_answer",
-                        lambda self, service, port_, seconds=30: "our-service")
+                        lambda self, service, port_, seconds=30, register=None: "our-service")
 
     def slow_lookup(self, service, seconds=30):
         time.sleep(5)
@@ -423,7 +425,11 @@ def test_readiness_refuses_when_the_container_identity_cannot_be_read_in_time(tm
     finally:
         stop.set()
         thread.join(3)
-    assert time.monotonic() - started < 4, "the lookup was bounded by what was left, not by its own timeout"
+    from codex_harness.adapters.verification import RECLAIM_SECONDS
+
+    # The readiness deadline and the reclaim window are separate bounds, and the call is held by
+    # their sum at most - never by the lookup's own five seconds of sleeping.
+    assert time.monotonic() - started < 1.0 + RECLAIM_SECONDS + 2
 
 
 def test_readiness_failure_carries_nothing_back_on_the_exception_chain(tmp_path, monkeypatch):
@@ -436,7 +442,7 @@ def test_readiness_failure_carries_nothing_back_on_the_exception_chain(tmp_path,
     port, stop, thread = listener("close_immediately")
     sentinel = "SENTINEL-ORIGINAL-ERROR-TEXT-b4f1"
 
-    def refuse(self, service, port_, seconds=30):
+    def refuse(self, service, port_, seconds=30, register=None):
         raise RuntimeError("connection failed: " + sentinel)
 
     monkeypatch.setattr(VerificationServices, "_answer", refuse)
@@ -452,3 +458,123 @@ def test_readiness_failure_carries_nothing_back_on_the_exception_chain(tmp_path,
     assert sentinel not in rendered, "the original text reached the traceback"
     assert services.password not in rendered
     assert "refusals" in str(raised.value), "what is reported is the classification and its count"
+
+
+# ---- third review: a deadline that returns must also take back what it opened --------------------
+
+def silent_listener():
+    """A real socket that accepts a connection and then never says anything again."""
+    import socket
+    import threading
+
+    server = socket.socket()
+    server.bind(("127.0.0.1", 0))
+    server.listen(8)
+    port = server.getsockname()[1]
+    accepted, stop = [], threading.Event()
+
+    def serve():
+        server.settimeout(0.2)
+        while not stop.is_set():
+            try:
+                client, _ = server.accept()
+            except OSError:
+                continue
+            accepted.append(client)      # held open, answering nothing
+        for client in accepted:
+            try:
+                client.close()
+            except OSError:
+                pass
+        server.close()
+
+    thread = threading.Thread(target=serve, daemon=True)
+    thread.start()
+    return port, accepted, stop, thread
+
+
+def test_a_timed_out_attempt_takes_back_its_thread_and_its_socket(tmp_path):
+    """Codex's counterexample: three timeouts used to leave three live workers and three sockets.
+
+    Returning to the caller is not the same as letting go. The attempt registers the socket it
+    opened, the deadline closes it, and closing is what actually ends the blocked recv - which is
+    checked here on the worker itself, not inferred from the return value.
+    """
+    import socket
+    import threading
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, accepted, stop, thread = silent_listener()
+    sockets, before = [], threading.active_count()
+    try:
+        def blocking_work(register):
+            client = socket.create_connection(("127.0.0.1", port), timeout=5)
+            sockets.append(client)
+            register(client)
+            client.recv(1)               # the other end never answers
+            return "unreachable"
+
+        for _ in range(3):
+            with pytest.raises(TimeoutError):
+                services._bounded(blocking_work, 0.1)
+
+        assert len(sockets) == 3, "three real attempts were made"
+        for client in sockets:
+            assert client.fileno() == -1, "the socket the attempt opened was closed, not abandoned"
+        assert services.unreclaimed == [], "every worker was taken back inside the reclaim window"
+        deadline = time.monotonic() + 5
+        while threading.active_count() > before and time.monotonic() < deadline:
+            time.sleep(0.05)
+        assert threading.active_count() <= before, "no worker thread outlived its attempt"
+    finally:
+        stop.set()
+        thread.join(3)
+
+
+def test_an_attempt_that_cannot_be_taken_back_is_counted_and_then_refused(tmp_path):
+    """What cannot be reclaimed is not forgotten, and it limits how many more may be started."""
+    import threading
+
+    from codex_harness.adapters.verification import UNRECLAIMED_LIMIT
+    from codex_harness.domain.model import ContractError
+
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    released = threading.Event()
+
+    def unreclaimable(register):
+        released.wait(30)                # ignores every close; nothing to register
+        return "late"
+
+    try:
+        for index in range(UNRECLAIMED_LIMIT):
+            with pytest.raises(TimeoutError):
+                services._bounded(unreclaimable, 0.05)
+            assert len(services.unreclaimed) == index + 1, "what is still held is counted"
+
+        assert services.unreclaimed[0]["recovery"], "and it says how it ends"
+        with pytest.raises(ContractError, match="refusing to start another"):
+            services._bounded(unreclaimable, 0.05)
+    finally:
+        released.set()
+
+
+def test_readiness_receipt_separates_the_two_deadlines_and_names_what_is_held(tmp_path, monkeypatch):
+    """One deadline decides ready. The other only bounds taking back an attempt that missed it."""
+    from codex_harness.adapters.verification import RECLAIM_SECONDS
+
+    monkeypatch.setattr(VerificationServices, "_answer",
+                        lambda self, service, port_, seconds=30, register=None: "ours")
+    monkeypatch.setattr(VerificationServices, "_container_identity",
+                        lambda self, service, seconds=30: "ours")
+    services = VerificationServices(tmp_path / "verification", FileArtifacts(tmp_path / "artifacts"))
+    port, stop, thread = listener("close_immediately")
+    try:
+        report = services._await_service("postgres", port, deadline_seconds=5)
+    finally:
+        stop.set()
+        thread.join(3)
+
+    assert report["readiness_deadline_seconds"] == 5
+    assert report["reclaim_deadline_seconds"] == RECLAIM_SECONDS
+    assert report["unreclaimed_attempts"] == []
+    assert "reclaim deadline is separate" in report["note"]
