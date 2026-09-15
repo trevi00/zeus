@@ -170,7 +170,11 @@ def test_the_two_causes_are_never_reported_as_one(tmp_path):
         # The directories above it also refuse, and they are reported, but as the consequence they
         # are rather than as a second thing standing in the way.
         assert causes == {"in_use", "not_empty"}
-    Scratch(scratch.root).remove()
+    else:
+        # POSIX unlinks an open file, so the first removal already finished.
+        assert report["removed"] is True and report["refusals"] == []
+    if scratch.root.exists():
+        Scratch(scratch.root).remove()
 
 
 # ---- staying inside the root this run created ----------------------------------------------------
