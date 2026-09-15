@@ -115,8 +115,16 @@ class Scratch:
         points at evidence has to point at bytes somebody can still open.
         """
         destination = Path(destination)
-        destination.mkdir(parents=True, exist_ok=True)
         kept, failures = [], []
+        try:
+            destination.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            # Not being able to make the destination is a preservation failure like any other, and
+            # the caller needs it as a result rather than as an exception thrown past its reporting.
+            return {"destination": str(destination), "kept": [], "complete": False,
+                    "failures": [{"name": str(destination), "error": type(exc).__name__,
+                                  "message": str(exc)[:400]}],
+                    "note": "the destination directory could not be created; nothing was copied"}
         for entry in entries:
             name = str(entry["name"])
             target = destination / name

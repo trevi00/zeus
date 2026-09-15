@@ -316,3 +316,144 @@ def test_r4_a_receipt_that_cannot_be_written_still_reports_and_fails(tmp_path, l
 
     assert code == 1, "a run whose receipt could not be written is not a success"
     assert not list(tmp_path.glob("*-receipt.json"))
+
+
+# ---- second review: an empty selection is not an empty scratch -----------------------------------
+
+@pytest.mark.parametrize("case", ["capped", "missing_reference"])
+def test_a_an_empty_selection_is_not_a_determination_that_nothing_was_produced(tmp_path, monkeypatch, case):
+    """Both of these select no file, and neither means the scratch had nothing worth keeping.
+
+    A sweep that hit its cap left evidence behind. A receipt naming an artifact that is not there
+    has lost the thing it points at. Returning early on "no entries" answered both with complete.
+    """
+    module = runner()
+    scratch = Scratch.create("zeus-claude-call-")
+    try:
+        receipt = {}
+        if case == "capped":
+            artifact = scratch.root / "artifacts" / "execution.txt"
+            artifact.parent.mkdir()
+            artifact.write_bytes(b"ab")
+            monkeypatch.setattr(module, "SWEEP_BYTE_CAP", 1)
+        else:
+            receipt["provider_receipt"] = {"execution_ref": "sha256:" + "a" * 64}
+
+        report = module.preserve_evidence(scratch, receipt, tmp_path, "review", case)
+
+        assert report["complete"] is False
+        assert report["kept"] == []
+        assert report["failures"], "the reason is named rather than left to be inferred"
+    finally:
+        scratch.remove()
+
+
+def test_a_a_scratch_that_really_is_empty_is_still_accepted(tmp_path):
+    """The contrast: no cap was hit, nothing was listed, nothing is referenced."""
+    module = runner()
+    scratch = Scratch.create("zeus-claude-call-")
+    try:
+        report = module.preserve_evidence(scratch, {}, tmp_path, "review", "run-empty")
+        assert report["complete"] is True and report["kept"] == []
+        assert report["swept"]["seen"] == 0 and report["swept"]["capped"] is False
+    finally:
+        scratch.remove()
+
+
+def test_a_an_evidence_directory_that_cannot_be_listed_is_not_an_empty_one(tmp_path, monkeypatch):
+    """Not being able to look is a different answer from there being nothing to see."""
+    module = runner()
+    scratch = Scratch.create("zeus-claude-call-")
+    try:
+        (scratch.root / "artifacts").mkdir()
+
+        def refuse(self, pattern):
+            raise OSError("the directory refused to be listed")
+
+        monkeypatch.setattr(Path, "rglob", refuse)
+        report = module.preserve_evidence(scratch, {}, tmp_path, "review", "run-blind")
+        monkeypatch.undo()
+
+        assert report["complete"] is False
+        assert report["swept"]["errors"], "the failure to enumerate is recorded"
+    finally:
+        scratch.remove()
+
+
+# ---- second review: the destination refusing must not skip the report ----------------------------
+
+def test_b_a_destination_that_cannot_be_created_is_reported_and_the_scratch_is_kept(tmp_path, live):
+    """Codex's counterexample: a file occupies the evidence directory's name.
+
+    The failure used to escape past the receipt, so the scratch survived with nothing telling anyone
+    where it was.
+    """
+    module = runner()
+    (tmp_path / "review-evidence").write_text("an existing file blocks directory creation",
+                                              encoding="utf-8")
+    code = module.call(live, tmp_path)
+    receipt = only_receipt(tmp_path)
+
+    assert code != 0
+    assert receipt["evidence_complete"] is False
+    assert receipt["recovery"]["scratch"], "the report says where the only copy is"
+    assert receipt["workdir_removed"] is False
+    Scratch(Path(receipt["workdir_cleanup"]["root"])).remove()
+
+
+def test_b_the_call_ledger_is_settled_even_when_preservation_throws(tmp_path, live, monkeypatch):
+    """A reserved slot that is never settled keeps counting, whatever else went wrong."""
+    module = runner()
+    settled = {}
+
+    def refuse(self, destination, entries):
+        raise OSError("preservation itself failed")
+
+    monkeypatch.setattr(Scratch, "preserve", refuse)
+    monkeypatch.setattr(module.CallBudget, "settle",
+                        lambda self, slot_id, **kwargs: settled.setdefault("slot", slot_id))
+    code = module.call(live, tmp_path)
+    receipt = only_receipt(tmp_path)
+    monkeypatch.undo()
+
+    assert receipt["preserved"]["complete"] is False
+    assert receipt["preserved"]["failures"][0]["name"] == "preservation"
+    assert code != 0 and receipt["recovery"]["scratch"]
+    Scratch(Path(receipt["workdir_cleanup"]["root"])).remove()
+
+
+# ---- second review: an unplanned ending is a failed run ------------------------------------------
+
+def test_c_a_late_collection_error_does_not_exit_as_a_success(tmp_path, live, monkeypatch):
+    """The task finished and the copies were kept. The run still ended somewhere it did not plan."""
+    module = runner()
+    original = module.execute
+    seen = {}
+
+    def fail_at_the_boundary(*args, **kwargs):
+        seen["root"] = args[2]
+        original(*args, **kwargs)
+        assert args[1]["execution"]["status"] == "succeeded"
+        raise RuntimeError("review late collection boundary failure")
+
+    monkeypatch.setattr(module, "execute", fail_at_the_boundary)
+    code = module.call(live, tmp_path)
+    receipt = only_receipt(tmp_path)
+
+    assert receipt["error"] and receipt["workdir_removed"] is False
+    assert receipt["task_succeeded"] is True, "what the task did is still recorded as it was"
+    assert receipt["runner_complete"] is False, "but the run cannot account for itself"
+    assert receipt["passed"] is False and code != 0
+    assert receipt["recovery"]["error"]["type"] == "RuntimeError"
+    Scratch(seen["root"]).remove()
+
+
+def test_c_a_clean_run_still_passes(tmp_path, live):
+    """The contrast that keeps the line above from being a way of never passing."""
+    module = runner()
+    code = module.call(live, tmp_path)
+    receipt = only_receipt(tmp_path)
+
+    assert receipt.get("error") is None
+    assert receipt["runner_complete"] is True and receipt["passed"] is True and code == 0
+    assert receipt["workdir_removed"] is True

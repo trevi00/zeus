@@ -438,12 +438,19 @@ def swept_evidence(scratch) -> dict:
     got round to recording its path. So what is on disk decides, and the bookkeeping only adds what
     disk cannot show (a revision id, a command's exit status).
     """
-    entries, total, capped = [], 0, False
+    entries, total, capped, errors, seen = [], 0, False, [], 0
     for name in SWEPT_DIRECTORIES:
         directory = scratch.root / name
         if not directory.is_dir():
             continue
-        for found in sorted(p for p in directory.rglob("*") if p.is_file()):
+        try:
+            found_here = sorted(p for p in directory.rglob("*") if p.is_file())
+        except OSError as exc:
+            # Not being able to look is not the same as there being nothing to see.
+            errors.append({"directory": name, "error": type(exc).__name__, "message": str(exc)[:200]})
+            continue
+        for found in found_here:
+            seen += 1
             try:
                 size = found.stat().st_size
             except OSError:
@@ -454,7 +461,7 @@ def swept_evidence(scratch) -> dict:
             total += size
             entries.append({"name": (name + "/" + str(found.relative_to(directory))).replace("\\", "/"),
                             "source": found})
-    return {"entries": entries, "bytes": total, "capped": capped}
+    return {"entries": entries, "bytes": total, "capped": capped, "errors": errors, "seen": seen}
 
 
 def preserve_evidence(scratch, receipt: dict, out: Path, label: str, run_id: str) -> dict:
@@ -498,31 +505,43 @@ def preserve_evidence(scratch, receipt: dict, out: Path, label: str, run_id: str
     sweep = swept_evidence(scratch)
     entries.extend(sweep["entries"])
 
-    if not entries:
-        # Nothing was produced and nothing was expected: that is a determination, not an absence of
-        # one, and it is only reached when the scratch really holds no artifact or observation.
-        return {"complete": True, "kept": [], "failures": [], "destination": str(destination),
-                "run_id": run_id, "swept": sweep["bytes"], "required_failures": [],
-                "note": "the scratch held no execution artifact or observation to keep"}
-
-    report = scratch.preserve(destination, entries)
+    # An empty selection is not the same as an empty scratch. A sweep that hit its cap, a directory
+    # that could not be listed, and a receipt naming an artifact that is not there all produce no
+    # entries, and each of them is a reason to be incomplete rather than a reason to say there was
+    # nothing to keep. So the copying is conditional and the judging is not.
+    if entries:
+        report = scratch.preserve(destination, entries)
+    else:
+        report = {"complete": True, "kept": [], "failures": [], "destination": str(destination),
+                  "note": "no file was selected to keep"}
     report["run_id"] = run_id
     report["revisions"] = {"base": source.get("base_revision"),
                            "candidate": source.get("candidate_revision")}
-    report["swept"] = {"files": len(sweep["entries"]), "bytes": sweep["bytes"], "capped": sweep["capped"]}
+    report["swept"] = {"files": len(sweep["entries"]), "seen": sweep["seen"], "bytes": sweep["bytes"],
+                       "capped": sweep["capped"], "errors": sweep["errors"]}
     report["required_failures"] = required_failures
-    if required_failures or sweep["capped"]:
+    if required_failures:
         report["complete"] = False
+    if sweep["capped"]:
+        report["complete"] = False
+        report.setdefault("failures", []).append(
+            {"name": "swept evidence", "error": "SweepCapped",
+             "message": f"the scratch held more evidence than the {SWEEP_BYTE_CAP} byte sweep cap"})
+    if sweep["errors"]:
+        report["complete"] = False
+        report.setdefault("failures", []).append(
+            {"name": "swept evidence", "error": "NotEnumerated",
+             "message": "an evidence directory in the scratch could not be listed"})
     kept_names = {entry["name"] for entry in report["kept"]}
-    if sweep["entries"] and not any(name.startswith(tuple(d + "/" for d in SWEPT_DIRECTORIES))
-                                    for name in kept_names):
+    swept_prefixes = tuple(name + "/" for name in SWEPT_DIRECTORIES)
+    if sweep["seen"] and not any(name.startswith(swept_prefixes) for name in kept_names):
         report["complete"] = False
         report.setdefault("failures", []).append(
             {"name": "swept evidence", "error": "NotPreserved",
              "message": "the scratch held artifacts or observations and none of them were kept"})
     reference = (receipt.get("provider_receipt") or {}).get("execution_ref")
     if reference:
-        wanted = "artifacts/" + reference[7:] + ".txt"
+        wanted = "artifacts/" + str(reference)[7:] + ".txt"
         match = next((entry for entry in report["kept"] if entry["name"] == wanted), None)
         if match is not None:
             receipt.setdefault("provider_receipt", {})["preserved_copy"] = {
@@ -533,6 +552,8 @@ def preserve_evidence(scratch, receipt: dict, out: Path, label: str, run_id: str
             report.setdefault("failures", []).append(
                 {"name": wanted, "error": "NotPreserved",
                  "message": "the receipt names an execution artifact that was not kept"})
+    if report["complete"] and not report["kept"]:
+        report["note"] = "the scratch held no execution artifact or observation to keep"
     return report
 
 
@@ -597,7 +618,18 @@ def call(args, out, stack=None):
         except Exception as exc:
             receipt["error"] = {"type": type(exc).__name__, "message": str(exc)[:2000]}
         finally:
-            receipt["preserved"] = preserve_evidence(scratch, receipt, out, args.label, run_id)
+            destination = out / f"{args.label}-evidence" / run_id
+            try:
+                receipt["preserved"] = preserve_evidence(scratch, receipt, out, args.label, run_id)
+            except Exception as exc:
+                # Preservation failing is exactly when the report matters most: the scratch is the
+                # only copy left, and somebody has to be told where it is.
+                receipt["preserved"] = {
+                    "complete": False, "kept": [], "run_id": run_id, "destination": str(destination),
+                    "failures": [{"name": "preservation", "error": type(exc).__name__,
+                                  "message": str(exc)[:400]}],
+                    "required_failures": [],
+                    "note": "preservation itself failed; the scratch is kept and reported"}
             # Two reasons to keep the scratch, and both are about not being able to say what is in
             # it: evidence that could not be preserved, and a run that ended in a way this script
             # did not plan for, where what was produced is not fully known.
@@ -613,8 +645,17 @@ def call(args, out, stack=None):
             receipt["workdir_cleanup"] = removal
             receipt["workdir_removed"] = removal["removed"]
             if slot is not None:
-                CallBudget().settle(slot["id"], outcome=str(receipt.get("execution", {}).get("status")),
-                                    detail={"label": args.label, "executed": bool(receipt.get("executed"))})
+                # Settled whatever happened above: a reserved slot that is never settled keeps
+                # counting, and that must not depend on whether the evidence could be copied.
+                try:
+                    CallBudget().settle(slot["id"],
+                                        outcome=str(receipt.get("execution", {}).get("status")),
+                                        detail={"label": args.label,
+                                                "executed": bool(receipt.get("executed"))})
+                    receipt["call_budget_settled"] = True
+                except Exception as exc:
+                    receipt["call_budget_settled"] = False
+                    receipt["call_budget_settle_error"] = type(exc).__name__ + ": " + str(exc)[:200]
 
     receipt["finished_at"] = now()
     measured = receipt.get("runner_measured", {}).get("tests_after", {})
@@ -626,9 +667,14 @@ def call(args, out, stack=None):
     receipt["task_succeeded"] = accepted and (receipt["mode"] == "fixture" or receipt["task_verified"])
     receipt["evidence_complete"] = bool(receipt.get("preserved", {"complete": True})["complete"])
     receipt["accepted_by_harness"] = accepted
-    receipt["passed"] = receipt["task_succeeded"] and receipt["evidence_complete"]
-    if not receipt["evidence_complete"]:
+    # A third claim, and the one an unattended caller should read. The task may have finished and
+    # every copy may have been kept, and this run can still have ended somewhere it did not plan to
+    # be - which means something between those two facts went unobserved.
+    receipt["runner_complete"] = receipt["evidence_complete"] and not receipt.get("error")
+    receipt["passed"] = receipt["task_succeeded"] and receipt["runner_complete"]
+    if not receipt["runner_complete"]:
         receipt["recovery"] = {
+            "error": receipt.get("error"),
             "scratch": receipt.get("workdir_cleanup", {}).get("root"),
             "destination": receipt.get("preserved", {}).get("destination"),
             "failures": receipt.get("preserved", {}).get("failures"),
@@ -645,7 +691,7 @@ def call(args, out, stack=None):
     path = out / f"{args.label}-{suffix}-{run_id}-receipt.json"
     summary = {k: receipt.get(k) for k in ("label", "run_id", "mode", "executed", "accepted_by_harness",
                                            "task_verified", "task_succeeded", "evidence_complete",
-                                           "passed", "not_executed_reason")}
+                                           "runner_complete", "passed", "not_executed_reason")}
     try:
         out.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -659,8 +705,10 @@ def call(args, out, stack=None):
         print(json.dumps(summary, ensure_ascii=False))
         return 1
     print(json.dumps(summary, ensure_ascii=False))
-    if not receipt["evidence_complete"]:
-        return 1  # the task may well have succeeded; this runner cannot show it, which is a failure
+    if not receipt["runner_complete"]:
+        # The task may well have succeeded. This run cannot account for itself, which is a failure
+        # of the run, and an unattended caller has to see that in the exit code.
+        return 1
     return 0 if (receipt["passed"] or receipt.get("not_executed_reason")) else 1
 
 
