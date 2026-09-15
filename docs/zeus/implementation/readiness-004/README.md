@@ -102,7 +102,18 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
 
-## 6. 하지 않은 것
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-015/`, head `2b3455b`)
+
+| 호스트 | ruff | full-suite-integration | disposable-docker |
+|---|---|---|---|
+| Windows 11 | 통과 | **1740 passed, 14 skipped** (602s) | **22 passed** |
+| WSL Ubuntu 26.04 | 통과 | **1742 passed, 12 skipped** (237s) | **22 passed** |
+
+disposable-docker가 17건에서 **22건**으로 늘어난 것이 준비 관련 회귀 6건 중 5건이다(1건은 실행 시간이 짧아 전체
+스위트에서 함께 돈다). 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고,
+**이것을 증상 A의 해결 근거로 쓰지 않는다**(§2.3).
+
+## 7. 하지 않은 것
 
 - 기한을 늘리지 않았다(30초 그대로). 실패를 skip으로 돌리지 않았다.
 - 증상 A(포트 미연결)는 재현하지 못했고 고치지 않았다. **원인 미확정**으로 남긴다.
