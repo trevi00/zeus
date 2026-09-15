@@ -148,38 +148,28 @@ Codex가 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 네 곳
 - R4 — 필수 증거를 잃은 실행이 passed가 아니고 exit도 0이 아닌가, 작업 성공과 증거 완결이 **두 값으로** 남는가,
   영수증을 못 써도 보고하고 실패하는가
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-011/`, head `6d2bc2b`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-012/`, head `f6e9c05`)
 
-| 호스트 | ruff | full-suite-integration | disposable-docker | `test_scratch_cleanup` |
+| 호스트 | ruff | full-suite-integration | disposable-docker | 신규 회귀 |
 |---|---|---|---|---|
-| Windows 11 | 통과 | **1712 passed, 14 skipped** (541s) | **17 passed** | **13 passed, skip 0** |
-| WSL Ubuntu 26.04 | 통과 | **1714 passed, 12 skipped** (229s) | **실패** (아래) | **13 collected, 12 passed, skip 1** |
+| Windows 11 | 통과 | **1724 passed, 14 skipped** (582s) | **17 passed** | `test_runner_evidence` **12 passed**, `test_scratch_cleanup` **13 passed**, skip 0 |
+| WSL Ubuntu 26.04 | 통과 | **1726 passed, 12 skipped** (229s) | **실패**(아래) | `test_runner_evidence` **12 passed**, `test_scratch_cleanup` 13 중 **skip 1** |
 
-WSL의 skip 1은 읽기 전용 속성이 삭제를 막는 것이 Windows에서만 일어나기 때문이다. 그 차이 자체가 §1의 측정이다.
-두 호스트 로그·JUnit에서 canary 0건, `password=` 0건.
+**신규 12건은 두 호스트에서 전부 실제로 돌았다**(skip 0). 러너를 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로
+`--fixture`로 끝까지 구동하며, 유료 모델 호출은 0회다. WSL의 skip 1은 읽기 전용 속성이 삭제를 막는 것이 Windows에서만
+일어나기 때문이고, 그 차이 자체가 §1의 측정이다. 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건.
 
-### 6.1 WSL disposable-docker 단계는 이번 회차에 초록이 나오지 않았다
+### 6.1 WSL disposable-docker 단계 — 이번에도 실패했고, 여기서 다루지 않는다
 
-**3회 연속 실패했고, 네 번째를 돌리지 않았다.** 초록이 나올 때까지 돌리는 것은 고르는 일이므로 하지 않는다.
+이번 회차 1회 시도에서 `test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[12]`가
+`verification.py:98`의 30초 포트 연결 기한에서 `ConnectionRefusedError`로 끊겼다. 직전 회차 3연속과 같은 지점이다.
 
-| 시도 | 실패한 검사 | 지점 |
-|---|---|---|
-| 1 | `test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed` | `verification.py:98`, 포트 연결 기한 30.0s |
-| 2 | `test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[2]` | 동일 |
-| 3 | `test_verification.py::test_real_disposable_database_and_redis_are_isolated_and_removed` | 동일 |
+**재실행하지 않았다.** Codex가 이 환경 결함을 별도 작업(`docs/zeus/reviews/claude-work-018/READINESS-FOLLOWUP.md`)으로
+분리하고 "이 PR의 네 수정 검토와 WSL 운영 자격 판정을 분리한다"고 정했으므로, 여기서 초록을 만들려고 돌리는 것은 범위를
+벗어난 일이자 고르는 일이다.
 
-세 번 모두 같은 파일의 같은 30초 기한에서 `ConnectionRefusedError`로 끊겼다. 세 시도의 산출물은
-`attempt-1/2/3-wsl-disposable-docker-readiness/`에 전부 보존했다.
-
-**이 브랜치 탓인지 갈랐다.** `git diff --name-only origin/main...HEAD`가 바꾸는 파일은 7개이고
-`verification.py`·`test_verification.py`·`test_host_interruption.py`는 **그 안에 없다.** 새 코드
-(`scratch.py`)는 이 세 검사가 전혀 부르지 않으며, **전체 스위트는 세 번 모두 통과했다**(1714 passed) — 새 테스트
-13건 포함. 실패는 disposable-docker 단계에서만 났다.
-
-**다만 발생률이 달라진 것은 감추지 않는다.** 직전 회차까지 이 호스트는 8회 중 4회 실패였고, 이번 3회를 더하면
-**11회 중 7회**이며 오늘은 **3연속**이다. "기존 flake와 같다"는 실패 지점이 같다는 뜻이지 빈도가 같다는 뜻이 아니다.
-빈도가 왜 올라갔는지는 **재지 않았고**, 이 명세의 범위(러너의 증거 보존·임시 폴더 정리) 밖이다. Codex가 별건으로
-다룰지 정하면 된다. 관련 기록은 #16/#18.
+Codex의 판단을 그대로 옮겨 적는다: 파일 미변경만으로 인과관계가 증명되지는 않으며 정확한 원인은 미확정이다. 지금까지의
+누적 관측치(12회 중 8회)는 확률 추정이나 악화 원인의 증명이 아니다.
 
 ## 7. 하지 않은 것
 

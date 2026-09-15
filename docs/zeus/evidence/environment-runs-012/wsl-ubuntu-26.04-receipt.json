@@ -1,0 +1,845 @@
+{
+  "label": "wsl-ubuntu-26.04",
+  "compose_project": "harness-evidence-wsl-ubuntu-26-04-a040c35f",
+  "started_at": "2026-09-15T03:31:35.471580+00:00",
+  "phases": {
+    "preflight": {
+      "git_ok": true,
+      "ok": true,
+      "at": "2026-09-15T03:31:35.791718+00:00"
+    },
+    "claim_project": {
+      "found": {
+        "containers": [],
+        "volumes": [],
+        "networks": []
+      },
+      "errors": [],
+      "refusal": null,
+      "ok": true,
+      "at": "2026-09-15T03:31:35.851122+00:00"
+    },
+    "stack_up": {
+      "seconds": 4.0,
+      "services": {
+        "postgres": {
+          "container": "9c759179355014e3021807a72a32b4ac005b85362bbedf74799224e44db405fe",
+          "host_port": 62813
+        },
+        "redis": {
+          "container": "bf16497882c6b39e55df986bc4e35fc51882e74057ad67133e6ac50aac71b386",
+          "host_port": 62814
+        }
+      },
+      "database_url": "postgresql://harness:***@127.0.0.1:62813/harness",
+      "redis_url": "redis://127.0.0.1:62814/0",
+      "dropped_inherited": [],
+      "pinning": {
+        "mechanism": "repository .env (settings() reads it when no ZEUS_/HARNESS_ variable is set)",
+        "dotenv_before_sha256": "sha256:94ff4cee3b497c58a92f4fddece862c978afbab73c42d8ea4bb5948ebc0514a8",
+        "dotenv_run_sha256": "sha256:85fc4234ac05e15f8739471ebc5b82e4fbcffee8f4a8c7c7caee29f536230131",
+        "dotenv_run": [
+          "POSTGRES_PASSWORD=***",
+          "HARNESS_DATABASE_URL=postgresql://harness:***@127.0.0.1:62813/harness",
+          "HARNESS_REDIS_URL=redis://127.0.0.1:62814/0",
+          "COMPOSE_PROJECT_NAME=harness-evidence-wsl-ubuntu-26-04-a040c35f",
+          "ZEUS_REDIS_NAMESPACE=harness-evidence-wsl-ubuntu-26-04-a040c35f"
+        ]
+      },
+      "ok": true,
+      "at": "2026-09-15T03:31:40.152320+00:00"
+    },
+    "identity_before": {
+      "postgres": {
+        "container": "9c759179355014e3021807a72a32b4ac005b85362bbedf74799224e44db405fe",
+        "system_identifier": "7685599577251078182",
+        "xact_commit": 4
+      },
+      "redis": {
+        "container": "bf16497882c6b39e55df986bc4e35fc51882e74057ad67133e6ac50aac71b386",
+        "run_id": "8d2fc7cca6825be5fd47e6e811a40902d54f7178",
+        "total_commands_processed": 1
+      },
+      "ok": true,
+      "at": "2026-09-15T03:31:40.444143+00:00"
+    },
+    "steps": {
+      "count": 3,
+      "expected": 3,
+      "ok": false,
+      "at": "2026-09-15T03:36:36.903774+00:00"
+    },
+    "identity_after": {
+      "postgres": {
+        "container": "9c759179355014e3021807a72a32b4ac005b85362bbedf74799224e44db405fe",
+        "system_identifier": "7685599577251078182",
+        "xact_commit": 13357
+      },
+      "redis": {
+        "container": "bf16497882c6b39e55df986bc4e35fc51882e74057ad67133e6ac50aac71b386",
+        "run_id": "8d2fc7cca6825be5fd47e6e811a40902d54f7178",
+        "total_commands_processed": 12647
+      },
+      "ok": true,
+      "at": "2026-09-15T03:36:37.198480+00:00"
+    },
+    "identity_stable": {
+      "same_services": true,
+      "traffic": {
+        "postgres_xact_commit": 13353,
+        "redis_commands": 12646
+      },
+      "note": "the tests ran with both aliases pinned to this stack; the counters of this stack moved",
+      "ok": true,
+      "at": "2026-09-15T03:36:37.198519+00:00"
+    },
+    "teardown": {
+      "exit_code": 0,
+      "error": null,
+      "stderr_tail": [
+        " Volume harness-evidence-wsl-ubuntu-26-04-a040c35f_redis-data Removing ",
+        " Volume harness-evidence-wsl-ubuntu-26-04-a040c35f_postgres-data Removed ",
+        " Volume harness-evidence-wsl-ubuntu-26-04-a040c35f_redis-data Removed ",
+        " Network harness-evidence-wsl-ubuntu-26-04-a040c35f_default Removed"
+      ],
+      "remaining": [],
+      "scope": "only compose project harness-evidence-wsl-ubuntu-26-04-a040c35f",
+      "dotenv": "restored to its previous content",
+      "ok": true,
+      "at": "2026-09-15T03:36:38.898079+00:00"
+    }
+  },
+  "steps": [
+    {
+      "name": "ruff",
+      "argv": [
+        "uv",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "env_added": {},
+      "exit_code": 0,
+      "ok": true,
+      "timed_out": false,
+      "error": null,
+      "seconds": 0.0,
+      "summary": "All checks passed!",
+      "stdout_sha256": "sha256:82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "wsl-ubuntu-26.04-ruff.log"
+    },
+    {
+      "name": "full-suite-integration",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/rudtn/zeus-evidence/docs/zeus/evidence/environment-runs-012/wsl-ubuntu-26.04-full-suite.junit.xml"
+      ],
+      "env_added": {
+        "HARNESS_INTEGRATION": "1"
+      },
+      "exit_code": 0,
+      "ok": true,
+      "timed_out": false,
+      "error": null,
+      "seconds": 229.4,
+      "summary": "1726 passed, 12 skipped in 228.84s (0:03:48)",
+      "stdout_sha256": "sha256:96a7b61daa127e047c320a9e98b2b29d2b8dd643a04d1ff7c4daf99f73ffd2d4",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "wsl-ubuntu-26.04-full-suite-integration.log"
+    },
+    {
+      "name": "disposable-docker-checks",
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_verification.py",
+        "tests/test_host_interruption.py"
+      ],
+      "env_added": {
+        "HARNESS_INTEGRATION": "1",
+        "ZEUS_TEST_DOCKER": "1"
+      },
+      "exit_code": 1,
+      "ok": false,
+      "timed_out": false,
+      "error": null,
+      "seconds": 67.1,
+      "summary": "16 passed, 1 error in 66.82s (0:01:06)",
+      "stdout_sha256": "sha256:7d1dd4d8810ef74e25822c6b2fedfe879262584252e6af074c0cb01d9a8aa25d",
+      "stderr_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "wsl-ubuntu-26.04-disposable-docker-checks.log"
+    }
+  ],
+  "passed": false,
+  "authority": "what ran on this host at this head against the stack this run created; not a reboot, a human acceptance or a deployment",
+  "head": "f6e9c05ffa22fc22cd4669d52922ad4971f22d16",
+  "tracked_changes": [],
+  "untracked": [],
+  "diff_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "inputs": {
+    "runner": "sha256:a2a84aa069ec7f9d1879ffc160fed3f8987bbb28c3e8fb3552741b8eb2a66308",
+    "compose": "sha256:6e008ba80bfe4e1ac1c2e1465da448ee38809faacb049dd9bf61a59ec183fb07",
+    "uv.lock": "sha256:48be7d2bc5a3e2167fc9acac6c6ee0dea904c5a088604a30d99f7045f1dc6b25",
+    "pyproject.toml": "sha256:45c0eeba59497b0170b5f1d19293503c457f26ca41f2d62a4c55d5e01bb7992c",
+    "override": "sha256:c62e3c45d221a89f5f16a7b4762270daae5e47e60661ecc6e1ba187eb22f8986"
+  },
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "machine": "x86_64",
+  "python": "3.12.14",
+  "uv": "uv 0.12.12 (x86_64-unknown-linux-gnu)",
+  "docker": "29.7.2",
+  "compose": "5.4.0",
+  "junit_sha256": "sha256:cecc03f15335202ec1e7f09bea33906278c647d02ffa8ea9506469d30a03888d",
+  "per_file": {
+    "test_app_server.py": {
+      "passed": 24,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_architecture.py": {
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_artifact_query.py": {
+      "passed": 11,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_breaker.py": {
+      "passed": 14,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_bus.py": {
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_check_binding.py": {
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_claude_assignment.py": {
+      "passed": 19,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_claude_cli_process.py": {
+      "passed": 36,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_claude_execution.py": {
+      "passed": 48,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_claude_review_boundaries.py": {
+      "passed": 20,
+      "skipped": 3,
+      "failed": 0,
+      "error": 0
+    },
+    "test_completion_authority.py": {
+      "passed": 19,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_configuration.py": {
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_context_recovery.py": {
+      "passed": 2,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_core.py": {
+      "passed": 18,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_decision_atomicity.py": {
+      "passed": 26,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_decision_recovery.py": {
+      "passed": 37,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_dispatch_fairness.py": {
+      "passed": 3,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_environment_evidence.py": {
+      "passed": 10,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_evidence_inspection.py": {
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_fence.py": {
+      "passed": 11,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_identity.py": {
+      "passed": 50,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_notices.py": {
+      "passed": 9,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_output.py": {
+      "passed": 34,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_progress.py": {
+      "passed": 2,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_recovery.py": {
+      "passed": 64,
+      "skipped": 1,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_rejections.py": {
+      "passed": 25,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_execution_time.py": {
+      "passed": 35,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_executor_research.py": {
+      "passed": 23,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_experience.py": {
+      "passed": 20,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_external_context.py": {
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_gate_verdicts.py": {
+      "passed": 10,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_git_workspace.py": {
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_github_tickets.py": {
+      "passed": 50,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_graph_topology.py": {
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_host_interruption.py": {
+      "passed": 1,
+      "skipped": 5,
+      "failed": 0,
+      "error": 0
+    },
+    "test_idempotency_races.py": {
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_integration.py": {
+      "passed": 26,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_invocation_breaker_integration.py": {
+      "passed": 2,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_invocation_ledger.py": {
+      "passed": 17,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_maintenance.py": {
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_measurements.py": {
+      "passed": 15,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_migration_precheck.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_model_routing.py": {
+      "passed": 17,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_monitoring.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_namespace_guard.py": {
+      "passed": 31,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_native_hooks.py": {
+      "passed": 18,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_native_routing_replay.py": {
+      "passed": 9,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_contract.py": {
+      "passed": 16,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_review.py": {
+      "passed": 16,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_review2.py": {
+      "passed": 24,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_review3.py": {
+      "passed": 14,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_review4.py": {
+      "passed": 10,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_review5.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_spool.py": {
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observation_wiring.py": {
+      "passed": 19,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observations.py": {
+      "passed": 19,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_observed_assets_cli.py": {
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_outbox.py": {
+      "passed": 26,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_output_schema.py": {
+      "passed": 38,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_output_validation.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_pipeline.py": {
+      "passed": 17,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_profile_privacy.py": {
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_project_detection.py": {
+      "passed": 21,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_project_skills.py": {
+      "passed": 29,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_python_channel.py": {
+      "passed": 3,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_release_health.py": {
+      "passed": 16,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_release_recovery.py": {
+      "passed": 17,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_release_runner.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_release_test_imports.py": {
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_research_audits.py": {
+      "passed": 74,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_retry_state.py": {
+      "passed": 59,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_reverse_progress.py": {
+      "passed": 14,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_review005_boundaries.py": {
+      "passed": 12,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_runner_categories.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_runner_evidence.py": {
+      "passed": 12,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_runtime_projection.py": {
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_runtime_thresholds.py": {
+      "passed": 14,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_scratch_cleanup.py": {
+      "passed": 12,
+      "skipped": 1,
+      "failed": 0,
+      "error": 0
+    },
+    "test_sdd.py": {
+      "passed": 20,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_seam_contracts.py": {
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_seam_scope.py": {
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_seam_view.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_skill_audit.py": {
+      "passed": 22,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_skill_guidance.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_skill_history.py": {
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_skill_import.py": {
+      "passed": 15,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_skill_routing.py": {
+      "passed": 17,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_snapshot_integrity.py": {
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_supervisor.py": {
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_task_failure_atomicity.py": {
+      "passed": 10,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_threshold_approvals.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_threshold_collection.py": {
+      "passed": 10,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_threshold_proposals.py": {
+      "passed": 9,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_threshold_replay.py": {
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_threshold_reviews.py": {
+      "passed": 20,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_ticket_execution.py": {
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_ticket_lifecycle.py": {
+      "passed": 80,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_ticket_review.py": {
+      "passed": 14,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_tickets.py": {
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_usage_limit.py": {
+      "passed": 32,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_verification.py": {
+      "passed": 10,
+      "skipped": 1,
+      "failed": 0,
+      "error": 0
+    },
+    "test_windows_launchers.py": {
+      "passed": 0,
+      "skipped": 1,
+      "failed": 0,
+      "error": 0
+    },
+    "test_workflow.py": {
+      "passed": 43,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    },
+    "test_zeus_configuration.py": {
+      "passed": 9,
+      "skipped": 0,
+      "failed": 0,
+      "error": 0
+    }
+  },
+  "required_phases": [
+    "preflight",
+    "claim_project",
+    "stack_up",
+    "identity_before",
+    "steps",
+    "identity_after",
+    "identity_stable",
+    "teardown"
+  ],
+  "finished_at": "2026-09-15T03:36:38.898176+00:00"
+}
