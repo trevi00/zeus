@@ -175,28 +175,25 @@ Codex가 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 네 곳
 - C — 작업 완료 뒤 경계 오류가 passed를 거짓으로 만들고 exit 1인가(`task_succeeded`는 참으로 남는가),
   **깨끗한 실행은 여전히 통과하는가**(대조)
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-012/`, head `f6e9c05`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-013/`, head `ed30106`)
 
-| 호스트 | ruff | full-suite-integration | disposable-docker | 신규 회귀 |
+| 호스트 | ruff | full-suite-integration | disposable-docker | 회귀 |
 |---|---|---|---|---|
-| Windows 11 | 통과 | **1724 passed, 14 skipped** (582s) | **17 passed** | `test_runner_evidence` **12 passed**, `test_scratch_cleanup` **13 passed**, skip 0 |
-| WSL Ubuntu 26.04 | 통과 | **1726 passed, 12 skipped** (229s) | **실패**(아래) | `test_runner_evidence` **12 passed**, `test_scratch_cleanup` 13 중 **skip 1** |
+| Windows 11 | 통과 | **1732 passed, 14 skipped** (597s) | **17 passed** | `test_runner_evidence` **20 passed**, `test_scratch_cleanup` **13 passed**, skip 0 |
+| WSL Ubuntu 26.04 | 통과 | **1734 passed, 12 skipped** (247s) | **17 passed** | `test_runner_evidence` **20 passed**, `test_scratch_cleanup` 13 중 skip 1 |
 
-**신규 12건은 두 호스트에서 전부 실제로 돌았다**(skip 0). 러너를 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로
-`--fixture`로 끝까지 구동하며, 유료 모델 호출은 0회다. WSL의 skip 1은 읽기 전용 속성이 삭제를 막는 것이 Windows에서만
+회귀 20건은 두 호스트에서 **전부 실제로 돌았다**(skip 0). 실제 격리 PostgreSQL·Redis·Git·프로토콜 자식으로 러너를
+`--fixture`로 끝까지 구동하며, **실제 모델 호출 0회**다. WSL의 skip 1은 읽기 전용 속성이 삭제를 막는 것이 Windows에서만
 일어나기 때문이고, 그 차이 자체가 §1의 측정이다. 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건.
 
-### 6.1 WSL disposable-docker 단계 — 이번에도 실패했고, 여기서 다루지 않는다
+### 6.1 WSL disposable-docker 단계는 이번 회차에 통과했다
 
-이번 회차 1회 시도에서 `test_host_interruption.py::test_postgres_pause_is_not_a_clock_step[12]`가
-`verification.py:98`의 30초 포트 연결 기한에서 `ConnectionRefusedError`로 끊겼다. 직전 회차 3연속과 같은 지점이다.
+직전 네 회차에서 실패하던 단계가 이번 1회 시도에서 **17 passed**로 끝났다. 초록이 나올 때까지 돌린 것이 아니라
+**1회 돌린 결과가 이것**이다.
 
-**재실행하지 않았다.** Codex가 이 환경 결함을 별도 작업(`docs/zeus/reviews/claude-work-018/READINESS-FOLLOWUP.md`)으로
-분리하고 "이 PR의 네 수정 검토와 WSL 운영 자격 판정을 분리한다"고 정했으므로, 여기서 초록을 만들려고 돌리는 것은 범위를
-벗어난 일이자 고르는 일이다.
-
-Codex의 판단을 그대로 옮겨 적는다: 파일 미변경만으로 인과관계가 증명되지는 않으며 정확한 원인은 미확정이다. 지금까지의
-누적 관측치(12회 중 8회)는 확률 추정이나 악화 원인의 증명이 아니다.
+**이것을 고쳤다고 말하지 않는다.** 이 브랜치는 `verification.py`도 그 두 테스트 파일도 건드리지 않았고, 원인은 여전히
+미확정이다. 한 번 통과한 것은 한 번의 관측이며, 누적하면 이 호스트는 **13회 중 8회 실패**다. Codex가 별도 작업
+(`docs/zeus/reviews/claude-work-018/READINESS-FOLLOWUP.md`)으로 다루기로 한 판단은 그대로다.
 
 ## 7. 하지 않은 것
 
