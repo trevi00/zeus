@@ -1,0 +1,47 @@
+.........................FFFF                                            [100%]
+================================== FAILURES ===================================
+______________ test_empty_entries_does_not_mean_complete[capped] ______________
+.runtime\review-073b\test_remaining.py:45: in test_empty_entries_does_not_mean_complete
+    assert report['complete'] is False, 'empty entries bypass capped sweep / required execution reference validation'
+E   AssertionError: empty entries bypass capped sweep / required execution reference validation
+E   assert True is False
+________ test_empty_entries_does_not_mean_complete[missing_reference] _________
+.runtime\review-073b\test_remaining.py:45: in test_empty_entries_does_not_mean_complete
+    assert report['complete'] is False, 'empty entries bypass capped sweep / required execution reference validation'
+E   AssertionError: empty entries bypass capped sweep / required execution reference validation
+E   assert True is False
+________________ test_destination_creation_failure_is_reported ________________
+..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\pathlib.py:1311: in mkdir
+    os.mkdir(self, mode)
+E   FileNotFoundError: [WinError 3] 지정된 경로를 찾을 수 없습니다: 'C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-unknown\\pytest-10\\test_destination_creation_fail0\\review-evidence\\20260915T035859Z-6f9e45d4'
+
+During handling of the above exception, another exception occurred:
+.runtime\review-073b\test_remaining.py:62: in test_destination_creation_failure_is_reported
+    code = module.call(args(), tmp_path)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts\claude_real_call.py:600: in call
+    receipt["preserved"] = preserve_evidence(scratch, receipt, out, args.label, run_id)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts\claude_real_call.py:508: in preserve_evidence
+    report = scratch.preserve(destination, entries)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\codex_harness\adapters\scratch.py:118: in preserve
+    destination.mkdir(parents=True, exist_ok=True)
+..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\pathlib.py:1315: in mkdir
+    self.parent.mkdir(parents=True, exist_ok=True)
+..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\pathlib.py:1311: in mkdir
+    os.mkdir(self, mode)
+E   FileExistsError: [WinError 183] 파일이 이미 있으므로 만들 수 없습니다: 'C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-unknown\\pytest-10\\test_destination_creation_fail0\\review-evidence'
+________________ test_late_collection_exception_does_not_pass _________________
+.runtime\review-073b\test_remaining.py:90: in test_late_collection_exception_does_not_pass
+    assert code != 0 and receipt['passed'] is False, 'unexpected collection failure exits 0/passed'
+E   AssertionError: unexpected collection failure exits 0/passed
+E   assert (0 != 0)
+---------------------------- Captured stdout call -----------------------------
+{"label": "review", "run_id": "20260915T035902Z-2b2dbb48", "mode": "fixture", "executed": true, "accepted_by_harness": true, "task_verified": false, "task_succeeded": true, "evidence_complete": true, "passed": true, "not_executed_reason": null, "receipt": "C:\\Users\\rudtn\\AppData\\Local\\Temp\\pytest-of-unknown\\pytest-10\\test_late_collection_exception0\\review-fixture-20260915T035902Z-2b2dbb48-receipt.json"}
+=========================== short test summary info ===========================
+FAILED .runtime/review-073b/test_remaining.py::test_empty_entries_does_not_mean_complete[capped]
+FAILED .runtime/review-073b/test_remaining.py::test_empty_entries_does_not_mean_complete[missing_reference]
+FAILED .runtime/review-073b/test_remaining.py::test_destination_creation_failure_is_reported
+FAILED .runtime/review-073b/test_remaining.py::test_late_collection_exception_does_not_pass
+4 failed, 25 passed in 29.83s

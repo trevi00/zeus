@@ -1,0 +1,7 @@
+{
+  "parallel_runs": 2,
+  "same_label": true,
+  "distinct_destinations": true,
+  "all_hashes_match": true,
+  "model_calls": 0
+}
