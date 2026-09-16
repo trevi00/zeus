@@ -18,6 +18,13 @@ from codex_harness.domain.model import ContractError, canonical, require
 from codex_harness.domain.policy import POLICY
 
 NAMESPACE_DENIAL = "bwrap: No permissions to create a new namespace"
+READ_ONLY_INSTRUCTIONS = (
+    "This is an independent review of a clean checkout at the candidate commit. Inspect and run tests, "
+    "but do not create, modify or delete any file in this checkout, tracked or untracked: no frame files, "
+    "logs, notes or redirected test output; do not commit, push, merge or deploy. Collect test output from "
+    "stdout. Record one concise review frame and verdict in your response and tool stdout, which Zeus "
+    "preserves in its artifact store outside the checkout. Inspect only the assigned review input; full "
+    "re-verification belongs to the named owner or CI.")
 
 
 def namespace_failure(event: object) -> bool:
@@ -150,7 +157,9 @@ class AppServer:
         if model is not None:
             options["model"] = model
         if read_only:
-            options["developerInstructions"] = "This is an independent review. Inspect and test, but do not edit tracked source, commit, push, merge, or deploy."
+            # review-contract-001: the same rule the executor enforces afterwards (a clean checkout at
+            # the candidate commit), stated up front for both thread/start and thread/resume.
+            options["developerInstructions"] = READ_ONLY_INSTRUCTIONS
         if self.hooks and not self.hook_state:
             discovered = self.request("hooks/list", {"cwds": [options["cwd"]]}, request_budget())
             commands = {hook["command"] for groups in self.hooks.values()

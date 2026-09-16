@@ -53,3 +53,7 @@ A claim and its evidence are different things. Before you report that something 
   summarize unrelated parts of the repository.
 - The reviewer accepts or rejects from the diff and the recorded test output, not from your
   summary. Write the summary so that it can be checked against them.
+- In the structured answer, `tests` holds only the exact commands you actually executed, one
+  reproducible command per string, as typed. No arrows, results, pass counts, descriptions or
+  commands you did not run: those belong in `summary`, which states the actual results, skipped
+  tests and what was not run. Each `tests` entry is replayed token by token as argv.

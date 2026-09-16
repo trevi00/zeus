@@ -21,3 +21,18 @@
   not semantic review; an upstream test file is not evidence that the test was executed.
 - Never mark a repository fully analyzed while files or subsystems remain unreviewed. Carry forward
   remaining work using immutable evidence references and bounded context, rather than skipping it.
+
+## Review checkout recording
+
+- An independent review runs in a clean checkout at the candidate commit. Do not create, modify or
+  delete any file there, tracked or untracked: no frame files, logs, notes or redirected test output.
+  Collect test output from stdout.
+- Record one concise review frame and verdict in the response and tool stdout. Zeus preserves the
+  response and tool output in its artifact store under `D:\workspaces\zeus\artifacts`, outside the
+  checkout; no additional frame file is written anywhere.
+- Inspect only the assigned review input. Full re-verification (PostgreSQL/Redis suite, CI) belongs
+  to the named owner or CI. The executor's clean-checkout and HEAD checks stay as they are; a dirty
+  checkout is refused, never cleaned automatically, and a model run's permission settings are not an
+  isolation guarantee.
+- Worker answers keep executed commands and result descriptions apart: `tests` holds only the exact
+  commands that were run, one per string; results, skips and unrun work go in `summary`.

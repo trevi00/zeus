@@ -6,6 +6,14 @@ a finite per-command deadline, an output byte cap and an aggregate budget; the p
 terminated on timeout and that termination is recorded. Raw stdout/stderr bytes are archived
 losslessly (latin-1 byte-preserving text) beside their SHA-256, and decoding problems are a
 recorded property of the output, never a replacement of it.
+
+Replay context (review-contract-001): a Python replay runs the trusted host interpreter, never
+the first token the model wrote. Authorization is decided on the original claim argv; only an
+authorized `python -m ...` claim has its first token replaced by the verified absolute
+`sys.executable`, and the finding keeps the original argv, the effective argv and the reason.
+The snapshot is taken per workspace: it binds that interpreter, the normalized cwd and a
+PYTHONPATH that is the candidate's `src` only when it exists (the parent's PYTHONPATH and the
+harness's own secrets are never inherited), and every replay runs under exactly those values.
 """
 import hashlib
 import json
@@ -37,10 +45,39 @@ def packaged_policy():
         raise ContractError('Evidence policy definition unavailable or invalid') from exc
 
 
-def replay_environment(base=None):
+def replay_environment(base=None, cwd=None):
+    """The minimal replay environment. With `cwd`, PYTHONPATH is bound to `<cwd>/src` when that
+    directory exists and is otherwise absent; the parent's PYTHONPATH is never in KEEP_ENV."""
     env = {key: value for key, value in (base if base is not None else os.environ).items() if key in KEEP_ENV}
     env['PYTHONIOENCODING'] = 'utf-8'
+    if cwd is not None:
+        source_root = Path(cwd).resolve() / 'src'
+        if source_root.is_dir():
+            env['PYTHONPATH'] = str(source_root)
     return env
+
+
+def trusted_interpreter(candidate=None):
+    """The host interpreter every Python replay runs: an existing absolute file, verified before any
+    child starts. Windows `shell=False` does not resolve `python` through the child's PATH, and a
+    model-written executable is never trusted, so the replay names this file explicitly."""
+    path = Path(candidate if candidate is not None else sys.executable)
+    if not (path.is_absolute() and path.is_file()):
+        raise ContractError('Trusted replay interpreter is not a file: ' + str(path))
+    return path.resolve()
+
+
+def replay_argv(argv, interpreter):
+    """The effective argv for an already authorized claim, with the reason it differs, if it does.
+
+    Only a claim whose first two tokens are `python -m` is rewritten, and only its first token; every
+    other authorized command runs exactly as claimed. The caller authorizes the original argv first,
+    so this never widens a policy prefix.
+    """
+    if len(argv) >= 2 and argv[0] == 'python' and argv[1] == '-m':
+        return [str(interpreter), *argv[1:]], ('first token "python" replaced by the trusted host interpreter; '
+                                              'authorization was decided on the original argv')
+    return list(argv), None
 
 
 def _capture(argv, cwd, timeout, max_bytes, env):
@@ -102,9 +139,11 @@ def _capture(argv, cwd, timeout, max_bytes, env):
 
 
 class EvidenceInspector:
-    def __init__(self, artifacts, policy=None):
+    def __init__(self, artifacts, policy=None, interpreter=None):
         self.artifacts = artifacts
         self.policy = parse_policy(policy) if policy is not None else packaged_policy()
+        # Verified at snapshot time (before any child), so a missing interpreter is a clear refusal.
+        self._interpreter = interpreter
 
     def _archive(self, run):
         """Raw bytes go to the artifact store byte-for-byte; the finding keeps hashes and refs."""
@@ -159,50 +198,61 @@ class EvidenceInspector:
         return {'state': 'checked', 'cause': 'file present' + (' with the claimed hash' if claim['sha256'] else
                                                               '; no hash was claimed, so only presence is checked'), **detail}
 
-    def inspect_command(self, claim, cwd, remaining_seconds, environment=None):
+    def inspect_command(self, claim, cwd, remaining_seconds, environment=None, interpreter=None):
+        # Authorization is decided on the claim exactly as written; the interpreter substitution
+        # below never takes part in it (review-contract-001).
         if not authorized(claim['argv'], self.policy):
             return {'state': 'not_checked', 'cause': 'command is not an authorized replay prefix; a claim is not authority'}
         per_command = min(self.policy['replay']['per_command_seconds'], remaining_seconds)
         if per_command <= 0:
             return {'state': 'not_checked', 'cause': 'aggregate replay budget exhausted'}
         finite_positive(per_command, 'replay deadline', self.policy['replay']['total_seconds'])
+        interpreter = trusted_interpreter(interpreter if interpreter is not None else self._interpreter)
+        effective, transformation = replay_argv(claim['argv'], interpreter)
         runs = []
         for _ in range(self.policy['replay']['replays_per_claim']):
-            run = _capture(claim['argv'], str(Path(cwd).resolve()), per_command, self.policy['replay']['max_output_bytes'],
-                           dict(environment) if environment is not None else replay_environment())
+            run = _capture(effective, str(Path(cwd).resolve()), per_command, self.policy['replay']['max_output_bytes'],
+                           dict(environment) if environment is not None else replay_environment(cwd=cwd))
             runs.append(self._archive(run))
             if run.get('failure'):
                 break
         state, cause = classify_replays(runs, claim['expected_exit'])
-        return {'state': state, 'cause': cause, 'runs': runs, 'replay_argv': list(claim['argv']),
-                'argv_identical': True}
+        return {'state': state, 'cause': cause, 'runs': runs, 'original_argv': list(claim['argv']),
+                'replay_argv': effective, 'argv_identical': effective == list(claim['argv']),
+                'argv_transformation': transformation, 'interpreter': str(interpreter)}
 
-    def snapshot(self):
-        """One environment snapshot: its digest is part of the inspection identity and the same values
-        are what every replay runs under (review, PR #54: names alone let a changed value reuse a pass)."""
-        environment = replay_environment()
+    def snapshot(self, cwd=None):
+        """One verification context per workspace: its digest is part of the inspection identity and
+        the same values are what every replay runs under (review, PR #54: names alone let a changed
+        value reuse a pass). The interpreter is verified here, before any child exists."""
+        interpreter = trusted_interpreter(self._interpreter)
+        environment = replay_environment(cwd=cwd)
         identity = {'policy_hash': self.policy['policy_hash'], 'environment_names': sorted(environment),
                     'environment_digest': digest(sorted(environment.items())),
-                    'tool': {'python': platform.python_version(), 'executable_digest': digest(sys.executable),
+                    'interpreter': str(interpreter), 'cwd': str(Path(cwd).resolve()) if cwd is not None else None,
+                    'tool': {'python': platform.python_version(), 'executable_digest': digest(str(interpreter)),
                              'implementation': platform.python_implementation()},
                     'platform': platform.platform()}
-        return {'identity': identity, 'environment': environment}
+        return {'identity': identity, 'environment': environment, 'interpreter': str(interpreter)}
 
-    def identity(self):
-        return self.snapshot()['identity']
+    def identity(self, cwd=None):
+        return self.snapshot(cwd)['identity']
 
-    def inspect(self, claims, cwd, binding, environment=None):
+    def inspect(self, claims, cwd, binding, environment=None, interpreter=None):
         """Inspect every claim in one explicit context; the budget is enforced, never assumed.
 
-        `environment` is the snapshot the caller keyed the inspection by; every replay runs under exactly it.
+        `environment` and `interpreter` are the snapshot the caller keyed the inspection by; every
+        replay runs under exactly them, whatever the parent process's environment has become since.
         """
-        environment = dict(environment) if environment is not None else replay_environment()
         root = Path(cwd)
         if not root.is_dir():
             return {'context': {**binding, 'cwd': str(root)}, 'policy_hash': self.policy['policy_hash'], 'findings': [
                 {'claim': None, 'state': 'error', 'cause': 'workspace directory does not exist'}]}
+        environment = dict(environment) if environment is not None else replay_environment(cwd=root)
+        interpreter = trusted_interpreter(interpreter if interpreter is not None else self._interpreter)
         context = {**binding, 'cwd': str(root.resolve()), 'environment': sorted(environment),
-                   'environment_digest': digest(sorted(environment.items())), 'python': sys.version.split()[0]}
+                   'environment_digest': digest(sorted(environment.items())), 'python': sys.version.split()[0],
+                   'interpreter': str(interpreter), 'pythonpath': environment.get('PYTHONPATH')}
         findings = []
         deadline = time.monotonic() + self.policy['replay']['total_seconds']
         for index, raw in enumerate(claims):
@@ -217,7 +267,7 @@ class EvidenceInspector:
             if claim['kind'] == 'file':
                 result = self.inspect_file(claim, root)
             else:
-                result = self.inspect_command(claim, root, deadline - time.monotonic(), environment)
+                result = self.inspect_command(claim, root, deadline - time.monotonic(), environment, interpreter)
             findings.append({'claim': claim, **result})
         return {'context': context, 'policy_hash': self.policy['policy_hash'], 'findings': findings,
                 'inspection_id': digest([context, self.policy['policy_hash'], [f['claim'] for f in findings]])}

@@ -19,7 +19,9 @@ from codex_harness.adapters.evidence_inspection import (
     POLICY_FILE,
     EvidenceInspector,
     packaged_policy,
+    replay_argv,
     replay_environment,
+    trusted_interpreter,
 )
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.evidence_inspection import BUCKET, NOTICES, EvidenceInspections
@@ -37,10 +39,13 @@ from codex_harness.domain.evidence import (
 from codex_harness.domain.model import ContractError
 
 PY = sys.executable
+TRUSTED = str(Path(sys.executable).resolve())
+PROBE = 'zeus_candidate_probe'  # a module that exists only under the candidate workspace's src
 
 
 def policy(**replay):
     base = {'version': 1, 'replay': {'allowed_argv_prefixes': [[PY, '-c'], ['python', '-m', 'pytest'],
+                                                             ['python', '-m', PROBE],
                                                              ['definitely-not-an-executable-zeus']],
                                      'per_command_seconds': 20, 'total_seconds': 60, 'max_claims': 8,
                                      'max_output_bytes': 4096, 'replays_per_claim': 2},
@@ -136,14 +141,100 @@ def test_command_claims_replay_only_by_policy_and_keep_raw_bytes(tmp_path):
     raw = json.loads(insp.artifacts.text(f[2]['runs'][0]['stdout']['ref'], 100000))
     assert raw['raw'].encode('latin-1') == b'ok\xff\xfe' and raw['sha256'] == hashlib.sha256(b'ok\xff\xfe').hexdigest()
     assert f[3]['state'] == 'replay_failed' and 'executable_missing' in f[3]['cause'] and len(f[3]['runs']) == 1
+    assert f[3]['replay_argv'] == claims[3]['argv'] and f[3]['argv_identical'], 'a non-python command runs exactly as claimed'
     assert f[4]['state'] == 'flake_pattern' and 'differ' in f[4]['cause']
     assert f[5]['state'] == 'not_checked' and 'not an authorized replay prefix' in f[5]['cause']
     assert f[6]['state'] == 'checked' and f[6]['runs'][0]['stdout']['truncated'] and f[6]['runs'][0]['stdout']['bytes'] == 4096
     assert all(run['stdout']['ref'].startswith('sha256:') for run in f[0]['runs'])
-    assert f[0]['replay_argv'] == claims[0]['argv'] and f[0]['argv_identical']
+    assert f[0]['replay_argv'] == f[0]['original_argv'] == claims[0]['argv'] and f[0]['argv_identical']
+    assert f[0]['argv_transformation'] is None and f[0]['interpreter'] == TRUSTED
     assert 'PYTHONIOENCODING' in report['context']['environment'] and 'ZEUS_DATABASE_URL' not in replay_environment({'ZEUS_DATABASE_URL': 'x', 'PATH': 'p'})
+    assert report['context']['interpreter'] == TRUSTED and report['context']['pythonpath'] is None, 'no src, no PYTHONPATH'
     assert denominator(f) == {**{s: 0 for s in STATES}, 'checked': 3, 'verified_mismatch': 1, 'replay_failed': 1,
                               'flake_pattern': 1, 'not_checked': 1, 'claims': 7}
+
+
+def probe_workspace(tmp_path):
+    """A candidate whose src holds a module nothing else on this host can import."""
+    workspace = tmp_path / 'candidate ws'
+    (workspace / 'src').mkdir(parents=True)
+    (workspace / 'src' / (PROBE + '.py')).write_text(
+        'import os, sys\n'
+        'print("EXECUTABLE=" + sys.executable)\n'
+        'print("MODULE=" + os.path.abspath(__file__))\n'
+        'print("PYTHONPATH=" + os.environ.get("PYTHONPATH", "<unset>"))\n'
+        'sys.exit(0)\n', encoding='utf-8')
+    return workspace
+
+
+def test_python_replays_run_the_trusted_interpreter_against_the_candidate_source(tmp_path, monkeypatch):
+    """Real subprocess (review-contract-001): the canary's replay failed with `C:/Python314/python.exe: No
+    module named pytest` because `python` resolved to another interpreter. The replay now names the
+    verified host interpreter and binds PYTHONPATH to the candidate's src, whatever PATH or the parent's
+    PYTHONPATH say, and the finding records both the original and the effective argv."""
+    workspace = probe_workspace(tmp_path)
+    monkeypatch.setenv('PATH', str(tmp_path / 'no-interpreter-here'))
+    monkeypatch.setenv('PYTHONPATH', str(tmp_path / 'parent-leak'))
+    insp = inspector(tmp_path, replays_per_claim=1)
+    snapshot = insp.snapshot(workspace)
+    assert snapshot['identity']['interpreter'] == snapshot['interpreter'] == TRUSTED
+    assert snapshot['identity']['cwd'] == str(workspace.resolve())
+    assert snapshot['environment']['PYTHONPATH'] == str((workspace / 'src').resolve()), 'the candidate src, not the parent value'
+    assert 'parent-leak' not in json.dumps(snapshot['environment'])
+    assert 'PYTHONPATH' not in insp.snapshot(tmp_path)['environment'], 'no src, no PYTHONPATH'
+    # The parent environment changes after the snapshot; the replay still runs under the snapshot.
+    monkeypatch.setenv('PATH', str(tmp_path / 'changed-again'))
+    monkeypatch.setenv('PYTHONPATH', str(tmp_path / 'changed-leak'))
+    report = insp.inspect(['python -m ' + PROBE, {'kind': 'command', 'argv': [PY, '-m', PROBE], 'expected_exit': 0},
+                           'python -m pytest --version'],
+                          workspace, {'task_id': 't', 'attempt': 1},
+                          environment=snapshot['environment'], interpreter=snapshot['interpreter'])
+    checked, widened, pytest_claim = report['findings']
+    assert checked['state'] == 'checked', checked['cause']
+    assert checked['original_argv'] == ['python', '-m', PROBE]
+    assert checked['replay_argv'] == [TRUSTED, '-m', PROBE] and checked['argv_identical'] is False
+    assert 'trusted host interpreter' in checked['argv_transformation'] and 'original argv' in checked['argv_transformation']
+    out = json.loads(insp.artifacts.text(checked['runs'][0]['stdout']['ref'], 100000))['raw']
+    assert 'EXECUTABLE=' + TRUSTED in out.replace('\r', '')
+    assert 'MODULE=' + str((workspace / 'src' / (PROBE + '.py')).resolve()) in out.replace('\r', '')
+    assert 'PYTHONPATH=' + str((workspace / 'src').resolve()) in out.replace('\r', '')
+    assert 'changed-leak' not in out and 'parent-leak' not in out
+    # A claim that names an interpreter itself is not the policy's `python -m` prefix: nothing widens.
+    assert widened['state'] == 'not_checked' and 'not an authorized replay prefix' in widened['cause']
+    # The packaged-style prefix is rewritten the same way; whether pytest is importable is the host's fact.
+    assert pytest_claim['replay_argv'][:3] == [TRUSTED, '-m', 'pytest'] and pytest_claim['argv_identical'] is False
+    assert report['context']['interpreter'] == TRUSTED and report['context']['pythonpath'] == str((workspace / 'src').resolve())
+    assert replay_argv(['python', '-m', 'ruff', 'check', '.'], TRUSTED)[0] == [TRUSTED, '-m', 'ruff', 'check', '.']
+    assert replay_argv(['uv', 'run', 'python', '-m', 'pytest'], TRUSTED) == (['uv', 'run', 'python', '-m', 'pytest'], None)
+    assert replay_argv(['python', 'script.py'], TRUSTED) == (['python', 'script.py'], None), 'only python -m is rewritten'
+    assert trusted_interpreter() == Path(TRUSTED)
+
+
+def test_a_missing_trusted_interpreter_is_refused_before_any_child_and_never_recorded_as_success(tmp_path, setup_implementation):
+    missing = str(tmp_path / 'missing-python')
+    insp = EvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')), policy(), interpreter=missing)
+    workspace = probe_workspace(tmp_path)
+    with pytest.raises(ContractError, match='Trusted replay interpreter is not a file'):
+        insp.snapshot(workspace)
+    with pytest.raises(ContractError, match='Trusted replay interpreter is not a file'):
+        insp.inspect(['python -m ' + PROBE], workspace, {'task_id': 't', 'attempt': 1})
+    with pytest.raises(ContractError, match='not a file'):
+        trusted_interpreter(str(tmp_path))  # a directory is not an interpreter either
+    store = MemoryStore()
+    workflow = Workflow(store, organization())
+    workflow.submit(assignment())
+    lease = workflow.claim('worker:implementation', 'owner-1')
+    with pytest.raises(ContractError, match='Trusted replay interpreter is not a file'):
+        EvidenceInspections(store, insp).inspect(lease, {'revision': 'c' * 40}, ['python -m ' + PROBE], workspace)
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET) == [] and tx.scan(NOTICES) == [], 'nothing ran, so nothing is recorded'
+    # Through the executor the refusal is a named inspection_error on the result, never a verdict.
+    s = setup_implementation
+    s.executor.evidence = EvidenceInspections(s.service.store, EvidenceInspector(s.artifacts, policy(), interpreter=missing))
+    row = s.executor.execute_one('worker:implementation')
+    assert row['status'] == 'succeeded', row.get('error')
+    assert row['result']['evidence_inspection']['verdict'] == 'inspection_error'
+    assert 'Trusted replay interpreter is not a file' in row['result']['evidence_inspection']['cause']
 
 
 def test_deadline_and_budgets_are_enforced_and_termination_is_recorded(tmp_path):
@@ -203,7 +294,31 @@ def test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failur
     again = stricter.inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
     assert again['id'] != checked['id'] and again['verdict'] == 'incomplete' and again['policy_hash'] != checked['policy_hash']
     assert again['denominator']['not_checked'] == 1 and again['inspector']['policy_hash'] == again['policy_hash']
-    assert set(again['inspector']) == {'policy_hash', 'environment_names', 'environment_digest', 'tool', 'platform'}
+    assert set(again['inspector']) == {'policy_hash', 'environment_names', 'environment_digest', 'tool', 'platform',
+                                       'interpreter', 'cwd'}
+    assert again['inspector']['interpreter'] == TRUSTED == again['context']['interpreter']
+    assert again['inspector']['cwd'] == str(workspace.resolve())
+    # review-contract-001: the same execution, claims and policy under another cwd, interpreter or candidate
+    # src binding is a new inspection; the older row is neither reused nor overwritten.
+    other_workspace = tmp_path / 'ws2'
+    other_workspace.mkdir()
+    moved = inspections.inspect(lease, candidate, [command('import sys; sys.exit(0)')], other_workspace)
+    assert moved['id'] != checked['id'] and moved['verdict'] == 'all_checked' and moved['inspector']['cwd'] == str(other_workspace.resolve())
+    other_python = tmp_path / 'other-python'
+    other_python.write_text('# stands in for another interpreter file; the [PY, -c] claim never runs it\n', encoding='utf-8')
+    elsewhere_interpreter = EvidenceInspections(store, EvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')),
+                                                                          policy(replays_per_claim=1), interpreter=str(other_python)))
+    rebound = elsewhere_interpreter.inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
+    assert rebound['id'] != checked['id'] and rebound['inspector']['interpreter'] == str(other_python.resolve())
+    assert rebound['findings'][0]['argv_identical'] and rebound['findings'][0]['replay_argv'][0] == PY
+    (workspace / 'src').mkdir()
+    with_src = inspections.inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
+    assert with_src['id'] != checked['id'] and with_src['context']['pythonpath'] == str((workspace / 'src').resolve())
+    assert with_src['inspector']['environment_digest'] != checked['inspector']['environment_digest']
+    assert 'PYTHONPATH' in with_src['inspector']['environment_names'] and 'PYTHONPATH' not in checked['inspector']['environment_names']
+    with store.transaction() as tx:
+        assert tx.get(BUCKET, checked['id']) == checked, 'the earlier row is untouched'
+    (workspace / 'src').rmdir()
     # Review counterexample (PR #54, round 2): the same environment *names* with a changed value must not reuse a
     # pass. The value digest is in the identity and the replay runs under the snapshot that identity was taken from.
     gate = command('import os, sys; sys.exit(0 if os.environ.get("LANG") == "review-pass" else 3)')
@@ -228,11 +343,11 @@ def test_ledger_binds_the_inspection_to_the_execution_and_never_records_a_failur
     class OtherHost:
         def __init__(self, inner):
             self.inner, self.policy = inner, inner.policy
-        def snapshot(self):
-            inner = self.inner.snapshot()
+        def snapshot(self, cwd=None):
+            inner = self.inner.snapshot(cwd)
             return {**inner, 'identity': {**inner['identity'], 'platform': 'fixture-other-host'}}
-        def inspect(self, claims, cwd, binding, environment=None):
-            return self.inner.inspect(claims, cwd, binding, environment=environment)
+        def inspect(self, claims, cwd, binding, environment=None, interpreter=None):
+            return self.inner.inspect(claims, cwd, binding, environment=environment, interpreter=interpreter)
     elsewhere = EvidenceInspections(store, OtherHost(inspector(tmp_path, replays_per_claim=1))).inspect(lease, candidate, [command('import sys; sys.exit(0)')], workspace)
     assert elsewhere['id'] != checked['id'] and elsewhere['inspector']['platform'] == 'fixture-other-host'
     with pytest.raises(ContractError, match='typed execution lease'):
@@ -283,6 +398,54 @@ def test_executor_inspects_implementation_claims_in_the_workspace(setup_implemen
     states = {f['claim']['argv'][0] if f['claim']['kind'] == 'command' else 'file': f['state'] for f in stored['findings']}
     assert states[PY] == 'checked' and states['rm'] == 'not_checked'
     assert Path(stored['binding']['workspace']).resolve() == Path(stored['context']['cwd']).resolve()
+    assert stored['inspector']['interpreter'] == stored['context']['interpreter'] == TRUSTED
+    assert stored['inspector']['cwd'] == stored['context']['cwd']
+
+
+def test_read_only_runs_receive_a_host_composed_review_context_and_implementation_runs_do_not(tmp_path, monkeypatch):
+    """review-contract-001: the reviewer is told which interpreter and checkout to test, by the host."""
+    from types import SimpleNamespace
+
+    from codex_harness.adapters.executor import IMPLEMENTATION, VERDICT, Executor
+    from codex_harness.adapters.output_schema import preflight
+    from codex_harness.application.service import Harness
+
+    prompts = []
+
+    class Runtime:
+        def __init__(self, **kwargs): pass
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def run(self, prompt, cwd, schema, timeout, **kwargs):
+            prompts.append((json.loads(prompt), kwargs['read_only']))
+            answer = {'accepted': True, 'reason': 'fixture', 'blocked': False, 'risks': [], 'sre_assessment': 'n/a',
+                      'arc42_assessment': 'n/a'} if kwargs['read_only'] else {'summary': 'fixture', 'tests': []}
+            return {'answer': answer, 'events': [], 'thread_id': 'thread', 'turn_id': 'turn', 'usage': None,
+                    'rotate': False, 'interrupted': False, 'requested_model': kwargs.get('model')}
+
+    monkeypatch.setattr('codex_harness.adapters.executor.AppServer', Runtime)
+    service = Harness(MemoryStore(), organization())
+    executor = Executor(service, SimpleNamespace(_git=lambda *a, **k: 'revision'), FileArtifacts(str(tmp_path / 'artifacts')))
+    review = tmp_path / 'review checkout'
+    (review / 'src').mkdir(parents=True)
+    executor._run('lead:improvement', 'review', 'Evaluate review_lead', {'candidate': {'revision': 'c' * 40}},
+                  str(review), VERDICT, read_only=True)
+    executor._run('worker:implementation', 'task', 'Implement', {'plan': {'objective': 'x', 'acceptance_criteria': ['y'],
+                  'allowed_paths': ['z']}}, str(tmp_path), IMPLEMENTATION)
+    (reviewer, read_only), (worker, writes) = prompts
+    assert read_only and not writes
+    context = reviewer['required']['review_context']
+    assert context['interpreter'] == TRUSTED and context['cwd'] == str(review.resolve())
+    assert context['src'] == str((review / 'src').resolve())
+    assert 'stdout' in context['instruction'] and 'do not create frame' in context['instruction']
+    assert 'review_context' not in worker['required'], 'an implementer edits its workspace; the review context is for reviewers'
+    # The implementation schema separates executed commands from result descriptions and still preflights.
+    assert preflight(IMPLEMENTATION)['schema_hash']
+    assert 'Only the exact commands you actually executed' in IMPLEMENTATION['properties']['tests']['description']
+    assert 'No arrows, results, pass counts' in IMPLEMENTATION['properties']['tests']['description']
+    assert 'what was not run' in IMPLEMENTATION['properties']['summary']['description']
+    # Past claims are parsed as written: a result arrow in a tests string is part of the argv, not stripped.
+    assert parse_claim('python -m pytest tests -q -> 23 passed')['argv'][-3:] == ['->', '23', 'passed']
 
 
 @pytest.fixture

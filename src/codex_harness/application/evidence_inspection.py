@@ -31,24 +31,31 @@ class EvidenceInspections:
         """Run the inspection and commit it; one row per (execution, revision, claims, policy, host)."""
         bound = self.binding(task, candidate, cwd)
         # The policy and the host that decide the result are part of the identity: a stricter policy or
-        # another environment never reads back an older all_checked (review, PR #54).
-        snapshot = self.inspector.snapshot()
+        # another environment never reads back an older all_checked (review, PR #54). The snapshot is
+        # taken for this workspace, so the trusted interpreter, the normalized cwd and the candidate-bound
+        # PYTHONPATH are in the key too, and a changed one is a new inspection (review-contract-001).
+        snapshot = self.inspector.snapshot(cwd)
         identity = snapshot['identity'] if isinstance(snapshot, dict) else None
         require(isinstance(identity, dict) and type(identity.get('policy_hash')) is str and identity['policy_hash']
-                and type(identity.get('environment_digest')) is str and isinstance(snapshot.get('environment'), dict),
-                'Inspector snapshot requires an identity with policy_hash and environment_digest, and the environment values')
-        key = digest(['evidence-inspection-v3', bound, identity, list(claims)])
+                and type(identity.get('environment_digest')) is str and type(identity.get('interpreter')) is str
+                and identity['interpreter'] and isinstance(snapshot.get('environment'), dict),
+                'Inspector snapshot requires an identity with policy_hash, environment_digest and interpreter, '
+                'and the environment values')
+        # v4: the identity gained interpreter and cwd; rows keyed under v3 stay untouched and unread.
+        key = digest(['evidence-inspection-v4', bound, identity, list(claims)])
         with self.store.transaction() as tx:
             existing = tx.get(BUCKET, key)
         if existing is not None:
             return existing
-        # The replays run under the very environment the identity was taken from.
-        report = self.inspector.inspect(list(claims), cwd, bound, environment=snapshot['environment'])
+        # The replays run under the very environment and interpreter the identity was taken from.
+        report = self.inspector.inspect(list(claims), cwd, bound, environment=snapshot['environment'],
+                                        interpreter=identity['interpreter'])
         counts = denominator(report['findings'])
         require(report['policy_hash'] == identity['policy_hash'], 'Inspector reported a different policy than its identity')
-        require(report['findings'] and report['findings'][0].get('cause') == 'workspace directory does not exist'
-                or report['context'].get('environment_digest') == identity['environment_digest'],
-                'Inspector replayed under a different environment than its identity')
+        absent = bool(report['findings']) and report['findings'][0].get('cause') == 'workspace directory does not exist'
+        require(absent or (report['context'].get('environment_digest') == identity['environment_digest']
+                           and report['context'].get('interpreter') == identity['interpreter']),
+                'Inspector replayed under a different environment or interpreter than its identity')
         row = {'id': key, 'binding': bound, 'policy_hash': report['policy_hash'], 'inspector': identity, 'context': report['context'],
                'claims': list(claims), 'findings': report['findings'], 'denominator': counts,
                'verdict': verdict(report['findings']), 'recorded_at': utcnow(),
