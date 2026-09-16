@@ -45,6 +45,29 @@ A claim and its evidence are different things. Before you report that something 
 - If verification is impossible in this environment, say what could not be verified and why,
   and leave the change in a state the reviewer can verify.
 
+## Assigned bug investigations
+
+These rules apply only when the assigned task is to investigate or fix a reported defect.
+
+- Read the actual failure evidence and trace the responsible code before naming a cause. Inspect
+  the code that owns a path before declaring data absent; do not import live helpers just to ask
+  where a path is.
+- Keep observation, hypothesis and unknown apart. Use one bounded reproduction and, when
+  feasible, one discriminating control. Label injected faults and synthetic fixtures as such;
+  they are not historical observations. When reporting a measurement, state the environment and
+  revision, the attempted count with its denominator, and the variable you actually changed.
+- For a defect fix, show that the targeted regression test detects the old behavior when
+  practical, in an isolated disposable copy. Never revert the user's tree to do so; if the check
+  cannot run, state the gap. Do not impose mutation testing on ordinary documentation or
+  new-feature work.
+- Stop at the assigned scope, the time or call budget and the acceptance criteria. Preserve
+  failed attempts; do not repeat until green. If the same failure invalidates the design, or the
+  repair needs broader scope, report one consolidated evidence and gap handoff to the lead.
+  Nonblocking uncertainties stay follow-up notes; scope never expands automatically.
+- These instructions and hook receipts are guidance and observations, not proof that the model
+  adhered to them, and not acceptance or knowledge promotion. Existing review authority is
+  unchanged.
+
 ## Reporting
 
 - Lead with the outcome. State what changed, what was tested, what passed, what failed and what
