@@ -365,7 +365,7 @@ class VerificationServices:
         # number out of that allocator's reach. `chosen` is None on a host with no such window, and
         # then the daemon picks exactly as it always did.
         chosen = published_ports.choose(2)
-        postgres_port, redis_port = (chosen or [None, None])
+        postgres_port, redis_port = (chosen["ports"] or [None, None])
         spec = {"services": {
             "postgres": {"image": "pgvector/pgvector:pg17", "environment": {
                 "POSTGRES_USER": "zeus", "POSTGRES_DB": "zeus", "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}"},
@@ -405,11 +405,12 @@ class VerificationServices:
             self.artifacts.put(canonical({"project": self.project, "ports": ports,
                 "ready_after_seconds": {name: row["ready_after"] for name, row in readiness.items()},
                 "readiness": readiness, "status": "services_ready",
-                # Which mechanism was in play for this stack: a port this process chose out of the
-                # daemon's reach, or the daemon's own pick. The numbers above are read back from
-                # `compose port`, not assumed from the choice.
-                "published_by": "chosen" if chosen else "daemon",
-                "choice_window": list(published_ports.window() or ()),
+                # Which mechanism was in play for this stack, and how far it was actually checked:
+                # which sides were asked and how, where the ephemeral range came from, and - when
+                # nothing was chosen - which of the reasons it was. The numbers above are read back
+                # from `compose port`, never assumed from the choice.
+                "published_by": "chosen" if chosen["ports"] else "daemon",
+                "port_choice": {key: value for key, value in chosen.items() if key != "ports"},
                 "definition_hash": digest(spec)}), "verification-services")
             return {"database_url": f'postgresql://zeus:{self.password}@127.0.0.1:{ports["postgres"]}/zeus',
                     "redis_url": f'redis://127.0.0.1:{ports["redis"]}/0'}

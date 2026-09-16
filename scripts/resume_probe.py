@@ -7,13 +7,16 @@ real answer instead of an open socket. That gate is in `VerificationServices.__e
 The interruption tests bring the same database back **mid-test** - `unpause`, or
 `up -d --no-recreate --wait` after a `stop` - and then assert immediately. Those paths have either no
 gate at all or only the container healthcheck, and a healthcheck is not the claim "this service can
-answer me". The two CI failures in the ledger are exactly the two refusals such a window produces:
+answer me". Two CI failures in the ledger are the kind of refusal such a window would produce:
 
     B  test_postgres_pause_is_not_a_clock_step        server closed the connection unexpectedly
     C  test_host_probe_never_falls_back_to_public_tasks  FATAL: the database system is starting up
 
-This measures whether that window exists on the resume paths, and how wide it is. It does not assume
-it: a run where health and the first answer coincide would say so.
+This looks for that window on the resume paths. What it can report is what it saw in the interval it
+watched, and that interval has a known edge: the watch starts after the bring-back command has
+already returned and after one health read. A cycle with no refusal here is **not** a cycle with no
+window - it is a cycle where none was observed in that interval. Nothing here can say what happened
+in a different CI run, and it cannot rule the resume paths out as a cause of B or C.
 
 The repetition plan is fixed here, before anything runs, and every cycle is recorded - the ones that
 found nothing too.
@@ -99,8 +102,9 @@ def watch(services, container, port, started):
     return {"first_healthy_after": first_healthy, "first_answer_after": first_answer,
             "refusals": refusals,
             "refused_after_health_was_green": healthy_before_answer is False,
-            "gate_would_have_been_wrong": bool(first_healthy is not None and first_answer is not None
-                                               and first_healthy < first_answer)}
+            "health_green_before_first_answer": bool(first_healthy is not None
+                                                    and first_answer is not None
+                                                    and first_healthy < first_answer)}
 
 
 def main():
@@ -127,17 +131,22 @@ def main():
             cycles.append(row)
             print(json.dumps(row))
 
-    windows = [row for row in cycles if row["gate_would_have_been_wrong"]]
+    ordered = [row for row in cycles if row["health_green_before_first_answer"]]
     summary = {
         "label": args.label, "plan": {"ways": list(WAYS), "cycles_per_way": CYCLES_PER_WAY},
         "cycles": cycles,
-        "cycles_where_health_was_green_before_the_first_answer": len(windows),
+        "cycles_where_health_was_green_before_the_first_answer": len(ordered),
         "cycles_where_a_request_was_refused_after_health_went_green":
             sum(1 for row in cycles if row["refused_after_health_was_green"]),
         "widest_gap_seconds": max([round(row["first_answer_after"] - row["first_healthy_after"], 3)
-                                   for row in windows] or [0.0]),
+                                   for row in ordered] or [0.0]),
         "note": "measured on the resume paths the interruption tests use; the start path is gated "
                 "by _await_service and is not what this measures",
+        "not_observed": "the watch begins after the bring-back command returned and after one "
+                        "health read, so anything between the command reaching the daemon and "
+                        "that first request is outside this record; a cycle with no refusal here "
+                        "is not a cycle with no window",
+        "ordering_is_not_unreadiness": "health going green before the first answer is an ordering of two observations, not evidence that the service could not have answered earlier",
     }
     pathlib.Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     pathlib.Path(args.out).write_text(json.dumps(summary, indent=1, ensure_ascii=False),
