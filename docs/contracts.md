@@ -829,6 +829,47 @@ it. Unbound dispatch keeps its key and output and is not claimed to enforce goal
 chain check is not signature re-verification; the existing close path remains the only closure
 authority, and no report, comparison or binding grants completion, permission, merge or deploy.
 
+## INV-OPERATION-001
+
+`zeus --repository ROOT operate run --file OPERATION.json` is the one bounded operating entry
+point; `operate status ID` is its read-only receipt. The manifest (`urn:zeus:operation:1`) is
+strict: exact fields `id`, 40-hex `base_revision`, `goal` (relative Markdown path, sha256,
+criterion, rationale), `plan` (objective, acceptance_criteria, allowed_paths), `budget` (per_host,
+total) and `claude` (model, timeout_seconds, max_budget_usd); unknown fields, wrong types,
+booleans as integers, nonfinite numbers, traversal, `.git` or absolute paths and empty values are
+refused, and the claude controls are validated by the existing provider policy validators. Fixed by
+contract: max_executions 2, worker profile `worker-v1`, `restricted` true; credentials, executable
+and endpoints stay host settings. Before any call the goal must exist at base as a regular Git
+blob whose bytes hash to `goal.sha256` (read with git argv); current HEAD need not equal base.
+The `operations` row atomically claims the id as running with the manifest digest, the
+repository/runtime/provider-policy identity and endpoint digests, the goal binding, a
+deterministic assignment message id and the durable initial `local_cycles` row; the assignment
+goes to the transactional outbox in the same transaction, never to the bus first. The same id with
+a different manifest or identity is `configuration_mismatch`; a completed id returns the saved
+receipt with zero calls and no new assignment; a running row (concurrent or interrupted) is
+`running_residue` and a preexisting cycle or task is `cycle_residue`; none of these touch the first
+owner or a provider. The run reuses `LocalCycle.step` for at most two executor starts and finite
+message-only turns; a wrapper reserves the machine `CallBudget` under the manifest ceilings
+immediately before each underlying execute_one/decide_one, never for an idle, stopped or cached
+turn, settles afterwards and keeps the slot ids in the receipt; a settlement failure keeps the
+slot counted and makes the outcome `failed:settlement_failed`. Before the review reservation the
+exact pending `review_lead` decision, its succeeded worker task with the same correlation and
+result, the candidate revision and an actual `evidence_inspections` row bound to that task id,
+generation, attempt and source revision must pass `require_all_checked`; a summary verdict string
+is insufficient and a missing, foreign or incomplete row stops with `evidence_gate_refused` and
+zero reviewer calls. Worker retry/failure/exception, ledger exhaustion, a lead rejection (no
+rework, diagnosis or retry), an unproven or non-boolean verdict and repeated idle turns end the
+run as failed, exhausted, rejected or unknown. `accepted` requires a succeeded accepted review_lead
+decision for the worker's candidate revision, all slots settled and a collection without sink
+failures; `awaiting_operator` alone is insufficient. The receipt persists status, reason code,
+slots, the cycle handoff projection, task/decision ids, execution/inspection references and
+collection counts; the CLI exits 0 only for accepted (including cached accepted) and prints codes
+and digests, never DSNs, raw exceptions, prompts, plans or environment values. Status builds no
+executor, observer, bus or provider. `PROGRAMDATA`/`ProgramData` join the replay environment
+allowlist; the value takes part in the snapshot digest, historical inspections stay immutable and
+no other exclusion changes. No conductor, release, merge, deploy, automatic retry, new work, budget
+escalation, ticket closure, cleanup or ownership takeover happens here.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

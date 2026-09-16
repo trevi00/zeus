@@ -53,7 +53,7 @@ def build_collector(store, observer=None):
     return Collector(store, SpoolDirectory(observation_root()), validate=validate_observation, observer=observer)
 
 
-def build_executor(service=None, observer=None):
+def build_executor(service=None, observer=None, execution_policy=None):
     from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.adapters.audit_runner import AuditRunner
     from codex_harness.adapters.executor import Executor
@@ -70,4 +70,5 @@ def build_executor(service=None, observer=None):
     return Executor(service, git, artifacts, PostgresKnowledge(database_url()),
                     ResearchSources(artifacts),
                     audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True),
-                    observer=observer or build_observer(service.store, "executor"))
+                    observer=observer or build_observer(service.store, "executor"),
+                    execution_policy=execution_policy)
