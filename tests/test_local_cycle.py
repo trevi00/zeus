@@ -245,7 +245,8 @@ def real_executor(tmp_path, monkeypatch, store=None, verdict=None):
     git = SimpleNamespace(repository=tmp_path, inspect=lambda *a: {}, review_workspace=lambda *a: str(tmp_path),
                           _git=lambda *a, **k: "" if a[0] == "status" else "candidate",
                           prepare=lambda *a: {"path": str(workspace), "branch": "harness/t", "base": "base", "task_id": "t"},
-                          capture=lambda ws: {"revision": "candidate", "base": "base", "tree": "tree"})
+                          capture=lambda ws: {"revision": "candidate", "base": "base", "tree": "tree",
+                                              "author": "worker:implementation"})
     executor = Executor(svc, git, FileArtifacts(str(tmp_path / "artifacts")))
     runs = []
 
@@ -385,7 +386,7 @@ def test_cycle_policy_persists_in_postgres_across_instances(isolated_pgstore):
     LocalCycle(svc).start("c1", CORR, 2)
     task(svc, "t1")
     assert LocalCycle(svc, FakeExecutor(svc)).step("c1")["cycle"]["executions"] == 1
-    again = Harness(isolated_pgstore, organization())  # a new process over the same schema
+    again = Harness(isolated_pgstore, organization())  # a new instance over the same schema
     with pytest.raises(ContractError, match="Conflicting cycle policy"):
         LocalCycle(again).start("c1", CORR, 5)
     assert LocalCycle(again).start("c1", CORR, 2)["executions"] == 1
