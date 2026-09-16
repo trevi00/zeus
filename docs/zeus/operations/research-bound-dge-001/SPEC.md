@@ -137,3 +137,21 @@ Automated Codex research/proposer/attacker/arbiter session dispatch with authent
 receipts, independent role context and actual budgets; formal verified ontology/topology promotion
 with exact candidate/evidence/reviewer binding and transactional write; actual product/human
 acceptance where required. This PR must not label these done or fabricate such executions.
+
+## Owner review R1: preserve unresolved findings across rounds
+
+Candidate f10832d7f56434d1285b148b7c5d0d344bc5b7b4 passes a critical finding with disposition
+blocking in round 1 to revise; round 2 can submit zero findings and accept with zero dispositions.
+Observed state: unresolved 1 -> 0, design_approved, without any resolution event. Deterministic
+MemoryStore fixture in the owner's D artifact check-carry.py; no real debate/model execution.
+This violates acceptance row 3 and the user's fixed residual principle. Do not reopen other rows.
+
+Clarify the SAME state design: a finding's identity/content/severity is stable for the session;
+all unresolved findings persist into the next round even when its attacker omits them. Arbitration
+must cover the union of carried unresolved findings and current findings. No id reuse may silently
+replace/downgrade a prior critical finding. An explicit resolved disposition with reason can close
+the carried finding; deferred remains forbidden for critical findings. Preserve all history.
+The implementation gate must never approve an unresolved session. Add regressions proving the
+reported omission and id-reuse/downgrade are refused, while explicit later resolution can approve.
+Exercise the carry/refusal on isolated PG too. Tests are injected operator fixtures, not a live
+three-agent debate. Update RUNBOOK/contracts as needed. No new unrelated behavior.
