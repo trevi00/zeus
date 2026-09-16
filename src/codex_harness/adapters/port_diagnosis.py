@@ -40,7 +40,7 @@ CAPTURE_SECONDS = 10.0
 
 # Why a vantage observed nothing. None of these is a connection result.
 NOT_OBSERVED = ("command_failed", "unrecognised_reply", "not_available", "no_container",
-                "did_not_finish")
+                "did_not_finish", "no_budget")
 
 NARROWINGS = {
     "service": "the service in the container was not answering on the container's own port",
@@ -242,13 +242,20 @@ def observe(port, *, service, container=None, container_lookup=None, seconds=CAP
         worker.start()
         workers.append((name, worker))
 
-    budget = max(0.0, deadline - time.monotonic())
-    probe_bound = min(PROBE_SECONDS, budget) if budget else 0.0
-    ask("container", lambda: _tcp_in_container(container, service, probe_bound))
-    ask("windows", lambda: _tcp_from_windows(port, probe_bound))
-    ask("wsl", lambda: _tcp_from_wsl(port, probe_bound))
-    for _, worker in workers:
-        worker.join(max(0.0, deadline - time.monotonic()))
+    probe_bound = min(PROBE_SECONDS, max(0.0, deadline - time.monotonic()))
+    if probe_bound > 0:
+        ask("container", lambda: _tcp_in_container(container, service, probe_bound))
+        ask("windows", lambda: _tcp_from_windows(port, probe_bound))
+        ask("wsl", lambda: _tcp_from_wsl(port, probe_bound))
+        for _, worker in workers:
+            worker.join(max(0.0, deadline - time.monotonic()))
+    else:
+        # The budget was gone before a single probe could start. Asking with no time at all would
+        # make a socket refuse instantly and a command fail instantly, and either would be written
+        # down as an answer. Nothing was observed here, and that is what is recorded.
+        with guard:
+            for name in VANTAGES:
+                live[name] = _unobserved("probe", "no_budget")
 
     where = context(max(0.0, deadline - time.monotonic()))
 

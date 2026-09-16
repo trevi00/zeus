@@ -284,7 +284,7 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
 
-### 5.1 진단 회귀 (`tests/test_port_diagnosis.py` 27건 + `tests/test_verification.py` 2건)
+### 5.1 진단 회귀 (`tests/test_port_diagnosis.py` 29건 + `tests/test_verification.py` 2건)
 
 이전 head(`db42fb2`)의 모듈로 갈아 끼워 새 검사를 돌렸다. **17건이 실패하지만 전부가 반례는 아니다.** 실제로 틀린
 답을 얻어낸 것과 키·서명이 바뀌어 실패한 것을 갈라 적는다.

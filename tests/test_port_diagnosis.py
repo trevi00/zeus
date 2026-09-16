@@ -303,3 +303,26 @@ def test_a_validated_refusal_records_the_form_it_matched_not_the_line(monkeypatc
     assert record["reachable"] is False and record["observed"] is True
     assert record["said"] == "Connection refused"
     assert "127.0.0.1:6379" not in str(record), "the line itself is not copied"
+
+
+def test_a_probe_given_no_time_at_all_observes_nothing():
+    """A socket asked with a zero budget refuses instantly. That is not the port refusing."""
+    listener = socket.socket()
+    listener.bind(("127.0.0.1", 0))
+    listener.listen(1)
+    port = listener.getsockname()[1]
+
+    def eats_the_budget(seconds):
+        time.sleep(0.4)
+        return "abc123"
+
+    try:
+        record = port_diagnosis.observe(port, service="postgres", container_lookup=eats_the_budget,
+                                        seconds=0.2)
+    finally:
+        listener.close()
+
+    assert record["verdict"] == "undetermined"
+    for name, observation in record["observations"].items():
+        assert observation["reachable"] is None, name
+        assert observation["why"] == "no_budget", name
