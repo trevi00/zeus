@@ -1,6 +1,7 @@
 # Autonomous DGE delivery record
 
-Status: real bounded autonomous cycle ACCEPTED and promoted; final PR CI pending.
+Status: real bounded autonomous cycle ACCEPTED and promoted. PR #117 merged as `2bcb390` after
+[CI 35126407879](https://github.com/trevi00/zeus/actions/runs/35126407879) passed on attempt 1.
 Two earlier actual canaries stopped at research validation and remain recorded below.
 Completion is judged against [SPEC.md](SPEC.md). This is one host/task, not unattended 24/7
 operation or full source-asset absorption.
@@ -120,7 +121,7 @@ dispatch until independently accepted.
 
 ## Final delivery gate and limits
 
-- Final PR CI on Windows/Linux and actual integration must pass before owner merge.
+- Final PR CI passed on Windows/Linux and actual integration before owner merge; this gate is closed.
 - The code does not schedule unlimited new work, autonomously merge/deploy, qualify model-tier
   transfers or convert debate agreement into factual truth. Human/product/device acceptance and
   full asset analysis remain their existing separate goals. No broad issue is closed by this run.

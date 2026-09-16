@@ -1,0 +1,403 @@
+{
+  "id": "worker-ssot-adoption-001",
+  "status": "accepted",
+  "reason_code": "promoted",
+  "manifest_sha256": "acae63a82a296627b193907377fd6af61b10493696e8f48a76fa7ba3e49a9468",
+  "goal": {
+    "path": "docs/zeus/operations/GOAL.md",
+    "bytes": 7287,
+    "sha256": "b5739f4bbfc4333ecab215f030f455b54ea012a95777e68a3da22ae8978602f2",
+    "criterion": "Absorb one reviewed local harness asset into the existing worker profile through the verified autonomous cycle",
+    "base_revision": "c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976"
+  },
+  "starts": {
+    "reserved": 6,
+    "settled": 6,
+    "slots": [
+      {
+        "id": "fe6da77f4db1443fb7c22962cbb5c8b0",
+        "kind": "task",
+        "agent": "lead:researcher",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "f146fcf6bfdf4036bb732b5e79884e6b",
+        "kind": "task",
+        "agent": "lead:proposer",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "46b1358cea5f416cbb4b91b15f3bab7c",
+        "kind": "task",
+        "agent": "lead:attacker",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "91cbaf1675744c06a5d8fd714dcc0d7f",
+        "kind": "task",
+        "agent": "lead:arbiter",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "86daf2d6eb7f4c8fa4b0f1d7deea01f9",
+        "kind": "task",
+        "agent": "worker:implementation",
+        "provider": "claude",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": "worker-ssot-adoption-001.impl"
+      },
+      {
+        "id": "44421d84ad5e44bc98ead0918bc3b6e9",
+        "kind": "decision",
+        "agent": "lead:improvement",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": "worker-ssot-adoption-001.impl"
+      }
+    ]
+  },
+  "invocations": {
+    "review": 1,
+    "arbiter": 1,
+    "attacker": 1,
+    "proposer": 1,
+    "researcher": 1,
+    "implementation": 1
+  },
+  "roles": {
+    "arbiter": {
+      "agent": "lead:arbiter",
+      "stage": "dge:arbiter",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "8d49f616-1591-50bd-ab76-ca5a210afec3",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ac8d-1d71-7530-8219-4309ff462fdf",
+        "invocation": 1,
+        "output_sha256": "de4ba0f9983a3d1523bf1b030dfdaf201df0dbdfe4d3e98506d129294260ff0c",
+        "reservation_id": "a4c00574e536e31a1a30fbef38ca2d72167496de4fe30456a2ff7da7262beefe"
+      },
+      "generation": 1,
+      "base_revision": "c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976",
+      "execution_ref": "sha256:5969903cf775381be0fd701f674e9fa0213e52d0a64053bf76413bcfcc902166",
+      "output_sha256": "de4ba0f9983a3d1523bf1b030dfdaf201df0dbdfe4d3e98506d129294260ff0c"
+    },
+    "attacker": {
+      "agent": "lead:attacker",
+      "stage": "dge:attacker",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "7f87dc01-555b-5610-98a7-5c8556daeed1",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ac8a-f2ff-7f73-96e3-f0a940582b1f",
+        "invocation": 1,
+        "output_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36",
+        "reservation_id": "e1d69f3b808a35df288d03a01fb0455a0f81e616c00fa567d646f34234ff4aec"
+      },
+      "generation": 1,
+      "base_revision": "c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976",
+      "execution_ref": "sha256:00643bd6e0ac81e0a1f9a93647183eb067cb46660b2625456ef5579f5ded0fe2",
+      "output_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    "proposer": {
+      "agent": "lead:proposer",
+      "stage": "dge:proposer",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "cd61e0c9-7324-53e0-87b3-8d672643d3e8",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ac89-675d-7a50-a3d4-1ab1c7a531e1",
+        "invocation": 1,
+        "output_sha256": "ead354d8aadb9b5a5be78191fae310e814b6e28d1a697165d4ac1b919de6ea36",
+        "reservation_id": "317747cbdc5447c2d09f412de55d1ec791931875dfc760c36f49b8272bf77100"
+      },
+      "generation": 1,
+      "base_revision": "c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976",
+      "execution_ref": "sha256:aa3a60d81163a4e1a6214d774b025935c11b109cc89fa38e362cf2015aa43f3b",
+      "output_sha256": "ead354d8aadb9b5a5be78191fae310e814b6e28d1a697165d4ac1b919de6ea36"
+    },
+    "researcher": {
+      "agent": "lead:researcher",
+      "stage": "dge:researcher",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "0e487f41-f2ba-5f76-a737-34421d8d1f55",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ac86-2154-7a31-87f0-b957f1221aec",
+        "invocation": 1,
+        "output_sha256": "0087e1e0557367205eab4668cad79680afb6a8f29df3d41b86be280aeb396b5d",
+        "reservation_id": "368374b53f3347865cf35778b5605cb8b8d9759a32e82c0ae0d7379815db77f8"
+      },
+      "generation": 1,
+      "base_revision": "c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976",
+      "execution_ref": "sha256:019c55d4face49dda1d4f41ea4824a27d4d3a2cdb424ef5e0905e32f2fe1013f",
+      "output_sha256": "0087e1e0557367205eab4668cad79680afb6a8f29df3d41b86be280aeb396b5d"
+    }
+  },
+  "promotion": {
+    "id": "worker-ssot-adoption-001",
+    "edges": 4,
+    "nodes": [
+      "verified:worker-ssot-adoption-001:goal",
+      "verified:worker-ssot-adoption-001:research",
+      "verified:worker-ssot-adoption-001:design",
+      "verified:worker-ssot-adoption-001:candidate",
+      "verified:worker-ssot-adoption-001:verification"
+    ],
+    "cached": false,
+    "repository": "verified:worker-ssot-adoption-001",
+    "graph_sha256": "fcb9e484a0ac0657f0a5a972cc5554bc5566853d6e77e6bb9ce01ea812f28740"
+  },
+  "durations": {
+    "arbiter": 133.31155190000027,
+    "attacker": 142.18218909999996,
+    "proposer": 100.81772360000105,
+    "promotion": 0.07009290000132751,
+    "researcher": 214.87549540000145,
+    "implementation": 309.73030780000045
+  },
+  "claimed_at": "2026-09-16T23:20:57.928294+00:00",
+  "finished_at": "2026-09-16T23:35:59.692910+00:00",
+  "owner_checks": {
+    "base": "c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976",
+    "candidate": "13408e39df19ce69f0ece1f6ab8fcabf9e344cfe",
+    "characters": 5977,
+    "source_count": 6,
+    "unchanged_authority_fields": true,
+    "exact_source_append": true,
+    "changed": [
+      "docs/zeus/operations/worker-ssot-adoption-001/ADOPTION.md",
+      "src/codex_harness/resources/worker-profile-v1.json",
+      "src/codex_harness/resources/worker-profile-v1.md"
+    ],
+    "checks": [
+      {
+        "name": "profile",
+        "exit_code": 0,
+        "sha256": "6d589754e01ec36e2505779f4a96640e1cdd77445cc08b4a32b745f3319e0744"
+      },
+      {
+        "name": "ruff",
+        "exit_code": 0,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      }
+    ]
+  },
+  "actual_pg": {
+    "nodes": [
+      [
+        "verified:worker-ssot-adoption-001:candidate",
+        "candidate",
+        "13408e39df19ce69f0ece1f6ab8fcabf9e344cfe"
+      ],
+      [
+        "verified:worker-ssot-adoption-001:design",
+        "design",
+        "5b30acbc399a5136338a77896edf51d7cddaabd53001131ade0f1a348da7449b"
+      ],
+      [
+        "verified:worker-ssot-adoption-001:goal",
+        "goal",
+        "b5739f4bbfc4333ecab215f030f455b54ea012a95777e68a3da22ae8978602f2"
+      ],
+      [
+        "verified:worker-ssot-adoption-001:research",
+        "research",
+        "6a310279e1756788db065a20dc2fb11b602146deed47279d49e05d2ef26a1716"
+      ],
+      [
+        "verified:worker-ssot-adoption-001:verification",
+        "verification",
+        "179977d43b5218ca6628f24371e2e00f971245f3ce92492d1b1d92a9652c7a1f"
+      ]
+    ],
+    "edges": [
+      [
+        "verified:worker-ssot-adoption-001:candidate",
+        "verified:worker-ssot-adoption-001:design",
+        "implements"
+      ],
+      [
+        "verified:worker-ssot-adoption-001:candidate",
+        "verified:worker-ssot-adoption-001:verification",
+        "verified_by"
+      ],
+      [
+        "verified:worker-ssot-adoption-001:design",
+        "verified:worker-ssot-adoption-001:research",
+        "derived_from"
+      ],
+      [
+        "verified:worker-ssot-adoption-001:research",
+        "verified:worker-ssot-adoption-001:goal",
+        "derived_from"
+      ]
+    ]
+  },
+  "observations": {
+    "buckets": {
+      "observation_audit": 12,
+      "observations": 266,
+      "observation_quarantine": 0,
+      "observation_alerts": 0,
+      "observation_collections": 2,
+      "observation_terminations": 6
+    },
+    "spool_files": [
+      "48f328e36260438584d684140752db57.0000.jsonl"
+    ],
+    "spool_unacknowledged_bytes": 1021,
+    "runtime_directory_bytes": 1466,
+    "live_writer_runs": [],
+    "limits": {
+      "per_run_unacknowledged_bytes": 33554432,
+      "segment_bytes": 4194304,
+      "finished_run_retention_seconds": 604800,
+      "note": "the per-run limit bounds live producers; the directory total is the sum over producers plus finished runs inside the retention window, not a hard cap"
+    },
+    "process_health": [
+      {
+        "component": "cli.observe",
+        "counters": {
+          "emitted": 1
+        },
+        "host": "DESKTOP-T38M60T",
+        "inherited_pending_alerts": {},
+        "last_defect": null,
+        "pending_alerts": [],
+        "pid": 16752,
+        "process_run_id": "48f328e36260438584d684140752db57",
+        "role": null,
+        "sequence_next": 2,
+        "sink": "available",
+        "spool": {
+          "limit_bytes": 33554432,
+          "rotations": 0,
+          "unacknowledged_bytes": 1021
+        },
+        "updated_at": "2026-09-16T23:36:35.190219+00:00"
+      }
+    ],
+    "pending_alert_files": {},
+    "pending_terminations": {
+      "local": [],
+      "sink": []
+    },
+    "alerts": {
+      "recorded": 0,
+      "pending_locally": null
+    },
+    "orphans": {
+      "as_of": "2026-09-16T23:36:35.762235+00:00",
+      "in_progress": [],
+      "orphan": [],
+      "note": "orphan means reserved without a live lease; it is an observation, the invocation ledger's reclaim closes it as unsettled_unknown"
+    },
+    "observer": null,
+    "authority": "informational_only"
+  },
+  "reviews": [
+    {
+      "risks": [
+        "Only 23 characters remain under the profile limit.",
+        "Full platform/integration CI remains with owner/CI; acceptance does not close the broader operation.",
+        "Fixtures do not establish model compliance. Upstream license and private incident claims remain unverified."
+      ],
+      "origin": {
+        "plan": {
+          "origin": {}
+        }
+      },
+      "reason": "Accept candidate 13408e39df19ce69f0ece1f6ab8fcabf9e344cfe within the three-file review frame. Guidance, authority, migration, provenance, digest/size and delivery conditions pass. Confirmed exact appended source, unchanged prior guidance and manifest fields, and 5977/6000 characters. Against candidate src using the designated interpreter: 19 focused tests passed in 4.13s; lint, invariant assertions and diff checks passed. Checkout remains clean; no checkout files changed.",
+      "blocked": false,
+      "accepted": true,
+      "candidate": {
+        "base": "c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976",
+        "path": "D:\\workspaces\\zeus\\artifacts\\worker-ssot-adoption-001\\run-001\\runtime\\workspaces\\8b6a610c-0264-581a-a085-345c3e23c3ce",
+        "tree": "2425cd001086bc678088dc170459502986ee8594",
+        "author": "worker:implementation",
+        "branch": "harness/8b6a610c-0264-581a-a085-345c3e23c3ce",
+        "task_id": "8b6a610c-0264-581a-a085-345c3e23c3ce",
+        "revision": "13408e39df19ce69f0ece1f6ab8fcabf9e344cfe",
+        "diff_hash": "c3f5aa474a48aab035ab5d19f9c66d821412865951abd3a4b7d0c0b1455a2954",
+        "repository": "github:trevi00/zeus",
+        "audit_lifecycle_version": 1
+      },
+      "release_id": "ec9f17536f9e9860f278d4fc3ddd62213018e0aa83c235534056247c6833c1be",
+      "execution_ref": "sha256:89ae6ec528f1929709d60372471b3eace8be605fd7fe1437978d875d5fac422a",
+      "basis_revision": "13408e39df19ce69f0ece1f6ab8fcabf9e344cfe",
+      "sre_assessment": "Windows fixtures verify refusal, delivery, timeout and session-isolation behavior. No new retries, writers or services; no production reliability improvement claimed. Rollback restores the document and manifest together from base c7fecbfc48c0d6f2acde2f2dad4d8eb3322af976.",
+      "arc42_assessment": "Existing document/manifest \u2192 verified loader \u2192 Claude prompt/settings \u2192 delivery receipt path preserves INV-WORKER-PROFILE-001 and review authority. No new runtime, dependency, persistence or permission boundary. Benefit is explicit SSOT guidance coverage; behavioral improvement is unmeasured."
+    }
+  ],
+  "evidence": {
+    "source-code-quality.md": {
+      "sha256": "0c23345fb447a53ad089ec73be685de50b99793084b5549de46c1e3cd5e0bfa9",
+      "bytes": 6854
+    },
+    "owner-checks.json": {
+      "sha256": "4e1b1194e38b0ab5e745c5f9cff575884283d977cbcef3bab35bf15047d3dd89",
+      "bytes": 750
+    },
+    "profile.log": {
+      "sha256": "6d589754e01ec36e2505779f4a96640e1cdd77445cc08b4a32b745f3319e0744",
+      "bytes": 101
+    },
+    "ruff.log": {
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    "run-001\\manifest.json": {
+      "sha256": "524f76bb80cdfef362c6154b2547db0b48da51f52fe7e4140fda5c9b01d1fdbd",
+      "bytes": 3388
+    },
+    "run-001\\receipt.json": {
+      "sha256": "f1ee00ef27859e2d909d30385e66089e8cd5f4d80c0a44177932d1df9257a91e",
+      "bytes": 664
+    },
+    "run-001\\run.stdout": {
+      "sha256": "ca8195ca3dc6a01e284b40431b019a67a82f5e1bafc921da7ebf6a1e8c7fd2c1",
+      "bytes": 10425
+    },
+    "run-001\\run.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "run-001\\records.json": {
+      "sha256": "5eb5a5d2171e52b8952416426f7d6dbea8b29b0d7527646e53c46a50eec3ea18",
+      "bytes": 1036351
+    },
+    "run-001\\observation-collect.json": {
+      "sha256": "ed8d89c47efdce2a91e0234773d5d3981c08b08a612fb8859d24e1801a1d7d12",
+      "bytes": 524
+    },
+    "run-001\\observation-status.json": {
+      "sha256": "03ccc6901162272df1ccd27c80c3162d85fcaedc71246ca6b13e83c7c1394c7e",
+      "bytes": 1794
+    }
+  }
+}

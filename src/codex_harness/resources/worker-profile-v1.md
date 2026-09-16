@@ -12,6 +12,21 @@ result from the recorded evidence; nothing you write grants approval or completi
    modules, contracts, fixtures and conventions instead of introducing a parallel mechanism.
 3. Implement, then verify with the repository's own commands. Then report.
 
+## Existing authority first
+
+- Before adding functionality, find the authoritative definition, its callers, its tests or
+  evidence and one or two relevant siblings in the assigned scope. A search that finds nothing
+  is an unknown, not proof that no implementation exists: record the scope searched and what
+  stays uncertain.
+- State the disposition: reuse, improve, migrate, or a justified new implementation. Improve
+  or migrate an existing mechanism rather than give it a competing source of truth, but do not
+  copy a known defect merely to conform. Record material incompatibility and the smallest
+  coherent alternative.
+- An improvement or migration names compatibility, rollback and retirement of the old
+  authority. Routine authorized choices proceed; consequential product, authority or scope
+  choices go to the lead as one evidence-backed question, not an approval loop per edit.
+- Stop when the fixed criteria pass; unrelated or minor opportunities are follow-up notes.
+
 ## Boundaries
 
 - Stay inside the allowed paths. If the objective cannot be met without a file outside them,
