@@ -227,10 +227,66 @@ def role_binding(task: dict, *, role: str, base_revision: str, correlation: str)
         raise ContractError("role_task_base_mismatch")
     if type(task.get("generation")) is not int or type(task.get("attempt")) is not int:
         raise ContractError("role_task_unbound")
-    answer = {k: v for k, v in result.items() if k not in {"execution_ref", "basis_revision", "role_execution"}}
+    answer = {k: v for k, v in result.items() if k not in HOST_RESULT_FIELDS}
     return {"origin": ORIGIN_EXECUTOR, "task_id": task["id"], "generation": task["generation"], "attempt": task["attempt"],
             "agent": task["agent"], "stage": "dge:" + role, "base_revision": base_revision,
             "execution_ref": result["execution_ref"], "output_sha256": digest(answer), "answer": answer}
+
+
+HOST_RESULT_FIELDS = {"execution_ref", "basis_revision", "role_execution", "candidate", "origin", "evidence_inspection",
+                      "release_id", "shortlist_execution_ref"}
+ACCEPTED_INVOCATION = "accepted"
+
+
+def execution_evidence(record: dict, artifact, reservation, *, bucket: str, stage: str | None, basis_revision: str | None,
+                       evidence_ref: str | None = None, exact: bool = False) -> dict:
+    """The persisted execution artifact (what the executor stored under `execution_ref`) must be the
+    execution that produced the stored answer: its `answer` is the record's result (exactly, for role
+    outputs), its invocation names an authoritative settled `accepted` reservation of this record's
+    bucket, id, generation, attempt and stage, and its context binding names the base revision and the
+    exact input evidence. A row, an accepted flag or a matching revision alone never proves this. Raised
+    codes are fixed; nothing here reads files or a store."""
+    if not isinstance(artifact, dict) or not isinstance(artifact.get("answer"), dict):
+        raise ContractError("evidence_artifact_invalid")
+    result = record.get("result") if isinstance(record.get("result"), dict) else {}
+    answer = artifact["answer"]
+    stored = {k: v for k, v in result.items() if k not in HOST_RESULT_FIELDS} if exact else {k: result.get(k) for k in answer}
+    if stored != answer:
+        raise ContractError("evidence_answer_mismatch")
+    invocation = artifact.get("invocation") if isinstance(artifact.get("invocation"), dict) else {}
+    reservation_id = invocation.get("reservation")
+    if not (isinstance(reservation_id, str) and isinstance(reservation, dict) and reservation.get("id") == reservation_id):
+        raise ContractError("evidence_reservation_unbound")
+    identity = (reservation.get("bucket"), reservation.get("task_id"), reservation.get("generation"), reservation.get("attempt"))
+    if identity != (bucket, record.get("id"), record.get("generation"), record.get("attempt")) or reservation.get("stage") != stage:
+        raise ContractError("evidence_reservation_unbound")
+    if reservation.get("status") != "settled" or reservation.get("outcome") != ACCEPTED_INVOCATION \
+            or invocation.get("outcome") != ACCEPTED_INVOCATION:
+        raise ContractError("evidence_reservation_unsettled")
+    binding = artifact.get("research_binding")
+    if stage is not None or binding is not None:
+        if not (isinstance(binding, dict) and binding.get("stage") == stage and binding.get("basis_revision") == basis_revision
+                and (evidence_ref is None or binding.get("evidence_ref") == evidence_ref)):
+            raise ContractError("evidence_basis_mismatch")
+    assignment = artifact.get("execution_assignment") if isinstance(artifact.get("execution_assignment"), dict) else {}
+    thread = artifact.get("thread_id")
+    return {"reservation_id": reservation_id, "invocation": reservation.get("invocation"),
+            "thread_id": thread if isinstance(thread, str) else None,
+            "provider": assignment.get("provider") if isinstance(assignment.get("provider"), str) else None,
+            "output_sha256": digest(answer)}
+
+
+def evidence_ref_for(details) -> str:
+    """The content address the executor gives the input evidence it compiled the context from."""
+    return "sha256:" + digest(details)
+
+
+def independent_roles(bindings: dict) -> None:
+    """Fresh sessions per role: two roles sharing one provider thread means one resumed the other."""
+    threads = [b.get("evidence", {}).get("thread_id") for b in bindings.values()]
+    threads = [t for t in threads if isinstance(t, str)]
+    if len(threads) != len(set(threads)):
+        raise ContractError("role_session_shared")
 
 
 # ----- promoted graph -----------------------------------------------------------------------------
@@ -255,8 +311,10 @@ def verified_graph(run_id: str, refs: dict) -> dict:
                              "sha256": digest(refs["role_bindings"])}),
              node("candidate", {"revision": refs["candidate"]["revision"], "base": refs["candidate"]["base"],
                                 "tree": refs["candidate"]["tree"], "diff_hash": refs["candidate"]["diff_hash"],
-                                "task_id": refs["implementation_task_id"], "execution_ref": refs["implementation_execution_ref"]}),
+                                "task_id": refs["implementation_task_id"], "execution_ref": refs["implementation_execution_ref"],
+                                "reservation_id": refs.get("implementation_reservation_id")}),
              node("verification", {"decision_id": refs["decision_id"], "review_execution_ref": refs["review_execution_ref"],
+                                   "review_reservation_id": refs.get("review_reservation_id"),
                                    "inspection_id": refs["inspection_id"], "operation_id": refs["operation_id"],
                                    "sha256": digest([refs["decision_id"], refs["review_execution_ref"], refs["inspection_id"]])})]
     ids = [n["id"] for n in nodes]

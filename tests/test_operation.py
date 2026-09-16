@@ -199,8 +199,8 @@ def test_normal_two_stage_success_is_accepted_with_two_settled_slots_and_no_cond
     assert receipt["status"] == "accepted" and receipt["exit_code"] == 0 and receipt["lead_accepted"] is True
     assert executor.calls == ["task", "decision"] and len(budget.reserved) == 2 == len(budget.settled)
     assert receipt["calls"] == {"reserved": 2, "settled": 2, "slots": [
-        {"id": "slot-1", "kind": "task", "agent": "worker:implementation", "outcome": "succeeded", "settled": True, "settle_error": None},
-        {"id": "slot-2", "kind": "decision", "agent": "lead:improvement", "outcome": "succeeded", "settled": True, "settle_error": None}]}
+        {"id": "slot-1", "kind": "task", "agent": "worker:implementation", "provider": "claude", "outcome": "succeeded", "settled": True, "settle_error": None},
+        {"id": "slot-2", "kind": "decision", "agent": "lead:improvement", "provider": "codex", "outcome": "succeeded", "settled": True, "settle_error": None}]}
     assert budget.reserved[0]["per_host"] == 4 and budget.reserved[0]["total"] == 8 and budget.reserved[0]["model"] == "claude-fixture-model"
     assert receipt["evidence"]["candidate"]["revision"] == "c" * 40 and receipt["evidence"]["inspection_id"].startswith("insp-")
     assert receipt["collection"]["sink_failures"] == 0 and collector.calls == 1
@@ -310,7 +310,7 @@ def test_first_settlement_failure_stops_before_the_reviewer_reservation():
     assert receipt["lead_accepted"] is False and receipt["decision_id"] is None
     assert executor.calls == ["task"] and len(budget.reserved) == 1 and budget.settled == [], "reviewer calls and reservation stay zero"
     assert receipt["calls"] == {"reserved": 1, "settled": 0, "slots": [
-        {"id": "slot-1", "kind": "task", "agent": "worker:implementation", "outcome": "succeeded", "settled": False, "settle_error": "OSError"}]}
+        {"id": "slot-1", "kind": "task", "agent": "worker:implementation", "provider": "claude", "outcome": "succeeded", "settled": False, "settle_error": "OSError"}]}
     assert receipt["cycle"]["cycle"]["executions"] == 1
     with svc.store.transaction() as tx:
         assert tx.scan("decisions_pending") == [] and tx.get("operations", "op-001")["status"] == "failed"

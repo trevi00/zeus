@@ -1,9 +1,11 @@
-"""INV-AUTONOMOUS-001 with labelled fixtures: the executor, budget and role outputs below are fault
-injection, never Claude, Codex or independent model debate."""
+"""INV-AUTONOMOUS-001 with labelled fixtures: the executor, budget, artifact port, clock and role
+outputs below are fault injection, never Claude, Codex or independent model debate."""
+import hashlib
 import json
 
 import pytest
 
+from codex_harness.adapters.autonomous_evidence import EvidenceUnavailable
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.autonomous import AutonomousRefused, AutonomousRun
@@ -17,12 +19,15 @@ from codex_harness.domain.autonomous import (
     validate_autonomous_manifest,
     verified_graph,
 )
-from codex_harness.domain.model import envelope
+from codex_harness.domain.model import canonical, envelope
 from tests.test_operation import BOUND_GOAL, GOAL, IDENTITY, Bus, Collector, FakeBudget
+from tests.test_operation import build as build_operation
+from tests.test_operation import valid as operation_manifest_valid
 
 CANARY = "CANARY-must-never-be-emitted"
 BASE = "a" * 40
 SOURCE_SHA = "b" * 64
+LATE = "2031-01-01T00:00:00+00:00"  # past the fixed deadline below
 
 
 def manifest(**overrides):
@@ -55,12 +60,63 @@ ROLE_OUTPUTS = {"researcher": RESEARCH, "proposer": {"summary": "bind the plan",
                             "dispositions": [{"finding_id": "f1", "decision": "deferred", "reason": "backlog"}]}}
 
 
-class FakeExecutor:
-    """Settles the guarded row the way the real executor would (fixture); counts provider entries."""
+class Artifacts:
+    """Content-addressed in-memory stand-in for FileArtifacts (fixture): put/document with integrity."""
 
-    def __init__(self, svc, outputs=None, verdict=True, role_status="succeeded", wrong_agent=False):
-        self.svc, self.outputs, self.verdict = svc, {**ROLE_OUTPUTS, **(outputs or {})}, verdict
+    def __init__(self):
+        self.bodies = {}
+
+    def put(self, body):
+        key = hashlib.sha256(body.encode("utf-8")).hexdigest()
+        self.bodies[key] = body
+        return "sha256:" + key
+
+    def corrupt(self, ref):
+        self.bodies[ref[7:]] = self.bodies[ref[7:]] + " "  # bytes no longer hash to the reference
+
+    def document(self, ref):
+        if ref not in {"sha256:" + k for k in self.bodies}:
+            raise FileNotFoundError(ref)
+        body = self.bodies[ref[7:]]
+        if hashlib.sha256(body.encode("utf-8")).hexdigest() != ref[7:]:
+            raise EvidenceUnavailable("evidence_corrupt")  # what the FileArtifacts-backed port raises
+        return json.loads(body)
+
+
+class Clock:
+    def __init__(self, now="2029-01-01T00:00:00+00:00"):
+        self.now, self.after_review = now, None
+
+    def __call__(self):
+        return self.now
+
+
+class FakeExecutor:
+    """Settles the guarded row the way the real executor would and persists the execution artifact plus
+    the settled invocation reservation (fixture); `evidence` injects: none, corrupt, unrelated, verdict."""
+
+    def __init__(self, svc, artifacts, outputs=None, verdict=True, role_status="succeeded", wrong_agent=False,
+                 evidence="bound", shared_thread=False, clock=None):
+        self.svc, self.artifacts, self.outputs, self.verdict = svc, artifacts, {**ROLE_OUTPUTS, **(outputs or {})}, verdict
         self.role_status, self.wrong_agent, self.calls = role_status, wrong_agent, []
+        self.evidence, self.shared_thread, self.clock = evidence, shared_thread, clock
+
+    def _persist(self, tx, record, bucket, answer, stage, evidence_ref):
+        if self.evidence == "none":
+            return "sha256:" + "0" * 64
+        key = record["id"] if self.evidence != "unrelated" else "someone-else"
+        reservation = {"id": "res-" + record["id"], "bucket": bucket, "task_id": key, "generation": 1, "attempt": 1, "invocation": 1,
+                       "stage": stage, "status": "settled", "outcome": "accepted", "usage": {"source": "provider", "total_tokens": 1}}
+        tx.put("invocation_reservations", reservation["id"], reservation)
+        artifact = {"answer": answer, "thread_id": "thread-fixed" if self.shared_thread else "thread-" + record["id"],
+                    "invocation": {"reservation": reservation["id"], "outcome": "accepted"},
+                    "execution_assignment": {"provider": "codex" if bucket == "decisions_pending" or record["agent"].startswith("lead:") else "claude"}}
+        if stage is not None:
+            artifact["research_binding"] = {"stage": stage, "evidence_ref": evidence_ref, "basis_revision": BASE}
+        ref = self.artifacts.put(canonical(artifact))
+        if self.evidence == "corrupt":
+            self.artifacts.corrupt(ref)
+        return ref
 
     def execute_one(self, agent, expected=None):
         self.calls.append(agent)
@@ -71,7 +127,8 @@ class FakeExecutor:
             if task["agent"].startswith("lead:"):
                 role = details["role"]
                 task["status"] = self.role_status
-                task["result"] = {**self.outputs[role], "execution_ref": "sha256:" + "e" * 64, "basis_revision": BASE}
+                ref = self._persist(tx, task, "tasks", self.outputs[role], "dge:" + role, "sha256:" + hashlib.sha256(canonical(details).encode()).hexdigest())
+                task["result"] = {**self.outputs[role], "execution_ref": ref, "basis_revision": BASE}
                 if self.wrong_agent:
                     task["agent"] = "lead:improvement"
             else:
@@ -80,7 +137,9 @@ class FakeExecutor:
                 tx.put("evidence_inspections", inspection_id, {"id": inspection_id, "policy_hash": "ph", "verdict": "all_checked",
                        "binding": {"task_id": task["id"], "generation": 1, "attempt": 1, "source_revision": candidate["revision"]},
                        "denominator": {"claims": 1, "checked": 1, "missing": 0}})
-                task.update(status="succeeded", result={"summary": CANARY, "candidate": candidate, "execution_ref": "sha256:" + "e" * 64,
+                answer = {"summary": CANARY, "tests": ["python -m pytest -q"]}
+                ref = self._persist(tx, task, "tasks", answer, None, None)
+                task.update(status="succeeded", result={**answer, "candidate": candidate, "execution_ref": ref, "basis_revision": BASE,
                                                         "evidence_inspection": {"inspection_id": inspection_id, "verdict": "all_checked"}})
                 report = envelope("task.result", task["agent"], "lead:improvement", "implement",
                                   {"task_id": task["id"], "result": task["result"]}, task["message"]["correlation_id"])
@@ -92,17 +151,28 @@ class FakeExecutor:
         self.calls.append(agent)
         with self.svc.store.transaction() as tx:
             row = tx.get("decisions_pending", expected["id"])
-            row.update(status="succeeded", result={"accepted": self.verdict, "reason": CANARY, "execution_ref": "sha256:" + "f" * 64})
+            row.update(attempt=1, generation=1, lease_owner="fixture")
+            answer = {"accepted": self.verdict, "reason": CANARY}
+            ref = self._persist(tx, row, "decisions_pending", answer, None, None)
+            stored = {**answer, "execution_ref": ref, "basis_revision": BASE}
+            if self.evidence == "verdict":
+                stored["accepted"] = True  # the row claims acceptance the artifact never gave (fixture)
+            row.update(status="succeeded", result=stored)
             tx.put("decisions_pending", row["id"], row)
-            return row
+        if self.clock is not None and self.clock.after_review:
+            self.clock.now = self.clock.after_review  # the review returns after the deadline passed (fixture)
+        return row
 
 
-def build(**kwargs):
+def build(clock=None, **kwargs):
     svc = Harness(MemoryStore(), organization())
-    executor = FakeExecutor(svc, **kwargs)
+    artifacts = Artifacts()
+    clock = clock or Clock()
+    executor = FakeExecutor(svc, artifacts, clock=clock, **kwargs)
     budget = FakeBudget()
     run = AutonomousRun(svc, executor, Bus(), Workflow(svc.store, svc.org), budget, Collector(),
-                        verify_sources=lambda packet: [{**s, "bytes": 1} for s in packet["sources"]], repository="r")
+                        verify_sources=lambda packet: [{**s, "bytes": 1} for s in packet["sources"]], repository="r",
+                        clock=clock, evidence=artifacts)
     return svc, run, executor, budget
 
 
@@ -115,28 +185,34 @@ def test_manifest_reuses_operation_rules_and_refuses_naive_deadline_or_missing_r
         assert CANARY not in str(info.value)
 
 
-def test_normal_cycle_promotes_in_one_transaction_and_reports_six_starts():
+def test_normal_cycle_promotes_in_one_transaction_and_reports_six_starts_labels_durations_and_invocations():
     svc, run, executor, budget = build()
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
     assert receipt["status"] == "accepted" and receipt["exit_code"] == 0 and receipt["reason_code"] == "promoted"
     assert executor.calls == ["lead:researcher", "lead:proposer", "lead:attacker", "lead:arbiter", "worker:implementation", "lead:improvement"]
     assert receipt["starts"]["reserved"] == 6 == receipt["starts"]["settled"] == len(budget.reserved)
-    assert receipt["invocations"] == {"researcher": 0, "proposer": 0, "attacker": 0, "arbiter": 0}, "counted independently of slots"
+    assert [s["provider"] for s in receipt["starts"]["slots"]] == ["codex"] * 4 + ["claude", "codex"], "actual provider labels"
+    assert [s["provider"] for s in budget.reserved] == ["codex"] * 4 + ["claude", "codex"]
+    assert receipt["invocations"] == {"researcher": 1, "proposer": 1, "attacker": 1, "arbiter": 1, "implementation": 1, "review": 1}
+    assert set(receipt["durations"]) == {"researcher", "proposer", "attacker", "arbiter", "implementation", "promotion"}, "all stages kept"
     assert receipt["design"]["state"] == "design_approved" and receipt["residuals"] == {"critical": [], "minor": [{"id": "f1", "status": "deferred"}]}
     assert receipt["promotion"]["repository"] == "verified:auto-001" and len(receipt["promotion"]["nodes"]) == 5
-    assert receipt["roles"]["arbiter"]["origin"] == "executor_bound" and "answer" not in receipt["roles"]["arbiter"]
+    arbiter = receipt["roles"]["arbiter"]
+    assert arbiter["origin"] == "executor_bound" and "answer" not in arbiter and arbiter["evidence"]["reservation_id"].startswith("res-")
     with svc.store.transaction() as tx:
         session = tx.get("dge_sessions", "auto-001.design")
-        assert session["origin"] == "executor_bound" and session["owner"] == "auto-001" and session["research_binding"]["task_id"]
+        assert session["origin"] == "executor_bound" and session["owner"] == "auto-001" and session["research_binding"]["evidence"]["thread_id"]
         assert [e["origin"] for e in tx.scan("dge_events")] == ["executor_bound"] * 3 and all(e["binding"] for e in tx.scan("dge_events"))
         assert len(tx.scan("knowledge_nodes")) == 5 and len(tx.scan("knowledge_edges")) == 4
-        assert tx.get("promotions", "auto-001")["graph_sha256"] == receipt["promotion"]["graph_sha256"]
-        assert tx.get("operations", "auto-001.impl")["status"] == "accepted"
+        promotion = tx.get("promotions", "auto-001")
+        assert promotion["graph_sha256"] == receipt["promotion"]["graph_sha256"] and promotion["evidence"]["review_reservation_id"]
+        assert tx.get("operations", "auto-001.impl")["status"] == "accepted" and tx.get("operations", "auto-001.impl")["deadline"] == valid()["deadline"]
+        assert tx.get("tasks", tx.get("operations", "auto-001.impl")["assignment_message_id"])["message"]["when"]["deadline"] == valid()["deadline"]
     assert CANARY not in json.dumps(receipt) and CANARY not in json.dumps(AutonomousRun(svc).status("auto-001"))
     with pytest.raises(DgeRefused, match="session_owned"):
         DebateSessions(svc.store).submit("auto-001.design", {"schema": "urn:zeus:debate-event:1", "id": "op-1", "expected_version": 3,
                                                              "packet_digest": receipt["packet_digest"], "round": 1, "role": "proposer", "payload": {}})
-    replay = AutonomousRun(svc, FakeExecutor(svc), Bus(), None, FakeBudget(), Collector()).run(valid(), IDENTITY, BOUND_GOAL)
+    replay = AutonomousRun(svc, FakeExecutor(svc, Artifacts()), Bus(), None, FakeBudget(), Collector()).run(valid(), IDENTITY, BOUND_GOAL)
     assert replay["cached"] is True and replay["starts"] == receipt["starts"]
     with pytest.raises(AutonomousRefused, match="configuration_mismatch"):
         AutonomousRun(svc).run(valid(), {**IDENTITY, "runtime": "other"}, BOUND_GOAL)
@@ -146,6 +222,7 @@ def test_rejected_review_and_rejected_design_never_promote_or_dispatch_further()
     svc, run, executor, budget = build(verdict=False)
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
     assert receipt["status"] == "rejected" and receipt["reason_code"] == "review_rejected" and receipt["promotion"] is None
+    assert receipt["invocations"]["review"] == 1 and "implementation" in receipt["durations"]
     with svc.store.transaction() as tx:
         assert tx.scan("knowledge_nodes") == [] and tx.get("promotions", "auto-001") is None
     svc, run, executor, budget = build(outputs={"arbiter": {"verdict": "reject", "rationale": "no", "research_question": None,
@@ -154,6 +231,28 @@ def test_rejected_review_and_rejected_design_never_promote_or_dispatch_further()
     assert receipt["status"] == "rejected" and receipt["reason_code"] == "design_rejected" and len(executor.calls) == 4
     with svc.store.transaction() as tx:
         assert tx.get("operations", "auto-001.impl") is None
+
+
+@pytest.mark.parametrize("evidence, code, calls", [
+    ("none", "evidence_missing", 1), ("corrupt", "evidence_corrupt", 1), ("unrelated", "evidence_reservation_unbound", 1)])
+def test_missing_corrupt_or_unrelated_role_artifact_refuses_before_the_next_role(evidence, code, calls):
+    svc, run, executor, budget = build(evidence=evidence)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "failed" and receipt["reason_code"] == code and len(executor.calls) == calls
+    with svc.store.transaction() as tx:
+        assert tx.get("dge_sessions", "auto-001.design") is None, "no packet is frozen from an unproven execution"
+
+
+def test_mismatched_review_verdict_or_shared_role_session_never_promotes():
+    svc, run, executor, budget = build(evidence="verdict", verdict=False)  # row says accepted, artifact says rejected
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "promotion_evidence_unproven:evidence_answer_mismatch"
+    assert receipt["operation"]["status"] == "accepted", "the accepted operation row alone cannot promote"
+    with svc.store.transaction() as tx:
+        assert tx.scan("knowledge_nodes") == [] and tx.get("promotions", "auto-001") is None
+    svc, run, executor, budget = build(shared_thread=True)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "role_session_shared" and len(executor.calls) == 2
 
 
 def test_unbound_stale_or_unsupported_role_output_stops_before_the_next_role():
@@ -174,15 +273,45 @@ def test_unbound_stale_or_unsupported_role_output_stops_before_the_next_role():
     assert executor.calls == [] and budget.reserved == []
 
 
+def test_deadline_passing_after_the_review_or_before_the_worker_never_promotes():
+    clock = Clock()
+    clock.after_review = LATE
+    svc, run, executor, budget = build(clock=clock)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "expired" and receipt["reason_code"] == "deadline_expired" and receipt["promotion"] is None
+    assert receipt["operation"]["status"] == "accepted" and len(executor.calls) == 6, "late success authorizes nothing"
+    with svc.store.transaction() as tx:
+        assert tx.scan("knowledge_nodes") == [] and tx.get("promotions", "auto-001") is None
+    svc, run, executor, budget = build()
+    original = executor.execute_one
+
+    def late_arbiter(agent, expected=None):
+        row = original(agent, expected)
+        if agent == "lead:arbiter":
+            run.clock.now = LATE  # the clock passes the deadline between the design and the worker (fixture)
+        return row
+    executor.execute_one = late_arbiter
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["reason_code"] == "debate_refused:packet_expired" and len(executor.calls) == 4 and len(budget.reserved) == 4
+    # The child operation checks the propagated deadline before each provider start (no reservation).
+    svc, operation, executor, budget, _ = build_operation()
+    child = operation.run(operation_manifest_valid(), IDENTITY, BOUND_GOAL, deadline="2000-01-01T00:00:00+00:00")
+    assert child["status"] == "failed" and child["reason_code"] == "deadline_expired" and executor.calls == [] and budget.reserved == []
+
+
 def test_running_residue_is_refused_without_takeover_and_budget_refusal_ends_exhausted():
     svc, run, executor, budget = build()
     run.claim(valid(), IDENTITY, BOUND_GOAL)
     with pytest.raises(AutonomousRefused, match="running_residue"):
-        AutonomousRun(svc, FakeExecutor(svc), Bus(), Workflow(svc.store, svc.org), FakeBudget(), Collector()).run(valid(), IDENTITY, BOUND_GOAL)
+        AutonomousRun(svc, FakeExecutor(svc, Artifacts()), Bus(), Workflow(svc.store, svc.org), FakeBudget(), Collector()).run(valid(), IDENTITY, BOUND_GOAL)
     svc, run, executor, budget = build()
     run.budget = FakeBudget(refuse_after=2)
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
     assert receipt["status"] == "exhausted" and receipt["reason_code"] == "budget_exhausted" and len(executor.calls) == 2
+    svc, run, executor, budget = build()
+    run.budget = FakeBudget(refuse_after=5)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "exhausted" and receipt["reason_code"] == "operation_exhausted" and len(executor.calls) == 5
 
 
 def test_promotion_is_idempotent_refuses_conflict_and_rolls_back_with_the_receipt():

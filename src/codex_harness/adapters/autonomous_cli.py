@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from codex_harness.adapters.autonomous_evidence import ExecutionEvidence
 from codex_harness.adapters.dge_cli import read_document, repository_identity, verify_sources
 from codex_harness.adapters.operation_cli import (
     GitSource,
@@ -37,9 +38,11 @@ def run(service, args) -> dict:
     observer = build_observer(service.store, "cli.autonomous")
     try:
         executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False)
+        # The evidence port reads the very artifact store the executor persists execution results to.
         cycle = AutonomousRun(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org), CallBudget(),
                               build_collector(service.store, observer), verify_sources=lambda packet: verify_sources(packet, source),
-                              repository=repository_identity(repository), observer=observer)
+                              repository=repository_identity(repository), observer=observer,
+                              evidence=ExecutionEvidence(executor.artifacts))
         return cycle.run(manifest, bound, goal)
     finally:
         observer.close()

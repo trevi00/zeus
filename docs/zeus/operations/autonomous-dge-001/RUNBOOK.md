@@ -27,16 +27,31 @@ are produced by the role executions; `dge submit` refuses an autonomous-owned se
    `dge_role` through the outbox, bus delivery to that lead, claimed by `Executor.execute_one` under
    the machine `CallBudget`, executed read-only in a clean detached checkout at base with one provider
    entry (no handoff retry). The answer is bound to the persisted task row (agent, correlation,
-   action, role, base, execution_ref, generation, attempt) or the run stops (`role_task_*`).
+   action, role, base, execution_ref, generation, attempt) or the run stops (`role_task_*`), and then
+   to the execution artifact behind `execution_ref` read through the FileArtifacts-backed evidence
+   port: the artifact's own `answer` must equal the stored output, its invocation must name a settled
+   `accepted` reservation of that task/generation/attempt/stage `dge:<role>`, and its context binding
+   must name the base revision and the exact input evidence digest (`evidence_missing`,
+   `evidence_corrupt`, `evidence_answer_mismatch`, `evidence_reservation_unbound`,
+   `evidence_reservation_unsettled`, `evidence_basis_mismatch`). Two roles sharing one provider
+   thread stop the run (`role_session_shared`).
 3. The researcher output becomes the packet through the existing validator plus Git source
    verification; `needs_user` stops as `needs_user`. One round only: `revise` ends `exhausted`.
 4. Critical attacker findings need trigger, impact and mitigation; otherwise refused. Minor findings
    never block. Arbiter dispositions follow the existing DGE rules.
-5. Approved design launches `Operation.run` with the `.impl` v2 manifest (start cap six in total).
+5. Approved design launches `Operation.run` with the `.impl` v2 manifest (start cap six in total). The
+   run's absolute deadline travels into the child operation unchanged: it is checked before the worker
+   and before the reviewer reservation (`deadline_expired`, no slot taken), after the review returns
+   and again inside the promotion transaction. A late success promotes nothing (`expired`).
 6. Promotion re-reads the accepted operation, the succeeded worker task, the accepted `review_lead`
    decision for the same candidate revision, the all_checked inspection row and the owned session
-   inside the transaction that writes `verified:<run>` nodes/edges and the `promotions` receipt.
+   inside the transaction that writes `verified:<run>` nodes/edges and the `promotions` receipt, and
+   re-verifies the worker and reviewer execution artifacts the same way as the roles (the reviewer
+   artifact's own `accepted` must be true; `promotion_evidence_unproven:<code>` otherwise).
    Identical retry is idempotent; a different graph is `promotion_conflict`.
+7. The receipt keeps every stage duration (roles, implementation, promotion), the actual ledger
+   provider label per start (Codex for the four design leads and the reviewer, Claude for the worker)
+   and reservation counts per role plus `implementation` and `review`. Ledger refusal ends `exhausted`.
 
 Legacy `operate` v1/v2 stays manual maintenance; it is never a fallback for an autonomous failure.
 
@@ -52,7 +67,13 @@ Exit 0 only for accepted (or cached accepted). Refusals print `status`, `reason_
 ## Limitations for the owner canary
 
 - Not run by the worker: real Claude/Codex executions, Redis, PostgreSQL (`tests/test_dge_postgres.py`
-  style checks for `PostgresGraph`), CI on both platforms, the six-start canary.
+  style checks for `PostgresGraph`), CI on both platforms, the six-start canary. Separate
+  `test_autonomous_cli.py`, `test_autonomous_roles.py`, `test_autonomous_postgres.py` and
+  `test_promotion.py` files were not written in the continuation call; the acceptance-matrix, evidence,
+  deadline, reporting and promotion regressions live in `tests/test_autonomous.py` with labelled fixtures.
+- Evidence provenance is checked against the artifact store and `invocation_reservations`; the real
+  executor's artifact shape (`answer`, `invocation.reservation`, `research_binding`, `thread_id`) was
+  traced in code, not exercised by a live run.
 - Role provider routing uses the packaged default (Codex, app_server); the `dge_role` action has no
   Claude assignment rule. Role `invocations` are counted from `invocation_reservations` per task.
 - Provenance proves which execution produced the bytes, not that citations are true.

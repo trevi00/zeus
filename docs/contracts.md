@@ -951,8 +951,14 @@ implementation and review; then promotion. The `autonomous_runs` row claims the 
 replay, `configuration_mismatch`, `running_residue`, `residue`, `deadline_expired`) and every
 transition records its expected prior stage. Role answers bind to the persisted succeeded task row
 (agent, correlation, action, role, base revision, execution_ref, generation, attempt, output digest)
-with origin `executor_bound`; the packet and events go through the existing DGE validators and an
-owned session that `dge submit` cannot feed (`session_owned`). Critical findings need trigger, impact
+with origin `executor_bound`, and to the execution artifact behind `execution_ref` through an injected
+evidence port (FileArtifacts plus `invocation_reservations`): the artifact's own answer, a settled
+`accepted` reservation of that task/generation/attempt/stage, the base revision and the exact input
+evidence digest; a row, flag or matching revision alone never proves an execution, and roles sharing
+one provider thread are refused. The packet and events go through the existing DGE validators and an
+owned session that `dge submit` cannot feed (`session_owned`). The run deadline propagates unchanged
+into the child operation (checked before each provider start, after the review and inside the
+promotion transaction); the worker and reviewer artifacts are re-verified in that transaction. Critical findings need trigger, impact
 and mitigation; minor findings never block; one round, no rework, no retry, at most six executor
 starts, deadline never reset. Only an accepted operation whose worker task, accepted `review_lead`
 decision for the same candidate revision and all_checked inspection row are re-read in the same
