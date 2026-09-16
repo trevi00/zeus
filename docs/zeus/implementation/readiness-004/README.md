@@ -236,18 +236,26 @@ identity 조회 지연 거절, **예외 체인에 원문이 없는 것**. 되돌
 `DIAGNOSIS_SECONDS` 10초. **기한을 늘리거나 초록이 나올 때까지 돌리지 않는다.** 실패 시 `ContractError` 요약과
 영수증(`verification-readiness`)에 결과가 함께 남는다.
 
+**구현 중에 같은 결함을 한 층 위에서 한 번 더 밟았다.** 조회가 예산을 다 써 버리면 탐침을 **0초 한도로** 시작했는데,
+0초로 물은 소켓은 즉시 예외를 내고 0초로 건 명령은 즉시 실패한다. 그리고 그 둘이 **답으로 기록됐다** — R1에서 고쳤다고
+한 바로 그 성질이다. 예산이 남지 않았으면 이제 탐침을 **시작하지 않고** 세 지점을 `no_budget`으로 미관측 처리한다.
+
 ### 3.6.3 실측 (`docs/zeus/evidence/readiness-004/*-three-vantage-capture.json`)
 
-두 호스트에서 실제 스택을 띄우고 두 경우를 잡았다. 양방향 interop이 살아 있어(WSL→`powershell.exe`,
-Windows→`wsl.exe`) 어느 쪽에서 돌려도 세 지점이 전부 답했다.
+두 호스트에서 실제 스택을 띄우고 **세 경우**를 잡았다(head `1ce8cb6`에서 재수집). 양방향 interop이 살아 있어
+(WSL→`powershell.exe`, Windows→`wsl.exe`) 어느 쪽에서 돌려도 세 지점이 전부 답한다.
 
 | 잡은 것 | 컨테이너 | Windows | WSL | 결론 |
 |---|---|---|---|---|
 | 정상 게시 포트 | 성공 | 성공 | 성공 | `all_reachable` |
 | 게시되지 않은 포트 | 성공 | 실패 | 실패 | **`publication`** |
+| 컨테이너를 물을 수 없음 | **미관측**(`command_failed`) | 성공 | 성공 | **`undetermined`** |
 
 두 번째가 이 도구의 요점이다. 같은 "연결 거부"를 보고도 **서비스는 멀쩡하고 게시·전달 구간이 문제**라고 말한다.
 한쪽에서만 봤다면 구별할 수 없었을 답이다.
+
+**세 번째가 이번에 고친 것이다.** 같은 조건에서 이전 모듈은 `service`, 즉 **DB 장애**라고 답했다. 두 호스트 모두
+`undetermined` + `command_failed`로 바뀐 것을 실측으로 남긴다.
 
 **이것으로 증상 A를 해결했다고 말하지 않는다.** 증상 A는 여전히 재현되지 않았고, 이 진단은 **다음 실패가 났을 때 어느
 구간인지 알 수 있게** 해 둔 것이다. 위 `publication` 판정도 내가 만든 조건에서 나온 것이지 증상 A의 관측이 아니다.
@@ -284,12 +292,12 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 
 **되돌려 확인했다.** 수정을 되돌리면 이 6건이 전부 실패한다.
 
-### 5.1 진단 회귀 (`tests/test_port_diagnosis.py` 29건 + `tests/test_verification.py` 2건)
+### 5.1 진단 회귀 (`tests/test_port_diagnosis.py` 30건 + `tests/test_verification.py` 2건)
 
-이전 head(`db42fb2`)의 모듈로 갈아 끼워 새 검사를 돌렸다. **17건이 실패하지만 전부가 반례는 아니다.** 실제로 틀린
+이전 head(`db42fb2`)의 모듈로 갈아 끼워 새 검사를 돌렸다. **20건이 실패하지만 전부가 반례는 아니다.** 실제로 틀린
 답을 얻어낸 것과 키·서명이 바뀌어 실패한 것을 갈라 적는다.
 
-**행동 반례 11건** — 이전 코드가 *틀린 답*을 낸다.
+**행동 반례 12건** — 이전 코드가 *틀린 답*을 낸다.
 
 | 검사 | 이전 head가 낸 답 |
 |---|---|
@@ -302,20 +310,32 @@ Docker 없이 **실제 소켓**으로 창을 재현한다 — 연결을 받아�
 | `…prints_something_else_observes_nothing` | `wsl.exe` 미설치를 **"WSL이 못 닿는다"**로 판정 |
 | `…late_cannot_edit_the_record_that_was_handed_back` | 늦은 답이 **반환된 기록을 덮어씀** |
 | `…capture_of_a_failed_readiness_has_a_bound_of_its_own` | id 조회가 수집 밖에서 자기 10초를 씀(10.2s 대 3.1s) |
+| `…validated_refusal_records_the_form_it_matched_not_the_line` | 검증된 거절에서도 출력 줄 전체를 복사 |
 
-**모양·서명 변경 6건** — 새 키(`observed`/`why`/`deadline_seconds`)나 새 인자(`container_lookup`/`failed_at`,
+**모양·서명 변경 8건** — 새 키(`observed`/`why`/`deadline_seconds`)나 새 인자(`container_lookup`/`failed_at`,
 `context(seconds)`)를 요구해 실패한다. **반례로 세지 않는다.**
 
-## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-021/`, head `e28d9e8`)
+## 6. 호스트 증거 (`docs/zeus/evidence/environment-runs-023/`, head `1ce8cb6`)
 
-| 호스트 | ruff | full-suite-integration | disposable-docker |
-|---|---|---|---|
-| Windows 11 | 통과 | **1773 passed, 14 skipped** (678s) | **42 passed** |
-| WSL Ubuntu 26.04 | 통과 | **1775 passed, 12 skipped** (344s) | **42 passed** |
+| 호스트 | 인터프리터 | ruff | full-suite-integration | disposable-docker |
+|---|---|---|---|---|
+| Windows 11 | **CPython 3.14.7** | 통과 | **1792 passed, 14 skipped** (692s) | **44 passed** (161s) |
+| WSL Ubuntu 26.04 | CPython 3.12.14 | 통과 | **1794 passed, 12 skipped** (360s) | **44 passed** (159s) |
 
-전체 스위트가 늘어난 13건이 `tests/test_port_diagnosis.py`다(도커 없이 도는 판정·관측 검사라 disposable 단계는 42로
-그대로다). 두 호스트 로그·JUnit에서 canary 0건, `password=` 0건. 양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의
-해결 근거로 쓰지 않는다**(§2.3).
+전체 스위트가 `environment-runs-021`(1773/1775)보다 늘어난 19건 중 17건이 `tests/test_port_diagnosis.py`이고 2건이
+`tests/test_verification.py`의 진단 기한 검사다. disposable 단계가 42 → 44인 것은 그 2건이 실제 스택을 쓰기 때문이다.
+두 호스트 로그·JUnit에서 `password=` 0건, canary 값 0건(JUnit에 남은 `canary` 문자열은 검사 이름뿐이다).
+
+**Windows 인터프리터가 지난 실행과 다르다. 그대로 적는다.** `environment-runs-021`은 두 호스트 모두 3.12.14였는데,
+이번에 Windows에서 uv가 받아 둔 3.12(`%APPDATA%\uv\python\cpython-3.12*`)가 **애플리케이션 제어 정책에 막혀**
+`_ctypes` 적재에서 실패한다(`ImportError: DLL load failed while importing _ctypes: 애플리케이션 제어 정책에서 이
+파일을 차단했습니다`). 이 PC에 정책 밖의 3.12가 없어 시스템 `C:\Python314`(3.14.7)로 돌렸다. **정책을 끄거나
+우회하지 않았고 원인도 진단하지 않았다** — 관측된 사실로만 남긴다. WSL은 영향이 없어 3.12.14 그대로다.
+
+**`environment-runs-022`는 남기지 않았다.** 그 실행 중에 §3.6.2의 `no_budget` 결함을 스스로 찾아 코드를 고쳤고,
+그러면 그 증거는 **런타임 head의 것이 아니게 된다.** 고친 뒤 두 호스트를 처음부터 다시 돌린 것이 023이다.
+
+양쪽 모두 1회 시도에서 통과했고, **이것을 증상 A의 해결 근거로 쓰지 않는다**(§2.3).
 
 ## 7. 하지 않은 것
 

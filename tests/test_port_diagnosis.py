@@ -300,9 +300,9 @@ def test_a_validated_refusal_records_the_form_it_matched_not_the_line(monkeypatc
 
     record = port_diagnosis._tcp_in_container("deadbeef", "redis", 1.0)
 
-    assert record["reachable"] is False and record["observed"] is True
-    assert record["said"] == "Connection refused"
     assert "127.0.0.1:6379" not in str(record), "the line itself is not copied"
+    assert record["said"] == "Connection refused"
+    assert record["reachable"] is False and record["observed"] is True
 
 
 def test_a_probe_given_no_time_at_all_observes_nothing():

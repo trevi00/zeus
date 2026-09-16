@@ -14,7 +14,7 @@
   }
  },
  "port_that_is_up": {
-  "port": 59426,
+  "port": 53534,
   "service": "postgres",
   "observations": {
    "windows": {
@@ -32,14 +32,14 @@
     "asked_port": "5432",
     "of": "the container's own loopback",
     "looked_from": 0.0,
-    "looked_until": 0.131
+    "looked_until": 0.122
    },
    "wsl": {
     "reachable": true,
     "observed": true,
     "how": "wsl.exe",
     "looked_from": 0.001,
-    "looked_until": 0.169
+    "looked_until": 0.178
    }
   },
   "verdict": "all_reachable",
@@ -62,7 +62,7 @@
    "found": true
   },
   "deadline_seconds": 10.0,
-  "seconds": 0.202,
+  "seconds": 0.214,
   "still_running": [],
   "delay_from_failure_seconds": 0.0,
   "note": "three overlapping observation windows, not one instant; a vantage that observed nothing never narrows anything, and probes still running at the deadline cannot change this record"
@@ -78,13 +78,13 @@
     "asked_port": "5432",
     "of": "the container's own loopback",
     "looked_from": 0.0,
-    "looked_until": 0.125
+    "looked_until": 0.119
    },
    "wsl": {
     "reachable": false,
     "observed": true,
     "how": "wsl.exe",
-    "looked_from": 0.0,
+    "looked_from": 0.001,
     "looked_until": 0.166
    },
    "windows": {
@@ -92,9 +92,9 @@
     "observed": true,
     "how": "socket from this process",
     "error": "ConnectionRefusedError",
-    "seconds": 2.016,
+    "seconds": 2.029,
     "looked_from": 0.0,
-    "looked_until": 2.017
+    "looked_until": 2.03
    }
   },
   "verdict": "publication",
@@ -117,22 +117,22 @@
    "found": true
   },
   "deadline_seconds": 10.0,
-  "seconds": 2.051,
+  "seconds": 2.061,
   "still_running": [],
   "delay_from_failure_seconds": 0.0,
   "note": "three overlapping observation windows, not one instant; a vantage that observed nothing never narrows anything, and probes still running at the deadline cannot change this record"
  },
  "container_that_cannot_be_asked": {
-  "port": 59426,
+  "port": 53534,
   "service": "postgres",
   "observations": {
    "windows": {
     "reachable": true,
     "observed": true,
     "how": "socket from this process",
-    "seconds": 0.001,
+    "seconds": 0.015,
     "looked_from": 0.0,
-    "looked_until": 0.001
+    "looked_until": 0.015
    },
    "container": {
     "reachable": null,
@@ -143,14 +143,14 @@
     "asked_port": "5432",
     "of": "the container's own loopback",
     "looked_from": 0.0,
-    "looked_until": 0.043
+    "looked_until": 0.04
    },
    "wsl": {
     "reachable": true,
     "observed": true,
     "how": "wsl.exe",
-    "looked_from": 0.0,
-    "looked_until": 0.159
+    "looked_from": 0.001,
+    "looked_until": 0.161
    }
   },
   "verdict": "undetermined",
@@ -173,7 +173,7 @@
    "found": true
   },
   "deadline_seconds": 10.0,
-  "seconds": 0.193,
+  "seconds": 0.196,
   "still_running": [],
   "delay_from_failure_seconds": null,
   "note": "three overlapping observation windows, not one instant; a vantage that observed nothing never narrows anything, and probes still running at the deadline cannot change this record"
