@@ -11,7 +11,7 @@
  "cycles": [
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.333,
+   "first_answer_after": 0.218,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
@@ -20,7 +20,7 @@
   },
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.341,
+   "first_answer_after": 0.196,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
@@ -29,7 +29,7 @@
   },
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.36,
+   "first_answer_after": 0.215,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
@@ -38,7 +38,7 @@
   },
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.343,
+   "first_answer_after": 0.205,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
@@ -46,8 +46,8 @@
    "cycle": 3
   },
   {
-   "first_healthy_after": 2.011,
-   "first_answer_after": 2.031,
+   "first_healthy_after": 1.884,
+   "first_answer_after": 1.908,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": true,
@@ -55,8 +55,8 @@
    "cycle": 0
   },
   {
-   "first_healthy_after": 2.0,
-   "first_answer_after": 2.012,
+   "first_healthy_after": 1.903,
+   "first_answer_after": 1.936,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": true,
@@ -64,8 +64,8 @@
    "cycle": 1
   },
   {
-   "first_healthy_after": 2.013,
-   "first_answer_after": 2.024,
+   "first_healthy_after": 1.877,
+   "first_answer_after": 1.887,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": true,
@@ -73,8 +73,8 @@
    "cycle": 2
   },
   {
-   "first_healthy_after": 2.033,
-   "first_answer_after": 2.042,
+   "first_healthy_after": 1.889,
+   "first_answer_after": 1.9,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": true,
@@ -83,7 +83,7 @@
   },
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.811,
+   "first_answer_after": 0.597,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
@@ -92,8 +92,10 @@
   },
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.807,
-   "refusals": {},
+   "first_answer_after": 0.656,
+   "refusals": {
+    "starting_up": 1
+   },
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
    "way": "restart",
@@ -101,7 +103,7 @@
   },
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.783,
+   "first_answer_after": 0.609,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
@@ -110,7 +112,7 @@
   },
   {
    "first_healthy_after": null,
-   "first_answer_after": 0.872,
+   "first_answer_after": 0.605,
    "refusals": {},
    "refused_after_health_was_green": false,
    "gate_would_have_been_wrong": false,
@@ -120,6 +122,6 @@
  ],
  "cycles_where_health_was_green_before_the_first_answer": 4,
  "cycles_where_a_request_was_refused_after_health_went_green": 0,
- "widest_gap_seconds": 0.02,
+ "widest_gap_seconds": 0.033,
  "note": "measured on the resume paths the interruption tests use; the start path is gated by _await_service and is not what this measures"
 }
