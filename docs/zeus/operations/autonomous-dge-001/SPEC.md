@@ -243,3 +243,37 @@ the actual console entrypoint. Record this distinction. Original manifest/eviden
 This bounded schema/prompt/contract-test correction + independent review: ceiling 41 -> 43,
 Claude timeout 600s, declared USD 3. A new immutable canary manifest will follow acceptance;
 do not resume or rewrite the failed run. Framework canary and final CI remain the same exit gate.
+
+### Canary 002: citation cardinality (same producer/consumer boundary)
+
+490c5d4 was independently accepted. Real researcher e8152929-701f-5238-88e7-3507a61cd459 produced
+valid enum values, but emitted a fact about its execution environment with source_ids=[] (claim c6).
+The existing packet consumer correctly rejects uncited facts. The model-facing claim schema still
+allows them. Run autonomous-ssot-canary-002 failed at packet construction, one settled call,
+ledger 43 -> 44; no downstream models or promotion. An owner cancellation check after noticing
+an unrelated manifest command issue found no live task and cancelled nothing.
+
+Complete this same boundary: model-facing claims must discriminate fact/inference (nonempty
+source_ids) from unknown (empty source_ids stays valid). Keep domain behavior and all kinds;
+do not force false citations on unknowns. Use nested anyOf with typed object variants and minItems
+for the sourced branch, not if/then/allOf. Reuse domain kind constants and update contract tests
+for each kind with both empty/nonempty citations. Prompts must keep runtime/test/clean-checkout
+observations in ssot.evidence, not pretend they are Git-supported claims. Do not alter the actual
+failed answer, loosen validation, or implement automatic output repair. Preserve the other accepted
+enum, provenance, deadline and promotion contracts.
+
+Official source opened 2026-09-17:
+https://developers.openai.com/api/docs/guides/structured-outputs . Nested anyOf variants are
+supported when each follows the subset; if/then/else and allOf are not supported. Array minItems
+is supported for the relevant non-fine-tuned use; the page separately excludes it for fine-tunes.
+Local preflight accepts a broader JSON Schema dialect, so it alone is not provider compatibility
+proof. The next actual role run remains necessary. No model migration or credentials change.
+
+Owner also corrected its canary input: python -P -m pytest is outside the existing evidence replay
+allow-list. Do NOT widen execution authority merely for this pilot. Next worker runs supported
+python -m pytest commands; the owner separately runs -P and actual GitHub CI exercises console
+entrypoint collection before merge. These are explicitly different evidence scopes, not a claim
+that -P was replayed by the harness. Fixed canary code change remains three imports only.
+
+Bounded citation-shape fix/review: ceiling 44 -> 46, timeout 600s, declared Claude USD 2. After
+acceptance, new canary manifest allows six starts (46 -> 52) and no automatic retries.
