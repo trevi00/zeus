@@ -1,0 +1,743 @@
+{
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002",
+  "files": [
+    {
+      "path": "worker-001/receipt.json",
+      "sha256": "b07ac6ecd2f9ace457243e89739baec49e193cf927f18837b87b9df4149404c0",
+      "bytes": 36063
+    },
+    {
+      "path": "lead-review-001/receipt.json",
+      "sha256": "43d144ac80e621980249c83359812501c84d2f9edf38500c4f8683c5e977e3d5",
+      "bytes": 4756
+    },
+    {
+      "path": "acceptance.json",
+      "sha256": "31ff76ede32c67aacd3cffc78ed06c7672193074c8ec625d883ae1aafc2b7d0b",
+      "bytes": 18403
+    },
+    {
+      "path": "live-handoff.json",
+      "sha256": "3ff488ee4b2c1ffbbcf5a2a6c8fdefea3f29b4ce7f9078d96f036bc4836cbe39",
+      "bytes": 6742
+    },
+    {
+      "path": "independent-repro.json",
+      "sha256": "3e3d09a97b49775348996252dd8a0945c0ea5a69db237fa6998460bf64830a34",
+      "bytes": 1004
+    }
+  ],
+  "acceptance": {
+    "phase": "accepted_awaiting_operator",
+    "task_id": "d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+    "candidate": {
+      "base": "7c58a7dd450ca79ba8720325d7bbf94be2df7eb1",
+      "path": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002\\worker-001\\workspaces\\d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+      "tree": "d1fb920d1552258fc6e65636ff537e2a06ea241e",
+      "author": "worker:implementation",
+      "branch": "harness/d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+      "task_id": "d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+      "revision": "e77db1c32173ebcd24795c99606297611dc1f4a7",
+      "diff_hash": "fb3887995cbe56071a01c72d07d2f0f465b8240f6298ff74f6d07e2c6a7e4f57",
+      "repository": "github:trevi00/zeus",
+      "audit_lifecycle_version": 1
+    },
+    "inspection": [
+      {
+        "id": "1b095abb6fdb290ccf836d75ed4140324ece906ba1def44768954481c7f7a428",
+        "claims": [
+          "python -m pytest tests/test_cycle_handoff.py tests/test_local_cycle.py tests/test_cycle_remaining.py -q",
+          "python -m ruff check .",
+          "python -m pytest tests/test_cycle_handoff.py tests/test_local_cycle.py tests/test_cycle_remaining.py -q -rs"
+        ],
+        "binding": {
+          "base": "7c58a7dd450ca79ba8720325d7bbf94be2df7eb1",
+          "tree": "d1fb920d1552258fc6e65636ff537e2a06ea241e",
+          "owner": "fa7c4fa7-d31e-4325-a21f-cb799e23a4cf",
+          "attempt": 1,
+          "task_id": "d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "workspace": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002\\worker-001\\workspaces\\d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "generation": 1,
+          "source_revision": "e77db1c32173ebcd24795c99606297611dc1f4a7"
+        },
+        "context": {
+          "cwd": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002\\worker-001\\workspaces\\d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "base": "7c58a7dd450ca79ba8720325d7bbf94be2df7eb1",
+          "tree": "d1fb920d1552258fc6e65636ff537e2a06ea241e",
+          "owner": "fa7c4fa7-d31e-4325-a21f-cb799e23a4cf",
+          "python": "3.14.7",
+          "attempt": 1,
+          "task_id": "d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "workspace": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002\\worker-001\\workspaces\\d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "generation": 1,
+          "pythonpath": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002\\worker-001\\workspaces\\d11e55a1-47bb-4922-bdcd-f5164e96fe6d\\src",
+          "environment": [
+            "COMSPEC",
+            "LANG",
+            "LC_ALL",
+            "PATH",
+            "PYTHONIOENCODING",
+            "PYTHONPATH",
+            "SYSTEMROOT",
+            "TEMP",
+            "TMP",
+            "USERPROFILE"
+          ],
+          "interpreter": "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+          "source_revision": "e77db1c32173ebcd24795c99606297611dc1f4a7",
+          "environment_digest": "fb27aa4c945c1cd2bc6d6fde51c24331b301b719d37cf8276211073066b52048"
+        },
+        "verdict": "all_checked",
+        "findings": [
+          {
+            "runs": [
+              {
+                "stderr": {
+                  "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "stdout": {
+                  "ref": "sha256:b6ec586de2acb0c9134556a21bb4ba51a262935b2b99af97327fdbf9c75b4858",
+                  "bytes": 112,
+                  "sha256": "5a51d0b3e3a7152c884170a7769318043caa7581989daabd8127d79163ca290a",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "failure": null,
+                "returncode": 0,
+                "terminated": false,
+                "duration_seconds": 1.257
+              },
+              {
+                "stderr": {
+                  "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "stdout": {
+                  "ref": "sha256:9e2392d69478c9ec42680b0a823262066130d9843fba73493af6d998323d05d0",
+                  "bytes": 112,
+                  "sha256": "1202449ea655ee29425b9e429d0b78f7684499b2db1ac9ac042d69a205df5317",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "failure": null,
+                "returncode": 0,
+                "terminated": false,
+                "duration_seconds": 1.276
+              }
+            ],
+            "cause": "exit 0 as claimed on 2 identical replay(s)",
+            "claim": {
+              "id": "c22596234e8829aad37e752da67ddcd38f33bf08b5745a51e00e2c3740a6affd",
+              "argv": [
+                "python",
+                "-m",
+                "pytest",
+                "tests/test_cycle_handoff.py",
+                "tests/test_local_cycle.py",
+                "tests/test_cycle_remaining.py",
+                "-q"
+              ],
+              "kind": "command",
+              "origin": "free_text",
+              "expected_exit": 0
+            },
+            "state": "checked",
+            "interpreter": "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+            "replay_argv": [
+              "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+              "-m",
+              "pytest",
+              "tests/test_cycle_handoff.py",
+              "tests/test_local_cycle.py",
+              "tests/test_cycle_remaining.py",
+              "-q"
+            ],
+            "original_argv": [
+              "python",
+              "-m",
+              "pytest",
+              "tests/test_cycle_handoff.py",
+              "tests/test_local_cycle.py",
+              "tests/test_cycle_remaining.py",
+              "-q"
+            ],
+            "argv_identical": false,
+            "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv"
+          },
+          {
+            "runs": [
+              {
+                "stderr": {
+                  "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "stdout": {
+                  "ref": "sha256:19db0d68fd0223951ea01dbcb577ffcc9d6f7361af23aa383e07882c0fedfda4",
+                  "bytes": 19,
+                  "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "failure": null,
+                "returncode": 0,
+                "terminated": false,
+                "duration_seconds": 0.102
+              },
+              {
+                "stderr": {
+                  "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "stdout": {
+                  "ref": "sha256:19db0d68fd0223951ea01dbcb577ffcc9d6f7361af23aa383e07882c0fedfda4",
+                  "bytes": 19,
+                  "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "failure": null,
+                "returncode": 0,
+                "terminated": false,
+                "duration_seconds": 0.097
+              }
+            ],
+            "cause": "exit 0 as claimed on 2 identical replay(s)",
+            "claim": {
+              "id": "0bdafc30dd158bb5bd238c87d5c48fd724c4f28003585a7a30736575bf0ed572",
+              "argv": [
+                "python",
+                "-m",
+                "ruff",
+                "check",
+                "."
+              ],
+              "kind": "command",
+              "origin": "free_text",
+              "expected_exit": 0
+            },
+            "state": "checked",
+            "interpreter": "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+            "replay_argv": [
+              "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+              "-m",
+              "ruff",
+              "check",
+              "."
+            ],
+            "original_argv": [
+              "python",
+              "-m",
+              "ruff",
+              "check",
+              "."
+            ],
+            "argv_identical": false,
+            "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv"
+          },
+          {
+            "runs": [
+              {
+                "stderr": {
+                  "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "stdout": {
+                  "ref": "sha256:79995c4e0b745e85acabfc7df08b707204b07fd404c988e7e3869d1581899b89",
+                  "bytes": 270,
+                  "sha256": "a240ed19755905d0da10d12061e5f578fe6d7ca0df08edb7819747387cc159d2",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "failure": null,
+                "returncode": 0,
+                "terminated": false,
+                "duration_seconds": 1.27
+              },
+              {
+                "stderr": {
+                  "ref": "sha256:40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "stdout": {
+                  "ref": "sha256:7e72bd5b1fd1f99721a7cd8a5ca0886b7f2b88a367b071383265a9fc275a7b16",
+                  "bytes": 270,
+                  "sha256": "d98774b8cd74851d319f2506f7d1865af65539ec8425576cf293e8b73df45fc3",
+                  "decoding": "utf-8",
+                  "truncated": false
+                },
+                "failure": null,
+                "returncode": 0,
+                "terminated": false,
+                "duration_seconds": 1.268
+              }
+            ],
+            "cause": "exit 0 as claimed on 2 identical replay(s)",
+            "claim": {
+              "id": "acbd21639d8f4d18b36414e1d1df49bf46bdea004b6b77920d5f03676ce304e6",
+              "argv": [
+                "python",
+                "-m",
+                "pytest",
+                "tests/test_cycle_handoff.py",
+                "tests/test_local_cycle.py",
+                "tests/test_cycle_remaining.py",
+                "-q",
+                "-rs"
+              ],
+              "kind": "command",
+              "origin": "free_text",
+              "expected_exit": 0
+            },
+            "state": "checked",
+            "interpreter": "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+            "replay_argv": [
+              "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+              "-m",
+              "pytest",
+              "tests/test_cycle_handoff.py",
+              "tests/test_local_cycle.py",
+              "tests/test_cycle_remaining.py",
+              "-q",
+              "-rs"
+            ],
+            "original_argv": [
+              "python",
+              "-m",
+              "pytest",
+              "tests/test_cycle_handoff.py",
+              "tests/test_local_cycle.py",
+              "tests/test_cycle_remaining.py",
+              "-q",
+              "-rs"
+            ],
+            "argv_identical": false,
+            "argv_transformation": "first token \"python\" replaced by the trusted host interpreter; authorization was decided on the original argv"
+          }
+        ],
+        "authority": "deterministic inspection of claims; not historical truth, semantic review or human acceptance",
+        "inspector": {
+          "cwd": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002\\worker-001\\workspaces\\d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "tool": {
+            "python": "3.14.7",
+            "implementation": "CPython",
+            "executable_digest": "5ab36109add8324f34919cd28c017bdf78524e64e0f44d496063cb797852190b"
+          },
+          "platform": "Windows-11-10.0.26200-SP0",
+          "interpreter": "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+          "policy_hash": "7d56293694ca66e40b6c5931933ee6529d9f3480c740d5c2b2af5eae93a88e64",
+          "environment_names": [
+            "COMSPEC",
+            "LANG",
+            "LC_ALL",
+            "PATH",
+            "PYTHONIOENCODING",
+            "PYTHONPATH",
+            "SYSTEMROOT",
+            "TEMP",
+            "TMP",
+            "USERPROFILE"
+          ],
+          "environment_digest": "fb27aa4c945c1cd2bc6d6fde51c24331b301b719d37cf8276211073066b52048"
+        },
+        "denominator": {
+          "error": 0,
+          "claims": 3,
+          "checked": 3,
+          "missing": 0,
+          "unknown": 0,
+          "not_checked": 0,
+          "flake_pattern": 0,
+          "replay_failed": 0,
+          "verified_mismatch": 0
+        },
+        "policy_hash": "7d56293694ca66e40b6c5931933ee6529d9f3480c740d5c2b2af5eae93a88e64",
+        "recorded_at": "2026-09-16T10:48:38.912094+00:00"
+      }
+    ],
+    "cycle": {
+      "id": "operation-handoff-002",
+      "status": "awaiting_operator",
+      "in_flight": null,
+      "created_at": "2026-09-16T10:44:29.260548+00:00",
+      "executions": 2,
+      "updated_at": "2026-09-16T10:51:57.426666+00:00",
+      "correlation_id": "operation-handoff-002",
+      "last_execution": {
+        "at": "2026-09-16T10:51:57.426659+00:00",
+        "id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d",
+        "kind": "decision",
+        "agent": "lead:improvement",
+        "status": "succeeded",
+        "claimed": true,
+        "result_id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d"
+      },
+      "max_executions": 2,
+      "stopped_reason": null
+    },
+    "review": {
+      "id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d",
+      "status": "succeeded",
+      "result": {
+        "risks": [
+          "One PostgreSQL test skipped; four file-writing tests deselected to honor no-write constraints. Full PostgreSQL/Redis verification, live measurement and CI remain owner responsibilities.",
+          "Windows was exercised; Linux and concurrent database behavior were not newly verified.",
+          "Digests do not protect guessable reasons; status/step intentionally retain raw details."
+        ],
+        "origin": {
+          "plan": {
+            "origin": {}
+          }
+        },
+        "reason": "Review frame: accept e77db1c32173ebcd24795c99606297611dc1f4a7 for the authorized output correction only. Normal, failure, malformed/unknown, unavailable, budget and restart checks found no material defect. Results: 67 tests passed; scoped Ruff passed. The synthetic failed-task → step → handoff regression passes the candidate and fails the base specifically on raw-error disclosure. HEAD/tree match the assignment; checkout remains clean. Exact commands and results are recorded in tool stdout.",
+        "blocked": false,
+        "accepted": true,
+        "candidate": {
+          "base": "7c58a7dd450ca79ba8720325d7bbf94be2df7eb1",
+          "path": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-002\\worker-001\\workspaces\\d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "tree": "d1fb920d1552258fc6e65636ff537e2a06ea241e",
+          "author": "worker:implementation",
+          "branch": "harness/d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "task_id": "d11e55a1-47bb-4922-bdcd-f5164e96fe6d",
+          "revision": "e77db1c32173ebcd24795c99606297611dc1f4a7",
+          "diff_hash": "fb3887995cbe56071a01c72d07d2f0f465b8240f6298ff74f6d07e2c6a7e4f57",
+          "repository": "github:trevi00/zeus",
+          "audit_lifecycle_version": 1
+        },
+        "release_id": "189aba68cfe48cce235098e4d4bee16978cdc722738b7e7bfff24068d92ffd53",
+        "execution_ref": "sha256:c341dc002dedfd4db1a4df5f33352ca5e7538e605346b731c41054f5cc8bc0b1",
+        "basis_revision": "e77db1c32173ebcd24795c99606297611dc1f4a7",
+        "sre_assessment": "Verified benefit: the reproduced disclosure is removed while safe reason codes and digests preserve diagnostic correlation. Focused tests confirm unchanged stored records, budgets and execution isolation, explicit failure handling, and nested-error exclusion. Evidence is synthetic; no production reliability or SLO improvement is claimed.",
+        "arc42_assessment": "The correction stays within the existing CLI → LocalCycle → store projection path and INV-CYCLE-HANDOFF-001. No new service, database migration, execution authority or state transition. Code rollback needs no data migration but would restore the disclosure."
+      },
+      "error": null
+    },
+    "release_queue": 0,
+    "operator_annotation": false,
+    "machine_budget": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 21,
+      "all_hosts": 21,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "restart_step": {
+      "cycle": {
+        "id": "operation-handoff-002",
+        "status": "awaiting_operator",
+        "in_flight": null,
+        "created_at": "2026-09-16T10:44:29.260548+00:00",
+        "executions": 2,
+        "updated_at": "2026-09-16T10:51:57.426666+00:00",
+        "correlation_id": "operation-handoff-002",
+        "last_execution": {
+          "at": "2026-09-16T10:51:57.426659+00:00",
+          "id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d",
+          "kind": "decision",
+          "agent": "lead:improvement",
+          "status": "succeeded",
+          "claimed": true,
+          "result_id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d"
+        },
+        "max_executions": 2,
+        "stopped_reason": null
+      },
+      "action": "none",
+      "reason": "awaiting_operator"
+    }
+  },
+  "live_handoff": {
+    "candidate": "e77db1c32173ebcd24795c99606297611dc1f4a7",
+    "provider_calls": 0,
+    "runs": [
+      {
+        "cycle_id": "asset-operation-001",
+        "server_default_transaction_read_only": true,
+        "exit_code": 0,
+        "stdout_sha256": "a3814e3ba8ea7489dd9a157b317239961db04500d975cef1e366941722802a56",
+        "stderr_bytes": 0,
+        "records_unchanged": true,
+        "record_count": 107,
+        "output": {
+          "schema": "urn:zeus:cycle-handoff:1",
+          "authority": "observation_only",
+          "automatic_resume": false,
+          "cycle": {
+            "id": "asset-operation-001",
+            "correlation_id": "asset-operation-001",
+            "status": "awaiting_operator",
+            "max_executions": 2,
+            "executions": 2,
+            "in_flight": null,
+            "stopped_reason": null,
+            "last_execution": {
+              "agent": "lead:improvement",
+              "kind": "decision",
+              "id": "2126d50f-6f95-48ee-8803-2e2bd8443825",
+              "status": "succeeded",
+              "at": "2026-09-16T09:21:47.929497+00:00",
+              "result_id": "2126d50f-6f95-48ee-8803-2e2bd8443825",
+              "claimed": true
+            },
+            "created_at": "2026-09-16T09:16:49.242784+00:00",
+            "updated_at": "2026-09-16T09:21:47.929511+00:00",
+            "stopped_reason_sha256": null
+          },
+          "remaining_executions": 0,
+          "target_record": {
+            "availability": "found",
+            "kind": "decision",
+            "id": "2126d50f-6f95-48ee-8803-2e2bd8443825",
+            "status": "succeeded",
+            "attempt": 1,
+            "generation": 1,
+            "phase": "review_lead",
+            "result": {
+              "candidate": {
+                "base": "c6f7ad473d0c725d1923cc8d889e60f87f1a0872",
+                "revision": "183df72507e2f3ed83b912f6d675ab1c4908f3e8",
+                "tree": "61cfa27d76d284ac07d5a6876c40136e928a31da",
+                "diff_hash": "234a6b2717eae151b2b5655c06141e0011a83dcbed877cb44eada972ca3902a2"
+              },
+              "execution_ref": "sha256:d9e5187ee09dbd83acb9bdd752ce997e050f84cde7e3bf13bd4a3ad8c9a4c9b1",
+              "evidence_verdict": null,
+              "accepted": true
+            }
+          }
+        }
+      },
+      {
+        "cycle_id": "operation-handoff-001",
+        "server_default_transaction_read_only": true,
+        "exit_code": 0,
+        "stdout_sha256": "521b855b6d883f15340ec80ba2a851df0033bf667e59b458f96bdaf8811713d4",
+        "stderr_bytes": 0,
+        "records_unchanged": true,
+        "record_count": 129,
+        "output": {
+          "schema": "urn:zeus:cycle-handoff:1",
+          "authority": "observation_only",
+          "automatic_resume": false,
+          "cycle": {
+            "id": "operation-handoff-001",
+            "correlation_id": "operation-handoff-001",
+            "status": "stopped",
+            "max_executions": 2,
+            "executions": 2,
+            "in_flight": null,
+            "stopped_reason": "budget_exhausted",
+            "last_execution": {
+              "agent": "lead:improvement",
+              "kind": "decision",
+              "id": "1c9420df-0f64-4e65-8d6d-a396d4d25418",
+              "status": "succeeded",
+              "at": "2026-09-16T09:51:01.473798+00:00",
+              "result_id": "1c9420df-0f64-4e65-8d6d-a396d4d25418",
+              "claimed": true
+            },
+            "created_at": "2026-09-16T09:43:23.659791+00:00",
+            "updated_at": "2026-09-16T09:53:21.848725+00:00",
+            "stopped_reason_sha256": "84704c7762a58bf58a35d9844749002877d2ab32ad5c4e15b420811ee8028837"
+          },
+          "remaining_executions": 0,
+          "target_record": {
+            "availability": "found",
+            "kind": "decision",
+            "id": "1c9420df-0f64-4e65-8d6d-a396d4d25418",
+            "status": "succeeded",
+            "attempt": 1,
+            "generation": 1,
+            "phase": "review_lead",
+            "result": {
+              "candidate": {
+                "base": "74909aec09f9548f989314b1d0ffeeca747c2bca",
+                "revision": "bdd0d1b145842738fc27bd83db4fd2bc6f316a39",
+                "tree": "b37e78527d98d94ea149a6d5c32b9b9f01a8a837",
+                "diff_hash": "e211d6614052d29342f73a64692d0ac632fdcf76d963f82d2d16539f7f68b439"
+              },
+              "execution_ref": "sha256:da4d84ac61f4b50f1b9ff0b2055e5409c5a26ff182bff2e54a973c2385fcf5ef",
+              "evidence_verdict": null,
+              "accepted": false
+            }
+          }
+        }
+      },
+      {
+        "cycle_id": "operation-handoff-002",
+        "server_default_transaction_read_only": true,
+        "exit_code": 0,
+        "stdout_sha256": "3906044d62c375c326fda7aa50ebf505da307201beae0a0d2a5f00ba3ff161e7",
+        "stderr_bytes": 0,
+        "records_unchanged": true,
+        "record_count": 136,
+        "output": {
+          "schema": "urn:zeus:cycle-handoff:1",
+          "authority": "observation_only",
+          "automatic_resume": false,
+          "cycle": {
+            "id": "operation-handoff-002",
+            "correlation_id": "operation-handoff-002",
+            "status": "awaiting_operator",
+            "max_executions": 2,
+            "executions": 2,
+            "in_flight": null,
+            "stopped_reason": null,
+            "last_execution": {
+              "agent": "lead:improvement",
+              "kind": "decision",
+              "id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d",
+              "status": "succeeded",
+              "at": "2026-09-16T10:51:57.426659+00:00",
+              "result_id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d",
+              "claimed": true
+            },
+            "created_at": "2026-09-16T10:44:29.260548+00:00",
+            "updated_at": "2026-09-16T10:51:57.426666+00:00",
+            "stopped_reason_sha256": null
+          },
+          "remaining_executions": 0,
+          "target_record": {
+            "availability": "found",
+            "kind": "decision",
+            "id": "da6dfd6d-ae1d-4b2a-9270-a98ee0b7bb0d",
+            "status": "succeeded",
+            "attempt": 1,
+            "generation": 1,
+            "phase": "review_lead",
+            "result": {
+              "candidate": {
+                "base": "7c58a7dd450ca79ba8720325d7bbf94be2df7eb1",
+                "revision": "e77db1c32173ebcd24795c99606297611dc1f4a7",
+                "tree": "d1fb920d1552258fc6e65636ff537e2a06ea241e",
+                "diff_hash": "fb3887995cbe56071a01c72d07d2f0f465b8240f6298ff74f6d07e2c6a7e4f57"
+              },
+              "execution_ref": "sha256:c341dc002dedfd4db1a4df5f33352ca5e7538e605346b731c41054f5cc8bc0b1",
+              "evidence_verdict": null,
+              "accepted": true
+            }
+          }
+        }
+      }
+    ],
+    "machine_budget_unchanged": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 21,
+      "all_hosts": 21,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    }
+  },
+  "independent_repro": {
+    "synthetic_fixture": true,
+    "provider_calls": 0,
+    "reproduced": false,
+    "fixed": true,
+    "affected_field": "cycle.stopped_reason",
+    "trigger": "ordinary LocalCycle.step observes a failed task error, then handoff copies stored reason",
+    "view": {
+      "schema": "urn:zeus:cycle-handoff:1",
+      "authority": "observation_only",
+      "automatic_resume": false,
+      "cycle": {
+        "id": "repro",
+        "correlation_id": "repro",
+        "status": "stopped",
+        "max_executions": 2,
+        "executions": 0,
+        "in_flight": null,
+        "stopped_reason": "failed",
+        "last_execution": null,
+        "created_at": "2026-09-16T10:50:02.957203+00:00",
+        "updated_at": "2026-09-16T10:50:02.957436+00:00",
+        "stopped_reason_sha256": "2b685a4dfe02c547b5f0673f8420a70e110b0d481d3830c9bafb612b1edbb364"
+      },
+      "remaining_executions": 2,
+      "target_record": {
+        "availability": "none",
+        "kind": null,
+        "id": null
+      }
+    },
+    "step_reason": "failed:SYNTHETIC-RAW-ERROR-SECRET"
+  },
+  "observations": {
+    "worker": {
+      "files": 1,
+      "records": 62,
+      "inserted": 62,
+      "duplicates": 0,
+      "conflicts": 0,
+      "corrupt": 0,
+      "refused": 0,
+      "truncated_tail": 0,
+      "unconfirmed_audits": 0,
+      "confirmed_audits": 2,
+      "sink_failures": 0,
+      "reclaimed_segments": 0,
+      "pruned_runs": 0,
+      "pruned_files": 0,
+      "alerts_replayed": 0,
+      "per_file": [
+        {
+          "file": "900d015adc8444afbe1f4cde79343eee.0000.jsonl",
+          "from_offset": 0,
+          "to_offset": 83527,
+          "records": 62,
+          "inserted": 62,
+          "confirmed_audits": 2
+        }
+      ]
+    },
+    "lead": {
+      "files": 1,
+      "records": 37,
+      "inserted": 37,
+      "duplicates": 0,
+      "conflicts": 0,
+      "corrupt": 0,
+      "refused": 0,
+      "truncated_tail": 0,
+      "unconfirmed_audits": 0,
+      "confirmed_audits": 2,
+      "sink_failures": 0,
+      "reclaimed_segments": 0,
+      "pruned_runs": 0,
+      "pruned_files": 0,
+      "alerts_replayed": 0,
+      "per_file": [
+        {
+          "file": "1b601c31159049cfb022ab723192c905.0000.jsonl",
+          "from_offset": 0,
+          "to_offset": 54013,
+          "records": 37,
+          "confirmed_audits": 2,
+          "inserted": 37
+        }
+      ]
+    }
+  },
+  "prior_rejected_run_preserved": "operation-handoff-001",
+  "limits": [
+    "Full suite and final-head CI are recorded separately in PR.",
+    "Current row projection is not artifact integrity or historical execution proof.",
+    "Actual model execution Windows only; Linux is CI."
+  ]
+}
