@@ -1,0 +1,87 @@
+{
+  "task_id": "2911461e-399a-4a77-bb38-8e33d411c92a",
+  "base": "693ad93b20649779f4c48661537c99adde33357e",
+  "task_status": "succeeded",
+  "candidate": {
+    "revision": "0c10cb6131a69881ec7f4d1f3191c2680bbfac86",
+    "tree": "a4698aedc98014ddc7a7147ad1df887200170a8e",
+    "base": "693ad93b20649779f4c48661537c99adde33357e",
+    "branch": "harness/2911461e-399a-4a77-bb38-8e33d411c92a",
+    "repository": "github:trevi00/zeus",
+    "diff_hash": "ce5ba7009eb7eaf564df27b4c5f99377f8f51ae4db026f89ff050abb8b178abe"
+  },
+  "assignment_stream_id": "1789536731387-0",
+  "result_stream_id": "1789536778405-0",
+  "duplicate_same_task": true,
+  "received_type": "task.result",
+  "decisions": [
+    {
+      "id": "76dce9d6-d7a3-4ef2-9671-64fec809932f",
+      "actor": "lead:improvement",
+      "phase": "review_lead",
+      "status": "pending"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "61346e8610d54fa875f59c7deedc3a6c7e894226871cdc86e72df44e6a445dd5",
+      "status": "settled",
+      "outcome": "accepted",
+      "usage": {
+        "basis": "result_total_including_cache",
+        "parts": {
+          "input_tokens": 66,
+          "output_tokens": 2369,
+          "cache_read_input_tokens": 24102,
+          "cache_creation_input_tokens": 13235
+        },
+        "source": "claude/result.usage",
+        "cost_note": "the provider's own estimate for this run, never a billed amount",
+        "usage_note": "the terminal result message only; no message is added twice",
+        "cost_source": "provider_estimate",
+        "event_count": 22,
+        "last_tokens": null,
+        "stream_hash": "sha256:28c85d8e77f766c221d43aefadce401c5096ed5ef5e08bb71ce58db08c3c89c2",
+        "total_tokens": 39772,
+        "confirmed_model": "claude-fable-5-1",
+        "requested_model": "claude-fable-5-1",
+        "reported_cost_usd": 0.3926575,
+        "model_confirmation": "transport_reported"
+      }
+    }
+  ],
+  "collection": {
+    "files": 1,
+    "records": 16,
+    "inserted": 16,
+    "duplicates": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "refused": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0,
+    "confirmed_audits": 3,
+    "sink_failures": 0,
+    "reclaimed_segments": 0,
+    "pruned_runs": 0,
+    "pruned_files": 0,
+    "alerts_replayed": 0,
+    "per_file": [
+      {
+        "file": "b0abfbf9062b4a7189e5b9de094f4beb.0000.jsonl",
+        "from_offset": 0,
+        "to_offset": 21240,
+        "records": 16,
+        "inserted": 16,
+        "confirmed_audits": 3
+      }
+    ]
+  },
+  "remaining_containers": "",
+  "model_calls": 1,
+  "receipt_sha256": "6c3180419533442f1dca21c5686a1559b423c3197bfdf8d3ecb335ee0f0377ca",
+  "operator_script_sha256": "af7374a5ab93a7c42832ac3101f3da15a84db63ccbd904702c197580f9f51846",
+  "external_review": "Codex current session; not a Zeus internal model invocation",
+  "artifact_root": "D:\\workspaces\\zeus\\artifacts\\limited-operation-002",
+  "tests_claimed": []
+}
