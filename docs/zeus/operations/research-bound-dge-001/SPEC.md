@@ -155,3 +155,15 @@ The implementation gate must never approve an unresolved session. Add regression
 reported omission and id-reuse/downgrade are refused, while explicit later resolution can approve.
 Exercise the carry/refusal on isolated PG too. Tests are injected operator fixtures, not a live
 three-agent debate. Update RUNBOOK/contracts as needed. No new unrelated behavior.
+
+## Consolidated review R2: registration deadline at the write boundary
+
+The real independent Codex review (decision 63f99786-a8e1-4d37-8c27-909e9b664d08) reproduced
+registration waiting for the store lock past its deadline while using a pre-lock clock reading.
+Submissions and operation claims still reject expiry; no provider-start bypass was demonstrated.
+This is lower severity than R1, but fix its small, directly related timing seam in the SAME batch:
+read/check current time inside the registration transaction immediately before a new row is
+written. Exact existing registration replay may return its cached historical row without mutation,
+even after deadline; it does not reauthorize submission or implementation. Preserve deadline.
+Add one deterministic lock-contention regression and the replay control. Do not expand scope for
+unmeasured production latency or unrelated rollback redesign. Re-review R1/R2 and direct interactions.
