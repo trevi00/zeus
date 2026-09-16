@@ -160,3 +160,23 @@ def test_every_report_carries_what_the_cleanup_did(probe):
     report = box.report()
     assert set(report) >= {"name", "started", "start_exit", "cleanup"}
     assert set(report["cleanup"]) == {"attempted", "removed", "error"}
+
+
+@docker_only
+def test_the_record_carries_the_cleanup_that_actually_happened(probe):
+    """The defect this bites: reports were taken inside the block, before the removal had run.
+
+    A record built while the container was still alive said `attempted: False, error: None` for a
+    cleanup that had not happened yet, which reads exactly like a cleanup that had nothing to do.
+    """
+    record = probe.directions()
+
+    assert record["containers"], "the run has to say what it created"
+    for entry in record["containers"]:
+        cleanup = entry["cleanup"]
+        if entry["started"]:
+            assert cleanup["attempted"] is True and cleanup["removed"] is True
+        else:
+            assert cleanup["attempted"] is False
+            assert cleanup["error"] == "nothing_was_created", (
+                "a report taken before __exit__ would leave this empty")

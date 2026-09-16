@@ -3,12 +3,13 @@
   20000,
   32767
  ],
+ "window_source": "assumed:linux-default-32768",
  "ephemeral_range": null,
  "cycles": [
   {
    "cycle": 0,
-   "postgres_port": 21061,
-   "redis_port": 22962,
+   "postgres_port": 22146,
+   "redis_port": 29838,
    "inside_choice_window": [
     true,
     true
@@ -23,8 +24,8 @@
   },
   {
    "cycle": 1,
-   "postgres_port": 27956,
-   "redis_port": 27552,
+   "postgres_port": 27205,
+   "redis_port": 31941,
    "inside_choice_window": [
     true,
     true
@@ -39,8 +40,8 @@
   },
   {
    "cycle": 2,
-   "postgres_port": 23371,
-   "redis_port": 25370,
+   "postgres_port": 21015,
+   "redis_port": 26489,
    "inside_choice_window": [
     true,
     true
@@ -55,8 +56,10 @@
   }
  ],
  "note": "ports are read back from `compose port`, never assumed from the choice",
+ "run_id": "f2d836297695",
  "measured_on": {
   "platform": "win32",
+  "side": "windows",
   "ephemeral_range": null
  }
 }

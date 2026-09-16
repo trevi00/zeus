@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
+import random
 import socket
 import subprocess
 import sys
@@ -143,16 +144,28 @@ def ephemeral_range():
         return None
 
 
+OVERLAP = (49152, 60999)
+
+
 def a_port_both_sides_draw_from():
-    """A port free right now and inside the range the daemon and the distro both take from."""
-    for _ in range(300):
+    """A port free right now, inside the range the daemon and the distro both draw from.
+
+    Asking the OS for port 0 and hoping it lands in the overlap is not a search: Windows hands out
+    ephemeral ports in sequence and can sit above the overlap for a whole session, which is exactly
+    where 300 of those hopes failed. This binds candidates in the band instead.
+    """
+    picker = random.Random()
+    for _ in range(400):
+        candidate = picker.randint(*OVERLAP)
         probe = socket.socket()
-        probe.bind(("127.0.0.1", 0))
-        chosen = probe.getsockname()[1]
-        probe.close()
-        if 49152 <= chosen <= 60999:
-            return chosen
-    raise SystemExit("no candidate port in the overlap")
+        try:
+            probe.bind(("127.0.0.1", candidate))
+        except OSError:
+            continue
+        finally:
+            probe.close()
+        return candidate
+    raise SystemExit(f"no free port found in {OVERLAP[0]}-{OVERLAP[1]}")
 
 
 def look(port, container, note):
@@ -181,14 +194,16 @@ def reproduce():
             box.running()
             time.sleep(3.0)
             steps.append(look(port, box.id, "after a container restart, port long free"))
-        held = box.report()
+        boxes = [box]
+    # Reports are taken after the block: `cleanup` only says anything once __exit__ has run.
+    held = boxes[0].report()
 
     free = a_port_both_sides_draw_from()
     with Container(free) as control:
         if control.id is not None and control.running():
             time.sleep(1.0)
             steps.append(look(free, control.id, "control: a port nobody held"))
-        control_report = control.report()
+    control_report = control.report()
 
     return {"port": port, "control_port": free, "ephemeral_range": ephemeral_range(),
             "steps": steps, "containers": [held, control_report]}
@@ -229,8 +244,8 @@ def sockets():
             box.running()
             time.sleep(3.0)
             steps.append(snapshot("after a container restart"))
-        return {"port": port, "docker_run_exit": box.start_exit, "steps": steps,
-                "containers": [box.report()]}
+    return {"port": port, "docker_run_exit": box.start_exit, "steps": steps,
+            "containers": [box.report()]}
 
 
 def directions():
@@ -254,11 +269,11 @@ def directions():
             occupant.release()
             time.sleep(3.0)
             record["after_release"] = look(port, box.id, "occupant gone, container up")
-        record["containers"] = [box.report()]
         record["means"] = ("the daemon refused, so this side needs no prediction"
                            if box.id is None else
                            "the daemon published anyway, so an occupant on this side fails silently")
-        return record
+    record["containers"] = [box.report()]
+    return record
 
 
 def residual():
@@ -279,8 +294,8 @@ def residual():
             occupant.release()
             time.sleep(3.0)
             record["after_occupant_released"] = look(port, box.id, "occupant gone, container up")
-        record["containers"] = [box.report()]
-        return record
+    record["containers"] = [box.report()]
+    return record
 
 
 def after_fix(rounds=3):
