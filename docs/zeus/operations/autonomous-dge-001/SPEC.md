@@ -147,3 +147,41 @@ create one bounded consolidated correction after reading actual results; never s
 The real six-start canary gets a separate explicit manifest after the implementation is accepted.
 No completion claim until that canary and relevant owner/CI checks pass. Residual minor work is
 reported with a revisit trigger; no speculative scope expansion or broad environment investigation.
+
+## Incomplete draft continuation (same frame)
+
+Initial worker stopped at provider budget, not an accepted candidate: task
+ae1d7bfc-4675-55cd-9149-c203910b2117, error_max_budget_usd, provider estimate USD 8.1429005
+(not a billed amount). Draft preserved as 45f6fe2; 1 slot reserved/settled, no reviewer called.
+Owner ran its currently written test file: 5 passed, 1 failed (budget refusal wrongly `failed`
+instead of `exhausted`). Do not pretend other tests or the real canary ran.
+
+Complete the same delivery, preserving that draft. Consolidated required work:
+
+1. Finish the acceptance-matrix tests, CLI/role/PG tests and documentation. Run focused checks and
+   architecture/ruff; do not spend this call on full-suite repetition or unrelated code.
+2. Authority: role_binding currently hashes the task result without loading any execution artifact.
+   _promote similarly checks verdict rows but not actual persisted reviewer answers. Owner fixture
+   completes/promotion succeeds with no execution artifacts at all. This violates the fixed SPEC.
+   Add an injected evidence verification port wired to FileArtifacts plus authoritative invocation
+   records; verify content hash, actual stored answer, reservation -> task/generation/attempt/stage,
+   basis/context/packet and independent role identity. Reuse existing invocation and artifact
+   structures. No requirement for a new crypto system or generalized attestation framework.
+   Application may use an injected port, not adapter imports. Same artifacts/provenance must be
+   revalidated for promotion; accepted row or matching revision alone cannot substitute. A fixture
+   must create meaningful evidence (or explicitly inject failure); tests that omit evidence must
+   refuse, not certify execution. Missing/corrupt/unrelated artifact and mismatched verdict regressions.
+3. Deadline: owner injected fixture advances the clock after the review returns, beyond the fixed
+   deadline. Draft still returns accepted and promotes. Propagate the remaining absolute deadline
+   into child implementation/review dispatch (without resetting it); check before each provider
+   and in promotion transaction. Late success must not authorize promotion. Reuse existing lease/
+   invocation timeout policy; do not build another process supervisor.
+4. Preserve all stage durations (current implementation replaces them using initial stale row),
+   actual provider labels in call ledger (BudgetedExecutor currently labels every task Claude,
+   including Codex dge roles), and full invocation counts including implementation/review. These
+   are direct reporting corrections, not a new metric system. Budget refusal maps exhausted.
+
+Owner probes live at D:/workspaces/zeus/artifacts/autonomous-dge-001/draft-boundaries.py; they are
+labelled injected fixtures, zero actual model calls. Full delivery still includes real six-start
+canary. The owner-authorized continuation is ONE further Claude/reviewer pair, machine ledger
+36 -> ceiling 38, timeout 1200s, declared Claude max USD 8. No automated retry or hidden reset.
