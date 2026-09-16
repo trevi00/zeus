@@ -18,9 +18,14 @@ from codex_harness.domain.model import ContractError, digest, require
 from codex_harness.domain.providers import parse_configuration
 
 SCHEMA = "urn:zeus:operation:1"
+# INV-DGE-001: v2 is v1 plus one `design` block naming the approved debate session; nothing else
+# differs, so v1 manifests keep their exact semantics and canonical form.
+SCHEMA_V2 = "urn:zeus:operation:2"
 FIELDS = {"schema", "id", "base_revision", "goal", "plan", "budget", "claude"}
+FIELDS_V2 = FIELDS | {"design"}
 GOAL_FIELDS = {"path", "sha256", "criterion", "rationale"}
 PLAN_FIELDS = {"objective", "acceptance_criteria", "allowed_paths"}
+DESIGN_FIELDS = {"session_id", "packet_digest"}
 BUDGET_FIELDS = {"per_host", "total"}
 CLAUDE_FIELDS = {"model", "timeout_seconds", "max_budget_usd"}
 # Fixed by this contract, never by the manifest: two executor starts (one worker, one lead), the
@@ -74,11 +79,33 @@ def _fields(document, expected, name):
                             + ", ".join(["+" + k for k in unknown] + ["-" + k for k in missing]))
 
 
+def validate_plan(plan, error=ManifestError) -> dict:
+    """The one plan shape shared by the operation manifest and the research packet (INV-DGE-001);
+    returns a canonical copy so both sides compare the same bytes."""
+    if not isinstance(plan, dict):
+        raise error("Operation manifest plan must be an object")
+    unknown, missing = sorted(set(plan) - PLAN_FIELDS), sorted(PLAN_FIELDS - set(plan))
+    if unknown or missing:
+        raise error("Operation manifest plan has unknown or missing fields: "
+                    + ", ".join(["+" + k for k in unknown] + ["-" + k for k in missing]))
+    if not _text(plan["objective"]):
+        raise error("Operation manifest plan.objective is required text")
+    criteria = plan["acceptance_criteria"]
+    if not (isinstance(criteria, list) and criteria and all(_text(c, 4000) for c in criteria)):
+        raise error("Operation manifest plan.acceptance_criteria must be a non-empty list of text")
+    paths = plan["allowed_paths"]
+    if not (isinstance(paths, list) and paths and all(safe_relative_path(p) for p in paths)
+            and len(set(paths)) == len(paths)):
+        raise error("Operation manifest plan.allowed_paths must be distinct safe relative paths")
+    return {"objective": plan["objective"], "acceptance_criteria": list(criteria), "allowed_paths": list(paths)}
+
+
 def validate_manifest(document, policy) -> dict:
     """Strict validation; returns a canonical copy. `policy` is the packaged provider policy."""
-    _fields(document, FIELDS, "root")
-    if document["schema"] != SCHEMA:
-        raise ManifestError("Operation manifest schema is not " + SCHEMA)
+    if not isinstance(document, dict) or document.get("schema") not in {SCHEMA, SCHEMA_V2}:
+        raise ManifestError("Operation manifest schema is not " + SCHEMA + " or " + SCHEMA_V2)
+    schema = document["schema"]
+    _fields(document, FIELDS_V2 if schema == SCHEMA_V2 else FIELDS, "root")
     if type(document["id"]) is not str or ID.fullmatch(document["id"]) is None:
         raise ManifestError("Operation manifest id must be a short safe token")
     if type(document["base_revision"]) is not str or REVISION.fullmatch(document["base_revision"]) is None:
@@ -91,17 +118,15 @@ def validate_manifest(document, policy) -> dict:
         raise ManifestError("Operation manifest goal.sha256 must be 64 lowercase hex")
     if not (_text(goal["criterion"], 400) and _text(goal["rationale"])):
         raise ManifestError("Operation manifest goal.criterion and goal.rationale are required text")
-    plan = document["plan"]
-    _fields(plan, PLAN_FIELDS, "plan")
-    if not _text(plan["objective"]):
-        raise ManifestError("Operation manifest plan.objective is required text")
-    criteria = plan["acceptance_criteria"]
-    if not (isinstance(criteria, list) and criteria and all(_text(c, 4000) for c in criteria)):
-        raise ManifestError("Operation manifest plan.acceptance_criteria must be a non-empty list of text")
-    paths = plan["allowed_paths"]
-    if not (isinstance(paths, list) and paths and all(safe_relative_path(p) for p in paths)
-            and len(set(paths)) == len(paths)):
-        raise ManifestError("Operation manifest plan.allowed_paths must be distinct safe relative paths")
+    plan = validate_plan(document["plan"])
+    design = None
+    if schema == SCHEMA_V2:
+        design = document["design"]
+        _fields(design, DESIGN_FIELDS, "design")
+        if type(design["session_id"]) is not str or ID.fullmatch(design["session_id"]) is None:
+            raise ManifestError("Operation manifest design.session_id must be a short safe token")
+        if type(design["packet_digest"]) is not str or SHA256.fullmatch(design["packet_digest"]) is None:
+            raise ManifestError("Operation manifest design.packet_digest must be 64 lowercase hex")
     budget = document["budget"]
     _fields(budget, BUDGET_FIELDS, "budget")
     if not (_integer(budget["per_host"]) and _integer(budget["total"]) and budget["per_host"] > 0
@@ -116,13 +141,14 @@ def validate_manifest(document, policy) -> dict:
         parse_configuration(policy, provider_settings({"claude": claude}))
     except ContractError as exc:
         raise ManifestError("Operation manifest claude controls are refused by the provider policy") from exc
-    return {"schema": SCHEMA, "id": document["id"], "base_revision": document["base_revision"],
-            "goal": {k: goal[k] for k in sorted(GOAL_FIELDS)},
-            "plan": {"objective": plan["objective"], "acceptance_criteria": list(criteria),
-                     "allowed_paths": list(paths)},
-            "budget": {"per_host": budget["per_host"], "total": budget["total"]},
-            "claude": {"model": claude["model"], "timeout_seconds": claude["timeout_seconds"],
-                       "max_budget_usd": claude["max_budget_usd"]}}
+    canonical = {"schema": schema, "id": document["id"], "base_revision": document["base_revision"],
+                 "goal": {k: goal[k] for k in sorted(GOAL_FIELDS)}, "plan": plan,
+                 "budget": {"per_host": budget["per_host"], "total": budget["total"]},
+                 "claude": {"model": claude["model"], "timeout_seconds": claude["timeout_seconds"],
+                            "max_budget_usd": claude["max_budget_usd"]}}
+    if design is not None:
+        canonical["design"] = {"session_id": design["session_id"], "packet_digest": design["packet_digest"]}
+    return canonical
 
 
 def provider_settings(manifest) -> dict:

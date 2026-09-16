@@ -9,6 +9,7 @@ budget or takes over an interrupted owner.
 """
 from __future__ import annotations
 
+from codex_harness.application.dge import DgeRefused, design_gate
 from codex_harness.application.evidence_inspection import EvidenceInspections
 from codex_harness.application.local_cycle import LocalCycle
 from codex_harness.domain.model import ContractError, digest, envelope, require, utcnow
@@ -45,6 +46,11 @@ class BudgetRefused(OperationRefused):
 
 class EvidenceGateRefused(OperationRefused):
     pass
+
+
+class DesignGateRefused(OperationRefused):
+    """INV-DGE-001: a v2 manifest without an approved design bound to exactly this plan; raised
+    inside the claim transaction, so no operation, cycle or outbox row is written."""
 
 
 class BudgetedExecutor:
@@ -110,8 +116,8 @@ class Operation:
     @staticmethod
     def _receipt(row) -> dict:
         """Safe projection: identities, digests, codes and counts; no manifest text or raw errors."""
-        keys = ("id", "status", "reason_code", "manifest_sha256", "identity", "goal", "correlation_id", "cycle_id",
-                "assignment_message_id", "task_id", "decision_id", "lead_accepted", "calls", "evidence",
+        keys = ("id", "status", "reason_code", "manifest_sha256", "identity", "goal", "design", "correlation_id",
+                "cycle_id", "assignment_message_id", "task_id", "decision_id", "lead_accepted", "calls", "evidence",
                 "cycle", "collection", "claimed_at", "updated_at", "finished_at")
         return {"schema": RECEIPT_SCHEMA, "authority": "operation_receipt; not merge, deploy or completion",
                 **{k: row.get(k) for k in keys}}
@@ -132,7 +138,15 @@ class Operation:
                 raise OperationRefused("running_residue")  # interrupted or concurrent; never taken over
             if tx.get("local_cycles", cycle) is not None or tx.get("tasks", message["message_id"]) is not None:
                 raise OperationRefused("cycle_residue")
-            row = {"id": operation_id, "status": "running", "reason_code": None, **binding,
+            design = None
+            if "design" in manifest:
+                # INV-DGE-001: same transaction as the first claim; a refusal writes nothing.
+                try:
+                    design = design_gate(tx, manifest["design"], repository=identity.get("repository"),
+                                         base_revision=manifest["base_revision"], plan=manifest["plan"], now=utcnow())
+                except DgeRefused as exc:
+                    raise DesignGateRefused(exc.reason_code) from exc
+            row = {"id": operation_id, "status": "running", "reason_code": None, **binding, "design": design,
                    "correlation_id": correlation, "cycle_id": cycle, "assignment_message_id": message["message_id"],
                    "max_executions": MAX_EXECUTIONS, "task_id": None, "decision_id": None, "lead_accepted": None,
                    "calls": {"reserved": 0, "settled": 0, "slots": []}, "evidence": {}, "cycle": None,
@@ -153,6 +167,9 @@ class Operation:
         details = {"plan": {k: manifest["plan"][k] for k in ("objective", "acceptance_criteria", "allowed_paths")},
                    "operation": {"id": manifest["id"], "manifest_sha256": manifest_digest(manifest),
                                  "goal": dict(manifest["goal"]), "base_revision": manifest["base_revision"]}}
+        if "design" in manifest:
+            # The worker and reviewer can trace the plan authority; the reference is not knowledge.
+            details["operation"]["design"] = dict(manifest["design"])
         message = envelope("task.assign", LEAD, WORKER, ACTION, details, correlation_id(manifest))
         message["message_id"] = assignment_message_id(manifest)
         message["where"] = {**message["where"], "revision": manifest["base_revision"],

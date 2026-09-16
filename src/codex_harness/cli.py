@@ -299,6 +299,8 @@ def parser() -> argparse.ArgumentParser:
     operate_run.add_argument("--file", type=Path, required=True, help="Operation manifest JSON (urn:zeus:operation:1)")
     operate_status = operate_commands.add_parser("status", help="Read the saved receipt; store read only")
     operate_status.add_argument("operation_id")
+    from codex_harness.adapters.dge_cli import add_parser as add_dge_parser
+    add_dge_parser(commands)
     ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
     ticket_commands = ticket.add_subparsers(dest="ticket_command", required=True)
     ticket_commands.add_parser("list")
@@ -447,6 +449,16 @@ def operate_command(service, args):
         raise SystemExit(1) from exc
     emit(receipt)
     if args.operate_command == "run" and receipt.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def dge_command(service, args):
+    """INV-DGE-001: exit 0 only for a recorded, replayed or read result; refusals print a code and a
+    type, never packet text, payloads, DSNs or raw exceptions."""
+    from codex_harness.adapters import dge_cli
+    result = dge_cli.execute(service, args)
+    emit(result)
+    if result.get("exit_code", 1) != 0:
         raise SystemExit(1)
 
 
@@ -604,6 +616,8 @@ def main() -> None:
             cycle_command(service, args)
         elif args.command == "operate":
             operate_command(service, args)
+        elif args.command == "dge":
+            dge_command(service, args)
         elif args.command == "observe":
             observe_command(service, args)
         elif args.command == "demo":
