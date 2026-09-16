@@ -33,3 +33,11 @@
 사용자 진행 지시에 따라 새 단계로 시작한다. 기존 기계 원장 5개 항목을 유지한다. Claude 구현·필요한 수정 최대 2회, 호출당 900초·provider 예산 옵션 USD 3. Codex 팀장 검토 최대 2회, 기존 decision deadline 적용. 단계 총 4회이며 누적 호출 슬롯 상한 9로 고정한다. 수치가 실제 청구액을 보증하지 않으며 자동 증액하지 않는다. 현재 Codex 세션은 분석과 최종 수용을 담당한다.
 
 구현 범위: `src/codex_harness/application/local_cycle.py`, CLI 배선, 관련 테스트와 계약·짧은 운영 문서. 필요한 변경은 이 범위 안에서 한 번에 제출한다. reference 분석·디자인 자산·WSL 추가 조사로 범위를 늘리지 않는다.
+
+## 첫 구현 검토와 한 번의 보완
+
+첫 Claude 실행은 provider의 예산 종료로 실패했고 초안만 남았다. 단위 테스트 14개와 Ruff는 독립 실행에서 통과했다. 실패 원장과 diagnose는 그대로 보존하며 성공으로 바꾸지 않는다.
+
+실제 Workflow.claim을 사용한 반례에서 cycle의 사전 조회와 executor claim 사이에 들어온 다른 correlation이 선택됐다. 모델 호출 없이 재현했다. 따라서 기존 선택 순서를 재구현하지 않고, executor와 Workflow.claim의 기존 트랜잭션에 선택한 id·correlation·허용 상태/phase를 검사하는 선택적 guard를 전달하도록 범위를 좁게 확장한다. 기본 호출은 이전 동작을 유지한다. guard 불일치는 provider 시작 전에 거절하고 cycle이 중단한다. DB 트랜잭션을 모델 실행 동안 유지하지 않는다.
+
+보완은 위 결함, 실제 Workflow를 이용한 성공→검토·거절→수정 계약 시험, 별도 프로세스에서 PG 상태 재조회 시험을 한 묶음으로 진행한다. 외부 모델 대역과 실제 Redis/PG 사용을 구별한다. 기존 초안을 보존한 revision 위에서 남은 Claude 1회를 사용하며 예산은 증액하지 않는다. 첫 실패 schema와 다른 보완 schema를 사용해 실패 작업을 자동 재호출하지 않는다.
