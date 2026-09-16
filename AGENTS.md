@@ -1,5 +1,11 @@
 # Codex harness implementation rules
 
+## Local workspace placement
+
+- On this Windows host, put new worktrees under `D:\workspaces\zeus\worktrees`, raw evidence under `D:\workspaces\zeus\artifacts`, and temporary work under `D:\workspaces\zeus\scratch`. WSL accesses these through `/mnt/d/workspaces/zeus`. Do not create review folders directly under the user's home.
+- The existing active repository `C:\Users\rudtn\zeus` remains a compatibility exception. Keep small tracked specs, summaries, and manifests in Git. Do not move tracked documents out of a checkout independently of Git.
+- Reuse a task's worktree for repeat reviews; preserve dirty and ignored evidence before cleanup. Relocated Python virtual environments may contain old absolute paths: recreate them at the new path before use. Follow `D:\workspaces\README.md` for this host's directory layout.
+
 - This is a new Codex harness. Reference repositories are not implementation roots.
 - Domain and application depend only on the standard library and inner contracts.
 - Scripts/CLI invoke use cases; do not duplicate domain policy in shell scripts.
