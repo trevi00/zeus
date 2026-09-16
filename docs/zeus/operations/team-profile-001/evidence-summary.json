@@ -1,0 +1,381 @@
+{
+  "recorded_on": "2026-09-16",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\team-profile-001",
+  "files": [
+    {
+      "path": "sources.json",
+      "bytes": 2187,
+      "sha256": "ca5ae4de4eb4f56f061222bec46d383b7b2444ee6695dfd4c004af8dd8c300ba"
+    },
+    {
+      "path": "prior-review-disposition.json",
+      "bytes": 1573,
+      "sha256": "bf66d17580d087ae6e10e4efb13dde571ae94c441d58d3fad118471be155d694"
+    },
+    {
+      "path": "unaccepted-draft.json",
+      "bytes": 746,
+      "sha256": "578964a075051db138c824936f9eec52a894427e323f7a9ad5fba41f20bdf010"
+    },
+    {
+      "path": "implementation-001/receipt.json",
+      "bytes": 16097,
+      "sha256": "e612353c94fb38a44555da724c0ef3f7ca550b5ef9156138f9eaf90849fda0e4"
+    },
+    {
+      "path": "implementation-002/receipt.json",
+      "bytes": 31315,
+      "sha256": "c1d07d9e4e18136407cd61e5c236fc76c8053ca6f9f59729faed5127934df476"
+    },
+    {
+      "path": "canary-001/receipt.json",
+      "bytes": 28529,
+      "sha256": "9a5a5dd7528c4beb5802be72c9774c2bccaf89dbab7e5bd852eff49860f0ddb7"
+    },
+    {
+      "path": "canary-001/observed-test-tools.json",
+      "bytes": 1590,
+      "sha256": "e8e8953a23fc8c2630ba0b0d94f952aace2fad801d55f5688de410dc5d415fe9"
+    },
+    {
+      "path": "canary-checks/result.json",
+      "bytes": 1131,
+      "sha256": "6e3a6542312103cb3d9ef4e0e17e2c78fd1adbf445be7f0f06f956b681ee7714"
+    },
+    {
+      "path": "review-handoff.json",
+      "bytes": 6594,
+      "sha256": "3cc536823b2a98b349523cdde26d51d1392b6ee32f9486c7232bd964782fb8f1"
+    },
+    {
+      "path": "lead-review-001/receipt.json",
+      "bytes": 2020,
+      "sha256": "194d57b77c982212f787a6de87faac73f5169cd284b720daa9eba8dacae7872d"
+    },
+    {
+      "path": "lead-review-001/poststate.json",
+      "bytes": 813,
+      "sha256": "d702190d44e2c1c8a16aa3dc6c27a67318d71a00b61f017d5a4d9e16c5fc96a7"
+    },
+    {
+      "path": "independent-checks/result.json",
+      "bytes": 406,
+      "sha256": "aafb1ba5b36d5c300ce3fe17cf163d007e357fd71fab4900bdc6d437b8318199"
+    },
+    {
+      "path": "independent-checks/pytest.log",
+      "bytes": 2152,
+      "sha256": "8664e496d78e1d2c3627aa8f81139a207cb989f0bedc170ed72608036530ef5a"
+    },
+    {
+      "path": "independent-checks/ruff.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  ],
+  "runs": [
+    {
+      "run": "implementation-001",
+      "phase": "blocked_execution",
+      "task_status": "retry",
+      "task_id": "563762c1-265a-4708-af24-87af1208e82c",
+      "collection": {
+        "files": 1,
+        "records": 93,
+        "inserted": 93,
+        "duplicates": 0,
+        "conflicts": 0,
+        "corrupt": 0,
+        "refused": 0,
+        "truncated_tail": 0,
+        "unconfirmed_audits": 0,
+        "confirmed_audits": 3,
+        "sink_failures": 0,
+        "reclaimed_segments": 0,
+        "pruned_runs": 0,
+        "pruned_files": 0,
+        "alerts_replayed": 0,
+        "per_file": [
+          {
+            "file": "d3a8002d7c4a4fefa7cff5c48d791ebd.0000.jsonl",
+            "from_offset": 0,
+            "to_offset": 114824,
+            "records": 93,
+            "inserted": 93,
+            "confirmed_audits": 3
+          }
+        ]
+      },
+      "cycle": null
+    },
+    {
+      "run": "implementation-002",
+      "phase": "awaiting_external_codex_review",
+      "task_status": "succeeded",
+      "task_id": "2558f51c-f2c7-4858-8105-159aa9738226",
+      "collection": {
+        "files": 1,
+        "records": 36,
+        "inserted": 36,
+        "duplicates": 0,
+        "conflicts": 0,
+        "corrupt": 0,
+        "refused": 0,
+        "truncated_tail": 0,
+        "unconfirmed_audits": 0,
+        "confirmed_audits": 3,
+        "sink_failures": 0,
+        "reclaimed_segments": 0,
+        "pruned_runs": 0,
+        "pruned_files": 0,
+        "alerts_replayed": 0,
+        "per_file": [
+          {
+            "file": "6b153f2af4964c4ca8fd40038cdd9b9b.0000.jsonl",
+            "from_offset": 0,
+            "to_offset": 47584,
+            "records": 36,
+            "inserted": 36,
+            "confirmed_audits": 3
+          }
+        ]
+      },
+      "cycle": null
+    },
+    {
+      "run": "canary-001",
+      "phase": "awaiting_external_codex_review",
+      "task_status": "succeeded",
+      "task_id": "fee94c1f-ee53-4df7-bf43-d87f31c627b3",
+      "collection": {
+        "files": 1,
+        "records": 25,
+        "inserted": 25,
+        "duplicates": 0,
+        "conflicts": 0,
+        "corrupt": 0,
+        "refused": 0,
+        "truncated_tail": 0,
+        "unconfirmed_audits": 0,
+        "confirmed_audits": 2,
+        "sink_failures": 0,
+        "reclaimed_segments": 0,
+        "pruned_runs": 0,
+        "pruned_files": 0,
+        "alerts_replayed": 0,
+        "per_file": [
+          {
+            "file": "82960c4c9adf4f24b7d1230493fc025b.0000.jsonl",
+            "from_offset": 0,
+            "to_offset": 33877,
+            "records": 25,
+            "inserted": 25,
+            "confirmed_audits": 2
+          }
+        ]
+      },
+      "cycle": null
+    },
+    {
+      "run": "lead-review-001",
+      "phase": "completed_step",
+      "task_status": null,
+      "task_id": null,
+      "collection": {
+        "files": 1,
+        "records": 29,
+        "inserted": 29,
+        "duplicates": 0,
+        "conflicts": 0,
+        "corrupt": 0,
+        "refused": 0,
+        "truncated_tail": 0,
+        "unconfirmed_audits": 0,
+        "confirmed_audits": 2,
+        "sink_failures": 0,
+        "reclaimed_segments": 0,
+        "pruned_runs": 0,
+        "pruned_files": 0,
+        "alerts_replayed": 0,
+        "per_file": [
+          {
+            "file": "f93a6846d90747fe98e30508ef87444d.0000.jsonl",
+            "from_offset": 0,
+            "to_offset": 42369,
+            "records": 29,
+            "confirmed_audits": 2,
+            "inserted": 29
+          }
+        ]
+      },
+      "cycle": {
+        "id": "team-profile-canary-001",
+        "status": "stopped",
+        "in_flight": null,
+        "created_at": "2026-09-16T08:01:41.520454+00:00",
+        "executions": 2,
+        "updated_at": "2026-09-16T08:08:03.805029+00:00",
+        "correlation_id": "team-profile-canary-001",
+        "last_execution": {
+          "agent": "lead:improvement",
+          "kind": "decision",
+          "id": "1c7c05af-3307-4579-bdd7-06024fe9b367",
+          "status": "retry",
+          "claimed": true,
+          "result_id": "1c7c05af-3307-4579-bdd7-06024fe9b367",
+          "at": "2026-09-16T08:08:03.805017+00:00"
+        },
+        "max_executions": 2,
+        "stopped_reason": "execution_retry"
+      }
+    }
+  ],
+  "profile_revision": "945bdcb0ce26b1f1f45884aa1bb844dcd139072a",
+  "canary_revision": "bb026ab56a62884bb3823d49f92e1ab32bc68d53",
+  "profile_delivery": {
+    "character_limit": 6000,
+    "characters": 3052,
+    "compliance": "not judged here: delivery of the document is recorded, adherence is not",
+    "document_sha256": "50e048c42949b92800429c21de13a2c3dffeb59444aa79ea547c74276ed832f3",
+    "document_transport": "--append-system-prompt",
+    "evidence_directory": "D:\\workspaces\\zeus\\artifacts\\team-profile-001\\canary-001\\profiles\\7f15f0fa-1001-492a-b2a2-ab4b71084145",
+    "hook_sha256": "5498b27724a68662053b2e2e8949392ca6ba880bc6d8b83e3a9ddfa38ee5f1c2",
+    "hooks": [
+      "SessionStart",
+      "PostToolUse(Bash)"
+    ],
+    "hooks_transport": "--settings",
+    "id": "worker-v1",
+    "manifest_sha256": "b43a66a49f294c82a843d179894f56c49941132c3efdd6232fc1cb659687e224",
+    "permissions_added": [
+      "Bash(python -m pytest:*)",
+      "Bash(python -m pytest)",
+      "Bash(python -m ruff:*)",
+      "Bash(python -m compileall:*)",
+      "Bash(git status:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git diff)",
+      "Bash(git log:*)"
+    ],
+    "profile_digest": "67c60f8100c4dcc2b3c78b75c203a7845159f35309378bbe49f0411c976c3d32",
+    "sources": [
+      {
+        "blob": "5c4d35dd306ea0f06bc53eb353df4e247f8ac041",
+        "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+        "path": "CLAUDE.md",
+        "pinned_sha256": "87f6572ecf367d46e233956a864167657976aae44d3abc38bf8b5a2d3e3f7d20",
+        "scope": "principles adapted; no upstream executable installed",
+        "source": "baldrix"
+      },
+      {
+        "blob": "efff7fa01d6c078f4cfd48d7840ebeafebd2ee09",
+        "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+        "path": "skills/_common/verification-before-completion.md",
+        "pinned_sha256": "bd34addce510c1ab7c88ee45dc577d2531645d29d29d52567c4d447a14016da6",
+        "scope": "principles adapted; no upstream executable installed",
+        "source": "baldrix"
+      },
+      {
+        "blob": "6e9d5ddb86c9a4d8db38398068f05049a7048057",
+        "commit": "70a7a49d84fbb991cdc5ab017d643b18f7740112",
+        "path": "CLAUDE.md",
+        "pinned_sha256": "13fef9bb49e35f8b51b427e5e6d378de6cd3ff98a66f2bf70cde8e4fc352d5a1",
+        "scope": "principles adapted; no upstream executable installed",
+        "source": "harness"
+      },
+      {
+        "blob": "a8c4881b7f9be1c74ff32bbb32724ce7836df592",
+        "commit": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+        "path": "README.md",
+        "pinned_sha256": "9286e27c95965839fd4c04e8ac22b66426cb412b23517e5cf8c3a7ec46ce4fa8",
+        "scope": "principles adapted; no upstream executable installed",
+        "source": "guardian"
+      }
+    ],
+    "version": "1"
+  },
+  "hook_receipts": {
+    "authority": "none: a receipt shows the hook ran, it approves and completes nothing",
+    "directory": "D:\\workspaces\\zeus\\artifacts\\team-profile-001\\canary-001\\profiles\\7f15f0fa-1001-492a-b2a2-ab4b71084145",
+    "events": {
+      "PostToolUse": 5,
+      "SessionStart": 1
+    },
+    "foreign_records": 0,
+    "observed": true,
+    "provenance": "files written by the packaged hook into this session's directory, read after the run; a missing file is not observed, not absent",
+    "records": 6,
+    "sessions_named": [
+      "7f15f0fa-1001-492a-b2a2-ab4b71084145"
+    ],
+    "unreadable_records": 0
+  },
+  "canary_independent_checks": {
+    "revision": "bb026ab56a62884bb3823d49f92e1ab32bc68d53",
+    "role": "Codex independent verification",
+    "checks": [
+      {
+        "name": "pytest",
+        "argv": [
+          "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+          "-m",
+          "pytest",
+          "tests/test_cycle_remaining.py",
+          "tests/test_local_cycle.py",
+          "-q",
+          "--basetemp=D:\\workspaces\\zeus\\artifacts\\team-profile-001\\canary-checks\\pytest-temp"
+        ],
+        "exit_code": 0,
+        "log_sha256": "4e97bbd895eed6eeada233821b1f254f4cb972f2f616a16bf7cfad1ed96de182",
+        "output": "........................                                                 [100%]\r\n24 passed in 1.06s\r\n"
+      },
+      {
+        "name": "ruff",
+        "argv": [
+          "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+          "-m",
+          "ruff",
+          "check",
+          "src/codex_harness/cli.py",
+          "tests/test_cycle_remaining.py"
+        ],
+        "exit_code": 0,
+        "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "output": "All checks passed!\n"
+      }
+    ]
+  },
+  "implementation_independent_checks": {
+    "revision": "945bdcb0ce26b1f1f45884aa1bb844dcd139072a",
+    "provider_calls": 0,
+    "checks": [
+      {
+        "name": "ruff",
+        "exit_code": 0,
+        "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "name": "pytest",
+        "exit_code": 0,
+        "log_sha256": "8664e496d78e1d2c3627aa8f81139a207cb989f0bedc170ed72608036530ef5a"
+      }
+    ]
+  },
+  "acceptance": {
+    "profile": "independent implementation review; final PR CI required",
+    "actual_lead_model": "accepted true returned",
+    "actual_lead_commit": "refused: reviewer modified its checkout",
+    "autonomous_cycle_complete": false,
+    "cycle_executions": 2,
+    "cycle_limit": 2,
+    "stage_cli_calls": 4,
+    "cumulative_machine_slots": 12,
+    "automatic_retries": 0
+  },
+  "scope_limits": [
+    "Partial adaptation of selected local principles, not full local harness absorption.",
+    "Operator supplied additional verification; original replay failures unchanged.",
+    "Actual reviewer and worker on Windows; Linux CI is separate and not an actual Linux provider run."
+  ]
+}
