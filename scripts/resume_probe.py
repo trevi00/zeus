@@ -26,6 +26,7 @@ import argparse
 import json
 import pathlib
 import sys
+import tempfile
 import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "src"))
@@ -111,13 +112,17 @@ def main():
     cycles = []
     for way in WAYS:
         for index in range(CYCLES_PER_WAY):
-            room = pathlib.Path(args.out).parent / f".{args.label}-{way}-{index}"
-            services = VerificationServices(room / "verification", FileArtifacts(room / "artifacts"))
-            with services as endpoints:
-                port = int(endpoints["database_url"].rsplit(":", 1)[1].split("/")[0])
-                container = services._command("ps", "-q", "postgres", timeout=20).strip()
-                started = bring_down_and_back(services, way)
-                row = watch(services, container, port, started)
+            # A scratch room of its own, outside the repository. Writing these next to the evidence
+            # left a dozen working directories behind in the tree on the first run.
+            with tempfile.TemporaryDirectory(prefix="zeus-resume-") as scratch:
+                room = pathlib.Path(scratch)
+                services = VerificationServices(room / "verification",
+                                                FileArtifacts(room / "artifacts"))
+                with services as endpoints:
+                    port = int(endpoints["database_url"].rsplit(":", 1)[1].split("/")[0])
+                    container = services._command("ps", "-q", "postgres", timeout=20).strip()
+                    started = bring_down_and_back(services, way)
+                    row = watch(services, container, port, started)
             row.update({"way": way, "cycle": index})
             cycles.append(row)
             print(json.dumps(row))
