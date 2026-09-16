@@ -205,3 +205,41 @@ will establish wiring. Do not remove tests or weaken provenance to make it pass.
 
 Owner authorizes this specifically reproduced correction and review, ceiling 38 -> 40, Claude
 timeout 600s / declared USD 2. The autonomous canary is still unexecuted and remains required.
+
+## Live canary obstacle: producer/consumer contract mismatch
+
+Correction e345c2e was independently accepted (86af48e5-d671-4488-9c12-1e712d931027), including
+in-memory restoration of the old argument. CI then exposed imports of tests.test_operation that
+only work with repository root on sys.path. Existing test_breaker.py etc use test_operation-style
+sibling imports. Owner selected this real three-import correction as the canary task instead of
+the earlier documentation example; fixed overall completion conditions did not change.
+
+Actual canary autonomous-ssot-canary-001 at e345c2e dispatched one Codex researcher task
+7708599f-f2b1-5988-8fd4-b19ddc5395db. It read the pinned sources and produced real output, but
+packet_from_research rejected it: adapter SCHEMAS describe kind/status/decision as unconstrained
+strings while consumers accept finite domain values. The output used claim kinds review_frame,
+recommendation, test_command, execution_result, verdict and a prose question status. No packet,
+debate, worker or graph was accepted. One slot reserved/settled, ledger 40 -> 41. This is an actual
+failed role-to-packet boundary, not a synthetic test and not a reason to weaken the consumer.
+
+One coherent contract fix, all four roles: align model-output schemas with the EXISTING consumer
+contracts (claim kind, question status, SSOT decision, finding severity, arbiter verdict and
+disposition). Import/reuse domain constants instead of creating divergent enum copies. Describe
+the constraints in role prompts: output only packet research claims (fact/inference/unknown),
+record execution/process commentary in normal evidence rather than invented claim kinds, and
+distinguish an unknown blocking DESIGN question from future implementation tests that have not yet
+run. Do not demand that a read-only researcher certify the future fix. Preserve facts/inferences/
+unknowns and independent critical-only debate. No output coercion, manual rewriting or retry loop.
+Test model-facing schemas against valid full role outputs and invalid values across all four roles,
+then actual domain consumption (including meaningful critical/minor cases). Reproduce the live
+bad kinds/status refusal using a labelled compact fixture; no credentials or full raw transcript
+in Git. Keep the CI import defect for the real canary, so it remains a real implementation task.
+
+The research session also observed Windows application control refusing pytest.exe (WinError 4551).
+Do not weaken host security or treat it as a code defect. Next canary uses `python -P -m pytest`
+with only checkout src on PYTHONPATH to exercise collection without root injection; GitHub CI runs
+the actual console entrypoint. Record this distinction. Original manifest/evidence is unchanged.
+
+This bounded schema/prompt/contract-test correction + independent review: ceiling 41 -> 43,
+Claude timeout 600s, declared USD 3. A new immutable canary manifest will follow acceptance;
+do not resume or rewrite the failed run. Framework canary and final CI remain the same exit gate.
