@@ -1,0 +1,2270 @@
+{
+  "label": "wsl-ubuntu-26.04",
+  "started_at": "2026-09-15T07:23:17.054909+00:00",
+  "platform": "linux",
+  "plan": {
+    "cycles_per_condition": 6,
+    "conditions": [
+      "standalone",
+      "after_teardown"
+    ],
+    "note": "fixed before the first run; every attempt is recorded, including passes"
+  },
+  "docker": "29.7.2",
+  "cycles": [
+    {
+      "project": "zeus-probe-8459af402a2c",
+      "condition": "standalone",
+      "cycle": 1,
+      "started_at": "2026-09-15T07:23:17.113904+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.578,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 1.018,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 61622
+        },
+        {
+          "at": 1.221,
+          "event": "port_published",
+          "service": "redis",
+          "port": 61623
+        },
+        {
+          "at": 1.223,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 1.227,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 1.229,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.742,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.89,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 2.931,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 2.931,
+          "event": "teardown_started"
+        },
+        {
+          "at": 3.721,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "d9c3a1fa221122290d7dcf81b251d30433f2d4dc0ee57ced5f571c71a0f5c6ca",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 2
+          },
+          "port": 61622,
+          "tcp": {
+            "ok": true,
+            "at": 1.223
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.742,
+            "refusals": [
+              {
+                "at": 1.227,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.28,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.375,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.426,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.477,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.529,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.581,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.632,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.683,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61622 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659283060957222"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "abd6f7b34ea626d44e222568d675d21b2fc6975cd25b12640e5846619b913d0c",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 61623,
+          "tcp": {
+            "ok": true,
+            "at": 1.227
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.229,
+            "refusals": [],
+            "run_id": "66249c4e46c7505482da340259d79ed6fcd66985"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 3.721,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:20.835377+00:00"
+    },
+    {
+      "project": "zeus-probe-9b702e3f3097",
+      "condition": "standalone",
+      "cycle": 2,
+      "started_at": "2026-09-15T07:23:23.835577+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.446,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.625,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 61629
+        },
+        {
+          "at": 0.801,
+          "event": "port_published",
+          "service": "redis",
+          "port": 61628
+        },
+        {
+          "at": 0.801,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.802,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.804,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.506,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.513,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.983,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.984,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.747,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "a4579ebecbd88e38f2a59cdfe3888ee0447752f855bb9717adc979f0ab49dd8a",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 61629,
+          "tcp": {
+            "ok": true,
+            "at": 0.801
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.513,
+            "refusals": [
+              {
+                "at": 0.802,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.855,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.907,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.005,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.055,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.106,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.157,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.208,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.259,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.31,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.361,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.412,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61629 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659311469932582"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "0c5d9c824a224642708e19872bd3d449d96750226fc2c8efb5bab6630577cd06",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 61628,
+          "tcp": {
+            "ok": true,
+            "at": 0.802
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.804,
+            "refusals": [],
+            "run_id": "1d446bdec40b123021f362a6fa1d7c8804c5c0a0"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.747,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:26.583204+00:00"
+    },
+    {
+      "project": "zeus-probe-96342bcd127c",
+      "condition": "standalone",
+      "cycle": 3,
+      "started_at": "2026-09-15T07:23:29.583362+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.459,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.627,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 61635
+        },
+        {
+          "at": 0.794,
+          "event": "port_published",
+          "service": "redis",
+          "port": 61634
+        },
+        {
+          "at": 0.794,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.795,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.797,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.53,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.554,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.561,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.561,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.347,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "ea21c08478b987473e090dee0fb5d56fed51fe4d21d5c49c44500bb82e0bf732",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 61635,
+          "tcp": {
+            "ok": true,
+            "at": 0.794
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.561,
+            "refusals": [
+              {
+                "at": 0.795,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.848,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.899,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.95,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.048,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.099,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.15,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.201,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.252,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.303,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.354,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.406,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.458,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61635 failed: FATAL: the database system is starting up"
+              }
+            ],
+            "system_identifier": "7685659336226656294"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "7bb2db2fa58add5b258391a36896957228a85df8ec7a2ce651d57f7509e551e6",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 61634,
+          "tcp": {
+            "ok": true,
+            "at": 0.795
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.797,
+            "refusals": [],
+            "run_id": "437e11881c48075f35434ff7d39eadca101c9332"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.347,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:31.932270+00:00"
+    },
+    {
+      "project": "zeus-probe-35ff205014c4",
+      "condition": "standalone",
+      "cycle": 4,
+      "started_at": "2026-09-15T07:23:34.932626+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.446,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.624,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 61641
+        },
+        {
+          "at": 0.786,
+          "event": "port_published",
+          "service": "redis",
+          "port": 61640
+        },
+        {
+          "at": 0.786,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.787,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.788,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.516,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.536,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.542,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.542,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.331,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "58492ccdf1dee1fd5d4fc37ed705bd22c416bcc2ecfcf2a72a7d9f098c2122bb",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 61641,
+          "tcp": {
+            "ok": true,
+            "at": 0.786
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.542,
+            "refusals": [
+              {
+                "at": 0.787,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.839,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.891,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.942,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.037,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.089,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.14,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.191,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.241,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.292,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.343,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.394,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.445,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 61641 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659359144833062"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "1ca6669d922d412dd548f23193b44d4535a547aaf0d7082984fc54b2e7dfb41e",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 61640,
+          "tcp": {
+            "ok": true,
+            "at": 0.787
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.788,
+            "refusals": [],
+            "run_id": "974dacc49be1272cfcd32a4241f7b2971b736d19"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.331,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:37.265228+00:00"
+    },
+    {
+      "project": "zeus-probe-8dde14bb032c",
+      "condition": "standalone",
+      "cycle": 5,
+      "started_at": "2026-09-15T07:23:40.265392+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.441,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.605,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 53369
+        },
+        {
+          "at": 0.769,
+          "event": "port_published",
+          "service": "redis",
+          "port": 53370
+        },
+        {
+          "at": 0.769,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.77,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.771,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.511,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.532,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.538,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.538,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.32,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "09b7bcf7d2c9de7fbccc9b77b21f86d0d007a52c2055ce2ad19429b3209557bc",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53369,
+          "tcp": {
+            "ok": true,
+            "at": 0.769
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.538,
+            "refusals": [
+              {
+                "at": 0.77,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.822,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.873,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.925,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.032,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.083,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.134,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.185,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.236,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.288,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.338,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.389,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.44,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 53369 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659381795262502"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "582cee346935b461213b2d0b70199a063484ebe3173a1c1a80ad12d32f693098",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 53370,
+          "tcp": {
+            "ok": true,
+            "at": 0.77
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.771,
+            "refusals": [],
+            "run_id": "9d7176ecd49c10a7927c1e321dbcfbaf60098fd9"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.32,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:42.585843+00:00"
+    },
+    {
+      "project": "zeus-probe-c75122b14aca",
+      "condition": "standalone",
+      "cycle": 6,
+      "started_at": "2026-09-15T07:23:45.585991+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.445,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.617,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 49335
+        },
+        {
+          "at": 0.817,
+          "event": "port_published",
+          "service": "redis",
+          "port": 49336
+        },
+        {
+          "at": 0.817,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.818,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.82,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.526,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.536,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 3.051,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 3.051,
+          "event": "teardown_started"
+        },
+        {
+          "at": 3.819,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "23d518206a83a2112510f5d3a79e7b0c7f655be240a68e7d16cf69b3fb40eda4",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 2
+          },
+          "port": 49335,
+          "tcp": {
+            "ok": true,
+            "at": 0.817
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.536,
+            "refusals": [
+              {
+                "at": 0.818,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.871,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.922,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.025,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.076,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.127,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.178,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.229,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.28,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.331,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.382,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.433,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 49335 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659404790448168"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "f18bdb04cd36bc656426c4b3c7081cc98991f3ffb1ab02586c8d62e521defc0d",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 49336,
+          "tcp": {
+            "ok": true,
+            "at": 0.818
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.82,
+            "refusals": [],
+            "run_id": "f228bed993dc1f8b92108750cb4ff2225f6e522f"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 3.819,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:49.406207+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-ad04267b25e3",
+      "condition": "after_teardown",
+      "cycle": 1,
+      "started_at": "2026-09-15T07:23:52.406416+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.442,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.613,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 63303
+        },
+        {
+          "at": 0.792,
+          "event": "port_published",
+          "service": "redis",
+          "port": 63304
+        },
+        {
+          "at": 0.792,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.793,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.795,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.492,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.499,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.969,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.969,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.809,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "07743b75cd388ff574bbdb2f169afdc8a85845eb0a25f387bf3f13b8cbf72b85",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63303,
+          "tcp": {
+            "ok": true,
+            "at": 0.792
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.499,
+            "refusals": [
+              {
+                "at": 0.793,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.846,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.897,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.991,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.042,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.093,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.144,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.195,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.246,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.297,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.348,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.399,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63303 failed: FATAL: the database system is starting up"
+              }
+            ],
+            "system_identifier": "7685659433936232486"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "579969406dc1a4a8ed3d3f4e29236bbd26ea9c5aaa38f2efea4a6ed23b358f52",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63304,
+          "tcp": {
+            "ok": true,
+            "at": 0.793
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.795,
+            "refusals": [],
+            "run_id": "a4113729adf778b59afc41cf2911ada862f95c20"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.809,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:55.216417+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-3e80c98edea7",
+      "condition": "after_teardown",
+      "cycle": 2,
+      "started_at": "2026-09-15T07:23:55.216467+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.477,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.647,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 63310
+        },
+        {
+          "at": 0.818,
+          "event": "port_published",
+          "service": "redis",
+          "port": 63309
+        },
+        {
+          "at": 0.819,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.819,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.821,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.485,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.555,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.575,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.575,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.317,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "faa909b0a83857bd8d392447af7fea35ea10d4cad2c68ddf2c01199afc0c1b87",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63310,
+          "tcp": {
+            "ok": true,
+            "at": 0.819
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.485,
+            "refusals": [
+              {
+                "at": 0.819,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.872,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.923,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.974,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.068,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.119,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.169,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.221,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.272,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.323,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.374,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.425,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63310 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659446284054566"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "51e27a338a4314f9241036aef36db293021998762b8443a8b1a90cdac2ee6c37",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63309,
+          "tcp": {
+            "ok": true,
+            "at": 0.819
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.821,
+            "refusals": [],
+            "run_id": "58f080856f12d3396b3c077b094037700a3c1c2a"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.317,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:57.534477+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-2a5e11c8d4a4",
+      "condition": "after_teardown",
+      "cycle": 3,
+      "started_at": "2026-09-15T07:23:57.534524+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.47,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.638,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 63313
+        },
+        {
+          "at": 0.801,
+          "event": "port_published",
+          "service": "redis",
+          "port": 63314
+        },
+        {
+          "at": 0.802,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.803,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.804,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.47,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.542,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.562,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.562,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.314,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "b4698f12cf26a50decb20697283654e1230e6ed49f5da0e16533f283dca6ec3d",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63313,
+          "tcp": {
+            "ok": true,
+            "at": 0.802
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.47,
+            "refusals": [
+              {
+                "at": 0.802,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.855,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.906,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.956,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.051,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.102,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.152,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.203,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.254,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.305,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.356,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.407,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63313 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659456262795302"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "0d7f7602a3a4280a7cb68f726fd61fe98322b5830c12beaf8495af911a704c68",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63314,
+          "tcp": {
+            "ok": true,
+            "at": 0.803
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.804,
+            "refusals": [],
+            "run_id": "4f3c27d255e294dd45e9b6d5e0a672e9ee1a14e7"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.314,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:23:59.849959+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-af6369cc6acb",
+      "condition": "after_teardown",
+      "cycle": 4,
+      "started_at": "2026-09-15T07:23:59.850031+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.467,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.644,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 63319
+        },
+        {
+          "at": 0.816,
+          "event": "port_published",
+          "service": "redis",
+          "port": 63318
+        },
+        {
+          "at": 0.816,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.817,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.818,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.518,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.525,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 2.045,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 2.045,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.715,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "9563d062641dda43138af47de28f0f0b35b30eccf7b3b9363d6c55857eb1ff0f",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63319,
+          "tcp": {
+            "ok": true,
+            "at": 0.816
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.525,
+            "refusals": [
+              {
+                "at": 0.817,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.869,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.921,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.019,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.07,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.121,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.172,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.223,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.274,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.325,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.376,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.427,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63319 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659466231971878"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "659b9fb2cd6a188a4f75c0b32dc50d3d21f4a80521d2d02eecedddc2ea8c0e90",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63318,
+          "tcp": {
+            "ok": true,
+            "at": 0.817
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.818,
+            "refusals": [],
+            "run_id": "2dea634d44b2c6ffc9b15e030e5d38e618346df3"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.715,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:24:02.565992+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-27314df0fcbc",
+      "condition": "after_teardown",
+      "cycle": 5,
+      "started_at": "2026-09-15T07:24:02.566029+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.502,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.67,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 63323
+        },
+        {
+          "at": 0.836,
+          "event": "port_published",
+          "service": "redis",
+          "port": 63324
+        },
+        {
+          "at": 0.836,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.837,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.839,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.504,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 1.573,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 1.593,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.593,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.363,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "a26137cfe2963d34755039c405b881c89c86362e34aa8f0e79013eb9ea344f00",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63323,
+          "tcp": {
+            "ok": true,
+            "at": 0.836
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.504,
+            "refusals": [
+              {
+                "at": 0.837,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.89,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.941,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.992,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.085,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.136,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.187,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.238,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.289,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.34,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.391,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.442,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63323 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659477949403174"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "3e97432b3449a9f2cf17738ee5b37100378a6e11d32bbc025ffda6916b32c67f",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63324,
+          "tcp": {
+            "ok": true,
+            "at": 0.837
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.839,
+            "refusals": [],
+            "run_id": "87aba1a2eea1773e1f79cfc2b4791a5d77e33698"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.363,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:24:04.929969+00:00",
+      "followed_by_immediate_start": true
+    },
+    {
+      "project": "zeus-probe-5060f099dc0d",
+      "condition": "after_teardown",
+      "cycle": 6,
+      "started_at": "2026-09-15T07:24:04.930015+00:00",
+      "timeline": [
+        {
+          "at": 0.0,
+          "event": "compose_up_started"
+        },
+        {
+          "at": 0.509,
+          "event": "compose_up_returned",
+          "exit_code": 0
+        },
+        {
+          "at": 0.693,
+          "event": "port_published",
+          "service": "postgres",
+          "port": 63329
+        },
+        {
+          "at": 0.857,
+          "event": "port_published",
+          "service": "redis",
+          "port": 63328
+        },
+        {
+          "at": 0.858,
+          "event": "tcp_accepted",
+          "service": "postgres"
+        },
+        {
+          "at": 0.858,
+          "event": "tcp_accepted",
+          "service": "redis"
+        },
+        {
+          "at": 0.86,
+          "event": "service_answered",
+          "service": "redis"
+        },
+        {
+          "at": 1.571,
+          "event": "health_healthy",
+          "service": "redis"
+        },
+        {
+          "at": 1.577,
+          "event": "service_answered",
+          "service": "postgres"
+        },
+        {
+          "at": 2.049,
+          "event": "health_healthy",
+          "service": "postgres"
+        },
+        {
+          "at": 2.049,
+          "event": "teardown_started"
+        },
+        {
+          "at": 2.882,
+          "event": "teardown_returned",
+          "exit_code": 0
+        }
+      ],
+      "services": {
+        "postgres": {
+          "container": "82000b19929cad86104acf068dd25d5690ade5a2bd7a30cb5b0c3086349f1204",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63329,
+          "tcp": {
+            "ok": true,
+            "at": 0.858
+          },
+          "answer": {
+            "ok": true,
+            "at": 1.577,
+            "refusals": [
+              {
+                "at": 0.858,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.911,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 0.962,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.064,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.115,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.166,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.218,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.269,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.32,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.371,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.422,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              },
+              {
+                "at": 1.473,
+                "error": "OperationalError",
+                "reason": "connection failed: connection to server at \"127.0.0.1\", port 63329 failed: server closed the connection unexpectedly This probably means the server terminated a"
+              }
+            ],
+            "system_identifier": "7685659488233369638"
+          },
+          "health_healthy": true
+        },
+        "redis": {
+          "container": "1d3652486dfcdd704f86b83122623e57f171732d02d8220b30bcf248f4a9f9ea",
+          "health": {
+            "status": "healthy",
+            "failing_streak": 0,
+            "checks": 1
+          },
+          "port": 63328,
+          "tcp": {
+            "ok": true,
+            "at": 0.858
+          },
+          "answer": {
+            "ok": true,
+            "at": 0.86,
+            "refusals": [],
+            "run_id": "132a573ee9f69875b04516eb488cbe079574cb83"
+          },
+          "health_healthy": true
+        }
+      },
+      "compose_up_ok": true,
+      "teardown_at": 2.882,
+      "teardown_ok": true,
+      "finished_at": "2026-09-15T07:24:07.813428+00:00"
+    }
+  ],
+  "finished_at": "2026-09-15T07:24:07.813447+00:00",
+  "summary": {
+    "cycles": 12,
+    "by_condition": {
+      "standalone": {
+        "runs": 6,
+        "tcp_never_accepted": 0,
+        "never_answered": 0,
+        "tcp_to_answer_seconds": [
+          {
+            "service": "postgres",
+            "seconds": 0.519
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.712
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.767
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.756
+          },
+          {
+            "service": "redis",
+            "seconds": 0.001
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.769
+          },
+          {
+            "service": "redis",
+            "seconds": 0.001
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.719
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          }
+        ],
+        "healthy_to_answer_seconds": [
+          -1.189,
+          -0.47,
+          0.031,
+          0.026,
+          0.027,
+          -1.515
+        ],
+        "refusal_kinds": [
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 49335 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 53369 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 61622 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 61629 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 61635 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 61641 fai"
+        ]
+      },
+      "after_teardown": {
+        "runs": 6,
+        "tcp_never_accepted": 0,
+        "never_answered": 0,
+        "tcp_to_answer_seconds": [
+          {
+            "service": "postgres",
+            "seconds": 0.707
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.666
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.668
+          },
+          {
+            "service": "redis",
+            "seconds": 0.001
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.709
+          },
+          {
+            "service": "redis",
+            "seconds": 0.001
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.668
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          },
+          {
+            "service": "postgres",
+            "seconds": 0.719
+          },
+          {
+            "service": "redis",
+            "seconds": 0.002
+          }
+        ],
+        "healthy_to_answer_seconds": [
+          -0.47,
+          -0.07,
+          -0.072,
+          -0.52,
+          -0.069,
+          -0.472
+        ],
+        "refusal_kinds": [
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 63303 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 63310 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 63313 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 63319 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 63323 fai",
+          "postgres:OperationalError:connection failed: connection to server at \"127.0.0.1\", port 63329 fai"
+        ]
+      }
+    }
+  }
+}

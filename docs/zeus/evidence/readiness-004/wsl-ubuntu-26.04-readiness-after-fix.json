@@ -1,0 +1,182 @@
+{
+  "label": "wsl-ubuntu-26.04",
+  "started_at": "2026-09-15T07:29:29.535452+00:00",
+  "platform": "linux",
+  "plan": {
+    "through_harness_runs": 6,
+    "note": "fixed before the first run; every run is recorded"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "project": "zeus-verify-df7b22c53b0d481c88ec07fc3ffe8311",
+      "started_at": "2026-09-15T07:29:29.580737+00:00",
+      "endpoints_opened": true,
+      "ok": true,
+      "seconds": 3.29,
+      "finished_at": "2026-09-15T07:29:32.869771+00:00"
+    },
+    {
+      "run": 2,
+      "project": "zeus-verify-3422211d6cbd4d9490f02e23f90b1cea",
+      "started_at": "2026-09-15T07:29:32.869868+00:00",
+      "endpoints_opened": true,
+      "ok": true,
+      "seconds": 3.17,
+      "finished_at": "2026-09-15T07:29:36.036553+00:00"
+    },
+    {
+      "run": 3,
+      "project": "zeus-verify-f54ea4785ab54071b19d9247b5fd05c1",
+      "started_at": "2026-09-15T07:29:36.036701+00:00",
+      "endpoints_opened": true,
+      "ok": true,
+      "seconds": 3.21,
+      "finished_at": "2026-09-15T07:29:39.251503+00:00"
+    },
+    {
+      "run": 4,
+      "project": "zeus-verify-fa0186282f5842e09afcf35b9847210d",
+      "started_at": "2026-09-15T07:29:39.251602+00:00",
+      "endpoints_opened": true,
+      "ok": true,
+      "seconds": 3.19,
+      "finished_at": "2026-09-15T07:29:42.442922+00:00"
+    },
+    {
+      "run": 5,
+      "project": "zeus-verify-2c90d64da59d4906b762db3f0fd699a0",
+      "started_at": "2026-09-15T07:29:42.443034+00:00",
+      "endpoints_opened": true,
+      "ok": true,
+      "seconds": 3.17,
+      "finished_at": "2026-09-15T07:29:45.611087+00:00"
+    },
+    {
+      "run": 6,
+      "project": "zeus-verify-82ceac42781d423d9de425d74cb8a1db",
+      "started_at": "2026-09-15T07:29:45.611174+00:00",
+      "endpoints_opened": true,
+      "ok": true,
+      "seconds": 3.15,
+      "finished_at": "2026-09-15T07:29:48.762568+00:00"
+    }
+  ],
+  "readiness_receipts": [
+    {
+      "project": "zeus-verify-fa0186282f5842e09afcf35b9847210d",
+      "readiness": {
+        "postgres": {
+          "identity": "7685660923762544679",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.18,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        },
+        "redis": {
+          "identity": "d9a2c09bd9228929723292e08219d3ed5511c2ad",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.13,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        }
+      }
+    },
+    {
+      "project": "zeus-verify-df7b22c53b0d481c88ec07fc3ffe8311",
+      "readiness": {
+        "postgres": {
+          "identity": "7685660882381287462",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.2,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        },
+        "redis": {
+          "identity": "ade48d8b478f28c3eb6a266229b9a250e8b556ad",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.15,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        }
+      }
+    },
+    {
+      "project": "zeus-verify-f54ea4785ab54071b19d9247b5fd05c1",
+      "readiness": {
+        "postgres": {
+          "identity": "7685660910163087398",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.16,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        },
+        "redis": {
+          "identity": "7a0dda4c26809a277f0cb9141a9516740c6d6bcc",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.13,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        }
+      }
+    },
+    {
+      "project": "zeus-verify-2c90d64da59d4906b762db3f0fd699a0",
+      "readiness": {
+        "postgres": {
+          "identity": "7685660937782485031",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.16,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        },
+        "redis": {
+          "identity": "025ee108c965cfbf69fe6baced78f8afebca3497",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.12,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        }
+      }
+    },
+    {
+      "project": "zeus-verify-82ceac42781d423d9de425d74cb8a1db",
+      "readiness": {
+        "postgres": {
+          "identity": "7685660951410638886",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.15,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        },
+        "redis": {
+          "identity": "5ffea5df7db7fb180a406aa8af755bd45a122896",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.13,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        }
+      }
+    },
+    {
+      "project": "zeus-verify-3422211d6cbd4d9490f02e23f90b1cea",
+      "readiness": {
+        "postgres": {
+          "identity": "7685660896410980390",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.15,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        },
+        "redis": {
+          "identity": "5190256abc35aa7352e24c7e8ec1b2c39adb0265",
+          "note": "ready is a real answer from the container this project started, not an open socket",
+          "ready_after": 0.14,
+          "refusals_during_startup": {},
+          "tcp_after": 0.0
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-09-15T07:29:48.763267+00:00"
+}

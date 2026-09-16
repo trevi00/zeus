@@ -1,0 +1,182 @@
+{
+ "label": "windows-11",
+ "context": {
+  "platform": "win32",
+  "kernel": "",
+  "docker_context": "desktop-linux",
+  "docker_host_set": false,
+  "wsl_networking_mode": "not measured by this capture",
+  "reference": {
+   "claim": "WSL2 in NAT mode gives Windows and the distribution different loopbacks, and Docker Desktop forwards between them, so which side is asked matters",
+   "source": "operator observation of this machine, plus Microsoft and Docker networking docs",
+   "observed_at": "2026-09-15",
+   "note": "reference only; this capture does not measure the networking mode"
+  }
+ },
+ "port_that_is_up": {
+  "port": 53534,
+  "service": "postgres",
+  "observations": {
+   "windows": {
+    "reachable": true,
+    "observed": true,
+    "how": "socket from this process",
+    "seconds": 0.001,
+    "looked_from": 0.0,
+    "looked_until": 0.001
+   },
+   "container": {
+    "reachable": true,
+    "observed": true,
+    "how": "docker exec",
+    "asked_port": "5432",
+    "of": "the container's own loopback",
+    "looked_from": 0.0,
+    "looked_until": 0.122
+   },
+   "wsl": {
+    "reachable": true,
+    "observed": true,
+    "how": "wsl.exe",
+    "looked_from": 0.001,
+    "looked_until": 0.178
+   }
+  },
+  "verdict": "all_reachable",
+  "means": "every vantage reached the port during its observation, so whatever refused earlier was not refusing while this was taken",
+  "context": {
+   "platform": "win32",
+   "kernel": "",
+   "docker_context": "desktop-linux",
+   "docker_host_set": false,
+   "wsl_networking_mode": "not measured by this capture",
+   "reference": {
+    "claim": "WSL2 in NAT mode gives Windows and the distribution different loopbacks, and Docker Desktop forwards between them, so which side is asked matters",
+    "source": "operator observation of this machine, plus Microsoft and Docker networking docs",
+    "observed_at": "2026-09-15",
+    "note": "reference only; this capture does not measure the networking mode"
+   }
+  },
+  "container_lookup": {
+   "seconds": 0.0,
+   "found": true
+  },
+  "deadline_seconds": 10.0,
+  "seconds": 0.214,
+  "still_running": [],
+  "delay_from_failure_seconds": 0.0,
+  "note": "three overlapping observation windows, not one instant; a vantage that observed nothing never narrows anything, and probes still running at the deadline cannot change this record"
+ },
+ "port_never_published": {
+  "port": 59999,
+  "service": "postgres",
+  "observations": {
+   "container": {
+    "reachable": true,
+    "observed": true,
+    "how": "docker exec",
+    "asked_port": "5432",
+    "of": "the container's own loopback",
+    "looked_from": 0.0,
+    "looked_until": 0.119
+   },
+   "wsl": {
+    "reachable": false,
+    "observed": true,
+    "how": "wsl.exe",
+    "looked_from": 0.001,
+    "looked_until": 0.166
+   },
+   "windows": {
+    "reachable": false,
+    "observed": true,
+    "how": "socket from this process",
+    "error": "ConnectionRefusedError",
+    "seconds": 2.029,
+    "looked_from": 0.0,
+    "looked_until": 2.03
+   }
+  },
+  "verdict": "publication",
+  "means": "the container answered, and the published port did not; the forwarding path between them is where this broke",
+  "context": {
+   "platform": "win32",
+   "kernel": "",
+   "docker_context": "desktop-linux",
+   "docker_host_set": false,
+   "wsl_networking_mode": "not measured by this capture",
+   "reference": {
+    "claim": "WSL2 in NAT mode gives Windows and the distribution different loopbacks, and Docker Desktop forwards between them, so which side is asked matters",
+    "source": "operator observation of this machine, plus Microsoft and Docker networking docs",
+    "observed_at": "2026-09-15",
+    "note": "reference only; this capture does not measure the networking mode"
+   }
+  },
+  "container_lookup": {
+   "seconds": 0.0,
+   "found": true
+  },
+  "deadline_seconds": 10.0,
+  "seconds": 2.061,
+  "still_running": [],
+  "delay_from_failure_seconds": 0.0,
+  "note": "three overlapping observation windows, not one instant; a vantage that observed nothing never narrows anything, and probes still running at the deadline cannot change this record"
+ },
+ "container_that_cannot_be_asked": {
+  "port": 53534,
+  "service": "postgres",
+  "observations": {
+   "windows": {
+    "reachable": true,
+    "observed": true,
+    "how": "socket from this process",
+    "seconds": 0.015,
+    "looked_from": 0.0,
+    "looked_until": 0.015
+   },
+   "container": {
+    "reachable": null,
+    "observed": false,
+    "how": "docker exec",
+    "why": "command_failed",
+    "exit_code": 1,
+    "asked_port": "5432",
+    "of": "the container's own loopback",
+    "looked_from": 0.0,
+    "looked_until": 0.04
+   },
+   "wsl": {
+    "reachable": true,
+    "observed": true,
+    "how": "wsl.exe",
+    "looked_from": 0.001,
+    "looked_until": 0.161
+   }
+  },
+  "verdict": "undetermined",
+  "means": "at least one vantage observed nothing, so this narrows nothing",
+  "context": {
+   "platform": "win32",
+   "kernel": "",
+   "docker_context": "desktop-linux",
+   "docker_host_set": false,
+   "wsl_networking_mode": "not measured by this capture",
+   "reference": {
+    "claim": "WSL2 in NAT mode gives Windows and the distribution different loopbacks, and Docker Desktop forwards between them, so which side is asked matters",
+    "source": "operator observation of this machine, plus Microsoft and Docker networking docs",
+    "observed_at": "2026-09-15",
+    "note": "reference only; this capture does not measure the networking mode"
+   }
+  },
+  "container_lookup": {
+   "seconds": 0.0,
+   "found": true
+  },
+  "deadline_seconds": 10.0,
+  "seconds": 0.196,
+  "still_running": [],
+  "delay_from_failure_seconds": null,
+  "note": "three overlapping observation windows, not one instant; a vantage that observed nothing never narrows anything, and probes still running at the deadline cannot change this record"
+ },
+ "note": "captures taken on a healthy stack; symptom A was not reproduced and is not claimed to be diagnosed here"
+}
