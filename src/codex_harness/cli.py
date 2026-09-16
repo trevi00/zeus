@@ -284,6 +284,15 @@ def parser() -> argparse.ArgumentParser:
     rollback.add_argument("--reason", required=True)
     canary = commands.add_parser("canary")
     canary.add_argument("--live", action="store_true", help="Execute a real Codex file task (uses account quota)")
+    cycle = commands.add_parser("cycle", help="Bounded persistent execution loop over one correlation; no conductor")
+    cycle_commands = cycle.add_subparsers(dest="cycle_command", required=True)
+    for name in ("start", "status", "step"):
+        sub = cycle_commands.add_parser(name)
+        sub.add_argument("cycle_id")
+        if name == "start":
+            sub.add_argument("--correlation", required=True)
+            sub.add_argument("--max-executions", type=int, required=True,
+                             help="Executor starts allowed through this cycle; not a billing count")
     ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
     ticket_commands = ticket.add_subparsers(dest="ticket_command", required=True)
     ticket_commands.add_parser("list")
@@ -366,6 +375,22 @@ def ticket_command(service, args):
                             reconcile_observation=args.reconcile_observation, expected_revision=args.revision))
         else:
             emit(github.pull(args.ticket_id, args.repo))
+
+
+def cycle_command(service, args):
+    from codex_harness.application.local_cycle import LocalCycle
+    if args.cycle_command == "start":
+        emit(LocalCycle(service).start(args.cycle_id, args.correlation, args.max_executions))
+    elif args.cycle_command == "status":
+        emit(LocalCycle(service).status(args.cycle_id))
+    else:
+        observer = build_observer(service.store, "cli.cycle")
+        executor = build_executor(service, observer=observer)
+        cycle = LocalCycle(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org))
+        try:
+            emit(cycle.step(args.cycle_id))
+        finally:
+            observer.close()
 
 
 def main() -> None:
@@ -513,6 +538,8 @@ def main() -> None:
             emit(ArtifactMaintenance(service.store, executor.artifacts).collect(apply=args.apply))
         elif args.command == "ticket":
             ticket_command(service, args)
+        elif args.command == "cycle":
+            cycle_command(service, args)
         elif args.command == "observe":
             observe_command(service, args)
         elif args.command == "demo":

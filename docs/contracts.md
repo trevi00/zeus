@@ -684,6 +684,22 @@ under a lock before any process can start, and a slot that was reserved and neve
 counted because an interrupted experiment may already have reached the provider. A run's label and
 output directory are names and places, never budget authority.
 
+## INV-LOCAL-CYCLE-001
+
+A local cycle binds one correlation to a durable policy row (`local_cycles`) holding the number
+of executor starts it may make. Start is idempotent for the same policy and refuses a different
+correlation or limit; restarts and repeated steps never reset or enlarge the count. A step reuses
+the existing message path (receive, handle, outbox relay, ACK) and makes at most one executor
+start, only for worker:implementation tasks or lead:improvement review_lead decisions. The slot is
+taken and an in-flight marker recorded in one transaction before the executor starts; a marker
+found by another step refuses execution and is never released automatically. Any outcome other
+than success (retry, failed, blocked, expired, exception, no claim), a pending diagnose decision,
+a received execution notice, a message or queued work under another correlation, or running
+residue in the ledger stops the cycle with a recorded reason. A rejected review_lead result
+continues through the existing rework path; an accepted one leaves the cycle in
+`awaiting_operator` before the conductor. The limit counts executor starts through this cycle,
+never provider billing, and an idle turn is reported as idle, not success.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
