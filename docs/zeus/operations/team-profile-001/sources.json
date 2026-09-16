@@ -1,0 +1,50 @@
+[
+  {
+    "source": "baldrix",
+    "path": "CLAUDE.md",
+    "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+    "blob": "5c4d35dd306ea0f06bc53eb353df4e247f8ac041",
+    "observed_sha256": "1c37ff1d510ecd85f4db914b001b5c3f0305b20252d40da7823a01299edf16c2",
+    "pinned_sha256": "87f6572ecf367d46e233956a864167657976aae44d3abc38bf8b5a2d3e3f7d20",
+    "working_copy_matches_commit": false,
+    "bytes": 8489,
+    "scope": "principles adapted; no upstream executable installed",
+    "lf_normalized_matches_commit": true
+  },
+  {
+    "source": "baldrix",
+    "path": "skills/_common/verification-before-completion.md",
+    "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+    "blob": "efff7fa01d6c078f4cfd48d7840ebeafebd2ee09",
+    "observed_sha256": "939ee8c6b8c3e76fe7510e88747baf87ccd21898c0731e127ddbe3952017482b",
+    "pinned_sha256": "bd34addce510c1ab7c88ee45dc577d2531645d29d29d52567c4d447a14016da6",
+    "working_copy_matches_commit": false,
+    "bytes": 5683,
+    "scope": "principles adapted; no upstream executable installed",
+    "lf_normalized_matches_commit": true
+  },
+  {
+    "source": "harness",
+    "path": "CLAUDE.md",
+    "commit": "70a7a49d84fbb991cdc5ab017d643b18f7740112",
+    "blob": "6e9d5ddb86c9a4d8db38398068f05049a7048057",
+    "observed_sha256": "c4e6c5fac4b1a144ea1bea4f59f9c9a2d0bea9739a2cfda9377ac66fd210abe2",
+    "pinned_sha256": "13fef9bb49e35f8b51b427e5e6d378de6cd3ff98a66f2bf70cde8e4fc352d5a1",
+    "working_copy_matches_commit": false,
+    "bytes": 2390,
+    "scope": "principles adapted; no upstream executable installed",
+    "lf_normalized_matches_commit": true
+  },
+  {
+    "source": "guardian",
+    "path": "README.md",
+    "commit": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+    "blob": "a8c4881b7f9be1c74ff32bbb32724ce7836df592",
+    "observed_sha256": "eaae5b2fd56a4a3109796659d36feaa8737bd3c4537f5aa44a1c81cf7bed19c5",
+    "pinned_sha256": "9286e27c95965839fd4c04e8ac22b66426cb412b23517e5cf8c3a7ec46ce4fa8",
+    "working_copy_matches_commit": false,
+    "bytes": 1500,
+    "scope": "principles adapted; no upstream executable installed",
+    "lf_normalized_matches_commit": true
+  }
+]
