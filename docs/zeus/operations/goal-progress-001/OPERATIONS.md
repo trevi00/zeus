@@ -40,11 +40,20 @@ Tracked JSON in Git, no ledger row or migration:
   `total - resolved`. An open ticket means zero completion for its criterion.
 - Corrupted or fabricated closure records show as `unverified`; the report does not print the
   records or the reason. Store failures propagate as errors, never as an empty report.
+- The closure check is a consistency check over the trusted closure records already in the store
+  (hash chain, event revision/hash/sequence, `ticket_closures` receipt). It is not a fresh
+  signature verification and it does not re-read or re-hash the packet or proof artifact bytes;
+  the existing `zeus ticket close` path that wrote those records remains the only closure
+  authority. A rewrite of the trusted database that keeps every record mutually consistent is
+  outside this trusted-store model and is not detected by the report.
 
 ## `zeus goal compare`
 
 - Pure file comparison, no database. Both reports must have the same `goal_id`,
   `definition_hash` and criterion bindings; otherwise the command refuses.
+- The input report files are not authenticated. The command checks shape and same-definition
+  identity only; it cannot tell whether a file came from a real `zeus goal report` run or was
+  edited afterwards. Keep report files with the evidence they belong to.
 - Output lists `gained` and `regressed` criterion ids and `net_resolved`, derived from the
   criterion statuses in the files, not from their `metrics` blocks. A reopen after a close appears
   as a regression. The comparison is `observation_only` and is not a budget, promotion or merge
