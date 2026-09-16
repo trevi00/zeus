@@ -382,7 +382,9 @@ def cycle_command(service, args):
     if args.cycle_command == "start":
         emit(LocalCycle(service).start(args.cycle_id, args.correlation, args.max_executions))
     elif args.cycle_command == "status":
-        emit(LocalCycle(service).status(args.cycle_id))
+        row = LocalCycle(service).status(args.cycle_id)
+        # Presentation only: derived here, never written back to the stored cycle row.
+        emit({**row, "remaining_executions": max(0, row["max_executions"] - row["executions"])})
     else:
         observer = build_observer(service.store, "cli.cycle")
         executor = build_executor(service, observer=observer)

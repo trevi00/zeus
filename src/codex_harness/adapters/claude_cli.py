@@ -37,6 +37,19 @@ from uuid import uuid4
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.execution_output import completed_output
 from codex_harness.adapters.process_tree import ProcessTree, TreeOwnershipLeak
+from codex_harness.adapters.worker_profile import (
+    delivery_receipt,
+    evidence_root,
+    hook_command,
+    hook_receipts,
+    hook_settings,
+    load_profile,
+    merge_settings,
+    profile_digest,
+    profile_environment,
+    session_directory,
+    verified_interpreter,
+)
 from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.observation import redact_text
 from codex_harness.domain.policy import POLICY
@@ -138,6 +151,13 @@ class ClaudeCodeRuntime:
         # measurement. Production resolves an executable and leaves this empty.
         self.launcher = [str(part) for part in (launcher or [])]
         self.limit_overrides = dict(limits or {})
+        # INV-WORKER-PROFILE-001: the profile is chosen by configuration alone and verified now,
+        # before any probe or process. Unconfigured runs keep every existing default untouched.
+        self.profile = None
+        self.profile_interpreter = None
+        if self.runtime.get("worker_profile") is not None:
+            self.profile = load_profile(self.runtime["worker_profile"])
+            self.profile_interpreter = verified_interpreter(self.runtime.get("profile_interpreter"))
         self.version = None
         self.help_digest = None
         self.capabilities = ()
@@ -198,14 +218,28 @@ class ClaudeCodeRuntime:
             flags.append("--setting-sources")
         if self.runtime.get("tools"):
             flags.append("--tools")
-        if self.settings_document is not None:
+        if self.settings_document is not None or self.profile is not None:
             flags.append("--settings")
+        if self.profile is not None:
+            flags.append("--append-system-prompt")
         return flags
 
-    def _command(self, *, schema: dict, session_id: str) -> tuple[list, list]:
+    def _run_settings(self, evidence_directory) -> dict | None:
+        """The settings value for this run: the configured document, plus the profile's hooks and
+        Bash rules when a profile is selected. Without a profile it is the document unchanged."""
+        if self.profile is None:
+            return self.settings_document
+        command = hook_command(self.profile_interpreter, self.profile["hook_path"],
+                               evidence_directory, profile_digest(self.profile))
+        return merge_settings(self.settings_document, self.profile, hook_settings(command))
+
+    def _command(self, *, schema: dict, session_id: str,
+                 settings_document: dict | None = None) -> tuple[list, list]:
         """Return (argv, manifest). The manifest is what may be written to a log: every element
         that can carry schema, context or configuration text is replaced by its digest."""
         require(self.max_budget_usd is not None, "Claude execution requires a configured spend ceiling")
+        if settings_document is None:
+            settings_document = self.settings_document
         argv = [*self.launcher, self.executable]
         manifest = [*self.launcher, "<claude-executable>"]
 
@@ -234,8 +268,11 @@ class ClaudeCodeRuntime:
             add("--setting-sources", str(self.runtime["setting_sources"]))
         if self.runtime.get("tools"):
             add("--tools", ",".join(str(tool) for tool in self.runtime["tools"]))
-        if self.settings_document is not None:
-            add("--settings", canonical(self.settings_document), sensitive_from=1)
+        if settings_document is not None:
+            add("--settings", canonical(settings_document), sensitive_from=1)
+        if self.profile is not None:
+            # The document travels as a value; the log keeps its digest (INV-WORKER-PROFILE-001).
+            add("--append-system-prompt", self.profile["document"], sensitive_from=1)
         add("--max-budget-usd", format(float(self.max_budget_usd), ".2f"))
         add("--json-schema", canonical(schema), sensitive_from=1)
         return argv, manifest
@@ -257,9 +294,19 @@ class ClaudeCodeRuntime:
         session_id = session_id or str(uuid4())
         require(SESSION_ID.fullmatch(session_id) is not None, "Claude session id must be a UUID")
         self.session_id = session_id
-        argv, manifest = self._command(schema=schema, session_id=session_id)
-        environment, environment_report = child_environment(self.environment_source)
         workspace = str(Path(cwd).resolve())
+        environment, environment_report = child_environment(self.environment_source)
+        profile_delivery, evidence_directory = None, None
+        if self.profile is not None:
+            # Receipts live outside the checkout, one directory per session, created before the
+            # process so a hook that runs during initialization already has somewhere to write.
+            evidence_directory = session_directory(evidence_root(self.runtime), session_id)
+            environment, profile_env = profile_environment(environment, workspace, self.profile_interpreter)
+            environment_report = {**environment_report, "profile": profile_env}
+            profile_delivery = delivery_receipt(self.profile, evidence_directory)
+        settings_document = self._run_settings(evidence_directory)
+        argv, manifest = self._command(schema=schema, session_id=session_id,
+                                       settings_document=settings_document)
         limits = {"line_bytes": POLICY.claude_line_bytes, "stream_bytes": POLICY.claude_stream_bytes,
                   "queue_events": POLICY.claude_event_queue, "retained_events": POLICY.claude_events_retained,
                   **self.limit_overrides, "deadline_seconds": float(timeout)}
@@ -267,7 +314,8 @@ class ClaudeCodeRuntime:
                    "cli_version": self.version, "help_digest": self.help_digest,
                    "prompt_transport": "stdin", "prompt_sha256": digest(prompt),
                    "prompt_bytes": len(prompt.encode("utf-8")), "schema_sha256": digest(schema),
-                   "settings_sha256": digest(self.settings_document) if self.settings_document is not None else None,
+                   "settings_sha256": digest(settings_document) if settings_document is not None else None,
+                   "worker_profile": profile_delivery,
                    "cwd": workspace, "session_id": session_id, "requested_model": self.model,
                    "launcher": list(self.launcher),
                    "measurement": ("fixture interpreter in front of the executable; a protocol test, "
@@ -382,9 +430,17 @@ class ClaudeCodeRuntime:
                     pass
         require(termination["confirmed"],
                 "Claude process tree termination could not be confirmed; the outcome is unknown")
-        return self._result(events=events, terminal=terminal, conflict=conflict, state=state,
-                            termination=termination, command=command, schema=schema,
-                            elapsed=time.monotonic() - started, reason=reason, session_id=session_id)
+        result = self._result(events=events, terminal=terminal, conflict=conflict, state=state,
+                              termination=termination, command=command, schema=schema,
+                              elapsed=time.monotonic() - started, reason=reason, session_id=session_id)
+        if self.profile is not None:
+            # Read after the tree is confirmed gone, so the count is final. "selected" is what this
+            # run passed; "hook_receipts" is what the hook wrote; neither is the other.
+            result["worker_profile"] = {
+                "selected": profile_delivery,
+                "hook_receipts": hook_receipts(evidence_directory, profile_digest(self.profile)),
+                "note": "delivery and observation recorded separately; neither certifies compliance"}
+        return result
 
     # ---- termination ----------------------------------------------------------------------------
     def _terminate(self, reason: str) -> dict:

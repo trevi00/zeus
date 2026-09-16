@@ -18,7 +18,7 @@ import time
 FLAGS = ("--print", "--output-format", "--input-format", "--verbose", "--model", "--session-id",
          "--permission-mode", "--permission-prompts", "--strict-mcp-config", "--setting-sources",
          "--tools", "--settings", "--max-budget-usd", "--json-schema", "--restricted",
-         "--version", "--help")
+         "--append-system-prompt", "--version", "--help")
 # The same synthetic secret the observation tests use: a provider that prints this must not put it
 # into any log, notice or public row.
 CANARY = "CANARY-7e1d9c3b5a2f4e6d8c0b1a2f3e4d5c6b"
@@ -96,7 +96,9 @@ def main(argv):
     observation = {"argv": argv, "cwd": os.getcwd(), "scenario": scenario,
                    "environment_names": sorted(os.environ), "model": model, "session_id": session,
                    "settings": option(argv, "--settings"), "schema": option(argv, "--json-schema"),
-                   "max_budget_usd": option(argv, "--max-budget-usd"), "stdin": None}
+                   "max_budget_usd": option(argv, "--max-budget-usd"), "stdin": None,
+                   "append_system_prompt": option(argv, "--append-system-prompt"),
+                   "path": os.environ.get("PATH"), "pythonpath": os.environ.get("PYTHONPATH")}
 
     def record():
         with open("stub-observation.json", "w", encoding="utf-8") as handle:
@@ -114,6 +116,32 @@ def main(argv):
     digest = (observation["stdin"] or {}).get("sha256", "")
 
     init_model = model if scenario != "wrong_model" else "some-other-model"
+    if scenario == "profile":
+        # Plays the part of Claude Code's hook runner: each configured command hook is run through
+        # the platform shell with the event JSON on stdin, exactly as the real CLI would. What the
+        # hook writes is the adapter's evidence; this child only reports that it invoked them.
+        settings = json.loads(observation["settings"] or "{}")
+        hooks = settings.get("hooks", {})
+        runs = []
+        for event, matcher, tool in (("SessionStart", None, None), ("PostToolUse", "Bash", "Bash")):
+            for group in hooks.get(event, []):
+                if matcher is not None and group.get("matcher") != matcher:
+                    continue
+                for hook in group.get("hooks", []):
+                    payload = {"session_id": session, "hook_event_name": event, "cwd": os.getcwd(),
+                               "tool_name": tool,
+                               "tool_input": {"command": "python -m pytest tests/secret " + CANARY},
+                               "tool_response": {"stdout": "output with " + CANARY}}
+                    completed = subprocess.run(hook["command"], shell=True,
+                                               input=json.dumps(payload).encode("utf-8"),
+                                               capture_output=True, timeout=60)
+                    runs.append({"event": event, "exit_code": completed.returncode,
+                                 "stderr": completed.stderr.decode("utf-8", "replace")[:200]})
+        observation["hook_runs"] = runs
+        record()
+        init(session, init_model)
+        result(session, structured={"summary": digest, "tests": ["profile hooks invoked"]})
+        return 0
     if scenario == "normal":
         init(session, init_model)
         tool_round(session)
