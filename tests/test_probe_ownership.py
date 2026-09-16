@@ -89,8 +89,14 @@ def test_a_failure_in_the_middle_still_removes_what_this_run_created(probe):
 
 
 @docker_only
-def test_a_start_that_never_happened_deletes_nothing(probe):
-    """A failed start does not license deleting whatever happens to carry the name."""
+def test_a_refused_publish_does_not_leave_a_container_behind(probe):
+    """The defect this bites: seven containers accumulated in `Created` from refused publishes.
+
+    `docker run` that cannot bind the port still creates the container and never hands back an id,
+    so a cleanup keyed on "did we get an id" skipped them. They are found by this run's own label
+    narrowed to this instance's uuid name - never by a name on its own, which is what could take
+    somebody else's container.
+    """
     listener = __import__("socket").socket()
     listener.bind(("127.0.0.1", 0))
     listener.listen(1)
@@ -99,10 +105,23 @@ def test_a_start_that_never_happened_deletes_nothing(probe):
         box = probe.Container(taken)
         with box:
             assert box.id is None, "the daemon should refuse this port"
-        assert box.cleanup["attempted"] is False
-        assert box.cleanup["error"] == "nothing_was_created"
+        assert box.cleanup["attempted"] is True
+        assert box.cleanup["removed"] is True
+        assert box.cleanup.get("from_failed_start") is True
     finally:
         listener.close()
+
+    leftovers = subprocess.run(["docker", "ps", "-aq", "--filter", f"name={box.name}"],
+                               capture_output=True, text=True, timeout=60)
+    assert not (leftovers.stdout or "").strip(), "nothing of this run may be left in Created"
+
+
+def test_a_failed_start_with_nothing_to_find_deletes_nothing(probe, monkeypatch):
+    """And when the label finds nothing, it stays hands-off rather than guessing at the name."""
+    box = probe.Container(1)
+    monkeypatch.setattr(probe, "run", lambda argv, timeout=120: (0, "", ""))
+    box.__exit__(None, None, None)
+    assert box.cleanup == {"attempted": False, "removed": None, "error": "nothing_was_created"}
 
 
 @docker_only

@@ -84,12 +84,32 @@ class Container:
                                        or "bind" in lowered)
         return self
 
+    def _ours(self):
+        """The id of a container carrying this run's label **and** this exact name, if one exists.
+
+        A `docker run` that cannot publish its port still leaves a container in `Created`, and the id
+        never came back - which is how seven of them accumulated while this class believed a failed
+        start had left nothing behind. Looking it up by the label this run set, narrowed to the uuid
+        name this instance generated, removes it without ever deleting something by a name alone.
+        """
+        code, out, _ = run(["docker", "ps", "-aq", "--no-trunc",
+                            "--filter", f"label=zeus.probe={RUN_ID}",
+                            "--filter", f"name=^{self.name}$"])
+        if code != 0:
+            return None
+        found = [line.strip() for line in out.splitlines() if line.strip()]
+        return found[0] if len(found) == 1 else None
+
     def __exit__(self, *_):
         if self.id is None:
-            # Nothing was created, so there is nothing of ours to remove. A failed start does not
-            # license deleting whatever happens to carry the name.
-            self.cleanup = {"attempted": False, "removed": None, "error": "nothing_was_created"}
-            return False
+            # The start failed. Nothing may be deleted by name, but a container this run's own label
+            # is on is this run's to remove, and a refused publish leaves exactly that behind.
+            leftover = self._ours()
+            if leftover is None:
+                self.cleanup = {"attempted": False, "removed": None, "error": "nothing_was_created"}
+                return False
+            self.id = leftover
+            self.cleanup["from_failed_start"] = True
         self.cleanup["attempted"] = True
         try:
             code, _, err = run(["docker", "rm", "-f", self.id])
