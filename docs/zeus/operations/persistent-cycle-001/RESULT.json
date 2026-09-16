@@ -1,0 +1,77 @@
+{
+  "date": "2026-09-16",
+  "runtime_revision": "171ce98105599e61d48eab5ac25092508e07e0c0",
+  "review_amendment": "baa3099f6aba8cca9e435cb13e237371591f04bc",
+  "actual_calls": [
+    {
+      "provider": "claude",
+      "task_id": "f24d3766-be43-42ce-b8ce-3407b784a8c4",
+      "status": "retry",
+      "outcome": "provider_budget_exhausted"
+    },
+    {
+      "provider": "claude",
+      "task_id": "705d8257-9c15-4940-a5a5-12d13a776da6",
+      "status": "succeeded",
+      "outcome": "submitted_unverified_implementation"
+    },
+    {
+      "provider": "codex",
+      "decision_id": "77967e22-94e2-436c-82d5-15c7192087fc",
+      "status": "blocked",
+      "outcome": "turn_budget_exceeded_reconciliation_required"
+    }
+  ],
+  "machine_slots_before": 5,
+  "machine_slots_after": 8,
+  "cycle": {
+    "id": "persistent-cycle-002",
+    "status": "stopped",
+    "in_flight": null,
+    "created_at": "2026-09-16T07:07:59.338959+00:00",
+    "executions": 1,
+    "updated_at": "2026-09-16T07:13:10.477269+00:00",
+    "correlation_id": "persistent-cycle-002",
+    "last_execution": {
+      "agent": "lead:improvement",
+      "kind": "decision",
+      "id": "77967e22-94e2-436c-82d5-15c7192087fc",
+      "status": "blocked",
+      "claimed": true,
+      "result_id": "77967e22-94e2-436c-82d5-15c7192087fc",
+      "at": "2026-09-16T07:13:10.477264+00:00"
+    },
+    "max_executions": 2,
+    "stopped_reason": "execution_blocked"
+  },
+  "evidence_root": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001",
+  "independent": {
+    "full_suite": {
+      "passed": 1830,
+      "failed": 2,
+      "skipped": 20,
+      "failure": "new test Git candidate omitted author; corrected only fixture"
+    },
+    "corrected_local_cycle": {
+      "passed": 20,
+      "skipped": 0,
+      "postgres": true
+    },
+    "ruff": "passed",
+    "real_backend": {
+      "postgres": true,
+      "redis": true,
+      "model": "fixture",
+      "git": "fixture",
+      "steps": 4,
+      "separate_process_counter": 3,
+      "final_status": "awaiting_operator",
+      "release_queue_empty": true
+    }
+  },
+  "open_operation_conditions": [
+    "Claude absolute-path Python/ruff commands not matched by scoped allow rules; approval prompts unavailable",
+    "Actual Codex lead review exceeded 300 seconds; reservation unsettled_unknown, decision blocked; no retry or manual success rewrite"
+  ],
+  "automatic_merge_or_deploy": false
+}

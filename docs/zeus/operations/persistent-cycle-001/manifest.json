@@ -1,0 +1,72 @@
+[
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\implementation-001\\receipt.json",
+    "sha256": "aa81affff3b2b34d932fb480c998e54bf207917383711f3e65e59f60dc7196c0",
+    "bytes": 16233
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\implementation-001\\draft-candidate.json",
+    "sha256": "52f5190ceb2fe33706de2c3661467c37a8dc34a153ed2bfc53321bba7e191c54",
+    "bytes": 733
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\implementation-002\\receipt.json",
+    "sha256": "a828b18ed67023ee08768de33dc7041c344f1e8aecaaf1e008fdba5ee4a0d84e",
+    "bytes": 44233
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\lead-review-001\\receipt.json",
+    "sha256": "3a85c6badf98967eb41b39b5c6e321c14f0664b9f8d68ae4e5a2edf5f7ee7eb8",
+    "bytes": 2002
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\review-race.py",
+    "sha256": "4e05a341c6271aa9d6044b5a713335b132d6e84143e2de2e1d4cef42f3be8db8",
+    "bytes": 1244
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\independent-checks\\result.json",
+    "sha256": "586f5cfc4aff26c5312bc5510eb0f602949d1cb6f1e2c46281688d7629b95482",
+    "bytes": 406
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\independent-checks\\pytest.log",
+    "sha256": "0812a8c96a58bc4456604a807f2fc5724064513e11512b19658013a127909c9c",
+    "bytes": 4968
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\independent-checks\\junit.xml",
+    "sha256": "62acccd74496892efe7cf780a91cf2085758160eca536f719ec42dd7987d549d",
+    "bytes": 271646
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\focused-final.json",
+    "sha256": "e69c8a4dad075467a2b651a89741e602bb727080eb0d975fbd347eaee54c1234",
+    "bytes": 114
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\local_cycle-final.log",
+    "sha256": "2f5aafdb1bf1fbccc80d3671e619bd2de655d646159b7ba297bd529d4d8b7536",
+    "bytes": 101
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\ruff-final.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "bytes": 19
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\real-backend-check-attempt-001.json",
+    "sha256": "48e2bd5452446ee6bc5e71ef505b0dbfe4b757adc76075313976f9bb5c153b86",
+    "bytes": 6015
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\real-backend-check.json",
+    "sha256": "50a18ca101afbd797da89b5cabf3ab9751377b00ef76894a96b17981a3533e4b",
+    "bytes": 6309
+  },
+  {
+    "path": "D:\\workspaces\\zeus\\artifacts\\persistent-cycle-001\\real-backend-check.py",
+    "sha256": "d263b947481bafc272750f10891de7618b18fa23b7f42797c08023995dbaaebb",
+    "bytes": 3853
+  }
+]
