@@ -1,0 +1,452 @@
+{
+  "status": "held_for_projection_fix",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-001",
+  "files": [
+    {
+      "path": "worker-001/receipt.json",
+      "sha256": "cf3932629ee5cea1d32c0281ffab89c9e4a2f982ab739918e66e6b32bf87eea2",
+      "bytes": 36134
+    },
+    {
+      "path": "lead-review-001/receipt.json",
+      "sha256": "243f2478946273904665087cc805c976bf795d9b545f55ee4948ffab7641943c",
+      "bytes": 4621
+    },
+    {
+      "path": "budget-stop.json",
+      "sha256": "f952ec1d5da8fc449fc1333d976398319b07232f16a67276f3d127ebb9fd374e",
+      "bytes": 1223
+    },
+    {
+      "path": "independent-repro.json",
+      "sha256": "095d6e6d3a3fe542cf6c1d3f990b4fa68a963719cf29a2f6f314bc61b18c0324",
+      "bytes": 914
+    },
+    {
+      "path": "live-handoff.json",
+      "sha256": "ecaad21c0a7aa31cd6a0a9c492fe612077876ee9edaf012d557d12953a95b76a",
+      "bytes": 4488
+    },
+    {
+      "path": "source.json",
+      "sha256": "4c71575afe4297a97c7149f9ea6028ffc66fa86c6f8445d4f5a5c70168b04bd1",
+      "bytes": 610
+    }
+  ],
+  "candidate": {
+    "base": "74909aec09f9548f989314b1d0ffeeca747c2bca",
+    "path": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-001\\worker-001\\workspaces\\784457f1-aaa1-440c-9c1e-6661f24c69ec",
+    "tree": "b37e78527d98d94ea149a6d5c32b9b9f01a8a837",
+    "author": "worker:implementation",
+    "branch": "harness/784457f1-aaa1-440c-9c1e-6661f24c69ec",
+    "task_id": "784457f1-aaa1-440c-9c1e-6661f24c69ec",
+    "revision": "bdd0d1b145842738fc27bd83db4fd2bc6f316a39",
+    "diff_hash": "e211d6614052d29342f73a64692d0ac632fdcf76d963f82d2d16539f7f68b439",
+    "repository": "github:trevi00/zeus",
+    "audit_lifecycle_version": 1
+  },
+  "worker_tests": [
+    "python -m pytest tests/test_cycle_handoff.py tests/test_local_cycle.py tests/test_cycle_remaining.py -q",
+    "python -m ruff check .",
+    "python -m pytest tests/test_cycle_handoff.py tests/test_local_cycle.py tests/test_cycle_remaining.py -q -rs"
+  ],
+  "inspection": {
+    "verdict": "all_checked",
+    "denominator": {
+      "error": 0,
+      "claims": 3,
+      "checked": 3,
+      "missing": 0,
+      "unknown": 0,
+      "not_checked": 0,
+      "flake_pattern": 0,
+      "replay_failed": 0,
+      "verified_mismatch": 0
+    },
+    "inspection_id": "f88d75c884c5ae9e8f113aa43cae17954392669e029955b79de4e9a02283d2c1"
+  },
+  "review": {
+    "id": "1c9420df-0f64-4e65-8d6d-a396d4d25418",
+    "phase": "review_lead",
+    "status": "succeeded",
+    "result": {
+      "risks": [
+        "A synthetic list-valued last_execution.kind raises TypeError at local_cycle.py:272; normal writers producing this value were not established.",
+        "Full PostgreSQL/Redis verification, CI, live-operation measurement and Linux execution remain with the named owner/CI. Four disk-writing tests and one PostgreSQL test were deliberately deselected."
+      ],
+      "origin": {
+        "plan": {
+          "origin": {}
+        }
+      },
+      "reason": "P2: src/codex_harness/application/local_cycle.py:78 copies stopped_reason verbatim. A failed-task probe using synthetic error data through ordinary step() then handoff() emitted 'failed:SYNTHETIC-RAW-ERROR-SECRET'. The existing stop path embeds task.error in stopped_reason, violating the handoff’s no-raw-errors requirement. Provide a safe stop-reason representation and an end-to-end regression test.",
+      "blocked": false,
+      "accepted": false,
+      "candidate": {
+        "base": "74909aec09f9548f989314b1d0ffeeca747c2bca",
+        "path": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-001\\worker-001\\workspaces\\784457f1-aaa1-440c-9c1e-6661f24c69ec",
+        "tree": "b37e78527d98d94ea149a6d5c32b9b9f01a8a837",
+        "author": "worker:implementation",
+        "branch": "harness/784457f1-aaa1-440c-9c1e-6661f24c69ec",
+        "task_id": "784457f1-aaa1-440c-9c1e-6661f24c69ec",
+        "revision": "bdd0d1b145842738fc27bd83db4fd2bc6f316a39",
+        "diff_hash": "e211d6614052d29342f73a64692d0ac632fdcf76d963f82d2d16539f7f68b439",
+        "repository": "github:trevi00/zeus",
+        "audit_lifecycle_version": 1
+      },
+      "release_id": "7e2513e35375ef449bf4e67573ee306b578f595e2435dbe34351890002b5ad10",
+      "execution_ref": "sha256:da4d84ac61f4b50f1b9ff0b2055e5409c5a26ff182bff2e54a973c2385fcf5ef",
+      "basis_revision": "bdd0d1b145842738fc27bd83db4fd2bc6f316a39",
+      "sre_assessment": "35 focused tests passed; changed-file Ruff and diff checks passed. Tests support unchanged budgets/state, explicit unknowns and no-provider construction, but miss the reproduced disclosure. Operator lookup is consolidated into one command; production reliability and time savings were not measured. Commands, results and the review frame are preserved in tool stdout.",
+      "arc42_assessment": "Review frame: candidate bdd0d1b, five allowed files, CLI → LocalCycle → existing store, assessed against the six SPEC cases. No graph, dependency, schema or execution-authority changes. Rollback requires only reverting code. Checkout remained clean."
+    },
+    "error": null
+  },
+  "budget_stop": {
+    "step": {
+      "cycle": {
+        "id": "operation-handoff-001",
+        "status": "stopped",
+        "in_flight": null,
+        "created_at": "2026-09-16T09:43:23.659791+00:00",
+        "executions": 2,
+        "updated_at": "2026-09-16T09:53:21.848725+00:00",
+        "correlation_id": "operation-handoff-001",
+        "last_execution": {
+          "at": "2026-09-16T09:51:01.473798+00:00",
+          "id": "1c9420df-0f64-4e65-8d6d-a396d4d25418",
+          "kind": "decision",
+          "agent": "lead:improvement",
+          "status": "succeeded",
+          "claimed": true,
+          "result_id": "1c9420df-0f64-4e65-8d6d-a396d4d25418"
+        },
+        "max_executions": 2,
+        "stopped_reason": "budget_exhausted"
+      },
+      "action": "stopped",
+      "messages": [
+        {
+          "entry_id": "1789552261402-0",
+          "message_id": "073db1c3-e000-42d9-aef6-7e73d1b16bb6",
+          "type": "task.assign",
+          "handled": true
+        }
+      ],
+      "reason": "budget_exhausted"
+    },
+    "machine_budget": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 19,
+      "all_hosts": 19,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "provider_calls": 0
+  },
+  "independent_repro": {
+    "synthetic_fixture": true,
+    "provider_calls": 0,
+    "reproduced": true,
+    "affected_field": "cycle.stopped_reason",
+    "trigger": "ordinary LocalCycle.step observes a failed task error, then handoff copies stored reason",
+    "view": {
+      "schema": "urn:zeus:cycle-handoff:1",
+      "authority": "observation_only",
+      "automatic_resume": false,
+      "cycle": {
+        "id": "repro",
+        "correlation_id": "repro",
+        "status": "stopped",
+        "max_executions": 2,
+        "executions": 0,
+        "in_flight": null,
+        "stopped_reason": "failed:SYNTHETIC-RAW-ERROR-SECRET",
+        "last_execution": null,
+        "created_at": "2026-09-16T09:53:19.093419+00:00",
+        "updated_at": "2026-09-16T09:53:19.093637+00:00"
+      },
+      "remaining_executions": 2,
+      "target_record": {
+        "availability": "none",
+        "kind": null,
+        "id": null
+      }
+    },
+    "step_reason": "failed:SYNTHETIC-RAW-ERROR-SECRET"
+  },
+  "live_handoff": {
+    "candidate": "bdd0d1b145842738fc27bd83db4fd2bc6f316a39",
+    "provider_calls": 0,
+    "runs": [
+      {
+        "cycle_id": "asset-operation-001",
+        "server_default_transaction_read_only": true,
+        "exit_code": 0,
+        "stdout_sha256": "9d83e0de3e32128b7d8cdb591ba4cfb102ad6c66c5a50abd6f890fc52cb826ae",
+        "stderr_bytes": 0,
+        "records_unchanged": true,
+        "record_count": 107,
+        "output": {
+          "schema": "urn:zeus:cycle-handoff:1",
+          "authority": "observation_only",
+          "automatic_resume": false,
+          "cycle": {
+            "id": "asset-operation-001",
+            "correlation_id": "asset-operation-001",
+            "status": "awaiting_operator",
+            "max_executions": 2,
+            "executions": 2,
+            "in_flight": null,
+            "stopped_reason": null,
+            "last_execution": {
+              "at": "2026-09-16T09:21:47.929497+00:00",
+              "id": "2126d50f-6f95-48ee-8803-2e2bd8443825",
+              "kind": "decision",
+              "agent": "lead:improvement",
+              "status": "succeeded",
+              "claimed": true,
+              "result_id": "2126d50f-6f95-48ee-8803-2e2bd8443825"
+            },
+            "created_at": "2026-09-16T09:16:49.242784+00:00",
+            "updated_at": "2026-09-16T09:21:47.929511+00:00"
+          },
+          "remaining_executions": 0,
+          "target_record": {
+            "availability": "found",
+            "kind": "decision",
+            "id": "2126d50f-6f95-48ee-8803-2e2bd8443825",
+            "status": "succeeded",
+            "attempt": 1,
+            "generation": 1,
+            "phase": "review_lead",
+            "result": {
+              "candidate": {
+                "base": "c6f7ad473d0c725d1923cc8d889e60f87f1a0872",
+                "revision": "183df72507e2f3ed83b912f6d675ab1c4908f3e8",
+                "tree": "61cfa27d76d284ac07d5a6876c40136e928a31da",
+                "diff_hash": "234a6b2717eae151b2b5655c06141e0011a83dcbed877cb44eada972ca3902a2"
+              },
+              "execution_ref": "sha256:d9e5187ee09dbd83acb9bdd752ce997e050f84cde7e3bf13bd4a3ad8c9a4c9b1",
+              "evidence_verdict": null,
+              "accepted": true
+            }
+          }
+        }
+      },
+      {
+        "cycle_id": "operation-handoff-001",
+        "server_default_transaction_read_only": true,
+        "exit_code": 0,
+        "stdout_sha256": "7868e9ac004a3af38f9cb4c8f7a2eb87daf204baf39f6a74cc0be96e9ad26d13",
+        "stderr_bytes": 0,
+        "records_unchanged": true,
+        "record_count": 129,
+        "output": {
+          "schema": "urn:zeus:cycle-handoff:1",
+          "authority": "observation_only",
+          "automatic_resume": false,
+          "cycle": {
+            "id": "operation-handoff-001",
+            "correlation_id": "operation-handoff-001",
+            "status": "stopped",
+            "max_executions": 2,
+            "executions": 2,
+            "in_flight": null,
+            "stopped_reason": "budget_exhausted",
+            "last_execution": {
+              "at": "2026-09-16T09:51:01.473798+00:00",
+              "id": "1c9420df-0f64-4e65-8d6d-a396d4d25418",
+              "kind": "decision",
+              "agent": "lead:improvement",
+              "status": "succeeded",
+              "claimed": true,
+              "result_id": "1c9420df-0f64-4e65-8d6d-a396d4d25418"
+            },
+            "created_at": "2026-09-16T09:43:23.659791+00:00",
+            "updated_at": "2026-09-16T09:53:21.848725+00:00"
+          },
+          "remaining_executions": 0,
+          "target_record": {
+            "availability": "found",
+            "kind": "decision",
+            "id": "1c9420df-0f64-4e65-8d6d-a396d4d25418",
+            "status": "succeeded",
+            "attempt": 1,
+            "generation": 1,
+            "phase": "review_lead",
+            "result": {
+              "candidate": {
+                "base": "74909aec09f9548f989314b1d0ffeeca747c2bca",
+                "revision": "bdd0d1b145842738fc27bd83db4fd2bc6f316a39",
+                "tree": "b37e78527d98d94ea149a6d5c32b9b9f01a8a837",
+                "diff_hash": "e211d6614052d29342f73a64692d0ac632fdcf76d963f82d2d16539f7f68b439"
+              },
+              "execution_ref": "sha256:da4d84ac61f4b50f1b9ff0b2055e5409c5a26ff182bff2e54a973c2385fcf5ef",
+              "evidence_verdict": null,
+              "accepted": false
+            }
+          }
+        }
+      }
+    ],
+    "machine_budget_unchanged": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 19,
+      "all_hosts": 19,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    }
+  },
+  "worker_profile": {
+    "hook_receipts": {
+      "authority": "none: a receipt shows the hook ran, it approves and completes nothing",
+      "directory": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-001\\worker-001\\profiles\\09535eeb-a3c0-4320-90ae-7695c14b6d36",
+      "events": {
+        "PostToolUse": 7,
+        "SessionStart": 1
+      },
+      "foreign_records": 0,
+      "observed": true,
+      "provenance": "files written by the packaged hook into this session's directory, read after the run; a missing file is not observed, not absent",
+      "records": 8,
+      "sessions_named": [
+        "09535eeb-a3c0-4320-90ae-7695c14b6d36"
+      ],
+      "unreadable_records": 0
+    },
+    "note": "delivery and observation recorded separately; neither certifies compliance",
+    "selected": {
+      "character_limit": 6000,
+      "characters": 4989,
+      "compliance": "not judged here: delivery of the document is recorded, adherence is not",
+      "document_sha256": "5cee400a5b61fe235e562dea3a6f4eacfd549bd7426e96cb9a2d802725d2fb41",
+      "document_transport": "--append-system-prompt",
+      "evidence_directory": "D:\\workspaces\\zeus\\artifacts\\operation-handoff-001\\worker-001\\profiles\\09535eeb-a3c0-4320-90ae-7695c14b6d36",
+      "hook_sha256": "5498b27724a68662053b2e2e8949392ca6ba880bc6d8b83e3a9ddfa38ee5f1c2",
+      "hooks": [
+        "SessionStart",
+        "PostToolUse(Bash)"
+      ],
+      "hooks_transport": "--settings",
+      "id": "worker-v1",
+      "manifest_sha256": "8bca0264c1888a6241f96cb2c6a1cfbad8f7d5a82d4e166a223061ee04e78e07",
+      "permissions_added": [
+        "Bash(python -m pytest:*)",
+        "Bash(python -m pytest)",
+        "Bash(python -m ruff:*)",
+        "Bash(python -m compileall:*)",
+        "Bash(git status:*)",
+        "Bash(git status)",
+        "Bash(git diff:*)",
+        "Bash(git diff)",
+        "Bash(git log:*)"
+      ],
+      "profile_digest": "b32f641a77ca8eebf4e26735c7ee8646331a9831b4d8903ec4256ced0ad9abb4",
+      "sources": [
+        {
+          "blob": "5c4d35dd306ea0f06bc53eb353df4e247f8ac041",
+          "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+          "path": "CLAUDE.md",
+          "pinned_sha256": "87f6572ecf367d46e233956a864167657976aae44d3abc38bf8b5a2d3e3f7d20",
+          "scope": "principles adapted; no upstream executable installed",
+          "source": "baldrix"
+        },
+        {
+          "blob": "efff7fa01d6c078f4cfd48d7840ebeafebd2ee09",
+          "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+          "path": "skills/_common/verification-before-completion.md",
+          "pinned_sha256": "bd34addce510c1ab7c88ee45dc577d2531645d29d29d52567c4d447a14016da6",
+          "scope": "principles adapted; no upstream executable installed",
+          "source": "baldrix"
+        },
+        {
+          "blob": "6e9d5ddb86c9a4d8db38398068f05049a7048057",
+          "commit": "70a7a49d84fbb991cdc5ab017d643b18f7740112",
+          "path": "CLAUDE.md",
+          "pinned_sha256": "13fef9bb49e35f8b51b427e5e6d378de6cd3ff98a66f2bf70cde8e4fc352d5a1",
+          "scope": "principles adapted; no upstream executable installed",
+          "source": "harness"
+        },
+        {
+          "blob": "a8c4881b7f9be1c74ff32bbb32724ce7836df592",
+          "commit": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+          "path": "README.md",
+          "pinned_sha256": "9286e27c95965839fd4c04e8ac22b66426cb412b23517e5cf8c3a7ec46ce4fa8",
+          "scope": "principles adapted; no upstream executable installed",
+          "source": "guardian"
+        },
+        {
+          "blob": "18e96fe309f708637fe995aaacc00dff7a3dfd86",
+          "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+          "path": "skills/_common/investigation-discipline.md",
+          "pinned_sha256": "c65582cce1480d72181b1d0fca8f25b7a7142a016900a738f52f35256ed6dcf7",
+          "scope": "investigation guidance adapted; upstream anecdotes are documentary claims, not Zeus measurements",
+          "source": "baldrix"
+        }
+      ],
+      "version": "1"
+    }
+  },
+  "observations": {
+    "worker": {
+      "files": 1,
+      "records": 52,
+      "inserted": 52,
+      "duplicates": 0,
+      "conflicts": 0,
+      "corrupt": 0,
+      "refused": 0,
+      "truncated_tail": 0,
+      "unconfirmed_audits": 0,
+      "confirmed_audits": 2,
+      "sink_failures": 0,
+      "reclaimed_segments": 0,
+      "pruned_runs": 0,
+      "pruned_files": 0,
+      "alerts_replayed": 0,
+      "per_file": [
+        {
+          "file": "83f049af083145d4abfd2c013116b8a2.0000.jsonl",
+          "from_offset": 0,
+          "to_offset": 69153,
+          "records": 52,
+          "inserted": 52,
+          "confirmed_audits": 2
+        }
+      ]
+    },
+    "lead": {
+      "files": 1,
+      "records": 38,
+      "inserted": 38,
+      "duplicates": 0,
+      "conflicts": 0,
+      "corrupt": 0,
+      "refused": 0,
+      "truncated_tail": 0,
+      "unconfirmed_audits": 0,
+      "confirmed_audits": 2,
+      "sink_failures": 0,
+      "reclaimed_segments": 0,
+      "pruned_runs": 0,
+      "pruned_files": 0,
+      "alerts_replayed": 0,
+      "per_file": [
+        {
+          "file": "fbd0bcda80e64015a89a642837ada110.0000.jsonl",
+          "from_offset": 0,
+          "to_offset": 55440,
+          "records": 38,
+          "confirmed_audits": 2,
+          "inserted": 38
+        }
+      ]
+    }
+  },
+  "limits": [
+    "Synthetic raw-error reproducer, not observed real-secret exposure.",
+    "Read-only actual PG measurement does not fix or waive the disclosure boundary.",
+    "Full suite and CI are recorded in the draft PR separately; neither overrides rejected review."
+  ]
+}

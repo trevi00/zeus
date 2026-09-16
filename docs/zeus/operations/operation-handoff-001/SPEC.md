@@ -39,3 +39,13 @@ Meaningful MemoryStore/CLI tests cover these boundaries; fixtures are not actual
 - python -m ruff check .
 
 Codex owns independent full PG/Redis suite, final CI and a read-only handoff measurement on actual completed operation PG rows, with no extra model call. Final tests array has exact commands only, results in summary. Actual Codex reviewer evaluates the fixed matrix. Real cycle must reach 2/2 awaiting_operator without input supplementation, then stop. A failed single call/review remains recorded and ends the batch without retry.
+
+## Review finding and consolidated correction specification (not implemented)
+
+Candidate bdd0d1b was rejected by the actual reviewer. Root independently reproduced this synthetic error through the ordinary application path: a failed task's error becomes `failed:<raw error>` in LocalCycle._candidate/_stop, and handoff copies it in cycle.stopped_reason. The original frame contradicted itself by requiring stored reason preservation and no raw errors. The raw stored record and existing status command remain unchanged; the new projection needs its own safe representation.
+
+For the next authorized implementation batch only: project stopped_reason as a recognized reason code, never its arbitrary detail suffix; include a SHA-256 digest of the complete stored reason separately when present so the operator can correlate it without printing it. Unknown/non-string reasons must be explicitly unknown, not rendered. Whitelist fields inside last_execution/in_flight as well, excluding error or arbitrary nested data. Keep ids/agent/kind/status/timestamps/claimed/result_id as applicable. Preserve raw PG records and all existing status/step behavior. Add a regression that creates a failed task with a synthetic marker, calls ordinary step then handoff, and checks marker absence plus safe code/digest and unchanged stored reason. Include a control where a normal reason remains meaningful. This is one output-projection boundary, not a redesign of execution recovery.
+
+The reviewer also noted synthetic list-valued kind raises TypeError, but no normal writer producing that shape was established. It is a nonblocking defensive hardening note; handle it in the same local helper if that helper is edited, without expanding scope or creating another blocker.
+
+Current batch made exactly two provider calls, reached 19/19, retained accepted=false, and used the existing cycle gate to stop at budget_exhausted without invoking a provider. No repair/review retry is authorized within this completed batch. The corrected specification is reviewable here; it is not a claim that the defect is fixed.
