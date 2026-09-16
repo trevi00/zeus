@@ -612,8 +612,8 @@ class Executor:
             recovery = {"checkpoint": state, "completed": completed[-4:]}
         raise RuntimeError("Session handoff budget exhausted; task remains resumable from checkpoint")
 
-    def execute_one(self, agent: str) -> dict | None:
-        task = self.workflow.claim(agent, str(uuid4()))
+    def execute_one(self, agent: str, expected: dict | None = None) -> dict | None:
+        task = self.workflow.claim(agent, str(uuid4()), expected=expected)
         if not task:
             return None
         try:
@@ -860,10 +860,12 @@ class Executor:
         except ContractError as exc:
             return self._lost_execution(task, error, exc)
 
-    def decide_one(self, agent: str) -> dict | None:
+    def decide_one(self, agent: str, expected: dict | None = None) -> dict | None:
+        from codex_harness.application.workflow import check_expected, require_expected
         owner, now = str(uuid4()), datetime.now(timezone.utc)
         decision = None
         with self.service.store.transaction() as tx:
+            check_expected(tx, "decisions_pending", expected)
             live = running(tx, self.service.org)
             if len(live) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in live):
                 return None
@@ -933,6 +935,7 @@ class Executor:
                     contain_with_notice(tx, self.service.org, row, 'decisions_pending', 'deadline_exceeded', now)
                     continue
                 from codex_harness.application.execution_fence import advance as advance_fence
+                require_expected(row, expected)  # before the fence, the lease and any provider entry
                 try:
                     advance_fence(tx, 'decisions_pending', row['id'], row.get("generation", 0) + 1, owner)
                 except ContractError:

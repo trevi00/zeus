@@ -695,7 +695,13 @@ taken and an in-flight marker recorded in one transaction before the executor st
 found by another step refuses execution and is never released automatically. Any outcome other
 than success (retry, failed, blocked, expired, exception, no claim), a pending diagnose decision,
 a received execution notice, a message or queued work under another correlation, or running
-residue in the ledger stops the cycle with a recorded reason. A rejected review_lead result
+residue in the ledger stops the cycle with a recorded reason. The candidate is chosen outside the
+claim transaction, so the step passes an optional execution guard (row id, correlation, allowed
+statuses) into the existing `Workflow.claim` / `decide_one` selection; the guard is validated inside
+the claim transaction before the fence, the lease and any provider entry, and a mismatch (for
+example an older queued task of another correlation that arrived after the scan) refuses the claim
+unclaimed and stops the cycle with `claim_guard_refused`. Callers without a guard keep the existing
+selection policy unchanged. A rejected review_lead result
 continues through the existing rework path; an accepted one leaves the cycle in
 `awaiting_operator` before the conductor. The limit counts executor starts through this cycle,
 never provider billing, and an idle turn is reported as idle, not success.

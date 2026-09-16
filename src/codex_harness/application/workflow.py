@@ -43,6 +43,36 @@ from codex_harness.domain.research import require_dispatch
 from codex_harness.ports import Store
 
 
+class ClaimGuardRefused(ContractError):
+    """The row the claim policy would take is not the one the caller pre-selected."""
+
+
+def check_expected(tx, bucket: str, expected: dict | None) -> None:
+    """INV-LOCAL-CYCLE-001: an optional execution guard, validated inside the claim transaction
+    before any row is claimed. `expected` names the row (`id`), its `correlation_id` and the
+    `statuses` it may still be in. Unguarded callers (`expected is None`) keep the existing policy."""
+    if expected is None:
+        return
+    require(isinstance(expected, dict) and isinstance(expected.get("id"), str)
+            and isinstance(expected.get("correlation_id"), str)
+            and isinstance(expected.get("statuses"), (set, frozenset, list, tuple)), "Invalid execution guard")
+    row = tx.get(bucket, expected["id"])
+    if row is None:
+        raise ClaimGuardRefused("Expected execution missing: " + expected["id"])
+    message = row.get("message")
+    correlation = message.get("correlation_id") if isinstance(message, dict) else None
+    if correlation != expected["correlation_id"]:
+        raise ClaimGuardRefused("Expected execution correlation changed: " + expected["id"])
+    if row.get("status") not in set(expected["statuses"]):
+        raise ClaimGuardRefused("Expected execution status changed: " + expected["id"] + " is " + str(row.get("status")))
+
+
+def require_expected(row: dict, expected: dict | None) -> None:
+    """The row about to be claimed must be the guarded one; anything else is refused unclaimed."""
+    if expected is not None and row["id"] != expected["id"]:
+        raise ClaimGuardRefused("Claim policy selected " + str(row["id"]) + " instead of " + expected["id"])
+
+
 class Workflow:
     """Durable, fenced task graph. External work never holds a database transaction."""
 
@@ -83,7 +113,8 @@ class Workflow:
                 {'attempt': task['attempt'], 'status': status, 'at': at, 'error': error})
 
     def claim(self, agent: str, owner: str, lease_seconds: int = POLICY.task_lease_seconds,
-              max_attempts: int | None = None, now: datetime | None = None) -> dict | None:
+              max_attempts: int | None = None, now: datetime | None = None,
+              expected: dict | None = None) -> dict | None:
         self.org.actor(agent)
         positive_integer(lease_seconds, "Lease duration")
         if max_attempts is not None:
@@ -98,6 +129,7 @@ class Workflow:
         except OverflowError as exc:
             raise ContractError("Lease duration out of timestamp range") from exc
         with self.store.transaction() as tx:
+            check_expected(tx, "tasks", expected)
             live = running(tx, self.org, requested_now)
             if len(live) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in live):
                 return None
@@ -169,6 +201,7 @@ class Workflow:
                         contain_with_notice(tx, self.org, task, 'tasks', 'deadline_exceeded', now)
                         continue
                     lease_until = (now + timedelta(seconds=lease_seconds)).isoformat()
+                    require_expected(task, expected)  # before the fence, the lease and any provider entry
                     try:
                         advance_fence(tx, "tasks", task["id"], task["generation"] + 1, owner)
                     except ContractError:

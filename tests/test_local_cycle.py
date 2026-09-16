@@ -51,10 +51,10 @@ class FakeExecutor:
             tx.put(bucket, row["id"], row)
             return row
 
-    def execute_one(self, agent):
+    def execute_one(self, agent, expected=None):
         return self._finish("tasks", agent, "task")
 
-    def decide_one(self, agent):
+    def decide_one(self, agent, expected=None):
         return self._finish("decisions_pending", agent, "decision")
 
 
@@ -231,3 +231,166 @@ def test_cli_start_and_status_use_local_cycle(monkeypatch):
     cli.cycle_command(svc, cli.parser().parse_args(["cycle", "status", "c1"]))
     assert outputs[0]["max_executions"] == 2 and outputs[1]["status"] == "active"
     assert cli.parser().parse_args(["cycle", "step", "c1"]).cycle_command == "step"
+
+
+# ----- real Workflow / Executor paths; the provider is a labeled fixture, never Claude or Codex -----
+def real_executor(tmp_path, monkeypatch, store=None, verdict=None):
+    from codex_harness.adapters.artifacts import FileArtifacts
+    from codex_harness.adapters.executor import Executor
+    from codex_harness.application.workflow import Workflow
+
+    svc = Harness(store or MemoryStore(), organization())
+    workspace = tmp_path / "workspace"
+    workspace.mkdir(exist_ok=True)
+    git = SimpleNamespace(repository=tmp_path, inspect=lambda *a: {}, review_workspace=lambda *a: str(tmp_path),
+                          _git=lambda *a, **k: "" if a[0] == "status" else "candidate",
+                          prepare=lambda *a: {"path": str(workspace), "branch": "harness/t", "base": "base", "task_id": "t"},
+                          capture=lambda ws: {"revision": "candidate", "base": "base", "tree": "tree"})
+    executor = Executor(svc, git, FileArtifacts(str(tmp_path / "artifacts")))
+    runs = []
+
+    def fixture_run(agent, key, objective, *a, **k):
+        runs.append((agent, key))
+        if agent == "lead:improvement":
+            return {"accepted": verdict, "reason": "fixture review verdict", "execution_ref": "fixture:review"}
+        return {"summary": "fixture implementation", "tests": [], "execution_ref": "fixture:implement"}
+    monkeypatch.setattr(executor, "_run", fixture_run)
+    monkeypatch.setattr(executor, "_inspect_evidence", lambda *a, **k: {"verdict": "not_inspected_in_unit", "claims": 0})
+    return svc, executor, Workflow(svc.store, svc.org), runs
+
+
+def implement(correlation=CORR):
+    return envelope("task.assign", "lead:improvement", "worker:implementation", "implement", {"plan": {}}, correlation)
+
+
+def test_real_workflow_success_reaches_review_lead_and_rejection_reworks(tmp_path, monkeypatch):
+    svc, executor, workflow, runs = real_executor(tmp_path, monkeypatch, verdict=False)
+    bus = Bus([])
+    cycle = LocalCycle(svc, executor, bus, workflow)
+    cycle.start("c1", CORR, 4)
+    workflow.submit(implement())
+    first = cycle.step("c1")
+    assert first["execution"]["status"] == "succeeded" and first["execution"]["kind"] == "task"
+    assert bus.published[-1]["type"] == "task.result"  # relayed through the existing outbox
+    bus.queued.append(("1-0", bus.published[-1]))
+    second = cycle.step("c1")  # task.result -> review_lead decision -> fixture rejection -> rework implement
+    assert second["messages"][0]["type"] == "task.result" and second["execution"]["kind"] == "decision"
+    assert second["execution"]["status"] == "succeeded" and second["cycle"]["status"] == "active"
+    rework = bus.published[-1]
+    assert rework["type"] == "task.assign" and rework["who"]["recipient"] == "worker:implementation"
+    assert rework["what"]["details"]["rework"] == 1 and rework["correlation_id"] == CORR
+    bus.queued.append(("2-0", rework))
+    third = cycle.step("c1")
+    assert third["execution"]["kind"] == "task" and third["execution"]["status"] == "succeeded"
+    assert third["cycle"]["executions"] == 3
+    assert [r[0] for r in runs] == ["worker:implementation", "lead:improvement", "worker:implementation"]
+
+
+def test_real_workflow_acceptance_stops_before_the_conductor(tmp_path, monkeypatch):
+    svc, executor, workflow, runs = real_executor(tmp_path, monkeypatch, verdict=True)
+    bus = Bus([])
+    cycle = LocalCycle(svc, executor, bus, workflow)
+    cycle.start("c1", CORR, 4)
+    workflow.submit(implement())
+    cycle.step("c1")
+    bus.queued.append(("1-0", bus.published[-1]))
+    result = cycle.step("c1")
+    assert result["cycle"]["status"] == "awaiting_operator" and bus.published[-1]["who"]["recipient"] == "conductor"
+    with svc.store.transaction() as tx:
+        assert tx.scan("release_queue") == []
+    assert LocalCycle(svc, executor, bus, workflow).step("c1")["reason"] == "awaiting_operator" and len(runs) == 2
+
+
+def older_foreign_task(svc, task_id="t-foreign"):
+    task(svc, task_id, correlation="improvement:other")
+    with svc.store.transaction() as tx:
+        row = tx.get("tasks", task_id)
+        row.update(created_at="2020-01-01T00:00:00+00:00", generation=0, lease_until=None, lease_owner=None,
+                   result=None, error=None, input_hash="x")
+        tx.put("tasks", task_id, row)
+
+
+def test_real_claim_guard_refuses_a_foreign_older_task_injected_after_preflight(tmp_path, monkeypatch):
+    svc, executor, workflow, runs = real_executor(tmp_path, monkeypatch)
+    cycle = LocalCycle(svc, executor, None, workflow)
+    cycle.start("c1", CORR, 3)
+    mine = workflow.submit(implement())
+    original = executor.execute_one
+
+    def racing(agent, expected=None):
+        older_foreign_task(svc)  # arrives between the cycle's scan and the claim transaction
+        return original(agent, expected=expected)
+    monkeypatch.setattr(executor, "execute_one", racing)
+    result = cycle.step("c1")
+    assert result["action"] == "refused" and result["reason"] == "claim_guard_refused"
+    assert result["cycle"]["executions"] == 1 and result["cycle"]["in_flight"] is None
+    assert result["cycle"]["last_execution"]["id"] == mine["id"] and runs == []
+    with svc.store.transaction() as tx:
+        assert tx.get("tasks", "t-foreign")["status"] == "queued"  # refused unclaimed
+        assert tx.get("tasks", mine["id"])["status"] == "queued"
+    # The unguarded default keeps the existing policy: the older task is the one claimed.
+    assert workflow.claim("worker:implementation", "plain")["id"] == "t-foreign"
+
+
+def test_claim_guard_validates_identity_correlation_and_status(tmp_path, monkeypatch):
+    from codex_harness.application.workflow import ClaimGuardRefused
+    svc, executor, workflow, runs = real_executor(tmp_path, monkeypatch)
+    mine = workflow.submit(implement())
+    guard = {"id": mine["id"], "correlation_id": CORR, "statuses": {"queued"}}
+    with pytest.raises(ClaimGuardRefused, match="missing"):
+        workflow.claim("worker:implementation", "o", expected={**guard, "id": "absent"})
+    with pytest.raises(ClaimGuardRefused, match="correlation"):
+        workflow.claim("worker:implementation", "o", expected={**guard, "correlation_id": "improvement:other"})
+    with pytest.raises(ClaimGuardRefused, match="status"):
+        workflow.claim("worker:implementation", "o", expected={**guard, "statuses": {"retry"}})
+    with pytest.raises(ContractError, match="Invalid execution guard"):
+        workflow.claim("worker:implementation", "o", expected={"id": mine["id"]})
+    claimed = workflow.claim("worker:implementation", "o", expected=guard)
+    assert claimed["id"] == mine["id"] and claimed["status"] == "running"
+    # decide_one: a foreign older pending decision is refused before any provider entry.
+    decision(svc, "d-foreign", correlation="improvement:other")
+    decision(svc, "d-mine")
+    candidate = {"revision": "candidate", "base": "base", "tree": "tree", "author": "worker:implementation"}
+    with svc.store.transaction() as tx:
+        for key in ("d-foreign", "d-mine"):
+            row = tx.get("decisions_pending", key)
+            row["input"] = {"candidate": candidate}
+            tx.put("decisions_pending", key, row)
+    with pytest.raises(ClaimGuardRefused, match="instead of d-mine"):
+        executor.decide_one("lead:improvement", expected={"id": "d-mine", "correlation_id": CORR, "statuses": {"pending"}})
+    with svc.store.transaction() as tx:
+        assert {r["status"] for r in tx.scan("decisions_pending")} == {"pending"}
+    assert runs == []
+
+
+def test_concurrent_step_on_the_same_cycle_executes_once():
+    svc = service()
+    LocalCycle(svc).start("c1", CORR, 3)
+    task(svc, "t1")
+    inner = FakeExecutor(svc)
+    seen = []
+
+    class Overlapping(FakeExecutor):
+        def execute_one(self, agent, expected=None):
+            seen.append(LocalCycle(svc, inner).step("c1"))  # a second process steps while we hold the slot
+            return super().execute_one(agent, expected)
+    outer = Overlapping(svc)
+    result = LocalCycle(svc, outer).step("c1")
+    assert result["execution"]["status"] == "succeeded" and result["cycle"]["executions"] == 1
+    assert seen[0]["reason"] == "in_flight_residue" and inner.calls == [] and len(outer.calls) == 1
+
+
+def test_cycle_policy_persists_in_postgres_across_instances(isolated_pgstore):
+    svc = Harness(isolated_pgstore, organization())
+    LocalCycle(svc).start("c1", CORR, 2)
+    task(svc, "t1")
+    assert LocalCycle(svc, FakeExecutor(svc)).step("c1")["cycle"]["executions"] == 1
+    again = Harness(isolated_pgstore, organization())  # a new process over the same schema
+    with pytest.raises(ContractError, match="Conflicting cycle policy"):
+        LocalCycle(again).start("c1", CORR, 5)
+    assert LocalCycle(again).start("c1", CORR, 2)["executions"] == 1
+    task(again, "t2")
+    assert LocalCycle(again, FakeExecutor(again)).step("c1")["cycle"]["executions"] == 2
+    task(again, "t3")
+    stopped = LocalCycle(again, FakeExecutor(again)).step("c1")
+    assert stopped["reason"] == "budget_exhausted" and LocalCycle(again).status("c1")["executions"] == 2

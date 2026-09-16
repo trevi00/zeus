@@ -8,6 +8,7 @@ release queue, merges or deploys.
 """
 from __future__ import annotations
 
+from codex_harness.application.workflow import ClaimGuardRefused
 from codex_harness.domain.model import ContractError, require, utcnow
 
 WORKER = "worker:implementation"
@@ -89,9 +90,19 @@ class LocalCycle:
                            in_flight={"agent": agent, "kind": kind, "id": target, "at": utcnow()},
                            updated_at=utcnow())
             tx.put("local_cycles", cycle_id, current)
+        # The candidate was chosen outside the claim transaction; the guard makes the existing claim
+        # refuse, unclaimed and before any provider entry, anything but this row in this correlation.
+        expected = {"id": target, "correlation_id": current["correlation_id"],
+                    "statuses": {"queued"} if kind == "task" else {"pending"}}
         result = None
         try:
-            result = (self.executor.execute_one(agent) if kind == "task" else self.executor.decide_one(agent))
+            result = (self.executor.execute_one(agent, expected=expected) if kind == "task"
+                      else self.executor.decide_one(agent, expected=expected))
+        except ClaimGuardRefused as exc:
+            cycle = self._settle(cycle_id, {"agent": agent, "kind": kind, "id": target, "status": "refused",
+                                            "error": str(exc)}, "claim_guard_refused")
+            self._flush()
+            return {"cycle": cycle, "action": "refused", "messages": messages, "reason": cycle["stopped_reason"]}
         except Exception as exc:  # the executor already recorded the task outcome; the cycle only stops
             cycle = self._settle(cycle_id, {"agent": agent, "kind": kind, "id": target, "status": "exception",
                                             "error": type(exc).__name__}, "exception:" + type(exc).__name__)
