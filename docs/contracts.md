@@ -842,7 +842,8 @@ contract: max_executions 2, worker profile `worker-v1`, `restricted` true; crede
 and endpoints stay host settings. Before any call the goal must exist at base as a regular Git
 blob whose bytes hash to `goal.sha256` (read with git argv); current HEAD need not equal base.
 The `operations` row atomically claims the id as running with the manifest digest, the
-repository/runtime/provider-policy identity and endpoint digests, the goal binding, a
+repository, effective resolved runtime directory, packaged runtime policy and provider-policy
+identity and endpoint digests (values digested, never stored), the goal binding, a
 deterministic assignment message id and the durable initial `local_cycles` row; the assignment
 goes to the transactional outbox in the same transaction, never to the bus first. The same id with
 a different manifest or identity is `configuration_mismatch`; a completed id returns the saved
@@ -852,7 +853,13 @@ owner or a provider. The run reuses `LocalCycle.step` for at most two executor s
 message-only turns; a wrapper reserves the machine `CallBudget` under the manifest ceilings
 immediately before each underlying execute_one/decide_one, never for an idle, stopped or cached
 turn, settles afterwards and keeps the slot ids in the receipt; a settlement failure keeps the
-slot counted and makes the outcome `failed:settlement_failed`. Before the review reservation the
+slot counted, stops before any further cycle turn, reservation or provider entry and makes the
+outcome `failed:settlement_failed` (after the first slot the reviewer is never reserved or
+called). The executor built for this entry point carries no knowledge adapter (explicit
+`build_executor(knowledge=False)`; the default elsewhere is unchanged): no hybrid query, no graph
+indexing or runtime projection from worker, reviewer, failure or checkpoint. Execution, budget
+and observation ledgers and artifact files are recovery and audit evidence, never validated
+knowledge; formal knowledge promotion is a separate explicit contract. Before the review reservation the
 exact pending `review_lead` decision, its succeeded worker task with the same correlation and
 result, the candidate revision and an actual `evidence_inspections` row bound to that task id,
 generation, attempt and source revision must pass `require_all_checked`; a summary verdict string

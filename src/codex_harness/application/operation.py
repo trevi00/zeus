@@ -214,6 +214,10 @@ class Operation:
                 step = cycle.step(row["cycle_id"])
                 steps.append({"action": step["action"], "reason": _code(step.get("reason"))})
                 outcome = self._classify(step, wrapped)
+                if any(not s["settled"] for s in wrapped.slots) and outcome["status"] not in TERMINAL:
+                    # An unsettled counted slot stops here: no further LocalCycle turn, reservation
+                    # or provider entry. The slot stays counted; the receipt records the failure.
+                    outcome = {"status": "failed", "reason_code": "settlement_failed"}
                 if outcome["status"] in TERMINAL:
                     break
                 if step["action"] == "none" and step.get("reason") == "idle":

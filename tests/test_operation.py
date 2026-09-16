@@ -24,7 +24,7 @@ CANARY = "CANARY-must-never-be-emitted"
 BASE = "a" * 40
 GOAL = {"path": "docs/zeus/operations/GOAL.md", "sha256": "b" * 64, "criterion": "one-start entry point",
         "rationale": "the runbook task exercises the entry point"}
-IDENTITY = {"repository": "r", "runtime_policy": "p", "provider": {"policy_digest": "x", "config_digest": "y"}}
+IDENTITY = {"repository": "r", "runtime": "d", "runtime_policy": "p", "provider": {"policy_digest": "x", "config_digest": "y"}}
 BOUND_GOAL = {**GOAL, "base_revision": BASE, "bytes": 3}
 
 
@@ -81,8 +81,10 @@ class Bus:
 class FakeBudget:
     """Fault-injected stand-in for the machine CallBudget."""
 
-    def __init__(self, refuse_after=None, settle_fail=False):
+    def __init__(self, refuse_after=None, settle_fail=None):
+        """`settle_fail` is the 1-based settlement ordinal that fails (fixture); None never fails."""
         self.reserved, self.settled, self.refuse_after, self.settle_fail = [], [], refuse_after, settle_fail
+        self.settle_calls = 0
 
     def reserve(self, *, per_host, total, purpose, provider, model):
         if self.refuse_after is not None and len(self.reserved) >= self.refuse_after:
@@ -93,7 +95,8 @@ class FakeBudget:
         return slot
 
     def settle(self, slot_id, *, outcome, detail=None):
-        if self.settle_fail:
+        self.settle_calls += 1
+        if self.settle_fail == self.settle_calls:
             raise OSError("settle failed (fixture)")
         self.settled.append((slot_id, outcome))
 
@@ -219,6 +222,9 @@ def test_same_id_replay_returns_the_saved_receipt_without_calls_or_a_new_assignm
     with pytest.raises(OperationRefused, match="configuration_mismatch"):
         again.run(valid(), {**IDENTITY, "runtime_policy": "changed"}, BOUND_GOAL)
     with pytest.raises(OperationRefused, match="configuration_mismatch"):
+        again.run(valid(), {**IDENTITY, "runtime": "other-resolved-runtime-dir"}, BOUND_GOAL)
+    assert again.run(valid(), dict(IDENTITY), BOUND_GOAL)["calls"] == receipt["calls"], "unchanged restart, same receipt"
+    with pytest.raises(OperationRefused, match="configuration_mismatch"):
         again.run(validate_manifest(manifest(**{"plan.objective": "other"}), packaged_policy()), IDENTITY, BOUND_GOAL)
     assert again.budget.reserved == []
 
@@ -298,10 +304,28 @@ def test_ledger_exhaustion_refuses_the_reviewer_and_ends_exhausted():
     assert receipt["status"] == "exhausted" and executor.calls == [] and budget.reserved == []
 
 
-def test_settlement_and_collection_failures_never_become_success():
-    receipt, _, _, budget, _ = run(budget=FakeBudget(settle_fail=True))
-    assert receipt["status"] == "failed" and receipt["reason_code"] == "settlement_failed" and receipt["lead_accepted"] is True
-    assert receipt["calls"]["settled"] == 0 and receipt["calls"]["slots"][0]["settle_error"] == "OSError"
+def test_first_settlement_failure_stops_before_the_reviewer_reservation():
+    receipt, svc, executor, budget, _ = run(budget=FakeBudget(settle_fail=1))
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "settlement_failed" and receipt["exit_code"] == 1
+    assert receipt["lead_accepted"] is False and receipt["decision_id"] is None
+    assert executor.calls == ["task"] and len(budget.reserved) == 1 and budget.settled == [], "reviewer calls and reservation stay zero"
+    assert receipt["calls"] == {"reserved": 1, "settled": 0, "slots": [
+        {"id": "slot-1", "kind": "task", "agent": "worker:implementation", "outcome": "succeeded", "settled": False, "settle_error": "OSError"}]}
+    assert receipt["cycle"]["cycle"]["executions"] == 1
+    with svc.store.transaction() as tx:
+        assert tx.scan("decisions_pending") == [] and tx.get("operations", "op-001")["status"] == "failed"
+    assert CANARY not in json.dumps(receipt)
+
+
+def test_second_settlement_failure_fails_after_the_accepted_review_by_contrast():
+    receipt, _, executor, budget, _ = run(budget=FakeBudget(settle_fail=2))
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "settlement_failed" and receipt["exit_code"] == 1
+    assert receipt["lead_accepted"] is True and executor.calls == ["task", "decision"] and len(budget.reserved) == 2
+    assert receipt["calls"]["settled"] == 1 and budget.settled == [("slot-1", "succeeded")]
+    assert [s["settle_error"] for s in receipt["calls"]["slots"]] == [None, "OSError"]
+
+
+def test_collection_failure_never_becomes_success():
     receipt, _, _, _, _ = run(collector=Collector(fail=True))
     assert receipt["status"] == "failed" and receipt["reason_code"] == "collection_failed" and receipt["exit_code"] == 1
 

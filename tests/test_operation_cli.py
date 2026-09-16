@@ -6,14 +6,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from codex_harness import cli
+from codex_harness import bootstrap, cli
 from codex_harness.adapters import operation_cli
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.operation import Operation, OperationRefused
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
-from codex_harness.domain.model import ContractError
+from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.operation import validate_manifest
 
 CANARY = "CANARY-must-never-be-emitted"
@@ -67,10 +67,71 @@ def test_execution_policy_fixes_worker_profile_restricted_and_manifest_controls(
     assert assignment.runtime["worker_profile"] == "worker-v1" and assignment.runtime["restricted"] is True
     assert assignment.controls == {"executable": "C:/tools/claude.cmd", "max_budget_usd": 1.5, "timeout_seconds": 120}
     assert packaged_policy().provider("claude").runtime["restricted"] is False, "the packaged default is untouched"
-    bound = operation_cli.identity(valid, root, policy, {"HARNESS_DATABASE_URL": CANARY, "HARNESS_REDIS_URL": "redis://x"})
+    host = {"HARNESS_DATABASE_URL": CANARY, "HARNESS_REDIS_URL": "redis://x"}
+    bound = operation_cli.identity(valid, root, policy, host, tmp_path / "runtime-a")
     assert CANARY not in json.dumps(bound) and bound["provider"]["config_digest"] == policy.summary()["config_digest"]
     assert bound["endpoints"]["database"] != bound["endpoints"]["redis"]
-    assert operation_cli.identity(valid, root, policy, {"HARNESS_DATABASE_URL": "other"})["endpoints"]["database"] != bound["endpoints"]["database"]
+    assert operation_cli.identity(valid, root, policy, {"HARNESS_DATABASE_URL": "other"}, tmp_path / "runtime-a")["endpoints"]["database"] != bound["endpoints"]["database"]
+    # R3: the effective resolved runtime directory is part of the identity; the path itself is not stored.
+    moved = operation_cli.identity(valid, root, policy, host, tmp_path / "runtime-b")
+    assert moved["runtime"] != bound["runtime"] and {k: v for k, v in moved.items() if k != "runtime"} == {k: v for k, v in bound.items() if k != "runtime"}
+    assert operation_cli.identity(valid, root, policy, host, tmp_path / "x" / ".." / "runtime-a")["runtime"] == bound["runtime"]
+    assert str(tmp_path) not in json.dumps(bound)
+    svc = Harness(MemoryStore(), organization())
+    goal = operation_cli.bind_goal(valid, operation_cli.GitSource(root))
+    assert Operation(svc).claim(valid, bound, goal)["cached"] is False
+    with pytest.raises(OperationRefused, match="configuration_mismatch"):
+        Operation(svc).claim(valid, moved, goal)
+
+
+def test_build_executor_opt_out_wires_no_knowledge_adapter_and_default_is_unchanged(tmp_path, monkeypatch):
+    from codex_harness.adapters import knowledge as knowledge_module
+    from codex_harness.adapters.executor import Executor
+    root, _ = repository(tmp_path)
+    monkeypatch.setenv("ZEUS_REPOSITORY", str(root))
+    monkeypatch.setenv("HARNESS_RUNTIME_DIR", ".runtime-test")
+    monkeypatch.delenv("HARNESS_DATABASE_URL", raising=False)
+    svc = Harness(MemoryStore(), organization())
+    assert callable(getattr(knowledge_module.PostgresKnowledge, "index_python")) and callable(
+        getattr(knowledge_module.PostgresKnowledge, "project_runtime")), "the default adapter is writable"
+    built = []
+    monkeypatch.setattr(knowledge_module, "PostgresKnowledge", lambda dsn: built.append(dsn) or SimpleNamespace(dsn=dsn))
+    executor = bootstrap.build_executor(svc, knowledge=False)
+    assert isinstance(executor, Executor) and executor.knowledge is None and built == []
+    assert not hasattr(executor.knowledge, "index_python") and not hasattr(executor.knowledge, "project_runtime")
+    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://fixture")
+    assert bootstrap.build_executor(svc).knowledge.dsn == "postgresql://fixture" and built == ["postgresql://fixture"]
+
+
+def test_operate_run_builds_the_real_executor_without_knowledge_and_binds_the_runtime(tmp_path, monkeypatch):
+    from codex_harness.adapters import bus as bus_module
+    from codex_harness.adapters import call_budget as budget_module
+    from codex_harness.adapters import knowledge as knowledge_module
+    from codex_harness.adapters.executor import Executor
+    root, head = repository(tmp_path)
+    monkeypatch.setenv("ZEUS_REPOSITORY", str(root))
+    monkeypatch.setenv("HARNESS_RUNTIME_DIR", ".runtime-test")
+    monkeypatch.setenv("ZEUS_CLAUDE_EXECUTABLE", "C:/tools/claude.cmd")
+    monkeypatch.delenv("HARNESS_DATABASE_URL", raising=False)
+    monkeypatch.setattr(knowledge_module, "PostgresKnowledge", lambda dsn: pytest.fail("operate wired a writable knowledge adapter"))
+    monkeypatch.setattr(bus_module, "RedisBus", lambda url: SimpleNamespace(url=url))
+    monkeypatch.setattr(budget_module, "CallBudget", lambda: SimpleNamespace(kind="budget"))
+    wired = {}
+
+    class Recorder:
+        def __init__(self, service, executor, bus, workflow, budget, collector):
+            wired.update(executor=executor, bus=bus, budget=budget, collector=collector)
+
+        def run(self, manifest, identity, goal):
+            wired.update(identity=identity, goal=goal)
+            return {"status": "failed", "reason_code": "fixture", "exit_code": 1}
+    monkeypatch.setattr(operation_cli, "Operation", Recorder)
+    path = tmp_path / "op.json"
+    path.write_text(json.dumps(manifest(head)), encoding="utf-8")
+    receipt = operation_cli.run(Harness(MemoryStore(), organization()), SimpleNamespace(file=path))
+    assert receipt["exit_code"] == 1 and isinstance(wired["executor"], Executor) and wired["executor"].knowledge is None
+    assert wired["identity"]["runtime"] == digest(str((root / ".runtime-test").resolve())) and wired["goal"]["base_revision"] == head
+    assert wired["bus"].url and wired["budget"].kind == "budget"
 
 
 def test_parser_and_dispatch_exit_nonzero_with_redacted_output(monkeypatch):

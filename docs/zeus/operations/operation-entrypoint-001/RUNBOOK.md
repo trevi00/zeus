@@ -64,12 +64,15 @@ receipt with zero calls). Everything else exits 1 and prints `status`, `reason_c
 | rejected | lead_rejected | the lead rejected; no rework, diagnosis or retry |
 | failed | execution_retry / execution_failed / exception:* | worker did not succeed; reviewer calls stay zero |
 | failed | evidence_gate_refused | no bound all_checked `evidence_inspections` row for the task; reviewer calls stay zero |
-| failed | settlement_failed / collection_failed | the lead accepted but bookkeeping failed; not a success |
+| failed | settlement_failed | a slot could not be settled; the run stops there (after the worker slot the reviewer is never reserved or called), the slot stays counted |
+| failed | collection_failed | the lead accepted but observation collection reported sink failures; not a success |
 | failed | idle | nothing to execute after finite message-only turns |
 | exhausted | budget_exhausted | machine ledger or cycle limit refused a start |
 | unknown | review_verdict_unknown / acceptance_unproven / other | no provable outcome |
 
-Refusals before any call: `configuration_mismatch`, `running_residue`, `cycle_residue`,
+Refusals before any call: `configuration_mismatch` (same id with a different manifest,
+repository, resolved runtime directory `HARNESS_RUNTIME_DIR`, packaged policy, provider
+policy/controls or endpoint digest), `running_residue`, `cycle_residue`,
 `base_revision_missing`, `goal_missing_at_base`, manifest errors. An interrupted run stays
 `running` and is refused on restart with no new calls; an operator inspects it with
 `operate status` and `cycle handoff`, never by automatic takeover.
@@ -79,6 +82,21 @@ Refusals before any call: `configuration_mismatch`, `running_residue`, `cycle_re
 The receipt holds the manifest digest, identity digests, slot ids, the cycle handoff projection,
 task/decision ids, execution and inspection references and collection counts. Observation logs go
 through the existing Observer spool and Collector; artifacts stay under the runtime directory.
+
+## Ledgers, provisional artifacts and formal knowledge
+
+Three kinds of records leave this entry point and none of them is validated knowledge:
+
+- Execution ledgers: the PG `operations`, `local_cycles`, `tasks`, `decisions_pending`,
+  `evidence_inspections` rows, machine call slots and observation records. They exist for
+  recovery, audit and the receipt; they carry no semantic acceptance.
+- Provisional artifacts: worker/reviewer outputs, candidate revisions and execution refs under
+  the runtime `artifacts` directory. Staging evidence for a human-owned PR, never an ontology.
+- Formal knowledge: not written here. `operate run` builds its executor with
+  `build_executor(knowledge=False)`, so no `index_python`/`project_runtime` graph write, hybrid
+  query, projection or promotion happens from the worker, the reviewer, a failure or a
+  checkpoint. An accepted review boolean does not promote anything; promotion is a separate,
+  explicit contract. Other commands keep the default writable adapter and are not claimed fixed.
 
 ## Pilot record
 

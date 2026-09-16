@@ -74,9 +74,12 @@ def execution_policy(manifest: dict, host_settings: dict) -> ExecutionPolicy:
     return ExecutionPolicy(policy, parse_configuration(policy, merged))
 
 
-def identity(manifest: dict, repository, policy: ExecutionPolicy, host_settings: dict) -> dict:
+def identity(manifest: dict, repository, policy: ExecutionPolicy, host_settings: dict, runtime) -> dict:
+    """Effective repository, resolved runtime directory, packaged policy, provider policy/config and
+    endpoint digests; a same-id run under any other of these is refused before any call."""
     summary = policy.summary()
     return {"repository": digest(str(Path(repository).resolve())),
+            "runtime": digest(str(Path(runtime).resolve())),
             "runtime_policy": digest(POLICY.snapshot()),
             "provider": {"policy_digest": summary["policy_digest"], "config_digest": summary["config_digest"],
                          "worker_profile": WORKER_PROFILE, "restricted": RESTRICTED},
@@ -88,7 +91,7 @@ def identity(manifest: dict, repository, policy: ExecutionPolicy, host_settings:
 def run(service, args) -> dict:
     from codex_harness.adapters.bus import RedisBus
     from codex_harness.adapters.call_budget import CallBudget
-    from codex_harness.adapters.configuration import repository_root, settings
+    from codex_harness.adapters.configuration import repository_root, runtime_dir, settings
     from codex_harness.application.workflow import Workflow
     from codex_harness.bootstrap import build_collector, build_executor, build_observer, redis_url
 
@@ -98,10 +101,12 @@ def run(service, args) -> dict:
     policy = execution_policy(manifest, host)
     repository = repository_root()
     goal = bind_goal(manifest, GitSource(repository))
-    bound = identity(manifest, repository, policy, host)
+    bound = identity(manifest, repository, policy, host, runtime_dir())
     observer = build_observer(service.store, "cli.operate")
     try:
-        executor = build_executor(service, observer=observer, execution_policy=policy)
+        # No knowledge adapter: this entry point writes execution ledgers and provisional
+        # artifacts only; formal knowledge promotion is a separate explicit contract.
+        executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False)
         operation = Operation(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org),
                               CallBudget(), build_collector(service.store, observer))
         return operation.run(manifest, bound, goal)
