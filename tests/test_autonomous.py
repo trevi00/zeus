@@ -4,6 +4,9 @@ import hashlib
 import json
 
 import pytest
+from test_operation import BOUND_GOAL, GOAL, IDENTITY, Bus, Collector, FakeBudget
+from test_operation import build as build_operation
+from test_operation import valid as operation_manifest_valid
 
 from codex_harness.adapters.autonomous_evidence import EvidenceUnavailable
 from codex_harness.adapters.providers import packaged_policy
@@ -20,9 +23,6 @@ from codex_harness.domain.autonomous import (
     verified_graph,
 )
 from codex_harness.domain.model import canonical, envelope
-from tests.test_operation import BOUND_GOAL, GOAL, IDENTITY, Bus, Collector, FakeBudget
-from tests.test_operation import build as build_operation
-from tests.test_operation import valid as operation_manifest_valid
 
 CANARY = "CANARY-must-never-be-emitted"
 BASE = "a" * 40
