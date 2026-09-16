@@ -49,3 +49,11 @@ For the next authorized implementation batch only: project stopped_reason as a r
 The reviewer also noted synthetic list-valued kind raises TypeError, but no normal writer producing that shape was established. It is a nonblocking defensive hardening note; handle it in the same local helper if that helper is edited, without expanding scope or creating another blocker.
 
 Current batch made exactly two provider calls, reached 19/19, retained accepted=false, and used the existing cycle gate to stop at budget_exhausted without invoking a provider. No repair/review retry is authorized within this completed batch. The corrected specification is reviewable here; it is not a claim that the defect is fixed.
+
+## Authorized correction round: operation-handoff-002
+
+User continued on 2026-09-16. Preserve the prior rejected execution and all 19 machine slots; one Claude implementation and one Codex review, cumulative cap 21, fresh cycle/schema, cycle cap 2. Reuse this PR and frame. Prior accepted behavior remains accepted; independent full suite and CI remain Codex-owned.
+
+Precise projection contract: cycle.stopped_reason is null for absent/null, otherwise a finite recognized code or `unknown`. Recognize existing STOP_STATES, fixed budget_exhausted/foreign_correlation/in_flight_residue/diagnose_pending/claim_guard_refused/no_execution_claimed, and exception/foreign_queue/unsupported_phase/execution_notice prefixes. Recognize execution_<status> only for an explicit finite list of existing execution statuses; never accept arbitrary prefix text. Discard any colon detail. cycle.stopped_reason_sha256 is the lowercase SHA256 hex of the complete original UTF-8 string (including unknown strings), otherwise null. This is correlation metadata, not secrecy proof for low-entropy values.
+
+Nested in_flight/last_execution projections admit only string agent/kind/id/status/at/result_id and boolean claimed, with other types null and unknown keys omitted; absent/non-object containers become null. Raw rows, status and step remain unchanged. Retain the previous fixed acceptance matrix, plus failed task -> ordinary step -> safe handoff, known/unknown/null reason controls, nested-error exclusion and unchanged stored records. Do not broaden into other logging or runtime paths.
