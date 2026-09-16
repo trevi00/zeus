@@ -185,3 +185,23 @@ Owner probes live at D:/workspaces/zeus/artifacts/autonomous-dge-001/draft-bound
 labelled injected fixtures, zero actual model calls. Full delivery still includes real six-start
 canary. The owner-authorized continuation is ONE further Claude/reviewer pair, machine ledger
 36 -> ceiling 38, timeout 1200s, declared Claude max USD 8. No automated retry or hidden reset.
+
+## Independent review: one completion defect
+
+Candidate 6bcb739, actual Codex review 4f340394-7575-4443-b232-fc1380b807ed rejected one P1.
+At application/autonomous.py promotion reviewer artifact validation uses manifest base_revision,
+but the independent review executes at candidate revision. Configured project skills cause that
+binding to be recorded. The reviewer's labelled fixture reproduced accepted review ->
+evidence_basis_mismatch after six starts (zero nodes), while the control promoted. Its focused
+tests: 56 passed/1 PG skipped, lint/diff passed, checkout clean. Owner independently ran actual
+isolated PG chain/5 nodes/4 edges/atomic rollback/concurrent claim and 154 focused PG tests passed.
+
+One bounded correction: validate reviewer evidence against the exact reviewed candidate revision,
+keep the implementation bound to its actual execution base, add a regression with the real
+executor's project-skill context binding shape. Preserve other accepted boundaries. Run relevant
+autonomous + operation tests and ruff; no broad refactor or repeated full suite. Missing separate
+test filenames are not themselves blockers: owner actual CLI/schema/PG checks and the real canary
+will establish wiring. Do not remove tests or weaken provenance to make it pass.
+
+Owner authorizes this specifically reproduced correction and review, ceiling 38 -> 40, Claude
+timeout 600s / declared USD 2. The autonomous canary is still unexecuted and remains required.
