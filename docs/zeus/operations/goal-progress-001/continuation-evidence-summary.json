@@ -1,0 +1,284 @@
+{
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\goal-progress-002",
+  "candidate": {
+    "base": "07f306ab3083cded308762da21fa0594e92bb1dc",
+    "path": "D:\\workspaces\\zeus\\artifacts\\goal-progress-002\\worker-001\\workspaces\\2cce36f7-73e4-4f66-95d7-e713ce7283e9",
+    "tree": "26f480007f93e294d3bcbd1b0b5db4f2933d477f",
+    "author": "worker:implementation",
+    "branch": "harness/2cce36f7-73e4-4f66-95d7-e713ce7283e9",
+    "task_id": "2cce36f7-73e4-4f66-95d7-e713ce7283e9",
+    "revision": "98120dba38b12c260cf9d1a9f80db46eddb935d9",
+    "diff_hash": "b25ca5b784938f972b905603161f4a76a5680a6085d27fb3f14a2b2cb9bb0071",
+    "repository": "github:trevi00/zeus",
+    "audit_lifecycle_version": 1
+  },
+  "inspection": {
+    "verdict": "incomplete",
+    "denominator": {
+      "error": 0,
+      "claims": 2,
+      "checked": 1,
+      "missing": 0,
+      "unknown": 0,
+      "not_checked": 0,
+      "flake_pattern": 0,
+      "replay_failed": 0,
+      "verified_mismatch": 1
+    },
+    "inspection_id": "d46e1c5eb24ae026b8efda72aba8b142049664e37dccf7be2f3b5ece0189e11d"
+  },
+  "actual_review": [
+    {
+      "id": "6d3717bf-5627-4703-87fb-c6a7a05229c0",
+      "phase": "review_lead",
+      "status": "succeeded",
+      "result": {
+        "risks": [
+          "Eight PostgreSQL cases skipped; full PostgreSQL/Redis and CI verification remain owner-owned.",
+          "Supplied evidence reports one verification mismatch without diagnostic detail; its cause remains unknown."
+        ],
+        "origin": {
+          "plan": {
+            "origin": {}
+          }
+        },
+        "reason": "P2: Matrix row 2 fails under injected corruption. Removing id from a stored lifecycle event makes ticket_lifecycle.py:18 raise KeyError; goal_progress.py:96-98 catches only ContractError, so the entire report aborts instead of returning unverified. Deterministically reproduced with synthetic MemoryStore records. Handle malformed records while preserving store-error propagation, and add a regression test.",
+        "blocked": false,
+        "accepted": false,
+        "candidate": {
+          "base": "07f306ab3083cded308762da21fa0594e92bb1dc",
+          "path": "D:\\workspaces\\zeus\\artifacts\\goal-progress-002\\worker-001\\workspaces\\2cce36f7-73e4-4f66-95d7-e713ce7283e9",
+          "tree": "26f480007f93e294d3bcbd1b0b5db4f2933d477f",
+          "author": "worker:implementation",
+          "branch": "harness/2cce36f7-73e4-4f66-95d7-e713ce7283e9",
+          "task_id": "2cce36f7-73e4-4f66-95d7-e713ce7283e9",
+          "revision": "98120dba38b12c260cf9d1a9f80db46eddb935d9",
+          "diff_hash": "b25ca5b784938f972b905603161f4a76a5680a6085d27fb3f14a2b2cb9bb0071",
+          "repository": "github:trevi00/zeus",
+          "audit_lifecycle_version": 1
+        },
+        "release_id": "8f4e6d03c742bf215873c1761fe5c5e48b9d75d56454439ee8c1d4104111d93c",
+        "execution_ref": "sha256:5db2be9590c5c25ac8cb7aabd294d9db2b07bf7421cf5ce021a72b38ec24c3af",
+        "basis_revision": "98120dba38b12c260cf9d1a9f80db46eddb935d9",
+        "sre_assessment": "Focused tests: 33 passed, 8 skipped; Ruff passed. Fixed-denominator metrics and dispatch admission provide useful progress controls, but one malformed record currently disables reporting for every criterion. Checkout remained clean and unchanged. Exact commands, review frame, and reproducer output are preserved in tool output.",
+        "arc42_assessment": "Reviewed the inherited manifest \u2192 store evaluation \u2192 report/compare and transactional dispatch paths against all six SPEC rows. Existing authority boundaries remain intact; no migration or new service. The nine-line documentation delta is accurate and readily reversible."
+      },
+      "error": null
+    }
+  ],
+  "owner_disposition": "accept goal-progress feature with explicit P2 reporting and replay-environment residuals; not autonomous-cycle acceptance",
+  "verification_reuse": {
+    "candidate": "98120dba38b12c260cf9d1a9f80db46eddb935d9",
+    "tested_base": "2765e590e37a78732d01b8e98ce74deaa7d07332",
+    "changed_paths": [
+      "docs/zeus/operations/goal-progress-001/OPERATIONS.md",
+      "docs/zeus/operations/goal-progress-001/SPEC.md"
+    ],
+    "runtime_and_tests_unchanged": true,
+    "prior_suite": {
+      "passed": 1940,
+      "skipped": 20,
+      "sha256": "fe440916a2b9abb6a1df426592fb047e305276803ce16c873e67acca8d54a512"
+    }
+  },
+  "corrected_environment_verification": {
+    "candidate": "98120dba38b12c260cf9d1a9f80db46eddb935d9",
+    "status": "independent corrected-environment verification; original inspection remains incomplete",
+    "difference": [
+      "PROGRAMDATA"
+    ],
+    "runs": [
+      {
+        "attempt": 1,
+        "exit_code": 0,
+        "log_sha256": "23867aa978e1f8e184b71266aa02754435bfec3046be867cac7ae60620eb37e2",
+        "summary": "33 passed, 8 skipped in 2.76s"
+      },
+      {
+        "attempt": 2,
+        "exit_code": 0,
+        "log_sha256": "dbd986597c3375c9d947d006ac68b7aa9ec29ce70a6638018ccbb5174b5e921c",
+        "summary": "33 passed, 8 skipped in 2.71s"
+      }
+    ],
+    "provider_calls": 0
+  },
+  "live_measurement": {
+    "candidate": "98120dba38b12c260cf9d1a9f80db46eddb935d9",
+    "definition_hash": "23f9ee4bbf35b36bbc9627de71871de000593a83abb951515ed98f6f7512a171",
+    "metrics": {
+      "total": 2,
+      "resolved": 0,
+      "reopened": 0,
+      "missing": 0,
+      "stale": 0,
+      "unverified": 0,
+      "remaining": 2,
+      "completion_ratio": 0.0
+    },
+    "comparison": {
+      "authority": "observation_only",
+      "goal_id": "zeus-asset-provider-gates",
+      "definition_hash": "23f9ee4bbf35b36bbc9627de71871de000593a83abb951515ed98f6f7512a171",
+      "gained": [],
+      "regressed": [],
+      "net_resolved": 0
+    },
+    "database_unchanged": true,
+    "readonly_server": true,
+    "budget": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 24,
+      "all_hosts": 24,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "provider_calls": 0,
+    "manifest_sha256": "62574043b1f4be1e8e03c17b1881770388b26aa2462de8ecfc28f8fbef08a558"
+  },
+  "budget_stop": {
+    "step": {
+      "cycle": {
+        "id": "goal-progress-002",
+        "status": "stopped",
+        "in_flight": null,
+        "created_at": "2026-09-16T11:48:54.633607+00:00",
+        "executions": 2,
+        "updated_at": "2026-09-16T11:57:05.905069+00:00",
+        "correlation_id": "goal-progress-002",
+        "last_execution": {
+          "at": "2026-09-16T11:55:03.119085+00:00",
+          "id": "6d3717bf-5627-4703-87fb-c6a7a05229c0",
+          "kind": "decision",
+          "agent": "lead:improvement",
+          "status": "succeeded",
+          "claimed": true,
+          "result_id": "6d3717bf-5627-4703-87fb-c6a7a05229c0"
+        },
+        "max_executions": 2,
+        "stopped_reason": "budget_exhausted"
+      },
+      "action": "stopped",
+      "messages": [
+        {
+          "entry_id": "1789559703094-0",
+          "message_id": "810da029-9c66-4f77-b7c8-da7dc92c7285",
+          "type": "task.assign",
+          "handled": true
+        }
+      ],
+      "reason": "budget_exhausted"
+    },
+    "machine_budget": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 24,
+      "all_hosts": 24,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "provider_calls": 0
+  },
+  "observations": {
+    "worker": {
+      "files": 1,
+      "records": 37,
+      "inserted": 37,
+      "duplicates": 0,
+      "conflicts": 0,
+      "corrupt": 0,
+      "refused": 0,
+      "truncated_tail": 0,
+      "unconfirmed_audits": 0,
+      "confirmed_audits": 2,
+      "sink_failures": 0,
+      "reclaimed_segments": 0,
+      "pruned_runs": 0,
+      "pruned_files": 0,
+      "alerts_replayed": 0,
+      "per_file": [
+        {
+          "file": "e02f424e7da44ac692aab1cc9d4ab1ac.0000.jsonl",
+          "from_offset": 0,
+          "to_offset": 50051,
+          "records": 37,
+          "inserted": 37,
+          "confirmed_audits": 2
+        }
+      ]
+    },
+    "lead": {
+      "files": 1,
+      "records": 38,
+      "inserted": 38,
+      "duplicates": 0,
+      "conflicts": 0,
+      "corrupt": 0,
+      "refused": 0,
+      "truncated_tail": 0,
+      "unconfirmed_audits": 0,
+      "confirmed_audits": 2,
+      "sink_failures": 0,
+      "reclaimed_segments": 0,
+      "pruned_runs": 0,
+      "pruned_files": 0,
+      "alerts_replayed": 0,
+      "per_file": [
+        {
+          "file": "7859014404f142099ca5f696743ab5b2.0000.jsonl",
+          "from_offset": 0,
+          "to_offset": 55330,
+          "records": 38,
+          "confirmed_audits": 2,
+          "inserted": 38
+        }
+      ]
+    }
+  },
+  "files": [
+    {
+      "path": "worker-001/receipt.json",
+      "sha256": "5e57acd04ecbe9f7619b529fc77cacaf26edc1b096d2d72597689c255d42b064",
+      "bytes": 34939
+    },
+    {
+      "path": "lead-review-001/receipt.json",
+      "sha256": "fbc98d082bf601faffcc732dd106640f661279fe1d380399019b229a1ed68d20",
+      "bytes": 4453
+    },
+    {
+      "path": "verification-reuse.json",
+      "sha256": "7ba365030c13a7d24ae4f9655a9439f65d74b8d20b57663f3bfc3a60c45f5bc4",
+      "bytes": 445
+    },
+    {
+      "path": "live-check.json",
+      "sha256": "2ee72ab05d0f6a776abcc958a46fdd24a7298b2347ba96b77ab59670a715eabc",
+      "bytes": 985
+    },
+    {
+      "path": "replay-programdata.json",
+      "sha256": "47dbbc9daf82621713287739451291d81c77ec2e179895ed94e8a5cb7b16bdd5",
+      "bytes": 628
+    },
+    {
+      "path": "replay-diagnostic/result.json",
+      "sha256": "6e61a6300bb52ba67ac0e86385706bab3619e5f4475633af7279840370e47f9e",
+      "bytes": 1228
+    },
+    {
+      "path": "replay-diagnostic/result-more.json",
+      "sha256": "7101afa6993393477e18e2cd9145568b0d26a18648664bc09be267cb2ff7bc1c",
+      "bytes": 262
+    },
+    {
+      "path": "replay-diagnostic/delta.json",
+      "sha256": "5b4929abe8fda1b2264f53989d0c6944cfaa1d8a25d38c6a27ba231b642b8df9",
+      "bytes": 4089
+    },
+    {
+      "path": "budget-stop.json",
+      "sha256": "9a5938a2046d7cb9d65ea291dbed2e29917106fbd50bcbbe5780cd64967cb11e",
+      "bytes": 1215
+    }
+  ]
+}
