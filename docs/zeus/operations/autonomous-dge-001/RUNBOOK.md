@@ -47,7 +47,10 @@ are produced by the role executions; `dge submit` refuses an autonomous-owned se
    decision for the same candidate revision, the all_checked inspection row and the owned session
    inside the transaction that writes `verified:<run>` nodes/edges and the `promotions` receipt, and
    re-verifies the worker and reviewer execution artifacts the same way as the roles (the reviewer
-   artifact's own `accepted` must be true; `promotion_evidence_unproven:<code>` otherwise).
+   artifact's own `accepted` must be true; `promotion_evidence_unproven:<code>` otherwise). The
+   worker artifact's context binding must name the manifest `base_revision`; the reviewer's must
+   name the reviewed candidate revision, because the independent review executes in the candidate
+   checkout and the executor records that binding whenever project skills are configured.
    Identical retry is idempotent; a different graph is `promotion_conflict`.
 7. The receipt keeps every stage duration (roles, implementation, promotion), the actual ledger
    provider label per start (Codex for the four design leads and the reviewer, Claude for the worker)

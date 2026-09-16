@@ -26,8 +26,14 @@ from tests.test_operation import valid as operation_manifest_valid
 
 CANARY = "CANARY-must-never-be-emitted"
 BASE = "a" * 40
+CANDIDATE = "c" * 40  # the worker's commit; the independent review executes at this revision
+SKILLS_REF = "sha256:" + "5" * 64  # a configured project-skills manifest (fixture)
 SOURCE_SHA = "b" * 64
 LATE = "2031-01-01T00:00:00+00:00"  # past the fixed deadline below
+
+
+def evidence_ref_of(details) -> str:
+    return "sha256:" + hashlib.sha256(canonical(details).encode()).hexdigest()
 
 
 def manifest(**overrides):
@@ -96,12 +102,16 @@ class FakeExecutor:
     the settled invocation reservation (fixture); `evidence` injects: none, corrupt, unrelated, verdict."""
 
     def __init__(self, svc, artifacts, outputs=None, verdict=True, role_status="succeeded", wrong_agent=False,
-                 evidence="bound", shared_thread=False, clock=None):
+                 evidence="bound", shared_thread=False, clock=None, project_skills=False, review_basis=CANDIDATE,
+                 implementation_basis=BASE):
         self.svc, self.artifacts, self.outputs, self.verdict = svc, artifacts, {**ROLE_OUTPUTS, **(outputs or {})}, verdict
         self.role_status, self.wrong_agent, self.calls = role_status, wrong_agent, []
         self.evidence, self.shared_thread, self.clock = evidence, shared_thread, clock
+        # With project skills configured the real executor records `research_binding` for every execution,
+        # including the stage-None worker and reviewer, naming HEAD of the checkout it ran in (fixture).
+        self.project_skills, self.review_basis, self.implementation_basis = project_skills, review_basis, implementation_basis
 
-    def _persist(self, tx, record, bucket, answer, stage, evidence_ref):
+    def _persist(self, tx, record, bucket, answer, stage, evidence_ref, basis=BASE):
         if self.evidence == "none":
             return "sha256:" + "0" * 64
         key = record["id"] if self.evidence != "unrelated" else "someone-else"
@@ -111,8 +121,12 @@ class FakeExecutor:
         artifact = {"answer": answer, "thread_id": "thread-fixed" if self.shared_thread else "thread-" + record["id"],
                     "invocation": {"reservation": reservation["id"], "outcome": "accepted"},
                     "execution_assignment": {"provider": "codex" if bucket == "decisions_pending" or record["agent"].startswith("lead:") else "claude"}}
-        if stage is not None:
-            artifact["research_binding"] = {"stage": stage, "evidence_ref": evidence_ref, "basis_revision": BASE}
+        if stage is not None or self.project_skills:
+            # Same shape the executor builds: stage, input evidence ref, basis revision, plus the
+            # project-skills manifest ref that makes a stage-None context bound.
+            artifact["research_binding"] = {"stage": stage, "evidence_ref": evidence_ref, "basis_revision": basis}
+            if self.project_skills:
+                artifact["research_binding"]["project_skills_ref"] = SKILLS_REF
         ref = self.artifacts.put(canonical(artifact))
         if self.evidence == "corrupt":
             self.artifacts.corrupt(ref)
@@ -127,18 +141,18 @@ class FakeExecutor:
             if task["agent"].startswith("lead:"):
                 role = details["role"]
                 task["status"] = self.role_status
-                ref = self._persist(tx, task, "tasks", self.outputs[role], "dge:" + role, "sha256:" + hashlib.sha256(canonical(details).encode()).hexdigest())
+                ref = self._persist(tx, task, "tasks", self.outputs[role], "dge:" + role, evidence_ref_of(details))
                 task["result"] = {**self.outputs[role], "execution_ref": ref, "basis_revision": BASE}
                 if self.wrong_agent:
                     task["agent"] = "lead:improvement"
             else:
-                candidate = {"revision": "c" * 40, "base": BASE, "tree": "t" * 40, "diff_hash": "d" * 64, "path": CANARY}
+                candidate = {"revision": CANDIDATE, "base": BASE, "tree": "t" * 40, "diff_hash": "d" * 64, "path": CANARY}
                 inspection_id = "insp-" + task["id"]
                 tx.put("evidence_inspections", inspection_id, {"id": inspection_id, "policy_hash": "ph", "verdict": "all_checked",
                        "binding": {"task_id": task["id"], "generation": 1, "attempt": 1, "source_revision": candidate["revision"]},
                        "denominator": {"claims": 1, "checked": 1, "missing": 0}})
                 answer = {"summary": CANARY, "tests": ["python -m pytest -q"]}
-                ref = self._persist(tx, task, "tasks", answer, None, None)
+                ref = self._persist(tx, task, "tasks", answer, None, evidence_ref_of(details), self.implementation_basis)
                 task.update(status="succeeded", result={**answer, "candidate": candidate, "execution_ref": ref, "basis_revision": BASE,
                                                         "evidence_inspection": {"inspection_id": inspection_id, "verdict": "all_checked"}})
                 report = envelope("task.result", task["agent"], "lead:improvement", "implement",
@@ -153,8 +167,9 @@ class FakeExecutor:
             row = tx.get("decisions_pending", expected["id"])
             row.update(attempt=1, generation=1, lease_owner="fixture")
             answer = {"accepted": self.verdict, "reason": CANARY}
-            ref = self._persist(tx, row, "decisions_pending", answer, None, None)
-            stored = {**answer, "execution_ref": ref, "basis_revision": BASE}
+            # The review runs in the candidate checkout, so the executor's basis is the reviewed revision.
+            ref = self._persist(tx, row, "decisions_pending", answer, None, evidence_ref_of(row["message"]["what"]["details"]), self.review_basis)
+            stored = {**answer, "execution_ref": ref, "basis_revision": self.review_basis}
             if self.evidence == "verdict":
                 stored["accepted"] = True  # the row claims acceptance the artifact never gave (fixture)
             row.update(status="succeeded", result=stored)
@@ -253,6 +268,30 @@ def test_mismatched_review_verdict_or_shared_role_session_never_promotes():
     svc, run, executor, budget = build(shared_thread=True)
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
     assert receipt["status"] == "failed" and receipt["reason_code"] == "role_session_shared" and len(executor.calls) == 2
+
+
+def test_review_evidence_is_bound_to_the_reviewed_candidate_and_the_worker_to_its_base():
+    # Regression (Codex review 4f340394 P1): with project skills configured the executor records the
+    # stage-None context binding, and the review's basis is the candidate commit it ran at, not the
+    # implementation base. Promotion must check each artifact against its own execution basis.
+    svc, run, executor, budget = build(project_skills=True)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "accepted" and receipt["reason_code"] == "promoted" and len(executor.calls) == 6
+    with svc.store.transaction() as tx:
+        review = executor.artifacts.document(tx.get("decisions_pending", receipt["operation"]["decision_id"])["result"]["execution_ref"])
+        assert review["research_binding"] == {"stage": None, "evidence_ref": review["research_binding"]["evidence_ref"],
+                                              "basis_revision": CANDIDATE, "project_skills_ref": SKILLS_REF}
+        assert tx.get("promotions", "auto-001")["evidence"]["review_reservation_id"] == "res-" + receipt["operation"]["decision_id"]
+    # A review whose artifact names the implementation base did not execute at the reviewed candidate.
+    svc, run, executor, budget = build(project_skills=True, review_basis=BASE)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "promotion_evidence_unproven:evidence_basis_mismatch"
+    # The worker stays bound to its actual execution base; a worker artifact at the candidate is refused.
+    svc, run, executor, budget = build(project_skills=True, implementation_basis=CANDIDATE)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "promotion_evidence_unproven:evidence_basis_mismatch"
+    with svc.store.transaction() as tx:
+        assert tx.scan("knowledge_nodes") == [] and tx.get("promotions", "auto-001") is None
 
 
 def test_unbound_stale_or_unsupported_role_output_stops_before_the_next_role():

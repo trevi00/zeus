@@ -374,8 +374,11 @@ class AutonomousRun:
             try:
                 # The persisted artifacts must be the executions that produced the stored answers: the
                 # worker's answer and the reviewer's verdict (`accepted` must be the artifact's own).
+                # The worker executed at the implementation base; the independent review executed at the
+                # reviewed candidate commit. The executor records that context binding (with project skills
+                # configured, at stage None too), so each artifact is checked against its own basis.
                 implementation = self._verify_execution(tx, task, "tasks", None, manifest["base_revision"])
-                review = self._verify_execution(tx, decision, "decisions_pending", None, manifest["base_revision"])
+                review = self._verify_execution(tx, decision, "decisions_pending", None, reviewed["revision"])
                 if (self.evidence.document(verdict.get("execution_ref")).get("answer") or {}).get("accepted") is not True:
                     raise ContractError("evidence_answer_mismatch")
             except ContractError as exc:
