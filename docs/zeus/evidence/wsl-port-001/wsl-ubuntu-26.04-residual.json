@@ -1,0 +1,25 @@
+{
+ "port": 29040,
+ "choice_window": [
+  20000,
+  32767
+ ],
+ "docker_run_exit": 0,
+ "daemon_refused_to_publish": false,
+ "after_occupant_released": {
+  "at": "occupant gone, container up",
+  "verdict": "wsl_path",
+  "reachable": {
+   "wsl": false,
+   "container": true,
+   "windows": true
+  }
+ },
+ "measured_on": {
+  "platform": "linux",
+  "ephemeral_range": [
+   32768,
+   60999
+  ]
+ }
+}

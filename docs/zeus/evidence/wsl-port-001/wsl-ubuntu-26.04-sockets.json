@@ -1,0 +1,58 @@
+{
+ "port": 60555,
+ "docker_run_exit": 0,
+ "steps": [
+  {
+   "at": "occupant bound, no container yet",
+   "distro_sockets": [
+    {
+     "state": "UNCONN",
+     "local": "127.0.0.1:60555"
+    }
+   ],
+   "windows_listeners": "0",
+   "connect_from_distro": false
+  },
+  {
+   "at": "container up, occupant still holding",
+   "distro_sockets": [
+    {
+     "state": "UNCONN",
+     "local": "127.0.0.1:60555"
+    }
+   ],
+   "windows_listeners": "1",
+   "connect_from_distro": false
+  },
+  {
+   "at": "5s after the occupant closed",
+   "distro_sockets": [],
+   "windows_listeners": "1",
+   "connect_from_distro": false
+  },
+  {
+   "at": "30s after the occupant closed",
+   "distro_sockets": [],
+   "windows_listeners": "1",
+   "connect_from_distro": false
+  },
+  {
+   "at": "after a container restart",
+   "distro_sockets": [
+    {
+     "state": "LISTEN",
+     "local": "127.0.0.1:60555"
+    }
+   ],
+   "windows_listeners": "1",
+   "connect_from_distro": true
+  }
+ ],
+ "measured_on": {
+  "platform": "linux",
+  "ephemeral_range": [
+   32768,
+   60999
+  ]
+ }
+}

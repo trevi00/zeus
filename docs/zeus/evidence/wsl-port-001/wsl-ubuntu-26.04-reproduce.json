@@ -1,0 +1,71 @@
+{
+ "port": 56687,
+ "control_port": 59757,
+ "ephemeral_range": [
+  32768,
+  60999
+ ],
+ "steps": [
+  {
+   "at": "occupant holds the port in the distro",
+   "port": 56687
+  },
+  {
+   "at": "docker publishes that same port",
+   "exit_code": 0,
+   "published": true
+  },
+  {
+   "at": "while the occupant holds it",
+   "verdict": "wsl_path",
+   "reachable": {
+    "wsl": false,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "5s after the occupant let go",
+   "verdict": "wsl_path",
+   "reachable": {
+    "wsl": false,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "30s after the occupant let go",
+   "verdict": "wsl_path",
+   "reachable": {
+    "wsl": false,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "after a container restart, port long free",
+   "verdict": "all_reachable",
+   "reachable": {
+    "wsl": true,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "control: a port nobody held",
+   "verdict": "all_reachable",
+   "reachable": {
+    "wsl": true,
+    "container": true,
+    "windows": true
+   }
+  }
+ ],
+ "measured_on": {
+  "platform": "linux",
+  "ephemeral_range": [
+   32768,
+   60999
+  ]
+ }
+}

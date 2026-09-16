@@ -1,0 +1,77 @@
+{
+ "choice_window": [
+  20000,
+  32767
+ ],
+ "ephemeral_range": [
+  32768,
+  60999
+ ],
+ "cycles": [
+  {
+   "cycle": 0,
+   "postgres_port": 23835,
+   "redis_port": 22684,
+   "inside_choice_window": [
+    true,
+    true
+   ],
+   "inside_ephemeral_range": [
+    false,
+    false
+   ],
+   "verdict": "all_reachable",
+   "reachable": {
+    "wsl": true,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "cycle": 1,
+   "postgres_port": 32673,
+   "redis_port": 20064,
+   "inside_choice_window": [
+    true,
+    true
+   ],
+   "inside_ephemeral_range": [
+    false,
+    false
+   ],
+   "verdict": "all_reachable",
+   "reachable": {
+    "wsl": true,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "cycle": 2,
+   "postgres_port": 22256,
+   "redis_port": 23900,
+   "inside_choice_window": [
+    true,
+    true
+   ],
+   "inside_ephemeral_range": [
+    false,
+    false
+   ],
+   "verdict": "all_reachable",
+   "reachable": {
+    "wsl": true,
+    "container": true,
+    "windows": true
+   }
+  }
+ ],
+ "note": "ports are read back from `compose port`, never assumed from the choice",
+ "measured_on": {
+  "platform": "linux",
+  "ephemeral_range": [
+   32768,
+   60999
+  ]
+ }
+}
