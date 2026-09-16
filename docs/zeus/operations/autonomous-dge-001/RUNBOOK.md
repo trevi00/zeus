@@ -71,9 +71,20 @@ Exit 0 only for accepted (or cached accepted). Refusals print `status`, `reason_
 
 - Not run by the worker: real Claude/Codex executions, Redis, PostgreSQL (`tests/test_dge_postgres.py`
   style checks for `PostgresGraph`), CI on both platforms, the six-start canary. Separate
-  `test_autonomous_cli.py`, `test_autonomous_roles.py`, `test_autonomous_postgres.py` and
-  `test_promotion.py` files were not written in the continuation call; the acceptance-matrix, evidence,
-  deadline, reporting and promotion regressions live in `tests/test_autonomous.py` with labelled fixtures.
+  `test_autonomous_cli.py`, `test_autonomous_postgres.py` and `test_promotion.py` files were not
+  written; the acceptance-matrix, evidence, deadline, reporting and promotion regressions live in
+  `tests/test_autonomous.py` with labelled fixtures.
+- Role output contract (after canary autonomous-ssot-canary-001): the four model-facing schemas in
+  `adapters/autonomous_roles.py` enumerate claim kind, question status, SSOT decision, finding
+  severity, arbiter verdict and disposition decision from the domain constants the consumers check,
+  so an off-contract value is refused as `schema_mismatch` (owner `agent_output`) at the provider
+  boundary before any packet or event is built. The consumers are unchanged and nothing is coerced.
+  `tests/test_autonomous_roles.py` holds the schema-to-consumer tests plus a compact labelled fixture
+  of the live rejected kinds/status; no transcript is stored.
+- Next canary: run collection as `python -P -m pytest` with only the checkout `src` on `PYTHONPATH`
+  (no repository-root injection); GitHub CI runs the console entrypoint. The host's application
+  control refusing `pytest.exe` (WinError 4551) is a host policy, not a code defect. The three
+  `tests.test_operation` import lines stay as they are for the real canary task.
 - Evidence provenance is checked against the artifact store and `invocation_reservations`; the real
   executor's artifact shape (`answer`, `invocation.reservation`, `research_binding`, `thread_id`) was
   traced in code, not exercised by a live run.
