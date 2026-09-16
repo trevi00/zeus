@@ -1,0 +1,249 @@
+{
+  "schema": "urn:zeus:autonomous-receipt:1",
+  "trust": "executor-bound role outputs: the persisted task execution, its agent, stage, generation, attempt, base revision and output digest are checked; citation truth and design correctness are not",
+  "authority": "autonomous_receipt; not merge, deploy, completion or truth",
+  "id": "autonomous-ssot-canary-003",
+  "status": "accepted",
+  "reason_code": "promoted",
+  "manifest_sha256": "c4343ea1a9d0a88b71d3b98b358ae4a7b588821e78287961e2bb1cadcb7b69de",
+  "goal": {
+    "path": "docs/zeus/operations/GOAL.md",
+    "bytes": 6433,
+    "sha256": "82f8b6f9c41d447258aaf704b0c3e191cc048a093ebbad339e76d4bd242500df",
+    "criterion": "A bounded real improvement progresses through SSOT-first DGE, implementation, independent verification and provenance promotion",
+    "base_revision": "b74e57870a4591105c4a13912d253ea60aa1f595"
+  },
+  "session_id": "autonomous-ssot-canary-003.design",
+  "operation_id": "autonomous-ssot-canary-003.impl",
+  "deadline": "2026-09-16T17:55:27.592324+00:00",
+  "starts": {
+    "reserved": 6,
+    "settled": 6,
+    "slots": [
+      {
+        "id": "0b2a905e900a442199d9559ce14be70e",
+        "kind": "task",
+        "agent": "lead:researcher",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "f1ea867e524049afb23d3e14ce1cf2aa",
+        "kind": "task",
+        "agent": "lead:proposer",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "e0c8269d7ffb4fd89907487f211bc37b",
+        "kind": "task",
+        "agent": "lead:attacker",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "bd1543a47c5e4fbea0a214f8867840de",
+        "kind": "task",
+        "agent": "lead:arbiter",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": null
+      },
+      {
+        "id": "35f179e7809d42f3ad2eb2ee6448e600",
+        "kind": "task",
+        "agent": "worker:implementation",
+        "provider": "claude",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": "autonomous-ssot-canary-003.impl"
+      },
+      {
+        "id": "7514b5e825b64ff1a0c3c68d59317e0f",
+        "kind": "decision",
+        "agent": "lead:improvement",
+        "provider": "codex",
+        "outcome": "succeeded",
+        "settled": true,
+        "settle_error": null,
+        "operation": "autonomous-ssot-canary-003.impl"
+      }
+    ]
+  },
+  "invocations": {
+    "review": 1,
+    "arbiter": 1,
+    "attacker": 1,
+    "proposer": 1,
+    "researcher": 1,
+    "implementation": 1
+  },
+  "roles": {
+    "arbiter": {
+      "agent": "lead:arbiter",
+      "stage": "dge:arbiter",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "f6a20f98-0636-5aa1-91c3-f7e0d012f6a2",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ab2a-0937-7d73-9905-a3a957e1a5a8",
+        "invocation": 1,
+        "output_sha256": "e4dbbb595722beff48e59a0e9e23e26ad082ee49bc1dfd46f8e0d5a328f5bd8d",
+        "reservation_id": "92b41af8670139d902d1dd5764102ac290152bee7bcbb3525a794fd109029fc1"
+      },
+      "generation": 1,
+      "base_revision": "b74e57870a4591105c4a13912d253ea60aa1f595",
+      "execution_ref": "sha256:a0d176f86bf8393b7ec42e5009fafff50b886f2cfc06fe50b18092ee99567509",
+      "output_sha256": "e4dbbb595722beff48e59a0e9e23e26ad082ee49bc1dfd46f8e0d5a328f5bd8d"
+    },
+    "attacker": {
+      "agent": "lead:attacker",
+      "stage": "dge:attacker",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "bcd2fecf-49a9-54a1-bfda-cb7cfb2c5962",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ab28-e754-7f71-8bbd-f1dd80e2c1db",
+        "invocation": 1,
+        "output_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36",
+        "reservation_id": "9b1b0e3cf47c0ef0b9bee0a45cf0efb89f6eaf7cfbc37aa26a0811bdce801f09"
+      },
+      "generation": 1,
+      "base_revision": "b74e57870a4591105c4a13912d253ea60aa1f595",
+      "execution_ref": "sha256:cf868c0701c18d4b0520f61235e066f805103773c99ea8dfe04cac88877473bf",
+      "output_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    "proposer": {
+      "agent": "lead:proposer",
+      "stage": "dge:proposer",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "9e962d20-b704-5165-990e-5d7249370b80",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ab27-5549-7133-a0cd-05ecc918c118",
+        "invocation": 1,
+        "output_sha256": "9542a640c5ec884d18c2b8610cccde450d64cf20806d388143414e2b2b74cfa8",
+        "reservation_id": "d1cd39dd21b466ab5f1eec94921282870d73cf3042efdff59f19fc556bb91a31"
+      },
+      "generation": 1,
+      "base_revision": "b74e57870a4591105c4a13912d253ea60aa1f595",
+      "execution_ref": "sha256:4a549cd4c30d7ca1e4a1fab14f941407961b65b166d39461303b3d5f01511289",
+      "output_sha256": "9542a640c5ec884d18c2b8610cccde450d64cf20806d388143414e2b2b74cfa8"
+    },
+    "researcher": {
+      "agent": "lead:researcher",
+      "stage": "dge:researcher",
+      "origin": "executor_bound",
+      "attempt": 1,
+      "task_id": "8545dcfa-c480-5d11-a196-3149441d8c66",
+      "evidence": {
+        "provider": "codex",
+        "thread_id": "01a0ab25-319e-7823-ac47-74f5999b30a8",
+        "invocation": 1,
+        "output_sha256": "92a15965e1471690fe9db2358be2082ff0e23ebd6e7d82e96cae5557ddf51432",
+        "reservation_id": "1a433a8f4b6f06717500f6758c5b9536ec428abb028ef198cc16f6c5a889ac12"
+      },
+      "generation": 1,
+      "base_revision": "b74e57870a4591105c4a13912d253ea60aa1f595",
+      "execution_ref": "sha256:21f5afc840850c8ff6980fe6893ddd52e67d947d5ac13ac9272914267b3d37ad",
+      "output_sha256": "92a15965e1471690fe9db2358be2082ff0e23ebd6e7d82e96cae5557ddf51432"
+    }
+  },
+  "promotion": {
+    "id": "autonomous-ssot-canary-003",
+    "edges": 4,
+    "nodes": [
+      "verified:autonomous-ssot-canary-003:goal",
+      "verified:autonomous-ssot-canary-003:research",
+      "verified:autonomous-ssot-canary-003:design",
+      "verified:autonomous-ssot-canary-003:candidate",
+      "verified:autonomous-ssot-canary-003:verification"
+    ],
+    "cached": false,
+    "repository": "verified:autonomous-ssot-canary-003",
+    "graph_sha256": "d97844f3f14954c9892309b9aa65a64ea52e55e28ee542a784e9d9d327667155"
+  },
+  "durations": {
+    "arbiter": 82.91769700002624,
+    "attacker": 71.47645759995794,
+    "proposer": 104.67335970001295,
+    "promotion": 0.05089610000140965,
+    "researcher": 138.84173200000077,
+    "implementation": 176.88224370003445
+  },
+  "history": [
+    {
+      "at": "2026-09-16T16:55:28.507731+00:00",
+      "to": "research",
+      "from": null
+    },
+    {
+      "at": "2026-09-16T16:57:47.759446+00:00",
+      "to": "packet",
+      "from": "research"
+    },
+    {
+      "at": "2026-09-16T16:57:47.774161+00:00",
+      "to": "proposer",
+      "from": "packet"
+    },
+    {
+      "at": "2026-09-16T16:59:32.524359+00:00",
+      "to": "attacker",
+      "from": "proposer"
+    },
+    {
+      "at": "2026-09-16T17:00:44.093237+00:00",
+      "to": "arbiter",
+      "from": "attacker"
+    },
+    {
+      "at": "2026-09-16T17:02:07.188607+00:00",
+      "to": "implementation",
+      "from": "arbiter"
+    },
+    {
+      "at": "2026-09-16T17:05:04.130580+00:00",
+      "to": "promotion",
+      "from": "implementation"
+    }
+  ],
+  "claimed_at": "2026-09-16T16:55:28.507731+00:00",
+  "finished_at": "2026-09-16T17:05:04.243688+00:00",
+  "state_check": {
+    "cached_reentry": true,
+    "ledger_before": 52,
+    "ledger_after": 52,
+    "nodes": 5,
+    "edges": 4,
+    "scope": "actual isolated PostgreSQL, not a reboot test"
+  },
+  "reviews": [
+    {
+      "accepted": true,
+      "reason": "Accept candidate 47e7314. Review frame: collection \u2192 shared fixtures \u2192 preserved assertions. Only the three authorized imports changed, matching repository convention. Candidate-bound focused tests: 53 passed, 1 skipped. Ruff and diff checks passed; HEAD/tree matched and checkout remained clean. No blocking findings.",
+      "risks": [
+        "PostgreSQL integration test skipped: integration environment required.",
+        "python -P, pytest.exe, GitHub CI and full suite were not run; owner verification remains outstanding.",
+        "Historical CI root cause was supplied evidence, not independently reproduced."
+      ],
+      "execution_ref": "sha256:4c3f6e04fe41bf0f7e0bde90c1ac4453b3f7104d743f82204e67044d71d7d410",
+      "basis_revision": "47e7314cb8ef9f370e887c7ba6707ef3168ddfa0"
+    }
+  ]
+}

@@ -19,6 +19,30 @@
       "team": "improvement"
     },
     {
+      "id": "lead:researcher",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
+      "id": "lead:proposer",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
+      "id": "lead:attacker",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
+      "id": "lead:arbiter",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
       "id": "worker:github",
       "role": "worker",
       "parent": "lead:research",

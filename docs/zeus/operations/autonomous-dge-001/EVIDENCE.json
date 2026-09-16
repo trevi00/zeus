@@ -1,0 +1,593 @@
+{
+  "schema": "zeus-owner-evidence-index:1",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\autonomous-dge-001",
+  "scope": "Exact local bytes. Fixture/owner checks and actual provider runs are separate; no billing claim.",
+  "runs": [
+    {
+      "directory": ".",
+      "receipt": {
+        "phase": "failed",
+        "kind": "maintenance_bootstrap_not_canary",
+        "base_revision": "030b7217a3188f28bafa3cc40e04a8acf35a1245",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 35,
+          "all_hosts": 35,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "exit_code": 1,
+        "reason_code": "execution_retry",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 36,
+          "all_hosts": 36,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 683,
+          "sha256": "3e2faee41b5ce59ec3cb33ae835f9a55972ea2ee0b963d629d54bc44a4ce257c"
+        },
+        "run.stdout": {
+          "bytes": 3917,
+          "sha256": "3f008578ee4369aeb402c9fa76d8a259dfee6b0d19c8f26129bf8b01aa34e5b5"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "operation.json": {
+          "bytes": 3517,
+          "sha256": "4b3ae9699fffdd0fb6e816664cf2d67324b401a0935edfc5e289b5b4c237a088"
+        },
+        "records.json": {
+          "bytes": 24210,
+          "sha256": "c2b8094f2c174f180618b5d030cd37661499fea6bf782b35a9597b7d904a1017"
+        }
+      },
+      "run_id": "autonomous-dge-build-001",
+      "reason_code": "execution_retry",
+      "starts": null,
+      "invocations": null
+    },
+    {
+      "directory": "continuation",
+      "receipt": {
+        "phase": "rejected",
+        "kind": "maintenance_bootstrap_not_canary",
+        "base_revision": "fbdb7950d1f75309cdf5418ae97abf80c1ea082b",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 36,
+          "all_hosts": 36,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "exit_code": 1,
+        "reason_code": "lead_rejected",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 38,
+          "all_hosts": 38,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 683,
+          "sha256": "9ee0ce2c5f891c815737960ae78c220c90739af5f018f6277857bd093b9658a5"
+        },
+        "run.stdout": {
+          "bytes": 4993,
+          "sha256": "a50711663b4776c253cd12f39e39f767138cfd1c79e80b77388a5db6f370289f"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "operation.json": {
+          "bytes": 3717,
+          "sha256": "c5cd7ae03dcfc3d192bfc0f2d316dd07c329ad3ea45eb57f37e5207a26750f4c"
+        },
+        "records.json": {
+          "bytes": 68628,
+          "sha256": "7f23d025546da4932bfb3485d758548a442073f0d22ecda32dc93b3a67d08993"
+        }
+      },
+      "run_id": "autonomous-dge-build-002",
+      "reason_code": "lead_rejected",
+      "starts": null,
+      "invocations": null
+    },
+    {
+      "directory": "correction",
+      "receipt": {
+        "phase": "accepted",
+        "kind": "maintenance_bootstrap_not_canary",
+        "base_revision": "22f0002a3ace9ba34dc5907b56cbeb9823e4b020",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 38,
+          "all_hosts": 38,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "exit_code": 0,
+        "reason_code": "lead_accepted",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 40,
+          "all_hosts": 40,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 683,
+          "sha256": "c3adc26abc2dec390fabe96c5aa734d025a3f7362460339a07f29e1dec1914ca"
+        },
+        "run.stdout": {
+          "bytes": 5000,
+          "sha256": "32075b3a61a3d4bf1f00e0583ca11b4877562e6c622b1b37a58928037b5fe210"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "operation.json": {
+          "bytes": 3481,
+          "sha256": "414bd40796cdaae838dd82060eef6813e0d3c45a32d143337faf3ff591e97d97"
+        },
+        "records.json": {
+          "bytes": 59299,
+          "sha256": "4a671efca4b8bab65bc67b12f3d3a2132642510ee44d73b77069472f8a785e17"
+        }
+      },
+      "run_id": "autonomous-dge-build-003",
+      "reason_code": "lead_accepted",
+      "starts": null,
+      "invocations": null
+    },
+    {
+      "directory": "canary",
+      "receipt": {
+        "phase": "failed",
+        "base_revision": "e345c2e53f3fc5d9e11db28287e0dbc85eb96a01",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 40,
+          "all_hosts": 40,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "maximum_executor_starts": 6,
+        "exit_code": 1,
+        "reason_code": "packet_invalid:PacketError",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 41,
+          "all_hosts": 41,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 680,
+          "sha256": "030adb39f8a33b9bf3ef8b1ca3be4baf1c01fc3ed3fb955d965bb6d2d5588b8e"
+        },
+        "run.stdout": {
+          "bytes": 3850,
+          "sha256": "66393fcc2435a6c1644c7be570773c7ac707cb9b4343c80498ee3fd4e2b3bb35"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "manifest.json": {
+          "bytes": 2760,
+          "sha256": "ead904fe367759d0559bcf8e05a5540b04059d340a7f5ce7aa9d22604900d8f0"
+        },
+        "records.json": {
+          "bytes": 70984,
+          "sha256": "ac8f1a2cffaf63e6118dca59d00880bbadc074da3c16786d70dba302067849a9"
+        }
+      },
+      "run_id": "autonomous-ssot-canary-001",
+      "reason_code": "packet_invalid:PacketError",
+      "starts": {
+        "reserved": 1,
+        "settled": 1,
+        "slots": [
+          {
+            "id": "19d2cbbdd1c847ed86930ebeb5b1e05a",
+            "kind": "task",
+            "agent": "lead:researcher",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": null
+          }
+        ]
+      },
+      "invocations": {
+        "researcher": 1
+      }
+    },
+    {
+      "directory": "contract-fix",
+      "receipt": {
+        "phase": "accepted",
+        "kind": "maintenance_bootstrap_not_canary",
+        "base_revision": "b7153dd4c025d759deb770ea2e736e702e724f95",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 41,
+          "all_hosts": 41,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "exit_code": 0,
+        "reason_code": "lead_accepted",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 43,
+          "all_hosts": 43,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 683,
+          "sha256": "b7431437b49d570fae0bb1d1f5be46892046d12830d7ec257bf369f1cde4ad7f"
+        },
+        "run.stdout": {
+          "bytes": 5002,
+          "sha256": "29a3efabf1c0be32237a0096d96ec511c0de5ec16798652588b4aeb858e612e6"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "operation.json": {
+          "bytes": 3648,
+          "sha256": "4881221397046c3fe997afbab71c654e248d25549d18f7e110387d71ff45a3d3"
+        },
+        "records.json": {
+          "bytes": 60406,
+          "sha256": "20a74e81b72c9318e044726ca035b5aac19755638c8e8689d368336270b654e6"
+        }
+      },
+      "run_id": "autonomous-dge-build-004",
+      "reason_code": "lead_accepted",
+      "starts": null,
+      "invocations": null
+    },
+    {
+      "directory": "canary-002",
+      "receipt": {
+        "phase": "failed",
+        "base_revision": "490c5d4fdd8047a0ab0525f4c2b45cbe205bc86e",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 43,
+          "all_hosts": 43,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "maximum_executor_starts": 6,
+        "exit_code": 1,
+        "reason_code": "packet_invalid:PacketError",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 44,
+          "all_hosts": 44,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 680,
+          "sha256": "2d265e44da03e91bb082d1f15e371db58702f68b923a714fea97bb30aae6d209"
+        },
+        "run.stdout": {
+          "bytes": 3850,
+          "sha256": "2cfea5a44d5d10e9b8ffd8f180a5337e52c105781014077254687df912c8e4dd"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "manifest.json": {
+          "bytes": 3047,
+          "sha256": "c9728f53a93a5af9ef237f2c7e275233d3fa4eed44378e69d66777d86c1da790"
+        },
+        "records.json": {
+          "bytes": 70877,
+          "sha256": "9b6a940951b89e4e7d6c1e6601e66f680558a2bb9b5590703effea5aad494e01"
+        }
+      },
+      "run_id": "autonomous-ssot-canary-002",
+      "reason_code": "packet_invalid:PacketError",
+      "starts": {
+        "reserved": 1,
+        "settled": 1,
+        "slots": [
+          {
+            "id": "684075fdb26440a5b3418706188c4cc0",
+            "kind": "task",
+            "agent": "lead:researcher",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": null
+          }
+        ]
+      },
+      "invocations": {
+        "researcher": 1
+      }
+    },
+    {
+      "directory": "citation-fix",
+      "receipt": {
+        "phase": "accepted",
+        "kind": "maintenance_bootstrap_not_canary",
+        "base_revision": "6e6d3d93bc0e23b97d7317333498db0ec6a80342",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 44,
+          "all_hosts": 44,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "exit_code": 0,
+        "reason_code": "lead_accepted",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 46,
+          "all_hosts": 46,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 683,
+          "sha256": "191e364713310ff0e60057ef2f5252daf2127591d7bf8192272bf74073215c7d"
+        },
+        "run.stdout": {
+          "bytes": 5000,
+          "sha256": "1c07f6993caad154a86fedafbbdb46c31478c0a7b44318da6f6ab7fa19b7085b"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "operation.json": {
+          "bytes": 3647,
+          "sha256": "f46a30851b4d3617c947606d22ad80073e7b8d9aa6e72bb45d618af262bf106e"
+        },
+        "records.json": {
+          "bytes": 61560,
+          "sha256": "f5710521ab41ed505e615a9758d2d80709a66375795fe44a486f4b68ff1b0757"
+        }
+      },
+      "run_id": "autonomous-dge-build-005",
+      "reason_code": "lead_accepted",
+      "starts": null,
+      "invocations": null
+    },
+    {
+      "directory": "canary-003",
+      "receipt": {
+        "phase": "accepted",
+        "base_revision": "b74e57870a4591105c4a13912d253ea60aa1f595",
+        "budget_before": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 46,
+          "all_hosts": 46,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        },
+        "maximum_executor_starts": 6,
+        "exit_code": 0,
+        "reason_code": "promoted",
+        "budget_after": {
+          "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+          "this_host": 52,
+          "all_hosts": 52,
+          "unreadable": 0,
+          "note": "a slot that was reserved and never settled still counts"
+        }
+      },
+      "files": {
+        "receipt.json": {
+          "bytes": 664,
+          "sha256": "ac1a6efc6b49ee9cfc3e455ea4b215f07ee2546c42bc613520c72781591bb96f"
+        },
+        "run.stdout": {
+          "bytes": 10468,
+          "sha256": "ddf5d83c7ff42a93b5c77b169c1372408ecc5bb68524d5af94ceac5e0b32d2ab"
+        },
+        "run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "manifest.json": {
+          "bytes": 3017,
+          "sha256": "0717021b7190490ed0e3bbd4cf52ce749e5bd4811b418082d456e1e88757bca0"
+        },
+        "records.json": {
+          "bytes": 828664,
+          "sha256": "7eaabcb13737d9ebeb78ce227f1f6675fb047da86191e7b3c3354c89faaf0005"
+        },
+        "state-verification.json": {
+          "bytes": 8238,
+          "sha256": "cc1045b56775eeceea4b6ed9055f1cc5eef7cd70b3e5a54e547317c24cc63177"
+        },
+        "reentry.stdout": {
+          "bytes": 10467,
+          "sha256": "0624d605887eceef8193f8556fd9ccaf6950427a8bf027b29e824d8e7752f2da"
+        },
+        "observation-collect.json": {
+          "bytes": 524,
+          "sha256": "06cdcd2963f93470e04533d40ccf20d1f27d31c1b3dc85e4813a369c96286698"
+        },
+        "observation-status.json": {
+          "bytes": 1794,
+          "sha256": "cf8a34dbe4e3f7cf6a907ebd0ccd415a7c801428224921410eab9c017fe8aa79"
+        }
+      },
+      "run_id": "autonomous-ssot-canary-003",
+      "reason_code": "promoted",
+      "starts": {
+        "reserved": 6,
+        "settled": 6,
+        "slots": [
+          {
+            "id": "0b2a905e900a442199d9559ce14be70e",
+            "kind": "task",
+            "agent": "lead:researcher",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": null
+          },
+          {
+            "id": "f1ea867e524049afb23d3e14ce1cf2aa",
+            "kind": "task",
+            "agent": "lead:proposer",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": null
+          },
+          {
+            "id": "e0c8269d7ffb4fd89907487f211bc37b",
+            "kind": "task",
+            "agent": "lead:attacker",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": null
+          },
+          {
+            "id": "bd1543a47c5e4fbea0a214f8867840de",
+            "kind": "task",
+            "agent": "lead:arbiter",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": null
+          },
+          {
+            "id": "35f179e7809d42f3ad2eb2ee6448e600",
+            "kind": "task",
+            "agent": "worker:implementation",
+            "provider": "claude",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": "autonomous-ssot-canary-003.impl"
+          },
+          {
+            "id": "7514b5e825b64ff1a0c3c68d59317e0f",
+            "kind": "decision",
+            "agent": "lead:improvement",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null,
+            "operation": "autonomous-ssot-canary-003.impl"
+          }
+        ]
+      },
+      "invocations": {
+        "review": 1,
+        "arbiter": 1,
+        "attacker": 1,
+        "proposer": 1,
+        "researcher": 1,
+        "implementation": 1
+      }
+    }
+  ],
+  "earlier_owner_checks": {
+    "revision": "6bcb739b13f1a2d9c60a21a894d0eddb8e53bc86",
+    "provider_calls": 0,
+    "checks": [
+      {
+        "name": "ruff",
+        "exit_code": 0,
+        "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "name": "owner-pg",
+        "exit_code": 0,
+        "log_sha256": "7fae5820250e4418be920b2bc8994d312c0b087a6861f612965c0c4f93b57399"
+      },
+      {
+        "name": "focused-pg",
+        "exit_code": 0,
+        "log_sha256": "08c5d2bc6ada7505f965feedf8de33e599dd2bc75d0b706dff6a4f0b29f89a28"
+      },
+      {
+        "name": "pytest",
+        "exit_code": 0,
+        "log_sha256": "aa0518f5794d94532621c934038d5d854ec35968d3138a5ad8a028ed846a729b"
+      }
+    ]
+  },
+  "final_owner_checks": {
+    "revision": "47e7314cb8ef9f370e887c7ba6707ef3168ddfa0",
+    "scope": "Owner checks; -P is not a harness-replayed command. PYTHONPATH only checkout/src.",
+    "checks": [
+      {
+        "name": "ruff",
+        "command": [
+          "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+          "-m",
+          "ruff",
+          "check",
+          "."
+        ],
+        "exit_code": 0,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "name": "collection-and-contracts",
+        "command": [
+          "C:\\Users\\rudtn\\zeus\\.venv\\Scripts\\python.exe",
+          "-P",
+          "-m",
+          "pytest",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_autonomous.py",
+          "tests/test_autonomous_roles.py",
+          "tests/test_operation.py",
+          "tests/test_dge.py",
+          "tests/test_architecture.py",
+          "--junitxml=D:\\workspaces\\zeus\\artifacts\\autonomous-dge-001\\final-checks\\focused.xml"
+        ],
+        "exit_code": 0,
+        "sha256": "c208dea05b0cb7d6ee1b91c1cd8b25e84cdc7e1c795f32e114ba6b98687ac2ad"
+      }
+    ]
+  }
+}

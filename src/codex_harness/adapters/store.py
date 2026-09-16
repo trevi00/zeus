@@ -31,6 +31,21 @@ class MemoryTransaction:
         return [{"id": key, "body": deepcopy(value)}
                 for (name, key), value in sorted(self.data.items()) if name == bucket and key > after][:limit]
 
+    def graph(self):
+        """Graph-write port (INV-AUTONOMOUS-001): nodes and edges live in the same draft as documents."""
+        return MemoryGraph(self)
+
+
+class MemoryGraph:
+    def __init__(self, tx):
+        self.tx = tx
+
+    def put_node(self, node: dict) -> None:
+        self.tx.put("knowledge_nodes", node["id"], node)
+
+    def put_edge(self, source: str, target: str, kind: str) -> None:
+        self.tx.put("knowledge_edges", source + "->" + target + ":" + kind, {"source": source, "target": target, "kind": kind})
+
 
 class MemoryStore:
     def __init__(self):
@@ -70,6 +85,28 @@ class PostgresTransaction:
         return [{"id": row[0], "body": row[1]} for row in self.conn.execute(
             "SELECT id,body FROM documents WHERE bucket=%s AND id>%s ORDER BY id LIMIT %s",
             (bucket, after, limit)).fetchall()]
+
+    def graph(self):
+        """Graph-write port on the same connection and transaction as the documents (INV-AUTONOMOUS-001):
+        a rollback of the receipt rolls the nodes and edges back with it."""
+        return PostgresGraph(self.conn)
+
+
+class PostgresGraph:
+    def __init__(self, conn):
+        self.conn = conn
+
+    def put_node(self, node: dict) -> None:
+        # A promoted namespace row is only ever updated by its own namespace, never by index_python
+        # or project_runtime (they delete within their own repository values only).
+        self.conn.execute("""INSERT INTO knowledge_nodes(id,repository,kind,body,source_ref,revision,properties)
+            VALUES (%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET body=excluded.body,source_ref=excluded.source_ref,
+            revision=excluded.revision,properties=excluded.properties WHERE knowledge_nodes.repository=excluded.repository""",
+                          (node["id"], node["repository"], node["kind"], json.dumps(node["body"], sort_keys=True),
+                           node["source_ref"], node["revision"], Jsonb(node["properties"])))
+
+    def put_edge(self, source: str, target: str, kind: str) -> None:
+        self.conn.execute("INSERT INTO knowledge_edges VALUES (%s,%s,%s) ON CONFLICT DO NOTHING", (source, target, kind))
 
 
 class PostgresStore:

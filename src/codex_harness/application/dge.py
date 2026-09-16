@@ -41,9 +41,12 @@ class DebateSessions:
         self.store, self.clock = store, clock
 
     # ----- register -----------------------------------------------------------------------
-    def register(self, packet: dict, repository: str, sources: list) -> dict:
+    def register(self, packet: dict, repository: str, sources: list, *, origin: str = ORIGIN, owner: str | None = None,
+                 binding: dict | None = None) -> dict:
         """`packet` is the validated normalized packet; `sources` are the Git-verified bindings the
-        adapter produced for it. Same id, digest and repository replays the saved row."""
+        adapter produced for it. Same id, digest and repository replays the saved row. An `owner`
+        (INV-AUTONOMOUS-001: the autonomous run id) makes the session executor-bound: only that owner
+        may submit events; `binding` is the researcher execution provenance stored beside the row."""
         digest_value = packet_digest(packet)
         verified = sorted((s["id"], s["sha256"]) for s in sources)
         if verified != sorted((s["id"], s["sha256"]) for s in packet["sources"]):
@@ -65,7 +68,8 @@ class DebateSessions:
                 self._check_replacement(tx, packet)
             row = {"id": packet["id"], "schema": packet["schema"], "packet_digest": digest_value,
                    "repository": repository, "base_revision": packet["base_revision"], "plan": packet["plan"],
-                   "objective": packet["objective"], "packet": packet, "origin": ORIGIN,
+                   "objective": packet["objective"], "packet": packet, "origin": origin, "owner": owner,
+                   "research_binding": binding,
                    "version": 0, "round": 1, "max_rounds": packet["limits"]["max_rounds"],
                    "deadline": packet["limits"]["deadline"], "state": "proposal",
                    "supersedes": packet["supersedes"], "research_reason": packet["research_reason"],
@@ -94,20 +98,23 @@ class DebateSessions:
             raise DgeRefused("supersedes_already_replaced")
 
     # ----- submit ---------------------------------------------------------------------------
-    def submit(self, session_id: str, document: dict) -> dict:
+    def submit(self, session_id: str, document: dict, *, owner: str | None = None, binding: dict | None = None) -> dict:
         """One transaction for the stage, event and history change. A refusal raised inside rolls
         everything back; the expiry refusal is the one committed write and is raised afterwards."""
         event = validate_event(document)
         with self.store.transaction() as tx:
-            result = self._submit(tx, session_id, event, event_digest(event), self.clock())
+            result = self._submit(tx, session_id, event, event_digest(event), self.clock(), owner, binding)
         if isinstance(result, DgeRefused):
             raise result  # the expired state is committed; the deadline is never refreshed
         return result
 
-    def _submit(self, tx, session_id, event, digest_value, now):
+    def _submit(self, tx, session_id, event, digest_value, now, owner=None, binding=None):
         session = tx.get(SESSIONS, session_id)
         if session is None:
             raise DgeRefused("unknown_session")
+        if session.get("owner") != owner:
+            # An executor-owned session takes no operator-submitted events and vice versa.
+            raise DgeRefused("session_owned")
         existing = tx.get(EVENTS, self._event_key(session_id, event["id"]))
         if existing is not None:
             # Exact replay (interrupted client retry) is idempotent before any version check.
@@ -142,7 +149,7 @@ class DebateSessions:
                                    known_finding_ids={f["id"] for f in registry})
         outcome = self._apply(session, event, payload, current, now)
         row = {"id": self._event_key(session_id, event["id"]), "event_id": event["id"], "session_id": session_id,
-               "digest": digest_value, "event": event, "origin": ORIGIN, "round": event["round"],
+               "digest": digest_value, "event": event, "origin": session["origin"], "binding": binding, "round": event["round"],
                "role": event["role"], "version_before": event["expected_version"],
                "version_after": session["version"], "recorded_at": now}
         tx.put(EVENTS, row["id"], row)
@@ -212,7 +219,7 @@ class DebateSessions:
                 "round": session["round"], "max_rounds": session["max_rounds"], "deadline": session["deadline"],
                 "version": session["version"], "packet_digest": session["packet_digest"],
                 "repository": session["repository"], "base_revision": session["base_revision"],
-                "origin": session["origin"], "supersedes": session["supersedes"],
+                "origin": session["origin"], "owner": session.get("owner"), "supersedes": session["supersedes"],
                 "counts": {"events": len([h for h in session["history"] if h.get("event_id")]),
                            "findings": len(session.get("findings") or []),
                            "resolved": len(_by_status(session.get("findings") or [], "resolved")),

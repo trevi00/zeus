@@ -12,6 +12,7 @@ from __future__ import annotations
 from codex_harness.application.dge import DgeRefused, design_gate
 from codex_harness.application.evidence_inspection import EvidenceInspections
 from codex_harness.application.local_cycle import LocalCycle
+from codex_harness.domain.dge import expired
 from codex_harness.domain.model import ContractError, digest, envelope, require, utcnow
 from codex_harness.domain.operation import (
     ACTION,
@@ -48,6 +49,16 @@ class EvidenceGateRefused(OperationRefused):
     pass
 
 
+class DeadlineRefused(OperationRefused):
+    """INV-AUTONOMOUS-001: the caller's absolute deadline passed before a provider start; the slot
+    is never reserved and the deadline is never reset or extended by the operation."""
+
+
+def default_labels(model: str):
+    """Ledger provider labels: the worker task is the Claude implementer, a decision is Codex routing."""
+    return lambda kind, agent: ("claude", model) if kind == "task" else ("codex", "model_routing")
+
+
 class DesignGateRefused(OperationRefused):
     """INV-DGE-001: a v2 manifest without an approved design bound to exactly this plan; raised
     inside the claim transaction, so no operation, cycle or outbox row is written."""
@@ -61,21 +72,26 @@ class BudgetedExecutor:
     reported; the provider itself never reserves again.
     """
 
-    def __init__(self, executor, budget, ceilings: dict, purpose: str, model: str, gate=None):
+    def __init__(self, executor, budget, ceilings: dict, purpose: str, model: str, gate=None, labels=None, before=None):
         self.executor, self.budget, self.ceilings = executor, budget, ceilings
         self.purpose, self.model, self.gate = purpose, model, gate
+        # `labels(kind, agent)` names the actual provider and model of each start for the ledger;
+        # `before(kind, agent)` runs ahead of every reservation (deadline check), never after one.
+        self.labels, self.before = labels or default_labels(model), before
         self.slots: list[dict] = []
 
     def _call(self, kind, agent, expected, call):
+        if self.before is not None:
+            self.before(kind, agent)
         if kind == "decision" and self.gate is not None:
             self.gate(expected)  # before the reservation, before any provider entry
+        provider, model = self.labels(kind, agent)
         try:
             slot = self.budget.reserve(per_host=self.ceilings["per_host"], total=self.ceilings["total"],
-                                       purpose=self.purpose + ":" + kind, provider="claude" if kind == "task" else "codex",
-                                       model=self.model if kind == "task" else "model_routing")
+                                       purpose=self.purpose + ":" + kind, provider=provider, model=model)
         except ContractError as exc:
             raise BudgetRefused("budget_exhausted") from exc
-        record = {"id": slot["id"], "kind": kind, "agent": agent, "reserved_at": slot.get("reserved_at"),
+        record = {"id": slot["id"], "kind": kind, "agent": agent, "provider": provider, "reserved_at": slot.get("reserved_at"),
                   "outcome": None, "settled": False}
         self.slots.append(record)
         outcome, error = "exception", None
@@ -123,11 +139,11 @@ class Operation:
                 **{k: row.get(k) for k in keys}}
 
     # ----- claim --------------------------------------------------------------------------
-    def claim(self, manifest: dict, identity: dict, goal: dict) -> dict:
+    def claim(self, manifest: dict, identity: dict, goal: dict, deadline: str | None = None) -> dict:
         """Atomically own the id, record the binding and queue the assignment in the outbox."""
         operation_id, correlation, cycle = manifest["id"], correlation_id(manifest), cycle_id(manifest)
         binding = {"manifest_sha256": manifest_digest(manifest), "identity": identity, "goal": goal}
-        message = self._assignment(manifest)
+        message = self._assignment(manifest, deadline)
         with self.service.store.transaction() as tx:
             old = tx.get(BUCKET, operation_id)
             if old is not None:
@@ -147,6 +163,7 @@ class Operation:
                 except DgeRefused as exc:
                     raise DesignGateRefused(exc.reason_code) from exc
             row = {"id": operation_id, "status": "running", "reason_code": None, **binding, "design": design,
+                   "deadline": deadline,
                    "correlation_id": correlation, "cycle_id": cycle, "assignment_message_id": message["message_id"],
                    "max_executions": MAX_EXECUTIONS, "task_id": None, "decision_id": None, "lead_accepted": None,
                    "calls": {"reserved": 0, "settled": 0, "slots": []}, "evidence": {}, "cycle": None,
@@ -163,7 +180,7 @@ class Operation:
         return {"row": row, "cached": False}
 
     @staticmethod
-    def _assignment(manifest) -> dict:
+    def _assignment(manifest, deadline: str | None = None) -> dict:
         details = {"plan": {k: manifest["plan"][k] for k in ("objective", "acceptance_criteria", "allowed_paths")},
                    "operation": {"id": manifest["id"], "manifest_sha256": manifest_digest(manifest),
                                  "goal": dict(manifest["goal"]), "base_revision": manifest["base_revision"]}}
@@ -176,6 +193,9 @@ class Operation:
                             "allowed_paths": list(manifest["plan"]["allowed_paths"])}
         message["how"] = {**message["how"], "acceptance_criteria": list(manifest["plan"]["acceptance_criteria"])}
         message["why"] = {"objective": manifest["plan"]["objective"], "evidence_refs": []}
+        if deadline is not None:
+            # The caller's remaining absolute deadline travels with the assignment; it is never reset here.
+            message["when"] = {**message["when"], "deadline": deadline}
         return message
 
     # ----- evidence gate ------------------------------------------------------------------
@@ -213,14 +233,22 @@ class Operation:
                 "source_revision": candidate["revision"]}
 
     # ----- run ----------------------------------------------------------------------------
-    def run(self, manifest: dict, identity: dict, goal: dict, ceilings: dict | None = None) -> dict:
-        claimed = self.claim(manifest, identity, goal)
+    def run(self, manifest: dict, identity: dict, goal: dict, ceilings: dict | None = None,
+            deadline: str | None = None, clock=utcnow, labels=None) -> dict:
+        """`deadline` (aware ISO 8601, optional) is checked by `clock` before every provider start;
+        a passed deadline ends `failed`/`deadline_expired` without a reservation and is never reset."""
+        claimed = self.claim(manifest, identity, goal, deadline)
         if claimed["cached"]:
             return {**self._receipt(claimed["row"]), "cached": True, "exit_code": 0 if claimed["row"]["status"] == "accepted" else 1}
         row = claimed["row"]
         require(self.executor is not None and self.budget is not None, "Operation run needs an executor and a call budget")
+
+        def before(kind, agent):
+            if deadline is not None and expired(deadline, clock()):
+                raise DeadlineRefused("deadline_expired")
         wrapped = BudgetedExecutor(self.executor, self.budget, ceilings or manifest["budget"],
-                                   "operation:" + manifest["id"], manifest["claude"]["model"], gate=self.evidence_gate)
+                                   "operation:" + manifest["id"], manifest["claude"]["model"], gate=self.evidence_gate,
+                                   labels=labels, before=before)
         cycle = LocalCycle(self.service, wrapped, self.bus, self.workflow)
         outcome = {"status": "unknown", "reason_code": "no_terminal_outcome"}
         idle, steps = 0, []
@@ -258,6 +286,8 @@ class Operation:
                 return {"status": "exhausted", "reason_code": "budget_exhausted"}
             if reason == "exception:EvidenceGateRefused":
                 return {"status": "failed", "reason_code": "evidence_gate_refused"}
+            if reason == "exception:DeadlineRefused":
+                return {"status": "failed", "reason_code": "deadline_expired"}
             if reason.startswith("execution_") or reason.startswith("exception:") or reason in {
                     "retry", "failed", "blocked", "expired", "superseded", "inspection_blocked", "cancelled"}:
                 return {"status": "failed", "reason_code": reason}
@@ -314,7 +344,7 @@ class Operation:
             current.update(status=status, reason_code=reason, lead_accepted=lead_accepted,
                            task_id=evidence.pop("task_id", None), decision_id=outcome.get("decision_id"),
                            calls={"reserved": len(wrapped.slots), "settled": sum(s["settled"] for s in wrapped.slots),
-                                  "slots": [{k: s.get(k) for k in ("id", "kind", "agent", "outcome", "settled", "settle_error")}
+                                  "slots": [{k: s.get(k) for k in ("id", "kind", "agent", "provider", "outcome", "settled", "settle_error")}
                                             for s in wrapped.slots]},
                            evidence=evidence, cycle=handoff, collection=collection, steps=steps,
                            updated_at=utcnow(), finished_at=utcnow())
