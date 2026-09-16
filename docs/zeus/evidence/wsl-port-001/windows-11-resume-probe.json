@@ -1,0 +1,125 @@
+{
+ "label": "windows-11",
+ "plan": {
+  "ways": [
+   "pause",
+   "stop",
+   "restart"
+  ],
+  "cycles_per_way": 4
+ },
+ "cycles": [
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.333,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "pause",
+   "cycle": 0
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.341,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "pause",
+   "cycle": 1
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.36,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "pause",
+   "cycle": 2
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.343,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "pause",
+   "cycle": 3
+  },
+  {
+   "first_healthy_after": 2.011,
+   "first_answer_after": 2.031,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": true,
+   "way": "stop",
+   "cycle": 0
+  },
+  {
+   "first_healthy_after": 2.0,
+   "first_answer_after": 2.012,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": true,
+   "way": "stop",
+   "cycle": 1
+  },
+  {
+   "first_healthy_after": 2.013,
+   "first_answer_after": 2.024,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": true,
+   "way": "stop",
+   "cycle": 2
+  },
+  {
+   "first_healthy_after": 2.033,
+   "first_answer_after": 2.042,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": true,
+   "way": "stop",
+   "cycle": 3
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.811,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "restart",
+   "cycle": 0
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.807,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "restart",
+   "cycle": 1
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.783,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "restart",
+   "cycle": 2
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.872,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "gate_would_have_been_wrong": false,
+   "way": "restart",
+   "cycle": 3
+  }
+ ],
+ "cycles_where_health_was_green_before_the_first_answer": 4,
+ "cycles_where_a_request_was_refused_after_health_went_green": 0,
+ "widest_gap_seconds": 0.02,
+ "note": "measured on the resume paths the interruption tests use; the start path is gated by _await_service and is not what this measures"
+}
