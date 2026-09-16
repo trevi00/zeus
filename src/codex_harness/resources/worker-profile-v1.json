@@ -2,7 +2,7 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "5cee400a5b61fe235e562dea3a6f4eacfd549bd7426e96cb9a2d802725d2fb41",
+  "document_sha256": "f7596f61984f5d6668dd56ff9ddadc52d33e6b4793c45319e3b0753b2e2d965f",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "5498b27724a68662053b2e2e8949392ca6ba880bc6d8b83e3a9ddfa38ee5f1c2",
   "character_limit": 6000,
@@ -68,6 +68,15 @@
       "pinned_sha256": "c65582cce1480d72181b1d0fca8f25b7a7142a016900a738f52f35256ed6dcf7",
       "scope": "investigation guidance adapted; upstream anecdotes are documentary claims, not Zeus measurements",
       "disposition": "Selected principles rewritten for bounded worker investigation; no upstream executable, global settings, fixed path guards or automatic retry rules adopted"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/code-quality.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "0b0abaf2d89bdc597b32660b7dccd05c6c552b20",
+      "pinned_sha256": "0c23345fb447a53ad089ec73be685de50b99793084b5549de46c1e3cd5e0bfa9",
+      "scope": "Sibling discovery and existing-authority reuse principles, adapted with the user's SSOT/migration requirements; no upstream execution or behavioral effectiveness claim",
+      "disposition": "Principles rewritten for the existing worker-v1 profile; private incident claims, numeric thresholds, blanket abstraction rules and upstream automation are not adopted"
     }
   ],
   "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."
