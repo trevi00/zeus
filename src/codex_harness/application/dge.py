@@ -48,15 +48,19 @@ class DebateSessions:
         verified = sorted((s["id"], s["sha256"]) for s in sources)
         if verified != sorted((s["id"], s["sha256"]) for s in packet["sources"]):
             raise DgeRefused("source_verification_incomplete")
-        now = self.clock()
-        if expired(packet["limits"]["deadline"], now):
-            raise DgeRefused("packet_expired")
         with self.store.transaction() as tx:
             old = tx.get(SESSIONS, packet["id"])
             if old is not None:
+                # Exact replay returns the historical row without mutation, even past the deadline;
+                # it reauthorizes nothing: submit and the claim gate check expiry themselves.
                 if old["packet_digest"] == digest_value and old["repository"] == repository:
                     return {"session": old, "cached": True}
                 raise DgeRefused("packet_conflict")
+            # The clock is read inside the transaction, after any wait for the store lock and
+            # immediately before the new row is written; a refusal here writes nothing.
+            now = self.clock()
+            if expired(packet["limits"]["deadline"], now):
+                raise DgeRefused("packet_expired")
             if packet["supersedes"] is not None:
                 self._check_replacement(tx, packet)
             row = {"id": packet["id"], "schema": packet["schema"], "packet_digest": digest_value,
@@ -65,7 +69,7 @@ class DebateSessions:
                    "version": 0, "round": 1, "max_rounds": packet["limits"]["max_rounds"],
                    "deadline": packet["limits"]["deadline"], "state": "proposal",
                    "supersedes": packet["supersedes"], "research_reason": packet["research_reason"],
-                   "rounds": {}, "deferred": [], "unresolved": [], "research_question": None,
+                   "rounds": {}, "findings": [], "deferred": [], "unresolved": [], "research_question": None,
                    "decision_event_id": None, "history": [],
                    "sources_verified": [{k: s[k] for k in ("id", "path", "sha256", "bytes")} for s in sources],
                    "registered_at": now, "updated_at": now, "finished_at": None}
@@ -127,10 +131,15 @@ class DebateSessions:
         if event["role"] != PHASE_ROLE[session["state"]]:
             raise DgeRefused("role_out_of_order")
         current = session["rounds"].setdefault(str(session["round"]), {})
+        registry = session.setdefault("findings", [])
+        # Unresolved findings persist into the next round even when its attacker omits them; the
+        # arbiter must cover the union of carried and current findings (owner review R1).
+        carried = [f for f in registry if f["status"] == "blocking"]
         payload = validate_payload(event["role"], event["payload"],
                                    claim_ids={c["id"] for c in session["packet"]["claims"]},
                                    criteria=session["plan"]["acceptance_criteria"],
-                                   findings=current.get("findings") or [])
+                                   findings=carried + (current.get("findings") or []),
+                                   known_finding_ids={f["id"] for f in registry})
         outcome = self._apply(session, event, payload, current, now)
         row = {"id": self._event_key(session_id, event["id"]), "event_id": event["id"], "session_id": session_id,
                "digest": digest_value, "event": event, "origin": ORIGIN, "round": event["round"],
@@ -155,19 +164,25 @@ class DebateSessions:
             entry["outcome"] = "critique"
         elif role == "attacker":
             current["findings"] = payload["findings"]
+            # Session-wide registry: identity, criterion and severity are fixed at first record.
+            session["findings"].extend({"id": f["id"], "round": event["round"], "criterion": f["criterion"],
+                                        "severity": f["severity"], "status": "open", "decisions": []}
+                                       for f in payload["findings"])
             session["state"] = "arbitration"
             entry["outcome"] = "arbitration"
         else:
             transition = verdict_transition(payload["verdict"], event["round"], session["max_rounds"])
+            records = {f["id"]: f for f in session["findings"]}
             current["arbitration"] = {"event_id": event["id"], "verdict": payload["verdict"],
-                                      "dispositions": payload["dispositions"]}
-            severity = {f["id"]: f["severity"] for f in current.get("findings") or []}
-            session["deferred"] = session["deferred"] + [
-                {"round": event["round"], "finding_id": d["finding_id"], "severity": severity[d["finding_id"]]}
-                for d in payload["dispositions"] if d["decision"] == "deferred"]
-            session["unresolved"] = [{"round": event["round"], "finding_id": d["finding_id"],
-                                      "severity": severity[d["finding_id"]]}
-                                     for d in payload["dispositions"] if d["decision"] == "blocking"]
+                                      "dispositions": payload["dispositions"],
+                                      "carried": [f["id"] for f in session["findings"] if f["status"] == "blocking"]}
+            for disposition in payload["dispositions"]:
+                record = records[disposition["finding_id"]]
+                record["status"] = disposition["decision"]  # every earlier decision stays in `decisions`
+                record["decisions"].append({"round": event["round"], "event_id": event["id"],
+                                            "decision": disposition["decision"]})
+            session["deferred"] = _by_status(session["findings"], "deferred")
+            session["unresolved"] = _by_status(session["findings"], "blocking")
             session["state"], session["round"] = transition["state"], transition["round"]
             if payload["verdict"] == "needs_research":
                 session["research_question"] = payload["research_question"]
@@ -199,8 +214,11 @@ class DebateSessions:
                 "repository": session["repository"], "base_revision": session["base_revision"],
                 "origin": session["origin"], "supersedes": session["supersedes"],
                 "counts": {"events": len([h for h in session["history"] if h.get("event_id")]),
+                           "findings": len(session.get("findings") or []),
+                           "resolved": len(_by_status(session.get("findings") or [], "resolved")),
                            "deferred": len(session["deferred"]), "unresolved": len(session["unresolved"]),
                            "sources_verified": len(session["sources_verified"])},
+                "unresolved_finding_ids": [u["finding_id"] for u in session["unresolved"]],
                 "research_question_present": session["research_question"] is not None,
                 "decision_event_id": session["decision_event_id"],
                 "history": [{k: h.get(k) for k in ("event_id", "role", "round", "version", "outcome", "at")}
@@ -210,6 +228,12 @@ class DebateSessions:
                               "identities and formal knowledge promotion are not implemented"),
                 "registered_at": session["registered_at"], "updated_at": session["updated_at"],
                 "finished_at": session["finished_at"]}
+
+
+def _by_status(findings: list, status: str) -> list:
+    """Session-wide view of findings in one status; `round` is the round that raised the finding."""
+    return [{"round": f["round"], "finding_id": f["id"], "severity": f["severity"]}
+            for f in findings if f["status"] == status]
 
 
 def design_gate(tx, design: dict, *, repository: str, base_revision: str, plan: dict, now: str) -> dict:

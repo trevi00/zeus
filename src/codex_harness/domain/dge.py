@@ -239,8 +239,13 @@ def event_digest(event: dict) -> str:
     return digest(event)
 
 
-def validate_payload(role: str, payload: dict, *, claim_ids: set, criteria: list, findings: list) -> dict:
-    """Strict per-role payload; `findings` are the current round's attacker findings (arbiter only)."""
+def validate_payload(role: str, payload: dict, *, claim_ids: set, criteria: list, findings: list,
+                     known_finding_ids: set = frozenset()) -> dict:
+    """Strict per-role payload. `known_finding_ids` are every finding id already recorded in the
+    session (attacker only): a finding's identity, content and severity are fixed for the session, so
+    no later round may reuse an id to replace or downgrade it. `findings` are the open findings the
+    arbiter must cover (arbiter only): the unresolved findings carried from earlier rounds plus the
+    current round's findings, each named exactly once."""
     if role == "proposer":
         _fields(payload, {"summary", "claim_ids"}, "Proposer payload", EventError)
         if not _text(payload["summary"]):
@@ -256,6 +261,8 @@ def validate_payload(role: str, payload: dict, *, claim_ids: set, criteria: list
             _fields(finding, FINDING_FIELDS, "Attacker finding", EventError)
             if not _token(finding["id"]) or finding["id"] in ids:
                 raise EventError("Attacker finding ids must be distinct safe tokens")
+            if finding["id"] in known_finding_ids:
+                raise EventError("Attacker finding id reuses a finding already recorded in this session")
             if finding["criterion"] not in criteria:
                 raise EventError("Attacker finding criterion must be an exact plan acceptance item")
             if finding["severity"] not in SEVERITIES or not _text(finding["scenario"]):
@@ -282,7 +289,7 @@ def validate_payload(role: str, payload: dict, *, claim_ids: set, criteria: list
         _fields(disposition, DISPOSITION_FIELDS, "Arbiter disposition", EventError)
         finding_id = disposition["finding_id"]
         if finding_id not in severity or finding_id in seen:
-            raise EventError("Arbiter dispositions must name each finding of this round exactly once")
+            raise EventError("Arbiter dispositions must name each open finding (carried and current) exactly once")
         if disposition["decision"] not in DECISIONS or not _text(disposition["reason"], 4000):
             raise EventError("Arbiter disposition needs a decision of resolved, deferred or blocking and a reason")
         if disposition["decision"] == "deferred" and severity[finding_id] == "critical":
@@ -290,7 +297,8 @@ def validate_payload(role: str, payload: dict, *, claim_ids: set, criteria: list
         seen.add(finding_id)
         out.append({"finding_id": finding_id, "decision": disposition["decision"], "reason": disposition["reason"]})
     if seen != set(severity):
-        raise EventError("Arbiter dispositions must name each finding of this round exactly once")
+        # A carried unresolved finding the current attacker omitted still needs an explicit decision.
+        raise EventError("Arbiter dispositions must name each open finding (carried and current) exactly once")
     if payload["verdict"] == "accept" and any(d["decision"] == "blocking" for d in out):
         raise EventError("Arbiter cannot accept with a blocking finding")
     return {"verdict": payload["verdict"], "rationale": payload["rationale"], "dispositions": out,
@@ -321,6 +329,9 @@ def design_gate_reason(session, design: dict, *, repository: str, base_revision:
         return "design_needs_research"
     if session.get("state") != "design_approved":
         return "design_not_approved"
+    if session.get("unresolved"):
+        # Defence in depth: an approved row that still carries an unresolved finding never authorizes.
+        return "design_unresolved"
     if session.get("repository") != repository:
         return "design_repository_mismatch"
     if session.get("base_revision") != base_revision:

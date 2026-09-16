@@ -101,6 +101,29 @@ Verdicts: `accept` -> `design_approved` (not verified), `reject` -> `rejected`, 
 -> `needs_research` (a new packet with `supersedes` and `research_reason` that answers the exact
 question may follow; the prior row stays), `revise` -> next round or `exhausted` at `max_rounds`.
 
+## Findings across rounds
+
+A finding is recorded once for the whole session with its id, criterion and severity. Every
+finding whose last disposition is `blocking` is carried into the next round: `dge status` lists
+it under `unresolved_finding_ids`, and the next arbiter must name it again even if the round's
+attacker submits `"findings": []`. A round 2 attacker may not reuse a recorded id (for example to
+resubmit `f1` as `minor`); that event is refused and nothing is written. Round 2 arbiter closing a
+carried critical finding:
+
+```json
+{"schema": "urn:zeus:debate-event:1", "id": "r2-arbiter", "expected_version": 5,
+ "packet_digest": "<digest>", "round": 2, "role": "arbiter",
+ "payload": {"verdict": "accept", "rationale": "The round 2 proposal addresses f1.",
+             "dispositions": [{"finding_id": "f1", "decision": "resolved", "reason": "fix described in r2-proposer"}],
+             "research_question": null}}
+```
+
+`resolved` is the operator's recorded decision, not a verified fix. Critical findings can only be
+`resolved` or `blocking`; minor findings may also be `deferred` and stay counted. `accept` with a
+carried finding omitted or left `blocking` is refused; `revise` with it still `blocking` at
+`max_rounds` ends `exhausted` with the finding recorded. Earlier decisions stay in the session row
+(`findings[*].decisions` and `rounds.N.arbitration`) and are never rewritten.
+
 ## Invocation
 
 ```powershell
@@ -129,7 +152,9 @@ the packet's plan:
 cycle and the outbox assignment. Refusals before any row, assignment, reservation or provider
 start: `design_missing`, `design_digest_mismatch`, `design_needs_research`,
 `design_not_approved` (proposal, critique, arbitration, rejected, exhausted, expired),
-`design_repository_mismatch`, `design_base_mismatch`, `design_plan_mismatch`, `design_expired`.
+`design_unresolved` (an approved row still carrying an unresolved finding; unreachable through
+`dge submit`, checked anyway), `design_repository_mismatch`, `design_base_mismatch`,
+`design_plan_mismatch`, `design_expired`.
 A completed v2 operation replays its receipt without re-gating. v1 manifests stay ungated; do not
 describe the gate as universal enforcement.
 
@@ -139,11 +164,11 @@ describe the gate as universal enforcement.
 |---|---|---|
 | register | contract_refused (PacketError) | schema, type, reference, boolean, digest or deadline fault; blocking unknown question |
 | register | base_revision_missing / source_missing_at_base / source_not_regular / source_digest_mismatch | Git verification failed; nothing registered |
-| register | packet_expired / packet_conflict / source_verification_incomplete | deadline already passed; same id with another digest or repository; bindings do not cover the packet |
+| register | packet_expired / packet_conflict / source_verification_incomplete | deadline passed by the time the row would be written (clock read inside the transaction, after the lock wait); same id with another digest or repository; bindings do not cover the packet. An exact replay returns the saved row even after the deadline and authorizes nothing |
 | register | supersedes_unknown / supersedes_not_needs_research / supersedes_plan_mismatch / supersedes_question_unanswered / supersedes_already_replaced | replacement linkage refused |
 | submit | unknown_session / event_conflict / session_terminal / packet_expired | the last one persists state `expired` |
 | submit | packet_digest_mismatch / round_mismatch / stale_version / role_out_of_order | nothing written |
-| submit | contract_refused (EventError) | payload shape, criterion, claim, disposition or verdict rule |
+| submit | contract_refused (EventError) | payload shape, criterion, claim, disposition or verdict rule; reused finding id; carried finding omitted, deferred while critical, or left blocking under `accept` |
 
 ## Owner verification
 

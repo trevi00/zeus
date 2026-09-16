@@ -892,8 +892,11 @@ bytes hash to the pinned sha256, read with git argv; a missing path, symlink, tr
 byte mismatch refuses registration. Matching bytes prove provenance of the text, never its truth or
 that any fetch ran. The `dge_sessions` row records the canonical packet digest, the resolved
 repository digest, the normalized packet, `version` 0, `round` 1, state `proposal` and origin
-`operator_submitted`; the same id with the same digest and repository replays the row, any other
-same-id packet is `packet_conflict`. A replacement (`supersedes`) is accepted only for a prior
+`operator_submitted`; the same id with the same digest and repository replays the saved row
+without mutation even after the deadline (a replay reauthorizes nothing), any other same-id packet
+is `packet_conflict`. The registration clock is read inside the store transaction, after any wait
+for the lock and immediately before the new row is written, so a deadline that passes during the
+wait refuses with nothing written. A replacement (`supersedes`) is accepted only for a prior
 `needs_research` session with the same objective and plan, when the new packet answers that
 session's exact research question and no other replacement exists; the prior row is not modified
 and the new session starts with its own declared limits, never an automatic extension.
@@ -906,11 +909,18 @@ mismatch and a role out of the fixed order proposer -> attacker -> arbiter refus
 The expiry refusal is the one committed write: the session becomes `expired` and the deadline is
 never refreshed or compared as naive time. Proposer payloads name claims and cannot change the
 plan; attacker findings name an exact plan acceptance item, a severity and claims (an empty list
-is allowed and is not a proof); the arbiter names every finding of the round exactly once, cannot
-defer a critical finding, cannot accept with a blocking disposition, gives a research question
-only with `needs_research`, and moves the session to `design_approved`, `rejected`,
-`needs_research`, the next round, or `exhausted` at the round cap; terminal states are never
-reopened in place and no model is called. All three roles are operator-submitted attestations;
+is allowed and is not a proof). A finding's identity, criterion and severity are fixed for the
+session in the `findings` registry of the row: a later round that reuses a recorded finding id,
+whether to repeat, replace or downgrade it, is refused. Every finding whose last disposition is
+`blocking` is carried unresolved into the next round even when that round's attacker omits it;
+the arbiter names every open finding, carried and current, exactly once, cannot defer a critical
+finding, cannot accept with a blocking disposition, gives a research question only with
+`needs_research`, and moves the session to `design_approved`, `rejected`, `needs_research`, the
+next round, or `exhausted` at the round cap. An explicit `resolved` disposition with a reason
+closes a carried finding; every earlier decision stays in the registry and in the round record,
+and the status counts `findings`, `resolved`, `deferred` and `unresolved` plus the unresolved
+finding ids are derived from it. Terminal states are never reopened in place and no model is
+called. All three roles are operator-submitted attestations;
 the store verifies structure, sequence and the recorded decision, never model execution, citation
 truth or a "resolved" assertion. `dge status ID` reads the store only and prints digests, phase,
 round/limit, counts, history identities and the trust boundary, never packet or payload text;
@@ -918,9 +928,10 @@ refusals print a fixed reason code and type. `urn:zeus:operation:2` is v1 plus
 `design {session_id, packet_digest}`; v1 keeps its exact semantics, canonical form and ungated
 path. Inside the same transaction that first claims `operations`, `local_cycles` and the outbox,
 the named session must be `design_approved` with the same packet digest, repository digest,
-base revision and byte-identical plan and an unexpired deadline; `design_missing`,
-`design_digest_mismatch`, `design_needs_research`, `design_not_approved`,
-`design_repository_mismatch`, `design_base_mismatch`, `design_plan_mismatch` and `design_expired`
+base revision and byte-identical plan, no unresolved finding and an unexpired deadline;
+`design_missing`, `design_digest_mismatch`, `design_needs_research`, `design_not_approved`,
+`design_unresolved`, `design_repository_mismatch`, `design_base_mismatch`, `design_plan_mismatch`
+and `design_expired`
 raise `DesignGateRefused` with zero rows, assignments, reservations or provider starts. A terminal
 operation replays its saved receipt without re-gating and the gate never mutates the session. The
 design reference is copied into the assignment details and the receipt so worker and reviewer can

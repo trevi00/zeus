@@ -174,8 +174,50 @@ def test_register_is_idempotent_for_same_digest_and_refuses_conflict_expiry_and_
         svc.status("nope")
     view = svc.status("sess-1")
     assert CANARY not in json.dumps(view) and view["packet_digest"] == DIGEST and view["phase"] == "proposer"
-    assert view["counts"] == {"events": 0, "deferred": 0, "unresolved": 0, "sources_verified": 1}
+    assert view["counts"] == {"events": 0, "findings": 0, "resolved": 0, "deferred": 0, "unresolved": 0, "sources_verified": 1}
     assert "not implemented" in view["remaining"] and "attestations" in view["trust"]
+
+
+def test_registration_reads_the_clock_inside_the_transaction_after_waiting_for_the_lock():
+    """R2 regression: the holder thread keeps the store lock; the moment register reaches the lock
+    boundary the clock is moved past the deadline and the lock is released (deterministic fixture)."""
+    store, clock = MemoryStore(), Clock()
+    holding, release = threading.Event(), threading.Event()
+
+    def hold():
+        with store.transaction():
+            holding.set()
+            release.wait()
+    holder = threading.Thread(target=hold)
+    holder.start()
+    holding.wait()
+
+    class Contended:
+        def transaction(self):
+            clock.now = "2030-01-01T00:00:00+00:00"  # the deadline passes while register waits for the lock
+            release.set()
+            return store.transaction()
+    with pytest.raises(DgeRefused, match="packet_expired"):
+        DebateSessions(Contended(), clock).register(VALID, REPO, SOURCES)
+    holder.join()
+    with store.transaction() as tx:
+        assert tx.scan("dge_sessions") == [], "nothing is written for a packet whose deadline passed during the wait"
+
+
+def test_exact_registration_replay_after_the_deadline_returns_the_historical_row_without_reauthorizing():
+    clock = Clock()
+    svc, _ = registered(clock=clock)
+    before = svc.status("sess-1")
+    clock.now = "2031-01-01T00:00:00+00:00"
+    replay = svc.register(deepcopy(VALID), REPO, SOURCES)
+    assert replay["cached"] is True and svc.status("sess-1") == before, "cached replay mutates nothing"
+    with pytest.raises(DgeRefused, match="packet_conflict"):
+        svc.register(validate_packet(packet(topic="changed")), REPO, SOURCES)
+    with pytest.raises(DgeRefused, match="packet_expired"):
+        svc.register(validate_packet(packet(id="sess-late")), REPO, SOURCES)
+    with pytest.raises(DgeRefused, match="packet_expired"):
+        svc.submit("sess-1", event("proposer", 0))
+    assert svc.status("sess-1")["state"] == "expired" and svc.status("sess-1")["deadline"] == before["deadline"]
 
 
 # ----- events -----------------------------------------------------------------------------------
@@ -203,7 +245,7 @@ def test_three_events_approve_the_design_and_replays_are_idempotent():
         {"finding_id": "f1", "decision": "deferred", "reason": "tracked follow-up"}])))
     assert done["outcome"]["state"] == "design_approved" and done["session"]["terminal"] is True
     view = svc.status("sess-1")
-    assert view["counts"] == {"events": 3, "deferred": 1, "unresolved": 0, "sources_verified": 1}
+    assert view["counts"] == {"events": 3, "findings": 1, "resolved": 0, "deferred": 1, "unresolved": 0, "sources_verified": 1}
     assert view["decision_event_id"] == "arbiter-1-2" and [h["role"] for h in view["history"]] == ["proposer", "attacker", "arbiter"]
     assert CANARY not in json.dumps(view) and "summary" not in json.dumps(view)
     with pytest.raises(DgeRefused, match="session_terminal"):
@@ -270,14 +312,93 @@ def test_revise_opens_the_next_round_and_the_cap_ends_exhausted_without_retry():
         svc.submit("sess-1", event("proposer", 3, round_number=1))
     svc.submit("sess-1", event("proposer", 3, round_number=2))
     svc.submit("sess-1", event("attacker", 4, round_number=2))
-    out = svc.submit("sess-1", event("arbiter", 5, round_number=2, payload=arbiter("revise")))
+    out = svc.submit("sess-1", event("arbiter", 5, round_number=2, payload=arbiter(
+        "revise", [{"finding_id": "f1", "decision": "blocking", "reason": "still open"}])))  # carried f1 must be named
     assert out["outcome"]["state"] == "exhausted" and svc.status("sess-1")["round"] == 2
+    assert svc.status("sess-1")["counts"]["unresolved"] == 1, "the cap ends the session with the finding still recorded"
     with pytest.raises(DgeRefused, match="session_terminal"):
         svc.submit("sess-1", event("proposer", 6, round_number=3))
     svc2, _ = registered()
     svc2.submit("sess-1", event("proposer", 0))
     svc2.submit("sess-1", event("attacker", 1))
     assert svc2.submit("sess-1", event("arbiter", 2, payload=arbiter("reject")))["outcome"]["state"] == "rejected"
+
+
+def carried_session(store=None, clock=None):
+    """Round 1 (fixture): critical f1 and minor f2 both blocking, verdict revise -> round 2 proposal."""
+    svc = sessions(store, clock)
+    svc.register(VALID, REPO, SOURCES)
+    svc.submit("sess-1", event("proposer", 0))
+    svc.submit("sess-1", event("attacker", 1, payload={"findings": [finding("f1", "critical"), finding("f2", "minor")]}))
+    svc.submit("sess-1", event("arbiter", 2, payload=arbiter("revise", [
+        {"finding_id": "f1", "decision": "blocking", "reason": "no fix yet"},
+        {"finding_id": "f2", "decision": "blocking", "reason": "needs a scenario"}])))
+    assert svc.status("sess-1")["counts"]["unresolved"] == 2 and svc.status("sess-1")["unresolved_finding_ids"] == ["f1", "f2"]
+    svc.submit("sess-1", event("proposer", 3, round_number=2))
+    return svc
+
+
+def test_unresolved_findings_carry_into_the_next_round_and_silent_omission_never_approves():
+    """Owner review R1: round 2 submits zero findings, then tries to accept with zero dispositions."""
+    svc = carried_session()
+    svc.submit("sess-1", event("attacker", 4, round_number=2, payload={"findings": []}))
+    assert svc.status("sess-1")["counts"]["unresolved"] == 2, "an attacker that omits carried findings does not drop them"
+    for payload, match in [
+            (arbiter("accept"), "exactly once"),  # the reported omission
+            (arbiter("accept", [{"finding_id": "f1", "decision": "resolved", "reason": "r"}]), "exactly once"),  # f2 omitted
+            (arbiter("accept", [{"finding_id": "f1", "decision": "blocking", "reason": "r"},
+                                {"finding_id": "f2", "decision": "resolved", "reason": "r"}]), "blocking finding"),
+            (arbiter("accept", [{"finding_id": "f1", "decision": "deferred", "reason": "r"},
+                                {"finding_id": "f2", "decision": "resolved", "reason": "r"}]), "defer a critical"),
+            (arbiter("revise", [{"finding_id": "f1", "decision": "blocking", "reason": "r"}]), "exactly once")]:
+        with pytest.raises(EventError, match=match):
+            svc.submit("sess-1", event("arbiter", 5, round_number=2, payload=payload))
+        view = svc.status("sess-1")
+        assert view["state"] == "arbitration" and view["version"] == 5 and view["counts"]["unresolved"] == 2
+    done = svc.submit("sess-1", event("arbiter", 5, round_number=2, payload=arbiter("accept", [
+        {"finding_id": "f1", "decision": "resolved", "reason": "explicit fix recorded in round 2 proposal"},
+        {"finding_id": "f2", "decision": "deferred", "reason": "minor, tracked"}])))
+    assert done["outcome"]["state"] == "design_approved"
+    view = svc.status("sess-1")
+    assert view["counts"] == {"events": 6, "findings": 2, "resolved": 1, "deferred": 1, "unresolved": 0, "sources_verified": 1}
+    assert view["unresolved_finding_ids"] == [] and view["decision_event_id"] == "arbiter-2-5"
+    with svc.store.transaction() as tx:
+        row = tx.get("dge_sessions", "sess-1")
+    assert row["rounds"]["1"]["arbitration"]["dispositions"][0]["decision"] == "blocking", "round 1 history is preserved"
+    assert row["rounds"]["2"]["arbitration"]["carried"] == ["f1", "f2"] and row["rounds"]["2"]["findings"] == []
+    assert [d["decision"] for d in row["findings"][0]["decisions"]] == ["blocking", "resolved"]
+    assert row["findings"][0]["severity"] == "critical" and row["findings"][0]["round"] == 1
+    assert len(row["history"]) == 6 and "explicit fix" not in json.dumps(view)
+
+
+def test_finding_id_reuse_cannot_replace_or_downgrade_a_recorded_finding():
+    svc = carried_session()
+    for findings in ([finding("f1", "minor")], [finding("f1", "critical")], [finding("f2", "minor")],
+                     [finding("f3", "minor"), finding("f1", "minor")]):
+        with pytest.raises(EventError, match="reuses a finding"):
+            svc.submit("sess-1", event("attacker", 4, round_number=2, payload={"findings": findings}))
+        assert svc.status("sess-1")["version"] == 4 and svc.status("sess-1")["state"] == "critique"
+    svc.submit("sess-1", event("attacker", 4, round_number=2, payload={"findings": [finding("f3", "minor")]}))
+    with pytest.raises(EventError, match="exactly once"):
+        svc.submit("sess-1", event("arbiter", 5, round_number=2, payload=arbiter("accept", [
+            {"finding_id": "f3", "decision": "resolved", "reason": "r"}])))  # current only, carried omitted
+    done = svc.submit("sess-1", event("arbiter", 5, round_number=2, payload=arbiter("accept", [
+        {"finding_id": "f1", "decision": "resolved", "reason": "r"}, {"finding_id": "f2", "decision": "resolved", "reason": "r"},
+        {"finding_id": "f3", "decision": "resolved", "reason": "r"}])))
+    assert done["outcome"]["state"] == "design_approved" and svc.status("sess-1")["counts"]["resolved"] == 3
+    with svc.store.transaction() as tx:
+        row = tx.get("dge_sessions", "sess-1")
+    assert [f["id"] for f in row["findings"]] == ["f1", "f2", "f3"] and row["findings"][0]["severity"] == "critical"
+    # a resolved or deferred id is just as fixed: no later round records it again (fresh session, cap 3)
+    svc2, digest_value = registered(doc=packet(**{"limits.max_rounds": 3}))
+    svc2.submit("sess-1", event("proposer", 0, digest_value=digest_value))
+    svc2.submit("sess-1", event("attacker", 1, digest_value=digest_value, payload={"findings": [finding("f1", "minor")]}))
+    svc2.submit("sess-1", event("arbiter", 2, digest_value=digest_value, payload=arbiter("revise", [
+        {"finding_id": "f1", "decision": "deferred", "reason": "r"}])))
+    svc2.submit("sess-1", event("proposer", 3, round_number=2, digest_value=digest_value))
+    with pytest.raises(EventError, match="reuses a finding"):
+        svc2.submit("sess-1", event("attacker", 4, round_number=2, digest_value=digest_value, payload={"findings": [finding("f1", "critical")]}))
+    assert svc2.status("sess-1")["counts"] == {"events": 4, "findings": 1, "resolved": 0, "deferred": 1, "unresolved": 0, "sources_verified": 1}
 
 
 def test_needs_research_stops_and_only_a_matching_replacement_keeps_linkage():
@@ -490,6 +611,29 @@ def test_unapproved_stale_or_expired_sessions_never_authorize_a_claim(stage, cod
         operation.run(manifest_v2(**{"design.packet_digest": digest_value}), IDENTITY, BOUND_GOAL)
     with harness.store.transaction() as tx:
         assert tx.scan("operations") == [] and tx.scan("outbox") == []
+
+
+def test_carried_findings_resolved_in_a_later_round_authorize_the_claim_and_unresolved_rows_never_do():
+    harness = Harness(MemoryStore(), organization())
+    svc = carried_session(harness.store)
+    svc.submit("sess-1", event("attacker", 4, round_number=2, payload={"findings": []}))
+    operation = Operation(harness, NeverExecutor(), None, None, NeverBudget(), None)
+    with pytest.raises(DesignGateRefused, match="design_not_approved"):
+        operation.run(manifest_v2(), IDENTITY, BOUND_GOAL)
+    svc.submit("sess-1", event("arbiter", 5, round_number=2, payload=arbiter("accept", [
+        {"finding_id": "f1", "decision": "resolved", "reason": "r"}, {"finding_id": "f2", "decision": "resolved", "reason": "r"}])))
+    claimed = Operation(harness).claim(manifest_v2(), IDENTITY, BOUND_GOAL)
+    assert claimed["cached"] is False and claimed["row"]["design"]["decision_event_id"] == "arbiter-2-5"
+    # Defence in depth (injected fixture, not a reachable state): an approved row still carrying an
+    # unresolved finding is refused by the gate itself.
+    with harness.store.transaction() as tx:
+        session = tx.get("dge_sessions", "sess-1")
+        session["unresolved"] = [{"round": 1, "finding_id": "f1", "severity": "critical"}]
+        tx.put("dge_sessions", "sess-1", session)
+    with pytest.raises(DesignGateRefused, match="design_unresolved"):
+        operation.run(manifest_v2(id="op-v2-again"), IDENTITY, BOUND_GOAL)
+    with harness.store.transaction() as tx:
+        assert [o["id"] for o in tx.scan("operations")] == ["op-v2"] and len(tx.scan("outbox")) == 1
 
 
 def test_approved_design_past_its_deadline_refuses_new_claims_but_a_finished_operation_replays():
