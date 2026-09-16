@@ -71,6 +71,9 @@ def test_the_packaged_profile_verifies_and_carries_its_provenance():
     profile = load_profile("worker-v1")
     assert profile["id"] == "worker-v1" and profile["characters"] <= module.MAX_CHARACTERS
     assert "Verification before completion" in profile["document"]
+    # review-contract-001: executed commands and result descriptions are kept apart in the answer.
+    assert "`tests` holds only the exact commands you actually executed" in profile["document"]
+    assert "No arrows, results, pass counts" in profile["document"]
     assert {source["source"] for source in profile["sources"]} == {"baldrix", "harness", "guardian"}
     assert all(source["pinned_sha256"] and source["commit"] for source in profile["sources"])
     assert all(rule.startswith("Bash(") for rule in profile["permissions_allow"])

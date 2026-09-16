@@ -428,6 +428,31 @@ property of the output, never a replacement. Inspections are ledger rows bound t
 generation, attempt, owner and revision; a recording failure is a notice, never a success; and
 a checked inspection is deterministic evidence, never historical truth, semantic review, human
 acceptance, SDD acceptance or model qualification.
+
+A Python replay runs the trusted host interpreter, the verified absolute `sys.executable` of the
+harness, never the first token the model wrote: authorization is decided on the original claim
+argv, and only an authorized `python -m ...` claim has its first token replaced; every other
+authorized command runs exactly as claimed, no policy prefix is widened, and a claim naming an
+absolute or other interpreter stays unauthorized. The finding keeps the original argv, the
+effective argv, whether they are identical and the reason they differ. A missing or unverifiable
+interpreter is a refusal before any child starts. The snapshot is taken per workspace and binds
+the interpreter, the normalized cwd, a PYTHONPATH that is the candidate's `src` only when it
+exists (the parent's PYTHONPATH and the harness's own secrets are never inherited) and the digest
+of the environment values; the replay runs under exactly that snapshot whatever the parent
+environment has become since, and the ledger key includes it, so a changed cwd, value or
+interpreter is a new inspection and an older row is neither reused nor overwritten. A worker's
+`tests` answer holds only commands that were executed, one per string; results, skips and unrun
+work are stated in `summary`, and past claims are parsed as written, never leniently reinterpreted.
+
+An independent review runs in a clean checkout at the candidate commit. The transport's read-only
+instructions, the repository's AGENTS.md and the executor's post-run checks say the same thing: no
+file in that checkout is created, modified or deleted, tracked or untracked; test output is read
+from stdout, never redirected into the checkout; the one concise review frame and verdict live in
+the response and tool output that Zeus preserves in its artifact store outside the checkout; and a
+dirty checkout or a moved HEAD is refused, never cleaned. The host, not the model, names the
+trusted interpreter and the review checkout (with its `src` when present) in the reviewer's
+context, so the tests a reviewer runs exercise the candidate under review. A model run's
+permission settings are not claimed as an isolation guarantee.
 ## INV-SEAM-VIEW-001
 
 A seam view is a deterministic projection of recorded observations and comparisons, never a

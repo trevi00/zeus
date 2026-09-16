@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from codex_harness.adapters.app_server import AppServer
+from codex_harness.adapters.app_server import READ_ONLY_INSTRUCTIONS, AppServer
 from codex_harness.domain.model import ContractError
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,7 +90,24 @@ def test_actual_startup_failure_overrides_verdict_and_preserves_evidence(monkeyp
     assert observed[:2] == [event, event]
     options = next(p for m, p in requests if m == 'thread/start')
     assert options['sandbox'] == 'danger-full-access' and options['approvalPolicy'] == 'never'
-    assert 'do not edit tracked source' in options['developerInstructions']
+    assert options['developerInstructions'] == READ_ONLY_INSTRUCTIONS
+
+
+def test_read_only_instructions_match_the_clean_checkout_rule_on_start_and_resume(monkeypatch):
+    """review-contract-001: the reviewer is told, before its first tool call, exactly what the executor
+    checks afterwards: nothing created or modified in the checkout, tracked or untracked; the frame and
+    verdict go to the response and stdout that Zeus preserves outside the checkout."""
+    for phrase in ('tracked or untracked', 'no frame files', 'redirected test output', 'stdout',
+                   'outside the checkout', 'do not commit, push, merge or deploy', 'named owner or CI'):
+        assert phrase in READ_ONLY_INSTRUCTIONS, phrase
+    _, requests, *_ = replay(monkeypatch, finish())
+    started = next(params for method, params in requests if method == 'thread/start')
+    assert started['developerInstructions'] == READ_ONLY_INSTRUCTIONS
+    _, requests, *_ = replay(monkeypatch, finish(), thread_id='thread')
+    resumed = next(params for method, params in requests if method == 'thread/resume')
+    assert resumed['developerInstructions'] == READ_ONLY_INSTRUCTIONS and resumed['threadId'] == 'thread'
+    _, requests, *_ = replay(monkeypatch, finish(), read_only=False)
+    assert 'developerInstructions' not in next(params for method, params in requests if method == 'thread/start')
 
 
 @pytest.mark.parametrize('change', [{'exitCode': 0, 'status': 'completed'},
