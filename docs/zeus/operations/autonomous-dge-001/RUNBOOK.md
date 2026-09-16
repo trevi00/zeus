@@ -67,7 +67,12 @@ uv run zeus --repository C:\Users\rudtn\zeus autonomous status <id>
 
 Exit 0 only for accepted (or cached accepted). Refusals print `status`, `reason_code`, `error_type`.
 
-## Limitations for the owner canary
+## Verification scope and limitations
+
+Owner live result: [RESULT.md](RESULT.md) and [CANARY.json](CANARY.json). The six-start canary
+completed research, independent debate, Claude implementation, independent review and real PG
+provenance promotion; a fresh process returned cached acceptance without new calls. The bullets
+below distinguish implementation-worker checks from owner verification.
 
 - Not run by the worker: real Claude/Codex executions, Redis, PostgreSQL (`tests/test_dge_postgres.py`
   style checks for `PostgresGraph`), CI on both platforms, the six-start canary. Separate
@@ -89,13 +94,15 @@ Exit 0 only for accepted (or cached accepted). Refusals print `status`, `reason_
   test-run and clean-checkout observations in `ssot.evidence`. Local preflight accepts a broader
   dialect than the provider, so provider acceptance of this shape is proven only by the next real
   role run; `if/then` and `allOf` are not used.
-- Next canary: run collection as `python -P -m pytest` with only the checkout `src` on `PYTHONPATH`
-  (no repository-root injection); GitHub CI runs the console entrypoint. The host's application
-  control refusing `pytest.exe` (WinError 4551) is a host policy, not a code defect. The three
-  `tests.test_operation` import lines stay as they are for the real canary task.
+- Canary worker commands use the existing replay allow-list (`python -m pytest`). The owner
+  separately checked collection as `python -P -m pytest` with only checkout `src` on `PYTHONPATH`;
+  GitHub CI runs the console entrypoint. The host's application control refusing `pytest.exe`
+  (WinError 4551) is a host policy, not a code defect. The three sibling imports were corrected
+  by the real canary. No host security or replay authority was widened.
 - Evidence provenance is checked against the artifact store and `invocation_reservations`; the real
   executor's artifact shape (`answer`, `invocation.reservation`, `research_binding`, `thread_id`) was
-  traced in code, not exercised by a live run.
+  traced in code and subsequently exercised by the owner's canary, including candidate-bound
+  independent review. This does not prove the semantic truth of arbitrary future outputs.
 - Role provider routing uses the packaged default (Codex, app_server); the `dge_role` action has no
   Claude assignment rule. Role `invocations` are counted from `invocation_reservations` per task.
 - Provenance proves which execution produced the bytes, not that citations are true.
