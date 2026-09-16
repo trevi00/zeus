@@ -36,3 +36,11 @@ Allowed paths: src/codex_harness/application/goal_progress.py; src/codex_harness
 ## Bounded execution and completion
 
 One real Claude call (900s, declared USD3 option not spending guarantee) plus one real Codex review (300s). Keep all prior 21 call slots; cumulative cap 23. New schema/cycle goal-progress-001 max_executions=2, persistent PG/Redis retained. No automatic model retry or budget extension. On accepted candidate, owner verifies full suite, records actual read-only report of pinned real tickets (open means zero completion), publishes PR and makes merge judgment. Failure remains recorded and batch stops. This completes the goal-metric/admission residual, not the remaining operator-script automation or whole-asset adoption.
+
+## Authorized continuation: goal-progress-002
+
+User continued after the preserved budget failure. Keep all 22 machine slots and the failed goal-progress-001 schema intact. New cycle/schema goal-progress-002, one Claude completion call and one Codex reviewer call, cumulative cap 24, same limits and matrix. Existing draft 2765e59 passed independent PG/Redis 1940 tests (20 skipped), focused PG 41/41 and CI 10/10. Reuse this evidence for unchanged code. No new features or expanded acceptance.
+
+Claude starts from the complete preserved draft; finish and submit, do not rewrite. Run the two focused commands and return promptly. Only correct a material mismatch within the fixed matrix if actually found. Clarify the existing operations wording: reports validate consistency of trusted closure records, do not reverify signatures/artifact bytes and cannot authenticate arbitrary comparison files. A consistent malicious rewrite of the trusted database is not detected by this report. This wording correction can be the submission diff if runtime needs no changes.
+
+Reviewer must evaluate the complete existing six-path feature against the fixed matrix, not only the final documentation delta. The feature began at base 9d503d0; the preserved implementation is already in the candidate base. Read current goal_progress.py, dispatch and CLI paths plus their tests and contract. Do not assume the inherited draft was independently accepted. No full suite in the model session; owner owns full verification and CI.
