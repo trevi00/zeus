@@ -2,6 +2,7 @@
 from copy import deepcopy
 from uuid import uuid4
 
+from codex_harness.application.goal_progress import admit_dispatch, validate_manifest
 from codex_harness.domain.model import ContractError, digest, envelope, require, utcnow
 
 TEXT_FIELDS = ("title", "problem", "impact", "rollback")
@@ -151,8 +152,11 @@ class Tickets:
             tx.put("ticket_reviews", identity, row)
             return row
 
-    def dispatch(self, ticket_id, expected_revision, repository_revision):
+    def dispatch(self, ticket_id, expected_revision, repository_revision, goal_manifest=None, criterion_id=None):
         require(bool(repository_revision), "Repository revision required")
+        # INV-GOAL-PROGRESS-001: goal binding is opt-in; unbound dispatch keeps its key and output.
+        require((goal_manifest is None) == (criterion_id is None), "Goal manifest and criterion are required together")
+        goal = validate_manifest(goal_manifest) if goal_manifest is not None else None
         with self.store.transaction() as tx:
             ticket = tx.get("tickets", ticket_id)
             require(ticket and ticket["revision"] == expected_revision, "Stale ticket dispatch")
@@ -160,7 +164,8 @@ class Tickets:
             if ticket.get("lifecycle_sequence", 0):
                 bound["lifecycle_sequence"] = ticket["lifecycle_sequence"]
             ticket_binding(tx, {"zeus_ticket": bound})
-            key = digest(bound)
+            goal_binding = admit_dispatch(tx, goal, criterion_id, bound) if goal is not None else None
+            key = digest(bound) if goal_binding is None else digest({"zeus_ticket": bound, "goal_binding": goal_binding})
             previous = tx.get("ticket_dispatches", key)
             if previous:
                 return previous
@@ -170,6 +175,8 @@ class Tickets:
             details = {"objective": content["title"] + "\n" + content["problem"],
                        "acceptance_criteria": content["acceptance_criteria"], "zeus_ticket": bound,
                        "ticket_context": content, "ticket_reviews": reviews}
+            if goal_binding is not None:
+                details["goal_binding"] = goal_binding
             observations = sorted((r for r in tx.scan("ticket_remote_observations")
                                    if r["ticket_id"] == ticket_id), key=lambda r: (r["at"], r["id"]))
             details["external_ticket_observations"] = observations[-10:]
@@ -183,6 +190,8 @@ class Tickets:
             tx.put("outbox", message["message_id"], {"message": message, "sent": False})
             result = {"id": key, "ticket_id": ticket_id, "revision": expected_revision,
                       "message_id": message["message_id"], "status": "queued_for_planning"}
+            if goal_binding is not None:
+                result["goal_binding"] = goal_binding
             tx.put("ticket_dispatches", key, result)
             tx.put("tickets", ticket_id, {**ticket, "status": "dispatched"})
             return result

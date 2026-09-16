@@ -1,0 +1,131 @@
+{
+  "status": "unaccepted_draft",
+  "task_id": "7cd2ecb3-6b70-4d77-9de7-f2cb30e35030",
+  "task_status": "retry",
+  "error": "ExecutionFailure: claude-provider-budget-exhausted",
+  "cycle": {
+    "id": "goal-progress-001",
+    "status": "stopped",
+    "in_flight": null,
+    "created_at": "2026-09-16T11:16:53.958017+00:00",
+    "executions": 1,
+    "updated_at": "2026-09-16T11:22:04.876605+00:00",
+    "correlation_id": "goal-progress-001",
+    "last_execution": {
+      "agent": "worker:implementation",
+      "kind": "task",
+      "id": "7cd2ecb3-6b70-4d77-9de7-f2cb30e35030",
+      "status": "retry",
+      "claimed": true,
+      "result_id": "7cd2ecb3-6b70-4d77-9de7-f2cb30e35030",
+      "at": "2026-09-16T11:22:04.876595+00:00"
+    },
+    "max_executions": 2,
+    "stopped_reason": "execution_retry"
+  },
+  "observations": {
+    "files": 1,
+    "records": 53,
+    "inserted": 53,
+    "duplicates": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "refused": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0,
+    "confirmed_audits": 2,
+    "sink_failures": 0,
+    "reclaimed_segments": 0,
+    "pruned_runs": 0,
+    "pruned_files": 0,
+    "alerts_replayed": 0,
+    "per_file": [
+      {
+        "file": "cd4ebe2f39694644adff77f33c47ef00.0000.jsonl",
+        "from_offset": 0,
+        "to_offset": 69414,
+        "records": 53,
+        "inserted": 53,
+        "confirmed_audits": 2
+      }
+    ]
+  },
+  "live_measurement": {
+    "candidate_status": "unaccepted draft from failed provider call",
+    "definition_hash": "23f9ee4bbf35b36bbc9627de71871de000593a83abb951515ed98f6f7512a171",
+    "metrics": {
+      "total": 2,
+      "resolved": 0,
+      "reopened": 0,
+      "missing": 0,
+      "stale": 0,
+      "unverified": 0,
+      "remaining": 2,
+      "completion_ratio": 0.0
+    },
+    "comparison": {
+      "authority": "observation_only",
+      "goal_id": "zeus-asset-provider-gates",
+      "definition_hash": "23f9ee4bbf35b36bbc9627de71871de000593a83abb951515ed98f6f7512a171",
+      "gained": [],
+      "regressed": [],
+      "net_resolved": 0
+    },
+    "database_unchanged": true,
+    "readonly_server": true,
+    "budget": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 22,
+      "all_hosts": 22,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "provider_calls": 0,
+    "manifest_sha256": "62574043b1f4be1e8e03c17b1881770388b26aa2462de8ecfc28f8fbef08a558"
+  },
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\goal-progress-001",
+  "files": [
+    {
+      "path": "worker-001/receipt.json",
+      "sha256": "ad20ef7248b97b84a05d504349bf274f6faff6074748e767212209b42623de89",
+      "bytes": 16952
+    },
+    {
+      "path": "draft-files.json",
+      "sha256": "c5dccb12035da60c315819f51e746fa99f38145097b67bb7cfa39fba67aac494",
+      "bytes": 845
+    },
+    {
+      "path": "focused-pg.log",
+      "sha256": "1c70fd526b255296ba78079d57a5f314663460012b70b6daf3b17d64a55b7523",
+      "bytes": 101
+    },
+    {
+      "path": "live-manifest.json",
+      "sha256": "62574043b1f4be1e8e03c17b1881770388b26aa2462de8ecfc28f8fbef08a558",
+      "bytes": 1084
+    },
+    {
+      "path": "live-check.json",
+      "sha256": "58dd4f8391232e25b25604a0c471d1aeac4961fc777d2892c9509bb99bb9a5ff",
+      "bytes": 994
+    },
+    {
+      "path": "before.json",
+      "sha256": "ce253f196d0eb699ed7edcd444beaa0301de8cc8a0f43a14e0f9daaaba0b1bdd",
+      "bytes": 1331
+    },
+    {
+      "path": "after.json",
+      "sha256": "ce253f196d0eb699ed7edcd444beaa0301de8cc8a0f43a14e0f9daaaba0b1bdd",
+      "bytes": 1331
+    }
+  ],
+  "goal_residuals_resolved": 0,
+  "reviewer_calls": 0,
+  "limitations": [
+    "No successful worker submission or evidence replay verdict.",
+    "No model reviewer acceptance or merge.",
+    "Full-suite and CI recorded in draft PR when completed."
+  ]
+}

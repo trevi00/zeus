@@ -306,6 +306,9 @@ def parser() -> argparse.ArgumentParser:
             sub.add_argument("--revision", type=int)
         if name in {"update", "review", "dispatch"}:
             sub.add_argument("--revision", type=int, required=True)
+        if name == "dispatch":
+            sub.add_argument("--goal-manifest", type=Path, help="Goal manifest JSON; requires --criterion")
+            sub.add_argument("--criterion", help="Criterion id in the goal manifest; requires --goal-manifest")
         if name == "update":
             sub.add_argument("--file", type=Path, required=True)
             sub.add_argument("--reason", required=True)
@@ -338,7 +341,33 @@ def parser() -> argparse.ArgumentParser:
             sub.add_argument("--reason", required=True)
             sub.add_argument("--expected-state", choices=["closed", "open", "dispatched"], default="closed",
                              help="Use open/dispatched explicitly to reconcile a new external close")
+    goal = commands.add_parser("goal", help="Goal manifest progress: read-only report and same-definition compare")
+    goal_commands = goal.add_subparsers(dest="goal_command", required=True)
+    report = goal_commands.add_parser("report", help="Observe criterion closure state; no completion authority")
+    report.add_argument("manifest", type=Path)
+    compare = goal_commands.add_parser("compare", help="Gained/regressed criteria between two reports of one definition")
+    compare.add_argument("before", type=Path)
+    compare.add_argument("after", type=Path)
     return p
+
+
+def _json_file(path):
+    try:
+        require(path.stat().st_size <= 1024 * 1024, "Goal file exceeds budget")
+        return json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise ContractError("Goal file unavailable") from exc
+    except json.JSONDecodeError as exc:
+        raise ContractError("Goal file is not valid JSON") from exc
+
+
+def goal_command(service, args):
+    # INV-GOAL-PROGRESS-001: store read only; no executor, observer, bus or provider is built.
+    from codex_harness.application.goal_progress import GoalProgress, compare_reports
+    if args.goal_command == "report":
+        emit(GoalProgress(service.store).report(_json_file(args.manifest)))
+    else:
+        emit(compare_reports(_json_file(args.before), _json_file(args.after)))
 
 
 def ticket_command(service, args):
@@ -360,8 +389,10 @@ def ticket_command(service, args):
     elif command == "export" or (command == "sync" and args.preview):
         print(render_ticket(tickets.get(args.ticket_id)), end="")
     elif command == "dispatch":
+        manifest = _json_file(args.goal_manifest) if args.goal_manifest is not None else None
         executor = build_executor(service)
-        emit(tickets.dispatch(args.ticket_id, args.revision, executor.git._git("rev-parse", "HEAD")))
+        emit(tickets.dispatch(args.ticket_id, args.revision, executor.git._git("rev-parse", "HEAD"),
+                              goal_manifest=manifest, criterion_id=args.criterion))
     elif command in {"evidence", "prepare-close", "close", "reopen", "review-close"}:
         from codex_harness.adapters.ticket_cli import execute
         emit(execute(tickets, args))
@@ -471,8 +502,13 @@ def main() -> None:
             if not result["passed"] or result.get("live_passed") is False:
                 raise SystemExit(1)
             return
+        if args.command == "goal" and args.goal_command == "compare":
+            goal_command(None, args)
+            return
         service = build()
-        if args.command == "init-db":
+        if args.command == "goal":
+            goal_command(service, args)
+        elif args.command == "init-db":
             receipt = service.store.migrate()
             emit({"migrated": True, "applied": receipt["applied"], "already_applied": receipt["already_applied"], "tool": receipt["tool"]})
         elif args.command == 'execution-recovery':

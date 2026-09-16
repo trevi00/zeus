@@ -798,6 +798,37 @@ raw errors, messages, settings and candidate paths are never emitted. An unknown
 generated next step. The references are recorded data, not integrity-checked artifacts, and the
 view grants no approval, completion or deployment.
 
+## INV-GOAL-PROGRESS-001
+
+A goal manifest (`version` 1, `id`, `objective`, `non_goals`, 1 to 50 `criteria`) lives in Git and
+pins each criterion to one ticket id, revision and content hash; duplicate criterion ids or ticket
+bindings are rejected so one ticket cannot inflate the denominator. The definition hash is the
+digest of the whole validated manifest; a manifest with any change is a new definition and reports
+of different definitions are never compared. `GoalProgress.report` reads every needed row in one
+store transaction and writes nothing. A criterion is `missing` without its ticket or revision row,
+`stale` when the current ticket revision or hash differs, `pending` for a valid open or dispatched
+ticket, `reopened` when that ticket's verified history contains a close, and `resolved` only when
+the ticket is closed, `verify_chain` passes, the current last event is a `closed` event at the same
+revision, hash and sequence with sha256 packet and proof references, and the `ticket_closures`
+receipt for that packet names the current lifecycle event. Any other purported closure, corrupted
+revision content or broken chain is `unverified`, never resolved. Review votes, remote issue state,
+task results, commits, PRs and test counts are activity, not completion. Metrics are total,
+resolved, remaining (total minus resolved), reopened, missing, stale, unverified and
+completion_ratio; raw records and store errors are not emitted and store failures propagate.
+`compare_reports` is pure: it validates both report shapes, requires the same goal id, definition
+hash and criterion bindings, derives resolved sets from criterion statuses rather than supplied
+metrics and returns gained ids, regressed ids and net_resolved, labelled `observation_only`.
+Goal-bound `Tickets.dispatch` (optional `goal_manifest` with `criterion_id`, required together)
+validates the manifest and the selected criterion inside the existing dispatch transaction before
+any write: the dispatched ticket binding must equal the criterion binding and the criterion must be
+pending or reopened; a missing, stale, unverified, resolved or unmapped selection refuses without an
+outbox, task or dispatch write. The goal binding (goal id, definition hash, criterion id) is added
+to the plan details and the returned dispatch, and the goal-bound dispatch id covers the ticket
+binding plus the goal binding so an earlier unbound or other-goal dispatch is never replayed for
+it. Unbound dispatch keeps its key and output and is not claimed to enforce goal discipline. The
+chain check is not signature re-verification; the existing close path remains the only closure
+authority, and no report, comparison or binding grants completion, permission, merge or deploy.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
