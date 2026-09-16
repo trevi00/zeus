@@ -1,13 +1,50 @@
 name: Windows and Linux validation
+# Routing design: docs/zeus/operations/ci-separation-001/SPEC.md. Branch pushes no longer run a
+# duplicate suite; pull requests and main pushes keep the full matrix unless the change set is
+# only operations Markdown, and `CI gate` fails closed on anything unexpected.
 on:
-  push:
   pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+# Same-PR runs supersede each other; main pushes and manual runs get a unique group and never cancel.
+concurrency:
+  group: validation-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.scope.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - id: scope
+        run: python scripts/ci_scope.py classify
+  docs:
+    needs: changes
+    if: needs.changes.outputs.mode == 'docs'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/ci_scope.py docs-check
   test:
+    needs: changes
+    if: needs.changes.outputs.mode == 'full'
     strategy:
       fail-fast: false
       matrix:
@@ -32,6 +69,8 @@ jobs:
       - run: uv run python -m zeus ticket --help
       - run: uv run zeus-monitor --help
   integration:
+    needs: changes
+    if: needs.changes.outputs.mode == 'full'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,3 +90,16 @@ jobs:
           ZEUS_TEST_DOCKER: '1'
       - if: always()
         run: docker compose -p harness-ci down --volumes
+  gate:
+    name: CI gate
+    if: always()
+    needs: [changes, docs, test, integration]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/ci_scope.py gate
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
