@@ -20,6 +20,13 @@ OPEN_DECISION = {"pending", "retry", "running"}
 STOP_STATES = {"retry", "failed", "blocked", "expired", "superseded", "inspection_blocked", "cancelled"}
 MESSAGE_DRAIN = 16
 
+# INV-CYCLE-HANDOFF-001: the read-only projection names only these stored fields.
+HANDOFF_SCHEMA = "urn:zeus:cycle-handoff:1"
+CYCLE_FIELDS = ("id", "correlation_id", "status", "max_executions", "executions", "in_flight",
+                "stopped_reason", "last_execution", "created_at", "updated_at")
+TARGET_BUCKETS = {"task": "tasks", "decision": "decisions_pending"}
+CANDIDATE_FIELDS = ("base", "revision", "tree", "diff_hash")
+
 
 class LocalCycle:
     """One correlation, one executor start per step, counts that survive restart."""
@@ -52,6 +59,27 @@ class LocalCycle:
             row = tx.get("local_cycles", cycle_id)
         require(row is not None, "Unknown cycle")
         return row
+
+    def handoff(self, cycle_id: str) -> dict:
+        """Read-only view for the next operating session (INV-CYCLE-HANDOFF-001).
+
+        One read transaction over the cycle row and the CURRENT row its last_execution addresses.
+        Nothing is written, published, opened, probed, reset or executed; the target is an
+        observation of the row as stored now, never proof of what the historical execution did.
+        """
+        with self.service.store.transaction() as tx:
+            row = tx.get("local_cycles", cycle_id)
+            require(row is not None, "Unknown cycle")
+            last = row.get("last_execution")
+            kind = last.get("kind") if isinstance(last, dict) else None
+            target_id = last.get("id") if isinstance(last, dict) else None
+            bucket = TARGET_BUCKETS.get(kind) if isinstance(kind, str) else None
+            target = tx.get(bucket, target_id) if bucket and isinstance(target_id, str) else None
+        cycle = {key: row.get(key) for key in CYCLE_FIELDS}
+        return {"schema": HANDOFF_SCHEMA, "authority": "observation_only", "automatic_resume": False,
+                "cycle": cycle,
+                "remaining_executions": max(0, cycle["max_executions"] - cycle["executions"]),
+                "target_record": _target_record(cycle["correlation_id"], last, kind, target_id, target)}
 
     # ----- one turn -----------------------------------------------------------------------
     def step(self, cycle_id: str) -> dict:
@@ -232,3 +260,42 @@ class LocalCycle:
 def _correlation(row) -> str | None:
     message = row.get("message")
     return message.get("correlation_id") if isinstance(message, dict) else None
+
+
+def _target_record(correlation, last, kind, target_id, target) -> dict:
+    """Availability of the current target row plus whitelisted metadata only when it matches.
+    Task input, prompt, summary, output, raw error, messages, settings and paths never leave."""
+    head = {"kind": kind if isinstance(kind, str) else None,
+            "id": target_id if isinstance(target_id, str) else None}
+    if not isinstance(last, dict):
+        return {"availability": "none", **head}
+    if kind not in TARGET_BUCKETS:
+        return {"availability": "unsupported_kind", **head}
+    if target is None:
+        return {"availability": "missing", **head}
+    if _correlation(target) != correlation:
+        return {"availability": "correlation_mismatch", **head}
+    result = target.get("result")
+    result = result if isinstance(result, dict) else {}
+    candidate = result.get("candidate")
+    candidate = ({key: _string(candidate.get(key)) for key in CANDIDATE_FIELDS}
+                 if isinstance(candidate, dict) else None)
+    inspection = result.get("evidence_inspection")
+    accepted = result.get("accepted") if kind == "decision" else None
+    return {"availability": "found", **head,
+            "status": _string(target.get("status")),
+            "attempt": _integer(target.get("attempt")),
+            "generation": _integer(target.get("generation")),
+            "phase": _string(target.get("phase")),
+            "result": {"candidate": candidate,
+                       "execution_ref": _string(result.get("execution_ref")),
+                       "evidence_verdict": _string(inspection.get("verdict")) if isinstance(inspection, dict) else None,
+                       "accepted": accepted if isinstance(accepted, bool) else None}}
+
+
+def _string(value) -> str | None:
+    return value if isinstance(value, str) else None
+
+
+def _integer(value) -> int | None:
+    return value if type(value) is int else None
