@@ -2,7 +2,7 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "77a7aed2366a4b1c3c8fb642f9f3abebc6ae273a9b76661602035dcd34ce6632",
+  "document_sha256": "5cee400a5b61fe235e562dea3a6f4eacfd549bd7426e96cb9a2d802725d2fb41",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "5498b27724a68662053b2e2e8949392ca6ba880bc6d8b83e3a9ddfa38ee5f1c2",
   "character_limit": 6000,
@@ -59,6 +59,15 @@
       "pinned_sha256": "9286e27c95965839fd4c04e8ac22b66426cb412b23517e5cf8c3a7ec46ce4fa8",
       "scope": "principles adapted; no upstream executable installed",
       "disposition": "principles rewritten in the document; no upstream text copied, no upstream executable installed"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/investigation-discipline.md",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "18e96fe309f708637fe995aaacc00dff7a3dfd86",
+      "pinned_sha256": "c65582cce1480d72181b1d0fca8f25b7a7142a016900a738f52f35256ed6dcf7",
+      "scope": "investigation guidance adapted; upstream anecdotes are documentary claims, not Zeus measurements",
+      "disposition": "Selected principles rewritten for bounded worker investigation; no upstream executable, global settings, fixed path guards or automatic retry rules adopted"
     }
   ],
   "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."

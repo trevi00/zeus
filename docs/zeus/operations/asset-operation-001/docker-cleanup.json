@@ -1,0 +1,68 @@
+{
+  "raw_receipt": "D:\\workspaces\\zeus\\artifacts\\docker-operation-001\\receipt.json",
+  "sha256": "b26dde34d3a39191c1095504b256254cecb2121ed285c37a03a603d343a57586",
+  "removed_containers": [
+    {
+      "id": "c773bbeac7df51fb6a5670d0a7cdb26b4280eb67404f670047b896b5a830afeb",
+      "name": "zeus-outbox-test-37930b58a2ed44d89b87bfdab29a1ce4",
+      "archive_sha256": "9fab40d436538a7ec487e4cafa96cc4e4328b7144ae960ddd993f8bd21f67d18",
+      "archive_bytes": 20516521
+    },
+    {
+      "id": "d19d810d84c528f83a3926d6daef476ef0c034a3b02ae353f5d94d86d3c03f39",
+      "name": "zeus-ticket-ledger-before-fixed-port-d19d810d84",
+      "archive_sha256": "336d14d2d9772fc41acfab64bdbd7810cb27f792226939ed5c26c87fbf114523",
+      "archive_bytes": 202481288
+    },
+    {
+      "id": "c9d50bb77d6daa0bdcd95f07f5aaf801fa33d44a30588493b049f13e86b19e92",
+      "name": "codex-harness-validation-redis-1",
+      "archive_sha256": "a92a5201b93a1f661329a270a97e6436d84b9321c3f1ac2849c74d8d6dbcfaf3",
+      "archive_bytes": 20516536
+    },
+    {
+      "id": "d60fcfe5aae6d9c161ed498b10b26af442412f9c51647897cfb49f3b76c8166d",
+      "name": "codex-harness-validation-postgres-1",
+      "archive_sha256": "070d7327584b87c9351b70ff848dbd85d891a907be76d172378a2a04c2aba3ce",
+      "archive_bytes": 202481329
+    },
+    {
+      "id": "e2a36ab6fbbee0b91eebe47637faca568ec5b0593230cbfaa863468b54c63e11",
+      "name": "harness-kafka",
+      "archive_sha256": "e744a5cacb00c8ebff214865bbc4a9addb27503880299f6d8021b9ce8a90cf45",
+      "archive_bytes": 249038640
+    },
+    {
+      "id": "7c5588d2cc0ca6b1d48acafddc60b8416b570b2950172bf60fcc874ba6763411",
+      "name": "harness-researcher",
+      "archive_sha256": "c69a0377d35583d47b6ffb948881bc68296d9832c9e0f9ade1bec72ae70e3e62",
+      "archive_bytes": 21551246
+    },
+    {
+      "id": "967558937c74174724561b0d73ba773f3e6a0e2c7a5313a4ff326f8f08dfca5f",
+      "name": "harness-dba",
+      "archive_sha256": "df500a416501cc2cbfd8c3f9692424f96582394e3d69e1ce289ec1bbb7aa11de",
+      "archive_bytes": 33384737
+    },
+    {
+      "id": "5435f348495c533a5a486a8ff560467efdc509b711e25137543658469ece3d5b",
+      "name": "harness-pg",
+      "archive_sha256": "dbc4aacc80039bbc4a31b8521441430d2584370e4535b9206320a881146ee0e5",
+      "archive_bytes": 147003920
+    }
+  ],
+  "archive_bytes": 896974217,
+  "volumes_preserved": 79,
+  "removed_networks": [
+    "codex-harness-validation_default",
+    "harness-fleet_default"
+  ],
+  "build_cache_reclaimed_docker_report": "2.764GB",
+  "verified": {
+    "original_services_uninterrupted": true,
+    "pg_healthy": true,
+    "redis_ping": "PONG",
+    "all_volumes_preserved": true
+  },
+  "limits": "Filesystem exports exclude volumes. Volumes remain on Docker. No host VHD compaction performed."
+}
