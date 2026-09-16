@@ -181,21 +181,26 @@ PR 본문에 4/24로 적은 것은 원본 JSON을 한 호스트분만 읽은 내
 말할 수 있는 것은 이 24 사이클에서 재현되지 않았다는 것뿐이고, **CI에서 B·C가 어느 경로였는지는 CI에서 재지
 않았다.**
 
-## 9. 호스트 증거 (`docs/zeus/evidence/environment-runs-025/`, head `deec4fd`)
+## 9. 호스트 증거 (`docs/zeus/evidence/environment-runs-026/`)
 
-| 호스트 | 인터프리터 | ruff | full-suite-integration | disposable-docker |
-|---|---|---|---|---|
-| Windows 11 | CPython 3.14.7 | 통과 | **1799 passed, 15 skipped** (717s) | **44 passed** (160s) |
-| WSL Ubuntu 26.04 | CPython 3.12.14 | 통과 | **1802 passed, 12 skipped** (354s) | **44 passed** (158s) |
+| 호스트 | 인터프리터 | 실행 head | ruff | full-suite-integration | disposable-docker |
+|---|---|---|---|---|---|
+| Windows 11 | CPython 3.14.7 | `55b5da9` | 통과 | **1811 passed, 20 skipped** (729s) | **44 passed** (152s) |
+| WSL Ubuntu 26.04 | CPython 3.12.14 | `9d3ab8a` | 통과 | **1810 passed, 21 skipped** (356s) | **44 passed** (159s) |
+
+**두 반쪽의 head가 다르다. 그대로 적고, 무엇이 다른지도 적는다.** `9d3ab8a..55b5da9`의 차이는
+`docs/zeus/evidence/environment-runs-025/` 삭제뿐이고, `src`·`scripts`·`tests`·`uv.lock`·`pyproject.toml`은
+**차이가 없다**(`git diff --stat 9d3ab8a 55b5da9 -- src scripts tests uv.lock pyproject.toml`이 비어 있다).
+그러므로 두 실행의 runtime은 같다. 같은 근거를 만들지 못했을 때는 다시 돌린다 — 앞선 024가 그 경우였다.
 
 두 호스트 로그·JUnit에서 `password=` 0건, canary 값 0건. 양쪽 모두 1회 시도에서 통과했다.
 
 Windows 인터프리터가 3.14.7인 이유는 `readiness-004` §6과 같다 — 이 PC의 uv 3.12가 애플리케이션 제어 정책에
 막혀 `_ctypes` 적재에서 실패한다. 정책을 끄거나 우회하지 않았다.
 
-**`environment-runs-024`는 남기지 않았다.** 두 호스트 반쪽이 서로 다른 head(`1750056` / `455be0c`)에서 났고,
-그 사이에 `resume_probe.py`의 작업 디렉터리 결함을 고쳤다. **한 head의 증거가 아니면 증거가 아니므로** 고친 뒤
-두 호스트를 처음부터 다시 돌린 것이 025다.
+**남기지 않은 실행 둘.** `environment-runs-024`는 두 반쪽이 서로 다른 **runtime**에서 났고(`resume_probe.py`의
+작업 디렉터리 결함을 그 사이에 고쳤다), `environment-runs-025`는 이번 세 항목 수정 **이전**의 것이다. 둘 다
+런타임의 증거가 아니므로 남기지 않고 다시 돌렸다.
 
 ## 10. 하지 않은 것
 
