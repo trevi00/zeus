@@ -53,12 +53,14 @@ def build_collector(store, observer=None):
     return Collector(store, SpoolDirectory(observation_root()), validate=validate_observation, observer=observer)
 
 
-def build_executor(service=None, observer=None):
+def build_executor(service=None, observer=None, execution_policy=None, knowledge=True):
+    """`knowledge=False` builds the executor without any knowledge adapter: no hybrid query and no
+    index_python/project_runtime write on rotate. The default (writable PostgresKnowledge) is
+    unchanged for every other caller."""
     from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.adapters.audit_runner import AuditRunner
     from codex_harness.adapters.executor import Executor
     from codex_harness.adapters.git import GitWorkspace
-    from codex_harness.adapters.knowledge import PostgresKnowledge
     from codex_harness.adapters.research import ResearchSources
 
     repository = str(repository_root())
@@ -67,7 +69,12 @@ def build_executor(service=None, observer=None):
     remote = settings().get("HARNESS_GITHUB_REPO")
     git = GitWorkspace(repository, str(runtime / "workspaces"), remote)
     service = service or build()
-    return Executor(service, git, artifacts, PostgresKnowledge(database_url()),
+    adapter = None
+    if knowledge:
+        from codex_harness.adapters.knowledge import PostgresKnowledge
+        adapter = PostgresKnowledge(database_url())
+    return Executor(service, git, artifacts, adapter,
                     ResearchSources(artifacts),
                     audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True),
-                    observer=observer or build_observer(service.store, "executor"))
+                    observer=observer or build_observer(service.store, "executor"),
+                    execution_policy=execution_policy)

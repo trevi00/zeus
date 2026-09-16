@@ -35,7 +35,11 @@ from codex_harness.domain.evidence import (
 from codex_harness.domain.model import ContractError, canonical, digest
 
 POLICY_FILE = Path(__file__).resolve().parents[1] / 'resources/evidence-policy.json'
-KEEP_ENV = ('PATH', 'SYSTEMROOT', 'SystemRoot', 'COMSPEC', 'TEMP', 'TMP', 'HOME', 'USERPROFILE', 'LANG', 'LC_ALL')
+# PROGRAMDATA (Windows OpenSSH reads its host configuration under it; goal-progress-001 isolated an
+# ssh-keygen exit 255 to its absence) joins the allowlist under both spellings the host may carry,
+# like SYSTEMROOT/SystemRoot. Its value takes part in the snapshot digest (INV-OPERATION-001).
+KEEP_ENV = ('PATH', 'SYSTEMROOT', 'SystemRoot', 'COMSPEC', 'TEMP', 'TMP', 'HOME', 'USERPROFILE', 'LANG', 'LC_ALL',
+            'PROGRAMDATA', 'ProgramData')
 
 
 def packaged_policy():

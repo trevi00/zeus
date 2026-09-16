@@ -293,6 +293,12 @@ def parser() -> argparse.ArgumentParser:
             sub.add_argument("--correlation", required=True)
             sub.add_argument("--max-executions", type=int, required=True,
                              help="Executor starts allowed through this cycle; not a billing count")
+    operate = commands.add_parser("operate", help="One bounded operation: worker, evidence gate, lead review; no conductor")
+    operate_commands = operate.add_subparsers(dest="operate_command", required=True)
+    operate_run = operate_commands.add_parser("run", help="Claim the manifest id and run it to a terminal receipt")
+    operate_run.add_argument("--file", type=Path, required=True, help="Operation manifest JSON (urn:zeus:operation:1)")
+    operate_status = operate_commands.add_parser("status", help="Read the saved receipt; store read only")
+    operate_status.add_argument("operation_id")
     ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
     ticket_commands = ticket.add_subparsers(dest="ticket_command", required=True)
     ticket_commands.add_parser("list")
@@ -427,6 +433,21 @@ def cycle_command(service, args):
             emit(cycle.step(args.cycle_id))
         finally:
             observer.close()
+
+
+def operate_command(service, args):
+    """INV-OPERATION-001: exit 0 only for an accepted (or cached accepted) receipt; failures print a
+    code and a type, never DSNs, raw exceptions, prompts, plans or environment values."""
+    from codex_harness.adapters import operation_cli
+    try:
+        receipt = (operation_cli.run(service, args) if args.operate_command == "run"
+                   else operation_cli.status(service, args))
+    except Exception as exc:
+        emit(operation_cli.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(receipt)
+    if args.operate_command == "run" and receipt.get("exit_code", 1) != 0:
+        raise SystemExit(1)
 
 
 def main() -> None:
@@ -581,6 +602,8 @@ def main() -> None:
             ticket_command(service, args)
         elif args.command == "cycle":
             cycle_command(service, args)
+        elif args.command == "operate":
+            operate_command(service, args)
         elif args.command == "observe":
             observe_command(service, args)
         elif args.command == "demo":
