@@ -1,0 +1,32 @@
+{
+  "title": "[ZEUS-CODEX] 기존 전역 하네스의 Codex 표준 변환·Zeus 무인운영 통합",
+  "problem": "후속 백로그로 등록한다. 현재 PR #101 작업과 섞거나 자동 착수하지 않는다. D:/old-projects/codex-harness(dks-codex-harness)의 Codex 자산을 현재 표준으로 가져오되 Zeus와 별도 팀 원장·메일박스·자율 반복 제어가 동시에 운영되지 않도록 통합해야 한다. #1 전체 흡수 분석의 구체적 후속이며 #11 미커밋·미추적 자산 검토와 연결된다. 현재 완료는 4,925개 경로의 목록화와 통합 설계뿐이다. 전체 의미 분석·이관·활성화는 미완료다.",
+  "impact": "전역 스킬과 훅을 그대로 설치하면 이전 계정 경로, Codex-only 팀 제어, 중복 훅, 검증되지 않은 지식 승격이 Zeus의 Claude 팀원·Redis Streams·PostgreSQL 작업 상태와 충돌할 수 있다. 분석·선정·설계·수용 판단은 Codex, 확정 명세 구현·테스트·실행 증거는 Claude가 맡는다.",
+  "rollback": "설치 전 소유 파일과 설정을 기록하고 해당 패키지가 소유한 변경만 되돌린다. 기존 사용자 config/rules·다른 플러그인·운영 상태는 보존한다. 운영 전환은 검증된 이전 버전 복구 및 stale writer 차단을 포함한다.",
+  "evidence_refs": [
+    "https://github.com/trevi00/zeus/blob/ff34e5e/docs/zeus/design/codex-standard-adoption-001/README.md",
+    "https://github.com/trevi00/zeus/blob/ff34e5e/docs/zeus/design/codex-standard-adoption-001/inventory.json",
+    "https://github.com/trevi00/zeus/issues/1",
+    "https://github.com/trevi00/zeus/issues/11"
+  ],
+  "scope": [
+    "대기 백로그. 티켓 등록은 작업 dispatch나 운영 활성화 승인이 아니다.",
+    "원본 commit/tree 및 dirty/untracked 파일 의미 검토·출처·라이선스·의존성 분석과 선정. Codex가 담당한다.",
+    "선정된 지침·스킬·역할·훅의 현재 Codex 표준 변환, 배포 manifest, 기존 개인 whole-task 정책 통합.",
+    "Zeus 단일 작업 권위: six-W/Redis Streams 전달, PostgreSQL task/attempt/lease, Git 정의와 실행 증거.",
+    "후보 컨텍스트와 승인 지식 분리, 일반·개발·운영 로그, Windows/WSL 실측, 카나리아·세션 교체·복구."
+  ],
+  "acceptance_criteria": [
+    "설계 A01–A10의 각 행에 구현·검증 증거와 미완료 사유를 매핑하고 필수 조건을 충족한다.",
+    "선정 범위의 모든 파일을 의미 검토하고 생성물·중복·미지원·보류를 근거와 함께 기록한다. 목록화만으로 전체 분석 완료를 선언하지 않는다.",
+    "현재 Codex에서 실제 스킬/훅 발견·신뢰·실행을 확인하고 기존 전역 설정과 중복 없이 설치·원복된다.",
+    "Zeus 관리 작업은 별도 GSD 팀 상태나 로컬 fallback으로 우회하지 않으며 중복 전달·stale lease·단절을 올바르게 처리한다.",
+    "실제 Codex→Claude 실행 및 증거 결속, 검증된 지식 승격, 카나리아·롤백을 확인한 뒤 독립 수용 판단으로 종료한다."
+  ],
+  "verification": [
+    "설계 문서의 A01–A10을 전체 검토표로 사용하여 한 묶음으로 검증한다.",
+    "Windows/WSL 실제 로딩·경로·인코딩·설치 멱등성·충돌·원복 검사.",
+    "실제 PG/Redis의 전달·상태·차단·복구 검사 및 필요한 실제 provider 실행 증거. fixture와 실제 실행을 구분한다.",
+    "통과 후 새 근거 없이 수용 기준을 확대하지 않는다. 설계 가정이 깨지면 같은 명세를 전체적으로 갱신한다."
+  ]
+}
