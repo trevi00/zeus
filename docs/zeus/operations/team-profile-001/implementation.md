@@ -7,8 +7,11 @@ are Codex follow-ups; nothing here is a provider measurement.
 
 - `src/codex_harness/adapters/worker_profile.py`: profile loading and verification, hook command
   quoting, settings merge, profile environment, per-session evidence directory, receipt reading.
-- `src/codex_harness/resources/worker-profile-v1.md`: the document (2819 characters, limit 6000),
-  newly written from the adapted principles; no upstream text copied.
+- `src/codex_harness/resources/worker-profile-v1.md`: the document (3052 characters, limit 6000),
+  newly written from the adapted principles; no upstream text copied. The verification section
+  makes the full suite the default and allows a task to narrow verification explicitly when the
+  lead owns the final verification; a narrowed run must report the full suite as not run, never
+  as passed.
 - `src/codex_harness/resources/worker-profile-v1.json`: manifest with id, version, document and
   hook sha256 (LF-normalized), Bash allow rules, and the four pinned sources from sources.json
   with their disposition.
@@ -44,7 +47,32 @@ are Codex follow-ups; nothing here is a provider measurement.
 - Independent PostgreSQL/Redis verification: the integration-marked tests skipped here because
   `HARNESS_INTEGRATION` was not set.
 
-## Test results in this call
+## Call history and test results
 
-See the implementation report; focused tests, Ruff and the full pytest run were executed with the
-host venv interpreter and `PYTHONPATH=src`.
+### First call (draft, not accepted)
+
+The first Claude implementation call wrote the code, tests and documents listed above and then
+timed out at the 900 second limit. Its working tree was preserved at base 34cd979 and was never
+accepted. Whatever that call ran before the deadline is not recorded here; in particular no claim
+is made that a full pytest run completed in it.
+
+### Second call (2026-09-16, this record)
+
+Scope assigned by the task: focused verification only. The full PostgreSQL/Redis suite is run
+independently by Codex and was deliberately not run in this call.
+
+Commands, run from the candidate checkout with the host venv interpreter:
+
+```
+PYTHONPATH=src python -m pytest tests/test_worker_profile.py -q
+19 passed in 12.86s        (base 34cd979, before the document change)
+19 passed in 4.40s         (after the document change and manifest re-pin)
+
+python -m ruff check .
+All checks passed!
+```
+
+Change made in this call: the profile document's verification section now states the
+full-suite default and the explicit lead-owned narrowing rule, and the manifest's
+`document_sha256` was re-pinned to the new LF-normalized digest. No adapter, hook or test code
+was changed. Full pytest: not run by this call.

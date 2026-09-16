@@ -33,7 +33,10 @@ result from the recorded evidence; nothing you write grants approval or completi
 
 A claim and its evidence are different things. Before you report that something works:
 
-- Run the focused tests for what you changed, then the full test suite, then the linter.
+- Run the focused tests for what you changed, then the full test suite, then the linter. The
+  full suite is the default. Only when the assigned task explicitly narrows verification because
+  the lead owns the final verification, run just the named commands and report the full suite as
+  not run by you, never as passed.
 - Read the actual output. A command you did not run, or whose output you did not read, has
   verified nothing.
 - Report failures as failures with their output. Report skipped tests as skipped with the
