@@ -1,0 +1,16 @@
+{
+  "id": "b1689854730e2aa79d6988f8024993027052e52462d5c145f153d25e8a0f27eb",
+  "ticket_id": "ZEUS-3875a025c20d",
+  "repository": "trevi00/zeus",
+  "number": 18,
+  "url": "https://github.com/trevi00/zeus/issues/18",
+  "state": "OPEN",
+  "title": "[FA-017] \uccab \uc7ac\uc2dc\ub3c4 \ud6c4 \uc791\uc5c5 \uc7ac\uac1c \ub204\ub77d\u00b7\ud68c\uace0 \uc0c1\ud0dc \uc720\uc2e4 \ubc29\uc9c0",
+  "purpose": "pull",
+  "evidence_ref": "sha256:101ede0bfa11a4aba7fe5389bdb58cf55dab4f727e169f91021947aa0555ba75",
+  "marker_present": true,
+  "authority": "external_observation_only",
+  "at": "2026-09-16T04:20:25.385783+00:00",
+  "first_seen": "2026-09-16T04:20:25.385783+00:00",
+  "sequence": 17
+}
