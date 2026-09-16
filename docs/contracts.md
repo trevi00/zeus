@@ -940,6 +940,30 @@ project-graph path changes. Automated research/proposer/attacker/arbiter dispatc
 role identities, independent multi-model debate and formal ontology or topology promotion are not
 implemented by this contract.
 
+## INV-AUTONOMOUS-001
+
+`zeus autonomous run --file MANIFEST` (`urn:zeus:autonomous:1`: the operation manifest plus an aware
+`deadline` and a `research` brief) runs one fixed cycle: researcher, proposer, attacker and arbiter as
+fresh `dge_role` tasks from the conductor to dedicated leads (`lead:researcher|proposer|attacker|arbiter`)
+through the outbox, bus and the existing executor claim, lease, reservation and checkpoint paths,
+read-only in a clean checkout at base with one provider entry per role; then the existing Operation v2
+implementation and review; then promotion. The `autonomous_runs` row claims the id (cached terminal
+replay, `configuration_mismatch`, `running_residue`, `residue`, `deadline_expired`) and every
+transition records its expected prior stage. Role answers bind to the persisted succeeded task row
+(agent, correlation, action, role, base revision, execution_ref, generation, attempt, output digest)
+with origin `executor_bound`; the packet and events go through the existing DGE validators and an
+owned session that `dge submit` cannot feed (`session_owned`). Critical findings need trigger, impact
+and mitigation; minor findings never block; one round, no rework, no retry, at most six executor
+starts, deadline never reset. Only an accepted operation whose worker task, accepted `review_lead`
+decision for the same candidate revision and all_checked inspection row are re-read in the same
+transaction is promoted as a bounded `verified:<run>` graph (goal, research, design, candidate,
+verification; derived_from/implements/verified_by) together with the `promotions` receipt through
+the store transaction graph port; a rollback writes neither, an identical retry is idempotent and a
+conflicting graph is refused. Promotion records verified execution/review provenance with explicit
+scope, never truth of prose, merged code or product acceptance; `knowledge=False` stays for every
+execution and `index_python`/`project_runtime` never touch the promoted namespace. Status reads the
+store only and prints digests, codes and counts.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

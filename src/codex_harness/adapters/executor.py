@@ -176,7 +176,7 @@ class Executor:
     def _run(self, agent: str, key: str, objective: str, evidence: dict, cwd: str,
              schema: dict, read_only: bool = False, heartbeat=None, lease=None, stage=None,
              workload: str = "final_validation", importance: str | None = None,
-             action: str | None = None) -> dict:
+             action: str | None = None, max_handoffs: int = 4) -> dict:
         # Codex model routing still decides every Codex model and names no other provider's model.
         # Which provider runs at all comes from the packaged policy and the host configuration;
         # the assignment message and the task details never take part (INV-CLAUDE-WORKER-001).
@@ -303,7 +303,8 @@ class Executor:
             recovery["checkpoint"] = checkpoint
         if progress and bound(progress):
             recovery["progress"] = progress
-        for handoff in range(4):
+        require(type(max_handoffs) is int and 1 <= max_handoffs <= 4, "Handoff cap must be 1..4")
+        for handoff in range(max_handoffs):
             # @invariant INV-CONTEXT-001: every actual prompt, including recovery,
             # passes the same compiler. History stays available by immutable handle.
             recovery_refs, recovery_items = {}, []
@@ -754,6 +755,10 @@ class Executor:
                 # INV-EVIDENCE-001: the worker's test claims are inspected in the workspace they came from;
                 # a claim is never authority, an uninspected claim is never success.
                 result["evidence_inspection"] = self._inspect_evidence(task, result, workspace["path"])
+            elif action == "dge_role":
+                # INV-AUTONOMOUS-001: read-only role execution in a clean checkout at base, one entry.
+                from codex_harness.adapters.autonomous_roles import execute_role
+                result = execute_role(self, task, heartbeat)
             elif action == "rebase":
                 heartbeat()
                 candidate = self.git.rebase(task["id"], details["candidate"], details["new_base"])

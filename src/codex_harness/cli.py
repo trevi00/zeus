@@ -301,6 +301,8 @@ def parser() -> argparse.ArgumentParser:
     operate_status.add_argument("operation_id")
     from codex_harness.adapters.dge_cli import add_parser as add_dge_parser
     add_dge_parser(commands)
+    from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
+    add_autonomous_parser(commands)
     ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
     ticket_commands = ticket.add_subparsers(dest="ticket_command", required=True)
     ticket_commands.add_parser("list")
@@ -462,6 +464,16 @@ def dge_command(service, args):
         raise SystemExit(1)
 
 
+def autonomous_command(service, args):
+    """INV-AUTONOMOUS-001: exit 0 only for an accepted (or cached accepted) receipt; refusals print a
+    code and a type, never manifests, packets, payloads, DSNs or raw exceptions."""
+    from codex_harness.adapters import autonomous_cli
+    result = autonomous_cli.execute(service, args)
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
 def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -618,6 +630,8 @@ def main() -> None:
             operate_command(service, args)
         elif args.command == "dge":
             dge_command(service, args)
+        elif args.command == "autonomous":
+            autonomous_command(service, args)
         elif args.command == "observe":
             observe_command(service, args)
         elif args.command == "demo":

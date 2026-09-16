@@ -92,6 +92,7 @@ REGISTRY = {
                                         "unconfirmed_audits": _I},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
+    "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},
 }
 
 # Runner classification (INV-INVOCATION-001) → observation outcome. Only `accepted` succeeds.
