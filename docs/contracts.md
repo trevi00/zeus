@@ -684,6 +684,36 @@ under a lock before any process can start, and a slot that was reserved and neve
 counted because an interrupted experiment may already have reached the provider. A run's label and
 output directory are names and places, never budget authority.
 
+## INV-WORKER-PROFILE-001
+
+A worker profile is a packaged document, a packaged standard-library hook and a manifest that pins
+both by digest and names the reviewed sources it was adapted from. It is selected only by the
+configured `runtime.worker_profile`; an assignment message, task detail or model output never
+chooses one, and an unconfigured run keeps every existing option, flag, settings value and
+environment exactly as before. Selection is verified before any probe or process: an unknown name,
+a manifest that names another profile, a document or hook whose bytes disagree with the manifest,
+a document over the character limit, or a rule that widens anything but Bash is refused whole and
+never truncated or narrowed. The document travels as the `--append-system-prompt` value and the
+hooks and Bash rules travel inside the per-run `--settings` value; the recorded command carries
+the profile's id, version, digests, source digests and transport names, never the text. The
+host's own hooks, settings files and home directory are neither read into the run nor modified,
+and the profile never installs a Stop hook. The hook receives its output directory and profile
+digest as fixed arguments, reads its stdin under a byte limit, records the session id, event
+name, tool name and profile digest only, and writes each receipt as a new exclusively created
+file under a per-session directory outside the checkout, so concurrent runs and restarts never
+share or overwrite a record and no prompt, command, output or credential is ever stored. The hook
+command is one string that `sh` and `cmd.exe` read the same way: every element is double-quoted,
+paths travel with forward slashes, and a character either shell treats specially is refused. The
+profile's environment puts the verified host interpreter's directory first on PATH and binds
+PYTHONPATH to the candidate's `src` only when it exists; the parent's PYTHONPATH is never
+inherited and the harness's own credentials stay withheld. After the tree is confirmed gone, the
+receipts are read back and reported beside, not merged into, what was selected: a delivered
+document is not a followed one, an installed hook is not an executed one, an absent receipt is
+"not observed" rather than "did not happen", and no receipt approves, completes or unblocks
+anything. Fixture runs record their launcher as every other transport run does, so a receipt
+produced by the protocol child is never a provider measurement; the real Claude verification is
+an operation canary recorded separately.
+
 ## INV-LOCAL-CYCLE-001
 
 A local cycle binds one correlation to a durable policy row (`local_cycles`) holding the number
