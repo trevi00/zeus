@@ -10,3 +10,7 @@
 규칙은 `D:\workspaces\README.md`, 프로젝트 안내는 `D:\workspaces\zeus\README.md`에 두었다. 전역 Codex AGENTS와 저장소 AGENTS에도 반영했다. 새 작업 트리를 홈에 만들지 않고, 같은 작업의 재검토는 재사용한다. 작은 명세·요약·manifest만 Git에, 큰 로그·증거·복제본은 D에 둔다. Windows/WSL 가상환경은 분리하며 이동된 환경은 재생성 후 사용한다.
 
 이동 목록·옛 경로표·검증 결과는 `D:\workspaces\zeus\maintenance\2026-09-16-storage`에 있다. 로컬 자료이며 GitHub에서 내려받을 수 있는 증거라고 주장하지 않는다. 작업 중 복사 후 재귀 삭제가 자동 승인 검토에 차단되어, 나머지는 원본을 보존하는 PowerShell Move-Item 방식으로 옮겼다. 중단된 이동의 잔여물도 maintenance 안에 보관했다. 전역 인증·설정·호출 원장과 운영 컨테이너는 변경하지 않았다.
+
+## 후속: 별도 Claude 세션 종료 후 이동
+
+사용자가 세션 종료를 확인하여 `C:\Users\rudtn\zeus-pr` 전체를 `D:\workspaces\zeus\worktrees\claude`로 옮겼다. 작업 트리 36개는 Git 연결을 복구하고 HEAD·변경 상태를 이동 직전과 비교했다. 임시 폴더 1개도 보존하여 총 37개 폴더를 이동했고, 빈 C 원본 루트는 제거했다. Git 등록에 옛 경로 참조가 없음을 확인했다. 상세 기록은 `D:\workspaces\zeus\maintenance\2026-09-16-claude-storage`에 있다. 이전 문단의 zeus-pr 유지 판단은 이 후속 이동으로 해소됐다.
