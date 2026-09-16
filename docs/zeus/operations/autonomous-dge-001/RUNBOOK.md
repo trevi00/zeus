@@ -81,6 +81,14 @@ Exit 0 only for accepted (or cached accepted). Refusals print `status`, `reason_
   boundary before any packet or event is built. The consumers are unchanged and nothing is coerced.
   `tests/test_autonomous_roles.py` holds the schema-to-consumer tests plus a compact labelled fixture
   of the live rejected kinds/status; no transcript is stored.
+- Claim citations (after canary autonomous-ssot-canary-002, claim c6): the researcher claim schema is a
+  nested `anyOf` of two closed object variants, fact/inference with `source_ids` `minItems: 1` and
+  unknown with any list (empty stays valid, no citation is forced). A fact with `source_ids: []` is
+  refused as `schema_mismatch` at the claim (`instance_path` `["claims", N]`) before the packet; the
+  consumer rule in `domain/dge.py` is unchanged. The prompt tells the researcher to keep runtime,
+  test-run and clean-checkout observations in `ssot.evidence`. Local preflight accepts a broader
+  dialect than the provider, so provider acceptance of this shape is proven only by the next real
+  role run; `if/then` and `allOf` are not used.
 - Next canary: run collection as `python -P -m pytest` with only the checkout `src` on `PYTHONPATH`
   (no repository-root injection); GitHub CI runs the console entrypoint. The host's application
   control refusing `pytest.exe` (WinError 4551) is a host policy, not a code defect. The three

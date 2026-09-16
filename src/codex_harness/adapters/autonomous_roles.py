@@ -11,8 +11,11 @@ finite field (claim kind, question status, SSOT decision, finding severity, arbi
 disposition decision) is an enum built from the same domain constants the consumers check
 (`domain.dge`, `domain.autonomous`), so a value the schema admits is a value the consumer accepts
 and the provider's structured output is refused at the model boundary instead of at
-`packet_from_research` (live canary autonomous-ssot-canary-001). The consumers are not loosened
-and no output is coerced or repaired here.
+`packet_from_research` (live canary autonomous-ssot-canary-001). Claim citation cardinality is the
+same boundary (live canary autonomous-ssot-canary-002, claim c6): the packet consumer requires
+source_ids for every kind except unknown, so the model-facing claim is a nested anyOf of typed
+variants, sourced fact/inference with minItems 1 and unknown with any list, never if/then or allOf.
+The consumers are not loosened and no output is coerced or repaired here.
 """
 from __future__ import annotations
 
@@ -44,7 +47,19 @@ NULLABLE_TEXT = {"type": ["string", "null"]}
 CONSUMER_ENUMS = {"claim.kind": CLAIM_KINDS, "question.status": QUESTION_STATUSES, "ssot.decision": SSOT_DECISIONS,
                   "finding.severity": SEVERITIES, "arbiter.verdict": VERDICTS, "disposition.decision": DECISIONS}
 SOURCE = _object({"id": TEXT, "path": TEXT, "sha256": TEXT, "locator": TEXT, "revision": TEXT, "read_scope": TEXT})
-CLAIM = _object({"id": TEXT, "kind": _enum(CLAIM_KINDS), "text": TEXT, "source_ids": STRINGS})
+# `domain.dge._claims` demands nonempty source_ids for every kind but unknown; the model-facing claim states the
+# same rule as two typed variants under a nested anyOf (nested anyOf and array minItems are inside the provider's
+# subset, if/then/else and allOf are not). Unknown keeps an ordinary list: an empty one is valid, none is forced.
+UNSOURCED_KIND = "unknown"
+SOURCED_KINDS = CLAIM_KINDS - {UNSOURCED_KIND}
+CITED = {"type": "array", "items": TEXT, "minItems": 1}
+
+
+def _claim(kinds, source_ids: dict) -> dict:
+    return _object({"id": TEXT, "kind": _enum(kinds), "text": TEXT, "source_ids": source_ids})
+
+
+CLAIM = {"anyOf": [_claim(SOURCED_KINDS, CITED), _claim({UNSOURCED_KIND}, STRINGS)]}
 QUESTION = _object({"id": TEXT, "question": TEXT, "blocking": {"type": "boolean"}, "status": _enum(QUESTION_STATUSES),
                     "claim_ids": STRINGS})
 TRANSITION = {"type": ["object", "null"], "additionalProperties": False,
@@ -80,6 +95,10 @@ OBJECTIVES = {
                  "is exactly one of " + _listed(QUESTION_STATUSES) + "; the packet accepts nothing else. Commands "
                  "you ran, results you observed, recommendations and verdicts are not claim kinds: put them in "
                  "ssot.evidence (or ssot.unknowns) and state what they establish as fact/inference/unknown claims. "
+                 "A " + _listed(SOURCED_KINDS) + " claim cites at least one source id from sources; only an "
+                 "unknown claim may leave source_ids empty. What you observed about your runtime, test run or "
+                 "clean checkout is not in the pinned sources: keep it in ssot.evidence rather than as a "
+                 "Git-supported fact, and never invent a citation so that an observation passes as a fact. "
                  "A question is unknown only when the DESIGN cannot be settled from the sources at base; a blocking "
                  "unknown stops the debate for more research. Tests of the future implementation that have not "
                  "run yet are not unknown design questions: the fix does not exist at base, so record the "

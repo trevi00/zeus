@@ -8,7 +8,13 @@ import json
 import pytest
 from jsonschema import Draft202012Validator
 
-from codex_harness.adapters.autonomous_roles import CONSUMER_ENUMS, OBJECTIVES, SCHEMAS
+from codex_harness.adapters.autonomous_roles import (
+    CONSUMER_ENUMS,
+    OBJECTIVES,
+    SCHEMAS,
+    SOURCED_KINDS,
+    UNSOURCED_KIND,
+)
 from codex_harness.adapters.execution_output import completed_output
 from codex_harness.adapters.output_schema import preflight
 from codex_harness.adapters.providers import packaged_policy
@@ -71,7 +77,11 @@ ROLE_OUTPUTS = {"researcher": RESEARCH, "proposer": {"summary": "enum every fini
 # these claim kinds and a prose question status; packet_from_research refused it. Compact fixture, not the transcript.
 LIVE_REJECTED_KINDS = ("review_frame", "recommendation", "test_command", "execution_result", "verdict")
 LIVE_REJECTED_STATUS = "open - depends on the future CI run"
+# Live canary autonomous-ssot-canary-002 (researcher e8152929, base 490c5d4): valid enums, but claim c6 was a fact
+# about the run's own execution environment with source_ids=[]; packet_from_research refused it. Compact fixture.
+LIVE_UNCITED_FACT = {"id": "c6", "kind": "fact", "text": "the execution environment observed during this run", "source_ids": []}
 PACKET_DIGEST = "1" * 64
+CLAIM_VARIANTS = SCHEMAS["researcher"]["properties"]["claims"]["items"]["anyOf"]
 
 
 def schema_check(role, output):
@@ -90,7 +100,10 @@ def consume(role, output, findings=None):
 
 def test_every_role_schema_enum_is_the_consumer_constant_and_passes_preflight():
     schemas = SCHEMAS
-    located = {"claim.kind": schemas["researcher"]["properties"]["claims"]["items"]["properties"]["kind"],
+    # The claim kind is split across the two typed anyOf variants; together they are exactly CLAIM_KINDS.
+    sourced, unsourced = CLAIM_VARIANTS
+    claim_kind = {"type": "string", "enum": sourced["properties"]["kind"]["enum"] + unsourced["properties"]["kind"]["enum"]}
+    located = {"claim.kind": claim_kind,
                "question.status": schemas["researcher"]["properties"]["questions"]["items"]["properties"]["status"],
                "ssot.decision": schemas["researcher"]["properties"]["ssot"]["properties"]["decision"],
                "finding.severity": schemas["attacker"]["properties"]["findings"]["items"]["properties"]["severity"],
@@ -104,6 +117,59 @@ def test_every_role_schema_enum_is_the_consumer_constant_and_passes_preflight():
     for role in ROLE_ORDER:
         receipt = preflight(SCHEMAS[role])
         assert receipt["checks"] and ("enum" in receipt["keywords"]) == (role != "proposer"), role
+        assert ("anyOf" in receipt["keywords"]) == (role == "researcher") and not {"if", "then", "else", "allOf"} & set(receipt["keywords"]), role
+
+
+def test_claim_variants_state_the_consumer_citation_rule_with_typed_anyof_and_minitems():
+    # Consumer rule (domain.dge._claims): nonempty source_ids for every kind except unknown. The producer states
+    # it as two closed object variants; nothing else about the claim differs between them.
+    sourced, unsourced = CLAIM_VARIANTS
+    assert SOURCED_KINDS | {UNSOURCED_KIND} == CLAIM_KINDS and UNSOURCED_KIND not in SOURCED_KINDS
+    assert set(sourced["properties"]["kind"]["enum"]) == SOURCED_KINDS and unsourced["properties"]["kind"]["enum"] == [UNSOURCED_KIND]
+    assert sourced["properties"]["source_ids"] == {"type": "array", "items": {"type": "string"}, "minItems": 1}
+    assert unsourced["properties"]["source_ids"] == {"type": "array", "items": {"type": "string"}}
+    for variant in CLAIM_VARIANTS:
+        assert variant["type"] == "object" and variant["additionalProperties"] is False
+        assert variant["required"] == ["id", "kind", "text", "source_ids"] and variant["properties"]["kind"]["type"] == "string"
+    assert set(SCHEMAS["researcher"]["properties"]["claims"]["items"]) == {"anyOf"}
+
+
+@pytest.mark.parametrize("kind", sorted(CLAIM_KINDS))
+@pytest.mark.parametrize("source_ids", [[], ["s1"]], ids=["empty", "cited"])
+def test_every_kind_with_empty_and_nonempty_citations_is_admitted_exactly_when_the_consumer_accepts(kind, source_ids):
+    claim = {"id": "c9", "kind": kind, "text": "one more claim", "source_ids": source_ids}
+    output = {**RESEARCH, "claims": RESEARCH["claims"] + [claim]}
+    result = schema_check("researcher", output)
+    admitted = bool(source_ids) or kind == UNSOURCED_KIND
+    if admitted:
+        assert result["answer"] == output, result.get("failure")
+        packet = packet_from_research(MANIFEST, output)["packet"]
+        assert packet["claims"][-1] == claim, "an unknown may carry citations or none; the consumer keeps both"
+    else:
+        assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+        assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == ["claims", 3]
+        with pytest.raises(PacketError, match="claim source_ids must be a list of distinct ids"):
+            packet_from_research(MANIFEST, output)
+
+
+def test_live_uncited_fact_fixture_is_refused_before_the_packet_and_the_observation_belongs_in_evidence():
+    # Labelled reproduction of the canary-002 refusal, not the answer itself. Before this fix the schema admitted
+    # source_ids=[] for a fact and only packet_from_research refused, after a paid start.
+    live = {**RESEARCH, "claims": RESEARCH["claims"] + [LIVE_UNCITED_FACT]}
+    result = schema_check("researcher", live)
+    assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+    assert result["failure"]["instance_path"] == ["claims", 3] and result["failure"]["schema_path"][-1] == "anyOf"
+    assert LIVE_UNCITED_FACT["text"] not in str(result["failure"]), "no output text is echoed"
+    with pytest.raises(PacketError, match="claim source_ids must be a list of distinct ids"):
+        packet_from_research(MANIFEST, live)
+    # Controls: the same observation is valid as an unknown claim, and as ssot.evidence with no claim at all.
+    # The refusal is about the fact/citation pairing; no citation is forced and nothing is repaired.
+    as_unknown = {**RESEARCH, "claims": RESEARCH["claims"] + [{**LIVE_UNCITED_FACT, "kind": UNSOURCED_KIND}]}
+    assert schema_check("researcher", as_unknown)["answer"] == as_unknown
+    assert packet_from_research(MANIFEST, as_unknown)["packet"]["claims"][-1]["kind"] == UNSOURCED_KIND
+    as_evidence = {**RESEARCH, "ssot": {**RESEARCH["ssot"], "evidence": RESEARCH["ssot"]["evidence"] + [LIVE_UNCITED_FACT["text"]]}}
+    assert schema_check("researcher", as_evidence)["answer"] == as_evidence
+    assert packet_from_research(MANIFEST, as_evidence)["ssot"]["evidence"][-1] == LIVE_UNCITED_FACT["text"]
 
 
 def test_prompts_name_the_finite_values_and_separate_design_unknowns_from_future_tests():
@@ -111,6 +177,8 @@ def test_prompts_name_the_finite_values_and_separate_design_unknowns_from_future
     for value in CLAIM_KINDS | QUESTION_STATUSES | SSOT_DECISIONS:
         assert value in researcher
     assert "ssot.evidence" in researcher and "not claim kinds" in researcher
+    assert "cites at least one source id" in researcher and "only an unknown claim may leave source_ids empty" in researcher
+    assert "runtime, test run or clean checkout" in researcher and "never invent a citation" in researcher
     assert "have not run yet are not unknown design questions" in researcher
     assert "not asked to certify" in researcher, "a read-only researcher never certifies the future fix"
     assert all(v in OBJECTIVES["attacker"] for v in SEVERITIES) and "Everything else is minor" in OBJECTIVES["attacker"]
@@ -148,7 +216,9 @@ def test_invalid_finite_values_are_refused_at_the_model_boundary_and_by_the_cons
     node[pointer[-1]] = bad
     result = schema_check(role, document)
     assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
-    assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == list(pointer)
+    # A claim is refused at the claim itself: both anyOf variants fail on the kind, so the best match is the anyOf.
+    reported = list(pointer[:2]) if pointer[0] == "claims" else list(pointer)
+    assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == reported
     assert bad not in str(result["failure"]), "no value is echoed"
     with pytest.raises((PacketError, EventError, ContractError)):
         consume(role, document)
@@ -164,7 +234,7 @@ def test_live_rejected_claim_kinds_and_question_status_fixture_is_refused_before
                            "claim_ids": ["c1"]}]}
     result = schema_check("researcher", live)
     assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
-    assert result["failure"]["instance_path"] == ["claims", 0, "kind"]
+    assert result["failure"]["instance_path"] == ["claims", 0]
     with pytest.raises(PacketError, match="known kind"):
         packet_from_research(MANIFEST, live)
     only_status = {**RESEARCH, "questions": [{**RESEARCH["questions"][0], "status": LIVE_REJECTED_STATUS}]}
