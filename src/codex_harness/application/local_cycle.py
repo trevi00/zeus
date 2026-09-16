@@ -8,6 +8,8 @@ release queue, merges or deploys.
 """
 from __future__ import annotations
 
+import hashlib
+
 from codex_harness.application.workflow import ClaimGuardRefused
 from codex_harness.domain.model import ContractError, require, utcnow
 
@@ -26,6 +28,15 @@ CYCLE_FIELDS = ("id", "correlation_id", "status", "max_executions", "executions"
                 "stopped_reason", "last_execution", "created_at", "updated_at")
 TARGET_BUCKETS = {"task": "tasks", "decision": "decisions_pending"}
 CANDIDATE_FIELDS = ("base", "revision", "tree", "diff_hash")
+# The stored stopped_reason may carry a raw detail suffix (`failed:<error>`); the projection emits
+# only a finite code and a digest of the whole string. Any other text, or a non-string, is `unknown`.
+FIXED_REASONS = STOP_STATES | {"budget_exhausted", "foreign_correlation", "in_flight_residue", "diagnose_pending",
+                               "claim_guard_refused", "no_execution_claimed"}
+PREFIX_REASONS = {"exception", "foreign_queue", "unsupported_phase", "execution_notice"}
+EXECUTION_STATUSES = {"queued", "pending", "retry", "running", "succeeded", "failed", "blocked", "expired",
+                      "superseded", "inspection_blocked", "cancelled"}
+RECOGNIZED_REASONS = FIXED_REASONS | PREFIX_REASONS | {"execution_" + status for status in EXECUTION_STATUSES}
+EXECUTION_STRING_FIELDS = ("agent", "kind", "id", "status", "at", "result_id")
 
 
 class LocalCycle:
@@ -76,10 +87,15 @@ class LocalCycle:
             bucket = TARGET_BUCKETS.get(kind) if isinstance(kind, str) else None
             target = tx.get(bucket, target_id) if bucket and isinstance(target_id, str) else None
         cycle = {key: row.get(key) for key in CYCLE_FIELDS}
+        # The stored row stays as it is; only this view replaces the reason by its code plus digest
+        # and reduces the execution markers to their whitelisted fields.
+        cycle["stopped_reason"], cycle["stopped_reason_sha256"] = _reason(row.get("stopped_reason"))
+        cycle["in_flight"] = _execution(row.get("in_flight"))
+        cycle["last_execution"] = _execution(last)
         return {"schema": HANDOFF_SCHEMA, "authority": "observation_only", "automatic_resume": False,
                 "cycle": cycle,
                 "remaining_executions": max(0, cycle["max_executions"] - cycle["executions"]),
-                "target_record": _target_record(cycle["correlation_id"], last, kind, target_id, target)}
+                "target_record": _target_record(row["correlation_id"], last, kind, target_id, target)}
 
     # ----- one turn -----------------------------------------------------------------------
     def step(self, cycle_id: str) -> dict:
@@ -262,6 +278,32 @@ def _correlation(row) -> str | None:
     return message.get("correlation_id") if isinstance(message, dict) else None
 
 
+def _reason(reason) -> tuple[str | None, str | None]:
+    """Stored stopped_reason -> (finite code or `unknown`, SHA-256 of the whole original string).
+
+    Only the text before the first colon is classified, and only against the closed list above;
+    arbitrary prefix text is never accepted. The digest lets the operator correlate the stored
+    string without printing it; it is correlation metadata, not secrecy for low-entropy values.
+    """
+    if reason is None:
+        return None, None
+    if not isinstance(reason, str):
+        return "unknown", None
+    head = reason.split(":", 1)[0]
+    code = head if head in RECOGNIZED_REASONS else "unknown"
+    return code, hashlib.sha256(reason.encode("utf-8")).hexdigest()
+
+
+def _execution(marker) -> dict | None:
+    """in_flight / last_execution -> whitelisted fields only; error and any other key never leave."""
+    if not isinstance(marker, dict):
+        return None
+    view = {key: _string(marker.get(key)) for key in EXECUTION_STRING_FIELDS}
+    claimed = marker.get("claimed")
+    view["claimed"] = claimed if isinstance(claimed, bool) else None
+    return view
+
+
 def _target_record(correlation, last, kind, target_id, target) -> dict:
     """Availability of the current target row plus whitelisted metadata only when it matches.
     Task input, prompt, summary, output, raw error, messages, settings and paths never leave."""
@@ -269,7 +311,7 @@ def _target_record(correlation, last, kind, target_id, target) -> dict:
             "id": target_id if isinstance(target_id, str) else None}
     if not isinstance(last, dict):
         return {"availability": "none", **head}
-    if kind not in TARGET_BUCKETS:
+    if head["kind"] not in TARGET_BUCKETS:  # a non-string kind (e.g. a list) is unsupported, not a TypeError
         return {"availability": "unsupported_kind", **head}
     if target is None:
         return {"availability": "missing", **head}

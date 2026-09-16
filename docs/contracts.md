@@ -770,7 +770,21 @@ names a task or decision, the current row under that id; nothing is put, updated
 published, acknowledged, opened, probed, reset or executed, and the CLI builds no executor,
 observer, bus or provider for it. The cycle view carries only the stored policy fields (id,
 correlation, status, limit, count, in-flight marker, stopped reason, last execution, timestamps);
-`remaining_executions` is display headroom clamped at zero and never written back. The target
+`remaining_executions` is display headroom clamped at zero and never written back. The stored
+`stopped_reason` is never printed as such: the view's `cycle.stopped_reason` is null when the
+stored value is absent or null, otherwise the text before the first colon when that text is one of
+the finite recognized codes (the stop states, `budget_exhausted`, `foreign_correlation`,
+`in_flight_residue`, `diagnose_pending`, `claim_guard_refused`, `no_execution_claimed`, the
+`exception`, `foreign_queue`, `unsupported_phase` and `execution_notice` prefixes, and
+`execution_<status>` only for the closed list of existing task/decision statuses), otherwise
+`unknown`; any colon detail is discarded and arbitrary prefix text or a non-string value is
+`unknown`. `cycle.stopped_reason_sha256` is the lowercase SHA-256 hex of the complete original
+UTF-8 string when the stored reason is a string (including unrecognized ones), otherwise null; it
+is correlation metadata, not a secrecy guarantee for low-entropy values. The `in_flight` and
+`last_execution` views admit only the string fields agent, kind, id, status, at and result_id and
+the boolean claimed; other types are null, any other key (including error) is omitted, and an
+absent or non-object marker is null. The stored row, `zeus cycle status` and `zeus cycle step`
+are unchanged by this projection. The target
 record is an observation of the row as stored now, not proof of a historical execution: its
 availability is `none` without a last execution, `unsupported_kind` for a kind other than task or
 decision, `missing` when the row is absent, `correlation_mismatch` when the row's message

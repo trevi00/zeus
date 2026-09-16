@@ -3,6 +3,7 @@
 Fixture executors, rows and canary values here are synthetic; nothing is actual provider evidence.
 """
 from copy import deepcopy
+from hashlib import sha256
 
 import pytest
 
@@ -106,7 +107,10 @@ def test_initial_active_cycle_has_no_target_and_full_headroom():
     assert view["remaining_executions"] == 2
     assert view["target_record"] == {"availability": "none", "kind": None, "id": None}
     assert set(view["cycle"]) == {"id", "correlation_id", "status", "max_executions", "executions", "in_flight",
-                                  "stopped_reason", "last_execution", "created_at", "updated_at"}
+                                  "stopped_reason", "stopped_reason_sha256", "last_execution", "created_at",
+                                  "updated_at"}
+    assert view["cycle"]["stopped_reason"] is None and view["cycle"]["stopped_reason_sha256"] is None
+    assert view["cycle"]["in_flight"] is None and view["cycle"]["last_execution"] is None
 
 
 # ----- 2. completed worker task / accepted review -----------------------------------------------
@@ -152,6 +156,7 @@ def test_stopped_and_exhausted_and_in_flight_states_are_reported_without_repair(
     set_cycle(svc, status="stopped", stopped_reason="budget_exhausted", executions=2)
     view = handoff(svc)
     assert view["cycle"]["status"] == "stopped" and view["cycle"]["stopped_reason"] == "budget_exhausted"
+    assert view["cycle"]["stopped_reason_sha256"] == sha256(b"budget_exhausted").hexdigest()
     assert view["remaining_executions"] == 0
     set_cycle(svc, executions=5)  # over-budget residue: display clamps, stored count untouched
     view = handoff(svc)
@@ -159,7 +164,8 @@ def test_stopped_and_exhausted_and_in_flight_states_are_reported_without_repair(
     marker = {"agent": "worker:implementation", "kind": "task", "id": "t1", "at": "x"}
     set_cycle(svc, status="active", stopped_reason=None, executions=1, in_flight=marker)
     view = handoff(svc)
-    assert view["cycle"]["in_flight"] == marker and view["cycle"]["status"] == "active"
+    assert view["cycle"]["in_flight"] == {**marker, "status": None, "result_id": None, "claimed": None}
+    assert view["cycle"]["status"] == "active"
     assert view["target_record"]["availability"] == "none"  # a marker is not a last execution
     assert LocalCycle(svc).status("c1")["in_flight"] == marker
 
@@ -205,6 +211,118 @@ def test_unsupported_kind_and_malformed_last_execution_are_explicit():
     assert handoff(svc)["target_record"] == {"availability": "unsupported_kind", "kind": None, "id": "x"}
     set_cycle(svc, last_execution="not-a-dict")
     assert handoff(svc)["target_record"] == {"availability": "none", "kind": None, "id": None}
+    set_cycle(svc, last_execution=last_execution(["task"], "x"))  # unhashable kind: unsupported, not a TypeError
+    assert handoff(svc)["target_record"] == {"availability": "unsupported_kind", "kind": None, "id": "x"}
+
+
+# ----- 7. stopped_reason projection: safe code + digest, nested whitelist ------------------------
+def test_failed_task_through_ordinary_step_gives_safe_reason_and_digest():
+    """Regression for the rejected candidate: the raw `failed:<error>` reason must not leak."""
+    svc = service()
+    LocalCycle(svc).start("c1", CORR, 2)
+    task(svc, "t1", status="failed", error=CANARY + "-raw-error-detail")
+    executor = FakeExecutor(svc)
+    stepped = LocalCycle(svc, executor).step("c1")
+    stored = "failed:" + CANARY + "-raw-error-detail"
+    assert stepped["action"] == "stopped" and stepped["reason"] == stored  # step output is unchanged
+    assert executor.calls == []
+    view = handoff(svc)  # asserts CANARY not in repr(view) and the store unchanged
+    assert view["cycle"]["status"] == "stopped" and view["cycle"]["stopped_reason"] == "failed"
+    assert view["cycle"]["stopped_reason_sha256"] == sha256(stored.encode("utf-8")).hexdigest()
+    assert LocalCycle(svc).status("c1")["stopped_reason"] == stored  # stored row and status unchanged
+    with svc.store.transaction() as tx:
+        assert tx.get("local_cycles", "c1")["stopped_reason"] == stored
+        assert tx.get("tasks", "t1")["error"] == CANARY + "-raw-error-detail"
+
+
+def test_executor_exception_reason_is_projected_as_code_without_nested_error():
+    svc = service()
+    LocalCycle(svc).start("c1", CORR, 2)
+    task(svc, "t1")
+
+    class Raising(FakeExecutor):
+        def execute_one(self, agent, expected=None):
+            raise RuntimeError(CANARY)
+    stepped = LocalCycle(svc, Raising(svc)).step("c1")
+    assert stepped["reason"] == "exception:RuntimeError"
+    assert LocalCycle(svc).status("c1")["last_execution"]["error"] == "RuntimeError"
+    view = handoff(svc)
+    assert view["cycle"]["stopped_reason"] == "exception"
+    assert view["cycle"]["stopped_reason_sha256"] == sha256(b"exception:RuntimeError").hexdigest()
+    assert "error" not in view["cycle"]["last_execution"]
+    assert view["cycle"]["last_execution"]["status"] == "exception" and view["cycle"]["last_execution"]["id"] == "t1"
+
+
+@pytest.mark.parametrize("stored, code", [
+    ("budget_exhausted", "budget_exhausted"),
+    ("failed", "failed"),
+    ("failed:" + CANARY, "failed"),
+    ("retry:" + CANARY, "retry"),
+    ("in_flight_residue", "in_flight_residue"),
+    ("claim_guard_refused", "claim_guard_refused"),
+    ("no_execution_claimed", "no_execution_claimed"),
+    ("diagnose_pending", "diagnose_pending"),
+    ("foreign_correlation", "foreign_correlation"),
+    ("foreign_queue:" + CANARY, "foreign_queue"),
+    ("unsupported_phase:" + CANARY, "unsupported_phase"),
+    ("execution_notice:" + CANARY, "execution_notice"),
+    ("execution_failed", "execution_failed"),
+    ("execution_retry", "execution_retry"),
+    ("execution_blocked:" + CANARY, "execution_blocked"),
+    ("execution_None", "unknown"),
+    ("execution_" + CANARY, "unknown"),
+    ("execution_failed_" + CANARY, "unknown"),
+    ("exceptionally:" + CANARY, "unknown"),
+    (CANARY, "unknown"),
+    (CANARY + ":failed", "unknown"),
+    ("", "unknown"),
+    (":failed", "unknown"),
+])
+def test_reason_codes_are_finite_and_detail_is_digested(stored, code):
+    svc = service()
+    LocalCycle(svc).start("c1", CORR, 2)
+    set_cycle(svc, status="stopped", stopped_reason=stored)
+    view = handoff(svc)
+    assert view["cycle"]["stopped_reason"] == code
+    assert view["cycle"]["stopped_reason_sha256"] == sha256(stored.encode("utf-8")).hexdigest()
+    assert LocalCycle(svc).status("c1")["stopped_reason"] == stored
+
+
+@pytest.mark.parametrize("stored", [7, ["failed"], {"code": "failed"}, True, b"failed"])
+def test_non_string_reason_is_unknown_without_digest(stored):
+    svc = service()
+    LocalCycle(svc).start("c1", CORR, 2)
+    set_cycle(svc, status="stopped", stopped_reason=stored)
+    view = handoff(svc)
+    assert view["cycle"]["stopped_reason"] == "unknown" and view["cycle"]["stopped_reason_sha256"] is None
+    assert LocalCycle(svc).status("c1")["stopped_reason"] == stored
+
+
+def test_null_reason_stays_null():
+    svc = service()
+    LocalCycle(svc).start("c1", CORR, 2)
+    set_cycle(svc, status="awaiting_operator", stopped_reason=None)
+    view = handoff(svc)
+    assert view["cycle"]["stopped_reason"] is None and view["cycle"]["stopped_reason_sha256"] is None
+
+
+def test_nested_execution_markers_are_whitelisted():
+    svc = service()
+    LocalCycle(svc).start("c1", CORR, 2)
+    noisy = {"agent": "worker:implementation", "kind": "task", "id": "t1", "status": "refused", "claimed": False,
+             "result_id": None, "at": "2026-09-16T00:00:00+00:00", "error": CANARY, "stdout": CANARY,
+             "prompt": CANARY, "nested": {"error": CANARY}}
+    set_cycle(svc, executions=1, in_flight=noisy, last_execution={**noisy, "status": 5, "claimed": "yes", "at": None})
+    view = handoff(svc)
+    assert view["cycle"]["in_flight"] == {"agent": "worker:implementation", "kind": "task", "id": "t1",
+                                          "status": "refused", "at": "2026-09-16T00:00:00+00:00",
+                                          "result_id": None, "claimed": False}
+    assert view["cycle"]["last_execution"] == {"agent": "worker:implementation", "kind": "task", "id": "t1",
+                                               "status": None, "at": None, "result_id": None, "claimed": None}
+    assert LocalCycle(svc).status("c1")["in_flight"] == noisy  # raw row and status output untouched
+    set_cycle(svc, in_flight="junk", last_execution=[CANARY])
+    view = handoff(svc)
+    assert view["cycle"]["in_flight"] is None and view["cycle"]["last_execution"] is None
 
 
 @pytest.mark.parametrize("result", [None, "junk", [], {}, {"candidate": "junk", "execution_ref": 7,
