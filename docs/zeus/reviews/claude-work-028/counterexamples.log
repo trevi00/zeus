@@ -1,0 +1,13 @@
+.........s..................................s........................... [ 84%]
+....F........                                                            [100%]
+================================== FAILURES ===================================
+__________ test_windows_selection_excludes_preexisting_wsl_occupant ___________
+.runtime\review-103\test_cross_host.py:42: in test_windows_selection_excludes_preexisting_wsl_occupant
+    assert chosen is None or port not in chosen, 'Windows accepted a port already held in WSL'
+E   AssertionError: Windows accepted a port already held in WSL
+E   assert ([24000] is None or 24000 not in [24000])
+---------------------------- Captured stdout call -----------------------------
+{"wsl_already_bound": 24000, "windows_chosen": [24000]}
+=========================== short test summary info ===========================
+FAILED .runtime/review-103/test_cross_host.py::test_windows_selection_excludes_preexisting_wsl_occupant
+1 failed, 82 passed, 2 skipped in 107.32s (0:01:47)
