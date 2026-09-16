@@ -1,0 +1,72 @@
+{
+ "port": 58541,
+ "docker_run_exit": 0,
+ "steps": [
+  {
+   "at": "occupant bound, no container yet",
+   "distro_sockets": [
+    {
+     "state": "UNCONN",
+     "local": "127.0.0.1:58541"
+    }
+   ],
+   "windows_listeners": "1",
+   "connect_from_distro": false
+  },
+  {
+   "at": "container up, occupant still holding",
+   "distro_sockets": [
+    {
+     "state": "UNCONN",
+     "local": "127.0.0.1:58541"
+    }
+   ],
+   "windows_listeners": "1",
+   "connect_from_distro": false
+  },
+  {
+   "at": "5s after the occupant closed",
+   "distro_sockets": [],
+   "windows_listeners": "1",
+   "connect_from_distro": false
+  },
+  {
+   "at": "30s after the occupant closed",
+   "distro_sockets": [],
+   "windows_listeners": "1",
+   "connect_from_distro": false
+  },
+  {
+   "at": "after a container restart",
+   "distro_sockets": [
+    {
+     "state": "LISTEN",
+     "local": "127.0.0.1:58541"
+    }
+   ],
+   "windows_listeners": "1",
+   "connect_from_distro": true
+  }
+ ],
+ "containers": [
+  {
+   "name": "zeus-probe-32411a3d6377-4f6a9cea",
+   "started": true,
+   "start_exit": 0,
+   "cleanup": {
+    "attempted": true,
+    "removed": true,
+    "error": null
+   }
+  }
+ ],
+ "run_id": "32411a3d6377",
+ "measured_on": {
+  "platform": "linux",
+  "side": "wsl",
+  "ephemeral_range": [
+   32768,
+   60999
+  ]
+ }
+}

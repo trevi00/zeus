@@ -1,0 +1,95 @@
+{
+ "port": 53590,
+ "control_port": 56169,
+ "ephemeral_range": [
+  32768,
+  60999
+ ],
+ "steps": [
+  {
+   "at": "occupant holds the port in the distro",
+   "port": 53590
+  },
+  {
+   "at": "docker publishes that same port",
+   "exit_code": 0,
+   "published": true
+  },
+  {
+   "at": "while the occupant holds it",
+   "verdict": "wsl_path",
+   "reachable": {
+    "wsl": false,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "5s after the occupant let go",
+   "verdict": "wsl_path",
+   "reachable": {
+    "wsl": false,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "30s after the occupant let go",
+   "verdict": "wsl_path",
+   "reachable": {
+    "wsl": false,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "after a container restart, port long free",
+   "verdict": "all_reachable",
+   "reachable": {
+    "wsl": true,
+    "container": true,
+    "windows": true
+   }
+  },
+  {
+   "at": "control: a port nobody held",
+   "verdict": "all_reachable",
+   "reachable": {
+    "wsl": true,
+    "container": true,
+    "windows": true
+   }
+  }
+ ],
+ "containers": [
+  {
+   "name": "zeus-probe-caf4d1c358ef-eb56cd3f",
+   "started": true,
+   "start_exit": 0,
+   "cleanup": {
+    "attempted": true,
+    "removed": true,
+    "error": null
+   }
+  },
+  {
+   "name": "zeus-probe-caf4d1c358ef-5e22b798",
+   "started": true,
+   "start_exit": 0,
+   "cleanup": {
+    "attempted": true,
+    "removed": true,
+    "error": null
+   }
+  }
+ ],
+ "run_id": "caf4d1c358ef",
+ "measured_on": {
+  "platform": "linux",
+  "side": "wsl",
+  "ephemeral_range": [
+   32768,
+   60999
+  ]
+ }
+}

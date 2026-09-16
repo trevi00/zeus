@@ -1,0 +1,64 @@
+{
+ "port": 31160,
+ "choice_window": [
+  20000,
+  32767
+ ],
+ "choice": {
+  "window": [
+   20000,
+   32767
+  ],
+  "window_source": "measured:/proc/sys/net/ipv4/ip_local_port_range",
+  "sides": {
+   "local": {
+    "kind": "wsl",
+    "checked": true,
+    "how": "bind"
+   },
+   "peer": {
+    "kind": "windows",
+    "checked": false,
+    "why_not": "answered_by_the_daemon_refusing_to_publish"
+   }
+  },
+  "verified_on": [
+   "local"
+  ],
+  "daemon_is_local": true,
+  "guarantee": "checked_before_choosing_on: local",
+  "fallback": null
+ },
+ "docker_run_exit": 0,
+ "daemon_refused_to_publish": false,
+ "after_occupant_released": {
+  "at": "occupant gone, container up",
+  "verdict": "wsl_path",
+  "reachable": {
+   "wsl": false,
+   "container": true,
+   "windows": true
+  }
+ },
+ "containers": [
+  {
+   "name": "zeus-probe-7c596483112d-97aeb091",
+   "started": true,
+   "start_exit": 0,
+   "cleanup": {
+    "attempted": true,
+    "removed": true,
+    "error": null
+   }
+  }
+ ],
+ "run_id": "7c596483112d",
+ "measured_on": {
+  "platform": "linux",
+  "side": "wsl",
+  "ephemeral_range": [
+   32768,
+   60999
+  ]
+ }
+}

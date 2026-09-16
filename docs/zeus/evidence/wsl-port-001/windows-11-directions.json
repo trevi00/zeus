@@ -1,0 +1,26 @@
+{
+ "held_on": "windows",
+ "port": 51008,
+ "daemon_refused_to_publish": true,
+ "daemon_named_the_port": true,
+ "docker_run_exit": 125,
+ "means": "the daemon refused, so this side needs no prediction",
+ "containers": [
+  {
+   "name": "zeus-probe-057c77fa2577-0e45cf7e",
+   "started": false,
+   "start_exit": 125,
+   "cleanup": {
+    "attempted": false,
+    "removed": null,
+    "error": "nothing_was_created"
+   }
+  }
+ ],
+ "run_id": "057c77fa2577",
+ "measured_on": {
+  "platform": "win32",
+  "side": "windows",
+  "ephemeral_range": null
+ }
+}

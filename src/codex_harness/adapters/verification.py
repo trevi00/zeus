@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
+from codex_harness.adapters import published_ports
 from codex_harness.adapters.commands import python_channel_environment, run_process
 from codex_harness.domain.model import ContractError, canonical, digest, require, utcnow
 
@@ -356,14 +357,25 @@ class VerificationServices:
 
     def __enter__(self):
         self.directory.mkdir(parents=True)
+        # The published port is chosen here rather than by the daemon. Measured cause in
+        # docs/zeus/implementation/wsl-port-001: Docker Desktop's WSL integration binds the published
+        # port inside the distro once, at container start, and never retries - so a port the distro's
+        # own ephemeral allocator happened to be holding at that instant stays refused from inside
+        # the distro for the container's whole life. Choosing below every ephemeral start keeps the
+        # number out of that allocator's reach. `chosen` is None on a host with no such window, and
+        # then the daemon picks exactly as it always did.
+        chosen = published_ports.choose(2)
+        postgres_port, redis_port = (chosen["ports"] or [None, None])
         spec = {"services": {
             "postgres": {"image": "pgvector/pgvector:pg17", "environment": {
                 "POSTGRES_USER": "zeus", "POSTGRES_DB": "zeus", "POSTGRES_PASSWORD": "${ZEUS_VERIFY_PASSWORD}"},
-                "ports": ["127.0.0.1::5432"], "volumes": ["database:/var/lib/postgresql/data"],
+                "ports": [published_ports.publication(postgres_port, "5432")],
+                "volumes": ["database:/var/lib/postgresql/data"],
                 "mem_limit": "512m", "cpus": 1,
                 "healthcheck": {"test": ["CMD-SHELL", "pg_isready -U zeus -d zeus"],
                                 "interval": "1s", "timeout": "3s", "retries": 60}},
-            "redis": {"image": "redis:7.4-alpine", "ports": ["127.0.0.1::6379"],
+            "redis": {"image": "redis:7.4-alpine",
+                "ports": [published_ports.publication(redis_port, "6379")],
                 "command": ["redis-server", "--appendonly", "no"], "mem_limit": "128m", "cpus": 0.5,
                 "healthcheck": {"test": ["CMD", "redis-cli", "ping"],
                                 "interval": "1s", "timeout": "3s", "retries": 60}}},
@@ -393,6 +405,12 @@ class VerificationServices:
             self.artifacts.put(canonical({"project": self.project, "ports": ports,
                 "ready_after_seconds": {name: row["ready_after"] for name, row in readiness.items()},
                 "readiness": readiness, "status": "services_ready",
+                # Which mechanism was in play for this stack, and how far it was actually checked:
+                # which sides were asked and how, where the ephemeral range came from, and - when
+                # nothing was chosen - which of the reasons it was. The numbers above are read back
+                # from `compose port`, never assumed from the choice.
+                "published_by": "chosen" if chosen["ports"] else "daemon",
+                "port_choice": {key: value for key, value in chosen.items() if key != "ports"},
                 "definition_hash": digest(spec)}), "verification-services")
             return {"database_url": f'postgresql://zeus:{self.password}@127.0.0.1:{ports["postgres"]}/zeus',
                     "redis_url": f'redis://127.0.0.1:{ports["redis"]}/0'}

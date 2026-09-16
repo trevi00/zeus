@@ -1,0 +1,127 @@
+{
+ "label": "windows-11",
+ "plan": {
+  "ways": [
+   "pause",
+   "stop",
+   "restart"
+  ],
+  "cycles_per_way": 4
+ },
+ "cycles": [
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.199,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "pause",
+   "cycle": 0
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.205,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "pause",
+   "cycle": 1
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.198,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "pause",
+   "cycle": 2
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.202,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "pause",
+   "cycle": 3
+  },
+  {
+   "first_healthy_after": 1.894,
+   "first_answer_after": 1.903,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": true,
+   "way": "stop",
+   "cycle": 0
+  },
+  {
+   "first_healthy_after": 1.892,
+   "first_answer_after": 1.923,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": true,
+   "way": "stop",
+   "cycle": 1
+  },
+  {
+   "first_healthy_after": 1.893,
+   "first_answer_after": 1.924,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": true,
+   "way": "stop",
+   "cycle": 2
+  },
+  {
+   "first_healthy_after": 1.899,
+   "first_answer_after": 1.909,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": true,
+   "way": "stop",
+   "cycle": 3
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.659,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "restart",
+   "cycle": 0
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.61,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "restart",
+   "cycle": 1
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.63,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "restart",
+   "cycle": 2
+  },
+  {
+   "first_healthy_after": null,
+   "first_answer_after": 0.601,
+   "refusals": {},
+   "refused_after_health_was_green": false,
+   "health_green_before_first_answer": false,
+   "way": "restart",
+   "cycle": 3
+  }
+ ],
+ "cycles_where_health_was_green_before_the_first_answer": 4,
+ "cycles_where_a_request_was_refused_after_health_went_green": 0,
+ "widest_gap_seconds": 0.031,
+ "note": "measured on the resume paths the interruption tests use; the start path is gated by _await_service and is not what this measures",
+ "not_observed": "the watch begins after the bring-back command returned and after one health read, so anything between the command reaching the daemon and that first request is outside this record; a cycle with no refusal here is not a cycle with no window",
+ "ordering_is_not_unreadiness": "health going green before the first answer is an ordering of two observations, not evidence that the service could not have answered earlier"
+}

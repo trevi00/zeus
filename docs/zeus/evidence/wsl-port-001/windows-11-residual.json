@@ -1,0 +1,53 @@
+{
+ "port": 29979,
+ "choice_window": [
+  20000,
+  32767
+ ],
+ "choice": {
+  "window": [
+   20000,
+   32767
+  ],
+  "window_source": "assumed:linux-default-32768",
+  "sides": {
+   "local": {
+    "kind": "windows",
+    "checked": true,
+    "how": "bind"
+   },
+   "peer": {
+    "kind": "wsl:Ubuntu",
+    "checked": true,
+    "how": "socket table over wsl.exe (ss -Htan, every state)"
+   }
+  },
+  "verified_on": [
+   "local",
+   "peer"
+  ],
+  "daemon_is_local": true,
+  "guarantee": "checked_before_choosing_on: local, peer",
+  "fallback": null
+ },
+ "docker_run_exit": 125,
+ "daemon_refused_to_publish": true,
+ "containers": [
+  {
+   "name": "zeus-probe-19fa3b27d239-23230142",
+   "started": false,
+   "start_exit": 125,
+   "cleanup": {
+    "attempted": false,
+    "removed": null,
+    "error": "nothing_was_created"
+   }
+  }
+ ],
+ "run_id": "19fa3b27d239",
+ "measured_on": {
+  "platform": "win32",
+  "side": "windows",
+  "ephemeral_range": null
+ }
+}
