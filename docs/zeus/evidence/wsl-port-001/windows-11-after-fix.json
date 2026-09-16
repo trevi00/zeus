@@ -8,8 +8,8 @@
  "cycles": [
   {
    "cycle": 0,
-   "postgres_port": 22146,
-   "redis_port": 29838,
+   "postgres_port": 27152,
+   "redis_port": 22585,
    "inside_choice_window": [
     true,
     true
@@ -24,8 +24,8 @@
   },
   {
    "cycle": 1,
-   "postgres_port": 27205,
-   "redis_port": 31941,
+   "postgres_port": 21703,
+   "redis_port": 27019,
    "inside_choice_window": [
     true,
     true
@@ -40,8 +40,8 @@
   },
   {
    "cycle": 2,
-   "postgres_port": 21015,
-   "redis_port": 26489,
+   "postgres_port": 21613,
+   "redis_port": 28775,
    "inside_choice_window": [
     true,
     true
@@ -56,7 +56,7 @@
   }
  ],
  "note": "ports are read back from `compose port`, never assumed from the choice",
- "run_id": "f2d836297695",
+ "run_id": "ff995f6e52ac",
  "measured_on": {
   "platform": "win32",
   "side": "windows",

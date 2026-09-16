@@ -1,5 +1,5 @@
 {
- "port": 60555,
+ "port": 58541,
  "docker_run_exit": 0,
  "steps": [
   {
@@ -7,10 +7,10 @@
    "distro_sockets": [
     {
      "state": "UNCONN",
-     "local": "127.0.0.1:60555"
+     "local": "127.0.0.1:58541"
     }
    ],
-   "windows_listeners": "0",
+   "windows_listeners": "1",
    "connect_from_distro": false
   },
   {
@@ -18,7 +18,7 @@
    "distro_sockets": [
     {
      "state": "UNCONN",
-     "local": "127.0.0.1:60555"
+     "local": "127.0.0.1:58541"
     }
    ],
    "windows_listeners": "1",
@@ -41,15 +41,29 @@
    "distro_sockets": [
     {
      "state": "LISTEN",
-     "local": "127.0.0.1:60555"
+     "local": "127.0.0.1:58541"
     }
    ],
    "windows_listeners": "1",
    "connect_from_distro": true
   }
  ],
+ "containers": [
+  {
+   "name": "zeus-probe-32411a3d6377-4f6a9cea",
+   "started": true,
+   "start_exit": 0,
+   "cleanup": {
+    "attempted": true,
+    "removed": true,
+    "error": null
+   }
+  }
+ ],
+ "run_id": "32411a3d6377",
  "measured_on": {
   "platform": "linux",
+  "side": "wsl",
   "ephemeral_range": [
    32768,
    60999

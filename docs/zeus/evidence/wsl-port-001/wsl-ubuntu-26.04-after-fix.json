@@ -3,6 +3,7 @@
   20000,
   32767
  ],
+ "window_source": "measured:/proc/sys/net/ipv4/ip_local_port_range",
  "ephemeral_range": [
   32768,
   60999
@@ -10,8 +11,8 @@
  "cycles": [
   {
    "cycle": 0,
-   "postgres_port": 23835,
-   "redis_port": 22684,
+   "postgres_port": 26149,
+   "redis_port": 28409,
    "inside_choice_window": [
     true,
     true
@@ -29,8 +30,8 @@
   },
   {
    "cycle": 1,
-   "postgres_port": 32673,
-   "redis_port": 20064,
+   "postgres_port": 27673,
+   "redis_port": 22343,
    "inside_choice_window": [
     true,
     true
@@ -48,8 +49,8 @@
   },
   {
    "cycle": 2,
-   "postgres_port": 22256,
-   "redis_port": 23900,
+   "postgres_port": 25477,
+   "redis_port": 27112,
    "inside_choice_window": [
     true,
     true
@@ -67,8 +68,10 @@
   }
  ],
  "note": "ports are read back from `compose port`, never assumed from the choice",
+ "run_id": "576615353f75",
  "measured_on": {
   "platform": "linux",
+  "side": "wsl",
   "ephemeral_range": [
    32768,
    60999

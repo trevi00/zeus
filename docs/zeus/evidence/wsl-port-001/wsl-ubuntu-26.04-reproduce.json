@@ -1,6 +1,6 @@
 {
- "port": 56687,
- "control_port": 59757,
+ "port": 53590,
+ "control_port": 56169,
  "ephemeral_range": [
   32768,
   60999
@@ -8,7 +8,7 @@
  "steps": [
   {
    "at": "occupant holds the port in the distro",
-   "port": 56687
+   "port": 53590
   },
   {
    "at": "docker publishes that same port",
@@ -61,8 +61,32 @@
    }
   }
  ],
+ "containers": [
+  {
+   "name": "zeus-probe-caf4d1c358ef-eb56cd3f",
+   "started": true,
+   "start_exit": 0,
+   "cleanup": {
+    "attempted": true,
+    "removed": true,
+    "error": null
+   }
+  },
+  {
+   "name": "zeus-probe-caf4d1c358ef-5e22b798",
+   "started": true,
+   "start_exit": 0,
+   "cleanup": {
+    "attempted": true,
+    "removed": true,
+    "error": null
+   }
+  }
+ ],
+ "run_id": "caf4d1c358ef",
  "measured_on": {
   "platform": "linux",
+  "side": "wsl",
   "ephemeral_range": [
    32768,
    60999
