@@ -286,7 +286,7 @@ def parser() -> argparse.ArgumentParser:
     canary.add_argument("--live", action="store_true", help="Execute a real Codex file task (uses account quota)")
     cycle = commands.add_parser("cycle", help="Bounded persistent execution loop over one correlation; no conductor")
     cycle_commands = cycle.add_subparsers(dest="cycle_command", required=True)
-    for name in ("start", "status", "step"):
+    for name in ("start", "status", "handoff", "step"):
         sub = cycle_commands.add_parser(name)
         sub.add_argument("cycle_id")
         if name == "start":
@@ -385,6 +385,9 @@ def cycle_command(service, args):
         row = LocalCycle(service).status(args.cycle_id)
         # Presentation only: derived here, never written back to the stored cycle row.
         emit({**row, "remaining_executions": max(0, row["max_executions"] - row["executions"])})
+    elif args.cycle_command == "handoff":
+        # INV-CYCLE-HANDOFF-001: store read only; no executor, observer, bus or provider is built.
+        emit(LocalCycle(service).handoff(args.cycle_id))
     else:
         observer = build_observer(service.store, "cli.cycle")
         executor = build_executor(service, observer=observer)

@@ -761,6 +761,43 @@ continues through the existing rework path; an accepted one leaves the cycle in
 `awaiting_operator` before the conductor. The limit counts executor starts through this cycle,
 never provider billing, and an idle turn is reported as idle, not success.
 
+## INV-CYCLE-HANDOFF-001
+
+`LocalCycle.handoff` and `zeus cycle handoff <cycle_id>` are a read-only projection for the next
+operating session: authority `observation_only`, `automatic_resume` false, schema
+`urn:zeus:cycle-handoff:1`. One store transaction reads the cycle row and, when `last_execution`
+names a task or decision, the current row under that id; nothing is put, updated, deleted,
+published, acknowledged, opened, probed, reset or executed, and the CLI builds no executor,
+observer, bus or provider for it. The cycle view carries only the stored policy fields (id,
+correlation, status, limit, count, in-flight marker, stopped reason, last execution, timestamps);
+`remaining_executions` is display headroom clamped at zero and never written back. The stored
+`stopped_reason` is never printed as such: the view's `cycle.stopped_reason` is null when the
+stored value is absent or null, otherwise the text before the first colon when that text is one of
+the finite recognized codes (the stop states, `budget_exhausted`, `foreign_correlation`,
+`in_flight_residue`, `diagnose_pending`, `claim_guard_refused`, `no_execution_claimed`, the
+`exception`, `foreign_queue`, `unsupported_phase` and `execution_notice` prefixes, and
+`execution_<status>` only for the closed list of existing task/decision statuses), otherwise
+`unknown`; any colon detail is discarded and arbitrary prefix text or a non-string value is
+`unknown`. `cycle.stopped_reason_sha256` is the lowercase SHA-256 hex of the complete original
+UTF-8 string when the stored reason is a string (including unrecognized ones), otherwise null; it
+is correlation metadata, not a secrecy guarantee for low-entropy values. The `in_flight` and
+`last_execution` views admit only the string fields agent, kind, id, status, at and result_id and
+the boolean claimed; other types are null, any other key (including error) is omitted, and an
+absent or non-object marker is null. The stored row, `zeus cycle status` and `zeus cycle step`
+are unchanged by this projection. The target
+record is an observation of the row as stored now, not proof of a historical execution: its
+availability is `none` without a last execution, `unsupported_kind` for a kind other than task or
+decision, `missing` when the row is absent, `correlation_mismatch` when the row's message
+correlation differs from the cycle's, and `found` only when it matches; a non-found record carries
+availability, kind and id alone. A found record adds status, attempt, generation and phase when
+present and, from a dict result only, the candidate's base/revision/tree/diff_hash strings, the
+execution_ref string, the evidence inspection verdict string and, for a decision, the boolean
+acceptance; anything absent or of another type is null. Task input, prompts, summaries, output,
+raw errors, messages, settings and candidate paths are never emitted. An unknown cycle is a
+`ContractError` and a store failure propagates; there is no empty success, recovery heuristic or
+generated next step. The references are recorded data, not integrity-checked artifacts, and the
+view grants no approval, completion or deployment.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

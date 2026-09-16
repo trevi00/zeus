@@ -1,0 +1,10 @@
+{
+  "source": "baldrix",
+  "path": "skills/_common/handoff-clear-trigger.md",
+  "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+  "blob": "0388365162155a528aedc3b1270855028117bf85",
+  "pinned_sha256": "a19c8bfc8148b0a5247112398eef14f790f5752542c570406835c172a1a4ec58",
+  "observed_sha256": "562dca1ea9767584af6cae234dcfb03cc167763626aa74a641be95da8515bb3e",
+  "lf_normalized_matches_commit": true,
+  "disposition": "Adapt explicit handoff identities and bounded continuation into a read-only PG projection; reject /clear, iteration thresholds and handoff prose as authority; no upstream code executed"
+}
