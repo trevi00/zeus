@@ -1,0 +1,81 @@
+{
+  "outcome": "blocked_provider_budget",
+  "model_calls": 1,
+  "base": "44ca034cc42c8f29f18935b6a77e8dcde68a97bc",
+  "task_id": "e5355f5d-32a0-4d3d-9541-5f09206ff062",
+  "task_status": "retry",
+  "task_error": "ExecutionFailure: claude-provider-budget-exhausted",
+  "assignment_stream_id": "1789532682208-0",
+  "result_stream_id": "1789532818534-0",
+  "duplicate_same_task": true,
+  "received_type": "execution.notice",
+  "decisions": [
+    {
+      "id": "e969832f66276f2c1e701b2c2035333ae5b4cedd1f4492d5fa6482f3411895fc",
+      "actor": "lead:improvement",
+      "phase": "diagnose",
+      "status": "pending"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "eb9ea3af1c9971f73cfe372e38f61862d6eab0e54c2c11c21c362ee236ec8346",
+      "status": "settled",
+      "outcome": "provider_failure",
+      "usage": {
+        "basis": "result_total_including_cache",
+        "parts": {
+          "input_tokens": 162,
+          "output_tokens": 8917,
+          "cache_read_input_tokens": 79687,
+          "cache_creation_input_tokens": 24999
+        },
+        "source": "claude/result.usage",
+        "cost_note": "the provider's own estimate for this run, never a billed amount",
+        "usage_note": "the terminal result message only; no message is added twice",
+        "cost_source": "provider_estimate",
+        "event_count": 54,
+        "last_tokens": null,
+        "stream_hash": "sha256:12aee5ba26d126469748b9277f7bb129cbc76187b701e0cd9bfa180b23f870f3",
+        "total_tokens": 113765,
+        "confirmed_model": "claude-fable-5-1",
+        "requested_model": "claude-fable-5-1",
+        "reported_cost_usd": 1.1365405,
+        "model_confirmation": "transport_reported"
+      }
+    }
+  ],
+  "collection": {
+    "files": 1,
+    "records": 32,
+    "inserted": 32,
+    "duplicates": 0,
+    "conflicts": 0,
+    "corrupt": 0,
+    "refused": 0,
+    "truncated_tail": 0,
+    "unconfirmed_audits": 0,
+    "confirmed_audits": 3,
+    "sink_failures": 0,
+    "reclaimed_segments": 0,
+    "pruned_runs": 0,
+    "pruned_files": 0,
+    "alerts_replayed": 0,
+    "per_file": [
+      {
+        "file": "ad08764af07e41f59a4152c69731c13e.0000.jsonl",
+        "from_offset": 0,
+        "to_offset": 42610,
+        "records": 32,
+        "inserted": 32,
+        "confirmed_audits": 3
+      }
+    ]
+  },
+  "remaining_containers": "",
+  "receipt_sha256": "9ca6ff5b90c52bdb1c3ea931184e7ba2fd00c7416d16272693ed82a826446ec0",
+  "operator_script_sha256": "78ff3b9d4d570ab858ee46cedf0a58a07b326402e8b9928e27896c987099ee1a",
+  "policy_sha256": "f7f0bc9a0e7550960cc911c7acd0ac72bee8592512c01cfb109d6d75fd9b71ed",
+  "scope": "isolated disposable stack; current Codex reviewed externally; no automatic reviewer invocation",
+  "unaccepted_draft_sha256": "69743eb36bc3aca550e64173150facc777b60b8d0a5c4eb1ea2917b388a24158"
+}
