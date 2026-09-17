@@ -139,3 +139,11 @@ canary pair (2), at most one critical corrective implementation pair (2): ceilin
 bounded delivery, no blind retry. Claude max_budget_usd16, timeout900; leads300 existing limits.
 Record calls actually used, not allocated budget as spend. If architecture fails, update this
 same frame before any additional operation; no repeated tiny patch batches.
+
+### Launch correction (before any model call)
+
+Bootstrap project-evidence-001 failed ConnectionError before delivery, ledger stayed80.
+The owner launcher used stale Redis port56379; current `docker port zeus-local-ops-redis`
+is127.0.0.1:63589. No implementation started. Keep failed receipt and pending old namespace
+unchanged, use a new operation identity and resolve/ping the exact container endpoint before
+launch. This is a corrected owner launch, not a model retry or a readiness investigation.
