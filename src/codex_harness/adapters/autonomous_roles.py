@@ -23,8 +23,14 @@ from codex_harness.domain.autonomous import (
     DEBATE_ROLES,
     MAX_ROLE_ENTRIES,
     RESEARCHER,
-    ROLE_ORDER,
     SSOT_DECISIONS,
+)
+from codex_harness.domain.council import (
+    AGENTS,
+    CONDUCTOR_ROLE,
+    DBA,
+    IMPROVEMENT_LEAD,
+    RESEARCH_LEAD,
 )
 from codex_harness.domain.dge import CLAIM_KINDS, DECISIONS, QUESTION_STATUSES, SEVERITIES, VERDICTS
 from codex_harness.domain.model import require
@@ -78,7 +84,16 @@ ATTACKER_OUTPUT = _object({"findings": {"type": "array", "items": FINDING}})
 DISPOSITION = _object({"finding_id": TEXT, "decision": _enum(DECISIONS), "reason": TEXT})
 ARBITER_OUTPUT = _object({"verdict": _enum(VERDICTS), "rationale": TEXT,
                           "dispositions": {"type": "array", "items": DISPOSITION}, "research_question": NULLABLE_TEXT})
-SCHEMAS = {RESEARCHER: RESEARCH_OUTPUT, "proposer": PROPOSER_OUTPUT, "attacker": ATTACKER_OUTPUT, "arbiter": ARBITER_OUTPUT}
+# INV-COUNCIL-001 council roles: every downstream output names the snapshot (and report) digest it worked from.
+DBA_OUTPUT = _object({"snapshot_digest": TEXT, "summary": TEXT, "claim_ids": STRINGS, "unknowns": STRINGS})
+RESEARCH_LEAD_OUTPUT = _object({"summary": TEXT, "claim_ids": STRINGS, "snapshot_digest": TEXT, "report_digest": TEXT})
+IMPROVEMENT_LEAD_OUTPUT = _object({"summary": TEXT, "decision": _enum(SSOT_DECISIONS), "rationale": TEXT, "transition": TRANSITION,
+                                   "claim_ids": STRINGS, "findings": {"type": "array", "items": FINDING},
+                                   "snapshot_digest": TEXT, "report_digest": TEXT})
+CONDUCTOR_OUTPUT = _object({**ARBITER_OUTPUT["properties"], "snapshot_digest": TEXT, "report_digest": TEXT})
+SCHEMAS = {RESEARCHER: RESEARCH_OUTPUT, "proposer": PROPOSER_OUTPUT, "attacker": ATTACKER_OUTPUT, "arbiter": ARBITER_OUTPUT,
+           DBA: DBA_OUTPUT, RESEARCH_LEAD: RESEARCH_LEAD_OUTPUT, IMPROVEMENT_LEAD: IMPROVEMENT_LEAD_OUTPUT,
+           CONDUCTOR_ROLE: CONDUCTOR_OUTPUT}
 
 
 def _listed(values) -> str:
@@ -113,6 +128,22 @@ OBJECTIVES = {
                 "allegation with cited reasoning; never defer a critical finding; accept only without blockers. "
                 "A verdict is exactly one of " + _listed(VERDICTS) + " (research_question only with needs_research) "
                 "and a disposition decision is exactly one of " + _listed(DECISIONS) + "."),
+    DBA: ("Interpret the frozen read-only database snapshot you were given against the research packet. "
+          "Name the exact snapshot_digest, summarize what the selected records show (found/missing/unknown and "
+          "their whitelisted status fields), cite only packet claim ids, and list unknowns. A missing key is absent "
+          "at that snapshot in the explicit scope only; an unknown record is not a success. Your report is an "
+          "interpretation, never a new Git-supported fact and never a substitute for the observation."),
+    RESEARCH_LEAD: ("Propose the design for the fixed plan from the packet AND the frozen DBA report, citing packet "
+                    "claims only; echo the snapshot_digest and report_digest you worked from; do not change the plan."),
+    IMPROVEMENT_LEAD: ("Respond with a constructive alternative: summary, decision (" + _listed(SSOT_DECISIONS) + "), "
+                       "rationale, transition (compatibility, rollback, retirement for improve/migrate, null otherwise), "
+                       "claim ids, plus findings under the existing rule: only material blockers are critical (concrete "
+                       "reachable trigger, cited claims, exact fixed criterion, impact, minimal mitigation); everything "
+                       "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest."),
+    CONDUCTOR_ROLE: ("Arbitrate the research lead proposal and the improvement lead alternative with the existing rules: "
+                     "name every finding exactly once, never defer a critical finding, accept only without blockers; a "
+                     "verdict is exactly one of " + _listed(VERDICTS) + " and a disposition decision one of "
+                     + _listed(DECISIONS) + ". Echo the snapshot_digest and report_digest."),
 }
 
 
@@ -121,8 +152,10 @@ def execute_role(executor, task: dict, heartbeat) -> dict:
     message = task["message"]
     details = message["what"]["details"]
     role = details.get("role")
-    require(role in ROLE_ORDER, "Unknown autonomous role")
-    require(task["agent"] == "lead:" + role, "Role task assigned to the wrong lead")
+    require(role in AGENTS, "Unknown autonomous role")
+    # v1 roles run on lead:<role>; the council roles on their real agents (lead:dba, lead:research,
+    # lead:improvement, conductor). The mapping is the domain table, never derived from the name.
+    require(task["agent"] == AGENTS[role], "Role task assigned to the wrong agent")
     base = details["base_revision"]
     require(message["where"]["revision"] == base, "Role base revision mismatch")
     cwd = executor.git.review_workspace(base, task["id"])

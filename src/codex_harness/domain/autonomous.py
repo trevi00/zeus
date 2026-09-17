@@ -209,17 +209,18 @@ def attacker_findings(output) -> dict:
 
 
 # ----- provenance ---------------------------------------------------------------------------------
-def role_binding(task: dict, *, role: str, base_revision: str, correlation: str) -> dict:
+def role_binding(task: dict, *, role: str, base_revision: str, correlation: str, agent: str | None = None) -> dict:
     """Bind the answer to the persisted execution row itself, or refuse with a fixed reason. Operator
     submitted sessions, another agent, another correlation, another base or a non-succeeded row never
-    bind. Provenance is proof of which execution produced the bytes, not of what they claim."""
+    bind. Provenance is proof of which execution produced the bytes, not of what they claim. `agent`
+    is the profile's real agent for the role (v1 default: `lead:<role>`)."""
     if not isinstance(task, dict):
         raise ContractError("role_task_missing")
     result = task.get("result")
     message = task.get("message") if isinstance(task.get("message"), dict) else {}
     if task.get("status") != "succeeded" or not isinstance(result, dict):
         raise ContractError("role_task_not_succeeded")
-    if task.get("agent") != ROLE_AGENTS[role] or message.get("correlation_id") != correlation:
+    if task.get("agent") != (agent or ROLE_AGENTS[role]) or message.get("correlation_id") != correlation:
         raise ContractError("role_task_unbound")
     if (message.get("what") or {}).get("action") != ROLE_ACTION or ((message.get("what") or {}).get("details") or {}).get("role") != role:
         raise ContractError("role_task_unbound")
@@ -306,9 +307,11 @@ def verified_graph(run_id: str, refs: dict) -> dict:
                            "ref": "git:" + refs["base_revision"] + ":" + refs["goal"]["path"]}),
              node("research", {"packet_digest": refs["packet_digest"], "execution_ref": refs["research_execution_ref"],
                                "task_id": refs["research_task_id"], "sha256": refs["packet_digest"]}),
+             # INV-COUNCIL-001: a v2 run adds the DBA binding and the snapshot/report digests; v1 bodies are unchanged.
              node("design", {"session_id": refs["session_id"], "packet_digest": refs["packet_digest"],
                              "decision_event_id": refs["decision_event_id"], "role_bindings": refs["role_bindings"],
-                             "sha256": digest(refs["role_bindings"])}),
+                             **({"council": refs["council"]} if refs.get("council") else {}),
+                             "sha256": digest([refs["role_bindings"], refs.get("council")] if refs.get("council") else refs["role_bindings"])}),
              node("candidate", {"revision": refs["candidate"]["revision"], "base": refs["candidate"]["base"],
                                 "tree": refs["candidate"]["tree"], "diff_hash": refs["candidate"]["diff_hash"],
                                 "task_id": refs["implementation_task_id"], "execution_ref": refs["implementation_execution_ref"],

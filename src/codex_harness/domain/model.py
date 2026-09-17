@@ -78,6 +78,8 @@ class Organization:
         recipient = self.actor(message["who"]["recipient"])
         self.actor(message["who"]["owner"])
         kind = message["type"]
+        if sender.role == "conductor" and conductor_self_arbitration(message):
+            return  # INV-COUNCIL-001: the only self-addressed shape; every other rule below is unchanged
         if kind == "task.assign":
             require(recipient.parent == sender.id, "Assignment must follow a direct reporting edge")
         elif kind == 'execution.notice':
@@ -87,6 +89,18 @@ class Organization:
             require(sender.role in {"lead", "conductor"}, "Worker cannot approve")
         elif kind in {"incident.report", "task.result", "hook.required"}:
             require(sender.parent == recipient.id, "Report must go to the direct parent")
+
+
+def conductor_self_arbitration(message: dict) -> bool:
+    """INV-COUNCIL-001: the one self-addressed message shape the organization admits: the conductor's
+    own `dge_role` arbitration task (details.role == "conductor") and that task's `task.result`.
+    General self-assignment, worker impersonation and every other type stay refused."""
+    who, what = message.get("who") or {}, message.get("what") or {}
+    if who.get("sender") != "conductor" or who.get("recipient") != "conductor" or what.get("action") != "dge_role":
+        return False
+    if message.get("type") == "task.assign":
+        return isinstance(what.get("details"), dict) and what["details"].get("role") == "conductor"
+    return message.get("type") == "task.result"
 
 
 def envelope(kind: str, sender: str, recipient: str, action: str, details: dict,

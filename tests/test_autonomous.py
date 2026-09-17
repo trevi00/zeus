@@ -120,7 +120,7 @@ class FakeExecutor:
         tx.put("invocation_reservations", reservation["id"], reservation)
         artifact = {"answer": answer, "thread_id": "thread-fixed" if self.shared_thread else "thread-" + record["id"],
                     "invocation": {"reservation": reservation["id"], "outcome": "accepted"},
-                    "execution_assignment": {"provider": "codex" if bucket == "decisions_pending" or record["agent"].startswith("lead:") else "claude"}}
+                    "execution_assignment": {"provider": "codex" if bucket == "decisions_pending" or stage is not None else "claude"}}
         if stage is not None or self.project_skills:
             # Same shape the executor builds: stage, input evidence ref, basis revision, plus the
             # project-skills manifest ref that makes a stage-None context bound.
@@ -138,7 +138,9 @@ class FakeExecutor:
             task = tx.get("tasks", expected["id"])
             details = task["message"]["what"]["details"]
             task.update(attempt=1, generation=1, lease_owner="fixture")
-            if task["agent"].startswith("lead:"):
+            # The real executor dispatches on the ACTION, not on the agent's name: every `dge_role` task runs
+            # `execute_role` at stage `dge:<role>`, including the council conductor's own arbitration task.
+            if task["message"]["what"]["action"] == "dge_role":
                 role = details["role"]
                 task["status"] = self.role_status
                 ref = self._persist(tx, task, "tasks", self.outputs[role], "dge:" + role, evidence_ref_of(details))

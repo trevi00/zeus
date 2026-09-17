@@ -970,6 +970,53 @@ scope, never truth of prose, merged code or product acceptance; `knowledge=False
 execution and `index_python`/`project_runtime` never touch the promoted namespace. Status reads the
 store only and prints digests, codes and counts.
 
+## INV-COUNCIL-001
+
+`urn:zeus:autonomous:2` is the opt-in topic-bound council; `urn:zeus:autonomous:1` keeps its validator,
+canonical form, roles and six-start cap unchanged and an unsupported schema is refused before any
+provider or database access. v2 adds `current_state` (`records`: 1..20 unique `{bucket,id}` from
+`tasks|operations|autonomous_runs|promotions` with safe token ids; `max_age_seconds`: integer 60..3600,
+never a bool) and runs researcher (`lead:researcher`) -> one read-only snapshot -> DBA (`lead:dba`) ->
+research lead (`lead:research`) -> improvement lead (`lead:improvement`) -> conductor (`conductor`) ->
+the existing Operation v2 -> promotion: at most seven executor starts, one round, one absolute deadline.
+The DGE proposer/attacker/arbiter names remain INTERNAL session slots only; task rows, bindings, receipt
+`topology` and the promoted design node name the real agents. The snapshot is one
+`BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY` transaction on a separate connection with bounded
+connect and statement timeouts (never `Store.transaction`, never model-written SQL), reading exactly the
+selected `documents` rows. Its envelope (`urn:zeus:db-snapshot:1`) binds topic, run, base revision,
+selection, `observed_at`, `expires_at` and a digest of database, schema and server version (no DSN), and
+holds per key `found|missing|unknown`, the SHA-256 of the canonical row and a whitelist of REQUIRED
+fields checked against finite vocabularies or known identity syntax: task status and actor
+(`conductor` or `lead|worker:<name>`, the colon is normal), operation status and `lead_accepted`
+(true/false/null), run status and stage, promotion repository (`verified:<run>`). A field that is
+absent, null or outside its vocabulary makes the record `unknown` with a digest and no fields; an
+arbitrary token-shaped string is never copied out; producer and consumer apply the same rule. `missing`
+means absent at that snapshot in the explicit selection, nothing about the rest of the database. A
+connection or read failure is `snapshot_unavailable` (never an empty observation, no later model start)
+and the public exception keeps no `__cause__`/`__context__`. The envelope is stored content-addressed in
+the executor artifact store; the run row holds reference, digest, times, identity digest and coverage
+counts only. Every council role uses the same six-W outbox -> bus -> executor path and the same
+task/artifact/reservation/stage/input binding as v1, with its real agent; roles sharing a provider
+thread are refused. The only hierarchy exception is the conductor's self-addressed `dge_role` task with
+`details.role == "conductor"` and its `task.result`; other self-assignment, lead-to-lead assignment or
+report and worker approval stay refused. The DBA `task.result` must pass the conductor's workflow
+before the verified report is handed to both leads (`report_not_relayed`). The DBA report names the
+snapshot digest and known packet claim ids and is interpretation, never a Git-supported fact. Both
+leads and the conductor echo the same snapshot and report digests (`council_identity_mismatch`) and may
+cite only known packet claim ids, including in the improvement alternative that never reaches the DGE
+validator. The improvement lead's full alternative (decision reuse/improve/migrate/new, rationale,
+transition for improve/migrate, findings) is delivered to the conductor; its findings are converted to
+the internal attacker event exactly once, by `event_from_role`. Before each downstream role and before
+the implementation the SAME frozen envelope is re-read and checked (`snapshot_missing`,
+`snapshot_corrupt`, `snapshot_mismatch`, `snapshot_stale`); nothing refreshes or repairs it. Promotion
+rechecks, in the promotion transaction and next to the unchanged worker/reviewer gates, the DBA task
+binding and execution artifact, the re-derived report digest and the snapshot document
+(`promotion_report_unproven:<code>`, `promotion_snapshot_unproven:<code>`) and records the DBA binding
+and the snapshot/report digests in the design node and the receipt. Not guaranteed: atomicity between
+Git and PostgreSQL, freshness beyond `expires_at`, completeness of topic-relevant records outside the
+selection, or the semantic accuracy of any role's prose. Fixture tests prove these contracts, not
+debate quality; no live seven-call council has been measured.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
