@@ -1,0 +1,85 @@
+{
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\code-tutor-scenario-pack-001",
+  "candidate": "4735974ed7012af645c0853530fa0591e7f47d99",
+  "delivery": "owner_review_of_preserved_provider_artifacts",
+  "autonomous_status": "failed",
+  "independent_reviewer_started": false,
+  "promotion_count": 0,
+  "actual_model_starts": 6,
+  "models": {
+    "codex": 5,
+    "claude": 1
+  },
+  "owner_checks": {
+    "passed": 68,
+    "skipped": 7,
+    "ruff": "passed"
+  },
+  "records": [
+    {
+      "path": "unfinished-candidate.json",
+      "bytes": 1516,
+      "sha256": "81ec171e53ac491cedb73a55b6a60dbff4173f0dfede6ccda1567b78cc37db30"
+    },
+    {
+      "path": "owner-checks.json",
+      "bytes": 1609,
+      "sha256": "a67012e85b77f4b07041f01140bad223f20f9c0e8ba486aa54c24ba4173ecadd"
+    },
+    {
+      "path": "contracts.log",
+      "bytes": 194,
+      "sha256": "fd2adbdbccf628c48b9162ac4a9f3e9e82d90802a7e77a42b94a405903e09cf0"
+    },
+    {
+      "path": "ruff.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "promotion-check.json",
+      "bytes": 117,
+      "sha256": "2d5a712cb47e18a59de6d5f8f9ddcde1c17fa171d793967805095c2184fbaf46"
+    },
+    {
+      "path": "learning-loop-review.html",
+      "bytes": 29292,
+      "sha256": "7d78f0080ef530d6dda49fa405933fb509096163b3022a14525c479ecfb4ccc2"
+    },
+    {
+      "path": "run-001/receipt.json",
+      "bytes": 671,
+      "sha256": "0203fba8ee812f1662698137f047795ccce8f3caf3ce8ba6b2df6bd5c4490cd3"
+    },
+    {
+      "path": "run-002/receipt.json",
+      "bytes": 680,
+      "sha256": "549739a7cbe0061ae9e73f87d231d7f64778732d6133560128c4bf26dee50930"
+    },
+    {
+      "path": "run-002/observation-status.json",
+      "bytes": 1730,
+      "sha256": "c36710591428e00cacd6f1049da512bf0e31d796131af7b6affc5a7dce0bb2cb"
+    },
+    {
+      "path": "run-003/receipt.json",
+      "bytes": 670,
+      "sha256": "9460cd73e0d7413671149a876bbb4743d30756f10b60e1f32949186d2fe4f245"
+    },
+    {
+      "path": "run-003/run.stdout",
+      "bytes": 8859,
+      "sha256": "430c231646662b60bff8f3f09989ca44869bd2939f541ea51d1be4982cb6f185"
+    },
+    {
+      "path": "run-003/observation-collect.json",
+      "bytes": 498,
+      "sha256": "898a15e86e03b6b873ccd61c78adbc05a47dec5f5fa332c783691f6f425b0dd9"
+    },
+    {
+      "path": "run-003/observation-status.json",
+      "bytes": 1731,
+      "sha256": "a4344c883ad25d34591b2a00fbb8702576d62b52ccf2e9975f3390c4625c61a0"
+    }
+  ]
+}
