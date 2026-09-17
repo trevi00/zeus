@@ -118,3 +118,17 @@ Use previously accepted immutable image for implementation; rebuild accepted
 candidate for the second task. Preserve any failed attempts and reframe here only
 for a material failed condition. Stop when this matrix and CI pass. Minor unrelated
 findings are follow-up notes, not new blockers or new tickets in this delivery.
+
+## Staging-path obstacle and bounded continuation
+
+First operation consumed one reserved start (ledger109->110) but failed while
+writing a nested tracked evidence file into staging, before any container/inner
+Claude result. FileNotFoundError and the failed namespace remain recorded. Longest
+staged path under the chosen root would be278 characters; the proposed shorter
+D:/workspaces/zeus/artifacts/b129/i/r root yields235. Windows path-length behavior
+is the suspected mechanism, not an authentication/provider failure.
+Reuse existing injectable runtime directory, no code or global setting changes.
+One explicit replacement operation uses that short root; no requeue of the failed
+task. Ceiling114 from current110 permits the original two pairs. Preserve all prior
+acceptance conditions. If staging still fails, reframe this assumption rather than
+retry blindly. Short-root raw artifacts are linked alongside the original root.
