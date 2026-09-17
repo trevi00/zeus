@@ -107,7 +107,10 @@ def test_the_transport_delivers_settings_instructions_and_environment(tmp_path):
 def test_the_packaged_document_no_longer_contradicts_a_host_profile():
     text = load_profile('worker-v1')['document']
     assert 'Do not substitute an absolute interpreter' not in text
-    assert 'except host `project_evidence` commands' in text and 'Run tests as `python -m pytest`' in text
+    flat = ' '.join(text.split())  # line wrapping of the packaged document must not change the check
+    assert 'PATH `python` is the verified interpreter' in flat
+    assert 'Test `python -m pytest`, lint `python -m ruff check .`.' in flat
+    assert 'No other interpreter except host `project_evidence` commands, run verbatim.' in flat
 
 
 def test_a_broad_rule_a_foreign_checkout_and_model_text_are_refused(tmp_path):
