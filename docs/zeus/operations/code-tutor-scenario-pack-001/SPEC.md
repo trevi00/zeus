@@ -152,3 +152,20 @@ real consumer test against mapped temporary Git project. Preserve run-001 refusa
 empty isolated schema. Use owner-authorized run-002 with a new identity/schema after
 preflight validation; same six-start ceiling64, no additional call allowance. This is
 input preparation correction, not an automatic model retry or relaxed acceptance.
+
+## Reframe after research-packet length refusal
+
+Run-002 used one real Codex call (ledger58->59), task succeeded, but packet validation
+refused ssot.evidence[3]: 1,171 characters versus the existing 1,024 limit. The output
+schema did not enforce that length. Evidence was not truncated/repaired or promoted;
+no debate, Claude or reviewer ran. The whole affected boundary is model output -> native
+SSOT/packet validation, not product correctness. Original consumer remains unchanged.
+
+One owner-directed corrected attempt: explicitly require each SSOT array item <=600
+characters (native cap1,024), split distinct evidence into short entries, and keep
+claims/questions within native limits. Validate the new input before launch. This is a
+bounded input-contract mitigation, not a durable schema fix; record schema enforcement
+as one nonblocking follow-up if the actual corrected cycle passes. If it fails again,
+stop rather than repeat prompt patches. Run-003 uses a fresh isolated identity and six
+starts; total batch maximum seven actual calls, ledger59->ceiling65, not an unbounded
+budget reset. All pack acceptance conditions above remain unchanged.
