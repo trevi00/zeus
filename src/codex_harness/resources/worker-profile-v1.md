@@ -43,12 +43,12 @@ can be checked against them; nothing you write grants approval or completion.
 
 ## Environment
 
-- `python` on PATH is the harness's verified interpreter; `PYTHONPATH` already points at this
-  checkout's `src` when it exists. Run tests as `python -m pytest` and lint as `python -m ruff
-  check .`. Substitute no other interpreter, except host `project_evidence` commands: run
-  those verbatim.
-- Bash is permitted for these verification commands and read-only git inspection; other tool
-  policies are unchanged.
+- PATH `python` is the verified interpreter; `PYTHONPATH` is checkout `src` if any. Test
+  `python -m pytest`, lint `python -m ruff check .`. No other interpreter except host
+  `project_evidence` commands, run verbatim.
+- Profile edit: run `python -m codex_harness.adapters.worker_profile_metadata`, Edit its
+  digest into the manifest, rerun.
+- Bash: these commands and read-only git; other tool policy unchanged.
 
 ## Verification before completion
 
