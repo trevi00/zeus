@@ -233,3 +233,78 @@ container canary/review pair sets the new ceiling to 103 (six total new starts).
 Correction Claude cap USD6 declared, 1200s; review scope is these corrections and directly affected
 interactions, preserving the prior fixed frame. Owner tests then decide acceptance; no speculative
 review expansion. The canary remains unstarted until these material gates pass.
+
+## Image and capture ownership reframe — 2026-09-17
+
+Candidate fd5dfa6c2b91180206779f7227b69ae01939515a. Preserve correction-1 results: image builds
+with exit0 and Claude 2.1.274 starts; the standard pytest entry collects; the owner's injected
+post-start REAL container cancellation now leaves no running container and one durable run record.
+That probe replaced capture and establishes the outer finally only, not capture's own teardown.
+Owner full suite: 1914 passed, 448 skipped, one failure in the architecture test (below), 506.14s.
+Independent lead completed and rejected on a material inner-capture cancellation defect. Its
+execution is sha256:e3ec378cc6deb0130fb702ea6482968bca448730e4a45f413c9aa4f1cad33364;
+raw command/output preserved in correction-1/lead-reproducer.json on D. No actual container model
+call yet. This is the same ownership family, so revise the complete teardown sequence, not another
+outer exception patch. The fixed acceptance matrix and already accepted source/config/profile
+behavior do not expand.
+
+### Remaining image contract
+
+Observation: image a27317b5a25d70841cf50d0934e7c03c64695c568cd7906943c8e24855f47901 starts Claude,
+but the real `verified_interpreter`/`profile_environment(child_environment()[0], ...)` selects
+`/usr/local/bin/python3.13`: Path.resolve follows the /opt/zeus venv symlink. Under THAT environment,
+`python -m pytest --version` and `python -m ruff --version` both exit1 (module missing).
+The assumption that an installed venv and a valid binary imply a valid worker environment is false.
+
+Competing solutions: change the shared interpreter helper (broad host behavior change) or construct
+the image with a venv-local copied interpreter (local image change). Owner's disposable, network-none,
+no-mount experiment replacing that symlink with a copied interpreter selects /opt/zeus/bin/python
+and both tools exit0. Choose the image-local solution. Create the venv with `python -m venv --copies`
+before uv sync, or an equivalently verified copied interpreter. Do NOT change approved worker profile,
+host interpreter policy or permission grants. Add a build check using the ACTUAL profile-derived
+environment and Python resolution for both pytest and ruff, not merely `/opt/zeus/bin/python -m`.
+Retain the existing Claude version check. Owner's build-image.py captures child exits and repeats
+these probes without credentials before canary.
+
+### Remaining capture ownership contract
+
+Lead's reproducer uses the REAL evidence_inspection._capture and a REAL local sleeping Python child,
+with just the first process.wait injected to raise KeyboardInterrupt. hold's Owned container is a
+test double recording stop time; advance/retire are patched to avoid checkout writes. At 32 seconds
+stop was still uncalled and the child alive. A watchdog killed it; only then did pipe.close unblock,
+the interruption propagate and hold call stop. This is injected local-child evidence, not Docker.
+
+Invalid assumption: capture returns/raises promptly to its outer owner. In fact _capture catches
+TimeoutExpired only, then closes streams in finally while reader threads may still hold read locks.
+Required complete sequence: capture/normal wait -> timeout/cancel/exception -> terminate the owned
+client process TREE -> bounded drain/join -> close only streams whose readers are finished -> outer
+container stop/confirmation -> durable observations/recovery -> removal when safe. Reuse existing
+ProcessTree, no second process supervisor. No blocking close while a live reader owns the stream.
+If a tree/reader cannot be reclaimed, report that fact and retain ownership/recovery information;
+do not turn partial capture into success or silently discard resource debt. Preserve the original
+KeyboardInterrupt/exception after bounded cleanup. Container lifecycle must still run if client
+capture cleanup fails. Normal output hashes/byte counts/classification and default host replay
+authorization must stay compatible. If a minimal shared _capture refactor is necessary it is now
+explicitly allowed, with tests of normal, timeout and interrupted paths through the real helper.
+
+Decisive regression: actual sleeping child + first wait interruption (if using ProcessTree, inject
+on the real returned process's wait, not on a fake process). A watchdog is only test cleanup, never
+the mechanism that makes the test pass. Assert child/tree cleanup and timely interruption/owner
+stop BEFORE watchdog. Preserve the real Docker outer-cancellation check; do not replace it with
+fixture success. Retest the directly affected stream/cleanup behavior, not unrelated providers.
+
+### Required suite compatibility and next bounded batch
+
+The one full-suite failure is test_architecture::test_tests_assert_behavior_not_source_text:
+test_isolated_worker.py's assertion reads a generated temporary `src/pkg/mod.py` fixture, which
+the existing heuristic mistakes for production-source inspection. Make the generated fixture path
+explicit in the test while preserving the byte-copy behavior assertion. Do not change the architecture
+guard, add an exemption, or drop the check. Include tests/test_architecture.py in focused validation.
+
+Claude changes only image construction, capture/lifecycle code and affected tests/report. Owner then
+runs fixed gates: standard focused + full/CI, build actual-profile preparation checks, original
+real-capture cancellation reproducer and owned Docker cleanup, followed by the reserved actual task.
+No source/profile/policy redesign and no new research topic. Counts are 101 after two implementation/
+review pairs; one explicit correction/review pair and the reserved actual pair set ceiling 105
+(eight starts total from97). Correction cap USD6 declared/1200s. No automatic retry or requeue of
+prior failed operations. Native Linux host and restricted network egress remain out of scope.
