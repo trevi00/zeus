@@ -10,8 +10,8 @@ same validator, roles and six-start cap, with additive receipt metadata; neither
 Framework construction only. Actual Zeus Claude implementation and Codex review calls built/reviewed
 this candidate; their outcomes are in RESULT.md. Council orchestration unit tests use labelled
 executor, budget, snapshot, clock and role-output fixtures. `test_council_postgres.py` separately uses
-real isolated PostgreSQL. These prove the exercised contracts, not debate quality. A live seven-call
-council has not been measured; do not report one until its provider executions are.
+real isolated PostgreSQL. These prove the exercised contracts, not debate quality. The subsequent
+live seven-call council is measured separately in LIVE-001.md; construction fixtures do not establish it.
 
 ## Manifest
 

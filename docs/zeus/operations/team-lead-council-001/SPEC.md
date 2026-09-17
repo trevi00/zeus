@@ -229,3 +229,9 @@ council tests and lint, independent review, owner provenance check, full CI for 
 resulting PR. Broader topology, automatic recovery, device/product acceptance and
 remaining reference absorption stay out of scope. A refusal is a measured limitation,
 not a reason to expand this task into exploratory environment repair.
+
+Live phase result: accepted/promoted first execution, seven calls/settlements;
+cached replay zero calls, one graph promotion, historical rejection unchanged.
+Owner66 tests (including real PG) and lint passed. See LIVE-001.md and its evidence
+manifest. The missing-key exception above is now resolved by the candidate; broad
+continuous operation and product acceptance remain outside this delivery.
