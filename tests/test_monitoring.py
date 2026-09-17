@@ -71,6 +71,31 @@ def test_expired_execution_and_stale_health_are_not_live():
     assert result['task_counts']['running'] == 1
 
 
+def test_collect_keeps_source_failures_independent(monkeypatch):
+    """Envelope contract read by monitor.html: one failed source never hides the others."""
+    from codex_harness.adapters import monitoring
+    monkeypatch.setattr(monitoring, 'run_process',
+                        lambda *args, **kwargs: SimpleNamespace(returncode=1, stdout='', stderr='git missing'))
+    monkeypatch.setattr(monitoring, 'docker_facts', lambda repository: [{'service': 'redis', 'state': 'running'}])
+    monkeypatch.setattr(monitoring, 'redis_facts', lambda url, agents: [{'agent': 'conductor', 'entries': 1}])
+    service = SimpleNamespace(store=None, org=SimpleNamespace(agents={'conductor': object()}))
+    before = datetime.now(timezone.utc)
+    result = monitoring.collect(service, None, '.', 'redis://127.0.0.1/0')
+    sources = result['sources']
+    assert result['schema'] == 'harness-monitor.v1'
+    assert set(sources) == {'database', 'docker', 'redis'}
+    assert sources['database']['status'] == 'unavailable'
+    assert sources['database']['data'] is None
+    assert sources['database']['error'] == 'RuntimeError'
+    assert sources['docker'] == {'status': 'ok', 'observed_at': sources['docker']['observed_at'],
+                                 'data': [{'service': 'redis', 'state': 'running'}]}
+    assert sources['redis']['status'] == 'ok' and sources['redis']['data'][0]['agent'] == 'conductor'
+    for name in ('database', 'docker', 'redis'):
+        observed = datetime.fromisoformat(sources[name]['observed_at'])
+        assert observed.tzinfo is not None
+        assert before <= observed <= datetime.fromisoformat(result['collected_at'])
+
+
 def test_credential_redaction():
     text = safe_text('postgresql://admin:secret@localhost/db Bearer abc token=def password=xyz')
     assert all(secret not in text for secret in ['secret', 'abc', 'def', 'xyz'])
@@ -93,6 +118,10 @@ def test_http_rejects_mutations_hosts_and_unavailable_snapshot(tmp_path):
         assert request('GET', '/api/status')[0] == 503
         path.write_text(json.dumps({'sources': {}}))
         assert request('GET', '/api/status') == (200, b'{"sources": {}}')
+        path.write_text('{"sources": ')
+        assert request('GET', '/api/status') == (503, b'{"error":"snapshot_unavailable"}')
+        path.write_text(json.dumps({'sources': {}}))
+        assert request('GET', '/api/status')[0] == 200
         assert request('GET', '/api/status', {'Host': 'untrusted.example'})[0] == 403
         assert request('POST', '/api/status')[0] == 405
         assert request('GET', '/.env')[0] == 404
