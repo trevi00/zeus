@@ -1,0 +1,88 @@
+{
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\team-lead-council-001",
+  "runtime_candidate": "426e41399d9ef556288e4d7a9df682198737a7cb",
+  "owner_disposition": "accept implementation with explicit P2 residual, contingent on CI",
+  "actual_starts": 3,
+  "new_council_live_runs": 0,
+  "operation_outcomes": [
+    "failed",
+    "rejected"
+  ],
+  "files": [
+    {
+      "path": "research.json",
+      "bytes": 742,
+      "sha256": "067aed8764752a26a9b513413a8656317ca3f6191b3b2e3fcac226bdff731558"
+    },
+    {
+      "path": "unfinished-candidate.json",
+      "bytes": 2205,
+      "sha256": "3503b9c4dcabce1297836c554034cc190a01822436c9806a980d1f0f6c1f264b"
+    },
+    {
+      "path": "preflight-tests.log",
+      "bytes": 16468,
+      "sha256": "067dd14b8c1ca9456639534404866f0d01bd41545eeab37069205caae3467686"
+    },
+    {
+      "path": "preflight-pg.log",
+      "bytes": 2244,
+      "sha256": "9525cab94092185fe1c2a35147f803e081a0eaa1ec3e353c4315c18d5c4fdba3"
+    },
+    {
+      "path": "preflight-pg-failure-transcript.txt",
+      "bytes": 405,
+      "sha256": "22e4cbb8383d554b9193e9db426857dabefbc7cfe0810e0915f23d1caf91933b"
+    },
+    {
+      "path": "owner-pg.log",
+      "bytes": 100,
+      "sha256": "9178cb5a06c956729c5d4ffb4e77bb3ec6e3a4c3bc283571be249b187f01f41d"
+    },
+    {
+      "path": "owner-checks.json",
+      "bytes": 392,
+      "sha256": "dabdfc8c46a2fdee080b9b6b66f2d23400afa1af02316cea2bf56d9b29493780"
+    },
+    {
+      "path": "owner-contracts.log",
+      "bytes": 275,
+      "sha256": "ee459575d6fc81735f1efb530b13b9f4bec1b56bce5c868d2df3cb62ce172378"
+    },
+    {
+      "path": "owner-ruff.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "residual-nullable-field.json",
+      "bytes": 557,
+      "sha256": "8f9cf40e7f881ab8626fc04d1279affe38641a196f6c24f24f4eefd61dead347"
+    },
+    {
+      "path": "run-001/receipt.json",
+      "bytes": 669,
+      "sha256": "a1278c028ebe5e87b164fe307ab4f5b2702033a21603941be283360505d2c460"
+    },
+    {
+      "path": "run-001/observation-status.json",
+      "bytes": 1731,
+      "sha256": "1fc3c9a758a53173a5a1547a32b4f2ab3fef37c5eb1a801ad6d905c67b989cc6"
+    },
+    {
+      "path": "run-002/receipt.json",
+      "bytes": 669,
+      "sha256": "dba60290eee161602deec9bb54f9083e9d21082681aebb44b6f30d140f79b918"
+    },
+    {
+      "path": "run-002/review.json",
+      "bytes": 25737,
+      "sha256": "ebfe0dd9f3326a4529b76cbaec3f43299ad6a623b7b0552f3fff27b7326a6e23"
+    },
+    {
+      "path": "run-002/observation-status.json",
+      "bytes": 1731,
+      "sha256": "f19d2625a8af60847a51d989bbafb5f96f5657bd069a96cb959b2f1c0cd68ea2"
+    }
+  ]
+}

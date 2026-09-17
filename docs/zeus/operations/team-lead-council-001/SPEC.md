@@ -169,3 +169,23 @@ maximum2 starts (Claude completion + Codex review), ledger65->ceiling67. Claude 
 USD12, timeout3600s; no new seven-call council execution. This is owner-directed bounded
 completion of the same frame, not automatic retry, failed-output repair or promotion.
 After the fixed checks pass, deliver normally; do not expand into unrelated research.
+
+## Owner disposition of the completed candidate
+
+Candidate426e413: owner contract lane198 passed/1 skipped, isolated real PG1 passed,
+ruff passed. Independent Zeus Codex review ran65 focused checks successfully but
+returned accepted=false for one P2: missing operations.lead_accepted is conflated
+with explicit null by body.get(), so that synthetic row is reported found instead
+of unknown. Owner independently reproduced it; it is not fixed or waived silently.
+
+Under the user's critical-only blocking rule, this is an accepted noncritical
+residual for this delivery: the actual status is still reported, null grants no
+approval, and the original worker/reviewer/promotion gates remain separate. The
+required-field completeness criterion has this explicit exception. Fix key-presence
+checking on the next bounded snapshot-maintenance task; revisit sooner if incomplete
+operation rows occur in a selected real topic or anyone starts using snapshot
+coverage as an approval decision. No current caller has that authority.
+
+The run stays rejected in PG; the reviewer output is preserved unchanged. Owner Git
+acceptance, contingent on full CI, is separate and does not create an accepted
+operation or knowledge promotion. No third implementation/model round for this P2.
