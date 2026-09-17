@@ -90,3 +90,104 @@ automation residual: a supported way for workers to produce/verify packaged prof
 within their declared permissions, followed by a bounded actual acceptance. Do not open a new
 feature or retry loop in this batch. Product acceptance and owner-reviewed source absorption
 can ship independently while preserving the failed operation and remaining condition.
+
+## Metadata residual resolution — 2026-09-17
+
+Outcome: worker packages profile changes without owner hash/length repair. Preserve the
+accepted product lane and original failed harness receipt. This continuation replaces only
+the outstanding harness acceptance; it does not claim two simultaneous accepted receipts.
+Authorized bounded delivery: bootstrap implementation/review then actual packaging canary/
+review, at most four new model starts (machine ledger91->95), no automatic retries. Codex
+owns this design/integration; actual Zeus Claude implements. No scheduler, global permissions,
+deployment, full absorption or product rerun. Existing external evidence remains immutable.
+
+Facts: old worker cannot execute python -c; loader normalizes CRLF and hashes UTF-8 using
+worker_profile._normalized/_sha256 and enforces MAX_CHARACTERS. Narrow solution: one fixed,
+read-only module command, not general Python permission. Official sources opened 2026-09-17:
+https://code.claude.com/docs/en/permissions documents exact Bash command grants and deny
+precedence; https://docs.python.org/3.12/library/hashlib.html documents SHA256 byte hashing.
+These support design, not proof of installed CLI permission delivery. Actual canary decides it.
+
+Path: tracked profile permission -> runtime settings -> actual Claude Bash command -> fixed
+candidate files -> calculated JSON -> Claude Edit manifest -> loader/tests -> evidence replay
+-> independent reviewer -> operation receipt -> owner acceptance. Git definitions and PG
+runtime records retain their existing owners; unverified observations are not knowledge.
+
+### Bootstrap implementation contract
+
+Add `python -m codex_harness.adapters.worker_profile_metadata`, accepting NO arguments.
+Read only cwd-relative src/codex_harness/resources/worker-profile-v1.md and same .json.
+Never derive a path from manifest content, search parent directories or write files. Refuse
+resolved paths outside cwd (including links), missing/invalid UTF-8/JSON/non-object metadata,
+wrong id/document/character_limit and bounded input overflow. Use finite input bounds ample
+for6000 Unicode characters. Error JSON names safe kinds, never raw content/exception strings.
+Reuse loader normalization/hash/MAX_CHARACTERS. Output a versioned JSON observation containing
+normalized character count, limit, computed document_sha256, digest_matches and within_limit.
+For stale digest/overlength, still return computed metadata so worker can repair; exit1.
+Valid matching metadata exits0; invalid invocation exits2. This is metadata verification,
+not certification of hooks/sources/full profile validity; loader remains final authority.
+
+Add ONLY exact Bash(python -m codex_harness.adapters.worker_profile_metadata) profile allow.
+Preserve all other manifest fields and document bytes during bootstrap (old runtime has no
+new permission yet). Explain use in AGENTS.md; no arbitrary Python, extra modules or paths.
+Add exact three-token argv grant to evidence-policy.json. In domain/evidence.authorized,
+this module requires exact argv even if prefix policy contains it; other command semantics
+remain unchanged. Existing evidence_inspection replay_argv supplies trusted interpreter.
+Do not extend project-evidence v1. Legacy tests lists final successful commands; expected
+stale diagnostic attempts belong in summary with observed failure, not mislabeled successes.
+
+Add focused real subprocess tests with synthetic checkout files: matching LF/CRLF/Unicode,
+stale digest (computed output retained),6000/6001 boundary, malformed/missing input, path escape,
+extra argv rejection, deterministic read-only behavior. Check exact allow delivery preserves
+denies and existing fields, replay allows exact command but refuses extra argv/other modules.
+Worker/reviewer run focused metadata/profile/evidence tests and ruff only; owner full suite/CI.
+Allowed changes: new adapter module and tests/test_worker_profile_metadata.py,
+tests/test_worker_profile.py, tests/test_evidence.py, domain/evidence.py,
+resources/evidence-policy.json, resources/worker-profile-v1.json, AGENTS.md and METADATA.md
+in this operation directory. No tests execution tricks to calculate profile hashes.
+
+### Fixed acceptance matrix and actual canary
+
+Normal: deterministic metadata matches loader, worker can repair manifest, final loader passes.
+Failure/unknown: invalid/missing/escaped files fail explicitly; stale/large content reports facts;
+no raw source or exceptions leak. Failure remains failed, no owner packaging or silent retry.
+Timeout/cancel: finite local reads and existing operation bounds; no new network/process owner.
+Concurrency/restart: stateless read-only command; no locks/caches/shared writes needed; loader
+rechecks actual final bytes so observation is not a transactional write guarantee.
+Platforms: focused subprocess tests + CI Windows/Linux; actual provider proof Windows only.
+Cleanup: command makes no artifacts; preserve operation receipts and existing dirty analysis.
+
+After bootstrap acceptance, run one actual canary from the new runtime/profile: add concise
+metadata-command guidance in the existing Environment section, condense that same section
+without dropping its interpreter/project-evidence/permission rules to fit6000, update digest
+using actual new CLI output and Edit. Only profile md/json and METADATA-CANARY.md allowed.
+Worker must execute the exact metadata command successfully, then focused profile tests/lint;
+replay and independent review must accept. Owner may integrate accepted commits, but must
+not edit the canary's profile or digest. Finish at this successful receipt, full relevant
+owner checks/CI, scoped PR merge and issue124 closure with original failure disclosed.
+Any unrelated recommendations remain follow-ups, not new acceptance gates.
+
+Acceptance record: METADATA-RESULT.md records accepted bootstrap ef01046 and actual canary
+1d0e670, four settled calls, no owner canary repair and the fixed-matrix verification. The
+bootstrap manifest corrected the draft test filename tests/test_evidence.py to the existing
+tests/test_evidence_inspection.py before execution. Earlier receipts remain immutable.
+
+### Final CI interaction found — bounded test correction
+
+PR126 run35200928738 failed in test_project_delivery.py's packaged-document assertion:
+it pins the old literal `Run tests as` despite the accepted Environment rewording. Both Linux
+versions report this same assertion; this is not an infrastructure flake. The bootstrap full
+suite preceded the canary and the owner's final subset omitted this directly affected test.
+The canary runtime/guidance/receipt remain accepted; no profile/hash edits or rerun are needed.
+Revised remaining batch: Claude changes ONLY tests/test_project_delivery.py, preserving every
+other test. Replace the stale sentence comparison with whitespace-normalized checks for the
+current verified-interpreter prohibition plus explicit host project_evidence exception/run
+verbatim requirement, and pytest/ruff command guidance. Do not weaken to mere token presence,
+remove the assertion, add a skip or modify runtime/profile. Existing contradictory absolute-
+interpreter sentence must remain prohibited. Formatting line wraps must not change the check.
+Run python -m pytest tests/test_project_delivery.py tests/test_worker_profile.py
+tests/test_worker_profile_metadata.py tests/test_evidence_inspection.py -q -p no:cacheprovider,
+and python -m ruff check .; owner owns final full suite/CI. One actual worker/reviewer pair,
+new total ceiling97 from95, explicitly superseding the initial four-call estimate because of
+this observed final-CI interaction. This is a new scoped correction, not an automatic rerun.
+Finish with test-only independent acceptance and passing final CI. Preserve the failed CI run.

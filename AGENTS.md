@@ -41,3 +41,19 @@
   commands verbatim (version 1 checks are `python -m pytest`/`python -m ruff check` only, under the
   context interpreter, not `python` on PATH). Either way results, skips,
   diagnostic attempts and unrun work go in `summary`.
+
+## Worker profile packaging metadata
+
+- After changing `src/codex_harness/resources/worker-profile-v1.md`, a worker runs exactly
+  `python -m codex_harness.adapters.worker_profile_metadata` from the checkout root, with no
+  arguments, and copies the reported `document_sha256` into `worker-profile-v1.json` with Edit. The
+  JSON observation carries the normalized character count, the 6000 limit, the computed digest,
+  `digest_matches` and `within_limit`. Exit 0: the manifest matches. Exit 1: stale digest, overlong
+  document or a named input failure (the computed facts are still reported when they exist).
+  Exit 2: arguments were passed.
+- The command is read-only and fixed to those two cwd-relative files. The profile grants this one
+  exact command and the evidence policy replays this one exact argv: no arbitrary Python
+  (`python -c`, scripts, other modules), no arguments and no other paths. It observes metadata only;
+  `worker_profile.load_profile` and the profile tests remain the authority over the final bytes.
+- An expected failing run (a stale digest before the repair) is a diagnostic attempt: report it in
+  `summary` with its observed exit; legacy `tests` lists the final successful command.
