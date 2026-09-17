@@ -1,0 +1,9 @@
+{
+  "source": "baldrix",
+  "path": "skills/_common/qa-boundary.md",
+  "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "blob": "03d449e415d8ea5263cdc3685b8363e4421c4c7a",
+  "pinned_sha256": "7b75f38d2bc3ecbdcc5eb831451343252cf9df9f43a0fb72d7aec6f9dbd00a0e",
+  "scope": "Selected producer-consumer contract comparison principles rewritten for assigned integrations only; no upstream execution or behavior guarantee",
+  "disposition": "Adapt paired reads, authoritative shape/state/optional-field mapping and scoped evidence; reject global six-pattern gates, mandatory code generation, automatic loops and upstream incident claims"
+}
