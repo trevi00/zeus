@@ -395,3 +395,17 @@ Only documentation changed after runtime69715d5; compare source/Dockerfile/lock
 before launch. CI run35215194425 passed on the prior documentation head6b060c2.
 Actual token acceptance, replay, hook cycle and lead acceptance remain the
 decisive checks. Retain all already accepted implementation/cleanup evidence.
+
+The renewed attempt also returned provider401 before tools. Ledger107; no further
+model call. Safe metadata checks found the value changed, is92 ASCII characters,
+has no whitespace and lacks the expected OAuth setup-token prefix. A network-none
+container comparison confirmed host/container bytes equal without printing either
+value or digest. Initial comparison was invalid due to a BOM on PowerShell stdin;
+the corrected probe removed that BOM from the comparison input and passed.
+The container transport is not the observed mismatch. Browser login-code confusion
+is a hypothesis, not proven. Official authentication documentation (opened again
+2026-09-17) distinguishes browser login code from subsequent terminal completion.
+The owner local auth helper now explains both stages and refuses unexpected token
+format before replacing the encrypted file. Format checking is not server validation.
+Next required user action is to supply the FINAL terminal setup token locally;
+retain both failed operations and do not run a third inference until corrected.

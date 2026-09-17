@@ -77,6 +77,17 @@ without a materially changed boundary or failed acceptance check.
 
 ## Retained failures and limits
 
+Renewal continuation: operation `isolated-worker-127-canary-2` at owner head
+ffa756b also received401, with no candidate or review. The stored value changed,
+but lacks the expected OAuth setup-token prefix. A network-none, no-model Docker
+probe confirmed the stored bytes reach the container unchanged. This narrows the
+remaining gate to credential input/validity; a browser login-code mix-up is only
+a hypothesis. The local helper now explains the stages and rejects unexpected
+format before storage. Raw evidence is in `canary-2/`; ledger107, automatic retries0,
+exact-token artifact hits0, owned-container inventory empty. The revised ceiling108
+still cannot fit another worker/lead pair without an explicit frame revision.
+CI run35215194425 passed at6b060c2 (before these documentation-only updates).
+
 The first lead timed out; correction-1 and correction-2 leads rejected real cleanup
 defects; correction-3 was accepted. The initial image had a CLI target failure;
 the next image exposed the profile interpreter resolving outside its environment.
