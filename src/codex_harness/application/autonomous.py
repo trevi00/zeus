@@ -25,13 +25,11 @@ from codex_harness.domain.autonomous import (
     ARBITER,
     CONDUCTOR,
     DEBATE_ROLES,
-    MAX_STARTS,
     ORIGIN_EXECUTOR,
     PROPOSER,
     RECEIPT_SCHEMA,
     RESEARCHER,
     ROLE_ACTION,
-    ROLE_AGENTS,
     TERMINAL,
     TRUST,
     correlation_id,
@@ -47,6 +45,7 @@ from codex_harness.domain.autonomous import (
     session_id,
     verified_graph,
 )
+from codex_harness.domain.council import profile
 from codex_harness.domain.dge import expired, packet_digest
 from codex_harness.domain.model import ContractError, envelope, require, utcnow
 from codex_harness.domain.operation import WORKER
@@ -59,6 +58,9 @@ OUTCOME_BY_REASON = {"deadline_expired": "expired", "start_cap_reached": "exhaus
                      "design_exhausted": "exhausted", "review_rejected": "rejected", "operation_exhausted": "exhausted",
                      "operation_unknown": "unknown"}
 SLOT_FIELDS = ("id", "kind", "agent", "provider", "outcome", "settled", "settle_error", "operation")
+BLOCKER_RULE = ("critical only: concrete reachable trigger, cited packet evidence, affected fixed criterion, "
+                "material impact and minimal mitigation; styling, optional refactoring and unsupported "
+                "hypotheticals are minor and never block")
 
 
 class AutonomousRefused(ContractError):
@@ -92,7 +94,8 @@ class AutonomousRun:
     def _receipt(row) -> dict:
         keys = ("id", "status", "stage", "reason_code", "manifest_sha256", "identity", "goal", "correlation_id", "session_id",
                 "operation_id", "deadline", "max_starts", "starts", "invocations", "roles", "packet_digest", "ssot_decision",
-                "design", "operation", "residuals", "promotion", "durations", "history", "claimed_at", "updated_at", "finished_at")
+                "design", "operation", "residuals", "promotion", "durations", "history", "claimed_at", "updated_at", "finished_at",
+                "topology", "snapshot", "report")  # INV-COUNCIL-001: v2 receipts; None on v1 rows
         return {"schema": RECEIPT_SCHEMA, "trust": TRUST, "authority": "autonomous_receipt; not merge, deploy, completion or truth",
                 **{k: row.get(k) for k in keys}}
 
@@ -113,9 +116,11 @@ class AutonomousRun:
             now = self.clock()
             if expired(manifest["deadline"], now):
                 raise AutonomousRefused("deadline_expired")
+            shape = profile(manifest)  # v1: six starts and lead:<role>; v2: seven starts and the council agents
             row = {"id": run_id, "status": "running", "stage": "research", "reason_code": None, **binding,
                    "correlation_id": correlation_id(manifest), "session_id": session, "operation_id": operation,
-                   "deadline": manifest["deadline"], "max_starts": MAX_STARTS, "starts": {"reserved": 0, "settled": 0, "slots": []},
+                   "deadline": manifest["deadline"], "max_starts": shape["max_starts"], "topology": shape["topology"],
+                   "starts": {"reserved": 0, "settled": 0, "slots": []},
                    "invocations": {}, "roles": {}, "packet_digest": None, "ssot_decision": None, "design": None,
                    "operation": None, "residuals": {"critical": [], "minor": []}, "promotion": None, "durations": {},
                    "history": [{"at": now, "from": None, "to": "research"}], "claimed_at": now, "updated_at": now, "finished_at": None}
@@ -158,6 +163,31 @@ class AutonomousRun:
         return self._finish(row, wrapped, outcome)
 
     def _pipeline(self, manifest, identity, goal, row, wrapped) -> dict:
+        """v1 flow, unchanged: research -> packet -> proposer/attacker/arbiter -> implementation -> promotion."""
+        run_id, base = row["id"], manifest["base_revision"]
+        research, frozen, sessions, digest_value = self._freeze_packet(manifest, goal, row, wrapped)
+        packet, prior, version, bindings = frozen["packet"], {}, 0, {RESEARCHER: research}
+        for role in DEBATE_ROLES:
+            self._transition(run_id, "packet" if role == PROPOSER else DEBATE_ROLES[DEBATE_ROLES.index(role) - 1], role)
+            binding = self._role(manifest, row, wrapped, role, {
+                "role": role, "run_id": run_id, "base_revision": base, "packet_digest": digest_value, "packet": packet,
+                "ssot": frozen["ssot"], "round": 1, "prior_outputs": prior, "acceptance_criteria": manifest["plan"]["acceptance_criteria"],
+                "blocker_rule": BLOCKER_RULE})
+            bindings[role] = binding
+            try:
+                independent_roles(bindings)  # no role resumes another role's provider session
+                event = event_from_role(role, binding["answer"], digest_value, version, binding["task_id"])
+                recorded = sessions.submit(row["session_id"], event, owner=run_id, binding=_safe_binding(binding))
+            except DgeRefused as exc:
+                raise AutonomousRefused("debate_refused:" + exc.reason_code) from exc
+            except ContractError as exc:
+                raise AutonomousRefused(str(exc) if str(exc) == "role_session_shared" else "debate_refused:" + type(exc).__name__) from exc
+            prior[role] = {"event_id": event["id"], "payload": event["payload"], "binding": _safe_binding(binding)}
+            version = recorded["session"]["version"]
+        return self._implement_and_promote(manifest, identity, goal, row, wrapped, research, prior, recorded["session"], ARBITER)
+
+    def _freeze_packet(self, manifest, goal, row, wrapped):
+        """Research at base, then the immutable packet through the existing validator and Git source check."""
         run_id, base = row["id"], manifest["base_revision"]
         research = self._role(manifest, row, wrapped, RESEARCHER, {
             "role": RESEARCHER, "run_id": run_id, "base_revision": base, "topic": manifest["research"]["topic"],
@@ -181,35 +211,24 @@ class AutonomousRun:
                                        binding=_safe_binding(research))
         digest_value = registered["session"]["packet_digest"]
         self._transition(run_id, "research", "packet", packet_digest=digest_value, ssot_decision=frozen["ssot"]["decision"])
-        prior, version, bindings = {}, 0, {RESEARCHER: research}
-        for role in DEBATE_ROLES:
-            self._transition(run_id, "packet" if role == PROPOSER else DEBATE_ROLES[DEBATE_ROLES.index(role) - 1], role)
-            binding = self._role(manifest, row, wrapped, role, {
-                "role": role, "run_id": run_id, "base_revision": base, "packet_digest": digest_value, "packet": packet,
-                "ssot": frozen["ssot"], "round": 1, "prior_outputs": prior, "acceptance_criteria": manifest["plan"]["acceptance_criteria"],
-                "blocker_rule": "critical only: concrete reachable trigger, cited packet evidence, affected fixed criterion, "
-                                "material impact and minimal mitigation; styling, optional refactoring and unsupported "
-                                "hypotheticals are minor and never block"})
-            bindings[role] = binding
-            try:
-                independent_roles(bindings)  # no role resumes another role's provider session
-                event = event_from_role(role, binding["answer"], digest_value, version, binding["task_id"])
-                recorded = sessions.submit(row["session_id"], event, owner=run_id, binding=_safe_binding(binding))
-            except DgeRefused as exc:
-                raise AutonomousRefused("debate_refused:" + exc.reason_code) from exc
-            except ContractError as exc:
-                raise AutonomousRefused(str(exc) if str(exc) == "role_session_shared" else "debate_refused:" + type(exc).__name__) from exc
-            prior[role] = {"event_id": event["id"], "payload": event["payload"], "binding": _safe_binding(binding)}
-            version = recorded["session"]["version"]
-        design = recorded["session"]
-        self._transition(run_id, ARBITER, ARBITER, design={k: design.get(k) for k in ("id", "state", "packet_digest", "decision_event_id", "version")},
+        return research, frozen, sessions, digest_value
+
+    def _implement_and_promote(self, manifest, identity, goal, row, wrapped, research, prior, design, last_stage,
+                               council=None, before_implementation=None) -> dict:
+        """Approved design -> existing Operation v2 -> same-transaction promotion. `before_implementation`
+        and `council` are the v2 snapshot guard and promotion recheck (INV-COUNCIL-001); None for v1."""
+        run_id = row["id"]
+        digest_value = design["packet_digest"]
+        self._transition(run_id, last_stage, last_stage, design={k: design.get(k) for k in ("id", "state", "packet_digest", "decision_event_id", "version")},
                          residuals=self._residuals(row["session_id"]))
         if design["state"] != "design_approved":
             raise AutonomousRefused("design_" + {"rejected": "rejected", "needs_research": "needs_research"}.get(design["state"], "exhausted"))
-        if len(wrapped.slots) + 2 > MAX_STARTS:
+        if len(wrapped.slots) + 2 > profile(manifest)["max_starts"]:
             raise AutonomousRefused("start_cap_reached")
         self._check_deadline(manifest)
-        self._transition(run_id, ARBITER, "implementation")
+        if before_implementation is not None:
+            before_implementation()
+        self._transition(run_id, last_stage, "implementation")
         self._log("implementation", run_id, "started")
         started = time.monotonic()
         operation = Operation(self.service, self.executor, self.bus, self.workflow, self.budget, self.collector)
@@ -228,15 +247,16 @@ class AutonomousRun:
         self._check_deadline(manifest)  # a late success authorizes nothing
         self._transition(run_id, "implementation", "promotion")
         started = time.monotonic()
-        promotion = self._promote(manifest, goal, row, receipt, research, prior)
+        promotion = self._promote(manifest, goal, row, receipt, research, prior, council)
         self._transition(run_id, "promotion", None, merge={"durations": {"promotion": time.monotonic() - started}})
         return {"status": "accepted", "reason_code": "promoted", "promotion": promotion}
 
     # ----- roles --------------------------------------------------------------------------
     def _role(self, manifest, row, wrapped, role, details) -> dict:
-        run_id, correlation, agent = row["id"], row["correlation_id"], ROLE_AGENTS[role]
+        shape = profile(manifest)
+        run_id, correlation, agent = row["id"], row["correlation_id"], shape["agents"][role]
         self._check_deadline(manifest)
-        if len(wrapped.slots) >= MAX_STARTS:
+        if len(wrapped.slots) >= shape["max_starts"]:
             raise AutonomousRefused("start_cap_reached")
         message = envelope("task.assign", CONDUCTOR, agent, ROLE_ACTION, details, correlation)
         message["message_id"] = role_message_id(manifest, role)
@@ -269,7 +289,7 @@ class AutonomousRun:
             task = tx.get("tasks", message["message_id"])
             invocations = [r for r in tx.scan(RESERVATIONS) if r.get("task_id") == message["message_id"]]
             try:
-                binding = role_binding(task, role=role, base_revision=manifest["base_revision"], correlation=correlation)
+                binding = role_binding(task, role=role, base_revision=manifest["base_revision"], correlation=correlation, agent=agent)
                 # The stored row alone is not proof: the artifact behind execution_ref must be this
                 # execution's own answer, reservation, stage, base and exact input evidence.
                 binding["evidence"] = self._verify_execution(tx, task, "tasks", "dge:" + role, manifest["base_revision"],
@@ -307,14 +327,15 @@ class AutonomousRun:
                 counts[label] = len([r for r in rows if r.get("bucket") == bucket and r.get("task_id") == key])
         return counts
 
-    def _deliver(self, agent: str, correlation: str) -> None:
+    def _deliver(self, agent: str, correlation: str) -> list:
         """Existing serve semantics for the dedicated lead: handle, relay outbox, ACK. A foreign message
-        is left pending and stops the run; nothing is dead-lettered on its behalf."""
-        consumer = agent + ":autonomous"
+        is left pending and stops the run; nothing is dead-lettered on its behalf. Returns the handled
+        messages so a caller can prove a specific report went through the workflow."""
+        consumer, handled = agent + ":autonomous", []
         for _ in range(MESSAGE_DRAIN):
             row = self.bus.receive(agent, consumer)
             if not row:
-                return
+                return handled
             entry_id, fields = row
             try:
                 message = self.bus.decode(fields)
@@ -328,6 +349,8 @@ class AutonomousRun:
             self.workflow.handle(message)
             self.service.flush_outbox(self.bus)
             self.bus.ack(agent, entry_id)
+            handled.append(message)
+        return handled
 
     def _check_deadline(self, manifest):
         if expired(manifest["deadline"], self.clock()):
@@ -341,10 +364,14 @@ class AutonomousRun:
                 "minor": [{"id": f["id"], "status": f["status"]} for f in findings if f["severity"] == "minor"]}
 
     # ----- promotion ----------------------------------------------------------------------
-    def _promote(self, manifest, goal, row, receipt, research, prior) -> dict:
+    def _promote(self, manifest, goal, row, receipt, research, prior, council=None) -> dict:
         """Re-read the exact records and re-verify the worker and reviewer artifacts inside the
-        promotion transaction; the receipt, an accepted row or a matching revision alone is insufficient."""
+        promotion transaction; the receipt, an accepted row or a matching revision alone is insufficient.
+        `council` (INV-COUNCIL-001, v2 only) is a callable run inside the same transaction that rechecks
+        the DBA, snapshot and report provenance and returns the extra design refs and receipt evidence;
+        the v1 worker/reviewer gates above and below it are unchanged."""
         run_id = row["id"]
+        debate_roles = profile(manifest)["debate_roles"]
         with self.service.store.transaction() as tx:
             if expired(manifest["deadline"], self.clock()):
                 raise AutonomousRefused("deadline_expired")
@@ -387,11 +414,12 @@ class AutonomousRun:
             if not (session and session["state"] == "design_approved" and session.get("owner") == run_id
                     and session.get("origin") == ORIGIN_EXECUTOR and session["packet_digest"] == row_digest(tx, run_id)):
                 raise AutonomousRefused("promotion_design_unproven")
+            extra = council(tx) if council is not None else {"refs": None, "evidence": {}}
             refs = {"base_revision": manifest["base_revision"], "goal": {"path": goal["path"], "sha256": goal["sha256"]},
                     "packet_digest": session["packet_digest"], "research_execution_ref": research["execution_ref"],
                     "research_task_id": research["task_id"], "session_id": session["id"],
-                    "decision_event_id": session["decision_event_id"],
-                    "role_bindings": {role: prior[role]["binding"] for role in DEBATE_ROLES},
+                    "decision_event_id": session["decision_event_id"], "council": extra["refs"],
+                    "role_bindings": {role: prior[role]["binding"] for role in debate_roles},
                     "candidate": {k: candidate.get(k) for k in ("revision", "base", "tree", "diff_hash")},
                     "implementation_task_id": task["id"], "implementation_execution_ref": result.get("execution_ref"),
                     "implementation_reservation_id": implementation["reservation_id"],
@@ -402,9 +430,10 @@ class AutonomousRun:
                                            "inspection": "all_checked command replays for the worker's test claims",
                                            "not_verified": ["semantic truth of research claims", "merge", "deploy"]}}
             graph = verified_graph(run_id, refs)
-            promotion = promote(tx, run_id, graph, {k: refs[k] for k in ("implementation_task_id", "implementation_reservation_id",
-                                                                             "decision_id", "review_reservation_id", "inspection_id",
-                                                                             "operation_id", "session_id", "packet_digest")})
+            promotion = promote(tx, run_id, graph, {**{k: refs[k] for k in ("implementation_task_id", "implementation_reservation_id",
+                                                                                 "decision_id", "review_reservation_id", "inspection_id",
+                                                                                 "operation_id", "session_id", "packet_digest")},
+                                                    **extra["evidence"]})
             current = tx.get(BUCKET, run_id)
             if not (current and current["status"] == "running" and current["stage"] == "promotion"):
                 raise AutonomousRefused("run_state_changed")

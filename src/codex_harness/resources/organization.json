@@ -19,6 +19,12 @@
       "team": "improvement"
     },
     {
+      "id": "lead:dba",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "state"
+    },
+    {
       "id": "lead:researcher",
       "role": "lead",
       "parent": "conductor",
