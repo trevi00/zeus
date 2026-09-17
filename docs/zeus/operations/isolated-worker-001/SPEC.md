@@ -422,3 +422,12 @@ Existing encrypted backups remain untouched and are not usable recovery credenti
 according to that diagnosis. Any new acceptance launcher must reject browser-code,
 whitespace or unexpected-prefix input before schema creation or a call reservation.
 No Zeus runtime change or further model call is needed to fix this local input path.
+
+### Correct-token acceptance run
+
+User confirmed storage again. Metadata: replaced2026-09-17T14:48:11Z;
+expected prefix present, no '#' or whitespace. Value not printed. Current ledger107;
+explicit ceiling109 reserves one worker/lead pair for isolated-worker-127-canary-3.
+Use unchanged runtime69715d5/build-004 and the same four-test task. Local launcher
+checks format before schema/reservation. This confirms input shape only; actual
+provider acceptance remains the next check. No automatic retries or new scope.
