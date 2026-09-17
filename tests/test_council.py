@@ -302,6 +302,12 @@ def test_status_fields_are_finite_vocabularies_and_known_actor_syntax_never_arbi
         assert state(bucket, body) == ("unknown", {}), (bucket, body)
     assert state("operations", {"status": "running", "lead_accepted": None}) == ("found", {"status": "running", "lead_accepted": None})
     assert state("operations", {"status": "accepted", "lead_accepted": True})[0] == "found"
+    # Key absence is not the nullable value (synthetic rows): only an explicit null/false/true is found.
+    for status in ("running", "accepted"):
+        assert state("operations", {"status": status}) == ("unknown", {}), status
+        for accepted in (None, False, True):
+            assert state("operations", {"status": status, "lead_accepted": accepted}) == ("found", {"status": status, "lead_accepted": accepted})
+    assert snapshot_records([{"bucket": "operations", "id": "x"}], {})[0] == {"bucket": "operations", "id": "x", "state": "missing", "sha256": None, "fields": {}}
     assert state("autonomous_runs", {"status": "needs_user", "stage": "improvement_lead"})[0] == "found"
     assert state("promotions", {"repository": "verified:council-001"}) == ("found", {"repository": "verified:council-001"})
     # The consumer applies the same rule: a stored envelope cannot smuggle a value the producer would refuse.

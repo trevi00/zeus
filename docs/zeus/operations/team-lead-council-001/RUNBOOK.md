@@ -97,9 +97,12 @@ and for `found` only these required fields, each checked against a finite vocabu
 | `autonomous_runs` | `status` (`running` or an autonomous terminal status), `stage` (a v1 or v2 stage) |
 | `promotions` | `repository` (`verified:<run id>`) |
 
-- `unknown`: a row exists but a whitelisted field is absent, null or outside its vocabulary (or the body
-  is not an object). Only the digest is exported, no field. An arbitrary token-shaped string is never
-  copied out, and unknown is never read as success.
+- `unknown`: a row exists but a whitelisted field is absent or outside its vocabulary (or the body is
+  not an object). Every listed field must be present as a key. Null is valid only where the table
+  permits it, which is `lead_accepted` alone: an explicit `lead_accepted: null` is `found`, an
+  operations row without the `lead_accepted` key is `unknown`, and null in any other field is
+  `unknown`. Only the digest is exported, no field. An arbitrary token-shaped string is never copied
+  out, and unknown is never read as success.
 - `missing`: no row for that key at that snapshot. It says nothing about other keys, other buckets or a
   later moment.
 - Never exported: row bodies, free text, errors, prompts, paths, credentials, the DSN. The adapter's

@@ -214,7 +214,8 @@ def snapshot_records(selection: list, bodies: dict) -> list:
                 entry["state"] = "unknown"
             else:
                 fields = {name: body.get(name) for name in STATUS_FIELDS[record["bucket"]]}
-                valid = all(field_valid(record["bucket"], name, value) for name, value in fields.items())
+                # Presence is its own requirement: `body.get` turns an absent key into None, which a nullable field accepts.
+                valid = all(name in body and field_valid(record["bucket"], name, value) for name, value in fields.items())
                 entry.update(state="found" if valid else "unknown", sha256=digest(body), fields=fields if valid else {})
         out.append(entry)
     return out
