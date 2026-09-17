@@ -15,15 +15,15 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from test_project_evidence import POLICY, PROBE, argv_for, document, workspace
+from test_project_evidence import SCHEMA as PROFILE_SCHEMA
+from test_worker_profile import CHILD, RUNTIME, SCHEMA, observation, profiled
 
 from codex_harness.adapters.claude_cli import ClaudeCodeRuntime, claude_settings
 from codex_harness.adapters.project_evidence import execution_instructions, worker_delivery
 from codex_harness.adapters.worker_profile import load_profile
 from codex_harness.domain.model import ContractError
 from codex_harness.domain.project_evidence import parse_profile
-from tests.test_project_evidence import POLICY, PROBE, argv_for, document, workspace
-from tests.test_project_evidence import SCHEMA as PROFILE_SCHEMA
-from tests.test_worker_profile import CHILD, RUNTIME, SCHEMA, observation, profiled
 
 SH = shutil.which('sh')
 AWKWARD = "candidate it's $HOME 작업"  # a space, a quote, a dollar sign and non-ASCII text in the path
