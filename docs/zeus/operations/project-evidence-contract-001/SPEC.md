@@ -200,3 +200,22 @@ No other source changes requested. Full service suite already running on initial
 retain its result, then run relevant corrections/full required checks once on corrected head.
 Use one corrective Claude+review pair ceiling84, then reserved actual Code Tutor pair ceiling86.
 An unrelated issue does not extend this batch or silently weaken the completion conditions.
+
+### Integration collection correction (same delivery, no runtime redesign)
+
+On corrected runtime dabb976, owner `uv run pytest -q -p no:cacheprovider` stopped during
+collection: tests/test_project_delivery.py imports tests.test_project_evidence and
+tests.test_worker_profile, but tests is not a package in this repository. Worker replay used
+python -m pytest, whose sys.path includes cwd and masked the difference. Existing sibling
+imports (test_autonomous.py, test_claude_review_boundaries.py etc.) use test_* without tests.
+Fix ONLY those two import module names to that existing convention. No new implementation
+or speculative review. Owner repeats the exact failing collection/full CLI after the fix.
+Preserve final-unit.log exit2. The initial candidate's real PG/Redis full suite2251 passed,
+22 skipped and44 Docker checks passed; its runtime was unchanged while owner review docs
+were committed. Corrected candidate runtime still needs final CI/full verification.
+
+Because implementation remains Claude-owned, one tiny integration repair pair is authorized
+in addition to the original budget, then the originally planned Code Tutor pair: ceiling88
+from starting80 (at most8 calls). This explicit adjustment follows a reproduced CI collection
+failure, not an automatic retry or an expanded acceptance matrix. No further model allocation
+is inferred. Runtime review of dabb976 remains valid for unchanged runtime bytes.
