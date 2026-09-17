@@ -171,3 +171,65 @@ environment dumps. Report actual failed attempts as well as passes. Nonblocking 
 follow-up conditions, not moving acceptance. Completion requires the actual operating loop, owner
 acceptance, preserved evidence and clean owned-container inventory; design or implementation alone
 is not operation completion.
+
+## Consolidated acceptance correction 1 — 2026-09-17
+
+Candidate bcedb56c3c9e711a1ff13cad50234d37a4b1cd5d. Claude completed implementation;
+Zeus replay reported all_checked (3/3). Automated lead invocation hit its 300-second turn limit,
+so the operation is failed/execution_blocked, not accepted. Preserve it; do not requeue or clear
+its reconciliation record. Codex owner completed the fixed-path review and the decisive checks
+below. This is one bounded correction, not an expansion to unrelated environment work.
+
+Accepted evidence retained: ruff passed; actual sleeping-container termination/removal tests passed
+on Windows (9.05s) and WSL (2.88s), with no labelled containers remaining. Image build produced
+sha256:a51736328f3329aed3589916f71b4b807979821470b3b0e7bf41e295b62b36b4.
+Docker build log ends in completed export; PowerShell wrapper returned 1, so that wrapper status is
+not represented as exit 0. A corrected build will capture the actual child exit directly.
+
+Three required corrections, same completion conditions:
+
+1. **R1 / normal startup:** Dockerfile links `/usr/local/bin/claude` to missing `cli.js`.
+   Real `docker run --entrypoint claude <image> --version` fails. The installed package's bin field
+   is `{"claude":"bin/claude.exe"}`; that actual executable reports 2.1.274 in the Linux image.
+   Preserve the installer's real executable/link (or derive its package-declared bin), do not assume
+   the obsolete path. Build must run `claude --version` and fail if unusable. Owner rebuilds and
+   verifies it before any real model call. No dependency/version change is needed.
+
+2. **R2 / required CI:** `uv run pytest -q` fails collection with ModuleNotFoundError: tests,
+   in test_isolated_evidence.py's cross-test import. `python -m pytest` inserted the checkout root
+   and hid the problem in the submitted check. Correct shared test-fixture imports so both supported
+   entry forms collect and run without a new global PYTHONPATH requirement. Preserve coverage.
+   Owner verifies the standard uv invocation; worker can use its permitted python -m pytest command.
+
+3. **R3 / cancel, ownership and evidence:** DockerEvidenceInspector._replay creates and starts a
+   container without a finally ownership boundary or durable recovery record. Owner's
+   artifacts/isolated-worker-001/review-cancel.py injects KeyboardInterrupt immediately AFTER a REAL
+   docker start; the exception propagates with that container still running and zero run.json records.
+   This is a labelled injected cancellation, not a naturally observed incident. Owner removed its
+   exact captured id (exit0); no foreign container was touched.
+
+   Observation -> invalid assumption: the worker has a durable owner, but the verifier assumes
+   capture always returns. Both create/start paths must share the same ownership rule, independent
+   of how capture exits. Revise the existing ownership implementation coherently: record exact
+   run/name/label/id and state durably before start; enclose start/capture in try/finally; cancel,
+   timeout, observer failure and unexpected capture exceptions attempt bounded stop/confirmation.
+   Unknown stop retains a durable exact recovery reference and cannot be success. Persist bounded
+   output/result observations outside the container before remove (also retain the worker's full
+   redacted inner result, not only inner_failure/inner_terminal). Cleanup/recovery must cover both
+   worker and verifier records, including restart visibility. Never run candidate commands on host.
+   Reuse OwnedContainer/run-record helpers; do not add a second scheduler, automatic retry or
+   fallback. The cleanup window must bound its Docker calls using remaining time; a 60-second
+   inspect must not silently sit outside a declared 30-second cleanup window.
+
+   Regression: owner-injected post-start interruption must terminate/remove or leave a durable
+   unknown recovery record, never an unrecorded running container. Add synthetic failure tests for
+   unconfirmed stop and evidence-write failure and normal replay, clearly labelled. Preserve the
+   already accepted source/permission/profile/default-host behavior. An ordinary successful run
+   still requires the owner actual canary, not just these regressions.
+
+Budget revision: observed machine counts 97 -> 99 (implementation and timed-out lead), no actual
+container model call yet. One explicitly authorized correction/review pair plus the reserved
+container canary/review pair sets the new ceiling to 103 (six total new starts). No automatic retry.
+Correction Claude cap USD6 declared, 1200s; review scope is these corrections and directly affected
+interactions, preserving the prior fixed frame. Owner tests then decide acceptance; no speculative
+review expansion. The canary remains unstarted until these material gates pass.
