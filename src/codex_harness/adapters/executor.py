@@ -17,6 +17,11 @@ from codex_harness.adapters.execution_output import evidence_json, persist_resul
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.output_schema import preflight
+from codex_harness.adapters.project_evidence import (
+    ProjectEvidenceInspector,
+    execution_instructions,
+    worker_delivery,
+)
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.providers import host_policy
 from codex_harness.adapters.skill_history import (
@@ -60,6 +65,7 @@ from codex_harness.domain.model import (
 from codex_harness.domain.model_routing import select_model
 from codex_harness.domain.observation import invocation_outcome, new_process_run_id
 from codex_harness.domain.policy import POLICY
+from codex_harness.domain.project_evidence import worker_schema
 from codex_harness.domain.provider_stream import CODEX_PROGRESS, CodexStream, stream_for
 from codex_harness.domain.research import require_dispatch
 
@@ -137,7 +143,7 @@ class Executor:
     """Infrastructure composition for role-specific, independently executed Codex tasks."""
 
     def __init__(self, service, git, artifacts, knowledge=None, research=None, release_runner=None, audit_runner=None,
-                 observer=None, execution_policy=None):
+                 observer=None, execution_policy=None, evidence_profile=None):
         self.service, self.git, self.artifacts = service, git, artifacts
         # Read on first use: a malformed host configuration must refuse an execution, not a process.
         self._execution_policy = execution_policy
@@ -149,7 +155,11 @@ class Executor:
         self.observer = observer or Observer(service.store, MemorySpool(new_process_run_id()),
                                              component="executor", directory=MemoryDirectory())
         self.breaker = Breaker(service.store)
-        self.evidence = EvidenceInspections(service.store, EvidenceInspector(artifacts))
+        # INV-PROJECT-EVIDENCE-001: the host-loaded profile (parsed once, before any provider entry)
+        # or None; absence keeps the legacy inspector, schema and review context exactly.
+        self.evidence_profile = evidence_profile
+        self.evidence = EvidenceInspections(service.store, EvidenceInspector(artifacts) if evidence_profile is None
+                                            else ProjectEvidenceInspector(artifacts, evidence_profile))
         self.releases = Releases(service.store, service.org)
         self.audit_execution = None
         if audit_runner is not None:
@@ -163,15 +173,20 @@ class Executor:
             self._execution_policy = host_policy()
         return self._execution_policy
 
-    def _open_runtime(self, assignment, model: str):
+    def _open_runtime(self, assignment, model: str, cwd=None, action: str | None = None):
         """Open the transport this assignment names. Nothing here falls back to another provider."""
         if assignment.transport == "app_server":
             return AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration())
         require(assignment.transport == "claude_cli", "Unsupported provider transport: " + assignment.transport)
+        # INV-PROJECT-EVIDENCE-001 (R3): the host profile resolved for THIS implementation checkout
+        # reaches the transport itself (exact Bash rules, system prompt), not only the prompt details.
+        # Without a profile the construction is exactly the legacy one.
+        project = ({"project_delivery": worker_delivery(self.evidence_profile, cwd)}
+                   if self.evidence_profile is not None and action == "implement" and cwd is not None else {})
         return ClaudeCodeRuntime(model=model, runtime=assignment.runtime,
                                  executable=assignment.controls.get("executable"),
                                  max_budget_usd=assignment.controls.get("max_budget_usd"),
-                                 settings_document=claude_settings(assignment.runtime))
+                                 settings_document=claude_settings(assignment.runtime), **project)
 
     def _run(self, agent: str, key: str, objective: str, evidence: dict, cwd: str,
              schema: dict, read_only: bool = False, heartbeat=None, lease=None, stage=None,
@@ -266,6 +281,11 @@ class Executor:
             # The host names the interpreter and checkout a reviewer tests with; the model receives
             # this, it never chooses it (review-contract-001).
             required["review_context"] = review_context(cwd)
+            if self.evidence_profile is not None:
+                # Rebound to THIS clean checkout, never the implementation workspace.
+                required["review_context"]["project_evidence"] = execution_instructions(self.evidence_profile, cwd)
+        elif action == "implement" and self.evidence_profile is not None:
+            required["project_evidence"] = execution_instructions(self.evidence_profile, cwd)
         # INV-SESSION-001: task identity is stable, but recovery belongs to one
         # stage, evidence set and harness revision; never replay shortlist as final.
         binding = {"stage": stage, "evidence_ref": raw["ref"], "basis_revision": basis_revision}
@@ -500,7 +520,7 @@ class Executor:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
                 # probe slot; breaker refusal must release the invocation reservation.
                 admission = self.breaker.admit(breaker_key(assignment.identity, workload), lease) if lease else None
-                opened = self._open_runtime(assignment, requested_model)
+                opened = self._open_runtime(assignment, requested_model, cwd, action)
                 # A transport whose construction is itself the external effect says so; one that
                 # starts its process later reports the exact moment through `on_enter`.
                 entry_on_open = getattr(opened, "enters_on_open", True)
@@ -735,12 +755,19 @@ class Executor:
                         "cases:{reproduction:[{input:JSON,output:JSON or null,exit_code:int}],"
                         "normal_case:[same]}. Use Codex native hook input/output contracts. "
                         "Include negative cases and actual incident reproductions; never fabricate a fix."}
+                profiled = self.evidence_profile is not None
                 result = self._run(agent, task["id"], "Implement the assigned plan, run meaningful tests, "
                                    "and leave changes ready for independent review. In the answer, `tests` "
-                                   "lists only the exact commands you executed, one per string, with no "
-                                   "arrows, results, pass counts, descriptions or unexecuted commands; "
-                                   "`summary` states the actual results, skips and what was not run.", details,
-                                   workspace["path"], IMPLEMENTATION, False, heartbeat, task,
+                                   + ("holds exactly one observation per host-declared check in project_evidence: "
+                                      "{check_id, status, exit_code} with status executed and the integer exit "
+                                      "code you observed (a failure stays a failure), or not_run with null; "
+                                      "diagnostic attempts and everything else belong in `summary`."
+                                      if profiled else
+                                      "lists only the exact commands you executed, one per string, with no "
+                                      "arrows, results, pass counts, descriptions or unexecuted commands; "
+                                      "`summary` states the actual results, skips and what was not run."), details,
+                                   workspace["path"], worker_schema(self.evidence_profile) if profiled else IMPLEMENTATION,
+                                   False, heartbeat, task,
                                    workload="implementation", action="implement",
                                    importance=details.get("plan", {}).get("origin", {}).get("importance"))
                 heartbeat()

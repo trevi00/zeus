@@ -1017,6 +1017,63 @@ Git and PostgreSQL, freshness beyond `expires_at`, completeness of topic-relevan
 selection, or the semantic accuracy of any role's prose. Fixture tests prove these contracts, not
 debate quality; no live seven-call council has been measured.
 
+## INV-PROJECT-EVIDENCE-001
+
+Optional host-authored project verification (`domain/project_evidence.py`,
+`adapters/project_evidence.py`; design in `docs/zeus/operations/project-evidence-contract-001/SPEC.md`).
+`ZEUS_EVIDENCE_PROFILE` (HARNESS alias) names an absolute JSON file outside the candidate, schema
+`urn:zeus:project-evidence:1`, closed fields `{schema, contexts, checks}`. A context is
+`{cwd, interpreter, source_paths, dependency_files}`; a check is `{id, context, argv, expected_exit}`
+and every check is required. Argv is authorized by the SAME packaged evidence policy
+(INV-EVIDENCE-001): a profile cannot authorize format, shell or install commands, carries no
+environment or secrets, and installs nothing; the host prepares dependencies. The profile is loaded
+once per run from host settings, never from the candidate or model output; a configured profile
+that is missing or invalid refuses before provider entry and never falls back. Absence of the
+setting leaves the legacy worker schema, inspector, review context and operation identity exactly.
+
+With a profile the worker answer stays `{summary, tests}` but each `tests` entry is
+`{check_id, status, exit_code}` (`executed` with an integer exit, `not_run` with null). The worker
+cannot choose argv, cwd, interpreter or a required flag. Each declared check yields one finding:
+`missing` and `not_run` are `not_checked` without any spawn; unknown, duplicate or malformed
+observations are `error` findings; an executed check is replayed in its context, and is `checked`
+only when the reported exit AND every replay exit equal the host's `expected_exit`. A reported
+failure is retained, never coerced; an expected nonzero exit passes only when the host declared it;
+pytest exit 5 is not exit 0. Zero observations is `incomplete`, never an empty-denominator success.
+The evidence gate (`require_all_checked`) and ontology promotion are unchanged.
+
+The snapshot resolves every context against the actual candidate root (containment holds through
+symlinks; missing cwd, source path, dependency file or interpreter refuses before replay) and binds
+the profile digest, resolved paths, dependency-file byte digests, interpreter content digest and
+environment value digest into the inspection identity and cache key. Replays run under exactly the
+snapshot values (context interpreter and cwd, `PYTHONPATH` from the candidate source paths only,
+`PYTHONDONTWRITEBYTECODE=1`, never the parent `PYTHONPATH`), reuse the existing bounded capture,
+aggregate budgets and raw-output archive, and the application refuses a project snapshot its
+identity does not name. Limit: an interpreter path and byte digest do not attest the immutability
+of installed dependencies. A read-only reviewer receives the same instructions rebound to its own
+clean checkout under `review_context.project_evidence`. `operate` and `autonomous` identities bind
+the profile digest, so a same-id run under another profile is refused. For `attacker` and
+`improvement_lead`, `execute_role` deep-copies the output schema per execution and makes
+`finding.criterion` the enum of the pinned plan `acceptance_criteria`; `domain.dge` exact membership
+is unchanged, nothing is normalized, and the static schema constants are never mutated.
+
+Correction batch (R1-R3). Version 1 support boundary, deliberate: a profile check argv must be
+`python -m pytest ...` or `python -m ruff check ...` AND pass the packaged allowlist. Replay
+enforces the context interpreter only by replacing the first token of `python -m`, so `uv run ...`,
+bare `ruff` and every other form is refused at profile load (and again before capture); the legacy
+unprofiled contract keeps those forms. The aggregate replay budget is one absolute monotonic
+deadline: the remaining allowance is recomputed before every repeat, no repeat starts at or beyond
+it, a result observed after it is `not_checked`, and `timeouts_seconds` records what each repeat
+was given. For a profiled `implement` on the `claude_cli` transport the executor resolves the host
+profile against that checkout (`worker_delivery`) and hands it to `ClaudeCodeRuntime`: each check
+becomes one exact POSIX `sh` command (`cd <cwd> && PYTHONPATH=<sources> PYTHONDONTWRITEBYTECODE=1
+<interpreter> -m ...`, every value through `shlex.quote`, control characters refused), the per-run
+`--settings` gain only exact wildcard-free `Bash(...)` allow rules for that command and its two
+parts, the system prompt gains a host section that overrides only the legacy interpreter and
+`tests` format instructions, and the process `PYTHONPATH` is unset. Deny rules, permission mode,
+the repository-root working directory and the legacy path without a profile are unchanged; nothing
+is derived from model output. Delivery is recorded as digests; whether the installed CLI honoured
+the rules is decided by a real canary, not by this configuration.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.

@@ -137,7 +137,8 @@ class ClaudeCodeRuntime:
     def __init__(self, *, model: str, runtime: dict | None = None, executable: str | None = None,
                  max_budget_usd: float | None = None, settings_document: dict | None = None,
                  environment: dict | None = None, probe_timeout: int = 30,
-                 launcher: list | None = None, limits: dict | None = None):
+                 launcher: list | None = None, limits: dict | None = None,
+                 project_delivery: dict | None = None):
         require(type(model) is str and bool(model.strip()), "Claude requires an explicit model name")
         self.model = model.strip()
         self.runtime = dict(runtime or {})
@@ -158,6 +159,19 @@ class ClaudeCodeRuntime:
         if self.runtime.get("worker_profile") is not None:
             self.profile = load_profile(self.runtime["worker_profile"])
             self.profile_interpreter = verified_interpreter(self.runtime.get("profile_interpreter"))
+        # INV-PROJECT-EVIDENCE-001 (R3): the executor resolved the HOST profile against this run's
+        # checkout; nothing here is read from an assignment message or a model output. Its allow
+        # rules are exact command strings, so a wildcard or a non-Bash rule is refused before entry.
+        self.project_delivery = None
+        if project_delivery is not None:
+            rules = project_delivery.get("permissions_allow") if isinstance(project_delivery, dict) else None
+            require(isinstance(rules, list) and bool(rules)
+                    and all(type(rule) is str and rule.startswith("Bash(") and rule.endswith(")")
+                            and len(rule) > len("Bash()") and "*" not in rule for rule in rules)
+                    and type(project_delivery.get("document")) is str and bool(project_delivery["document"])
+                    and type(project_delivery.get("workspace")) is str,
+                    "Project delivery must carry exact Bash rules, a document and its workspace")
+            self.project_delivery = project_delivery
         self.version = None
         self.help_digest = None
         self.capabilities = ()
@@ -218,20 +232,34 @@ class ClaudeCodeRuntime:
             flags.append("--setting-sources")
         if self.runtime.get("tools"):
             flags.append("--tools")
-        if self.settings_document is not None or self.profile is not None:
+        if self.settings_document is not None or self.profile is not None or self.project_delivery is not None:
             flags.append("--settings")
-        if self.profile is not None:
+        if self.profile is not None or self.project_delivery is not None:
             flags.append("--append-system-prompt")
         return flags
 
+    def _system_prompt(self) -> str | None:
+        """The worker profile document, then the host's per-run project section when there is one."""
+        parts = [part["document"] for part in (self.profile, self.project_delivery) if part is not None]
+        return "\n".join(parts) if parts else None
+
     def _run_settings(self, evidence_directory) -> dict | None:
         """The settings value for this run: the configured document, plus the profile's hooks and
-        Bash rules when a profile is selected. Without a profile it is the document unchanged."""
-        if self.profile is None:
-            return self.settings_document
-        command = hook_command(self.profile_interpreter, self.profile["hook_path"],
-                               evidence_directory, profile_digest(self.profile))
-        return merge_settings(self.settings_document, self.profile, hook_settings(command))
+        Bash rules when a profile is selected, plus the host project checks' exact Bash rules.
+        Without either it is the document unchanged; mode and deny rules are never touched."""
+        settings = self.settings_document
+        if self.profile is not None:
+            command = hook_command(self.profile_interpreter, self.profile["hook_path"],
+                                   evidence_directory, profile_digest(self.profile))
+            settings = merge_settings(settings, self.profile, hook_settings(command))
+        if self.project_delivery is not None:
+            settings = json.loads(json.dumps(settings or {}))
+            permissions = settings.setdefault("permissions", {})
+            permissions["allow"] = [*(permissions.get("allow") or []),
+                                    *(rule for rule in self.project_delivery["permissions_allow"]
+                                      if rule not in (permissions.get("allow") or []))]
+            permissions.setdefault("deny", [])
+        return settings
 
     def _command(self, *, schema: dict, session_id: str,
                  settings_document: dict | None = None) -> tuple[list, list]:
@@ -270,9 +298,9 @@ class ClaudeCodeRuntime:
             add("--tools", ",".join(str(tool) for tool in self.runtime["tools"]))
         if settings_document is not None:
             add("--settings", canonical(settings_document), sensitive_from=1)
-        if self.profile is not None:
+        if self._system_prompt() is not None:
             # The document travels as a value; the log keeps its digest (INV-WORKER-PROFILE-001).
-            add("--append-system-prompt", self.profile["document"], sensitive_from=1)
+            add("--append-system-prompt", self._system_prompt(), sensitive_from=1)
         add("--max-budget-usd", format(float(self.max_budget_usd), ".2f"))
         add("--json-schema", canonical(schema), sensitive_from=1)
         return argv, manifest
@@ -304,6 +332,22 @@ class ClaudeCodeRuntime:
             environment, profile_env = profile_environment(environment, workspace, self.profile_interpreter)
             environment_report = {**environment_report, "profile": profile_env}
             profile_delivery = delivery_receipt(self.profile, evidence_directory)
+        project_receipt = None
+        if self.project_delivery is not None:
+            require(self.project_delivery["workspace"] == workspace,
+                    "Project delivery was resolved for another checkout than this run's workspace")
+            # Each delivered command assigns its own context PYTHONPATH; the root `src` the legacy
+            # profile prepares must not stand in for a host-selected context.
+            environment.pop("PYTHONPATH", None)
+            project_receipt = {"profile_digest": self.project_delivery.get("profile_digest"),
+                               "project_digest": self.project_delivery.get("project_digest"),
+                               "checks": [entry["check_id"] for entry in self.project_delivery.get("commands", [])],
+                               "permissions_added": len(self.project_delivery["permissions_allow"]),
+                               "permissions_sha256": digest(self.project_delivery["permissions_allow"]),
+                               "document_sha256": digest(self.project_delivery["document"]),
+                               "pythonpath": "unset for the process; every host command assigns its context value",
+                               "compliance": "not judged here: delivery is recorded, the worker's execution is not"}
+            environment_report = {**environment_report, "project_evidence": {"pythonpath": None}}
         settings_document = self._run_settings(evidence_directory)
         argv, manifest = self._command(schema=schema, session_id=session_id,
                                        settings_document=settings_document)
@@ -316,6 +360,7 @@ class ClaudeCodeRuntime:
                    "prompt_bytes": len(prompt.encode("utf-8")), "schema_sha256": digest(schema),
                    "settings_sha256": digest(settings_document) if settings_document is not None else None,
                    "worker_profile": profile_delivery,
+                   **({"project_evidence": project_receipt} if project_receipt is not None else {}),
                    "cwd": workspace, "session_id": session_id, "requested_model": self.model,
                    "launcher": list(self.launcher),
                    "measurement": ("fixture interpreter in front of the executable; a protocol test, "

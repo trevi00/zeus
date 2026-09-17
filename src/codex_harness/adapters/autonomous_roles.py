@@ -19,6 +19,8 @@ The consumers are not loosened and no output is coerced or repaired here.
 """
 from __future__ import annotations
 
+import copy
+
 from codex_harness.domain.autonomous import (
     DEBATE_ROLES,
     MAX_ROLE_ENTRIES,
@@ -147,6 +149,23 @@ OBJECTIVES = {
 }
 
 
+CRITERION_ROLES = ("attacker", IMPROVEMENT_LEAD)
+
+
+def role_schema(role: str, details: dict) -> dict:
+    """A deep copy of the role's output schema for ONE execution. For the finding-producing roles
+    `finding.criterion` becomes the enum of this plan's pinned acceptance_criteria, so the provider
+    boundary states the exact membership `domain.dge` enforces; nothing is normalized or coerced,
+    and the static constants stay unmodified for the next plan."""
+    schema = copy.deepcopy(SCHEMAS[role])
+    if role in CRITERION_ROLES:
+        criteria = details.get("acceptance_criteria")
+        require(isinstance(criteria, list) and criteria and all(type(c) is str and c for c in criteria)
+                and len(set(criteria)) == len(criteria), "Role details must carry the pinned plan acceptance_criteria")
+        schema["properties"]["findings"]["items"]["properties"]["criterion"] = {"type": "string", "enum": list(criteria)}
+    return schema
+
+
 def execute_role(executor, task: dict, heartbeat) -> dict:
     """Run one role in a clean review checkout at base; assert a clean HEAD before and after."""
     message = task["message"]
@@ -161,7 +180,7 @@ def execute_role(executor, task: dict, heartbeat) -> dict:
     cwd = executor.git.review_workspace(base, task["id"])
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role checkout is not at base")
     stage = "dge:" + role
-    result = executor._run(task["agent"], task["id"], OBJECTIVES[role], details, cwd, SCHEMAS[role], True, heartbeat, task,
+    result = executor._run(task["agent"], task["id"], OBJECTIVES[role], details, cwd, role_schema(role, details), True, heartbeat, task,
                            stage=stage, workload="design", action="dge_role", max_handoffs=MAX_ROLE_ENTRIES)
     require(not executor.git._git("status", "--porcelain", cwd=cwd), "Role execution modified its checkout")
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role execution changed its commit")

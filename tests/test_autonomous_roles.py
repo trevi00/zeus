@@ -290,3 +290,34 @@ def test_schema_validation_is_the_same_dialect_the_runner_reports():
     for role in ROLE_ORDER:
         Draft202012Validator.check_schema(SCHEMAS[role])
         assert not list(Draft202012Validator(SCHEMAS[role]).iter_errors(ROLE_OUTPUTS[role])), role
+
+
+def test_finding_criterion_is_the_exact_pinned_plan_enum_per_execution():
+    """project-evidence-contract-001 item 5: schema -> domain boundary; fixtures only, no model is called."""
+    from codex_harness.adapters.autonomous_roles import CRITERION_ROLES, role_schema
+
+    before = json.dumps(SCHEMAS, sort_keys=True)
+    second_criterion = "Lint passes; no unrelated changes."
+    details = {"acceptance_criteria": [CRITERION, second_criterion]}
+    paraphrase = {**MINOR, "criterion": "Focused tests pass."}
+    for role in CRITERION_ROLES:
+        schema = role_schema(role, details)
+        preflight(schema)
+        criterion = schema["properties"]["findings"]["items"]["properties"]["criterion"]
+        assert criterion == {"type": "string", "enum": [CRITERION, second_criterion]}
+        validator = Draft202012Validator(schema["properties"]["findings"])
+        assert not list(validator.iter_errors([CRITICAL, {**MINOR, "criterion": second_criterion}]))
+        assert list(validator.iter_errors([paraphrase])), "a paraphrase is refused at the model boundary"
+        # A later, different plan does not inherit this plan's enum, and the constants never change.
+        later = role_schema(role, {"acceptance_criteria": ["another plan item"]})
+        assert later["properties"]["findings"]["items"]["properties"]["criterion"]["enum"] == ["another plan item"]
+        assert SCHEMAS[role]["properties"]["findings"]["items"]["properties"]["criterion"] == {"type": "string"}
+        for missing in ({}, {"acceptance_criteria": []}, {"acceptance_criteria": [CRITERION, CRITERION]}):
+            with pytest.raises(ContractError):
+                role_schema(role, missing)
+    assert json.dumps(SCHEMAS, sort_keys=True) == before
+    assert role_schema("proposer", {}) == SCHEMAS["proposer"] and role_schema("proposer", {}) is not SCHEMAS["proposer"]
+    # The domain keeps exact membership: what the enum admits it accepts, the paraphrase it still refuses.
+    assert consume("attacker", {"findings": [CRITICAL]})["findings"][0]["criterion"] == CRITERION
+    with pytest.raises(EventError, match="exact plan acceptance item"):
+        consume("attacker", {"findings": [paraphrase]})

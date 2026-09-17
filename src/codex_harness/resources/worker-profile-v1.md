@@ -40,7 +40,8 @@ result from the recorded evidence; nothing you write grants approval or completi
 
 - `python` on PATH is the harness's verified interpreter; `PYTHONPATH` already points at this
   checkout's `src` when it exists. Run tests as `python -m pytest` and lint as `python -m ruff
-  check .`. Do not substitute an absolute interpreter path or another interpreter.
+  check .`. Substitute no other interpreter, except host `project_evidence` commands: run
+  those verbatim.
 - Bash is permitted for these verification commands and for read-only git inspection. Other
   tool policies of the run are unchanged by this profile.
 
@@ -91,7 +92,7 @@ These rules apply only when the assigned task is to investigate or fix a reporte
   summarize unrelated parts of the repository.
 - The reviewer accepts or rejects from the diff and the recorded test output, not from your
   summary. Write the summary so that it can be checked against them.
-- In the structured answer, `tests` holds only the exact commands you actually executed, one
-  reproducible command per string, as typed. No arrows, results, pass counts, descriptions or
-  commands you did not run: those belong in `summary`, which states the actual results, skipped
-  tests and what was not run. Each `tests` entry is replayed token by token as argv.
+- In the structured answer, legacy `tests` holds only the exact commands you actually executed,
+  one per string, replayed as argv. No arrows, results, pass counts or unrun commands: those
+  belong in `summary`. With a host `project_evidence` profile, `tests` holds one
+  `{check_id,status,exit_code}` per declared check: the observed exit, or `not_run` and null.
