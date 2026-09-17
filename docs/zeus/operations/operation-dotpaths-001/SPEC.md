@@ -95,3 +95,21 @@ Machine ledger118 ->122 maximum: implementation/lead pair then canary/lead pair.
 Implementation900s/declared USD4; canary600s/USD2; lead300s. No automatic retry/reset.
 Preserve refusals and revise this SAME frame only for a material obstacle. Stop once
 the fixed matrix passes; do not reopen already accepted runtime boundaries.
+
+## Canary checkout-byte assumption: one corrected fixture
+
+Actual first canary4b93d2f directly changed only the two assigned dot paths; both target
+checks passed. Gate refused before lead because unchanged .github/KEEP.md was CRLF in
+the host checkout copied into replay, while the fixed byte oracle requires LF. The
+worker-stage check had passed. Git blob and scope are unchanged; the owner's fixture
+omitted a checkout line-ending contract. Original c receipt/inspection is preserved,
+not relabelled accepted. Ledger121; implementation acceptance remains intact.
+
+One discriminating check is the preserved replay assertion b'unchanged\r\n' versus
+b'unchanged\n', together with identical untouched Git blob. Add only .gitattributes
+with '* text eol=lf' to the SAME original canary baseline. Tests, goal, task bytes and
+allowed paths are unchanged; no newline normalization/relaxation of the oracle and no
+global Git or runtime change. A fresh c2 operation uses the same tested image/runtime
+code. One explicit replacement worker/lead pair, ceiling123 from121 (five total calls
+instead of four). This is an owner fixture correction, not automatic retry or a fix to
+the accepted path helper. No further expansion if the corrected fixture fails.
