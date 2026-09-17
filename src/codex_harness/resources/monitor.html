@@ -112,7 +112,8 @@ async function request(){
   if(!response.ok)throw Object.assign(Error(`HTTP ${response.status}`),{kind:'failed'});
   let body;try{body=await response.json()}catch(e){if(e.name==='AbortError')throw e;throw Object.assign(Error('JSON'),{kind:'invalid'})}
   if(!body||typeof body!=='object'||!body.sources||typeof body.sources!=='object')throw Object.assign(Error('sources 누락'),{kind:'invalid'});
-  snapshot=body;retain();transport={state:'ok',changed_at:at,ok_at:Date.now(),detail:''};
+  // ok_at is an ISO string because date()/parseTime() accept strings only; failure keeps the previous value, recovery replaces it.
+  snapshot=body;retain();transport={state:'ok',changed_at:at,ok_at:new Date().toISOString(),detail:''};
  }catch(e){transport={state:e.name==='AbortError'?'timeout':e.kind||'failed',changed_at:at,ok_at:transport.ok_at,detail:e.name==='AbortError'?'':String(e.message||'')}}
  finally{clearTimeout(timer);render()}
 }

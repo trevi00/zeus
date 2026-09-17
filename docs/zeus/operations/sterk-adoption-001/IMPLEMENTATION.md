@@ -69,6 +69,39 @@ python -m pytest tests/test_monitoring.py -q -p no:cacheprovider   # 7 passed
 python -m ruff check .                                             # All checks passed!
 ```
 
+## Bounded correction: transport.ok_at representation (SPEC consolidated acceptance)
+
+Worker: Zeus Claude implementation worker (Claude Fable 5.1), 2026-09-17, base revision
+d65fd52478200584bb871d90d102e47409d70f75. Scope: the one lead rejection recorded in SPEC.md
+"Consolidated owner acceptance / bounded correction". Files changed: `monitor.html` (one line
+plus a comment) and this file.
+
+- Defect confirmed by code inspection: the success branch of `request()` stored
+  `transport.ok_at` as `Date.now()` (a number), while `parseTime()` returns `NaN` for any
+  non-string and `date()` therefore rendered the header clock as `시각 해석 불가` after every
+  successful response.
+- Fix: the success branch now stores `ok_at` as `new Date().toISOString()`. `date()` parses that
+  string through the existing `parseTime()` path and renders it with `toLocaleString('ko-KR')`.
+- Failure path unchanged: `failed | timeout | invalid` still copies the previous `transport.ok_at`
+  forward, so the last successful response time stays readable during an outage. The initial
+  `null` still renders `관측 없음` until the first success.
+- Recovery path unchanged: the next accepted response re-executes the success branch and
+  replaces `ok_at` with the new ISO string.
+- Not changed: `freshness()`, `parseTime()`, `date()`, source timestamp checks, retention,
+  single-flight refresh, request timeout, polling, transport badge ownership or any view.
+  `changed_at` remains numeric; it is never passed to `date()`.
+
+Commands executed in this checkout, output read:
+
+```
+python -m pytest tests/test_monitoring.py -q -p no:cacheprovider
+python -m ruff check .
+```
+
+Results are recorded in the worker report for this correction. The monitoring tests do not
+exercise the browser script, so they guard against regression in the producer and HTTP adapter
+only; the header clock during success -> failure -> recovery is the owner's browser recheck.
+
 ## Not run and remaining uncertainty
 
 - Browser acceptance matrix (normal, stale, invalid/future, partial failure, HTTP failure and
