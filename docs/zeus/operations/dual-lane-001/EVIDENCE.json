@@ -1,0 +1,162 @@
+{
+  "date": "2026-09-17",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\dual-lane-001",
+  "note": "Local bytes; hashes do not imply availability, acceptance, or knowledge promotion.",
+  "files": [
+    {
+      "path": "harness/manifest.json",
+      "bytes": 2121,
+      "sha256": "ed54f44fce42d4a1c415edae1b90723faedebd6a35cc9c34af831a6b684fdbae"
+    },
+    {
+      "path": "harness/receipt.json",
+      "bytes": 784,
+      "sha256": "bd1c2301735233cae781caf5b9d0e1b8fd4bcc511f6764450d4e4e544ba4e4ca"
+    },
+    {
+      "path": "harness/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "harness/stdout.json",
+      "bytes": 4037,
+      "sha256": "35dadd6442c055da5e3612f499cf78973ed514572e85fd5aa14a6c9a882741dc"
+    },
+    {
+      "path": "harness-inspection.jsonl",
+      "bytes": 25050,
+      "sha256": "fdc78baa74799fe3de51a0d000a5c42e14b06bf838041088a8150573faa114ed"
+    },
+    {
+      "path": "product/manifest.json",
+      "bytes": 1926,
+      "sha256": "8d912ea8b4015aa4873e86e3b9aab4590bc7db8400b197dbf46818086d156fcc"
+    },
+    {
+      "path": "product/receipt.json",
+      "bytes": 784,
+      "sha256": "aea229ecced2792846b4c6c0e2479a1369175f449a215413ace7c25a925370fe"
+    },
+    {
+      "path": "product/runtime/artifacts/164d9f48fdab97f97b30e156951c1995e69cfee5a60adb1bb4ec916449ea53c1.txt",
+      "bytes": 993520,
+      "sha256": "164d9f48fdab97f97b30e156951c1995e69cfee5a60adb1bb4ec916449ea53c1"
+    },
+    {
+      "path": "product/runtime/artifacts/66af2844eaea659f66713ccd9030b2637d9b4ffb970ebe901cffd982efd28267.txt",
+      "bytes": 427079,
+      "sha256": "66af2844eaea659f66713ccd9030b2637d9b4ffb970ebe901cffd982efd28267"
+    },
+    {
+      "path": "product/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "product/stdout.json",
+      "bytes": 5250,
+      "sha256": "d1a76e0236a522c4e5d2766700dee2a827df6a5fa9f47a75c5e36b4da0e51c32"
+    },
+    {
+      "path": "product-owner/browser/playwright-output/.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "path": "product-owner/browser/receipts/01-auth.json",
+      "bytes": 750,
+      "sha256": "7612f9c7e1ab67aee84521b4c493a2c0e67fdeced8b7d7125b8ffe9803905355"
+    },
+    {
+      "path": "product-owner/browser/receipts/02-wrong-answer.json",
+      "bytes": 1188,
+      "sha256": "012425053f0903e771e3e96ec54f71ca511757ad7161a709f95243115b008d81"
+    },
+    {
+      "path": "product-owner/browser/receipts/03-learning-loop.json",
+      "bytes": 1148,
+      "sha256": "7d10ca72ef19c2ba80252d7eb495293d264a5c33a2d45b42ff8d90259dbe039f"
+    },
+    {
+      "path": "product-owner/browser/receipts/04-ownership.json",
+      "bytes": 1213,
+      "sha256": "b1028fbaa13fd46c8df12cbe5609e436796e00c345cd058554f7f540c1891cba"
+    },
+    {
+      "path": "product-owner/browser/screenshots/01-auth-account-a.png",
+      "bytes": 136119,
+      "sha256": "7d5c606377a4bf313f64206b61175c5f044509806f52d72bef17d7e2f28769c3"
+    },
+    {
+      "path": "product-owner/browser/screenshots/02-problem.png",
+      "bytes": 53186,
+      "sha256": "3f4bf32dcd2e818251f9fa29988ef07ea8166654500e34d878863f09c51f8cbd"
+    },
+    {
+      "path": "product-owner/browser/screenshots/03-result-wrong-answer.png",
+      "bytes": 54845,
+      "sha256": "4e8c6758a5c255129efccbf4b107153f8afc74fc866a016fdf27921dcbb6629f"
+    },
+    {
+      "path": "product-owner/browser/screenshots/04-history-wrong-answer.png",
+      "bytes": 197052,
+      "sha256": "96ce97979f6d0471a3b900148448aeae7589ee24bf47da9ff0d819829bc2e621"
+    },
+    {
+      "path": "product-owner/browser/screenshots/05-result-accepted.png",
+      "bytes": 80002,
+      "sha256": "05e1909ec5c4eb4d14b4406c0af875d3cb5657d03008903bd7a8c8b0412a4b10"
+    },
+    {
+      "path": "product-owner/browser/screenshots/06-history-accepted.png",
+      "bytes": 200017,
+      "sha256": "2eb96fe474d8cb64575f910decee4bc8675cc35c6443577c70d830140929b7db"
+    },
+    {
+      "path": "product-owner/browser/screenshots/07-history-account-b-empty.png",
+      "bytes": 5905,
+      "sha256": "f76be44cf937b7aa0fcc0c15a8fca5eb92946b12e71f1c1d3200528b120878b1"
+    },
+    {
+      "path": "product-owner/browser.log",
+      "bytes": 1099,
+      "sha256": "6c61f82ad4ff2868043a97318ceaece4e4664a63cffad7bdbd0146b4ef5c945c"
+    },
+    {
+      "path": "product-owner/build.log",
+      "bytes": 3179,
+      "sha256": "5a4e85c51e988b4a9957eb34b8a2329cd73467e8d7806a7fe4f4b9ac9a0a41ce"
+    },
+    {
+      "path": "product-owner/lint-normalized.log",
+      "bytes": 42,
+      "sha256": "af352a86840ad0af3d37ea0d9197f868363a6dac6b1c2ef5d2722f6b41d2d9af"
+    },
+    {
+      "path": "product-owner/lint.log",
+      "bytes": 1064,
+      "sha256": "50a8d2f962c080016f042a88a65bdfe7c28e23ed49190db154b849677cfe52bc"
+    },
+    {
+      "path": "product-owner/test-normalized.log",
+      "bytes": 21666,
+      "sha256": "a181f2c72dc52fa45a5d05f6664d44f202d48a0ceaf240e8d37e083e3999d8b6"
+    },
+    {
+      "path": "product-owner/test.log",
+      "bytes": 10676,
+      "sha256": "0b09166c07e4190257468a5bede761633220bd044231c898b06d08c3de08a638"
+    },
+    {
+      "path": "profile-normalization.json",
+      "bytes": 236,
+      "sha256": "e6f5af8392821687d373a753b44964aa4fdb7685c9432a74abdd799ce4c1619c"
+    },
+    {
+      "path": "source-receiving-code-review.md",
+      "bytes": 11126,
+      "sha256": "0cfbe5a026c2f2243be5ea9483ff01a4707b365c8f0a27312f1549758559452e"
+    }
+  ]
+}
