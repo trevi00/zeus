@@ -39,7 +39,10 @@ ACTION = "implement"
 ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
 REVISION = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
-SEGMENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,254}$")
+# One path segment: the unchanged ordinary grammar, or one optional leading dot before the same
+# alphanumeric start; the dot counts toward the 255-character segment budget. `.`, `..`, repeated
+# leading dots, whitespace, colons (drives, ADS), backslashes and control characters never match.
+SEGMENT = re.compile(r"^(?:[A-Za-z0-9][A-Za-z0-9._-]{0,254}|\.[A-Za-z0-9][A-Za-z0-9._-]{0,253})$")
 OPERATION_NAMESPACE = UUID("6f1c8f1e-4a4b-4d0a-9d3e-2a4b5c6d7e8f")
 TEXT_LIMIT = 12000
 
@@ -61,12 +64,18 @@ def _number(value) -> bool:
 
 
 def safe_relative_path(value) -> bool:
-    """A forward-slash relative repository path: no traversal, no `.git`, no drive or root."""
+    """A forward-slash relative repository path: no traversal, no `.git`, no drive or root.
+
+    Ordinary dot-prefixed project content (`.github/workflows/ci.yml`, `.gitignore`,
+    `docs/.github/GOAL.md`) is accepted; `.git` in any letter case at any depth and every
+    dot-prefixed segment ending in a period (`.git.`, `.GIT..`) are refused, so no alias of the
+    metadata directory passes. This is manifest grammar, not filesystem containment: symlinks,
+    hard links and case collisions are the isolated staging's job (INV-ISOLATED-WORKER-001).
+    """
     if type(value) is not str or not value or len(value) > 1024 or "\\" in value or value.startswith("/"):
         return False
-    segments = value.split("/")
-    return all(SEGMENT.fullmatch(s) is not None and s not in {".", "..", ".git"} and not s.startswith(".git/")
-               for s in segments)
+    return all(SEGMENT.fullmatch(s) is not None and s.lower() != ".git" and not (s[0] == "." and s[-1] == ".")
+               for s in value.split("/"))
 
 
 def _fields(document, expected, name):

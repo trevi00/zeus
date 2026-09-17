@@ -837,7 +837,17 @@ strict: exact fields `id`, 40-hex `base_revision`, `goal` (relative Markdown pat
 criterion, rationale), `plan` (objective, acceptance_criteria, allowed_paths), `budget` (per_host,
 total) and `claude` (model, timeout_seconds, max_budget_usd); unknown fields, wrong types,
 booleans as integers, nonfinite numbers, traversal, `.git` or absolute paths and empty values are
-refused, and the claude controls are validated by the existing provider policy validators. Fixed by
+refused, and the claude controls are validated by the existing provider policy validators. The one
+path grammar (`safe_relative_path`, shared by goal.path, allowed_paths, the research packet sources
+and the autonomous search scope) is forward-slash relative, at most 1024 characters, each segment
+an alphanumeric start followed by ASCII letters, digits, `.`, `_` or `-` up to 255 characters, with
+one optional leading dot that counts toward that 255; ordinary dot-prefixed project content such as
+`.github/workflows/ci.yml`, `.gitignore` or `docs/.github/GOAL.md` is accepted, while empty
+segments, `.`, `..`, repeated leading dots, `.git` in any letter case at any depth, dot-prefixed
+segments ending in a period, roots, drives, UNC, backslashes, whitespace, colons (ADS), control
+characters and non-string values are refused before any Git, PostgreSQL or provider access. This
+grammar is manifest validation, never protection against symlinks, hard links or hostile code;
+those stay with the isolated staging and import guards. Fixed by
 contract: max_executions 2, worker profile `worker-v1`, `restricted` true; credentials, executable
 and endpoints stay host settings. Before any call the goal must exist at base as a regular Git
 blob whose bytes hash to `goal.sha256` (read with git argv); current HEAD need not equal base.

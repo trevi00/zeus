@@ -1,0 +1,924 @@
+{
+  "files": [
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\owner-acceptance.json",
+      "bytes": 6303,
+      "sha256": "1b6ba2836c12f333a64cb5f393dc1d6e86a5c335846416f13f729e396761eba2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\owner-windows-launcher.json",
+      "bytes": 629,
+      "sha256": "b6dd69bb017a942b73070d1c68287fbf0478c59473e99698bdf20ba8efb71e65"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\owner-windows.xml",
+      "bytes": 38761,
+      "sha256": "3761399f35a7a6dd4881ea5b7fcc6ad826f410ec6061579626dc34b4fc4653ac"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\canary.diff",
+      "bytes": 319,
+      "sha256": "2ff011c4fff0aa4d38a21c96b72e10342d379f95360e38a02dc8023c321de687"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\build\\receipt.json",
+      "bytes": 818,
+      "sha256": "dd61c715b03526affb7c39b7e6c6e4facbf6653a392eae6239e98a2a9c260ecd"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\baseline\\baseline.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\baseline\\baseline.stdout",
+      "bytes": 8179,
+      "sha256": "0865f074ff299aae56f21dd3e0942758990de5ba9f4a846f51d122ab45f53abf"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\baseline\\baseline.xml",
+      "bytes": 10943,
+      "sha256": "29fbf417be39454d38f88be9e8d0357b5c359142653e406b1c4458b6cd2c6d75"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\baseline\\fixed.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\baseline\\fixed.stdout",
+      "bytes": 114,
+      "sha256": "ed835f32e4591455929df30bc9a15fe851fc87e0ba865411fd3f04cbbdb07128"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\baseline\\fixed.xml",
+      "bytes": 3571,
+      "sha256": "240cbbbc5af98b4252b35d1d8b5e2e93cae2bc12f629f0fb1ea28bab3b7617ae"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\baseline\\receipt.json",
+      "bytes": 554,
+      "sha256": "587b0b68683b73c82a0038e3118ac4672932517b40cf74ff9ef1266105855b96"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\manifest.json",
+      "bytes": 2385,
+      "sha256": "04259e1c905003346d3c0c19c147098d2778e1ebf3819e2edc97a1dad7f0201e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\stdout.json",
+      "bytes": 5694,
+      "sha256": "2c0af10de335cb864aec5e9c86fdc954309fdb80a1613aefbeaeb6603293a584"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\receipt.json",
+      "bytes": 966,
+      "sha256": "af647433e0d9bea831df2493dfd40a821d35a9bf3ed71df46f9f0c8713470a8e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\records.json",
+      "bytes": 72709,
+      "sha256": "bb46b3b40760c8b6f2dd080842307a2bf8bade333cd136886dedec40ef97d334"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\worker-observations.json",
+      "bytes": 14649,
+      "sha256": "1f64f088eaefef1b0ade2bac82aec5dec20659babe6360a25d2e6cc88a3e65dd"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\031c1a721d9cab87503d0d8f9f56766aa26422d2d9ffd2f7b056f6338cae03e1.txt",
+      "bytes": 638,
+      "sha256": "031c1a721d9cab87503d0d8f9f56766aa26422d2d9ffd2f7b056f6338cae03e1"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\0636731b9a8a8e7b04eebc85b92079c9789fb8f2b26b8565e562ae1a8c15924e.txt",
+      "bytes": 4567,
+      "sha256": "0636731b9a8a8e7b04eebc85b92079c9789fb8f2b26b8565e562ae1a8c15924e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\0bb71bad7b6bc7f71f75301a4c29e95b4c90f63208921069f50fd2ab0555f518.txt",
+      "bytes": 102329,
+      "sha256": "0bb71bad7b6bc7f71f75301a4c29e95b4c90f63208921069f50fd2ab0555f518"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\0ceea8dae2ac3c6d04dd884a2b4dea7d8c1ea94cc357b5114805781402004b6e.txt",
+      "bytes": 1765,
+      "sha256": "0ceea8dae2ac3c6d04dd884a2b4dea7d8c1ea94cc357b5114805781402004b6e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\0d3ee3f18901489e71803c3620b8cc1c43eafe134ac67dd8f34cab1de218e37f.txt",
+      "bytes": 24741,
+      "sha256": "0d3ee3f18901489e71803c3620b8cc1c43eafe134ac67dd8f34cab1de218e37f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\0dac635a9ec21ca1d65380410df4d79529c877089340f45474cc6bef8d7e2af4.txt",
+      "bytes": 3855,
+      "sha256": "0dac635a9ec21ca1d65380410df4d79529c877089340f45474cc6bef8d7e2af4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\0e278198f42d392541b59c53bd2e12baaecfd50621845a11b423653b9f7bdb0e.txt",
+      "bytes": 770,
+      "sha256": "0e278198f42d392541b59c53bd2e12baaecfd50621845a11b423653b9f7bdb0e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\1117a125d5157945538df6ec6b3447705133e41f70af681b9a54337857487afc.txt",
+      "bytes": 4006,
+      "sha256": "1117a125d5157945538df6ec6b3447705133e41f70af681b9a54337857487afc"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\1449fabec7bf649c70f86038da45139697a010565abdb72c5d12107cdc57fbba.txt",
+      "bytes": 9599,
+      "sha256": "1449fabec7bf649c70f86038da45139697a010565abdb72c5d12107cdc57fbba"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\14f2997f281a2f77d8b9c20c45de49b487bc1c8cf9ccec0240166f57e35157f8.txt",
+      "bytes": 7081,
+      "sha256": "14f2997f281a2f77d8b9c20c45de49b487bc1c8cf9ccec0240166f57e35157f8"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\181d774042caf9ae7e83498b66709021d3ef86d47217f066d4f8b6fc7aebaeed.txt",
+      "bytes": 15359,
+      "sha256": "181d774042caf9ae7e83498b66709021d3ef86d47217f066d4f8b6fc7aebaeed"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\19db0d68fd0223951ea01dbcb577ffcc9d6f7361af23aa383e07882c0fedfda4.txt",
+      "bytes": 191,
+      "sha256": "19db0d68fd0223951ea01dbcb577ffcc9d6f7361af23aa383e07882c0fedfda4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\1c2b10a4f8088f4cba501fac095388d55179d43cdc2203f656c1b6ba9e84d4c5.txt",
+      "bytes": 2762,
+      "sha256": "1c2b10a4f8088f4cba501fac095388d55179d43cdc2203f656c1b6ba9e84d4c5"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\1c71c3d8bc362fa844feee6494dcece80673ced439aafc868ee0b8fbef4a51ff.txt",
+      "bytes": 29979,
+      "sha256": "1c71c3d8bc362fa844feee6494dcece80673ced439aafc868ee0b8fbef4a51ff"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\1daa255106bdf635d768bf71bdc9f04a54ae9b7887023c45e0ce55a921b950fb.txt",
+      "bytes": 4035,
+      "sha256": "1daa255106bdf635d768bf71bdc9f04a54ae9b7887023c45e0ce55a921b950fb"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\2161e4a87b20842438f7a6c764c6447570dfd0e9bd614640d0e82caa50c37786.txt",
+      "bytes": 6445,
+      "sha256": "2161e4a87b20842438f7a6c764c6447570dfd0e9bd614640d0e82caa50c37786"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\248c6906762d5f8898b9a671b1fce9c35e5c255a4e18cf0a3291e4cf992896be.txt",
+      "bytes": 5385,
+      "sha256": "248c6906762d5f8898b9a671b1fce9c35e5c255a4e18cf0a3291e4cf992896be"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\26e7a83180ab4ba8ea1bb678ca78391ce18bfcebfd414dfd193e7d47364e26e2.txt",
+      "bytes": 14335,
+      "sha256": "26e7a83180ab4ba8ea1bb678ca78391ce18bfcebfd414dfd193e7d47364e26e2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\26fbb19b095910853f0d23f73810bf95d42f479daf0cb6857babbcfea3344cf0.txt",
+      "bytes": 9346,
+      "sha256": "26fbb19b095910853f0d23f73810bf95d42f479daf0cb6857babbcfea3344cf0"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\298982e22691c89bca27778f5880c1abe3316566a79fd264a87bca85a973ab6f.txt",
+      "bytes": 1939,
+      "sha256": "298982e22691c89bca27778f5880c1abe3316566a79fd264a87bca85a973ab6f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\2a10edda1d0802d37f6337a4f9aff55627e40d07bf638b6cdf0e6f79f93152b4.txt",
+      "bytes": 5738,
+      "sha256": "2a10edda1d0802d37f6337a4f9aff55627e40d07bf638b6cdf0e6f79f93152b4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\3429fd20d28142d06d7af86d94644584c6aa6cb6bdd551e21b25e98720f674b0.txt",
+      "bytes": 2114,
+      "sha256": "3429fd20d28142d06d7af86d94644584c6aa6cb6bdd551e21b25e98720f674b0"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\396d3c36379228a8ba59071de4e3f845b8ae918595e6bda965273d3f4bb25568.txt",
+      "bytes": 1442,
+      "sha256": "396d3c36379228a8ba59071de4e3f845b8ae918595e6bda965273d3f4bb25568"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\3fc152d61cdf0ddfa3a0002d1a6cc9c2c1794d058ace67c73c827571e3584e6d.txt",
+      "bytes": 4855,
+      "sha256": "3fc152d61cdf0ddfa3a0002d1a6cc9c2c1794d058ace67c73c827571e3584e6d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\4027428e510322b02e4bf02314e6df8eca8bd99c9ac1eec352653a292a3f5c44.txt",
+      "bytes": 9005,
+      "sha256": "4027428e510322b02e4bf02314e6df8eca8bd99c9ac1eec352653a292a3f5c44"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a.txt",
+      "bytes": 170,
+      "sha256": "40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\40d14626581c5d58b359690facc8f1737dff8ed65d160f3229fb3431e87bf02b.txt",
+      "bytes": 6559,
+      "sha256": "40d14626581c5d58b359690facc8f1737dff8ed65d160f3229fb3431e87bf02b"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\41994aaaff595b69b2a58104ccaa6abf5257e93051425a793606c5f0b60b1a3c.txt",
+      "bytes": 10123,
+      "sha256": "41994aaaff595b69b2a58104ccaa6abf5257e93051425a793606c5f0b60b1a3c"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\4997bd30d06453d6fee5aa3fb6590ed6ade61144066af12666f1710117cc05a3.txt",
+      "bytes": 7285,
+      "sha256": "4997bd30d06453d6fee5aa3fb6590ed6ade61144066af12666f1710117cc05a3"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\4b4524fbc8249d079a333b563c4ded4687b1a55caae119eead60c802a38b95b2.txt",
+      "bytes": 6323,
+      "sha256": "4b4524fbc8249d079a333b563c4ded4687b1a55caae119eead60c802a38b95b2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\4cc25d541c18f0ed3c811cdd1c9a97680ca41b0ed8ae7cfea3212e69cc9ee5a1.txt",
+      "bytes": 5392,
+      "sha256": "4cc25d541c18f0ed3c811cdd1c9a97680ca41b0ed8ae7cfea3212e69cc9ee5a1"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\503c5d6b468e8e895caaf2a443dd5689e8170b6a42e9c6d9e3373176aad19422.txt",
+      "bytes": 436,
+      "sha256": "503c5d6b468e8e895caaf2a443dd5689e8170b6a42e9c6d9e3373176aad19422"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\5204ee2edf3ae8e743afd8d23635fcc026122f924db9eac10da49eafabfa4215.txt",
+      "bytes": 1455,
+      "sha256": "5204ee2edf3ae8e743afd8d23635fcc026122f924db9eac10da49eafabfa4215"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\55fe20a988325f607270e1cc3e5e3da7e7ccfe67e1b0178c5bdd5c8072607b0a.txt",
+      "bytes": 840,
+      "sha256": "55fe20a988325f607270e1cc3e5e3da7e7ccfe67e1b0178c5bdd5c8072607b0a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\573d90cefe0460a6cf994f7dbfa12983a4f58210337d1fbdef75bf94a5361414.txt",
+      "bytes": 1578,
+      "sha256": "573d90cefe0460a6cf994f7dbfa12983a4f58210337d1fbdef75bf94a5361414"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\58dd5b349f4e7bda7c88c43fe2c5bb631e405f43249fe69e831608c4e7f8ac66.txt",
+      "bytes": 1973,
+      "sha256": "58dd5b349f4e7bda7c88c43fe2c5bb631e405f43249fe69e831608c4e7f8ac66"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\592a25ff7a338074f60280b93226f76d25818866dfe33b568ecee979c0684a29.txt",
+      "bytes": 770,
+      "sha256": "592a25ff7a338074f60280b93226f76d25818866dfe33b568ecee979c0684a29"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\5bfbacef27392eafe85466ec4ac46d0c92d595c36cc2e21fdf330c727d97b63d.txt",
+      "bytes": 528,
+      "sha256": "5bfbacef27392eafe85466ec4ac46d0c92d595c36cc2e21fdf330c727d97b63d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\61ed4e5f105dea774a7b559deb4bc05515d78d35eb72178f3dc7a62dde7a003e.txt",
+      "bytes": 6791,
+      "sha256": "61ed4e5f105dea774a7b559deb4bc05515d78d35eb72178f3dc7a62dde7a003e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\63157c355e9f4118730deb7160b2016b2db361c2d207d8db702c7c2d1c7ed28e.txt",
+      "bytes": 14703,
+      "sha256": "63157c355e9f4118730deb7160b2016b2db361c2d207d8db702c7c2d1c7ed28e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\65db55c7a9952811a79a709f7afe19bbfd7432246b545ecddd06a5a6fd0b8ec3.txt",
+      "bytes": 630,
+      "sha256": "65db55c7a9952811a79a709f7afe19bbfd7432246b545ecddd06a5a6fd0b8ec3"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\66e751ca6cc1b94222b170f22310709ad75d4454e446435c31b6db021abc7514.txt",
+      "bytes": 14329,
+      "sha256": "66e751ca6cc1b94222b170f22310709ad75d4454e446435c31b6db021abc7514"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\6bca819a7381d8f6de6eeeb016f4f6e0587b395f2e4accb6f1ab04e1c1c63910.txt",
+      "bytes": 2911,
+      "sha256": "6bca819a7381d8f6de6eeeb016f4f6e0587b395f2e4accb6f1ab04e1c1c63910"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\6d9bae789d53722b519b8425a57e00e3f21e89bc12a5cd9eba8d94781782366d.txt",
+      "bytes": 13042,
+      "sha256": "6d9bae789d53722b519b8425a57e00e3f21e89bc12a5cd9eba8d94781782366d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\6dd760a2f61993e5d0752d37c3d14a4d0ee2c88a1df18b2a50de82ea7f91409f.txt",
+      "bytes": 528,
+      "sha256": "6dd760a2f61993e5d0752d37c3d14a4d0ee2c88a1df18b2a50de82ea7f91409f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\753172e98af50b816d287a42014244db0ce3720316e106ab25f144f77b370225.txt",
+      "bytes": 5256,
+      "sha256": "753172e98af50b816d287a42014244db0ce3720316e106ab25f144f77b370225"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\77e2ab2d89d363dec030212456ac4dc6383b9c5d53d185ba793db3a3f1a3d874.txt",
+      "bytes": 22654,
+      "sha256": "77e2ab2d89d363dec030212456ac4dc6383b9c5d53d185ba793db3a3f1a3d874"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\7d87ec72f86e96e263321daab34fd4e8303409ef5220c587c05952b3b8d780f5.txt",
+      "bytes": 8387,
+      "sha256": "7d87ec72f86e96e263321daab34fd4e8303409ef5220c587c05952b3b8d780f5"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\81a4a558cc7c418a367a37a067121d8dccbaf997d2fe54a248666a8e2343bd37.txt",
+      "bytes": 944,
+      "sha256": "81a4a558cc7c418a367a37a067121d8dccbaf997d2fe54a248666a8e2343bd37"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\8247e0adf18c365b063fe7abbded383c38d53b61e60faecd1d0e9050ed296587.txt",
+      "bytes": 2524,
+      "sha256": "8247e0adf18c365b063fe7abbded383c38d53b61e60faecd1d0e9050ed296587"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\82e6a859fb12a28f1aef9329170f6a202dc6412c12e8029ac45151cb3dd063de.txt",
+      "bytes": 640,
+      "sha256": "82e6a859fb12a28f1aef9329170f6a202dc6412c12e8029ac45151cb3dd063de"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\840b9521cb41b94d5b819a2d1997077206822c5ebdb2feb2e32a8dd2035eed45.txt",
+      "bytes": 1984,
+      "sha256": "840b9521cb41b94d5b819a2d1997077206822c5ebdb2feb2e32a8dd2035eed45"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\8523c2db892895528a3c92e4f287e24ecad3a232d45fa42d230f5d467bccdd0d.txt",
+      "bytes": 19386,
+      "sha256": "8523c2db892895528a3c92e4f287e24ecad3a232d45fa42d230f5d467bccdd0d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\86a11ec185042fa8168a8c7efd0f09be137b80949c2bc97deb1b9e568e881821.txt",
+      "bytes": 14556,
+      "sha256": "86a11ec185042fa8168a8c7efd0f09be137b80949c2bc97deb1b9e568e881821"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\87335d291fb074bda64a0c7bc5faa419a55c670f8b65a1ff95d99a1fb1296ec5.txt",
+      "bytes": 1939,
+      "sha256": "87335d291fb074bda64a0c7bc5faa419a55c670f8b65a1ff95d99a1fb1296ec5"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\8dd146d4773d30d021e04a5b17a46091be5055aae780a14abeb0770ad1805dc2.txt",
+      "bytes": 745154,
+      "sha256": "8dd146d4773d30d021e04a5b17a46091be5055aae780a14abeb0770ad1805dc2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\8ea4529a6c63f34a1d99460ccc4e0832768bd8f84d77bdd8d1b4692d34f688b2.txt",
+      "bytes": 6627,
+      "sha256": "8ea4529a6c63f34a1d99460ccc4e0832768bd8f84d77bdd8d1b4692d34f688b2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\8ed3cfb1c0997f8a1ed7e412d0a4e4e26a8fa2b96b57b871cedb06e7ce797a4c.txt",
+      "bytes": 19915,
+      "sha256": "8ed3cfb1c0997f8a1ed7e412d0a4e4e26a8fa2b96b57b871cedb06e7ce797a4c"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\8f607090a23f4db12869b48550ed1bb5c534e500fc7d0363d0d687b9beeda377.txt",
+      "bytes": 751,
+      "sha256": "8f607090a23f4db12869b48550ed1bb5c534e500fc7d0363d0d687b9beeda377"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\902cc1377c3d3ace560b4353f2afa02e39fe36bcb8740da37b740dda23eab7db.txt",
+      "bytes": 643,
+      "sha256": "902cc1377c3d3ace560b4353f2afa02e39fe36bcb8740da37b740dda23eab7db"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\9adebb0270631112cf89ece4c1c58cb7e7131eee0e9af476da2d10cfd9526a04.txt",
+      "bytes": 942,
+      "sha256": "9adebb0270631112cf89ece4c1c58cb7e7131eee0e9af476da2d10cfd9526a04"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\9bb84e983da6083d140d100ac3ae344eafb66a515a0e057593724f2000391b65.txt",
+      "bytes": 22662,
+      "sha256": "9bb84e983da6083d140d100ac3ae344eafb66a515a0e057593724f2000391b65"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\9deb6ecc4ac450e79f6a061bd1659b6d2dacbdc29b31148beb3c95a03bdd996f.txt",
+      "bytes": 920,
+      "sha256": "9deb6ecc4ac450e79f6a061bd1659b6d2dacbdc29b31148beb3c95a03bdd996f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\a33336f80d8f2a20291cf36070fd60bd647c9cfb23b1838833ae806c3afb882f.txt",
+      "bytes": 9663,
+      "sha256": "a33336f80d8f2a20291cf36070fd60bd647c9cfb23b1838833ae806c3afb882f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\b1b8d20d723dbd31b0f5dca22b6bdc841ab0b51675c2c4d90b2d7785940cedbd.txt",
+      "bytes": 645,
+      "sha256": "b1b8d20d723dbd31b0f5dca22b6bdc841ab0b51675c2c4d90b2d7785940cedbd"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\b2debbf3de0d079e723882975350839c43ae502db25c03d9b2540dd4d2ef4b5d.txt",
+      "bytes": 4056,
+      "sha256": "b2debbf3de0d079e723882975350839c43ae502db25c03d9b2540dd4d2ef4b5d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\b4226ebbe2bcea64197d156735b1330dc6189cfd59b6de6db5fc1fd309ff6f40.txt",
+      "bytes": 7872,
+      "sha256": "b4226ebbe2bcea64197d156735b1330dc6189cfd59b6de6db5fc1fd309ff6f40"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\b6d139698b9ea559e399ff24808141bfb1a5086009096c61bec8c489d603b956.txt",
+      "bytes": 19951,
+      "sha256": "b6d139698b9ea559e399ff24808141bfb1a5086009096c61bec8c489d603b956"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\b81700992773277d45ce1a5f656364183b39a8dc33ace810df4ff07450b536ee.txt",
+      "bytes": 436,
+      "sha256": "b81700992773277d45ce1a5f656364183b39a8dc33ace810df4ff07450b536ee"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\b92919daf5cfa870cefe03d31a1843c4be90eafa267f3f69e8974dc7a1e85071.txt",
+      "bytes": 1210,
+      "sha256": "b92919daf5cfa870cefe03d31a1843c4be90eafa267f3f69e8974dc7a1e85071"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\bd26aeb959c5c651f4c1a4b07dbd5e6ec762f88a9c54195f0847f684b158aa21.txt",
+      "bytes": 6152,
+      "sha256": "bd26aeb959c5c651f4c1a4b07dbd5e6ec762f88a9c54195f0847f684b158aa21"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\c27576cfdf8332f3d6bf4339ac5555a6dabf6f048da733fa2c376bb668e6fca4.txt",
+      "bytes": 4683,
+      "sha256": "c27576cfdf8332f3d6bf4339ac5555a6dabf6f048da733fa2c376bb668e6fca4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\c5e4d212504999acdd0766fd8b13fea3854e799849c0f185cb59d03ce5fcafd4.txt",
+      "bytes": 807453,
+      "sha256": "c5e4d212504999acdd0766fd8b13fea3854e799849c0f185cb59d03ce5fcafd4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\ce78714405cb5a7751b414398a37b564ae0bf3752d007489850d55aa43c76f22.txt",
+      "bytes": 1776,
+      "sha256": "ce78714405cb5a7751b414398a37b564ae0bf3752d007489850d55aa43c76f22"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\cf551ea90443c7729b32fc2362ad2ef8dde88cfefc272c9b7f78f513aacd0b75.txt",
+      "bytes": 646,
+      "sha256": "cf551ea90443c7729b32fc2362ad2ef8dde88cfefc272c9b7f78f513aacd0b75"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\d4fc067dddb0ada717d39eb49337385f5862149bc32fe45363ad997cfdab2264.txt",
+      "bytes": 436,
+      "sha256": "d4fc067dddb0ada717d39eb49337385f5862149bc32fe45363ad997cfdab2264"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\d875c18b2432bd633ee4f1fa15fc4df517ff43317ab0568eddf4d9aa3c9546fa.txt",
+      "bytes": 14913,
+      "sha256": "d875c18b2432bd633ee4f1fa15fc4df517ff43317ab0568eddf4d9aa3c9546fa"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\d9950ebb5c762205cdd34593ee9252a073d2b37bf9ffc8fd6951d5b225da57f6.txt",
+      "bytes": 1938,
+      "sha256": "d9950ebb5c762205cdd34593ee9252a073d2b37bf9ffc8fd6951d5b225da57f6"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\de0ddf37bb94a5ca047b64ae473f526fb74fd63ec0834c0a25737a3a5f057025.txt",
+      "bytes": 711,
+      "sha256": "de0ddf37bb94a5ca047b64ae473f526fb74fd63ec0834c0a25737a3a5f057025"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\e464cb3d52397179d6ed6e6d33adddf312f69c3bdfdb22e942d1cb76399d132d.txt",
+      "bytes": 4375,
+      "sha256": "e464cb3d52397179d6ed6e6d33adddf312f69c3bdfdb22e942d1cb76399d132d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\e9f26bf65219a6c72eb8333931d7b1cb17d3780d0b0edcd2bc8bd97c0d2fc051.txt",
+      "bytes": 2130,
+      "sha256": "e9f26bf65219a6c72eb8333931d7b1cb17d3780d0b0edcd2bc8bd97c0d2fc051"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\ec1b12939de574bb968a8daec95e7a2972c66eecb9815eca97b1d654ec8ed2fc.txt",
+      "bytes": 12721,
+      "sha256": "ec1b12939de574bb968a8daec95e7a2972c66eecb9815eca97b1d654ec8ed2fc"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\edc768b2b614fe19e82a886c248c45744cccf23c1c09baff9ba0427023d85371.txt",
+      "bytes": 7260,
+      "sha256": "edc768b2b614fe19e82a886c248c45744cccf23c1c09baff9ba0427023d85371"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\ef5fef08e5e4e140ab10f67bf410612c7ce486a7e690a29e62627197e86dcb10.txt",
+      "bytes": 15117,
+      "sha256": "ef5fef08e5e4e140ab10f67bf410612c7ce486a7e690a29e62627197e86dcb10"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\efef088024e5a84f91923fa95f1e3b7b3d22c07d2d7893deb959502f8139c0ac.txt",
+      "bytes": 5391,
+      "sha256": "efef088024e5a84f91923fa95f1e3b7b3d22c07d2d7893deb959502f8139c0ac"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\f0e7e163634e94a221729f39883d9f6f601e2b0bba0d1db6b3c915e02316416c.txt",
+      "bytes": 436,
+      "sha256": "f0e7e163634e94a221729f39883d9f6f601e2b0bba0d1db6b3c915e02316416c"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\f332e11ecc62a15df0def971e41db87f9232c062aec7f9a02fdbbe92c47e65b2.txt",
+      "bytes": 4403,
+      "sha256": "f332e11ecc62a15df0def971e41db87f9232c062aec7f9a02fdbbe92c47e65b2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\fada74ffd7d4a9e8cdb0c0f5747eae577bc967e443a0f0f88d7fe3db31968e8c.txt",
+      "bytes": 14561,
+      "sha256": "fada74ffd7d4a9e8cdb0c0f5747eae577bc967e443a0f0f88d7fe3db31968e8c"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\artifacts\\ffddf669b87d3455821ba19c811ef91377563d587a6baa0723443b039db269c4.txt",
+      "bytes": 644,
+      "sha256": "ffddf669b87d3455821ba19c811ef91377563d587a6baa0723443b039db269c4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\isolated-worker\\runs\\eeeaf4e0c08e4174bffecb11fe7b3124\\run.json",
+      "bytes": 8479,
+      "sha256": "87ca3117d4a86f46db6e5d362b46dfd5889e5f5850f60578eff601cf899414c7"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\isolated-worker\\replays\\47df6f43b8f545b2a8173b19d1a3785e\\run.json",
+      "bytes": 7645,
+      "sha256": "22b0af3d40a66fb1c28b7efbcbbd16105be17fa05347759124637f2e510572a3"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\isolated-worker\\replays\\59767cb6f48343e5ac411f461b994fa1\\run.json",
+      "bytes": 7646,
+      "sha256": "25272d74ea474a5eb28b9af09fff353ca3d3e0dbaa8df6c302b0ae7bee43e0fe"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\isolated-worker\\replays\\8a9c7ccaadc047758946038f555f2291\\run.json",
+      "bytes": 7134,
+      "sha256": "cb49aa14f3a037fbe16283ad6bbcd4e0b41310ade47718f83868c3b0193eb934"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\i\\r\\isolated-worker\\replays\\fe3f15d491104dcfb63e06bf42b6cf5a\\run.json",
+      "bytes": 7136,
+      "sha256": "27e9e19544111449762b71edb804c1c290b9fa6149c07f22e27cd5e9e43c552b"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\manifest.json",
+      "bytes": 1569,
+      "sha256": "11dbc193d5cb3c63dd9684bb3eded367145854142913b1e7540bff0d061ab53f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\stdout.json",
+      "bytes": 4500,
+      "sha256": "f900de42ae222837af93222c35c099bff8e904050f1ebdf76b46cd1a3ab9eb0b"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\receipt.json",
+      "bytes": 958,
+      "sha256": "08be1865b9f92e9b44c323eaa2666cb958863b3b508aa76793b56ebb9eff430f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\records.json",
+      "bytes": 44944,
+      "sha256": "0db18e3c75e0d3ec898afa2af10bb571f9bccf8a6acbf756166642e0e614fdaa"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\worker-observations.json",
+      "bytes": 8012,
+      "sha256": "16a8d61c1949d4a8402575657af6e164c54b2f4fce2b6a2a616330a7902e2623"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\23e024e709532b88458aa8cfa068fc527b301e3dfc77c1218bbc8a87da9d20b9.txt",
+      "bytes": 6286,
+      "sha256": "23e024e709532b88458aa8cfa068fc527b301e3dfc77c1218bbc8a87da9d20b9"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\352da6378cad05381644db64bfe89ccb29d0c2ac7d63c9d9f2e8b9f8782efd67.txt",
+      "bytes": 710,
+      "sha256": "352da6378cad05381644db64bfe89ccb29d0c2ac7d63c9d9f2e8b9f8782efd67"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\39d1f08ec28b29b48f281740b93b6f455b89b7fcfb2fa260f127ac6eb505a303.txt",
+      "bytes": 2632,
+      "sha256": "39d1f08ec28b29b48f281740b93b6f455b89b7fcfb2fa260f127ac6eb505a303"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a.txt",
+      "bytes": 170,
+      "sha256": "40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\486203e1471b957b2d8122f9036c1ac9840ef5aa29c108420a83eb52a03eb35e.txt",
+      "bytes": 951,
+      "sha256": "486203e1471b957b2d8122f9036c1ac9840ef5aa29c108420a83eb52a03eb35e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\6f764d36a9df8c571db42ecd504bd44dc4206cc00fc0a1d7aef0549c998db242.txt",
+      "bytes": 76978,
+      "sha256": "6f764d36a9df8c571db42ecd504bd44dc4206cc00fc0a1d7aef0549c998db242"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\758be4d245197d17697a754892ed4909f743f2add89d68fcf2c51ec05c13ae83.txt",
+      "bytes": 777,
+      "sha256": "758be4d245197d17697a754892ed4909f743f2add89d68fcf2c51ec05c13ae83"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\823181ce9a66b63430b3128c10f3807c4a40b08bb277d70c085b60bdd7ba428f.txt",
+      "bytes": 951,
+      "sha256": "823181ce9a66b63430b3128c10f3807c4a40b08bb277d70c085b60bdd7ba428f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\8e93e381057191b6e1ea40945c4cf785d328cc0620fc101eb8db2b0169caf360.txt",
+      "bytes": 1035,
+      "sha256": "8e93e381057191b6e1ea40945c4cf785d328cc0620fc101eb8db2b0169caf360"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\9404b54923125cf7a4c5483b3422645de3fdefabdceeb219a88195e73131b4f0.txt",
+      "bytes": 929,
+      "sha256": "9404b54923125cf7a4c5483b3422645de3fdefabdceeb219a88195e73131b4f0"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\a13ac2c36df6265c8a12ddf1674bbb68236a2a883b90985eb2f328118d95e2b2.txt",
+      "bytes": 1338,
+      "sha256": "a13ac2c36df6265c8a12ddf1674bbb68236a2a883b90985eb2f328118d95e2b2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\a7bb029b3f8b9557daab7c6a9ec00e61e199c5c4e3fbbbfaa4bc50c1f0189cfc.txt",
+      "bytes": 1939,
+      "sha256": "a7bb029b3f8b9557daab7c6a9ec00e61e199c5c4e3fbbbfaa4bc50c1f0189cfc"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\c16309f559b171d9b4758b9adf7dda6bb3d9c58da9cd8d6da670d0b6154c2c0d.txt",
+      "bytes": 777,
+      "sha256": "c16309f559b171d9b4758b9adf7dda6bb3d9c58da9cd8d6da670d0b6154c2c0d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\c3d92e94a5287698a3f0b58578046892d64447b56f2d9c864d3c5e0c4e7fae61.txt",
+      "bytes": 1249,
+      "sha256": "c3d92e94a5287698a3f0b58578046892d64447b56f2d9c864d3c5e0c4e7fae61"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\c6f0aa3bd1a95d67a1a3eb2219a7e3bd612ac38fa02e2ee15365b4dd44cee9d5.txt",
+      "bytes": 1866,
+      "sha256": "c6f0aa3bd1a95d67a1a3eb2219a7e3bd612ac38fa02e2ee15365b4dd44cee9d5"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\ceeb5fd19fdc0f9841144ead2866cf994aa2e8333c4e1f1f6a449d6db1f0e5fc.txt",
+      "bytes": 770,
+      "sha256": "ceeb5fd19fdc0f9841144ead2866cf994aa2e8333c4e1f1f6a449d6db1f0e5fc"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\d58f2e0c6554197e89b280634111ac9974f0999d20f5320972c7fefbba10c4e6.txt",
+      "bytes": 2109,
+      "sha256": "d58f2e0c6554197e89b280634111ac9974f0999d20f5320972c7fefbba10c4e6"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\d925f226c5cf884414ed6345b078ae9ac1e8881a1aa7409140849ef0491de68a.txt",
+      "bytes": 1035,
+      "sha256": "d925f226c5cf884414ed6345b078ae9ac1e8881a1aa7409140849ef0491de68a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\artifacts\\e30d6477d4e6996ff889a41f3c63f2b5661e51eb45c8adca35ee0d3c0a75e0ac.txt",
+      "bytes": 5044,
+      "sha256": "e30d6477d4e6996ff889a41f3c63f2b5661e51eb45c8adca35ee0d3c0a75e0ac"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\isolated-worker\\runs\\c8bcfee3c966484abe041564b87ea642\\run.json",
+      "bytes": 8243,
+      "sha256": "0e888194b742ed15119ee9b3c304f080eec738ae3c179ff719f21e1063a82b67"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\isolated-worker\\replays\\2bd4cd1782734edaa42b86b70ed98d2a\\run.json",
+      "bytes": 7944,
+      "sha256": "6500a512c56d675563a3cd1dd2a3dd4cfcc8bed0aaab4d8445f3840ece6e1de9"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c\\r\\isolated-worker\\replays\\3e87837488c846ebb72af2af6b53522f\\run.json",
+      "bytes": 7945,
+      "sha256": "2a3a1eef6f64f619c3f5fee6656f01b626be2c80636622be7155adc9a126380f"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\manifest.json",
+      "bytes": 1570,
+      "sha256": "24c45cb762f145c71a138ab455d8ec19fb885f868f3119d15df98e0cfe22cec4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\stdout.json",
+      "bytes": 5629,
+      "sha256": "18c8bae8cf39d8739ad1d0774843e3fdad189845da3c655d674fe2004860ce66"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\receipt.json",
+      "bytes": 959,
+      "sha256": "7689b8c88653f77967a4cff44dcd68483db158a8cc22112626783d63c14be51c"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\records.json",
+      "bytes": 47547,
+      "sha256": "743e2c2476417f519bf1f0baf909ebe78f17f0dcae0c324adf0fec7032db8e27"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\worker-observations.json",
+      "bytes": 8012,
+      "sha256": "abcf106e879b6d97bef997b6d05995343ac47f6105447d72d2b7374d91e65fec"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\078777a51a3b00e94dcc8190c74a1a6753f8f2ee65f39e907a0031150fb6d8a8.txt",
+      "bytes": 1474,
+      "sha256": "078777a51a3b00e94dcc8190c74a1a6753f8f2ee65f39e907a0031150fb6d8a8"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\0810d4efdb1360f9304b8d2d2bd328349cc12ab9f7f8fe2d9915d556e8c3d781.txt",
+      "bytes": 1035,
+      "sha256": "0810d4efdb1360f9304b8d2d2bd328349cc12ab9f7f8fe2d9915d556e8c3d781"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\1b326e848dfda80ec05d229d03500d7c8838501af60f62b3b86b24b7160cbdc4.txt",
+      "bytes": 640,
+      "sha256": "1b326e848dfda80ec05d229d03500d7c8838501af60f62b3b86b24b7160cbdc4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\1e7f1bb7e73ff15c564886231839b93b9bb2baf638831c7cd06c9a6b91b457cb.txt",
+      "bytes": 4007,
+      "sha256": "1e7f1bb7e73ff15c564886231839b93b9bb2baf638831c7cd06c9a6b91b457cb"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\22c930bd6cc65d905853af0b70f9a783afaca2c532aadb1c3a05d248fa2e2d32.txt",
+      "bytes": 672,
+      "sha256": "22c930bd6cc65d905853af0b70f9a783afaca2c532aadb1c3a05d248fa2e2d32"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\23472f95d4dc6d8d7e70224e3820acfa57b639c1239d56cf39b12be19ab999ea.txt",
+      "bytes": 1339,
+      "sha256": "23472f95d4dc6d8d7e70224e3820acfa57b639c1239d56cf39b12be19ab999ea"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\23d002708ef8827426986cbae2e859972efc30ce484cec0b546b69a2e0652de6.txt",
+      "bytes": 5047,
+      "sha256": "23d002708ef8827426986cbae2e859972efc30ce484cec0b546b69a2e0652de6"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\2c9e4e167fec72e0e64c1528cbf856525b7737a4e2ec7ed88af418f84b644e6a.txt",
+      "bytes": 1005,
+      "sha256": "2c9e4e167fec72e0e64c1528cbf856525b7737a4e2ec7ed88af418f84b644e6a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\35c4ef9a7b468d1ae68748c8ed4ecd1c715cc4a8e4342844ee54f6967bba912d.txt",
+      "bytes": 642,
+      "sha256": "35c4ef9a7b468d1ae68748c8ed4ecd1c715cc4a8e4342844ee54f6967bba912d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\3c4776fb9e20c27f5dde389fc72c8ffb45415c5c41a084f50a93b76c50b184b3.txt",
+      "bytes": 436,
+      "sha256": "3c4776fb9e20c27f5dde389fc72c8ffb45415c5c41a084f50a93b76c50b184b3"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\3f36d72a4d8856cffcb9d0a18cd0eefda88d3ce8f1dd0e8d183dca802610f86a.txt",
+      "bytes": 710,
+      "sha256": "3f36d72a4d8856cffcb9d0a18cd0eefda88d3ce8f1dd0e8d183dca802610f86a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\40958b23578a893f33096119e9da44ea545963a360b1e6edb46d7acbc8452da0.txt",
+      "bytes": 643,
+      "sha256": "40958b23578a893f33096119e9da44ea545963a360b1e6edb46d7acbc8452da0"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a.txt",
+      "bytes": 170,
+      "sha256": "40a7f21fd14936974072a6cf7f256544da5cbf338d56721f65ae7d80ed7b2e2a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\604b8e9deb24a498b8ccb3ca60b45378eba926f71edd1d5d3f8fe502235ad240.txt",
+      "bytes": 8321,
+      "sha256": "604b8e9deb24a498b8ccb3ca60b45378eba926f71edd1d5d3f8fe502235ad240"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\616f43fb5389b900a73cdbba745ba46b20a54cb282f61b6977bf9a298ebd7af7.txt",
+      "bytes": 929,
+      "sha256": "616f43fb5389b900a73cdbba745ba46b20a54cb282f61b6977bf9a298ebd7af7"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\6789f8dd8bb4fce2e3b4a639016949b1f6ffe29aea7900266ef1c4d8b1f0b0c8.txt",
+      "bytes": 271,
+      "sha256": "6789f8dd8bb4fce2e3b4a639016949b1f6ffe29aea7900266ef1c4d8b1f0b0c8"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\7059fac4d26db30549bda24b19513afc1e7a6a884c6a55e859da3b0f3f786716.txt",
+      "bytes": 1939,
+      "sha256": "7059fac4d26db30549bda24b19513afc1e7a6a884c6a55e859da3b0f3f786716"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\782859f617534f2ab7aa54511d80b018b58613a63ade418b5b48ab516ff7fa57.txt",
+      "bytes": 1465,
+      "sha256": "782859f617534f2ab7aa54511d80b018b58613a63ade418b5b48ab516ff7fa57"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\7a0845c34b23106ef47e28e0c51d84ab681308f6804e3aec9b5ad1cc4185fdcc.txt",
+      "bytes": 1758,
+      "sha256": "7a0845c34b23106ef47e28e0c51d84ab681308f6804e3aec9b5ad1cc4185fdcc"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\7e334a8a6993523aa293589f502f15db9ed4a8678e0231d27e00900131b527c4.txt",
+      "bytes": 2632,
+      "sha256": "7e334a8a6993523aa293589f502f15db9ed4a8678e0231d27e00900131b527c4"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\821a7439836936169b332d44b3104e6141c0598c2045fa3674060e0d3fab6df1.txt",
+      "bytes": 3987,
+      "sha256": "821a7439836936169b332d44b3104e6141c0598c2045fa3674060e0d3fab6df1"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\94857a5ca34ef20e511ea8f8fba6a151afda93b175aacb9e093418e1c70e7de9.txt",
+      "bytes": 770,
+      "sha256": "94857a5ca34ef20e511ea8f8fba6a151afda93b175aacb9e093418e1c70e7de9"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\9549ccb723a282bfeb5d7ab235238966313e34f8945acbbc50886fc0d9d8b90e.txt",
+      "bytes": 436,
+      "sha256": "9549ccb723a282bfeb5d7ab235238966313e34f8945acbbc50886fc0d9d8b90e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\9db8921601898682119cdfe601bdea860b947356312802c818ed1aa10257ea2b.txt",
+      "bytes": 91302,
+      "sha256": "9db8921601898682119cdfe601bdea860b947356312802c818ed1aa10257ea2b"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\a83bd30bf5246a835d20e554122dbb0cecc5151f5c9f8e90c5377dff8d5e4c48.txt",
+      "bytes": 224879,
+      "sha256": "a83bd30bf5246a835d20e554122dbb0cecc5151f5c9f8e90c5377dff8d5e4c48"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\bae89a0e60e4471811148078eea298f0103a0cf55bd3b940d7cb2361e6791c24.txt",
+      "bytes": 777,
+      "sha256": "bae89a0e60e4471811148078eea298f0103a0cf55bd3b940d7cb2361e6791c24"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\caab671f2c29ce1e7d182bb06e376c5bbe18ff62aa4426b06df343607bb6bb75.txt",
+      "bytes": 4689,
+      "sha256": "caab671f2c29ce1e7d182bb06e376c5bbe18ff62aa4426b06df343607bb6bb75"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\cbfc4b12d3eb3b0d71d701312356c307fb87242aa1f4901394ea28083c6d1706.txt",
+      "bytes": 5689,
+      "sha256": "cbfc4b12d3eb3b0d71d701312356c307fb87242aa1f4901394ea28083c6d1706"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\d39e06749f8fd405661874e2b31be4a760aa71301fe204c2009d5b4c85a49a32.txt",
+      "bytes": 1405,
+      "sha256": "d39e06749f8fd405661874e2b31be4a760aa71301fe204c2009d5b4c85a49a32"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\d8bb1b93bec08f77cd541951509502c9076f80d305a655028307151a924ebc51.txt",
+      "bytes": 2109,
+      "sha256": "d8bb1b93bec08f77cd541951509502c9076f80d305a655028307151a924ebc51"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\d98013ede705058fb400b45ac8265bdf69d320ccca23761690d114ad79a98205.txt",
+      "bytes": 1045,
+      "sha256": "d98013ede705058fb400b45ac8265bdf69d320ccca23761690d114ad79a98205"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\ed0231b4210b952306cbb81ccf245971c1e1ca4a3fbdd96f6102e00bad9cd43a.txt",
+      "bytes": 630,
+      "sha256": "ed0231b4210b952306cbb81ccf245971c1e1ca4a3fbdd96f6102e00bad9cd43a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\f25125972b99364ed190d748c75b035e3b5a2fc054188967055fa0f6aa5944fe.txt",
+      "bytes": 9333,
+      "sha256": "f25125972b99364ed190d748c75b035e3b5a2fc054188967055fa0f6aa5944fe"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\fe369690f5e40c917faa5810f5f6850c9d24f392d57a17ff5bc604b83b82fd19.txt",
+      "bytes": 5781,
+      "sha256": "fe369690f5e40c917faa5810f5f6850c9d24f392d57a17ff5bc604b83b82fd19"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\artifacts\\ff8786597bb1647cc1701641ad245f53458e84e6ce5b523b1b0d5e1bb328cf0e.txt",
+      "bytes": 4738,
+      "sha256": "ff8786597bb1647cc1701641ad245f53458e84e6ce5b523b1b0d5e1bb328cf0e"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\isolated-worker\\runs\\70ce247e8c274459b53d06a6f07c11ec\\run.json",
+      "bytes": 7797,
+      "sha256": "4dcd6460e1536bed765eebc3869f962c5e4d5723f2f4728c0ba6cf5fc667bb7c"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\isolated-worker\\replays\\c25ed39ba8924286b76fd629a636f73d\\run.json",
+      "bytes": 7273,
+      "sha256": "d3888e65d2ea3e1d07e87eb23a8c0f12a790f1d09ad19575e3bc89d38f23e44b"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\p132\\c2\\r\\isolated-worker\\replays\\df93746e349c407983e601691a6c3ad9\\run.json",
+      "bytes": 7272,
+      "sha256": "9f6e768df3a8999c88d05fdd79ef8c1a5f93ff44a134efbd4a5540c167a2b404"
+    }
+  ]
+}
