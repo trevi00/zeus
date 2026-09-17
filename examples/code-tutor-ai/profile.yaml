@@ -1,0 +1,23 @@
+# Code Tutor project profile (distribution copy).
+# Install as .harness/tech-stack.yaml inside a NEW project root and commit it;
+# never overwrite an existing user-authored profile (INV-PROJECT-001).
+schema_version: "1"
+stacks:
+  - language: typescript
+    framework: react
+    version: "19"
+  - language: typescript
+    version: "5.9"
+  - language: python
+    framework: fastapi
+extensions: []
+metadata:
+  pack: code-tutor-scenario-pack-001
+  source: docs/zeus/operations/code-tutor-scenario-pack-001/SOURCE.json
+  reference_repository: https://github.com/trevi00/code-tutor-ai.git
+  reference_revision: 0d48f06dd8860a9e9f731e7af434824779eaadd8
+  version_note: >-
+    React 19 is the framework version and TypeScript 5.9 the language version as declared in
+    frontend/package.json; they are separate stacks on purpose. The backend is Python/FastAPI
+    per backend/pyproject.toml, and its FastAPI version is not measured, so it is omitted.
+    Declarations are not an installed-environment receipt.

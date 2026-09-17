@@ -1,0 +1,223 @@
+{
+  "schema": "zeus.sdd.v1",
+  "id": "code-tutor.learning-loop",
+  "title": "Code Tutor — 학습 루프 SDD 초안 (가입/로그인 → 문제 선택 → 제출 → 결과와 학습 이력)",
+  "intent": "사용자가 2026-09-17에 선택한 핵심 흐름을 GWT 초안으로 기록한다. 흐름의 의도는 확인됐지만 세부 GWT와 실제 실행은 아직 사람의 인수를 받지 않았다. 이 초안은 검토용이며 제품 성공, 모델 준수, 사람 승인 또는 실기기 실행을 뜻하지 않는다. 기준 저장소 trevi00/code-tutor-ai revision 0d48f06dd8860a9e9f731e7af434824779eaadd8은 읽기 전용이다.",
+  "personas": [
+    "문제를 풀고 결과와 학습 이력을 확인하는 학습자",
+    "실제 서비스·데이터·브라우저로 시나리오를 검수하는 QA 담당자",
+    "제출·채점·소유권 경계를 구현하고 증적을 재현하는 개발자"
+  ],
+  "target": {
+    "kind": "unconfigured",
+    "app_id": "code-tutor-ai",
+    "build_hash": null,
+    "alpha_url": null
+  },
+  "reset_contract": "실행 전 격리된 일회용 데이터셋과 테스트 계정을 만든다. 시드 데이터의 digest와 초기 DB 상태(제출 0건, 이력 0건)를 확인하고 영수증에 기록한다. 운영·공유 데이터는 삭제하지 않으며, 영수증에는 원시 자격 증명(비밀번호·토큰)을 넣지 않는다. 초기화 영수증이 없는 실행은 인수 증적이 아니다.",
+  "design": {
+    "components": "현재 프론트엔드 선언(frontend/package.json): React 19, Vite, React Query, Zustand. SPEC은 Tailwind를 언급하지만 SOURCE.json의 관찰된 선언 목록에는 없으므로 미확인이다. shadcn/ui와 Storybook은 설치됐다고 주장하지 않으며, 상태별 스토리 작성은 제안이다.",
+    "icons": "Lucide(선언 확인)를 사용하며 아이콘마다 접근 가능한 레이블을 함께 둔다.",
+    "tokens": "제안: surface/text/accent/danger 등 의미 기반 토큰으로 색상·간격·반경을 관리하고 화면별 임의 색상을 줄인다. 현재 적용 여부는 측정하지 않았다.",
+    "required_stories": [
+      "loading: 문제 목록·제출 결과·이력 로딩 상태",
+      "empty: 제출 이력이 없는 학습자의 빈 상태",
+      "error: 채점 실패·네트워크 오류·권한 거부 상태",
+      "success: ACCEPTED 결과와 갱신된 이력",
+      "pending: 제출 후 서버 결과 대기 상태(승인 표시 금지)",
+      "keyboard/focus/reduced-motion: 네 상태 모두 키보드 도달과 포커스 관리"
+    ]
+  },
+  "devices": [
+    {
+      "id": "samsung.phone",
+      "manufacturer": "samsung",
+      "platform": "android",
+      "form_factor": "phone",
+      "physical_required": true,
+      "conditions": [
+        "보류: 실제 Galaxy 모델·Android·One UI·WebView 버전이 정해지지 않았다",
+        "보류: 실기기 실행은 대상 URL/빌드 확정과 사람 승인 뒤로 미룬다",
+        "세로/가로 전환 뒤 코드 초안과 제출 상태 보존",
+        "네트워크 중단·복귀와 백그라운드 복귀 뒤 제출 상태 대조"
+      ]
+    },
+    {
+      "id": "samsung.tablet",
+      "manufacturer": "samsung",
+      "platform": "android",
+      "form_factor": "tablet",
+      "physical_required": true,
+      "conditions": [
+        "보류: 실제 Galaxy Tab 모델·Android·One UI·WebView 버전이 정해지지 않았다",
+        "보류: 실기기 실행은 대상 URL/빌드 확정과 사람 승인 뒤로 미룬다",
+        "멀티윈도우·창 크기 변경 뒤 편집기와 결과 화면 보존",
+        "외부 키보드 사용 시 포커스 이동과 제출 단축키 확인"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ.ct.learning-loop",
+      "statement": "가입 또는 로그인한 학습자는 알려진 시드 문제를 선택해 정답을 제출하고, 서버가 확정한 ACCEPTED 결과와 통과 수, 그리고 새로고침 뒤에도 남는 자신의 학습 이력을 본다.",
+      "risk": "normal",
+      "status": "active"
+    },
+    {
+      "id": "REQ.ct.wrong-answer",
+      "statement": "알려진 오답 제출은 WRONG_ANSWER로 판정되며 화면·이력 어디에도 해결됨 상태가 생기지 않는다.",
+      "risk": "normal",
+      "status": "active"
+    },
+    {
+      "id": "REQ.ct.ownership",
+      "statement": "다른 실제 계정은 첫 계정의 제출을 조회하거나 채점할 수 없고, 로그아웃·계정 전환 시 개인 UI 캐시가 비워진다. 인가는 서버가 결정한다.",
+      "risk": "critical",
+      "status": "active"
+    },
+    {
+      "id": "REQ.ct.interruption",
+      "statement": "타임아웃·네트워크 끊김·새로고침은 성공이 될 수 없으며, 재시도 전에 알려진 제출 식별자를 먼저 대조하고 효과를 맹목적으로 중복시키지 않는다.",
+      "risk": "critical",
+      "status": "active"
+    },
+    {
+      "id": "REQ.ct.ui-states",
+      "statement": "loading·empty·error·success 상태가 보이고 키보드로 도달 가능하며 포커스와 reduced motion을 다룬다. pending UI는 결코 정식 승인 표시가 아니다.",
+      "risk": "normal",
+      "status": "active"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "SCN.ct.learning-loop",
+      "title": "가입/로그인 → 시드 문제 선택 → 정답 제출 → 결과와 이력",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.ct.learning-loop"
+      ],
+      "given": [
+        "초기화 영수증이 있는 격리 데이터셋에 알려진 시드 문제와 그 정답 제출물이 준비되어 있다",
+        "새 테스트 계정이 실제 백엔드에 가입 또는 로그인되어 있고 제출 이력은 0건이다"
+      ],
+      "when": [
+        "학습자가 목록에서 해당 시드 문제를 선택한다",
+        "준비된 정답 코드를 붙여넣고 제출한다",
+        "결과 화면을 확인한 뒤 브라우저를 새로고침하고 학습 이력을 연다"
+      ],
+      "then": [
+        "서버 제출 레코드의 상태가 ACCEPTED이고 통과 수가 시드에서 미리 정한 기대값과 같다",
+        "화면의 결과 상태와 통과 수가 서버 레코드와 같으며 서버 조회 전에는 해결됨으로 표시되지 않는다",
+        "새로고침 뒤 학습 이력에 이 제출이 정확히 1건 남아 있고 다른 계정의 제출은 보이지 않는다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.ct.wrong-answer",
+      "title": "알려진 오답 제출은 WRONG_ANSWER이며 해결됨이 되지 않는다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.ct.wrong-answer"
+      ],
+      "given": [
+        "같은 격리 데이터셋에 결과가 WRONG_ANSWER로 미리 정해진 오답 제출물이 준비되어 있다",
+        "학습자가 로그인되어 있고 해당 문제를 아직 해결하지 않았다"
+      ],
+      "when": [
+        "학습자가 오답 코드를 제출하고 서버 결과를 기다린다"
+      ],
+      "then": [
+        "서버 제출 레코드의 상태가 WRONG_ANSWER이고 실패한 테스트 수가 기대값과 같다",
+        "문제 목록·결과 화면·학습 이력 어디에도 해결됨 표시가 생기지 않는다",
+        "학습 이력에는 WRONG_ANSWER 제출 1건이 기록되고 성공 건수는 0이다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.ct.ownership",
+      "title": "다른 계정은 남의 제출을 읽거나 채점할 수 없다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.ct.ownership"
+      ],
+      "given": [
+        "첫 계정이 제출 1건을 가지고 있고 그 제출 식별자와 서버 레코드 digest가 기록되어 있다",
+        "두 번째 실제 계정이 같은 백엔드에 로그인되어 있다"
+      ],
+      "when": [
+        "두 번째 계정이 첫 계정의 제출 조회 API와 채점 API를 직접 호출한다",
+        "첫 계정이 로그아웃한 같은 브라우저에서 두 번째 계정이 로그인해 이력 화면을 연다"
+      ],
+      "then": [
+        "두 호출 모두 서버가 거부 응답(403 또는 404, 관리자 제외)을 돌려주고 본문에 제출 내용이 없다",
+        "첫 계정의 제출 레코드 digest가 호출 전과 같다",
+        "두 번째 계정의 이력 화면에 첫 계정의 문제·제출·결과가 캐시로도 보이지 않는다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.ct.interruption",
+      "title": "타임아웃·네트워크 끊김·새로고침은 성공이 될 수 없다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.ct.interruption"
+      ],
+      "given": [
+        "학습자가 정답 코드를 제출한 직후이며 서버 결과는 아직 도착하지 않았다",
+        "제출 요청의 식별자를 클라이언트가 알고 있다"
+      ],
+      "when": [
+        "결과 도착 전에 네트워크를 끊거나 응답이 정한 타임아웃을 넘기거나 페이지를 새로고침한다",
+        "연결 복구 뒤 학습자가 다시 제출을 시도한다"
+      ],
+      "then": [
+        "중단 동안 화면은 pending 또는 unknown을 표시하고 결코 ACCEPTED를 표시하지 않는다",
+        "재시도 전에 알려진 제출 식별자로 서버 상태를 먼저 대조하며 동일 제출이 중복 생성되지 않는다",
+        "최종 서버 레코드 수와 화면 이력 수가 같고 unknown 결과는 success로 바뀌지 않는다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    },
+    {
+      "id": "SCN.ct.ui-states",
+      "title": "loading·empty·error·success가 보이고 키보드로 도달 가능하다",
+      "status": "active",
+      "requirement_ids": [
+        "REQ.ct.ui-states"
+      ],
+      "given": [
+        "이력 0건인 새 계정, 채점 오류를 낼 수 있는 격리 환경, 정답 제출물이 준비되어 있다",
+        "브라우저에 prefers-reduced-motion이 켜져 있다"
+      ],
+      "when": [
+        "학습자가 마우스 없이 키보드만으로 문제 목록, 제출, 결과, 이력 화면을 순서대로 이동한다",
+        "각 화면에서 loading, empty, error, success 상태를 실제 조건으로 만든다"
+      ],
+      "then": [
+        "네 상태 각각이 눈에 보이는 문구와 접근 가능한 레이블을 가지며 키보드 포커스가 관련 요소로 이동한다",
+        "reduced motion이 켜진 동안 애니메이션 전환이 없다",
+        "pending 상태 문구는 승인·해결됨과 구분되며 서버 결과 도착 전에는 success 상태가 나타나지 않는다"
+      ],
+      "device_profiles": [
+        "samsung.phone",
+        "samsung.tablet"
+      ],
+      "bindings": []
+    }
+  ]
+}
