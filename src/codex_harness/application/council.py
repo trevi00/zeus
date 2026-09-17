@@ -53,6 +53,7 @@ from codex_harness.domain.council import (
 from codex_harness.domain.model import ContractError, canonical, require, utcnow
 
 SNAPSHOT_SOURCE = "council-snapshot:"
+SNAPSHOT_REFUSALS = {"snapshot_unavailable", "snapshot_corrupt", "snapshot_mismatch", "snapshot_stale"}
 
 
 class CouncilRun(AutonomousRun):
@@ -106,7 +107,7 @@ class CouncilRun(AutonomousRun):
             bindings[role] = binding
             try:
                 independent_roles(bindings)
-                derived = council_output(role, binding["answer"], identities)
+                derived = council_output(role, binding["answer"], identities, claim_ids)
                 event = event_from_role(INTERNAL_SLOT[role], derived["event_payload"], digest_value, version, binding["task_id"])
                 recorded = sessions.submit(row["session_id"], event, owner=run_id, binding=_safe_binding(binding))
             except DgeRefused as exc:
@@ -134,13 +135,18 @@ class CouncilRun(AutonomousRun):
         selection, max_age = snapshot_selection(manifest), manifest["current_state"]["max_age_seconds"]
         self._log("snapshot", run_id, "started")
         self._check_deadline(manifest)
+        envelope, refused = None, None
         try:
             envelope = validate_snapshot(self.snapshot.observe(selection, topic=topic, run_id=run_id, base_revision=base,
                                                                max_age_seconds=max_age))
         except ContractError as exc:
-            raise AutonomousRefused(getattr(exc, "reason_code", "snapshot_unavailable")) from exc
-        except Exception as exc:  # the adapter maps its own failures; anything else is still not an observation
-            raise AutonomousRefused("snapshot_unavailable") from exc
+            refused = getattr(exc, "reason_code", "snapshot_unavailable")
+        except Exception:  # the adapter maps its own failures; anything else is still not an observation
+            refused = "snapshot_unavailable"
+        if refused is not None:
+            # Raised OUTSIDE the handler: neither __cause__ nor __context__ keeps the port's exception
+            # (a driver error can carry the DSN or row text), so no traceback chain can print it.
+            raise AutonomousRefused(refused if refused in SNAPSHOT_REFUSALS else "snapshot_unavailable")
         if (envelope["topic"], envelope["run_id"], envelope["base_revision"], envelope["selection"]) != (topic, run_id, base, selection):
             raise AutonomousRefused("snapshot_mismatch")
         stored = self.artifacts.put(canonical(envelope), SNAPSHOT_SOURCE + run_id)
@@ -161,17 +167,23 @@ class CouncilRun(AutonomousRun):
         recorded = current.get("snapshot")
         if not recorded or recorded != {k: observed[k] for k in recorded}:
             raise AutonomousRefused("snapshot_missing")
-        try:
-            document = self.evidence.document(recorded["ref"])
-        except ContractError as exc:
-            raise AutonomousRefused("snapshot_corrupt" if "corrupt" in str(exc) else "snapshot_missing") from exc
-        except Exception as exc:
-            raise AutonomousRefused("snapshot_missing") from exc
+        document = self._frozen_document(recorded["ref"])
         try:
             return check_snapshot(document, expected_digest=recorded["sha256"], topic=manifest["research"]["topic"], run_id=row["id"],
                                   base_revision=manifest["base_revision"], selection=observed["selection"], now=self.clock())
         except SnapshotError as exc:
             raise AutonomousRefused(exc.reason_code) from exc
+
+    def _frozen_document(self, ref: str):
+        """The persisted envelope through the evidence port, or a fixed snapshot code: bytes that no longer
+        hash to the reference or do not parse are `snapshot_corrupt`, anything else `snapshot_missing`."""
+        try:
+            return self.evidence.document(ref)
+        except ContractError as exc:
+            code = getattr(exc, "reason_code", "")
+            raise AutonomousRefused("snapshot_corrupt" if code in {"evidence_corrupt", "evidence_invalid"} else "snapshot_missing") from exc
+        except Exception as exc:
+            raise AutonomousRefused("snapshot_missing") from exc
 
     # ----- relay --------------------------------------------------------------------------
     def _relay(self, correlation: str, task_id: str, sender: str) -> str:
@@ -199,13 +211,11 @@ class CouncilRun(AutonomousRun):
         except ContractError as exc:
             raise AutonomousRefused("promotion_report_unproven:" + str(exc).split(":")[-1].strip()) from exc
         try:
-            document = self.evidence.document(observed["ref"])
-            check_snapshot(document, expected_digest=observed["sha256"], topic=manifest["research"]["topic"], run_id=row["id"],
-                           base_revision=base, selection=observed["selection"], now=None)
-        except ContractError as exc:
-            raise AutonomousRefused("promotion_snapshot_unproven:" + str(exc).split(":")[-1].strip()) from exc
-        except Exception as exc:
-            raise AutonomousRefused("promotion_snapshot_unproven:snapshot_missing") from exc
+            check_snapshot(self._frozen_document(observed["ref"]), expected_digest=observed["sha256"],
+                           topic=manifest["research"]["topic"], run_id=row["id"], base_revision=base,
+                           selection=observed["selection"], now=None)
+        except (AutonomousRefused, SnapshotError) as exc:  # both carry a fixed snapshot_* code, never content
+            raise AutonomousRefused("promotion_snapshot_unproven:" + exc.reason_code) from exc
         refs = {"version": 2, "topology": row["topology"],
                 "dba": {"task_id": task["id"], "execution_ref": binding["execution_ref"], "output_sha256": binding["output_sha256"],
                         "reservation_id": evidence["reservation_id"]},

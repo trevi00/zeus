@@ -22,7 +22,9 @@ def test_postgres_snapshot_is_one_read_only_repeatable_read_observation(isolated
     port = ReadOnlySnapshot(isolated_pgstore.dsn, clock=lambda: "2029-01-01T00:00:00+00:00")
     envelope = port.observe(SELECTION, topic="pg", run_id="council-pg", base_revision=BASE, max_age_seconds=120)
     assert [r["state"] for r in envelope["records"]] == ["found", "missing", "found"]
-    assert envelope["records"][0]["sha256"] == digest(ROWS[("tasks", "t-1")]) and envelope["records"][0]["fields"]["status"] == "succeeded"
+    assert envelope["records"][0]["sha256"] == digest(ROWS[("tasks", "t-1")])
+    assert envelope["records"][0]["fields"] == {"status": "succeeded", "agent": "worker:implementation"}, "colon-bearing actor stays readable"
+    assert envelope["records"][2]["fields"] == {"status": "running", "stage": "research"}
     assert envelope["records"][1]["sha256"] is None and SECRET not in str(envelope) and isolated_pgstore.dsn not in str(envelope)
     frozen = snapshot_digest(envelope)
     again = port.observe(SELECTION, topic="pg", run_id="council-pg", base_revision=BASE, max_age_seconds=120)

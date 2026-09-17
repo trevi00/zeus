@@ -2,11 +2,13 @@
 
 One `BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY` transaction with bounded connection and
 statement timeouts reads exactly the selected `documents` rows in one statement and the database,
-schema and server version for the endpoint identity digest. PostgreSQL 18 transaction-iso: Repeatable
+schema and server version for the endpoint identity digest. PostgreSQL transaction-iso and
+sql-set-transaction (the local server is 17.11; the 17 and 18 pages state the same): Repeatable
 Read sees one snapshot for the whole transaction; READ ONLY makes any write fail server-side. The
 domain reduces the rows to per-key found/missing/unknown, canonical-row SHA-256 and the whitelisted
-status fields; no body, DSN, error text or credential leaves this module. Any connection or read
-failure is `snapshot_unavailable`, never an empty observation. `connect` is injectable so unit tests
+finite status fields; no body, DSN, error text or credential leaves this module. Any connection or
+read failure is `snapshot_unavailable`, never an empty observation, and that public exception keeps
+no `__cause__`/`__context__`, so a traceback chain cannot print the driver's error. `connect` is injectable so unit tests
 drive a fake connection; the integration lane uses real PostgreSQL. This port never writes and is
 not `Store.transaction` (which serializes writers behind an advisory lock).
 """
@@ -43,8 +45,10 @@ class ReadOnlySnapshot:
         """The read-only repeatable-read transaction; always rolled back, never committed."""
         try:
             conn = self.connect(self.dsn, connect_timeout=self.connect_timeout, autocommit=True)
-        except Exception as exc:
-            raise SnapshotUnavailable("snapshot_unavailable") from exc
+        except Exception:
+            conn = None
+        if conn is None:
+            raise SnapshotUnavailable("snapshot_unavailable")  # no __cause__/__context__: a driver error can quote the DSN
         with conn:
             conn.execute(BEGIN)
             try:
@@ -55,15 +59,18 @@ class ReadOnlySnapshot:
 
     def observe(self, selection: list, *, topic: str, run_id: str, base_revision: str, max_age_seconds: int) -> dict:
         records = validate_current_state({"records": selection, "max_age_seconds": max_age_seconds})["records"]
+        failed = False
         try:
             with self._session() as conn:
                 identity = conn.execute(IDENTITY).fetchone()
                 rows = conn.execute(SELECT, ([r["bucket"] for r in records], [r["id"] for r in records])).fetchall()
                 observed_at = self.clock()
-        except SnapshotUnavailable:
-            raise
-        except Exception as exc:
-            raise SnapshotUnavailable("snapshot_unavailable") from exc
+        except Exception:
+            failed = True
+        if failed:
+            # Raised outside the handler so the public exception keeps neither __cause__ nor __context__:
+            # the raw adapter error (DSN, SQL, row text) cannot be printed by any traceback chain.
+            raise SnapshotUnavailable("snapshot_unavailable")
         if not (isinstance(identity, (tuple, list)) and len(identity) == 3 and all(isinstance(v, str) for v in identity)):
             raise SnapshotUnavailable("snapshot_unavailable")
         bodies = {(bucket, key): body for bucket, key, body in rows}

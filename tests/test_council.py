@@ -1,6 +1,7 @@
 """INV-COUNCIL-001 with labelled fixtures: the executor, budget, artifact store, snapshot port, clock
 and every role output below are fault injection, never Claude, Codex, a DBA or a live council."""
 import json
+import traceback
 
 import pytest
 from test_autonomous import (
@@ -21,14 +22,25 @@ from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.autonomous import AutonomousRefused, AutonomousRun
 from codex_harness.application.council import CouncilRun
+from codex_harness.application.local_cycle import EXECUTION_STATUSES
+from codex_harness.application.operation import TERMINAL as OPERATION_TERMINAL
 from codex_harness.application.service import Harness
 from codex_harness.application.workflow import Workflow
 from codex_harness.bootstrap import organization
-from codex_harness.domain.autonomous import AutonomousManifestError, validate_autonomous_manifest
+from codex_harness.domain.autonomous import (
+    STAGES,
+    AutonomousManifestError,
+    validate_autonomous_manifest,
+)
 from codex_harness.domain.council import (
+    OPERATION_STATUSES,
+    RUN_STAGES,
     SCHEMA_AUTONOMOUS_V2,
+    STAGES_V2,
+    TASK_STATUSES,
     SnapshotError,
     check_snapshot,
+    council_output,
     profile,
     report_from_dba,
     snapshot_digest,
@@ -37,6 +49,7 @@ from codex_harness.domain.council import (
     validate_any_manifest,
     validate_council_manifest,
     validate_current_state,
+    validate_snapshot,
 )
 from codex_harness.domain.model import ContractError, canonical, digest, envelope
 
@@ -106,7 +119,10 @@ class FakeSnapshotPort:
             raise SnapshotUnavailable("snapshot_unavailable")
         if self.mode == "malformed":
             return {"records": [{"body": SECRET}]}
-        connect = lambda dsn, **kw: FakeConnection(self.rows, self.statements, fail_at="unnest" if self.mode == "read_error" else None)
+        def connect(dsn, **kw):
+            if self.mode == "connect_error":
+                raise OSError("could not connect to " + dsn)  # a driver error quoting the DSN (injected fault)
+            return FakeConnection(self.rows, self.statements, fail_at="unnest" if self.mode == "read_error" else None)
         return ReadOnlySnapshot("postgresql://user:" + SECRET + "@host/db", connect=connect, clock=self.clock).observe(selection, **binding)
 
 
@@ -220,10 +236,13 @@ def test_snapshot_reduces_rows_to_digests_and_whitelist_and_keeps_missing_unknow
     other = FakeSnapshotPort(clock)
     same = other.observe(selection, topic="t", run_id="council-001", base_revision=BASE, max_age_seconds=600)
     assert snapshot_digest(same) == snapshot_digest(envelope_), "content-addressed"
-    for mode in ("unavailable", "read_error"):
+    for mode in ("unavailable", "read_error", "connect_error"):
         with pytest.raises(SnapshotUnavailable) as info:
             FakeSnapshotPort(clock, mode).observe(selection, topic="t", run_id="council-001", base_revision=BASE, max_age_seconds=600)
         assert info.value.reason_code == "snapshot_unavailable" and SECRET not in str(info.value)
+        # Owner probe (injected fault): the raw adapter error rode along on the exception chain.
+        assert info.value.__cause__ is None and info.value.__context__ is None
+        assert SECRET not in "".join(traceback.format_exception(info.value)), mode
     with pytest.raises(AutonomousManifestError):
         port.observe([{"bucket": "tasks", "id": "t" + str(i)} for i in range(21)], topic="t", run_id="r", base_revision=BASE, max_age_seconds=600)
     with pytest.raises(ContractError):
@@ -237,6 +256,10 @@ def test_snapshot_reduces_rows_to_digests_and_whitelist_and_keeps_missing_unknow
     with pytest.raises(SnapshotError, match="snapshot_mismatch"):
         check_snapshot(envelope_, **{**common, "run_id": "council-002"}, now=clock.now)
     with pytest.raises(SnapshotError, match="snapshot_mismatch"):
+        check_snapshot(envelope_, **{**common, "selection": selection[:2]}, now=clock.now)
+    with pytest.raises(SnapshotError, match="snapshot_mismatch"):  # a well-formed envelope of other content is not the frozen one
+        check_snapshot({**envelope_, "max_age_seconds": 601}, **common, now=clock.now)
+    with pytest.raises(SnapshotError, match="snapshot_corrupt"):  # records that do not follow the envelope's own selection
         check_snapshot({**envelope_, "records": envelope_["records"][::-1]}, **common, now=clock.now)
     with pytest.raises(SnapshotError, match="snapshot_corrupt"):
         check_snapshot({**envelope_, "records": [{**envelope_["records"][0], "body": SECRET}] + envelope_["records"][1:]}, **common, now=clock.now)
@@ -253,7 +276,100 @@ def test_snapshot_reduces_rows_to_digests_and_whitelist_and_keeps_missing_unknow
         report_from_dba({**DBA_REPORT, "snapshot_digest": frozen, "claim_ids": ["c9"]}, snapshot_digest_value=frozen, claim_ids={"c1"})
 
 
+def test_status_fields_are_finite_vocabularies_and_known_actor_syntax_never_arbitrary_tokens():
+    """Regressions measured at 271e1ab: a normal colon-bearing actor was reduced to unknown, while an
+    arbitrary token-shaped status was copied out verbatim (owner probe, injected rows)."""
+    assert TASK_STATUSES == EXECUTION_STATUSES and OPERATION_STATUSES == {"running"} | OPERATION_TERMINAL
+    assert RUN_STAGES == set(STAGES) | set(STAGES_V2)
+
+    def state(bucket, body):
+        record = snapshot_records([{"bucket": bucket, "id": "x"}], {(bucket, "x"): body})[0]
+        assert record["sha256"] == digest(body) and (record["state"] == "found" or record["fields"] == {})
+        return record["state"], record["fields"]
+    for agent in ("worker:implementation", "lead:dba", "lead:improvement", "conductor"):
+        assert state("tasks", {"status": "queued", "agent": agent}) == ("found", {"status": "queued", "agent": agent})
+    for agent in ("worker:", "root:admin", "lead:a:b", "Lead:dba", "conductor:x", "lead:" + "a" * 65, "lead:dba " + SECRET, None, 7):
+        assert state("tasks", {"status": "queued", "agent": agent})[0] == "unknown", agent
+    for bucket, body in (("tasks", {"status": "exfiltrated-token", "agent": "lead:dba"}),  # token-shaped, not a status
+                         ("tasks", {"agent": "lead:dba"}), ("tasks", {"status": None, "agent": "lead:dba"}),  # required status
+                         ("tasks", {"status": "succeeded"}), ("tasks", {"status": True, "agent": "lead:dba"}),
+                         ("operations", {"status": "succeeded", "lead_accepted": True}),  # a task status, not an operation status
+                         ("operations", {"status": "accepted", "lead_accepted": "true"}), ("operations", {"lead_accepted": True}),
+                         ("autonomous_runs", {"status": "running", "stage": "anything-goes"}),
+                         ("autonomous_runs", {"status": "queued", "stage": "research"}), ("autonomous_runs", {"status": "running"}),
+                         ("promotions", {"repository": "council-001"}), ("promotions", {"repository": "verified:"}),
+                         ("promotions", {"repository": "verified:a/../b"}), ("promotions", {})):
+        assert state(bucket, body) == ("unknown", {}), (bucket, body)
+    assert state("operations", {"status": "running", "lead_accepted": None}) == ("found", {"status": "running", "lead_accepted": None})
+    assert state("operations", {"status": "accepted", "lead_accepted": True})[0] == "found"
+    assert state("autonomous_runs", {"status": "needs_user", "stage": "improvement_lead"})[0] == "found"
+    assert state("promotions", {"repository": "verified:council-001"}) == ("found", {"repository": "verified:council-001"})
+    # The consumer applies the same rule: a stored envelope cannot smuggle a value the producer would refuse.
+    selection = [{"bucket": "tasks", "id": "x"}]
+    records = snapshot_records(selection, {("tasks", "x"): {"status": "succeeded", "agent": "worker:implementation"}})
+    good = snapshot_envelope(topic="t", run_id="r", base_revision=BASE, selection=selection, records=records,
+                             database_identity="0" * 64, observed_at=Clock().now, max_age_seconds=600)
+    assert good["records"][0]["fields"]["agent"] == "worker:implementation"
+    for fields in ({"status": "exfiltrated-token", "agent": "worker:implementation"}, {"status": "succeeded", "agent": "root:admin"},
+                   {"status": "succeeded"}, {"status": None, "agent": "worker:implementation"}):
+        with pytest.raises(SnapshotError, match="snapshot_corrupt"):
+            validate_snapshot({**good, "records": [{**good["records"][0], "fields": fields}]})
+    with pytest.raises(SnapshotError, match="snapshot_corrupt"):
+        validate_snapshot({**good, "records": [{**good["records"][0], "state": "unknown"}]})  # unknown exports no fields
+
+
+def test_application_snapshot_refusal_keeps_no_raw_exception_chain():
+    for mode in ("connect_error", "read_error", "unavailable", "raw"):
+        svc, run, executor, budget, port = build(snapshot_mode=mode)
+        if mode == "raw":  # a port that leaks its own driver error instead of mapping it (injected fault)
+            port.observe = lambda selection, **binding: (_ for _ in ()).throw(OSError("password " + SECRET))
+        claimed = run.claim(valid(), IDENTITY, BOUND_GOAL)
+        with pytest.raises(AutonomousRefused) as info:
+            run._observe(valid(), claimed["row"])
+        assert info.value.reason_code == "snapshot_unavailable" and info.value.__cause__ is None and info.value.__context__ is None
+        assert SECRET not in "".join(traceback.format_exception(info.value)), mode
+
+
 # ----- normal ---------------------------------------------------------------------------------------
+def test_critical_improvement_finding_is_converted_once_and_reaches_the_event_and_the_conductor_intact():
+    """Regression measured at 271e1ab: the improvement output went through `attacker_findings` twice and
+    the second pass refused the already converted critical finding (trigger/impact/mitigation gone)."""
+    critical = {"id": "f0", "criterion": "focused tests pass", "severity": "critical", "scenario": "stale row read",
+                "claim_ids": ["c1"], "trigger": "snapshot older than max age", "impact": "wrong design", "mitigation": "guard"}
+    outputs = {"improvement_lead": {**IMPROVEMENT, "findings": [critical] + IMPROVEMENT["findings"]},
+               "conductor": {**ROLE_OUTPUTS["arbiter"], "dispositions": [{"finding_id": "f0", "decision": "resolved", "reason": "guarded"}]
+                             + ROLE_OUTPUTS["arbiter"]["dispositions"]}}
+    svc, run, executor, budget, port = build(outputs=outputs)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "accepted" and receipt["reason_code"] == "promoted", receipt["reason_code"]
+    assert receipt["residuals"]["critical"] == [{"id": "f0", "status": "resolved"}]
+    with svc.store.transaction() as tx:
+        event = [e for e in tx.scan("dge_events") if e["role"] == "attacker"][0]
+        found = {f["id"]: f for f in event["event"]["payload"]["findings"]}
+        assert found["f0"]["scenario"].count("trigger: ") == 1 == found["f0"]["scenario"].count("mitigation: "), "one conversion"
+        assert set(found["f0"]) == {"id", "criterion", "severity", "scenario", "claim_ids"}
+        conductor = [t for t in tx.scan("tasks") if t["agent"] == "conductor"][0]["message"]["what"]["details"]
+        assert conductor["improvement_proposal"]["findings"][0] == critical, "the conductor sees the raw, complete finding"
+    derived = council_output("improvement_lead", {**outputs["improvement_lead"], "snapshot_digest": "1" * 64, "report_digest": "2" * 64},
+                             {"snapshot_digest": "1" * 64, "report_digest": "2" * 64}, {"c1"})
+    assert derived["event_payload"]["findings"][0] == critical, "raw payload: event_from_role owns the single conversion"
+
+
+@pytest.mark.parametrize("role, calls", [("research_lead", 3), ("improvement_lead", 4)])
+def test_unknown_claim_id_in_a_lead_contribution_is_refused_before_the_next_role(role, calls):
+    base = {"research_lead": ROLE_OUTPUTS["proposer"], "improvement_lead": IMPROVEMENT}[role]
+    svc, run, executor, budget, port = build(outputs={role: {**base, "claim_ids": ["c1", "c-not-in-packet"]}})
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "debate_refused:ContractError" and executor.calls == ORDER[:calls]
+    assert receipt["promotion"] is None
+    with svc.store.transaction() as tx:
+        assert len(tx.scan("dge_events")) == calls - 3, "the refused contribution never became an event"
+    for bad in (["c9"], ["c1", "c1"], "c1", [1]):
+        with pytest.raises(ContractError, match="claim_ids"):
+            council_output("improvement_lead", {**IMPROVEMENT, "claim_ids": bad, "snapshot_digest": "1" * 64, "report_digest": "2" * 64},
+                           {"snapshot_digest": "1" * 64, "report_digest": "2" * 64}, {"c1"})
+
+
 def test_normal_council_cycle_uses_real_agents_shares_one_report_reaches_the_conductor_and_promotes():
     svc, run, executor, budget, port = build()
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
@@ -283,9 +399,9 @@ def test_normal_council_cycle_uses_real_agents_shares_one_report_reaches_the_con
         assert conductor["message"]["what"]["details"]["improvement_proposal"]["decision"] == "improve"
         assert conductor["message"]["what"]["details"]["improvement_proposal"]["transition"]["rollback"] == "revert"
         events = {e["role"]: e for e in tx.scan("dge_events")}
-        assert set(events) == {"proposer", "attacker", "arbiter"} and set(events["attacker"]["payload"]) == {"findings"}, "internal slots"
+        assert set(events) == {"proposer", "attacker", "arbiter"} and set(events["attacker"]["event"]["payload"]) == {"findings"}, "internal slots"
         assert events["attacker"]["binding"]["agent"] == "lead:improvement" and events["arbiter"]["binding"]["agent"] == "conductor"
-        design = json.loads(tx.get("knowledge_nodes", "verified:council-001:design")["body"])
+        design = tx.get("knowledge_nodes", "verified:council-001:design")["body"]
         assert design["council"]["dba"]["task_id"] == report["task_id"] and design["council"]["snapshot"]["sha256"] == snapshot["sha256"]
         assert design["council"]["report"]["sha256"] == report["sha256"] and design["council"]["topology"]["roles"]["dba"]["agent"] == "lead:dba"
         promotion = tx.get("promotions", "council-001")
@@ -311,7 +427,7 @@ def test_v1_manifest_through_the_council_class_runs_the_v1_flow_with_six_starts_
 
 # ----- unknown / failure / time / ownership ---------------------------------------------------------
 @pytest.mark.parametrize("mode, code", [("unavailable", "snapshot_unavailable"), ("read_error", "snapshot_unavailable"),
-                                        ("malformed", "snapshot_corrupt")])
+                                        ("connect_error", "snapshot_unavailable"), ("malformed", "snapshot_corrupt")])
 def test_unavailable_or_malformed_snapshot_refuses_after_research_with_no_further_start(mode, code):
     svc, run, executor, budget, port = build(snapshot_mode=mode)
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)

@@ -17,6 +17,7 @@ that snapshot in the explicit scope, nothing more. Nothing here connects, calls 
 """
 from __future__ import annotations
 
+import re
 from datetime import datetime, timedelta, timezone
 
 from codex_harness.domain.autonomous import (
@@ -24,11 +25,14 @@ from codex_harness.domain.autonomous import (
     ATTACKER,
     FIELDS,
     MAX_STARTS,
+    PROMOTED_NAMESPACE,
     PROPOSER,
     RESEARCHER,
     ROLE_AGENTS,
     SCHEMA_AUTONOMOUS,
     SSOT_DECISIONS,
+    STAGES,
+    TERMINAL,
     AutonomousManifestError,
     attacker_findings,
     validate_autonomous_manifest,
@@ -61,11 +65,25 @@ RESPONSIBILITY = {RESEARCHER: "SSOT research at base; frozen packet",
 MAX_STARTS_V2 = 7        # research + DBA + two leads + conductor + implement + review
 STAGES_V2 = ("research", "packet", "snapshot", DBA, RESEARCH_LEAD, IMPROVEMENT_LEAD, CONDUCTOR_ROLE,
              "implementation", "promotion")
-# Whitelisted status/stage fields per bucket; every value must be a short safe token (or a bool / null
-# where noted) or the record is reported unknown. Nothing else of a row is ever copied out.
+# Whitelisted status/stage fields per bucket. Every field is REQUIRED and checked against a FINITE domain
+# vocabulary or a known identity syntax, never "any token-shaped string": a row whose field is absent, null
+# where not allowed or outside its vocabulary is reported unknown. Nothing else of a row is ever copied out.
 STATUS_FIELDS = {"tasks": ("status", "agent"), "operations": ("status", "lead_accepted"),
                  "autonomous_runs": ("status", "stage"), "promotions": ("repository",)}
-BOOLEAN_FIELDS = {"lead_accepted"}
+BOOLEAN_FIELDS = {"lead_accepted"}   # true / false / null (null: the operation is not decided yet)
+TASK_STATUSES = frozenset({"queued", "pending", "retry", "running", "succeeded", "failed", "blocked", "expired",
+                           "superseded", "inspection_blocked", "cancelled"})  # = local_cycle.EXECUTION_STATUSES
+OPERATION_STATUSES = frozenset({"running", "accepted", "rejected", "failed", "unknown", "exhausted"})
+RUN_STATUSES = frozenset({"running"} | TERMINAL)
+RUN_STAGES = frozenset(STAGES) | frozenset(STAGES_V2)
+# Known actor syntax: the conductor, or `<lead|worker>:<name>`; the colon is part of a normal identity.
+ACTOR = re.compile(r"^(?:conductor|(?:lead|worker):[a-z][a-z0-9_-]{0,63})$")
+# Known namespace syntax: a promoted repository is `verified:<run id>` and nothing else.
+NAMESPACE_REF = re.compile("^" + re.escape(PROMOTED_NAMESPACE) + r"[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
+FIELD_VALUES = {("tasks", "status"): TASK_STATUSES, ("tasks", "agent"): ACTOR,
+                ("operations", "status"): OPERATION_STATUSES,
+                ("autonomous_runs", "status"): RUN_STATUSES, ("autonomous_runs", "stage"): RUN_STAGES,
+                ("promotions", "repository"): NAMESPACE_REF}
 RECORD_STATES = ("found", "missing", "unknown")
 DBA_REPORT_FIELDS = {"snapshot_digest", "summary", "claim_ids", "unknowns"}
 RESEARCH_LEAD_FIELDS = {"summary", "claim_ids", "snapshot_digest", "report_digest"}
@@ -96,6 +114,18 @@ def _token(value) -> bool:
 
 def _sha256(value) -> bool:
     return type(value) is str and len(value) == SHA256_LENGTH and all(c in "0123456789abcdef" for c in value)
+
+
+def field_valid(bucket: str, name: str, value) -> bool:
+    """One rule for the producer (`snapshot_records`) and the consumer (`validate_snapshot`): a boolean
+    field is true/false/null; every other whitelisted field is a string of its finite vocabulary or known
+    identity syntax. An arbitrary token-shaped string is not valid and neither is a missing value."""
+    if name in BOOLEAN_FIELDS:
+        return value is None or type(value) is bool
+    allowed = FIELD_VALUES.get((bucket, name))
+    if allowed is None or type(value) is not str:
+        return False
+    return value in allowed if isinstance(allowed, frozenset) else allowed.fullmatch(value) is not None
 
 
 # ----- manifest -----------------------------------------------------------------------------------
@@ -172,7 +202,8 @@ def snapshot_selection(manifest) -> list:
 def snapshot_records(selection: list, bodies: dict) -> list:
     """Reduce fetched rows to the redacted per-key observation. `bodies` maps (bucket, id) -> row body
     for the keys the read-only transaction returned; a selected key without a row is `missing`, a row
-    whose whitelisted fields are not valid tokens is `unknown` (never guessed successful)."""
+    with a whitelisted field absent or outside its finite vocabulary is `unknown` (never guessed
+    successful) and exports its digest only."""
     out = []
     for record in selection:
         key = (record["bucket"], record["id"])
@@ -182,14 +213,8 @@ def snapshot_records(selection: list, bodies: dict) -> list:
             if not isinstance(body, dict):
                 entry["state"] = "unknown"
             else:
-                fields, valid = {}, True
-                for name in STATUS_FIELDS[record["bucket"]]:
-                    value = body.get(name)
-                    if name in BOOLEAN_FIELDS:
-                        valid = valid and (value is None or type(value) is bool)
-                    else:
-                        valid = valid and (value is None or _token(value))
-                    fields[name] = value
+                fields = {name: body.get(name) for name in STATUS_FIELDS[record["bucket"]]}
+                valid = all(field_valid(record["bucket"], name, value) for name, value in fields.items())
                 entry.update(state="found" if valid else "unknown", sha256=digest(body), fields=fields if valid else {})
         out.append(entry)
     return out
@@ -233,11 +258,12 @@ def validate_snapshot(document) -> dict:
             raise SnapshotError("snapshot_corrupt")
         if record["state"] == "found" and not _sha256(sha):
             raise SnapshotError("snapshot_corrupt")
-        if not isinstance(fields, dict) or set(fields) - set(STATUS_FIELDS[record["bucket"]]):
+        if record["state"] == "unknown" and (fields != {} or not (sha is None or _sha256(sha))):
+            raise SnapshotError("snapshot_corrupt")  # an unknown record exports no field at all
+        if not isinstance(fields, dict) or (record["state"] == "found" and set(fields) != set(STATUS_FIELDS[record["bucket"]])):
             raise SnapshotError("snapshot_corrupt")
-        for name, value in fields.items():
-            if not (value is None or (type(value) is bool if name in BOOLEAN_FIELDS else _token(value))):
-                raise SnapshotError("snapshot_corrupt")
+        if not all(field_valid(record["bucket"], name, value) for name, value in fields.items()):
+            raise SnapshotError("snapshot_corrupt")
         out.append({"bucket": record["bucket"], "id": record["id"], "state": record["state"], "sha256": sha, "fields": dict(fields)})
     return {"schema": SNAPSHOT_SCHEMA, "topic": document["topic"], "run_id": document["run_id"],
             "base_revision": document["base_revision"], "selection": selection["records"], "isolation": ISOLATION,
@@ -306,19 +332,23 @@ def report_digest(report: dict) -> str:
     return digest(report)
 
 
-def proposal_from_research_lead(output, identities: dict) -> dict:
+def proposal_from_research_lead(output, identities: dict, claim_ids: set) -> dict:
     """Research lead: the proposer payload plus the identities it worked from."""
     if not isinstance(output, dict) or set(output) != RESEARCH_LEAD_FIELDS:
         raise ContractError("Research lead proposal lacks the required fields")
     _identities(output, identities)
+    _claim_refs(output["claim_ids"], claim_ids, "Research lead proposal")
     return {"proposal": {k: output[k] for k in sorted(RESEARCH_LEAD_FIELDS)},
             "event_payload": {"summary": output["summary"], "claim_ids": output["claim_ids"]}}
 
 
-def proposal_from_improvement_lead(output, identities: dict) -> dict:
+def proposal_from_improvement_lead(output, identities: dict, claim_ids: set) -> dict:
     """Improvement lead: a constructive alternative (summary, reuse/improve/migrate/new, rationale,
-    transition for improve/migrate, claim ids) AND the existing findings. The findings become the
-    internal attacker event under the critical-only rule; the full proposal is kept for the conductor."""
+    transition for improve/migrate, KNOWN packet claim ids) AND the existing findings. The findings
+    become the internal attacker event under the critical-only rule; the full proposal is kept for the
+    conductor. The event payload is the RAW findings list: `event_from_role` owns the one conversion
+    that folds trigger/impact/mitigation into the scenario, so it is only checked here, never applied
+    twice (a converted critical finding has lost the very fields the rule requires)."""
     if not isinstance(output, dict) or set(output) != IMPROVEMENT_LEAD_FIELDS:
         raise ContractError("Improvement lead proposal lacks the required fields")
     _identities(output, identities)
@@ -331,13 +361,14 @@ def proposal_from_improvement_lead(output, identities: dict) -> dict:
             raise ContractError("Improvement lead improve or migrate requires compatibility, rollback and retirement")
     elif transition is not None:
         raise ContractError("Improvement lead transition must be null unless the decision is improve or migrate")
-    if not isinstance(output["claim_ids"], list) or not all(_token(c) for c in output["claim_ids"]):
-        raise ContractError("Improvement lead claim_ids must be safe tokens")
-    findings = attacker_findings({"findings": output["findings"]})
-    return {"proposal": {k: output[k] for k in sorted(IMPROVEMENT_LEAD_FIELDS)}, "event_payload": findings}
+    # The alternative never reaches the DGE validator (only its findings do), so its citations are bound here.
+    _claim_refs(output["claim_ids"], claim_ids, "Improvement lead proposal")
+    attacker_findings({"findings": output["findings"]})  # refuse early; the result is deliberately not used
+    return {"proposal": {k: output[k] for k in sorted(IMPROVEMENT_LEAD_FIELDS)},
+            "event_payload": {"findings": [dict(f) for f in output["findings"]]}}
 
 
-def verdict_from_conductor(output, identities: dict) -> dict:
+def verdict_from_conductor(output, identities: dict, claim_ids: set | None = None) -> dict:
     """Conductor: the existing arbiter payload plus the identities it arbitrated over."""
     if not isinstance(output, dict) or set(output) != CONDUCTOR_FIELDS:
         raise ContractError("Conductor verdict lacks the required fields")
@@ -350,15 +381,16 @@ COUNCIL_OUTPUTS = {RESEARCH_LEAD: proposal_from_research_lead, IMPROVEMENT_LEAD:
                    CONDUCTOR_ROLE: verdict_from_conductor}
 
 
-def council_output(role: str, output, identities: dict) -> dict:
+def council_output(role: str, output, identities: dict, claim_ids: set) -> dict:
+    """`claim_ids` are the frozen packet's claim ids: a lead citing an id the packet does not hold is refused."""
     if role not in COUNCIL_OUTPUTS:
         raise ContractError("Unknown council role")
-    return COUNCIL_OUTPUTS[role](output, identities)
+    return COUNCIL_OUTPUTS[role](output, identities, set(claim_ids))
 
 
 __all__ = ["AGENTS", "COUNCIL_AGENTS", "COUNCIL_DEBATE", "COUNCIL_ORDER", "CONDUCTOR_ROLE", "DBA", "IMPROVEMENT_LEAD",
            "INTERNAL_SLOT", "MAX_STARTS_V2", "RESEARCH_LEAD", "SCHEMA_AUTONOMOUS_V2", "SNAPSHOT_SCHEMA", "STAGES_V2",
-           "SnapshotError", "check_snapshot", "conductor_self_arbitration", "council_output", "profile", "report_digest",
+           "SnapshotError", "check_snapshot", "conductor_self_arbitration", "council_output", "field_valid", "profile", "report_digest",
            "report_from_dba", "snapshot_coverage", "snapshot_digest", "snapshot_envelope", "snapshot_records",
            "snapshot_selection", "topology", "validate_any_manifest", "validate_council_manifest",
            "validate_current_state", "validate_snapshot"]

@@ -22,6 +22,7 @@ from codex_harness.domain.model import ContractError, canonical
 
 SNAP, REPORT = "1" * 64, "2" * 64
 IDS = {"snapshot_digest": SNAP, "report_digest": REPORT}
+CLAIMS = {"c1", "c2"}  # the frozen packet's claim ids (fixture)
 TRANSITION = {"compatibility": "additive", "rollback": "revert", "retirement": "none"}
 OUTPUTS = {"dba": {"snapshot_digest": SNAP, "summary": "records observed", "claim_ids": ["c1"], "unknowns": []},
            "research_lead": {**ROLE_OUTPUTS["proposer"], **IDS},
@@ -55,7 +56,7 @@ def test_council_output_passes_the_schema_preflight_and_the_consumer(role):
     if role == "dba":
         assert report_from_dba(OUTPUTS[role], snapshot_digest_value=SNAP, claim_ids={"c1"})["claim_ids"] == ["c1"]
         return
-    derived = council_output(role, OUTPUTS[role], IDS)
+    derived = council_output(role, OUTPUTS[role], IDS, CLAIMS)
     slot = INTERNAL_SLOT[role]
     event = validate_event(event_from_role(slot, derived["event_payload"], "3" * 64, 1, "task-" + role))
     payload = validate_payload(slot, event["payload"], claim_ids={"c1", "c2"}, criteria=[CRITICAL["criterion"]], findings=[CRITICAL, MINOR])
@@ -69,19 +70,27 @@ def test_council_output_passes_the_schema_preflight_and_the_consumer(role):
 def test_swapped_identities_missing_transition_and_unsupported_critical_are_refused():
     for role in ("research_lead", "improvement_lead", "conductor"):
         with pytest.raises(ContractError, match="council_identity_mismatch"):
-            council_output(role, {**OUTPUTS[role], "report_digest": "9" * 64}, IDS)
+            council_output(role, {**OUTPUTS[role], "report_digest": "9" * 64}, IDS, CLAIMS)
         with pytest.raises(ContractError, match="council_identity_mismatch"):
-            council_output(role, OUTPUTS[role], {**IDS, "snapshot_digest": "9" * 64})
+            council_output(role, OUTPUTS[role], {**IDS, "snapshot_digest": "9" * 64}, CLAIMS)
         with pytest.raises(ContractError, match="required fields"):
-            council_output(role, {k: v for k, v in OUTPUTS[role].items() if k != "snapshot_digest"}, IDS)
+            council_output(role, {k: v for k, v in OUTPUTS[role].items() if k != "snapshot_digest"}, IDS, CLAIMS)
     with pytest.raises(ContractError, match="compatibility, rollback and retirement"):
-        council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "transition": None}, IDS)
+        council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "transition": None}, IDS, CLAIMS)
     with pytest.raises(ContractError, match="must be null"):
-        council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "decision": "reuse"}, IDS)
-    assert council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "decision": "new", "transition": None, "findings": []}, IDS)["event_payload"] == {"findings": []}, "no compulsory objection"
+        council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "decision": "reuse"}, IDS, CLAIMS)
+    assert council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "decision": "new", "transition": None, "findings": []}, IDS, CLAIMS)["event_payload"] == {"findings": []}, "no compulsory objection"
     with pytest.raises(ContractError, match="concrete trigger"):
-        council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "findings": [{**CRITICAL, "trigger": None}]}, IDS)
+        council_output("improvement_lead", {**OUTPUTS["improvement_lead"], "findings": [{**CRITICAL, "trigger": None}]}, IDS, CLAIMS)
+    # Unknown packet claim ids cannot ride in on the alternative (it never reaches the DGE payload validator).
+    for role in ("research_lead", "improvement_lead"):
+        with pytest.raises(ContractError, match="claim_ids must be distinct known packet claim ids"):
+            council_output(role, {**OUTPUTS[role], "claim_ids": ["c1", "c404"]}, IDS, CLAIMS)
+    # One authoritative conversion: the derived payload still carries the materiality fields for event_from_role.
+    raw = council_output("improvement_lead", OUTPUTS["improvement_lead"], IDS, CLAIMS)["event_payload"]["findings"][0]
+    assert raw == CRITICAL and event_from_role("attacker", {"findings": [raw]}, "3" * 64, 1, "t")["payload"]["findings"][0]["scenario"] \
+        .count("trigger: ") == 1
     with pytest.raises(ContractError, match="Unknown council role"):
-        council_output("dba", OUTPUTS["dba"], IDS)
+        council_output("dba", OUTPUTS["dba"], IDS, CLAIMS)
     bad = schema_check("improvement_lead", {**OUTPUTS["improvement_lead"], "decision": "keep"})
     assert bad["answer"] is None and bad["failure"]["output_reason"] == "schema_mismatch" and "keep" not in str(bad["failure"])
