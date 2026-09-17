@@ -34,5 +34,8 @@
   to the named owner or CI. The executor's clean-checkout and HEAD checks stay as they are; a dirty
   checkout is refused, never cleaned automatically, and a model run's permission settings are not an
   isolation guarantee.
-- Worker answers keep executed commands and result descriptions apart: `tests` holds only the exact
-  commands that were run, one per string; results, skips and unrun work go in `summary`.
+- Worker answers keep executed commands and result descriptions apart. Legacy (no host project
+  evidence profile): `tests` holds only the exact commands that were run, one per string. With a
+  host profile (INV-PROJECT-EVIDENCE-001): `tests` holds one `{check_id, status, exit_code}`
+  observation per host-declared check, failures and `not_run` included. Either way results, skips,
+  diagnostic attempts and unrun work go in `summary`.

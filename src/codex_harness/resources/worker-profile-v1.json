@@ -2,7 +2,7 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "f7596f61984f5d6668dd56ff9ddadc52d33e6b4793c45319e3b0753b2e2d965f",
+  "document_sha256": "fb6f68bbd6783d2ba87048865da256c7937cd313b78a0d785cad718ea21e9029",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "5498b27724a68662053b2e2e8949392ca6ba880bc6d8b83e3a9ddfa38ee5f1c2",
   "character_limit": 6000,

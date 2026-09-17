@@ -48,11 +48,19 @@ class EvidenceInspections:
         if existing is not None:
             return existing
         # The replays run under the very environment and interpreter the identity was taken from.
+        # INV-PROJECT-EVIDENCE-001: a profile-aware snapshot carries its resolved project contexts; they
+        # reach the adapter exactly as keyed, never re-resolved or dropped. Without them the call is legacy.
+        project = snapshot.get('project')
+        require(project is None or (isinstance(project, dict) and isinstance(identity.get('project'), dict)
+                                    and type(project.get('digest')) is str and project['digest'] == identity['project'].get('digest')),
+                'Inspector project snapshot is not the one its identity names')
         report = self.inspector.inspect(list(claims), cwd, bound, environment=snapshot['environment'],
-                                        interpreter=identity['interpreter'])
+                                        interpreter=identity['interpreter'], **({} if project is None else {'project': project}))
         counts = denominator(report['findings'])
         require(report['policy_hash'] == identity['policy_hash'], 'Inspector reported a different policy than its identity')
         absent = bool(report['findings']) and report['findings'][0].get('cause') == 'workspace directory does not exist'
+        require(project is None or absent or report['context'].get('project_digest') == project['digest'],
+                'Inspector replayed under a different project context than its identity')
         require(absent or (report['context'].get('environment_digest') == identity['environment_digest']
                            and report['context'].get('interpreter') == identity['interpreter']),
                 'Inspector replayed under a different environment or interpreter than its identity')

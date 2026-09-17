@@ -27,6 +27,7 @@ def run(service, args) -> dict:
     from codex_harness.adapters.call_budget import CallBudget
     from codex_harness.adapters.configuration import repository_root, runtime_dir, settings
     from codex_harness.adapters.council_snapshot import ReadOnlySnapshot
+    from codex_harness.adapters.project_evidence import load_profile
     from codex_harness.application.workflow import Workflow
     from codex_harness.bootstrap import (
         build_collector,
@@ -43,10 +44,13 @@ def run(service, args) -> dict:
     repository = repository_root()
     source = GitSource(repository)
     goal = bind_goal(manifest, source)
-    bound = identity(manifest, repository, policy, host, runtime_dir())
+    # INV-PROJECT-EVIDENCE-001: this entry point composes an operation, so it binds the same profile.
+    evidence_profile = load_profile(host)
+    bound = identity(manifest, repository, policy, host, runtime_dir(), evidence_profile)
     observer = build_observer(service.store, "cli.autonomous")
     try:
-        executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False)
+        executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False,
+                                  evidence_profile=evidence_profile)
         # The evidence port reads the very artifact store the executor persists execution results to.
         wiring = dict(verify_sources=lambda packet: verify_sources(packet, source), repository=repository_identity(repository),
                       observer=observer, evidence=ExecutionEvidence(executor.artifacts))

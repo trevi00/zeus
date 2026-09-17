@@ -53,10 +53,24 @@ def build_collector(store, observer=None):
     return Collector(store, SpoolDirectory(observation_root()), validate=validate_observation, observer=observer)
 
 
-def build_executor(service=None, observer=None, execution_policy=None, knowledge=True):
+HOST_PROFILE = "host"
+
+
+def host_evidence_profile():
+    """INV-PROJECT-EVIDENCE-001: the host-selected project evidence profile, or None when the host
+    configured none. A configured profile that is missing or invalid raises; it never falls back."""
+    from codex_harness.adapters.project_evidence import load_profile
+
+    return load_profile(settings())
+
+
+def build_executor(service=None, observer=None, execution_policy=None, knowledge=True, evidence_profile=HOST_PROFILE):
     """`knowledge=False` builds the executor without any knowledge adapter: no hybrid query and no
     index_python/project_runtime write on rotate. The default (writable PostgresKnowledge) is
-    unchanged for every other caller."""
+    unchanged for every other caller. `evidence_profile` is the profile an entry point already
+    loaded (or None) so identity and executor share one load; by default it is read from the host
+    settings here, before the executor exists and so before any provider entry."""
+    profile = host_evidence_profile() if evidence_profile == HOST_PROFILE else evidence_profile
     from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.adapters.audit_runner import AuditRunner
     from codex_harness.adapters.executor import Executor
@@ -77,4 +91,4 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
                     ResearchSources(artifacts),
                     audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True),
                     observer=observer or build_observer(service.store, "executor"),
-                    execution_policy=execution_policy)
+                    execution_policy=execution_policy, evidence_profile=profile)
