@@ -171,3 +171,23 @@ Acceptance record: METADATA-RESULT.md records accepted bootstrap ef01046 and act
 1d0e670, four settled calls, no owner canary repair and the fixed-matrix verification. The
 bootstrap manifest corrected the draft test filename tests/test_evidence.py to the existing
 tests/test_evidence_inspection.py before execution. Earlier receipts remain immutable.
+
+### Final CI interaction found — bounded test correction
+
+PR126 run35200928738 failed in test_project_delivery.py's packaged-document assertion:
+it pins the old literal `Run tests as` despite the accepted Environment rewording. Both Linux
+versions report this same assertion; this is not an infrastructure flake. The bootstrap full
+suite preceded the canary and the owner's final subset omitted this directly affected test.
+The canary runtime/guidance/receipt remain accepted; no profile/hash edits or rerun are needed.
+Revised remaining batch: Claude changes ONLY tests/test_project_delivery.py, preserving every
+other test. Replace the stale sentence comparison with whitespace-normalized checks for the
+current verified-interpreter prohibition plus explicit host project_evidence exception/run
+verbatim requirement, and pytest/ruff command guidance. Do not weaken to mere token presence,
+remove the assertion, add a skip or modify runtime/profile. Existing contradictory absolute-
+interpreter sentence must remain prohibited. Formatting line wraps must not change the check.
+Run python -m pytest tests/test_project_delivery.py tests/test_worker_profile.py
+tests/test_worker_profile_metadata.py tests/test_evidence_inspection.py -q -p no:cacheprovider,
+and python -m ruff check .; owner owns final full suite/CI. One actual worker/reviewer pair,
+new total ceiling97 from95, explicitly superseding the initial four-call estimate because of
+this observed final-CI interaction. This is a new scoped correction, not an automatic rerun.
+Finish with test-only independent acceptance and passing final CI. Preserve the failed CI run.
