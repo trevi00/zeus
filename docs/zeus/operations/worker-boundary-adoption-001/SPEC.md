@@ -132,3 +132,22 @@ One explicit replacement operation uses that short root; no requeue of the faile
 task. Ceiling114 from current110 permits the original two pairs. Preserve all prior
 acceptance conditions. If staging still fails, reframe this assumption rather than
 retry blindly. Short-root raw artifacts are linked alongside the original root.
+
+## Existing source-count assertion: owner scope correction
+
+Candidate a961125 produced the required guidance at5998 chars and exact appended
+source, preserving other manifest fields. Owner read the complete before/after and
+condensation map: the enumerated prior safeguards and all4 new requirements remain.
+Existing test_worker_profile.py:238 couples hook checks to len(sources)==7; the
+required append makes8. Worker correctly reported19 passed/1 failed and left the
+out-of-scope test untouched; evidence gate stopped before lead, ledger111. This is
+an owner specification omission, not reason to drop provenance or loosen permissions.
+
+One corrective Claude batch may change ONLY tests/test_worker_profile.py (the
+source-count expectation7->8, preserving all other checks) and ADOPTION.md (mark the
+prior gap resolved, preserve historical failure). Profile/manifest must not change.
+Run profile and metadata tests plus lint; no new mirror tests. Independent lead
+reviews the complete original profile adaptation and this test correction against
+the same frame, with supplied isolated evidence and no host candidate execution.
+Owner checks the two-file corrective diff separately. Current111; explicit ceiling115
+reserves correction/lead and the original canary/lead pair. No automatic retries.
