@@ -149,6 +149,17 @@ class EvidenceInspector:
         # Verified at snapshot time (before any child), so a missing interpreter is a clear refusal.
         self._interpreter = interpreter
 
+    # Injection seams (INV-ISOLATED-WORKER-001): a backend may name another trusted interpreter,
+    # replay context and capture. Authorization, classification, binding and archival stay here.
+    def _trusted(self, candidate):
+        return trusted_interpreter(candidate)
+
+    def _python(self):
+        return sys.version.split()[0]
+
+    def _replay(self, argv, cwd, timeout, max_bytes, env):
+        return _capture(argv, cwd, timeout, max_bytes, env)
+
     def _archive(self, run):
         """Raw bytes go to the artifact store byte-for-byte; the finding keeps hashes and refs."""
         archived = {}
@@ -211,12 +222,12 @@ class EvidenceInspector:
         if per_command <= 0:
             return {'state': 'not_checked', 'cause': 'aggregate replay budget exhausted'}
         finite_positive(per_command, 'replay deadline', self.policy['replay']['total_seconds'])
-        interpreter = trusted_interpreter(interpreter if interpreter is not None else self._interpreter)
+        interpreter = self._trusted(interpreter if interpreter is not None else self._interpreter)
         effective, transformation = replay_argv(claim['argv'], interpreter)
         runs = []
         for _ in range(self.policy['replay']['replays_per_claim']):
-            run = _capture(effective, str(Path(cwd).resolve()), per_command, self.policy['replay']['max_output_bytes'],
-                           dict(environment) if environment is not None else replay_environment(cwd=cwd))
+            run = self._replay(effective, str(Path(cwd).resolve()), per_command, self.policy['replay']['max_output_bytes'],
+                               dict(environment) if environment is not None else replay_environment(cwd=cwd))
             runs.append(self._archive(run))
             if run.get('failure'):
                 break
@@ -253,9 +264,9 @@ class EvidenceInspector:
             return {'context': {**binding, 'cwd': str(root)}, 'policy_hash': self.policy['policy_hash'], 'findings': [
                 {'claim': None, 'state': 'error', 'cause': 'workspace directory does not exist'}]}
         environment = dict(environment) if environment is not None else replay_environment(cwd=root)
-        interpreter = trusted_interpreter(interpreter if interpreter is not None else self._interpreter)
+        interpreter = self._trusted(interpreter if interpreter is not None else self._interpreter)
         context = {**binding, 'cwd': str(root.resolve()), 'environment': sorted(environment),
-                   'environment_digest': digest(sorted(environment.items())), 'python': sys.version.split()[0],
+                   'environment_digest': digest(sorted(environment.items())), 'python': self._python(),
                    'interpreter': str(interpreter), 'pythonpath': environment.get('PYTHONPATH')}
         findings = []
         deadline = time.monotonic() + self.policy['replay']['total_seconds']

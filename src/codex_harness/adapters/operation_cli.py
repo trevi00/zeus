@@ -75,13 +75,17 @@ def execution_policy(manifest: dict, host_settings: dict) -> ExecutionPolicy:
 
 
 def identity(manifest: dict, repository, policy: ExecutionPolicy, host_settings: dict, runtime,
-             evidence_profile: dict | None = None) -> dict:
+             evidence_profile: dict | None = None, isolation: dict | None = None) -> dict:
     """Effective repository, resolved runtime directory, packaged policy, provider policy/config and
     endpoint digests; a same-id run under any other of these is refused before any call. With a host
     project evidence profile its digest is bound too (INV-PROJECT-EVIDENCE-001), so a same-id replay
-    cannot change its verification context; without one the identity keeps its exact old shape."""
+    cannot change its verification context; without one the identity keeps its exact old shape.
+    A host-selected isolation (INV-ISOLATED-WORKER-001) binds its mode, image and limits the same way."""
     summary = policy.summary()
     profiled = {} if evidence_profile is None else {"evidence_profile": evidence_profile["profile_digest"]}
+    if isolation is not None:
+        profiled["isolation"] = {"mode": isolation["mode"], "image": isolation["image"],
+                                 "limits": isolation["limits"], "digest": isolation["digest"]}
     return {**profiled, "repository": digest(str(Path(repository).resolve())),
             "runtime": digest(str(Path(runtime).resolve())),
             "runtime_policy": digest(POLICY.snapshot()),
@@ -98,7 +102,13 @@ def run(service, args) -> dict:
     from codex_harness.adapters.configuration import repository_root, runtime_dir, settings
     from codex_harness.adapters.project_evidence import load_profile
     from codex_harness.application.workflow import Workflow
-    from codex_harness.bootstrap import build_collector, build_executor, build_observer, redis_url
+    from codex_harness.bootstrap import (
+        build_collector,
+        build_executor,
+        build_observer,
+        host_isolation,
+        redis_url,
+    )
 
     document = read_manifest(args.file)
     manifest = validate_manifest(document, packaged_policy())
@@ -106,15 +116,19 @@ def run(service, args) -> dict:
     policy = execution_policy(manifest, host)
     # Loaded once from host settings; an invalid configured profile refuses here, before any provider.
     profile = load_profile(host)
+    # INV-ISOLATED-WORKER-001: the host selection (or None) is validated, with Docker, image and token,
+    # before the reservation, the executor and any provider; a refusal here never runs on the host.
+    isolated = host_isolation(profile)
     repository = repository_root()
     goal = bind_goal(manifest, GitSource(repository))
-    bound = identity(manifest, repository, policy, host, runtime_dir(), profile)
+    bound = identity(manifest, repository, policy, host, runtime_dir(), profile,
+                     **({} if isolated is None else {"isolation": isolated.config}))
     observer = build_observer(service.store, "cli.operate")
     try:
         # No knowledge adapter: this entry point writes execution ledgers and provisional
         # artifacts only; formal knowledge promotion is a separate explicit contract.
         executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False,
-                                  evidence_profile=profile)
+                                  evidence_profile=profile, **({} if isolated is None else {"isolation": isolated}))
         operation = Operation(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org),
                               CallBudget(), build_collector(service.store, observer))
         return operation.run(manifest, bound, goal)

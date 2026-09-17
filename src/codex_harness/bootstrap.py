@@ -64,13 +64,37 @@ def host_evidence_profile():
     return load_profile(settings())
 
 
-def build_executor(service=None, observer=None, execution_policy=None, knowledge=True, evidence_profile=HOST_PROFILE):
+def host_isolation(evidence_profile=None):
+    """INV-ISOLATED-WORKER-001: the host-selected isolated worker, or None when the host configured
+    none. Unknown or partial configuration, a host project-evidence profile beside it, an unavailable
+    daemon or image and a missing worker token all raise here, before any executor or provider
+    exists; nothing falls back to host execution."""
+    from codex_harness.adapters.isolated_worker import (
+        IsolatedWorker,
+        IsolationError,
+        load_isolation,
+        preflight,
+    )
+
+    config = load_isolation(settings())
+    if config is None:
+        return None
+    if evidence_profile is not None:
+        raise IsolationError("isolation_refuses_project_evidence_profile")
+    preflight(config)
+    return IsolatedWorker(config, runtime_dir() / "isolated-worker")
+
+
+def build_executor(service=None, observer=None, execution_policy=None, knowledge=True, evidence_profile=HOST_PROFILE,
+                   isolation=HOST_PROFILE):
     """`knowledge=False` builds the executor without any knowledge adapter: no hybrid query and no
     index_python/project_runtime write on rotate. The default (writable PostgresKnowledge) is
     unchanged for every other caller. `evidence_profile` is the profile an entry point already
     loaded (or None) so identity and executor share one load; by default it is read from the host
     settings here, before the executor exists and so before any provider entry."""
     profile = host_evidence_profile() if evidence_profile == HOST_PROFILE else evidence_profile
+    # Same sentinel: by default the host selection is read (and refused) here, before the executor.
+    isolated = host_isolation(profile) if isolation == HOST_PROFILE else isolation
     from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.adapters.audit_runner import AuditRunner
     from codex_harness.adapters.executor import Executor
@@ -91,4 +115,5 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
                     ResearchSources(artifacts),
                     audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True),
                     observer=observer or build_observer(service.store, "executor"),
-                    execution_policy=execution_policy, evidence_profile=profile)
+                    execution_policy=execution_policy, evidence_profile=profile,
+                    **({} if isolated is None else {"isolation": isolated}))

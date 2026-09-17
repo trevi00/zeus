@@ -1074,6 +1074,35 @@ the repository-root working directory and the legacy path without a profile are 
 is derived from model output. Delivery is recorded as digests; whether the installed CLI honoured
 the rules is decided by a real canary, not by this configuration.
 
+- INV-ISOLATED-WORKER-001: Worker isolation is a host opt-in (`ZEUS_WORKER_ISOLATION=docker` with
+`ZEUS_WORKER_IMAGE=sha256:<64hex>`); absent, host execution is exactly unchanged; unknown or partial
+configuration, a host project-evidence profile beside it, an unavailable daemon or image and a
+missing `CLAUDE_CODE_OAUTH_TOKEN` refuse before any reservation or provider, and a selected isolation
+never falls back to the host. Mode, image and limits are bound into the operation identity, the
+invocation request, the result and the replay cache identity; image, mounts, executable and
+credential never come from model output. The pinned candidate is validated (safe relative paths,
+Windows names, case collisions, no link/submodule/special entries, <=10000 files, <=256 MiB,
+<=16 MiB per file) and exported into a fresh staging directory with a standalone git repository;
+host git never runs there again. One uniquely named, run-labelled container (read-only root,
+non-root, `--cap-drop ALL`, no-new-privileges, finite memory/CPU/pids, tmpfs home/tmp, only the
+staging and evidence binds, no socket, home or port) runs the image's trusted entrypoint, which
+reuses `ClaudeCodeRuntime`; the token travels by environment name, never in argv, an image, a record
+or an artifact, and the container environment is never inspected or archived. States are prepared ->
+created -> start_requested (external-effect boundary) -> running -> stop_confirmed -> validated ->
+imported -> evidence_retained -> removed. No inner result is returned before the exact container id
+is confirmed stopped; invalid, truncated or missing protocol output is never success; outputs are
+fully validated before any regular addition, edit or deletion is imported, and a refused output
+imports nothing and preserves its staging. An unconfirmed stop, failed import or failed removal
+keeps a run record naming the exact container as the recovery reference, flows to the existing
+blocked/unknown termination semantics and refuses the next run of that workspace until reconciled;
+a lost create response is recovered only by exact name and label, and removal is by exact id, never
+forced and never by prefix. Evidence replay keeps the inherited authorization, classification,
+binding and archival and runs each authorized argv in a fresh network-none, credential-free
+container of the same image over a fresh candidate copy; an unavailable container is a named replay
+failure, never a host replay, and the host lead is told to review read-only without running
+candidate code. This is worker/verifier isolation for trusted repositories: it does not contain the
+lead, restrict worker egress or protect against a host administrator.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
