@@ -67,3 +67,26 @@ Cleanup: own app processes only; preserve databases/evidence and other existing 
 Product owner runs actual API/PG/browser evidence and regression; fixtures labelled units.
 Finish at independent acceptance, owner checks, scoped PR integration and evidence summary.
 No new team runtime framework, full absorption completion, Node replay extension or deployment.
+
+## Observed obstacle and bounded owner integration
+
+Lane P completed accepted with independent model review and owner actual browser evidence.
+Lane H emitted an honest incomplete answer: hashing via python -c was policy-denied, the
+manifest digest stayed old, and the 6007-character document exceeded the6000 cap. Its tests
+failed and the evidence gate refused; no reviewer call was reserved. Original operation and
+inspection remain failed/incomplete. Machine usage is91, not92; no extra model call is started.
+
+Owner verified the full condensed text against the prior profile. No behavioral requirement
+was lost; generic scope/uncertainty rules moved out of the bug-only section. A deterministic
+packaging repair removed eight blank-line separators (word sequence identical), yielding5999,
+and refreshed the normalized digest. Prior manifest fields/sources/hooks/permissions remain
+identical; the added source bytes match the pinned inventory. This is operator-assisted
+packaging, not an autonomous fix, permission bypass or retroactive successful operation.
+Owner's independent review and tests/CI decide adoption of that packaged text. Worker ADOPTION
+remains a historical incomplete report, superseded only for owner acceptance by RESULT.md.
+
+Original two-accepted-receipts condition is NOT satisfied. Issue124 stays open for that precise
+automation residual: a supported way for workers to produce/verify packaged profile metadata
+within their declared permissions, followed by a bounded actual acceptance. Do not open a new
+feature or retry loop in this batch. Product acceptance and owner-reviewed source absorption
+can ship independently while preserving the failed operation and remaining condition.
