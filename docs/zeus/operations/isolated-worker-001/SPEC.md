@@ -383,3 +383,15 @@ leaves one start, not a worker/lead pair. A new pair requires an explicit bounde
 revision here after authentication renewal. No code redesign is inferred from401;
 the discriminating check is one new actual operation with a renewed credential.
 Until that check and final CI pass, retain draft PR128 and open issue127.
+
+## Renewed credential continuation, 2026-09-17
+
+User reports renewal; filesystem metadata confirms replacement at 14:19:24 UTC
+and preservation of the previous encrypted token. No secret value was displayed.
+One new operation `isolated-worker-127-canary-2` uses the SAME task, acceptance
+tests and build-004 image. Current ledger106; explicit ceiling108 allows one
+worker and one lead. No automatic retry and no requeue of the old failed task.
+Only documentation changed after runtime69715d5; compare source/Dockerfile/lock
+before launch. CI run35215194425 passed on the prior documentation head6b060c2.
+Actual token acceptance, replay, hook cycle and lead acceptance remain the
+decisive checks. Retain all already accepted implementation/cleanup evidence.
