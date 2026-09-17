@@ -327,7 +327,10 @@ def test_real_capture_keeps_normal_stream_receipts(tmp_path):
     run = ei._capture([PY, '-c', "import sys; print('out'); sys.stderr.write('err'); sys.exit(3)"], str(tmp_path), 20, 4096,
                       replay_environment())
     body = b'out' + os.linesep.encode()
-    assert run['failure'] is None and run['terminated'] is False and run['returncode'] == 3 and 'cleanup' not in run
+    assert run['failure'] is None and run['terminated'] is False and run['returncode'] == 3
+    # A clean exit carries its positive cleanup proof too: a return alone proves nothing to the owner.
+    assert run['cleanup']['reason'] == 'exited' and run['cleanup']['confirmed'] is True
+    assert run['cleanup']['tree']['confirmed'] and sorted(run['cleanup']['streams_closed']) == ['stderr', 'stdout']
     assert run['stdout'] == {'sha256': hashlib.sha256(body).hexdigest(), 'bytes': len(body), 'truncated': False,
                              'decoding': 'utf-8', 'raw': body.decode()}
     assert run['stderr']['bytes'] == 3 and run['stderr']['raw'] == 'err'

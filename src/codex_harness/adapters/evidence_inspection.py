@@ -119,8 +119,19 @@ def _reclaim(tree, readers, reason):
     return record
 
 
+def _unspawned(reason, leak=None):
+    """The cleanup proof of a capture that owns no process: positive unless the failed spawn itself
+    reported a process it could not prove gone (that detail is debt, in `_reclaim`'s record shape)."""
+    return {'reason': reason, 'tree': None, 'readers_alive': [], 'streams_closed': [], 'error': None,
+            'confirmed': leak is None, **({'leak': leak} if leak is not None else {})}
+
+
 def _capture(argv, cwd, timeout, max_bytes, env):
     """Run one bounded replay and return everything observed, including how it ended.
+
+    EVERY return carries `cleanup`, the positive proof (or the named debt) of what this capture still
+    owns: a normal Python return alone proves nothing, and the outer owner (`hold`) joins this record
+    with its container confirmation and fails closed when it is absent.
 
     The client process is an owned `ProcessTree` from spawn. However the wait ends (exit, deadline,
     KeyboardInterrupt, any exception) `_reclaim` runs once, bounded, before anything propagates; an
@@ -131,15 +142,17 @@ def _capture(argv, cwd, timeout, max_bytes, env):
         tree = ProcessTree.spawn(argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
     except FileNotFoundError as exc:
-        return {'failure': 'executable_missing: ' + str(exc), 'returncode': None, 'duration_seconds': 0.0}
+        return {'failure': 'executable_missing: ' + str(exc), 'returncode': None, 'duration_seconds': 0.0,
+                'cleanup': _unspawned('executable_missing')}
     except PermissionError as exc:
-        return {'failure': 'permission_denied: ' + str(exc), 'returncode': None, 'duration_seconds': 0.0}
+        return {'failure': 'permission_denied: ' + str(exc), 'returncode': None, 'duration_seconds': 0.0,
+                'cleanup': _unspawned('permission_denied')}
     except OSError as exc:
         return {'failure': 'spawn_error: ' + type(exc).__name__ + ': ' + str(exc), 'returncode': None,
-                'duration_seconds': 0.0}
+                'duration_seconds': 0.0, 'cleanup': _unspawned('spawn_error')}
     except TreeOwnershipError as exc:  # no owned boundary, no replay; a leak carries its own detail
         return {'failure': 'spawn_error: ' + type(exc).__name__ + ': ' + str(exc), 'returncode': None,
-                'duration_seconds': 0.0, **({'cleanup': exc.detail} if hasattr(exc, 'detail') else {})}
+                'duration_seconds': 0.0, 'cleanup': _unspawned('spawn_error', getattr(exc, 'detail', None))}
     process = tree.process
     captured = [b'', b'']
     truncated = [False, False]
@@ -183,8 +196,7 @@ def _capture(argv, cwd, timeout, max_bytes, env):
         streams[name] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'truncated': cut,
                          'decoding': decoding, 'raw': raw.decode('latin-1')}
     return {'failure': failure, 'terminated': terminated, 'returncode': process.returncode,
-            'duration_seconds': round(time.monotonic() - started, 3), **streams,
-            **({'cleanup': cleanup} if terminated or not cleanup['confirmed'] else {})}
+            'duration_seconds': round(time.monotonic() - started, 3), **streams, 'cleanup': cleanup}
 
 
 class EvidenceInspector:

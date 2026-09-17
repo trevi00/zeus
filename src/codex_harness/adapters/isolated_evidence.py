@@ -113,15 +113,19 @@ class DockerEvidenceInspector(EvidenceInspector):
         context["container"]["record"] = record["record"]
         # The inherited bounded capture owns the deadline, output cap and client tree; `hold` owns the
         # container: durable before start, stopped and confirmed by exact id however capture exits.
+        # The capture's own `cleanup` record is its positive proof; returned without one is unknown.
         try:
             run, stopped = hold(container, record, lambda: _capture(
-                [self.docker, "start", "--attach", container.id], None, timeout, max_bytes, docker_environment()))
+                [self.docker, "start", "--attach", container.id], None, timeout, max_bytes, docker_environment()),
+                proof=lambda value: value["cleanup"])
         except IsolationError as exc:  # a lifecycle step could not be written: nothing is removed on a guess
             return {"failure": "isolated_replay_unrecorded: " + exc.reason_code + "; recovery record " + record["record"]
                     + " container " + container.id, "returncode": None, "duration_seconds": 0.0, **context}
         context["container"]["stop"] = stopped
         if not stopped["confirmed"]:
-            return {**run, **context, "failure": "container_stop_unconfirmed; recovery record " + record["record"]
+            # Unknown container OR unknown/missing capture proof: retained and unresolved, never retired.
+            reason = "capture_cleanup_unconfirmed" if stopped["container_confirmed"] else "container_stop_unconfirmed"
+            return {**run, **context, "failure": reason + "; recovery record " + record["record"]
                     + " container " + container.id}
         if not run.get("failure") and not run.get("terminated"):
             run["returncode"] = stopped.get("exit_code")  # the container's own exit, not the client's

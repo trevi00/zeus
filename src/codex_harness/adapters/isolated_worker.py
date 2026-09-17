@@ -491,11 +491,36 @@ class OwnedContainer:
         return {"removed": gone, "exit_code": removed.returncode}
 
 
+def join_cleanup(stop: dict, proofs: list) -> dict:
+    """The one cleanup-proof join (C and P of the lifecycle table). C is the container's own stop
+    confirmation; P is EVERY supplied client/capture proof being a record whose `confirmed` is exactly
+    True. No proof, a missing one (None) or a malformed one is unknown, and no supplied false/unknown
+    is ever overwritten by another true. The proofs themselves stay in the durable stop."""
+    container = stop.get("confirmed") is True
+    client = bool(proofs) and all(isinstance(proof, dict) and proof.get("confirmed") is True for proof in proofs)
+    return {**stop, "confirmed": container and client, "container_confirmed": container, "client_confirmed": client}
+
+
+def cleanup_debt(record: dict) -> str | None:
+    """The same join read back from the durable record: None only when the last recorded stop is a
+    full positive join, otherwise the named reason retirement (and, for client debt, reconcile) refuses."""
+    stops = [step["stop"] for step in record.get("lifecycle") or [] if isinstance(step.get("stop"), dict)]
+    if not stops:
+        return "stop_unrecorded"
+    if stops[-1].get("client_confirmed") is not True:
+        return "client_cleanup_unconfirmed"
+    return None if stops[-1].get("confirmed") is True else "container_stop_unconfirmed"
+
+
 def retire(container, record: dict, result: dict, outcome: str, *, files: dict | None = None,
            removed: dict | None = None) -> dict:
     """Observations first, durably and outside the container; only then is the exact stopped container
-    removed. An observation that cannot be written keeps the container and its recovery reference."""
+    removed. An observation that cannot be written keeps the container and its recovery reference, and
+    a record without a full positive cleanup join is never retired: nothing is written or removed."""
     reference = recovery_reference(container, record)
+    debt = cleanup_debt(record)
+    if debt is not None:
+        return {"removed": False, "exit_code": None, "evidence_written": False, "recovery": reference, "refused": debt}
     try:
         record["retained_files"] = {name: _write_record(Path(record["record"]).with_name(name), body)
                                     for name, body in (files or {}).items()}
@@ -509,34 +534,44 @@ def retire(container, record: dict, result: dict, outcome: str, *, files: dict |
     return {**removal, "evidence_written": True, "recovery": None if removal["removed"] else reference}
 
 
-def hold(container, record: dict, body, *, client=None, detail=None):
+def hold(container, record: dict, body, *, client=None, proof=None, detail=None):
     """The one ownership rule of every started container, worker and verifier alike. The exact
     run/name/label/id is durable at `start_requested` before `body` may start anything; however `body`
     ends (return, cancel, deadline, observer failure, KeyboardInterrupt) the container gets one bounded
     stop and confirmation. Unconfirmed is recorded as `stop_unconfirmed` with its recovery reference.
-    Returns (value, stop); an exception of `body` propagates after the record says what was confirmed."""
+    Returns (value, stop); an exception of `body` propagates after the record says what was confirmed.
+
+    A return of `body` is not proof that its resources are gone. Positive cleanup proof comes from the
+    `client` callback (the worker's own tree) and/or from `proof(value)` (the verifier capture's
+    `cleanup` record), or the `capture_cleanup` of the exception that replaced the return; with `proof`
+    given, an absent or malformed record is unknown. `join_cleanup` combines them with the stop."""
     try:
         advance(record, "start_requested", recovery=recovery_reference(container, record))
     except IsolationError:
         container.remove()  # never started and no durable owner: exact id, not forced
         raise
-    value, interrupted, capture = None, None, None
+    value, interrupted, capture, supplied = None, None, None, proof is not None
     try:
         value = body()
+        if proof is not None:
+            try:
+                capture = proof(value)
+            except Exception:  # a value the proof cannot be read from is a missing proof
+                capture = None
     except BaseException as exc:
         interrupted = type(exc).__name__
         # A body that reclaimed its own client tree before propagating says what it left (the shared
         # bounded capture does); unreclaimed client debt is never a confirmed stop.
         capture = getattr(exc, "capture_cleanup", None)
+        supplied = supplied or capture is not None
         raise
     finally:
         stopped = container.stop(container.config["limits"]["cleanup_seconds"])
-        ended = client() if client is not None else {"confirmed": True}
-        if isinstance(capture, dict):
+        proofs = [client()] if client is not None else []
+        if supplied:
+            proofs.append(capture)
             stopped = {**stopped, "capture_cleanup": capture}
-            ended = {**ended, "confirmed": bool(ended.get("confirmed") and capture.get("confirmed"))}
-        stopped = {**stopped, "confirmed": bool(stopped["confirmed"] and ended.get("confirmed")),
-                   "client_confirmed": bool(ended.get("confirmed"))}
+        stopped = join_cleanup(stopped, proofs)
         if not stopped["confirmed"]:
             advance(record, "stop_unconfirmed", stop=stopped, interrupted=interrupted,
                     recovery=recovery_reference(container, record))
@@ -550,9 +585,14 @@ def hold(container, record: dict, body, *, client=None, detail=None):
 
 def reconcile(run_directory, docker: str = "docker") -> dict:
     """Operator step for a retained run: mark it removed only when the exact named, labelled
-    container is absent. It never removes a container and never touches another run."""
+    container is absent. It never removes a container and never touches another run. Container
+    absence says nothing about the host-side client/capture: recorded unconfirmed client debt is
+    refused by name and the record stays unresolved until that debt is independently resolved."""
     path = Path(run_directory) / "run.json"
     record = json.loads(path.read_text("utf-8"))
+    if cleanup_debt(record) == "client_cleanup_unconfirmed":
+        return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
+                "reason": "client_cleanup_unconfirmed"}
     probe = OwnedContainer({"limits": LIMITS, "image": record.get("image")}, docker, record["run_id"], record["role"])
     listed = _docker(docker, ["ps", "-a", "--no-trunc", "--filter", "name=^/" + probe.name + "$", "--format", "{{.ID}}"],
                      timeout=LIMITS["docker_command_seconds"])

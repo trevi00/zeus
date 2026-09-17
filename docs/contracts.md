@@ -1114,7 +1114,12 @@ unresolved verifier record refuses the next replay and the next worker run of th
 exception): terminate the tree, bounded reader join, close only streams whose reader finished, then
 the original exception propagates carrying the cleanup record to `hold`; a stream a live reader owns
 is never closed, and an unreclaimed tree or reader is a named failure (returned capture) or a
-`stop_unconfirmed` record (interruption), never success. The image's `/opt/zeus` interpreter is a
+`stop_unconfirmed` record (interruption), never success. A normal return is not cleanup proof: every
+capture return carries its `cleanup` record, and one join (`join_cleanup`) combines the container
+stop with every supplied client/capture proof, each of which must be exactly `confirmed: true`;
+absent, malformed or false is unknown and is never overwritten by another true. Anything but a full
+positive join is `stop_unconfirmed` with its recovery reference, `retire` refuses it, and `reconcile`
+refuses recorded client debt as `client_cleanup_unconfirmed` even when the container is absent. The image's `/opt/zeus` interpreter is a
 copy, not a symlink, and the build runs the profile-selected `python -m pytest`/`ruff` under the
 actual profile-derived environment and the pinned Claude version check, without a model call. This is worker/verifier isolation for trusted repositories: it does not contain the
 lead, restrict worker egress or protect against a host administrator.

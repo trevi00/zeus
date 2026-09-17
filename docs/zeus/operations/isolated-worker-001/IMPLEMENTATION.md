@@ -192,4 +192,49 @@ Owner-only, not run here: image build + the repeated no-credential probes, `uv r
 suite (`tests/test_architecture.py` alone was run here and passed), the lead's real-capture reproducer, real Docker
 outer-cancellation check, canary. Uncertain: uv reusing the stdlib `--copies` venv (build guard fails
 loudly if not); copied interpreter locating libpython (owner's experiment passed); a worst-case
-teardown is bounded (~25s) but longer than the declared container cleanup window that follows it.
+teardown is bounded but longer than the declared container cleanup window that follows it
+(corrected below: approximately 35s, not the ~25s first written here).
+
+## Final cleanup proof join — 2026-09-17
+
+Scope: SPEC "Final cleanup proof join" only. Dockerfile, image, interpreter, profile, source and
+permissions untouched. Disposition: improve the existing `hold`/`retire`/`reconcile` and `_reclaim`
+record; no second supervisor, no new state.
+
+- `evidence_inspection._capture`: EVERY return carries `cleanup` (`_reclaim`'s record; a clean exit
+  too; a capture that spawned nothing carries `_unspawned(reason)`, positive unless the spawn reported
+  a leak, which is recorded as debt with `confirmed: false`). Raised outcomes keep `capture_cleanup`.
+- `isolated_worker.join_cleanup(stop, proofs)`: the one C/P join. C = container stop `confirmed is
+  True`; P = at least one proof and every proof a dict with `confirmed is True`. Missing (None),
+  malformed or false is unknown; nothing supplied is overwritten. The durable stop gains
+  `container_confirmed` beside `client_confirmed`, and `capture_cleanup` (None when it never arrived).
+- `hold(..., proof=)`: the verifier passes `proof=lambda run: run["cleanup"]`; the worker's `client`
+  callback stays its proof; an exception's `capture_cleanup` is joined with either.
+- `cleanup_debt(record)` reads the same join back from the durable record. `retire` refuses (writes
+  and removes nothing, `refused: <reason>`) unless the last recorded stop is a full positive join;
+  `reconcile` refuses `client_cleanup_unconfirmed` even when the container is absent. No recovery
+  path for that debt was invented: the record stays unresolved until resolved independently.
+- E row unchanged: an unwritable observation leaves `stop_confirmed`, container kept, unresolved.
+- Replay failure text names which side is unknown: `capture_cleanup_unconfirmed` or
+  `container_stop_unconfirmed`.
+
+Compatibility: host-replay runs now always include `cleanup` (previously only on termination/debt);
+stream receipts, return codes and classification are unchanged. A `hold` caller that supplies neither
+`client` nor `proof` is now unconfirmed (fail closed); both in-repo callers supply one. Rollback is
+reverting this change; no stored record needs migration (older records already carry `client_confirmed`).
+
+Tests (Windows, FakeDocker daemon, REAL `_capture`, REAL local child; nothing here is a Docker
+result): normal exit + confirmed proof -> `removed`; real timeout with working termination ->
+failed replay, still `removed`; returned capture with INJECTED no-op `terminate` (child still alive)
+-> `stop_unconfirmed`, no `rm`, next replay refused, `retire` refuses, `reconcile` refuses after the
+container is deleted; raised KeyboardInterrupt with the same injected fault -> same; proof absent /
+None / malformed (INJECTED after the real capture) -> same; evidence write failure -> `stop_confirmed`
+retained. The injected fault is not a naturally observed OS failure; the test finally reclaims its
+own child. The old behaviour was not re-run in a disposable copy (the lead's reproducer is the
+before-evidence). POSIX path of these tests not run here.
+
+Cleanup-time estimate, corrected: capture teardown may take approximately 35s before the separately
+bounded container cleanup (`cleanup_seconds`), not ~25s. This is derived from the configured bounds
+(parent end 10s + tree settle 10s + reader joins 5s + 5s, plus kill/confirm slack), not measured.
+
+Not run here: full suite, CI, image build, real Docker, the lead's reproducer, canary, actual task.
