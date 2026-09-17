@@ -77,6 +77,15 @@
       "pinned_sha256": "0c23345fb447a53ad089ec73be685de50b99793084b5549de46c1e3cd5e0bfa9",
       "scope": "Sibling discovery and existing-authority reuse principles, adapted with the user's SSOT/migration requirements; no upstream execution or behavioral effectiveness claim",
       "disposition": "Principles rewritten for the existing worker-v1 profile; private incident claims, numeric thresholds, blanket abstraction rules and upstream automation are not adopted"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/receiving-code-review.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "bdba6cf2405b64015b556c84fb24218a350e06d6",
+      "pinned_sha256": "0cfbe5a026c2f2243be5ea9483ff01a4707b365c8f0a27312f1549758559452e",
+      "scope": "Selected evidence-first review feedback principles rewritten for existing worker-v1",
+      "disposition": "Adapt verification and reasoned disagreement; reject blanket stops, item-by-item loops, style bans and catchphrase; no upstream execution or behavior claim"
     }
   ],
   "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."
