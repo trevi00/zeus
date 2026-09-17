@@ -409,3 +409,16 @@ The owner local auth helper now explains both stages and refuses unexpected toke
 format before replacing the encrypted file. Format checking is not server validation.
 Next required user action is to supply the FINAL terminal setup token locally;
 retain both failed operations and do not run a third inference until corrected.
+
+### Credential-input handoff resolution
+
+User supplied Claude's local diagnosis: current and backup values have a48#43
+base64url code/state shape, unlike the observed local OAuth token. This corroborates
+browser-code mis-storage; report attribution is retained, no raw credential copied.
+The owner renewal helper now rejects '#' before its observed-prefix guard. The
+old prepare helper delegates to it instead of retaining a weaker storage path.
+Prefix validation is an observed CLI-format guard, not a permanent documented rule.
+Existing encrypted backups remain untouched and are not usable recovery credentials
+according to that diagnosis. Any new acceptance launcher must reject browser-code,
+whitespace or unexpected-prefix input before schema creation or a call reservation.
+No Zeus runtime change or further model call is needed to fix this local input path.
