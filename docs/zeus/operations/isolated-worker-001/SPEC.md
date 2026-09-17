@@ -308,3 +308,59 @@ No source/profile/policy redesign and no new research topic. Counts are 101 afte
 review pairs; one explicit correction/review pair and the reserved actual pair set ceiling 105
 (eight starts total from97). Correction cap USD6 declared/1200s. No automatic retry or requeue of
 prior failed operations. Native Linux host and restricted network egress remain out of scope.
+
+## Final cleanup proof join — 2026-09-17
+
+Candidate eb822013120f55718578378ef736478fc1051f2a. Preserve these accepted measurements:
+build-003 exit0; image b3c0d3b56559522ccc4b7b8b51c676b5abbde503b110049f24a3a2205c93a856;
+Claude2.1.274 and actual-profile pytest9.1.1/ruff0.16.6 all exit0; owner real-capture interruption
+propagates and calls outer stop in0.047s, watchdog unused, child gone. Standard focused invocation
+121 passed/4 skipped; WSL focused including real Docker123 passed/2 skipped. Windows real Docker
+termination/removal passed; real-container cancellation leaves no running container and one durable
+record. No new review of those accepted paths is requested.
+
+Independent lead found one remaining reachable violation: hold reads cleanup proof from exceptions
+but ignores a NORMAL return's `run.cleanup`. With a real child and injected termination failure,
+capture returned confirmed=false and child_alive=true, while outer state became removed and
+unresolved_runs was empty. The reproducer used mocked container/storage and an actual local child;
+its own cleanup subsequently succeeded. This is not a naturally observed OS failure. Nonetheless
+an explicit unknown must not become a resolved record. Owner canary is still unstarted.
+
+The assumption to replace: normal Python return is proof that capture resources are gone. It is not.
+Use one positive cleanup-proof join for both exception and return outcomes. Reuse `_reclaim`'s
+existing confirmed/debt record; do not create another process supervisor or change source/profile.
+For verifier captures, make that proof explicit for every return (including clean exit), consume it
+in hold/retire, and fail closed if it is absent/malformed. Worker client callbacks remain their
+positive proof source. Combine provided proofs; no supplied false/unknown may be overwritten by
+another true. Returning a failed capture may be correct; forgetting its live resources is not.
+
+| Container stop C | Capture/client cleanup P | Durable evidence E | Allowed lifecycle result |
+|---|---|---|---|
+| true | true | true | retire/remove permitted; preserve actual task/replay success or failure separately |
+| true | false/unknown/missing | either | stop_unconfirmed; retain exact recovery and cleanup debt; not resolved |
+| false/unknown | either | either | stop_unconfirmed; no success/resolved claim |
+| true | true | false | retained unresolved evidence state; no cleanup that discards required evidence |
+
+Implement this join once across hold/retire and test the COMPLETE lifecycle with real capture and
+real local child: (a) normal exit + confirmed cleanup; (b) returned unconfirmed cleanup; (c) raised
+interruption + unconfirmed cleanup; (d) missing proof; (e) evidence write failure. Inject termination
+failure at the real helper's cleanup dependency, not by replacing capture with a fabricated success.
+Unknown cases must leave recoverable state visible to unresolved_runs and must not call successful
+retirement. The same rule covers `reconcile`: container absence alone must not erase recorded
+unconfirmed client/capture debt (refuse with that named reason until it is independently resolved;
+do not invent an unmeasured recovery). Include this downstream state transition in the regression.
+The owner/test finally cleans its own child. Normal and known-failure replay remain
+compatible; no host fallback, widened permissions, automatic retry or new feature.
+
+Also correct the documentation estimate: capture teardown may take approximately35s before the
+separately bounded container cleanup, not25s. This is a description correction, not a demand to
+redesign those already bounded windows. The independent reviewer found ignored bytecode without
+an initial inventory; complete checkout preservation was therefore not established for that review.
+The files were left untouched; do not erase evidence or retrospectively claim a pristine inventory.
+
+One narrow correction/review pair is authorized on this same frame, ceiling107 (current103 plus
+that pair and the reserved actual pair; ten starts from97). Claude cap USD4 declared/900s. Scope:
+capture proof propagation, lifecycle join, affected tests and report only. Keep Dockerfile/image
+interpreter/profile unchanged. Run focused evidence/isolated/architecture tests and lint; owner/CI
+own broader checks. After these decisive checks pass, proceed to the actual operation; no further
+exploratory pass absent changed evidence or a material failed acceptance condition.
