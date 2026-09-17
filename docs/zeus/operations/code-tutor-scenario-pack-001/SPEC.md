@@ -48,10 +48,10 @@ definitions; PG may receive verified operation provenance only, not draft accept
 ## One implementation batch
 
 Only these worker files may change:
-- examples/code-tutor-ai/.harness/tech-stack.yaml
-- examples/code-tutor-ai/.harness/skills/typescript/react/experience-contract.md
-- examples/code-tutor-ai/.harness/skills/typescript/5.x/runtime-contract.md
-- examples/code-tutor-ai/.harness/skills/_common/real-acceptance.md
+- examples/code-tutor-ai/profile.yaml
+- examples/code-tutor-ai/skills/typescript/react/experience-contract.md
+- examples/code-tutor-ai/skills/typescript/5.x/runtime-contract.md
+- examples/code-tutor-ai/skills/common/real-acceptance.md
 - examples/code-tutor-ai/sdd/learning-loop.spec.json
 - examples/code-tutor-ai/README.md
 - tests/test_code_tutor_pack.py
@@ -59,6 +59,11 @@ Only these worker files may change:
 1. Canonical profile explicitly separates React framework version 19 and TS language
    version 5.9; include Python backend without pretending FastAPI version is measured.
    No global worker profile changes, no stages clone, no new loader/install CLI.
+   Distribution mapping: profile.yaml -> .harness/tech-stack.yaml;
+   skills/typescript/** -> .harness/skills/typescript/**;
+   skills/common/real-acceptance.md -> .harness/skills/_common/real-acceptance.md.
+   README and actual Git test must use this exact map; the source pack is not an active
+   project root. Assert non-overwrite guidance before copying into a new target.
 2. Three concise English skills (<=950 body characters each, UTF-8) with existing flat
    frontmatter name/description/keywords/min_score. Use specific keywords (including
    codetutor, learning, submission) so objective `codetutor learning submission` selects
@@ -135,3 +140,15 @@ Claude declared USD4/timeout900s; absolute deadline60min. No automatic retry, me
 deployment or issue closure. On failure preserve evidence and reframe the same task.
 Completion: accepted implementation/review, owner checks, final CI, PR merge and results
 including actual usage/logs and limits. Full absorption and product acceptance stay open.
+
+## Reframe after preflight refusal (before any provider invocation)
+
+First owner manifest was refused at validate_plan: operation path segments cannot begin
+with dot or underscore. The hidden installed path assumption was invalid for distribution
+files. Discriminating check: validate_autonomous_manifest against packaged policy names
+plan.allowed_paths; machine count remains58. No runtime or permission change is justified.
+Revised complete design: ordinary distribution paths above, explicit installed-path map,
+real consumer test against mapped temporary Git project. Preserve run-001 refusal and
+empty isolated schema. Use owner-authorized run-002 with a new identity/schema after
+preflight validation; same six-start ceiling64, no additional call allowance. This is
+input preparation correction, not an automatic model retry or relaxed acceptance.
