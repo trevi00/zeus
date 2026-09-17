@@ -131,3 +131,41 @@ Record topology, exact role/task/session identities, selected coverage, snapshot
 unknown/refusal counts, starts/cap and outcome. These measure this run, not absolute
 feature completeness or the truth of model prose. New UI dashboards, autonomous
 topic selection and cost optimization are outside this delivery.
+
+## Reframe: unfinished first implementation, bounded completion
+
+Run-001 stopped with `claude-provider-timeout` after one actual start (ledger64->65).
+No independent reviewer ran. Twelve unfinished files were preserved byte-for-byte at
+271e1ab; raw manifest/receipt and source hashes remain under the task artifact root.
+This is unfinished implementation, not an accepted or rejected completed candidate.
+
+Owner preflight at271e1ab:53 passed/6 failed across council/autonomous roles; real PG
+test failed (valid worker:implementation classified unknown); ruff E731 in new fixture.
+The first PG attempt lacked a DSN and is recorded as owner invocation error; the
+subsequent isolated PG run reached the adapter and reproduced the classification bug.
+The normal fixture cycle stops at evidence_reservation_unbound: new role stages must
+be represented accurately by the fixture, not weaken the production evidence check.
+The improvement output is transformed by attacker_findings twice, losing required
+critical trigger/impact/mitigation before event_from_role. Keep one authoritative
+conversion. Synthetic owner probes also confirmed an arbitrary token-shaped status
+was copied verbatim and a supplied connection error was exposed by traceback chains.
+These probes are injected faults, not observed production credential exposure.
+
+One continuation from the preserved implementation (no restart from scratch): finish
+the above normal/privacy boundaries, existing/new tests, RUNBOOK and contract entry.
+Use finite domain status/stage allowlists and known actor/namespace syntax instead
+of exporting arbitrary token-shaped row fields. Missing required status is unknown;
+normal colon-bearing actor identities must remain readable. Public snapshot failure
+tracebacks must not retain raw adapter exceptions. Keep report/source unknown semantics.
+Add focused regression coverage for these observed failures and verify unknown claim
+IDs cannot enter the improvement alternative unnoticed. Preserve existing v1 semantics.
+
+Actual DB is PostgreSQL17.11; owner also opened17 transaction-iso and sql-set-transaction
+on2026-09-17 and confirmed the same snapshot/read-only semantics. Record this version
+in the runbook; the earlier18 reference was not a local version observation.
+
+Continue through existing operate with a new run ID/schema at the preserved candidate,
+maximum2 starts (Claude completion + Codex review), ledger65->ceiling67. Claude budget
+USD12, timeout3600s; no new seven-call council execution. This is owner-directed bounded
+completion of the same frame, not automatic retry, failed-output repair or promotion.
+After the fixed checks pass, deliver normally; do not expand into unrelated research.
