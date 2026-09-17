@@ -166,3 +166,8 @@ replay and independent review must accept. Owner may integrate accepted commits,
 not edit the canary's profile or digest. Finish at this successful receipt, full relevant
 owner checks/CI, scoped PR merge and issue124 closure with original failure disclosed.
 Any unrelated recommendations remain follow-ups, not new acceptance gates.
+
+Acceptance record: METADATA-RESULT.md records accepted bootstrap ef01046 and actual canary
+1d0e670, four settled calls, no owner canary repair and the fixed-matrix verification. The
+bootstrap manifest corrected the draft test filename tests/test_evidence.py to the existing
+tests/test_evidence_inspection.py before execution. Earlier receipts remain immutable.

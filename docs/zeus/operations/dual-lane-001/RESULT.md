@@ -56,6 +56,12 @@ results are linked in the PR record. No model compliance/effectiveness claim fol
 
 ## Remaining conditions
 
+Update2026-09-17: the metadata residual described below is now addressed by two accepted
+actual operations; see METADATA-RESULT.md and its evidence manifest. The paragraphs below
+retain the original batch outcome and do not relabel its failed harness receipt. Closure of
+issue124 is based on the replacement harness acceptance plus preserved product/concurrency
+evidence, after the scoped PR passes final CI and merges.
+
 Two fully accepted autonomous operation receipts were NOT achieved: issue124 stays open for
 the documented worker metadata tooling residual. No blanket shell permission or new runtime
 feature was added. A later bounded task can supply the missing supported capability and prove
