@@ -147,3 +147,8 @@ The owner launcher used stale Redis port56379; current `docker port zeus-local-o
 is127.0.0.1:63589. No implementation started. Keep failed receipt and pending old namespace
 unchanged, use a new operation identity and resolve/ping the exact container endpoint before
 launch. This is a corrected owner launch, not a model retry or a readiness investigation.
+Run002 reached Redis but refused foreign_correlation, still zero calls: shared PG outbox
+included pending prior-run work even with a different Redis namespace. Revised launcher
+uses a new PG schema plus new Redis namespace together, resolving endpoints before setup.
+Do not drain/repair old failed operations as part of this delivery. Fresh-schema isolation
+is the discriminating check; no runtime change is added for these owner setup mistakes.
