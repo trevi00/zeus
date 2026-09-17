@@ -18,10 +18,15 @@ from codex_harness.adapters.isolated_worker import (
     WORKSPACE,
     IsolationError,
     OwnedContainer,
+    advance,
     container_args,
     docker_environment,
+    hold,
+    new_record,
+    retire,
     scan_tree,
     summary,
+    unresolved_runs,
 )
 from codex_harness.domain.model import digest
 
@@ -65,42 +70,66 @@ class DockerEvidenceInspector(EvidenceInspector):
         run_id = uuid4().hex
         directory = self.root / run_id
         snapshot = directory / "workspace"
+        workspace = str(Path(cwd).resolve())
         container = OwnedContainer(self.isolation, self.docker, run_id, "verifier")
         context = {"container": {"name": container.name, "image": self.isolation["image"], "network": "none",
                                  "credentials": "none", "run_id": run_id}}
+        record = None
         try:
+            pending = unresolved_runs(self.root, workspace)
+            if pending:
+                # Visible and refused, like the worker: a retained replay container is never doubled.
+                context["container"]["unresolved"] = pending
+                raise IsolationError("isolation_unresolved_run")
+            snapshot.mkdir(parents=True)
+            record = new_record(directory, role="verifier", workspace=workspace, config=self.isolation,
+                                container=container, argv=list(argv), snapshot=str(snapshot))
             files = scan_tree(Path(cwd))
             for name in files:
                 target = snapshot.joinpath(*name.split("/"))
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(Path(cwd).joinpath(*name.split("/")), target)
-            snapshot.mkdir(parents=True, exist_ok=True)
             context["container"]["snapshot_sha256"] = digest(files)
+            advance(record, "prepared", snapshot_sha256=context["container"]["snapshot_sha256"])
             args = container_args(self.isolation, name=container.name, run_id=run_id, role="verifier", network="none",
                                   mounts=[(str(snapshot.resolve()), WORKSPACE)], environment=dict(env), pass_names=(),
                                   entry=list(argv), workdir=WORKSPACE)
             container.create(args, docker_environment())
-            context["container"]["id"] = container.id
+            context["container"]["id"] = record["container"] = container.id
+            advance(record, "created", container=container.id)
             context["container"]["controls"] = container.verify({WORKSPACE}, "none")
         except (IsolationError, OSError) as exc:
             code = exc.reason_code if isinstance(exc, IsolationError) else type(exc).__name__
             if container.id is not None:
-                context["container"]["cleanup"] = container.remove()
+                context["container"]["cleanup"] = container.remove()  # never started: exact id, not forced
+            if record is not None and (container.id is None or context["container"]["cleanup"]["removed"]):
+                try:
+                    advance(record, "refused", reason=code)
+                    shutil.rmtree(snapshot, ignore_errors=True)
+                except IsolationError:
+                    pass  # the record stays where it was last written: unresolved and visible
             return {"failure": "isolated_replay_unavailable: " + code, "returncode": None, "duration_seconds": 0.0,
                     **context}
-        # The inherited bounded capture owns the deadline, output cap and client tree; the container
-        # itself is then stopped and confirmed by exact id whatever the client did.
-        run = _capture([self.docker, "start", "--attach", container.id], None, timeout, max_bytes, docker_environment())
-        stopped = container.stop(self.isolation["limits"]["cleanup_seconds"])
+        context["container"]["record"] = record["record"]
+        # The inherited bounded capture owns the deadline, output cap and client tree; `hold` owns the
+        # container: durable before start, stopped and confirmed by exact id however capture exits.
+        try:
+            run, stopped = hold(container, record, lambda: _capture(
+                [self.docker, "start", "--attach", container.id], None, timeout, max_bytes, docker_environment()))
+        except IsolationError as exc:  # a lifecycle step could not be written: nothing is removed on a guess
+            return {"failure": "isolated_replay_unrecorded: " + exc.reason_code + "; recovery record " + record["record"]
+                    + " container " + container.id, "returncode": None, "duration_seconds": 0.0, **context}
         context["container"]["stop"] = stopped
         if not stopped["confirmed"]:
-            return {**run, **context, "failure": "container_stop_unconfirmed; recovery container " + container.id}
+            return {**run, **context, "failure": "container_stop_unconfirmed; recovery record " + record["record"]
+                    + " container " + container.id}
         if not run.get("failure") and not run.get("terminated"):
             run["returncode"] = stopped.get("exit_code")  # the container's own exit, not the client's
-        cleanup = container.remove()
+        cleanup = retire(container, record, {**run, **context}, run.get("failure") or "replayed")
         context["container"]["cleanup"] = cleanup
+        if not cleanup["evidence_written"]:
+            return {**run, **context, "failure": "replay_evidence_unwritten; container retained; recovery record "
+                    + record["record"] + " container " + container.id}
         if cleanup["removed"]:
-            shutil.rmtree(directory, ignore_errors=True)  # exactly this replay's own snapshot
-        else:
-            context["container"]["recovery"] = {"container": container.id, "name": container.name, "snapshot": str(directory)}
+            shutil.rmtree(snapshot, ignore_errors=True)  # exactly this replay's own snapshot; the record stays
         return {**run, **context}

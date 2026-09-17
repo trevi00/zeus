@@ -61,7 +61,7 @@ Replay runs add `container{name,id,image,network:none,credentials:none,controls,
 2. `docker run --rm --entrypoint claude <id> --version` (expect 2.1.274) and `--entrypoint /opt/zeus/bin/python <id> -m pytest --version`.
 3. Set `ZEUS_WORKER_ISOLATION=docker`, `ZEUS_WORKER_IMAGE=<id>`; launcher exports `CLAUDE_CODE_OAUTH_TOKEN` in process memory only.
 4. Docker-marked test: `ZEUS_TEST_WORKER_IMAGE=<id> python -m pytest tests/test_isolated_worker.py -q -p no:cacheprovider -k real_sleeping` (Windows and WSL).
-5. Canary: `zeus operate run <manifest>`; then `python -m codex_harness.adapters.isolated_worker status <runtime>/isolated-worker/runs` must print `[]`
+5. Canary: `zeus operate run <manifest>`; then `python -m codex_harness.adapters.isolated_worker status <runtime>/isolated-worker/runs <runtime>/isolated-worker/replays` must print `[]`
    and `docker ps -a --filter label=zeus.isolated.run` must be empty.
 
 ## Observed by this worker, and not
@@ -74,7 +74,69 @@ Replay runs add `container{name,id,image,network:none,credentials:none,controls,
 - Known limits: (1) on a POSIX host running as root the container user is 10001 and a bind-mounted
   staging may not be writable; non-root POSIX hosts use their own uid. (2) `uv run ...` replay claims
   need network/sync and will fail honestly under network none; `python -m pytest|ruff` are the supported forms.
-  (3) If `on_tick`/observer raises mid-run the container is stopped but its record stays `running`
-  and needs `reconcile` after the owner removes the exact container. (4) Hook receipts missing is
+  (3) Superseded by correction 1 below: an observer failure now ends in `removed` or `stop_unconfirmed`. (4) Hook receipts missing is
   reported (`observed:false`), not turned into a failure, matching the host runtime. (5) Bind sources
   containing a comma are unsupported by `--mount` syntax. (6) Worker egress is unrestricted bridge networking (SPEC).
+
+## Consolidated acceptance correction 1 (SPEC final section)
+
+Disposition: improve the existing ownership implementation; no second scheduler, retry or fallback.
+Files: `Dockerfile.worker`, `adapters/isolated_worker.py`, `adapters/isolated_evidence.py`, the two
+isolated test files, `docs/contracts.md`, this report. Profile bytes, executor, bootstrap,
+operation_cli and default host mode are untouched.
+
+- **R1.** The obsolete `cli.js` link is gone. The build derives the link target from the installed
+  package's own `package.json` `bin.claude` (owner-measured: `bin/claude.exe`), then runs
+  `claude --version` and requires `2.1.274`, once as root and once as uid 10001 through PATH; an
+  unusable CLI fails the build. No dependency or version change. NOT built or run by this worker.
+- **R2.** `tests/test_isolated_evidence.py` imports its shared fixtures as
+  `from test_isolated_worker import ...`, the repository's existing convention (e.g.
+  `test_autonomous.py` -> `test_operation`), which relies on pytest's rootdir/`tests` insertion and
+  not on the checkout root being on `sys.path`. No PYTHONPATH, conftest or packaging change.
+  `uv run pytest -q` itself was NOT run by this worker (not a permitted command); owner verifies.
+- **R3.** One rule for both roles in `isolated_worker.py`: `new_record`/`advance` (durable `run.json`,
+  a failed write is `evidence_write_failed`), `hold(container, record, body, client=)` and
+  `retire(container, record, result, outcome, files=)`.
+  - `hold` writes `start_requested` with `{container,name,record}` (record also carries `run_id`,
+    `label`, `container_name`, `container`) BEFORE `body` starts anything; a failed write removes the
+    never-started container and refuses. `body` (worker: `on_enter` + `_converse`; verifier:
+    `_capture` of `docker start --attach`) runs in try/finally: return, cancel, deadline, observer
+    failure, KeyboardInterrupt and any other exception all get `OwnedContainer.stop(cleanup_seconds)`
+    plus, for the worker, the client-tree termination. Confirmed -> `stop_confirmed` (on an exception
+    also `retire(..., "interrupted")`, i.e. record then remove, staging kept, exception re-raised).
+    Unconfirmed -> `stop_unconfirmed` with the recovery reference; worker raises the existing
+    unknown-outcome `ContractError`, verifier returns `container_stop_unconfirmed` (never `checked`).
+    The former private stop inside `_converse` was removed in favour of this one rule.
+  - `retire` writes retained files and `evidence_retained` first, removes the exact container second,
+    then `removed`. A failed write removes nothing: worker raises `ContractError` (record stays
+    `imported`, container and staging retained), verifier returns `replay_evidence_unwritten`.
+  - Worker evidence: `run.json` `result` as before plus `retained_files["inner_result.json"]`
+    `{file,sha256,bytes}`: the WHOLE inner result (events included) after token redaction.
+    Verifier evidence: `replays/<run_id>/run.json` `result` = bounded capture output + container
+    context; only the snapshot copy is deleted after removal, the record stays (`removed`).
+  - Restart visibility: an unresolved verifier record refuses the next replay
+    (`isolated_replay_unavailable: isolation_unresolved_run`, nothing created) and, through
+    `IsolatedWorker` -> `watch=(replays,)`, the next worker run of that workspace. `reconcile
+    <replays>/<run_id>` works unchanged; `status <runs-dir> <replays-dir>` accepts several roots.
+  - `stop(window)`: every inspect/kill timeout is `min(docker_command_seconds, remaining window)`;
+    no call begins after the deadline; kill is attempted once even when inspect gave no answer.
+    Outside the declared window and still bounded: worker client-tree terminate (its own 20s+10s)
+    and `remove` (rm + ps, `docker_command_seconds` each), both after the stop decision.
+
+Injected vs actual. Everything this worker observed is INJECTED: `FakeDocker`, a fake `_capture`
+raising `KeyboardInterrupt` after marking the fake container running, `kill_works=False`,
+`_write_record` raising `OSError`, a synthetic verifier record, a raising `on_tick` over a real local
+non-model child process. None is an observation of a real container. New tests (all labelled):
+evidence: normal replay record, interruption -> removed, interruption + unconfirmed stop -> durable
+recovery record/refused next replay/reconcile, returned capture + unconfirmed stop, evidence-write
+failure; worker: full inner result before `rm`, evidence-write failure, observer failure, verifier
+record refusing the worker, stop timeouts bounded by the window.
+
+Owner-only, still required (not run here): rebuild `Dockerfile.worker` capturing the docker child exit
+directly and `docker run --rm --entrypoint claude <id> --version`; `uv run pytest -q` and CI; rerun
+`artifacts/isolated-worker-001/review-cancel.py` (REAL docker start + injected interrupt) expecting no
+running container and either a `removed` record or a `stop_unconfirmed` one; the Docker-marked test on
+Windows and WSL; `status` over both roots printing `[]`; then the actual model canary and its review.
+Uncertain: whether `claude --version` needs a writable HOME during the uid-10001 build step (it has
+`/home/worker`); a second interrupt arriving inside `hold`'s finally leaves the record at
+`start_requested`, which is durable and unresolved but the container may still run.

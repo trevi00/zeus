@@ -324,10 +324,38 @@ def apply_import(plan: dict, staging: Path, candidate: Path) -> dict:
 
 
 # ---- run records: the recovery reference --------------------------------------------------------
-def _write_record(path: Path, record: dict) -> None:
+def _write_record(path: Path, record: dict) -> dict:
+    data = json.dumps(record, ensure_ascii=False, sort_keys=True, indent=1).encode("utf-8")
     temporary = path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(record, ensure_ascii=False, sort_keys=True, indent=1), encoding="utf-8")
+    temporary.write_bytes(data)
     os.replace(temporary, path)
+    return {"file": str(path), "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
+
+
+def new_record(directory: Path, *, role: str, workspace: str, config: dict, container, **extra) -> dict:
+    """The durable owner of one container, worker or verifier: exact run, name and label from the
+    first write, the exact id as soon as it is known."""
+    return {"run_id": container.run_id, "role": role, "workspace": workspace, "image": config["image"],
+            "isolation_digest": config["digest"], "container": None, "container_name": container.name,
+            "label": LABEL + "=" + container.run_id, "record": str(Path(directory) / "run.json"), **extra,
+            "lifecycle": [], "state": None}
+
+
+def advance(record: dict, state: str, **detail) -> None:
+    """One durable lifecycle step. A step that cannot be written is a named failure, never assumed."""
+    previous = record["state"]
+    record["lifecycle"].append({"state": state, "at": time.time(), **detail})
+    record["state"] = state
+    try:
+        _write_record(Path(record["record"]), record)
+    except OSError as exc:
+        record["lifecycle"].pop()
+        record["state"] = previous
+        raise IsolationError("evidence_write_failed", state + " " + type(exc).__name__) from exc
+
+
+def recovery_reference(container, record: dict) -> dict:
+    return {"container": container.id, "name": container.name, "record": record["record"]}
 
 
 def run_records(root: Path) -> list:
@@ -431,9 +459,9 @@ class OwnedContainer:
             raise IsolationError("container_controls_mismatch")
         return observed
 
-    def state(self) -> dict | None:
+    def state(self, timeout: float | None = None) -> dict | None:
         shown = _docker(self.docker, ["inspect", "--format", "{{.State.Status}} {{.State.ExitCode}} {{.State.OOMKilled}}",
-                                      self.id], timeout=self.seconds)
+                                      self.id], timeout=self.seconds if timeout is None else timeout)
         parts = shown.stdout.split()
         if shown.returncode != 0 or len(parts) != 3:
             return None
@@ -441,24 +469,77 @@ class OwnedContainer:
                 "oom_killed": parts[2] == "true"}
 
     def stop(self, window: float) -> dict:
-        """Kill (when still running) and confirm by inspection within the cleanup window."""
+        """Kill (when not seen stopped) and confirm by inspection within the cleanup window. Every
+        Docker call here is bounded by what remains of that window, never by the general command limit."""
         deadline, killed, last = time.monotonic() + window, False, None
-        while True:
-            last = self.state()
+        while (remaining := deadline - time.monotonic()) > 0:
+            last = self.state(min(self.seconds, remaining))
             if last is not None and last["status"] in ("exited", "dead", "created"):
                 return {"confirmed": True, "killed": killed, **last}
-            if last is not None and not killed:
-                _docker(self.docker, ["kill", self.id], timeout=self.seconds)
+            remaining = deadline - time.monotonic()
+            if not killed and remaining > 0:
+                _docker(self.docker, ["kill", self.id], timeout=min(self.seconds, remaining))
                 killed = True
-            if time.monotonic() >= deadline:
-                return {"confirmed": False, "killed": killed, **(last or {"status": "unknown"})}
-            time.sleep(0.5)
+                continue
+            time.sleep(max(0.0, min(0.5, deadline - time.monotonic())))
+        return {"confirmed": False, "killed": killed, **(last or {"status": "unknown"})}
 
     def remove(self) -> dict:
         """Only this exact stopped container, never forced; absence afterwards is the proof."""
         removed = _docker(self.docker, ["rm", self.id], timeout=self.seconds)
         gone = removed.returncode == 0 and self.recover_id() is None
         return {"removed": gone, "exit_code": removed.returncode}
+
+
+def retire(container, record: dict, result: dict, outcome: str, *, files: dict | None = None,
+           removed: dict | None = None) -> dict:
+    """Observations first, durably and outside the container; only then is the exact stopped container
+    removed. An observation that cannot be written keeps the container and its recovery reference."""
+    reference = recovery_reference(container, record)
+    try:
+        record["retained_files"] = {name: _write_record(Path(record["record"]).with_name(name), body)
+                                    for name, body in (files or {}).items()}
+        record["result"] = result
+        advance(record, "evidence_retained", outcome=outcome)
+    except (IsolationError, OSError):
+        return {"removed": False, "exit_code": None, "evidence_written": False, "recovery": reference}
+    removal = container.remove()
+    if removal["removed"]:
+        advance(record, "removed", **(removed or {}))
+    return {**removal, "evidence_written": True, "recovery": None if removal["removed"] else reference}
+
+
+def hold(container, record: dict, body, *, client=None, detail=None):
+    """The one ownership rule of every started container, worker and verifier alike. The exact
+    run/name/label/id is durable at `start_requested` before `body` may start anything; however `body`
+    ends (return, cancel, deadline, observer failure, KeyboardInterrupt) the container gets one bounded
+    stop and confirmation. Unconfirmed is recorded as `stop_unconfirmed` with its recovery reference.
+    Returns (value, stop); an exception of `body` propagates after the record says what was confirmed."""
+    try:
+        advance(record, "start_requested", recovery=recovery_reference(container, record))
+    except IsolationError:
+        container.remove()  # never started and no durable owner: exact id, not forced
+        raise
+    value, interrupted = None, None
+    try:
+        value = body()
+    except BaseException as exc:
+        interrupted = type(exc).__name__
+        raise
+    finally:
+        stopped = container.stop(container.config["limits"]["cleanup_seconds"])
+        ended = client() if client is not None else {"confirmed": True}
+        stopped = {**stopped, "confirmed": bool(stopped["confirmed"] and ended.get("confirmed")),
+                   "client_confirmed": bool(ended.get("confirmed"))}
+        if not stopped["confirmed"]:
+            advance(record, "stop_unconfirmed", stop=stopped, interrupted=interrupted,
+                    recovery=recovery_reference(container, record))
+        else:
+            described = detail(value) if detail is not None and interrupted is None else {}
+            advance(record, "stop_confirmed", stop=stopped, interrupted=interrupted, **described)
+            if interrupted is not None:
+                retire(container, record, {"interrupted": interrupted, "stop": stopped}, "interrupted")
+    return value, stopped
 
 
 def reconcile(run_directory, docker: str = "docker") -> dict:
@@ -495,11 +576,12 @@ class IsolatedClaudeRuntime:
 
     def __init__(self, config: dict, root, *, model: str, runtime: dict | None = None,
                  max_budget_usd: float | None = None, settings_document: dict | None = None,
-                 docker: str = "docker", environment: dict | None = None):
+                 docker: str = "docker", environment: dict | None = None, watch: tuple = ()):
         require(isinstance(config, dict) and config.get("mode") == MODE and IMAGE.fullmatch(str(config.get("image"))),
                 "Isolated runtime requires a validated isolation configuration")
         require(type(model) is str and bool(model.strip()), "Claude requires an explicit model name")
         self.config, self.root, self.docker = config, Path(root), docker
+        self.watch = tuple(Path(other) for other in watch)  # sibling record roots: the verifier's replays
         self.model, self.max_budget_usd, self.settings_document = model.strip(), max_budget_usd, settings_document
         # Host paths never cross: the image's own interpreter, executable and evidence root apply.
         self.runtime = {key: value for key, value in dict(runtime or {}).items()
@@ -520,9 +602,15 @@ class IsolatedClaudeRuntime:
             self.tree = None
 
     def _advance(self, state: str, **detail) -> None:
-        self.record["lifecycle"].append({"state": state, "at": time.time(), **detail})
-        self.record["state"] = state
-        _write_record(self.record_path, self.record)
+        advance(self.record, state, **detail)
+
+    def _end_client(self) -> dict:
+        if self.tree is None:
+            return {"confirmed": True}
+        ended = self.tree.terminate("container_stopped")
+        self.tree.close()
+        self.tree = None
+        return ended
 
     def run(self, prompt: str, cwd: str, schema: dict, timeout: int = 240, *, on_event=None, on_tick=None,
             read_only: bool = False, model: str | None = None, on_enter=None, cancel=None,
@@ -534,7 +622,7 @@ class IsolatedClaudeRuntime:
         require(model is None or model == self.model, "The requested model differs from the configured Claude model")
         self.used = True
         workspace = str(Path(cwd).resolve())
-        pending = unresolved_runs(self.root, workspace)
+        pending = [row for root in (self.root, *self.watch) for row in unresolved_runs(root, workspace)]
         if pending:
             # Visible and refused: no duplicate container, no implicit restart, no model retry.
             raise IsolationError("isolation_unresolved_run", json.dumps(pending, sort_keys=True))
@@ -544,10 +632,10 @@ class IsolatedClaudeRuntime:
         staging, evidence = run_directory / "workspace", run_directory / "evidence"
         evidence.mkdir(parents=True)
         self.record_path = run_directory / "run.json"
-        self.record = {"run_id": run_id, "role": "worker", "workspace": workspace, "image": self.config["image"],
-                       "isolation_digest": self.config["digest"], "session_id": session_id, "container": None,
-                       "container_name": None, "record": str(self.record_path), "staging": str(staging),
-                       "evidence": str(evidence), "lifecycle": [], "state": None}
+        self.container = OwnedContainer(self.config, self.docker, run_id, "worker")
+        self.record = new_record(run_directory, role="worker", workspace=workspace, config=self.config,
+                                 container=self.container, session_id=session_id, staging=str(staging),
+                                 evidence=str(evidence))
         source_environment = os.environ if self.environment_source is None else self.environment_source
         secret = source_environment.get(TOKEN_NAME)
         try:
@@ -560,8 +648,6 @@ class IsolatedClaudeRuntime:
                 raise IsolationError("source_candidate_dirty")
             source = stage_source(workspace, revision.stdout.strip(), staging)
             git_report = init_standalone_git(staging)
-            self.container = OwnedContainer(self.config, self.docker, run_id, "worker")
-            self.record["container_name"] = self.container.name
             self._advance("prepared", source={key: source[key] for key in ("revision", "files", "bytes", "manifest_sha256")})
             entry = [TRUSTED_PYTHON, "-I", "-m", ENTRY_MODULE]
             environment = {"HOME": CONTAINER_HOME, "DISABLE_AUTOUPDATER": "1", "PYTHONDONTWRITEBYTECODE": "1",
@@ -577,12 +663,12 @@ class IsolatedClaudeRuntime:
                 self._advance("refused", reason="container_create_failed")
                 raise
             self.record["container"] = container_id
-            self._advance("created", container=container_id)
             try:
+                self._advance("created", container=container_id)
                 controls = self.container.verify({WORKSPACE, EVIDENCE}, "bridge")
-            except IsolationError:
+            except IsolationError as exc:
                 removal = self.container.remove()  # never started: exact id, not forced
-                self._advance("refused" if removal["removed"] else "created", reason="container_controls_mismatch")
+                self._advance("refused" if removal["removed"] else "created", reason=exc.reason_code)
                 raise
         except IsolationError:
             if self.record["state"] is None:
@@ -591,22 +677,19 @@ class IsolatedClaudeRuntime:
         request = {"protocol": PROTOCOL, "prompt": prompt, "schema": schema, "timeout": timeout, "model": self.model,
                    "session_id": session_id, "runtime": self.runtime, "max_budget_usd": self.max_budget_usd,
                    "settings_document": self.settings_document, "cwd": WORKSPACE, "evidence_root": EVIDENCE}
-        # External-effect boundary: from here on nothing is a refusal that never ran.
-        self._advance("start_requested")
-        if on_enter is not None:
-            on_enter()
         started = time.monotonic()
-        stream = self._converse(request, timeout, on_event=on_event, on_tick=on_tick, cancel=cancel)
-        stopped = self.container.stop(self.config["limits"]["cleanup_seconds"])
-        client = self.tree.terminate(stream["reason"])
-        self.tree.close()
-        self.tree = None
-        if not (stopped["confirmed"] and client.get("confirmed")):
-            self._advance("stop_unconfirmed", stop=stopped, recovery={"container": self.container.id,
-                                                                     "name": self.container.name, "record": str(self.record_path)})
+
+        def converse():
+            if on_enter is not None:
+                on_enter()
+            return self._converse(request, timeout, on_event=on_event, on_tick=on_tick, cancel=cancel)
+        # External-effect boundary (`start_requested`, written by `hold`): from here on nothing is a
+        # refusal that never ran, and the container is stopped however the conversation ends.
+        stream, stopped = hold(self.container, self.record, converse, client=self._end_client, detail=lambda value: {
+            "stream": {key: value[key] for key in ("reason", "violation", "lines")}})
+        if not stopped["confirmed"]:
             raise ContractError("Isolated worker container termination could not be confirmed; the outcome is unknown; "
                                 "recovery record " + str(self.record_path))
-        self._advance("stop_confirmed", stop=stopped, stream={key: stream[key] for key in ("reason", "violation", "lines")})
         inner = stream["result"]
         receipts = (hook_receipts(evidence / session_id, profile_digest(self.profile)) if self.profile is not None else None)
         isolation = {**summary(self.config), "run_id": run_id, "container": {"id": self.container.id, "name": self.container.name,
@@ -636,17 +719,18 @@ class IsolatedClaudeRuntime:
         except OSError as exc:
             failure = IsolationError("import_failed", type(exc).__name__)
         isolation["outcome"] = "imported" if failure is None else failure.reason_code
-        self.record["result"] = _scrub({"isolation": isolation, "inner_failure": (inner or {}).get("failure"),
-                                        "inner_terminal": (inner or {}).get("terminal")}, secret)
-        self._advance("evidence_retained", outcome=isolation["outcome"])
-        removal = self.container.remove()
-        isolation["cleanup"] = {**removal, "staging_retained": failure is not None,
-                                "recovery": None if removal["removed"] else
-                                {"container": self.container.id, "name": self.container.name, "record": str(self.record_path)}}
-        if removal["removed"]:
-            self._advance("removed", staging_retained=failure is not None)
-            if failure is None:
-                shutil.rmtree(staging, ignore_errors=True)  # this run's own staging; evidence and record stay
+        # The whole redacted inner result is retained beside the record before the container is removed.
+        removal = retire(self.container, self.record,
+                         _scrub({"isolation": isolation, "inner_failure": (inner or {}).get("failure"),
+                                 "inner_terminal": (inner or {}).get("terminal")}, secret), isolation["outcome"],
+                         files={"inner_result.json": _scrub(inner, secret)} if inner is not None else None,
+                         removed={"staging_retained": failure is not None})
+        isolation["cleanup"] = {**removal, "staging_retained": failure is not None or not removal["removed"]}
+        if not removal["evidence_written"]:
+            raise ContractError("Isolated worker evidence could not be written; the stopped container and staging are "
+                                "retained; recovery record " + str(self.record_path))
+        if removal["removed"] and failure is None:
+            shutil.rmtree(staging, ignore_errors=True)  # this run's own staging; evidence and record stay
         if failure is not None:
             # Entered and not importable: never a success, never a partial import, staging preserved.
             raise ContractError(str(failure) + "; staging preserved; recovery record " + str(self.record_path)) from failure
@@ -691,44 +775,40 @@ class IsolatedClaudeRuntime:
             thread.start()
         deadline = time.monotonic() + float(timeout) + limits["inner_grace_seconds"]
         events, result, reason, violation, lines, dropped = [], None, None, None, 0, 0
-        try:
-            while reason is None:
-                if cancel is not None and cancel():
-                    reason = "cancelled"
-                    break
-                if on_tick is not None:
-                    on_tick()
-                if time.monotonic() >= deadline:
-                    reason = "deadline"
-                    break
-                try:
-                    line = inbox.get(timeout=0.25)
-                except queue.Empty:
-                    continue
-                if line is None:
-                    reason = "stream_closed"
-                    break
-                lines += 1
-                message = parse_line(line, line_limit)
-                if message is None or result is not None:
-                    violation = "invalid_line" if message is None else "output_after_result"
-                    reason, result = "protocol_violation", None
-                    break
-                if message["kind"] == "event":
-                    if len(events) < POLICY.claude_events_retained:
-                        events.append(message["event"])
-                    else:
-                        dropped += 1
-                    if on_event is not None:
-                        on_event(message["event"])
-                elif message["kind"] == "result":
-                    result = message["result"]
-                elif message["kind"] == "refused":
-                    violation, reason = "inner_refused:" + str(message.get("error_type")), "inner_refused"
-        except BaseException:
-            # A lease check or observer raised: the container is still ours to stop before it propagates.
-            self.container.stop(limits["cleanup_seconds"])
-            raise
+        # A lease check or observer that raises here propagates to `hold`, which owns the stop.
+        while reason is None:
+            if cancel is not None and cancel():
+                reason = "cancelled"
+                break
+            if on_tick is not None:
+                on_tick()
+            if time.monotonic() >= deadline:
+                reason = "deadline"
+                break
+            try:
+                line = inbox.get(timeout=0.25)
+            except queue.Empty:
+                continue
+            if line is None:
+                reason = "stream_closed"
+                break
+            lines += 1
+            message = parse_line(line, line_limit)
+            if message is None or result is not None:
+                violation = "invalid_line" if message is None else "output_after_result"
+                reason, result = "protocol_violation", None
+                break
+            if message["kind"] == "event":
+                if len(events) < POLICY.claude_events_retained:
+                    events.append(message["event"])
+                else:
+                    dropped += 1
+                if on_event is not None:
+                    on_event(message["event"])
+            elif message["kind"] == "result":
+                result = message["result"]
+            elif message["kind"] == "refused":
+                violation, reason = "inner_refused:" + str(message.get("error_type")), "inner_refused"
         if result is not None and reason == "stream_closed":
             result = {**result, "events": events}
         else:
@@ -765,16 +845,16 @@ class IsolatedWorker:
     def runtime(self, *, model, runtime, max_budget_usd, settings_document) -> IsolatedClaudeRuntime:
         return IsolatedClaudeRuntime(self.config, self.root / "runs", model=model, runtime=runtime,
                                      max_budget_usd=max_budget_usd, settings_document=settings_document,
-                                     docker=self.docker)
+                                     docker=self.docker, watch=(self.root / "replays",))
 
     def inspector(self, artifacts):
         from codex_harness.adapters.isolated_evidence import DockerEvidenceInspector
         return DockerEvidenceInspector(artifacts, self.config, self.root / "replays", docker=self.docker)
 
 
-if __name__ == "__main__":  # python -m codex_harness.adapters.isolated_worker status|reconcile <dir>
-    if len(sys.argv) == 3 and sys.argv[1] == "status":
-        print(json.dumps(unresolved_runs(Path(sys.argv[2])), sort_keys=True))
+if __name__ == "__main__":  # python -m codex_harness.adapters.isolated_worker status <dir>...|reconcile <dir>
+    if len(sys.argv) >= 3 and sys.argv[1] == "status":  # the worker's runs and the verifier's replays alike
+        print(json.dumps([row for root in sys.argv[2:] for row in unresolved_runs(Path(root))], sort_keys=True))
     elif len(sys.argv) == 3 and sys.argv[1] == "reconcile":
         print(json.dumps(reconcile(sys.argv[2]), sort_keys=True))
     else:

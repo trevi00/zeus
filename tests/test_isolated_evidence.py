@@ -3,10 +3,10 @@ fakes; no container, model or live service runs here, and nothing below is a rea
 import json
 
 import pytest
+from test_isolated_worker import IMAGE, TOKEN, FakeDocker
 
 from codex_harness.adapters import isolated_evidence as ie
 from codex_harness.adapters import isolated_worker as iw
-from tests.test_isolated_worker import IMAGE, TOKEN, FakeDocker
 
 
 class Artifacts:
@@ -22,7 +22,7 @@ def setup(tmp_path, monkeypatch):
 
     def capture(argv, cwd, timeout, max_bytes, env):  # injected: the container "ran" and exited 0
         captured.append({"argv": argv, "env": env})
-        fake.containers[argv[-1]]["status"] = "exited"
+        fake.containers[argv[-1]]["status"] = "exited" if getattr(fake, "exit_on_capture", True) else "running"
         return {"failure": None, "terminated": False, "returncode": 0, "duration_seconds": 0.1}
     monkeypatch.setattr(ie, "_capture", capture)
     workspace = tmp_path / "candidate"
@@ -60,8 +60,92 @@ def test_authorized_replay_runs_in_fresh_credential_free_network_none_containers
     assert all(iw.TOKEN_NAME not in call["env"] for call in fake.calls) and all(iw.TOKEN_NAME not in c["env"] for c in captured)
     assert TOKEN not in json.dumps(fake.calls) + json.dumps(report)
     assert report["context"]["python"] == "container:" + IMAGE and report["context"]["interpreter"] == iw.TRUSTED_PYTHON
-    assert list(fake.containers) == ["f" * 64] and not any((inspector.root).glob("*"))  # own containers and copies removed
+    assert list(fake.containers) == ["f" * 64] and not any(inspector.root.glob("*/workspace"))  # own containers, copies removed
     assert [run["container"]["network"] for run in finding["runs"]] == ["none", "none"]
+    # Normal replay: each run keeps its durable record, with the observed output written BEFORE removal.
+    records = iw.run_records(inspector.root)
+    assert len(records) == 2 and iw.unresolved_runs(inspector.root) == []
+    for saved in records:
+        assert [step["state"] for step in saved["lifecycle"]] == ["prepared", "created", "start_requested", "stop_confirmed",
+                                                                  "evidence_retained", "removed"]
+        assert saved["role"] == "verifier" and saved["label"] == iw.LABEL + "=" + saved["run_id"]
+        assert saved["container_name"] == "zeus-verifier-" + saved["run_id"] and iw.CONTAINER_ID.fullmatch(saved["container"])
+        assert saved["lifecycle"][2]["recovery"]["container"] == saved["container"]  # exact id durable before start
+        assert saved["result"]["returncode"] == 0 and saved["result"]["container"]["stop"]["confirmed"]
+    order = [call["args"][0] for call in fake.calls]
+    assert order.index("rm") > order.index("create")
+
+
+def interrupting(fake, seen):
+    def capture(argv, cwd, timeout, max_bytes, env):  # INJECTED cancellation right after a (fake) docker start
+        fake.containers[argv[-1]]["status"] = "running"
+        seen.append({"id": argv[-1], "records": iw.run_records(fake.root)})
+        raise KeyboardInterrupt
+    return capture
+
+
+def test_injected_interruption_after_start_stops_records_and_removes(setup, monkeypatch):
+    inspector, fake, _, workspace = setup
+    fake.root, seen = inspector.root, []
+    monkeypatch.setattr(ie, "_capture", interrupting(fake, seen))
+    with pytest.raises(KeyboardInterrupt):
+        inspect(inspector, workspace, ["python -m pytest -q"])
+    # Durable owner existed before the start, naming the exact id that was then started.
+    assert seen[0]["records"][0]["state"] == "start_requested" and seen[0]["records"][0]["container"] == seen[0]["id"]
+    saved = iw.run_records(inspector.root)
+    assert len(saved) == 1 and saved[0]["state"] == "removed" and saved[0]["result"]["interrupted"] == "KeyboardInterrupt"
+    assert [c["args"] for c in fake.calls if c["args"][0] == "kill"] == [["kill", seen[0]["id"]]]
+    assert list(fake.containers) == ["f" * 64] and iw.unresolved_runs(inspector.root) == []
+
+
+def test_injected_interruption_with_unconfirmed_stop_leaves_a_durable_recovery_record(setup, monkeypatch):
+    inspector, fake, _, workspace = setup
+    fake.root, seen = inspector.root, []
+    fake.kill_works = False  # injected fault: kill changes nothing, the container stays running
+    inspector.isolation["limits"] = {**inspector.isolation["limits"], "cleanup_seconds": 1}
+    monkeypatch.setattr(ie, "_capture", interrupting(fake, seen))
+    with pytest.raises(KeyboardInterrupt):
+        inspect(inspector, workspace, ["python -m pytest -q"])
+    saved = iw.run_records(inspector.root)[0]
+    assert saved["state"] == "stop_unconfirmed" and saved["lifecycle"][-1]["recovery"] == {
+        "container": seen[0]["id"], "name": saved["container_name"], "record": saved["record"]}
+    assert seen[0]["id"] in fake.containers and not any(c["args"][0] == "rm" for c in fake.calls)
+    assert [row["run_id"] for row in iw.unresolved_runs(inspector.root, str(workspace.resolve()))] == [saved["run_id"]]
+    # Restart visibility: the next replay is refused by name and creates nothing.
+    created = len([c for c in fake.calls if c["args"][0] == "create"])
+    report, _ = inspect(inspector, workspace, ["python -m pytest -q"])
+    assert report["findings"][0]["state"] == "replay_failed" and "isolation_unresolved_run" in report["findings"][0]["cause"]
+    assert len([c for c in fake.calls if c["args"][0] == "create"]) == created
+    del fake.containers[seen[0]["id"]]  # the owner removed the exact container
+    assert iw.reconcile(inspector.root / saved["run_id"])["reconciled"] and iw.unresolved_runs(inspector.root) == []
+
+
+def test_unconfirmed_stop_after_a_returned_capture_is_never_a_checked_replay(setup):
+    inspector, fake, _, workspace = setup
+    fake.kill_works = False  # injected fault
+    fake.exit_on_capture = False  # injected: the capture returned but the container is still running
+    inspector.isolation["limits"] = {**inspector.isolation["limits"], "cleanup_seconds": 1}
+    report, _ = inspect(inspector, workspace, ["python -m pytest -q"])
+    finding = report["findings"][0]
+    assert finding["state"] == "replay_failed" and "container_stop_unconfirmed" in finding["cause"]
+    assert iw.run_records(inspector.root)[0]["state"] == "stop_unconfirmed" and len(fake.containers) == 2
+
+
+def test_evidence_write_failure_keeps_the_stopped_container_and_is_not_success(setup, monkeypatch):
+    inspector, fake, _, workspace = setup
+    real = iw._write_record
+
+    def failing(path, record):  # injected fault: the observation cannot be written
+        if record.get("state") == "evidence_retained":
+            raise OSError("injected: disk full")
+        return real(path, record)
+    monkeypatch.setattr(iw, "_write_record", failing)
+    report, _ = inspect(inspector, workspace, ["python -m pytest -q"])
+    finding = report["findings"][0]
+    assert finding["state"] == "replay_failed" and "replay_evidence_unwritten" in finding["cause"]
+    assert not any(c["args"][0] == "rm" for c in fake.calls) and len(fake.containers) == 2
+    saved = iw.run_records(inspector.root)[0]
+    assert saved["state"] == "stop_confirmed" and len(iw.unresolved_runs(inspector.root)) == 1
 
 
 def test_image_or_configuration_change_invalidates_the_replay_identity(setup, tmp_path):

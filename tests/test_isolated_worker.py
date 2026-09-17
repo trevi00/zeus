@@ -360,6 +360,91 @@ def test_failed_removal_keeps_an_exact_recovery_reference(config, candidate, tmp
     assert saved["state"] == "evidence_retained" and len(iw.unresolved_runs(tmp_path / "runs", str(candidate.resolve()))) == 1
 
 
+def test_full_redacted_inner_result_is_retained_before_removal(config, candidate, tmp_path, monkeypatch):
+    fake, written = FakeDocker(tmp_path), []
+    real = iw._write_record
+
+    def observing(path, body):  # observer only: which docker calls had happened at each durable write
+        written.append((Path(path).name, body.get("state"), [c["args"][0] for c in fake.calls]))
+        return real(path, body)
+    monkeypatch.setattr(iw, "_write_record", observing)
+    with runtime(config, tmp_path, monkeypatch, fake) as opened:
+        result = opened.run("do it", str(candidate), SCHEMA, 20)
+    saved = record(tmp_path)
+    kept = saved["retained_files"]["inner_result.json"]
+    inner = json.loads(Path(kept["file"]).read_text("utf-8"))
+    assert inner == {key: value for key, value in result.items() if key != "isolation"} and inner["events"]
+    assert TOKEN not in Path(kept["file"]).read_text("utf-8") and kept["bytes"] == Path(kept["file"]).stat().st_size
+    before_rm = [entry for entry in written if "rm" not in entry[2]]
+    assert any(name == "inner_result.json" for name, _, _ in before_rm) and any("rm" in calls for _, _, calls in written)
+    assert ("run.json", "evidence_retained") in [(n, s) for n, s, _ in before_rm]
+    assert saved["lifecycle"][2]["recovery"]["container"] == saved["container"] and saved["label"] == iw.LABEL + "=" + saved["run_id"]
+
+
+def test_evidence_write_failure_keeps_the_container_and_is_never_success(config, candidate, tmp_path, monkeypatch):
+    fake, real = FakeDocker(tmp_path), iw._write_record
+
+    def failing(path, body):  # injected fault: the inner result cannot be written
+        if Path(path).name == "inner_result.json":
+            raise OSError("injected: disk full")
+        return real(path, body)
+    monkeypatch.setattr(iw, "_write_record", failing)
+    with runtime(config, tmp_path, monkeypatch, fake) as opened, pytest.raises(ContractError) as failed:
+        opened.run("do it", str(candidate), SCHEMA, 20)
+    assert "evidence could not be written" in str(failed.value) and not any(c["args"][0] == "rm" for c in fake.calls)
+    saved = record(tmp_path)
+    assert saved["state"] == "imported" and saved["container"] in fake.containers and Path(saved["staging"]).is_dir()
+    assert len(iw.unresolved_runs(tmp_path / "runs", str(candidate.resolve()))) == 1
+
+
+def test_observer_failure_after_start_stops_records_and_removes(config, candidate, tmp_path, monkeypatch):
+    fake = FakeDocker(tmp_path, "sleep")
+
+    def tick():  # injected observer failure while the (fake) container runs
+        if fake.process is not None:
+            raise KeyboardInterrupt
+    with runtime(config, tmp_path, monkeypatch, fake) as opened, pytest.raises(KeyboardInterrupt):
+        opened.run("do it", str(candidate), SCHEMA, 20, on_tick=tick)
+    saved = record(tmp_path)
+    assert [step["state"] for step in saved["lifecycle"]][-3:] == ["stop_confirmed", "evidence_retained", "removed"]
+    assert saved["result"]["interrupted"] == "KeyboardInterrupt" and any(c["args"][0] == "kill" for c in fake.calls)
+    assert list(fake.containers) == ["f" * 64] and Path(saved["staging"]).is_dir()
+    assert (candidate / "kept.txt").read_text() == "original\n" and iw.unresolved_runs(tmp_path / "runs") == []
+
+
+def test_unresolved_verifier_record_refuses_the_next_worker_run(config, candidate, tmp_path, monkeypatch):
+    fake = FakeDocker(tmp_path)
+    monkeypatch.setattr(iw, "_docker", fake)
+    owned = iw.OwnedContainer(config, "docker", "replay1", "verifier")
+    saved = iw.new_record(tmp_path / "replays" / "replay1", role="verifier", workspace=str(candidate.resolve()),
+                          config=config, container=owned)  # synthetic retained verifier record
+    (tmp_path / "replays" / "replay1").mkdir(parents=True)
+    iw.advance(saved, "stop_unconfirmed")
+    worker = iw.IsolatedWorker(config, tmp_path).runtime(model="fable", runtime=None, max_budget_usd=1.0, settings_document=None)
+    worker.environment_source = {**os.environ, iw.TOKEN_NAME: TOKEN}
+    entered = []
+    with worker as opened, pytest.raises(iw.IsolationError) as refused:
+        opened.run("do it", str(candidate), SCHEMA, 5, on_enter=lambda: entered.append(1))
+    assert refused.value.reason_code == "isolation_unresolved_run" and "replay1" in str(refused.value) and entered == []
+    assert not any(c["args"][0] == "create" for c in fake.calls)
+
+
+def test_stop_bounds_every_docker_call_by_the_remaining_cleanup_window(config, tmp_path, monkeypatch):
+    fake, timeouts = FakeDocker(tmp_path), []
+    fake.kill_works = False  # injected fault
+    fake.containers["a" * 64] = {"name": "zeus-worker-x", "labels": {}, "status": "running"}
+
+    def bounded(docker, args, *, timeout, env=None):
+        timeouts.append(timeout)
+        return fake(docker, args, timeout=timeout, env=env)
+    monkeypatch.setattr(iw, "_docker", bounded)
+    owned = iw.OwnedContainer(config, "docker", "x", "worker")
+    owned.id = "a" * 64
+    started = time.monotonic()
+    assert owned.stop(1)["confirmed"] is False and time.monotonic() - started < 3
+    assert timeouts and max(timeouts) <= 1 < config["limits"]["docker_command_seconds"]
+
+
 # ---- inner entrypoint ---------------------------------------------------------------------------
 class FixtureRuntime:
     def __init__(self, **kwargs):

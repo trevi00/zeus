@@ -9,7 +9,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends git ca-certific
 RUN pip install --no-cache-dir uv==0.12.2
 COPY --from=claude /usr/local/bin/node /usr/local/bin/node
 COPY --from=claude /usr/local/lib/node_modules /usr/local/lib/node_modules
-RUN ln -s /usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js /usr/local/bin/claude
+# The link targets the executable the installed package itself declares (package.json bin.claude;
+# measured for 2.1.274: bin/claude.exe, there is no cli.js). The build fails unless that exact
+# pinned CLI answers --version.
+RUN python -c "import json, os; root = '/usr/local/lib/node_modules/@anthropic-ai/claude-code'; os.symlink(os.path.join(root, json.load(open(root + '/package.json'))['bin']['claude']), '/usr/local/bin/claude')" \
+    && claude --version \
+    && claude --version | grep -F "2.1.274"
 # Trusted package, locked dependencies, pytest and ruff live in /opt/zeus, installed non-editable so
 # nothing under /workspace can shadow the entrypoint or the pinned profile hook.
 WORKDIR /build
@@ -24,4 +29,6 @@ ENV PATH="/opt/zeus/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1
 USER 10001:10001
 WORKDIR /
+# Again as the unprivileged runtime user, through PATH, exactly as the inner runtime resolves it.
+RUN claude --version | grep -F "2.1.274"
 ENTRYPOINT ["/opt/zeus/bin/python", "-I", "-m", "codex_harness.adapters.isolated_worker_entry"]

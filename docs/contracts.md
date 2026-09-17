@@ -1100,7 +1100,16 @@ forced and never by prefix. Evidence replay keeps the inherited authorization, c
 binding and archival and runs each authorized argv in a fresh network-none, credential-free
 container of the same image over a fresh candidate copy; an unavailable container is a named replay
 failure, never a host replay, and the host lead is told to review read-only without running
-candidate code. This is worker/verifier isolation for trusted repositories: it does not contain the
+candidate code. Worker and verifier share one ownership rule (`hold`/`retire` over `OwnedContainer`
+and the same `run.json` record): exact run, name, label and id are durable at `start_requested`
+before anything starts; however the start/capture ends (return, cancel, deadline, observer failure,
+interruption) the exact container gets one stop-and-confirm whose Docker calls are bounded by the
+remaining cleanup window; an unconfirmed stop is `stop_unconfirmed` with its recovery reference and
+is never success; bounded observations (the verifier's replay output, the worker's result plus its
+whole redacted inner result file) are written outside the container before removal, and an
+observation that cannot be written keeps the stopped container and its unresolved record. An
+unresolved verifier record refuses the next replay and the next worker run of that workspace;
+`status` and `reconcile` cover both roots. This is worker/verifier isolation for trusted repositories: it does not contain the
 lead, restrict worker egress or protect against a host administrator.
 
 # SDD preparation contracts
