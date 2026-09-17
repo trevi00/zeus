@@ -2,7 +2,7 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "25b1fe9450cec6000b23f0c03e97085f29c10bf39d579dfe44c4c5314dc10e14",
+  "document_sha256": "ba0269ddf428f9f5faba870debc812fb709e88af5b6d182cc4239b5c1bb85bc1",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "5498b27724a68662053b2e2e8949392ca6ba880bc6d8b83e3a9ddfa38ee5f1c2",
   "character_limit": 6000,
@@ -87,6 +87,15 @@
       "pinned_sha256": "0cfbe5a026c2f2243be5ea9483ff01a4707b365c8f0a27312f1549758559452e",
       "scope": "Selected evidence-first review feedback principles rewritten for existing worker-v1",
       "disposition": "Adapt verification and reasoned disagreement; reject blanket stops, item-by-item loops, style bans and catchphrase; no upstream execution or behavior claim"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/qa-boundary.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "03d449e415d8ea5263cdc3685b8363e4421c4c7a",
+      "pinned_sha256": "7b75f38d2bc3ecbdcc5eb831451343252cf9df9f43a0fb72d7aec6f9dbd00a0e",
+      "scope": "Selected producer-consumer contract comparison principles rewritten for assigned integrations only; no upstream execution or behavior guarantee",
+      "disposition": "Adapt paired reads, authoritative shape/state/optional-field mapping and scoped evidence; reject global six-pattern gates, mandatory code generation, automatic loops and upstream incident claims"
     }
   ],
   "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."
