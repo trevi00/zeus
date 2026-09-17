@@ -364,3 +364,22 @@ capture proof propagation, lifecycle join, affected tests and report only. Keep 
 interpreter/profile unchanged. Run focused evidence/isolated/architecture tests and lint; owner/CI
 own broader checks. After these decisive checks pass, proceed to the actual operation; no further
 exploratory pass absent changed evidence or a material failed acceptance condition.
+
+## Actual acceptance attempt: authentication gate, 2026-09-17
+
+Correction-3 candidate69715d5 was independently accepted. Owner focused checks,
+real client cleanup probes and Windows/WSL Docker checks passed; build-004 binds
+the image to that candidate. Preserve these results. See RESULT.md and evidence.json.
+
+The actual operation isolated-worker-127-canary reached the container and its
+SessionStart hook, then the provider returned 401 Invalid bearer token before tools.
+The owner stopped without retry, preserved the inner result, and confirmed owned
+container cleanup. Storage and DPAPI decryption were proven; server acceptance was
+not. Do not reinterpret this as completed inference, replay or lead acceptance.
+
+User action requested: renew the setup-token credential locally, never in chat.
+The old attempt remains stopped and retained. Current machine ledger106/ceiling107
+leaves one start, not a worker/lead pair. A new pair requires an explicit bounded
+revision here after authentication renewal. No code redesign is inferred from401;
+the discriminating check is one new actual operation with a renewed credential.
+Until that check and final CI pass, retain draft PR128 and open issue127.

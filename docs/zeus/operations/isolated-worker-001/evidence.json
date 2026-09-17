@@ -1,0 +1,75 @@
+{
+  "schema": "urn:zeus:owner-evidence-index:1",
+  "runtime_commit": "69715d56311e50e6e4f0f737e06292c304483171",
+  "raw_root": "D:/workspaces/zeus/artifacts/isolated-worker-001",
+  "availability": "local raw evidence; hashes are not remote copies",
+  "actual_operation": "isolated-worker-127-canary",
+  "actual_outcome": "provider_401; no candidate/replay/lead acceptance",
+  "files": [
+    {
+      "path": "build-004/receipt.json",
+      "bytes": 818,
+      "sha256": "d35dd3549614e6add0e06fafa0be51f77f4c961e66a331ee0467ec40ac757304"
+    },
+    {
+      "path": "owner-focused-004.xml",
+      "bytes": 20114,
+      "sha256": "dfa3621f5e9a2c7a12d02f599c6d04932134402d05711d8c5dbebfc54a5b1998"
+    },
+    {
+      "path": "docker-wsl-004.xml",
+      "bytes": 19608,
+      "sha256": "f9ef3df3ad3a674a67a45d06c52aca8863be7c202504ebe7f15bb096ee67bc66"
+    },
+    {
+      "path": "verify-capture.result.json",
+      "bytes": 325,
+      "sha256": "ffa226ddccf10fe1ae90db163192ea6d240a7f4adb0fe5ac9d51417893bb9038"
+    },
+    {
+      "path": "cleanup-join-probe/result.json",
+      "bytes": 1087,
+      "sha256": "81cd07f8dbbf6e32e5d0cce7006ad1ec7d86ea27ff53a8561b9a8bfb7d1c43af"
+    },
+    {
+      "path": "correction-3/records.json",
+      "bytes": 56534,
+      "sha256": "d4e0feb7c0d1e8153bfbac0f6053f3c830c64e0311d2d81177e59506e3b4bc5f"
+    },
+    {
+      "path": "correction-3/worker-observations.json",
+      "bytes": 14317,
+      "sha256": "ed9547423c46005f7a58b0c0bfd045561c30fe4d24532b134a89e8e055ad0b34"
+    },
+    {
+      "path": "canary/receipt.json",
+      "bytes": 965,
+      "sha256": "9c1bcf36ff73382b4c6d91aaf21b0be25ac48555db7c9cededb16fa807ce7219"
+    },
+    {
+      "path": "canary/manifest.json",
+      "bytes": 1592,
+      "sha256": "79cbe4d48522ca42c0408c090a1e6d327d930cadc41513f27ddb892ba7742d77"
+    },
+    {
+      "path": "canary/records.json",
+      "bytes": 16622,
+      "sha256": "970188438c51ecdc1ac748bda219525468fedec79dec246cf0175d910cb0e8c2"
+    },
+    {
+      "path": "canary/stdout.json",
+      "bytes": 4567,
+      "sha256": "52e6ab05d86438fb206dbf851cbf2f5476cbfc44481b9bf673815763cfe00f6c"
+    },
+    {
+      "path": "canary/runtime/isolated-worker/runs/90ef9e8d4bdc430a9b145dd6415a9616/run.json",
+      "bytes": 8361,
+      "sha256": "29156006005f3dc885fd91dcab11125997bf6338ad41c5f5103ffcf533673c7f"
+    },
+    {
+      "path": "canary/runtime/isolated-worker/runs/90ef9e8d4bdc430a9b145dd6415a9616/inner_result.json",
+      "bytes": 25280,
+      "sha256": "0e4e309549a12e320edc25ad29a68669f3012b76adc66bc99fca4e82d90c40d8"
+    }
+  ]
+}
