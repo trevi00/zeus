@@ -3,8 +3,8 @@
   "runtime_commit": "69715d56311e50e6e4f0f737e06292c304483171",
   "raw_root": "D:/workspaces/zeus/artifacts/isolated-worker-001",
   "availability": "local raw evidence; hashes are not remote copies",
-  "actual_operation": "isolated-worker-127-canary",
-  "actual_outcome": "provider_401; no candidate/replay/lead acceptance",
+  "actual_operation": "isolated-worker-127-canary-3",
+  "actual_outcome": "accepted; actual worker, isolated replay, independent lead and cleanup",
   "files": [
     {
       "path": "build-004/receipt.json",
@@ -70,6 +70,81 @@
       "path": "canary/runtime/isolated-worker/runs/90ef9e8d4bdc430a9b145dd6415a9616/inner_result.json",
       "bytes": 25280,
       "sha256": "0e4e309549a12e320edc25ad29a68669f3012b76adc66bc99fca4e82d90c40d8"
+    },
+    {
+      "path": "canary-2/receipt.json",
+      "bytes": 967,
+      "sha256": "fc0961dad62cde5c56861090255a02c4ff00ed42423ae8b4ea830b3d762f6df0"
+    },
+    {
+      "path": "canary-2/records.json",
+      "bytes": 16642,
+      "sha256": "fe34d6b197c48fe67a5b73b5d6b95701736c8825a7e2cfe928a5d32432f0dc01"
+    },
+    {
+      "path": "canary-2/stdout.json",
+      "bytes": 4577,
+      "sha256": "406bb491c25fd4b7ba36ba5882c97562eaeb8555dc497906cd5af05359722784"
+    },
+    {
+      "path": "canary-3/receipt.json",
+      "bytes": 967,
+      "sha256": "3ff7bb72d464f89d5c15970d6c985974e070c082b6b4222e1f5e0b9759dfeccc"
+    },
+    {
+      "path": "canary-3/manifest.json",
+      "bytes": 1594,
+      "sha256": "e82c6343ee973a49b34fdeef172c39b9454d557f361cceef30cb7336e8986d9d"
+    },
+    {
+      "path": "canary-3/records.json",
+      "bytes": 47944,
+      "sha256": "1353cdad5add8c791f7bbeaa5b2f2ed2c93134c3c4e0560f5cd3f62e9b9ea16d"
+    },
+    {
+      "path": "canary-3/stdout.json",
+      "bytes": 5694,
+      "sha256": "de73407437964e058b5ccf7ce51eda9f7995f481fe8c95c59a7fbca729117ba7"
+    },
+    {
+      "path": "canary-3/worker-observations.json",
+      "bytes": 7010,
+      "sha256": "895331e50a8b8d158ed772fe2b3532260b105095a25a2eb2c1773237f659ca0d"
+    },
+    {
+      "path": "canary-3/owner-review-audit.json",
+      "bytes": 8903,
+      "sha256": "10b47f6dcdf52cbfeb6ee0ed4c3cb84719e81a1c67258d433fe3ab079ad68b39"
+    },
+    {
+      "path": "canary-3/runtime/isolated-worker/replays/e43a45a4e5b345ca81c3b541000e4ad2/run.json",
+      "bytes": 7435,
+      "sha256": "daa957f3f8f70d4775b6f697a28f2b87e3b7a5c5c187f28419f0b1395931b186"
+    },
+    {
+      "path": "canary-3/runtime/isolated-worker/replays/fd00112551684dfb97534398adaed331/run.json",
+      "bytes": 7435,
+      "sha256": "80a80a513f15280a60d8946212865880c783e23e120d216b713a3ee9a1a3d6e5"
+    },
+    {
+      "path": "canary-3/runtime/isolated-worker/runs/1ac1d54480a14df882be932ee9626fb7/run.json",
+      "bytes": 8291,
+      "sha256": "de0709b9c81fd8ec042386907bc136b5d86fb40bec8b15d75ed848dfd79e77c7"
+    },
+    {
+      "path": "canary-3/runtime/artifacts/5abb677741fab5a4d054d77377e67c9335b8dac0b6014020464c1c006d3c5afb.txt",
+      "bytes": 78943,
+      "sha256": "5abb677741fab5a4d054d77377e67c9335b8dac0b6014020464c1c006d3c5afb"
+    },
+    {
+      "path": "canary-3/runtime/artifacts/f0f00f0d6914b34fa419623f088191fe22cd647c28943ed5c7e11f8270e3cf19.txt",
+      "bytes": 341305,
+      "sha256": "f0f00f0d6914b34fa419623f088191fe22cd647c28943ed5c7e11f8270e3cf19"
+    },
+    {
+      "path": "canary-3/runtime/artifacts/f7a95846f9989422531b1a42854e109921647c9815de18b2eb70311db3fa48c4.txt",
+      "bytes": 271,
+      "sha256": "f7a95846f9989422531b1a42854e109921647c9815de18b2eb70311db3fa48c4"
     }
   ]
 }

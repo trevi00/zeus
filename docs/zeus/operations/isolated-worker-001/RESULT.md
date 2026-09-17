@@ -1,11 +1,37 @@
 # Isolated worker 001: owner acceptance record
 
-2026-09-17. Issue #127; draft PR #128. **Operating acceptance is incomplete.**
-The implementation and cleanup review are accepted at runtime commit
-`69715d56311e50e6e4f0f737e06292c304483171`; the real container call was rejected
-by the provider with `401 Invalid bearer token`. No candidate, test replay or
-lead acceptance was produced by that call. No automatic retry, merge or issue
-closure follows this record.
+2026-09-17. Issue #127; PR #128. **The bounded actual operating acceptance passed.**
+Operation `isolated-worker-127-canary-3` completed at14:50:56 UTC: actual Claude
+implementation, separate isolated replay and independent Codex acceptance. Owner
+accepts this delivery's fixed matrix. Merge/issue closure follow the final PR CI
+gate. Earlier401 attempts remain below as history, not the current blocker.
+
+## Final actual result
+
+- Runtime code69715d5; owner documentation head8a4eba7; unchanged build-004 image.
+- Worker task `ac16c8aa-4819-5181-bf03-1c0b929f13b1`; candidate
+  `e6e079c4f06f6853356e6cc4b4ddab90559ba76b`, only learning_progress.py changed.
+- Model actually executed in the worker container. Worker tests:4 passed.
+  Separate credential-free network-none replay ran the fixed four tests twice,
+  both4 passed/exit0; inspection31487397b16eebe9365fe04569fa7a68c1451cf06e5a994a69488397a6fc81b3
+  reports1/1 checked, no mismatch or replay failure.
+- Session `d61eb522-1ff0-40f8-9888-079e109078b3`; actual SessionStart1,
+  PostToolUse1 receipts; approved profile digest unchanged.
+- Independent lead decision `65620069-2b98-4a2b-8ba7-ccb2b30e6a77`: accepted.
+  Owner inspected all11 command events: Git/file/artifact reads and verdict output;
+  no candidate execution on host and no fileChange events. This is observed
+  behavior, not OS-enforced lead isolation.
+- Worker and two verifier run records are removed; owned-container inventory0.
+  Observation collection51 inserted, sink failures0, corrupt0, refused0.
+  Exact-token hits0 in scanned artifacts; secret was never placed in argv.
+- Ledger107->109: exactly one worker and one lead. No automatic retry. Prior two
+  authentication attempts and implementation correction rounds remain preserved.
+
+Raw evidence: `canary-3/`, including receipt, records, worker observations,
+owner-review-audit, lifecycle records and content-addressed execution/replay
+artifacts. The tracked evidence index binds these files. The success is for this
+small owner-authored acceptance task, not Code Tutor completion or continuous
+unattended production. No additional model call is needed for this delivery.
 
 ## Delivery and ownership
 
@@ -44,7 +70,7 @@ The source archive and build receipt bind it to runtime 69715d5.
 GitHub CI for that runtime is [run 35214818735](https://github.com/trevi00/zeus/actions/runs/35214818735);
 its final conclusion must be checked separately, not inferred from local tests.
 
-## Actual attempt and remaining gate
+## First actual attempt and then-remaining gate (historical)
 
 Operation `isolated-worker-127-canary`, task
 `a9614e6b-f30c-5984-a0a5-ecfdec2d49c1`, session

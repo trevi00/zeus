@@ -431,3 +431,15 @@ explicit ceiling109 reserves one worker/lead pair for isolated-worker-127-canary
 Use unchanged runtime69715d5/build-004 and the same four-test task. Local launcher
 checks format before schema/reservation. This confirms input shape only; actual
 provider acceptance remains the next check. No automatic retries or new scope.
+
+## Final owner acceptance
+
+Actual operation canary-3 accepted at2026-09-17T14:50:56Z. Fixed four tests passed
+in worker and twice in credential-free network-none replay. One approved-profile
+SessionStart and one PostToolUse receipt observed. Independent lead accepted;
+owner inspected all11 command events, no host candidate execution/file changes.
+All three owned containers removed; observation collection51/51, failures0;
+exact-token artifact scan0. Ledger109, no further model calls. RESULT.md and
+evidence.json bind the accepted outcome and retained failures. Implementation,
+cleanup and actual-loop conditions are met; final GitHub CI is the merge gate.
+No new exploratory review or scope expansion is required.
