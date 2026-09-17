@@ -152,3 +152,51 @@ included pending prior-run work even with a different Redis namespace. Revised l
 uses a new PG schema plus new Redis namespace together, resolving endpoints before setup.
 Do not drain/repair old failed operations as part of this delivery. Fresh-schema isolation
 is the discriminating check; no runtime change is added for these owner setup mistakes.
+
+## Consolidated candidate review and correction batch
+
+Candidate784e6f9: bootstrap worker succeeded, three legacy checks all_checked; independent
+Codex review rejected (artifact a9cf52257dcef36c45952a985db85c47dca4968dba684fd15ab086d05243d3c4).
+Owner's actual Code Tutor project-profile replay also all_checked (two real47-test executions).
+Keep these accepted paths. Three directly affected boundaries require one correction batch:
+
+R1 selected runtime enforcement: profile accepts `uv run python -m pytest` but replay_argv
+only substitutes `python -m`; uv reaches capture unchanged. The inspection records an
+interpreter it did not enforce. For this Python-only first profile version, REFUSE every
+profile argv form except `python -m pytest ...` and `python -m ruff check ...`, still intersect
+with packaged allowlist. Legacy unprofiled forms remain untouched. Document this deliberate
+version1 support boundary. Do not implement installers or new runtime adapters.
+
+R2 aggregate deadline: independent reviewer deterministic clock/capture probe reached
+all_checked at1.5s with a1s budget because every repeat gets the original remaining timeout.
+Pass one absolute monotonic deadline and recompute remaining before EVERY repeat; do not
+start another at/beyond deadline, late success cannot count as checked. Reuse existing
+capture/cleanup; cleanup overhead is not useful execution allowance. Test partial first
+success followed by budget exhaustion, remaining timeout shrinking, timely normal success.
+
+R3 complete worker delivery: packaged worker-profile-v1.md still categorically says do not
+substitute an absolute interpreter; ClaudeCodeRuntime.profile_environment still prepares
+Zeus Python/root src and its Bash rules only authorize legacy python commands. The new
+profile currently exists only in prompt details; its correct replay is not proof the worker
+can execute the host-selected command. Fix the actual Claude transport boundary and its
+instructions together. Supply per-run resolved host contexts to runtime, never derive grants
+from model output, and provide safely quoted exact runnable command(s) with the named cwd,
+interpreter and source environment. Add only narrowly scoped per-run permissions needed for
+these host-declared checks; no blanket Bash(*)/bypassPermissions/global settings. Keep the
+repository root as editing/review root; do not move Claude into backend as its workspace.
+Use standard shell quoting for generated command text; model-authored commands are never
+concatenated into shell. Prefer existing CLI settings/environment composition, not a new
+execution runner. One or multiple contexts must match their named check. Preserve all deny
+rules. Legacy profile path stays exact when project profile absent. Explicit host-profile
+instructions override only the legacy interpreter/command-output instructions. Include
+transport settings + instruction regression, not only fake AppServer prompt assertions.
+
+Primary docs opened2026-09-17 https://code.claude.com/docs/en/permissions: prompt instructions
+do not grant permission; per-run settings allow rules control it, with deny precedence and
+compound-command checks. This supports runtime wiring, not proof our installed CLI ran it.
+The final actual Claude canary decides this boundary, not a configuration-only claim.
+
+No other source changes requested. Full service suite already running on initial candidate;
+retain its result, then run relevant corrections/full required checks once on corrected head.
+Use one corrective Claude+review pair ceiling84, then reserved actual Code Tutor pair ceiling86.
+An unrelated issue does not extend this batch or silently weaken the completion conditions.
