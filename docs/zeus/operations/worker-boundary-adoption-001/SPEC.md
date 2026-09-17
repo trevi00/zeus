@@ -170,3 +170,12 @@ to fixed tests, source contract or functional criteria. Preserve first run and l
 this a corrected assignment, not a clean first attempt or causal effectiveness result.
 Current114, explicit final ceiling116 for one worker/lead pair. No further automatic
 extension or runtime investigation in this delivery if it fails again.
+
+## Final bounded acceptance
+
+Final canary accepted at ledger116. New digest and live hooks observed; both
+modules read; fixed4 tests passed and replayed; independent lead accepted; all
+three owned run receipts removed. RESULT.md and EVIDENCE.json bind outcomes and
+all unsuccessful attempts. Implementation and behavior acceptance are complete;
+final repository CI and owner merge/closure remain the only delivery gates.
+No new exploration or model calls are required.
