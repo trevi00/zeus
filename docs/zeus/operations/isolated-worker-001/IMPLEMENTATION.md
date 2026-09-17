@@ -140,3 +140,56 @@ Windows and WSL; `status` over both roots printing `[]`; then the actual model c
 Uncertain: whether `claude --version` needs a writable HOME during the uid-10001 build step (it has
 `/home/worker`); a second interrupt arriving inside `hold`'s finally leaves the record at
 `start_requested`, which is durable and unresolved but the container may still run.
+
+## Image and capture ownership reframe (SPEC final section)
+
+Disposition: improve the existing authorities (`evidence_inspection._capture`, `hold`,
+`Dockerfile.worker`); reuse `ProcessTree`; no new supervisor, retry or fallback. Files:
+`Dockerfile.worker`, `adapters/evidence_inspection.py`, `adapters/isolated_worker.py` (`hold` only),
+the three test files, `docs/contracts.md`, this report. `isolated_evidence.py`, `worker_profile.py`,
+profile bytes, host interpreter policy, permission grants, replay policy/authorization and default
+host mode are untouched. Rollback: revert this change; nothing persisted changes shape except the
+optional `cleanup`/`capture_cleanup` fields below.
+
+- **Image.** `python -m venv --copies --without-pip /opt/zeus` runs before `uv sync` (same
+  `UV_PROJECT_ENVIRONMENT`), and the same RUN fails if `/opt/zeus/bin/python` is a symlink or its
+  realpath leaves `/opt/zeus/bin` (guards against uv recreating a symlinked venv). As uid 10001,
+  after the retained Claude `2.1.274` check, one build step calls the real `verified_interpreter()`,
+  `profile_environment(child_environment()[0], '/workspace', interpreter)`, requires the interpreter
+  and the `python` found through THAT PATH to live in `/opt/zeus/bin`, and runs
+  `python -m pytest --version` and `python -m ruff --version` under exactly that environment with
+  `check=True`. No credential, network or model call. NOT built or run by this worker.
+- **Capture.** `_capture` spawns through `ProcessTree.spawn` (job object / process group, replacing
+  the private `CREATE_NEW_PROCESS_GROUP` + `taskkill`/`killpg`). One `_reclaim(tree, readers, reason)`
+  runs on every exit of the wait: `tree.terminate` (10s + 10s) -> one shared 5s reader join -> close
+  only streams whose reader finished (an unstarted reader owns nothing) -> `tree.close()`. Normal exit
+  first gives readers the former 5s to drain, then reclaims stragglers. `TimeoutExpired` keeps the
+  exact former failure text; any other `BaseException` is re-raised unchanged after `_reclaim`, with
+  the record on `exc.capture_cleanup`. Unconfirmed cleanup on a returned capture appends
+  `capture_cleanup_unconfirmed: ...` to `failure` (so `classify_replays` -> `replay_failed`) and the
+  run carries `cleanup`; `cleanup` is also present on timeout, absent on a clean normal run, so normal
+  stream receipts (sha256/bytes/truncated/decoding/raw) and classification are unchanged. A
+  `TreeOwnershipError` at spawn is a `spawn_error` failure. Errors inside `_reclaim` are recorded, not
+  raised, so `hold`'s container stop always follows.
+- **hold.** Reads `capture_cleanup` from the propagating exception, stores it in the stop record, and
+  treats unconfirmed client debt as not confirmed: `stop_unconfirmed` + recovery reference, container
+  still stopped, nothing retired. Confirmed -> `removed` with `result.stop.capture_cleanup`.
+- **Suite compatibility.** `test_staging_is_a_detached_export...` names the generated fixture file via
+  `stage.joinpath("src", "pkg", "mod.py")` outside the assert; the byte-copy assertion is kept, the
+  architecture guard is unchanged.
+
+Tests (real helper, real child `HOLDER` = python child + sleeping grandchild sharing the pipes; the
+interruption is INJECTED on the real returned process's first `wait`; a 60s watchdog is asserted
+never to fire): normal receipts; timeout -> tree confirmed, both streams closed, `started` kept;
+interruption -> original KeyboardInterrupt, cleanup confirmed, pipes at EOF and closed; INJECTED
+no-op terminate -> no close behind live readers, `replay_failed`; through `DockerEvidenceInspector`
+with the real `_capture`: container stop reached with the child already gone, record `removed`;
+INJECTED unreclaimed debt -> `stop_unconfirmed`, no `rm`. All local-child/FakeDocker evidence on
+Windows only; POSIX group path of these tests not run here. The old behaviour was not re-run in a
+disposable copy (the lead's preserved reproducer is the before-evidence); owner reruns it.
+
+Owner-only, not run here: image build + the repeated no-credential probes, `uv run pytest -q`/full
+suite (`tests/test_architecture.py` alone was run here and passed), the lead's real-capture reproducer, real Docker
+outer-cancellation check, canary. Uncertain: uv reusing the stdlib `--copies` venv (build guard fails
+loudly if not); copied interpreter locating libpython (owner's experiment passed); a worst-case
+teardown is bounded (~25s) but longer than the declared container cleanup window that follows it.

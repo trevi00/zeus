@@ -1109,7 +1109,14 @@ is never success; bounded observations (the verifier's replay output, the worker
 whole redacted inner result file) are written outside the container before removal, and an
 observation that cannot be written keeps the stopped container and its unresolved record. An
 unresolved verifier record refuses the next replay and the next worker run of that workspace;
-`status` and `reconcile` cover both roots. This is worker/verifier isolation for trusted repositories: it does not contain the
+`status` and `reconcile` cover both roots. The shared bounded capture owns its client as a
+`ProcessTree` and tears down in one order however the wait ends (exit, deadline, interruption, any
+exception): terminate the tree, bounded reader join, close only streams whose reader finished, then
+the original exception propagates carrying the cleanup record to `hold`; a stream a live reader owns
+is never closed, and an unreclaimed tree or reader is a named failure (returned capture) or a
+`stop_unconfirmed` record (interruption), never success. The image's `/opt/zeus` interpreter is a
+copy, not a symlink, and the build runs the profile-selected `python -m pytest`/`ruff` under the
+actual profile-derived environment and the pinned Claude version check, without a model call. This is worker/verifier isolation for trusted repositories: it does not contain the
 lead, restrict worker egress or protect against a host administrator.
 
 # SDD preparation contracts

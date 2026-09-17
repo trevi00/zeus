@@ -25,6 +25,7 @@ import threading
 import time
 from pathlib import Path
 
+from codex_harness.adapters.process_tree import ProcessTree, TreeOwnershipError
 from codex_harness.domain.evidence import (
     authorized,
     classify_replays,
@@ -34,6 +35,9 @@ from codex_harness.domain.evidence import (
 )
 from codex_harness.domain.model import ContractError, canonical, digest
 
+# Capture teardown bounds: each tree-termination phase, then the readers' one shared join window.
+CLEANUP_SECONDS = 10.0
+READER_JOIN_SECONDS = 5.0
 POLICY_FILE = Path(__file__).resolve().parents[1] / 'resources/evidence-policy.json'
 # PROGRAMDATA (Windows OpenSSH reads its host configuration under it; goal-progress-001 isolated an
 # ssh-keygen exit 255 to its absence) joins the allowlist under both spellings the host may carry,
@@ -84,14 +88,48 @@ def replay_argv(argv, interpreter):
     return list(argv), None
 
 
+def _reclaim(tree, readers, reason):
+    """Bounded teardown of one capture, in the only safe order: end the owned process TREE, then a
+    bounded join of the readers, then close only the streams whose reader has finished. A blocking
+    close is never attempted while a live reader owns the stream; what cannot be reclaimed is
+    reported as debt, never discarded. Returns the cleanup record; `confirmed` means nothing is left."""
+    record = {'reason': reason, 'tree': None, 'readers_alive': [], 'streams_closed': [], 'error': None}
+    try:
+        record['tree'] = tree.terminate(reason, timeout=CLEANUP_SECONDS, settle=CLEANUP_SECONDS)
+    except Exception as exc:  # the readers and the caller's own cleanup still get their turn
+        record['error'] = type(exc).__name__ + ': ' + str(exc)
+    deadline = time.monotonic() + READER_JOIN_SECONDS
+    for name, thread, stream in readers:
+        if thread.ident is not None:  # a reader that never started owns nothing
+            thread.join(timeout=max(0.0, deadline - time.monotonic()))
+        if thread.is_alive():
+            record['readers_alive'].append(name)
+            continue
+        try:
+            stream.close()
+            record['streams_closed'].append(name)
+        except OSError as exc:
+            record['error'] = record['error'] or type(exc).__name__ + ': ' + str(exc)
+    try:
+        tree.close()
+    except Exception as exc:
+        record['error'] = record['error'] or type(exc).__name__ + ': ' + str(exc)
+    record['confirmed'] = bool(record['tree'] and record['tree']['confirmed'] and not record['readers_alive']
+                               and record['error'] is None)
+    return record
+
+
 def _capture(argv, cwd, timeout, max_bytes, env):
-    """Run one bounded replay and return everything observed, including how it ended."""
+    """Run one bounded replay and return everything observed, including how it ended.
+
+    The client process is an owned `ProcessTree` from spawn. However the wait ends (exit, deadline,
+    KeyboardInterrupt, any exception) `_reclaim` runs once, bounded, before anything propagates; an
+    interruption is re-raised unchanged with the cleanup record on its `capture_cleanup` attribute,
+    so the outer owner (`hold`) still stops its container and knows what this capture left behind."""
     started = time.monotonic()
     try:
-        process = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE, env=env,
-                                   **({'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == 'nt'
-                                      else {'start_new_session': True}))
+        tree = ProcessTree.spawn(argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
     except FileNotFoundError as exc:
         return {'failure': 'executable_missing: ' + str(exc), 'returncode': None, 'duration_seconds': 0.0}
     except PermissionError as exc:
@@ -99,6 +137,10 @@ def _capture(argv, cwd, timeout, max_bytes, env):
     except OSError as exc:
         return {'failure': 'spawn_error: ' + type(exc).__name__ + ': ' + str(exc), 'returncode': None,
                 'duration_seconds': 0.0}
+    except TreeOwnershipError as exc:  # no owned boundary, no replay; a leak carries its own detail
+        return {'failure': 'spawn_error: ' + type(exc).__name__ + ': ' + str(exc), 'returncode': None,
+                'duration_seconds': 0.0, **({'cleanup': exc.detail} if hasattr(exc, 'detail') else {})}
+    process = tree.process
     captured = [b'', b'']
     truncated = [False, False]
 
@@ -109,26 +151,28 @@ def _capture(argv, cwd, timeout, max_bytes, env):
                 captured[index] += block[:room]
             if len(block) > room:
                 truncated[index] = True
-    readers = [threading.Thread(target=drain, args=(stream, i), daemon=True)
-               for i, stream in enumerate((process.stdout, process.stderr))]
-    for thread in readers:
-        thread.start()
-    terminated, failure = False, None
+    readers = [(name, threading.Thread(target=drain, args=(stream, i), daemon=True), stream)
+               for i, (name, stream) in enumerate((('stdout', process.stdout), ('stderr', process.stderr)))]
+    terminated, failure, reason = False, None, 'exited'
     try:
+        for _, thread, _ in readers:
+            thread.start()
         process.wait(timeout=timeout)
+        deadline = time.monotonic() + READER_JOIN_SECONDS  # an exited child's output, as before
+        for _, thread, _ in readers:
+            thread.join(timeout=max(0.0, deadline - time.monotonic()))
     except subprocess.TimeoutExpired:
-        terminated, failure = True, f'timeout after {timeout}s; process tree terminated'
-        if os.name == 'nt':
-            subprocess.run(['taskkill', '/PID', str(process.pid), '/T', '/F'], capture_output=True, timeout=20)
-        else:
-            import signal
-            os.killpg(process.pid, signal.SIGKILL)
-        process.wait(timeout=20)
-    finally:
-        for thread in readers:
-            thread.join(timeout=5)
-        for stream in (process.stdout, process.stderr):
-            stream.close()
+        terminated, failure, reason = True, f'timeout after {timeout}s; process tree terminated', 'timeout'
+    except BaseException as exc:
+        # Cancellation or an unexpected failure: bounded cleanup first, then the ORIGINAL exception.
+        exc.capture_cleanup = _reclaim(tree, readers, type(exc).__name__)
+        raise
+    cleanup = _reclaim(tree, readers, reason)
+    if not cleanup['confirmed']:
+        # Partial capture is never a success: the debt is named and travels with the run.
+        failure = (failure + '; ' if failure else '') + 'capture_cleanup_unconfirmed: ' + (
+            'readers still own ' + ','.join(cleanup['readers_alive']) if cleanup['readers_alive']
+            else cleanup['error'] or 'process tree not proven gone')
     streams = {}
     for name, raw, cut in (('stdout', captured[0], truncated[0]), ('stderr', captured[1], truncated[1])):
         try:
@@ -139,7 +183,8 @@ def _capture(argv, cwd, timeout, max_bytes, env):
         streams[name] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'truncated': cut,
                          'decoding': decoding, 'raw': raw.decode('latin-1')}
     return {'failure': failure, 'terminated': terminated, 'returncode': process.returncode,
-            'duration_seconds': round(time.monotonic() - started, 3), **streams}
+            'duration_seconds': round(time.monotonic() - started, 3), **streams,
+            **({'cleanup': cleanup} if terminated or not cleanup['confirmed'] else {})}
 
 
 class EvidenceInspector:

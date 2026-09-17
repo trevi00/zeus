@@ -1,10 +1,15 @@
 """INV-ISOLATED-WORKER-001 replay backend. The Docker client and the attached capture are INJECTED
-fakes; no container, model or live service runs here, and nothing below is a real-container result."""
+fakes (one labelled test runs the REAL capture over a real local child instead of a docker client);
+no container, model or live service runs here, and nothing below is a real-container result."""
 import json
+import sys
+import time
 
 import pytest
+from test_evidence_inspection import HOLDER, WATCHDOG_SECONDS, interrupt_first_wait
 from test_isolated_worker import IMAGE, TOKEN, FakeDocker
 
+from codex_harness.adapters import evidence_inspection as ei
 from codex_harness.adapters import isolated_evidence as ie
 from codex_harness.adapters import isolated_worker as iw
 
@@ -118,6 +123,54 @@ def test_injected_interruption_with_unconfirmed_stop_leaves_a_durable_recovery_r
     assert len([c for c in fake.calls if c["args"][0] == "create"]) == created
     del fake.containers[seen[0]["id"]]  # the owner removed the exact container
     assert iw.reconcile(inspector.root / saved["run_id"])["reconciled"] and iw.unresolved_runs(inspector.root) == []
+
+
+def test_real_capture_interrupted_in_wait_reaches_the_container_stop_before_the_watchdog(setup, monkeypatch):
+    """The REAL `_capture` and a REAL sleeping child tree stand where the attached docker client would;
+    the only injection is KeyboardInterrupt from the real process's first wait (and the fake daemon)."""
+    inspector, fake, _, workspace = setup
+    monkeypatch.setattr(ie, "_capture", ei._capture)  # undo the fixture's replacement: the real helper
+    spawned, fired, stops = [], [], []
+
+    def client(argv):  # the local child in place of `docker start --attach <id>`
+        fake.containers[argv[-1]]["status"] = "running"
+        return [sys.executable, "-c", HOLDER]
+    interrupt_first_wait(monkeypatch, spawned, fired, replace=client)
+    stop = iw.OwnedContainer.stop
+
+    def timed_stop(self, seconds):
+        stops.append({"at": time.monotonic(), "child_gone": spawned[0][0].process.poll() is not None})
+        return stop(self, seconds)
+    monkeypatch.setattr(iw.OwnedContainer, "stop", timed_stop)
+    started = time.monotonic()
+    with pytest.raises(KeyboardInterrupt):
+        inspect(inspector, workspace, ["python -m pytest -q"])
+    (tree, watchdog), = spawned
+    watchdog.cancel()
+    assert fired == [] and len(stops) == 1 and stops[0]["at"] - started < WATCHDOG_SECONDS / 2
+    assert stops[0]["child_gone"] and tree.process.stdout.closed and tree.process.stderr.closed
+    saved = iw.run_records(inspector.root)
+    assert len(saved) == 1 and saved[0]["state"] == "removed" and saved[0]["result"]["interrupted"] == "KeyboardInterrupt"
+    assert saved[0]["result"]["stop"]["capture_cleanup"]["confirmed"] and saved[0]["result"]["stop"]["confirmed"]
+    assert list(fake.containers) == ["f" * 64] and iw.unresolved_runs(inspector.root) == []
+
+
+def test_interruption_with_unreclaimed_capture_debt_is_retained_not_retired(setup, monkeypatch):
+    inspector, fake, _, workspace = setup
+    debt = {"reason": "KeyboardInterrupt", "confirmed": False, "readers_alive": ["stdout"], "injected": True}
+
+    def capture(argv, cwd, timeout, max_bytes, env):  # INJECTED: the capture could not reclaim its client
+        fake.containers[argv[-1]]["status"] = "running"
+        error = KeyboardInterrupt()
+        error.capture_cleanup = debt
+        raise error
+    monkeypatch.setattr(ie, "_capture", capture)
+    with pytest.raises(KeyboardInterrupt):
+        inspect(inspector, workspace, ["python -m pytest -q"])
+    saved = iw.run_records(inspector.root)[0]
+    assert saved["state"] == "stop_unconfirmed" and saved["lifecycle"][-1]["stop"]["capture_cleanup"] == debt
+    assert any(c["args"][0] == "kill" for c in fake.calls) and not any(c["args"][0] == "rm" for c in fake.calls)
+    assert len(iw.unresolved_runs(inspector.root)) == 1
 
 
 def test_unconfirmed_stop_after_a_returned_capture_is_never_a_checked_replay(setup):

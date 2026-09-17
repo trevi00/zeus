@@ -242,7 +242,8 @@ def test_symlink_entry_in_the_pinned_tree_refuses_before_materializing(candidate
 def test_staging_is_a_detached_export_with_a_standalone_repository(candidate, tmp_path):
     stage = tmp_path / "stage"
     source = iw.stage_source(candidate, git(candidate, "rev-parse", "HEAD"), stage)
-    assert source["files"] == 3 and (stage / "src/pkg/mod.py").read_bytes() == b"X = 1\n" and not (stage / ".git").exists()
+    generated = stage.joinpath("src", "pkg", "mod.py")  # the `candidate` fixture's generated file, never production source
+    assert source["files"] == 3 and generated.read_bytes() == b"X = 1\n" and not (stage / ".git").exists()
     iw.init_standalone_git(stage)
     assert (stage / ".git").is_dir() and git(stage, "remote") == "" and git(stage, "status", "--porcelain") == ""
     assert iw.plan_import(source["manifest"], stage)["added"] == []  # the staged .git is never an output

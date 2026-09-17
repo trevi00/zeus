@@ -21,7 +21,14 @@ WORKDIR /build
 COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
 ENV UV_PROJECT_ENVIRONMENT=/opt/zeus
-RUN uv sync --frozen --no-editable && rm -rf /build /root/.cache
+# The venv interpreter is a COPY, never a symlink: the worker profile resolves its interpreter
+# (Path.resolve) and puts that directory first on PATH, and a symlinked venv python resolves out to
+# /usr/local/bin, where neither pytest nor ruff exists (measured). uv sync reuses this venv; the
+# build fails if it was replaced by a symlinked one.
+RUN python -m venv --copies --without-pip /opt/zeus \
+    && uv sync --frozen --no-editable && rm -rf /build /root/.cache \
+    && test ! -L /opt/zeus/bin/python \
+    && test "$(/opt/zeus/bin/python -I -c 'import os, sys; print(os.path.realpath(sys.executable))')" = /opt/zeus/bin/python
 RUN useradd --uid 10001 --create-home --home-dir /home/worker worker && mkdir -p /workspace /evidence
 ENV PATH="/opt/zeus/bin:$PATH" \
     DISABLE_AUTOUPDATER=1 \
@@ -31,4 +38,9 @@ USER 10001:10001
 WORKDIR /
 # Again as the unprivileged runtime user, through PATH, exactly as the inner runtime resolves it.
 RUN claude --version | grep -F "2.1.274"
+# The ACTUAL worker profile selection, not merely /opt/zeus/bin/python -m: the interpreter the profile
+# verifies, the environment it derives from the allow-listed child environment, `python` found through
+# that PATH, then the profile-selected pytest and ruff under exactly that environment. No credential,
+# no network and no model call is involved.
+RUN /opt/zeus/bin/python -I -c "import shutil, subprocess; from pathlib import Path; from codex_harness.adapters.claude_cli import child_environment; from codex_harness.adapters.worker_profile import profile_environment, verified_interpreter; interpreter = verified_interpreter(); assert interpreter.parent == Path('/opt/zeus/bin'), interpreter; env = profile_environment(child_environment()[0], '/workspace', interpreter)[0]; python = shutil.which('python', path=env['PATH']); assert python is not None and Path(python).resolve().parent == Path('/opt/zeus/bin'), python; [subprocess.run([python, '-m', tool, '--version'], env=env, cwd='/workspace', check=True) for tool in ('pytest', 'ruff')]"
 ENTRYPOINT ["/opt/zeus/bin/python", "-I", "-m", "codex_harness.adapters.isolated_worker_entry"]

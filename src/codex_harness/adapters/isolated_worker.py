@@ -520,15 +520,21 @@ def hold(container, record: dict, body, *, client=None, detail=None):
     except IsolationError:
         container.remove()  # never started and no durable owner: exact id, not forced
         raise
-    value, interrupted = None, None
+    value, interrupted, capture = None, None, None
     try:
         value = body()
     except BaseException as exc:
         interrupted = type(exc).__name__
+        # A body that reclaimed its own client tree before propagating says what it left (the shared
+        # bounded capture does); unreclaimed client debt is never a confirmed stop.
+        capture = getattr(exc, "capture_cleanup", None)
         raise
     finally:
         stopped = container.stop(container.config["limits"]["cleanup_seconds"])
         ended = client() if client is not None else {"confirmed": True}
+        if isinstance(capture, dict):
+            stopped = {**stopped, "capture_cleanup": capture}
+            ended = {**ended, "confirmed": bool(ended.get("confirmed") and capture.get("confirmed"))}
         stopped = {**stopped, "confirmed": bool(stopped["confirmed"] and ended.get("confirmed")),
                    "client_confirmed": bool(ended.get("confirmed"))}
         if not stopped["confirmed"]:
