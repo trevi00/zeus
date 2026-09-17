@@ -1,0 +1,664 @@
+{
+  "date": "2026-09-17",
+  "base": "f331c4a6aaeedc584b66bd03d476d90166f61b7a",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\java-typescript-decision-001",
+  "shared_remote_evidence": false,
+  "primary_count": 38,
+  "primary_bytes": 365311,
+  "source_execution_count": 0,
+  "new_model_calls": 0,
+  "coverage_changed": false,
+  "inputs": [
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial-prompt.txt",
+      "bytes": 1688,
+      "sha256": "ba2da09c909f0c7569241285d24516aa3e64798496ea772e8d9f6d986d932526"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial-receipt.json",
+      "bytes": 4202,
+      "sha256": "2b22b1cf5fd6f715ca124fe279121b50d33397347f2aa4e3a763a83e4d4b4869"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.json",
+      "bytes": 38666,
+      "sha256": "d7bd59311f99bc2f49b923214d529046f752db0f706bc0cac82c7971d813dc53"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.md",
+      "bytes": 36275,
+      "sha256": "cf0f238b8ac3222d90e8d4173f2bb3049e5f4a7864ff0deee54277c8f95a6817"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/claude-initial.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/root-initial.md",
+      "bytes": 3991,
+      "sha256": "3a16989bba42a1218dd105eb6db68e6f810abae58d27d770e65901dca18bf1b5"
+    },
+    {
+      "path": "docs/full-analysis/java-typescript-joint-001/scope.json",
+      "bytes": 11438,
+      "sha256": "de789e4d48204c3d21eb194a672517fdbcae05658d6f4b9ff9a6714308940e83"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/artifact-hashes.json",
+      "bytes": 2666,
+      "sha256": "8c86fe0b69850ee44be082aa6081b3aceebd8c5af979b9009c1df3b9a1049fec"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/checkpoint.json",
+      "bytes": 1232,
+      "sha256": "df869d84be97b7e5994964088bb6a01e7fdde3a1bf1f33807553aae8fd897795"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/file-reviews.md",
+      "bytes": 18787,
+      "sha256": "fd37ccad949d82d5ccd23e0295ce4819f6d6a836eda95f624c7475127f4e805d"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/files.json",
+      "bytes": 85844,
+      "sha256": "370ab7e032137db046a35366e53d8c48c2ec788c210d73f40ed2183c21d5934a"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prepare.py",
+      "bytes": 2255,
+      "sha256": "a081d12e622b038de2e90918122a3771a753461ad144ca6bcc94563883c91bd0"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prior-path-ledger.json",
+      "bytes": 8614,
+      "sha256": "5e7eae1e7d3e95704fdfb20edc0705fa4829cb213b5b4748a59fcc49d3a8b57f"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/prior-support-status.json",
+      "bytes": 5946,
+      "sha256": "009afc14955aeb3946454d4d97c8231849321e7ab5593dfd25ac49af18cf8dfa"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/read-receipts.json",
+      "bytes": 4349,
+      "sha256": "b76d53a823a92ba12d7e3a6deaed2dbfc1ff8b699c6e18368b7225eb7d7840c4"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/record_review.py",
+      "bytes": 11997,
+      "sha256": "f13fc1369d2050736a8c70de09b16def9cd6d2280364ccdd67406c14ea3f5eae"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/remaining.json",
+      "bytes": 459,
+      "sha256": "1af8a982bd0a014019e3aaba848cf2f013af221be159fbf1a5d3e9ecae0076ec"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/review.md",
+      "bytes": 1636,
+      "sha256": "6eb9ba2169052bbd0a29c3862070a9c4fd30203f80edc646c8eb1667b4ad7529"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/scope.json",
+      "bytes": 2612,
+      "sha256": "03281690f3041c8ffdc8481ae245d4529ea188f8c51a506d232e6e5db7bc3c47"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/supporting-evidence.json",
+      "bytes": 14688,
+      "sha256": "98909f40ddad09154a24065bcfb090aa46d8966944afd460ce9b0805a5557c5f"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/supporting-review.md",
+      "bytes": 4185,
+      "sha256": "c990b7fe477c9e1bd4f25cb32c53979080bd66009f8f86f490109682cf773176"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/unavailable-support.json",
+      "bytes": 436,
+      "sha256": "cecc8952edcdeff4482fe39a5570b48cd5d70aa057f73b0faca3e9176d161d9e"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-java-001/validation.json",
+      "bytes": 521,
+      "sha256": "d95f6e3e95509802cec0e7a4477fc13d84a968f6b42c93e0a71c48def51c2653"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/checkpoint.json",
+      "bytes": 2230,
+      "sha256": "bdfa067af747c03101d309d5fdc9b5697f23fa33edbbb438e76e13fe122e58f8"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/files.json",
+      "bytes": 73943,
+      "sha256": "c60f63800954811f75e23e0d0c9e5a78fa4a6a6a39f5446072fa3643fc49c197"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/record-validation.json",
+      "bytes": 1069,
+      "sha256": "b647e3b55382b66ddeae4f1a2bc28284e6282082179561efb9c51f960b35847e"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/record_review.py",
+      "bytes": 12149,
+      "sha256": "07721830a50e40dfecfceacaff1b4152a292e30623d683ca679f73e1410336db"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/remaining.json",
+      "bytes": 1264,
+      "sha256": "952937c86e07933d0d78df405f0d5eaeb6ef1037cd8b0be4637da173c21fa139"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/review.md",
+      "bytes": 22163,
+      "sha256": "6eff5649e6321bbed02a31ae174e511a30c710f7c16b48da011c3792b5e5f9f3"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/supporting-evidence.json",
+      "bytes": 35418,
+      "sha256": "87947f21baf3d20ada44b0addcf11604d2a89b6f1d652286039741199fffc88f"
+    },
+    {
+      "path": "docs/full-analysis/baldrix-typescript-001/verification.json",
+      "bytes": 1618,
+      "sha256": "e465d32e64b338cacfa62927d68847078972744a69d634cee8bf6f3dc63b7072"
+    }
+  ],
+  "sources": [
+    {
+      "source": "baldrix",
+      "path": "skills/java/ecommerce/phase-expansion.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "84ec60f001ca55d5f906e212845d9cd0957c7b59",
+      "pinned_sha256": "ed1534ee2ca7965a0fb570eae9c149b551bd690889931edb984070f48f875f11",
+      "bytes": 5940,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-01",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/gradle-nebula-multi-project.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "8e1771e9c0d429e5cdddd819530223f8d65069c8",
+      "pinned_sha256": "bed95f54a1cdfad93fe6286d22a3235bc84d0ffcb4f4a46d253a2c990d824ca9",
+      "bytes": 6037,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-02",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/grpc-service-contracts.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "f3165f0afe5b70fef0eb2cd865512ba7967f3842",
+      "pinned_sha256": "2c231dd0d5ceea82e5c7e620542a016023b68d0d77629d590808480f120891ef",
+      "bytes": 6601,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-03",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/jvm-runtime-diagnostics.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "4d4b26aec522be90354f956958a0fb5f0118d9eb",
+      "pinned_sha256": "43f774d508b2a769299586f8f8caa8a07466f4c31db2ec3fe6cb3c526050e482",
+      "bytes": 3031,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-04",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/pattern-switch-records.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "93591fe040a26112fb2a76eb4dc68ad6032bd93f",
+      "pinned_sha256": "972615189bef677ee91c4d8ede42ada961e05b24c645344dc21a7d92e309f360",
+      "bytes": 3213,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-05",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/preview-feature-governance.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "2d46e8982406fcfabd37bbbe18e6745af2e17c6f",
+      "pinned_sha256": "743bdf441b55246338f122f31b29bdeb9ffbcfa5ceec1da6a0be70cbba533d41",
+      "bytes": 3531,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-06",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/testcontainers-junit-integration.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a800cafb2f644d7561094fef014bd7ec8e2edded",
+      "pinned_sha256": "759671d96b0c50d74413d3e19c5285899665736c4a0acd1b993d65d9f1629cd8",
+      "bytes": 6272,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-07",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/toolchain-boundaries.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "7970d4fdcdfd2b306c768ecff80a9bbf78c0a6e8",
+      "pinned_sha256": "d48c3a25e749235f70487c5f29188e661e7b7f8ec9f213e1700c91d69bed9839",
+      "bytes": 3409,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-08",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/lang/virtual-threads.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "8c1acc167ec5a934dedf196b34ae8766f5fa4651",
+      "pinned_sha256": "b0001995c73ad078ce015f979ceedc90fb8daa90e5befb43212c3171f45d124b",
+      "bytes": 3489,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-09",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/outpos/backend.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "59e2b7393d9da23a38eba51637b2a9e99da44abb",
+      "pinned_sha256": "6a2adc665e4ee419fbfb9530d4662c755a71a019aa299334ef4b14b0e4fbbe89",
+      "bytes": 34725,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-10",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/outpos/batch.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "28e7fa27d69247df1a86d0936a1694d2ca4575c8",
+      "pinned_sha256": "571c2a7697e036f175c54e262668dd6f4d738b700abb8c6904148c058243298b",
+      "bytes": 6867,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-11",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/outpos/grpc.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "db290fe48659e08501a9a3596dce3b900a69e205",
+      "pinned_sha256": "e9332da6db6a75cfcab3cd66dec32a777e45ed6bbb5ce8ddfa148579a79f8499",
+      "bytes": 16865,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-12",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/outpos/microservice.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "fbba1997af9f71e698653a52cadbd890b4b37b91",
+      "pinned_sha256": "810aad4732c5cfe911424d734acfc802de8b8e7ad1061026ed6086c3173a41d7",
+      "bytes": 11593,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-13",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/outpos/mybatis.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "9bf185ca43739b70ddfb8e6082332fc2fd0063c9",
+      "pinned_sha256": "d34c61ab1946bd8b878aebaca62b6699565bca6ba9f1ddb29f330c8792cb3adf",
+      "bytes": 14375,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-14",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/outpos/scaffolding.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "bd04069713a27e643e928cc9984b9a1dbdbcb384",
+      "pinned_sha256": "91b16ae8a9a591fdfeba9b5c05de74da0bf029a6d105f1f6092a7e64e9b38de6",
+      "bytes": 23885,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-15",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/springboot-3.2/auth-jwt-oauth.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "28f782c825d6b12c0dc3babab9ae41f189d8d9cb",
+      "pinned_sha256": "02e548dfdb6cc569ef860fdecf7aa3b4752703493706119ff29a25338cdd83c2",
+      "bytes": 15987,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-16",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/springboot-3.2/build-loop.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "445442878d7461f3084d8effed00836c54c41c91",
+      "pinned_sha256": "020bfbeccc6548c5b5698a0d002b12d98ccd4c6f41a40d287eea408b8d85f82e",
+      "bytes": 10276,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-17",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/springboot-3.2/database.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "1605e6ac3134203fc6e1d998958cf3d351940345",
+      "pinned_sha256": "5ea6642c078e4b52798480db05b143914bd5b24bb80f61bee3d3f6d06a9438cc",
+      "bytes": 10058,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-18",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/java/springboot-3.2/jpa-enum-three-layer.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "79212dc377bcffef68c89dd1425493cc69de6638",
+      "pinned_sha256": "5393966f6f72b9aecde002103cdcef9002bef3d398902c772f2d7b393159209c",
+      "bytes": 7060,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-java-001/file-reviews.md#file-19",
+      "historical_read_extent": "full"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/5.x/advanced-type-patterns.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "360a185cc9d4ae8e6a1ca3b991b198f4d8f117f9",
+      "pinned_sha256": "edb05b6e96c6ba40c891a96484604119578ee753c8c7e7479beaad4366c45392",
+      "bytes": 9535,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i01",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/5.x/config-drift-and-upgrades.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "b21ec9e841e02aeb702773535e304f07820660cd",
+      "pinned_sha256": "04f88e00cb8510585b17392700b14db62c01ca6f741e7b36e1d8b5321b689846",
+      "bytes": 9106,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i02",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/5.x/frontend.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "90910dbfd50556023ba708d03a1d5246bfe963c9",
+      "pinned_sha256": "eaf60e52bc168459a82a542768fbf11bb7b622cd698cc9cbd7b958bbbbdb1a46",
+      "bytes": 10928,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i03",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/5.x/strict-config-and-runtime-contracts.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "3cd843cd68e6cb7d49a35ad79b0e6e77523392ad",
+      "pinned_sha256": "ebc0372d2f4ea9b3b2b2f4ae04d94a28d90cb5e8afe6208732c03df705d80fc1",
+      "bytes": 6692,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i04",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/nextjs/app-router-and-rendering.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "2a77b74a67b02b8d002e3be8010d746998fa33bb",
+      "pinned_sha256": "9886571a62c78f457b5aa486bcdb0241e13aff7a5017c6fbac94d815ffbf0e31",
+      "bytes": 7938,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i05",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/nextjs/auth-runtime-and-secrets.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a8abd1825d2050b10832504c0251e8429407be3e",
+      "pinned_sha256": "77a3bfc349ea1ca109409e0e2ce8fff88a0331b2afd777be2b687f4a1a58c73d",
+      "bytes": 11092,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i06",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/nextjs/cache-data-and-route-boundaries.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "530a4c4bc17f715e40118949e6991b7f14132956",
+      "pinned_sha256": "bfc74d79f136b29089381d4ce9b9d4ffe47f91d13892816c5376fd6207d4d208",
+      "bytes": 8620,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i07",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/nuxt/plugins-runtime-config-and-secrets.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "0187f5d3de542cdd09cdb992fe96b2d7b16faf1f",
+      "pinned_sha256": "0d679391e184d0ea077473db07d742a36db4f75b28f687db4dbca3483103c988",
+      "bytes": 8642,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i08",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/nuxt/route-data-and-route-rules.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "f42dd725d6d01047e6711b19f7aa600afbf19c04",
+      "pinned_sha256": "dbe81c99bcfe5068a91d4b65a86fe3d22f52f86695afcc05ac1e32f160e7ff7f",
+      "bytes": 7627,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i09",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/nuxt/server-client-boundaries.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "7093548b2a1305eccaac5506ef326c8ba6c17d10",
+      "pinned_sha256": "e2e5dbb0e34da07663b39602bfeb9beb51e97861252145727901001a1b6cdb1e",
+      "bytes": 8907,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i10",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/react/fsd.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "c0ee2b138851b886fe65d1157e573b2360be1e6f",
+      "pinned_sha256": "6dee885c74465f84b8c66eef45d00d28ec4051dd436e3b9fa98d0da84fd25e39",
+      "bytes": 9577,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i11",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/react/patterns.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "7f1f997779f6f6e026a3c76ca92922e672d6064f",
+      "pinned_sha256": "8c81ac2c4f7220783f4d7810bdee091831d7a5027c4e2294d25e97d80d3cf521",
+      "bytes": 17435,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i12",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/react/react-19-actions-and-optimistic-ui.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "3aa9855cd96cf2473bee3a488948022fd422429b",
+      "pinned_sha256": "3554d3a0ce66c6544bf46a02a3d330680937082b4733bbc649e3ade0e5cf5b50",
+      "bytes": 9192,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i13",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/react/setup.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "e09d8a40bc663877a74c0783e19d50843ec8ba95",
+      "pinned_sha256": "11115eb79d4926272358de6d4700bea4a275ec9ef4080343013ee417de94a2bf",
+      "bytes": 5966,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i14",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/react/testing.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "94b7e46c181dd57f1a651f2f079c6c8dcc69382e",
+      "pinned_sha256": "ff466e77e45e02530979bce24fab9234e1cf30f2b510444c8d72ef8deb4f8be8",
+      "bytes": 8082,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i15",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/react/ui-design.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "3fd992afa85ac340ce77c472922e314821814f93",
+      "pinned_sha256": "5306f08196333c80d7ff316c294c39d7de0f6a3a021ef54aa46284d3351f292c",
+      "bytes": 7396,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i16",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/react/version-selection.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "74579221e2cdb86fe4f25286b9d782cc1fd1d6ac",
+      "pinned_sha256": "b89a020c6a13301ce6efb37bbccd15083166ec5b4725d0d35285c11607a6b9b0",
+      "bytes": 7012,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i17",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/vue/component-contracts-and-testing.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "a4c707dfe2f84ead013d68dc985a23bace737d00",
+      "pinned_sha256": "1096a9d4d177e603d4275916ead0fcc34e58a68168a20af34ec3699f1535ed9e",
+      "bytes": 10519,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i18",
+      "historical_read_extent": "full_body"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/typescript/vue/composables-and-reactivity.md",
+      "revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "git_blob": "0a4fb865b9025ec7526932a98a6fa77234d8de02",
+      "pinned_sha256": "39f2c5c53e9c56179f44a18f7b560a8b5247ad3eea9b44e80000e486f590a286",
+      "bytes": 7831,
+      "identity_verified": true,
+      "body_review_basis": "reused historical record; no new full-body pass",
+      "review_ref": "docs/full-analysis/baldrix-typescript-001/review.md#i19",
+      "historical_read_extent": "full_body"
+    }
+  ],
+  "supporting_identity": [
+    {
+      "path": "scripts/lib/tech_stack.py",
+      "sha256": "c990d4309891ad56d41d3c4b44b3eca0909a0d38a38dd63737e40d7b4a9d3c7f",
+      "read_extent": "targeted ranges only; not full consumer closure"
+    },
+    {
+      "path": "scripts/handlers/prompt/skill_match.py",
+      "sha256": "f8ea3e0bebf20246eed5104382c8205b02f30194b8e5c9f1ea66fc9a9b2c6971",
+      "read_extent": "targeted ranges only; not full consumer closure"
+    },
+    {
+      "path": "scripts/lib/skill_token_budget.py",
+      "sha256": "b2fdc976251444ed2207f1fea6f2896efd2f96d1816652864dd77d624f5e874f",
+      "read_extent": "targeted ranges only; not full consumer closure"
+    },
+    {
+      "path": "scripts/validators/skill_quality_axes.py",
+      "sha256": "2f42d2a0f5f484c2d766fd7f6b80e7921909103834836ba75f407d319ca18283",
+      "read_extent": "targeted ranges only; not full consumer closure"
+    },
+    {
+      "path": "scripts/validators/skill_frontmatter.py",
+      "sha256": "ad8049b9e6b261d8ae9f291c5ad3e4255560378d92b6da682c703292ba5026c2",
+      "read_extent": "targeted ranges only; not full consumer closure"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "b6fa9579c707a4858812b5cc83f3e69a176e4cab4ead6aa5aca2256a32fd13dd",
+      "read_extent": "targeted ranges only; not full consumer closure"
+    }
+  ],
+  "selection_sha256": "19095b1c01a772e4f2c80d5ed73ae4d7390bd1f0ef0e6d0986c3b477252c9a73",
+  "verification_notes": [
+    "First metadata report stdout failed cp949 encoding after identity checks; rerun with Python -X utf8 succeeded.",
+    "No upstream source was imported or executed. Hashing is identity verification, not semantic review.",
+    "Historical Claude receipt is preserved as input; no fresh Claude agreement is claimed."
+  ]
+}

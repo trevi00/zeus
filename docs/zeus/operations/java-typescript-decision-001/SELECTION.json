@@ -1,0 +1,315 @@
+{
+  "date": "2026-09-17",
+  "owner": "Codex",
+  "basis": "Historical body records plus targeted current adjudication; not a fresh full-body review",
+  "counts": {
+    "adapt": 24,
+    "hold": 14
+  },
+  "files": [
+    {
+      "path": "skills/java/ecommerce/phase-expansion.md",
+      "sha256": "ed1534ee2ca7965a0fb570eae9c149b551bd690889931edb984070f48f875f11",
+      "group": "SDD",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Bind requirement IDs to generated artifacts and an independent acceptance oracle; preserve the user eight stages.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/gradle-nebula-multi-project.md",
+      "sha256": "bed95f54a1cdfad93fe6286d22a3235bc84d0ffcb4f4a46d253a2c990d824ca9",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/grpc-service-contracts.md",
+      "sha256": "2c231dd0d5ceea82e5c7e620542a016023b68d0d77629d590808480f120891ef",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/jvm-runtime-diagnostics.md",
+      "sha256": "43f774d508b2a769299586f8f8caa8a07466f4c31db2ec3fe6cb3c526050e482",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/pattern-switch-records.md",
+      "sha256": "972615189bef677ee91c4d8ede42ada961e05b24c645344dc21a7d92e309f360",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/preview-feature-governance.md",
+      "sha256": "743bdf441b55246338f122f31b29bdeb9ffbcfa5ceec1da6a0be70cbba533d41",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/testcontainers-junit-integration.md",
+      "sha256": "759671d96b0c50d74413d3e19c5285899665736c4a0acd1b993d65d9f1629cd8",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/toolchain-boundaries.md",
+      "sha256": "d48c3a25e749235f70487c5f29188e661e7b7f8ec9f213e1700c91d69bed9839",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/lang/virtual-threads.md",
+      "sha256": "b0001995c73ad078ce015f979ceedc90fb8daa90e5befb43212c3171f45d124b",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/outpos/backend.md",
+      "sha256": "6a2adc665e4ee419fbfb9530d4662c755a71a019aa299334ef4b14b0e4fbbe89",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/outpos/batch.md",
+      "sha256": "571c2a7697e036f175c54e262668dd6f4d738b700abb8c6904148c058243298b",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/outpos/grpc.md",
+      "sha256": "e9332da6db6a75cfcab3cd66dec32a777e45ed6bbb5ce8ddfa148579a79f8499",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/outpos/microservice.md",
+      "sha256": "810aad4732c5cfe911424d734acfc802de8b8e7ad1061026ed6086c3173a41d7",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/outpos/mybatis.md",
+      "sha256": "d34c61ab1946bd8b878aebaca62b6699565bca6ba9f1ddb29f330c8792cb3adf",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/outpos/scaffolding.md",
+      "sha256": "91b16ae8a9a591fdfeba9b5c05de74da0bf029a6d105f1f6092a7e64e9b38de6",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/springboot-3.2/auth-jwt-oauth.md",
+      "sha256": "02e548dfdb6cc569ef860fdecf7aa3b4752703493706119ff29a25338cdd83c2",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/springboot-3.2/build-loop.md",
+      "sha256": "020bfbeccc6548c5b5698a0d002b12d98ccd4c6f41a40d287eea408b8d85f82e",
+      "group": "SDD",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Bind requirement IDs to generated artifacts and an independent acceptance oracle; preserve the user eight stages.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/springboot-3.2/database.md",
+      "sha256": "5ea6642c078e4b52798480db05b143914bd5b24bb80f61bee3d3f6d06a9438cc",
+      "group": "JAVA-LEGACY",
+      "disposition": "hold",
+      "acceptance_before_installation": "Resolve actual project versions, private types and authorization contracts; rewrite incompatible examples before any template installation.",
+      "installed": false
+    },
+    {
+      "path": "skills/java/springboot-3.2/jpa-enum-three-layer.md",
+      "sha256": "5393966f6f72b9aecde002103cdcef9002bef3d398902c772f2d7b393159209c",
+      "group": "JVM",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Pin the actual toolchain and dependency digests; execute build, real dependency integration, cancellation and cleanup before adopting code examples.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/5.x/advanced-type-patterns.md",
+      "sha256": "edb05b6e96c6ba40c891a96484604119578ee753c8c7e7479beaad4366c45392",
+      "group": "TS-CONTRACT",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Load configuration with the pinned compiler, build and execute runtime input/HTTP-error/authorization cases separately from type checking.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/5.x/config-drift-and-upgrades.md",
+      "sha256": "04f88e00cb8510585b17392700b14db62c01ca6f741e7b36e1d8b5321b689846",
+      "group": "TS-CONTRACT",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Load configuration with the pinned compiler, build and execute runtime input/HTTP-error/authorization cases separately from type checking.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/5.x/frontend.md",
+      "sha256": "eaf60e52bc168459a82a542768fbf11bb7b622cd698cc9cbd7b958bbbbdb1a46",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/5.x/strict-config-and-runtime-contracts.md",
+      "sha256": "ebc0372d2f4ea9b3b2b2f4ae04d94a28d90cb5e8afe6208732c03df705d80fc1",
+      "group": "TS-CONTRACT",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Load configuration with the pinned compiler, build and execute runtime input/HTTP-error/authorization cases separately from type checking.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nextjs/app-router-and-rendering.md",
+      "sha256": "9886571a62c78f457b5aa486bcdb0241e13aff7a5017c6fbac94d815ffbf0e31",
+      "group": "WEB-AUTH",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Verify real backend authorization, revocation, object ownership and cross-user cache isolation; no client-side approval substitution.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nextjs/auth-runtime-and-secrets.md",
+      "sha256": "77a3bfc349ea1ca109409e0e2ce8fff88a0331b2afd777be2b687f4a1a58c73d",
+      "group": "WEB-AUTH",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Verify real backend authorization, revocation, object ownership and cross-user cache isolation; no client-side approval substitution.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nextjs/cache-data-and-route-boundaries.md",
+      "sha256": "bfc74d79f136b29089381d4ce9b9d4ffe47f91d13892816c5376fd6207d4d208",
+      "group": "WEB-AUTH",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Verify real backend authorization, revocation, object ownership and cross-user cache isolation; no client-side approval substitution.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nuxt/plugins-runtime-config-and-secrets.md",
+      "sha256": "0d679391e184d0ea077473db07d742a36db4f75b28f687db4dbca3483103c988",
+      "group": "OPTIONAL-STACK",
+      "disposition": "hold",
+      "acceptance_before_installation": "Adopt only if the target product selects this stack; run pinned SSR, cleanup, overlapping-request and component-contract scenarios.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nuxt/route-data-and-route-rules.md",
+      "sha256": "dbe81c99bcfe5068a91d4b65a86fe3d22f52f86695afcc05ac1e32f160e7ff7f",
+      "group": "OPTIONAL-STACK",
+      "disposition": "hold",
+      "acceptance_before_installation": "Adopt only if the target product selects this stack; run pinned SSR, cleanup, overlapping-request and component-contract scenarios.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nuxt/server-client-boundaries.md",
+      "sha256": "e2e5dbb0e34da07663b39602bfeb9beb51e97861252145727901001a1b6cdb1e",
+      "group": "OPTIONAL-STACK",
+      "disposition": "hold",
+      "acceptance_before_installation": "Adopt only if the target product selects this stack; run pinned SSR, cleanup, overlapping-request and component-contract scenarios.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/fsd.md",
+      "sha256": "6dee885c74465f84b8c66eef45d00d28ec4051dd436e3b9fa98d0da84fd25e39",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/patterns.md",
+      "sha256": "8c81ac2c4f7220783f4d7810bdee091831d7a5027c4e2294d25e97d80d3cf521",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/react-19-actions-and-optimistic-ui.md",
+      "sha256": "3554d3a0ce66c6544bf46a02a3d330680937082b4733bbc649e3ade0e5cf5b50",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/setup.md",
+      "sha256": "11115eb79d4926272358de6d4700bea4a275ec9ef4080343013ee417de94a2bf",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/testing.md",
+      "sha256": "ff466e77e45e02530979bce24fab9234e1cf30f2b510444c8d72ef8deb4f8be8",
+      "group": "UI-TEST",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Keep synthetic UI/unit tests separate; require unmocked core scenario service/database/UI evidence and human acceptance.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/ui-design.md",
+      "sha256": "5306f08196333c80d7ff316c294c39d7de0f6a3a021ef54aa46284d3351f292c",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/version-selection.md",
+      "sha256": "b89a020c6a13301ce6efb37bbccd15083166ec5b4725d0d35285c11607a6b9b0",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/vue/component-contracts-and-testing.md",
+      "sha256": "1096a9d4d177e603d4275916ead0fcc34e58a68168a20af34ec3699f1535ed9e",
+      "group": "OPTIONAL-STACK",
+      "disposition": "hold",
+      "acceptance_before_installation": "Adopt only if the target product selects this stack; run pinned SSR, cleanup, overlapping-request and component-contract scenarios.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/vue/composables-and-reactivity.md",
+      "sha256": "39f2c5c53e9c56179f44a18f7b560a8b5247ad3eea9b44e80000e486f590a286",
+      "group": "OPTIONAL-STACK",
+      "disposition": "hold",
+      "acceptance_before_installation": "Adopt only if the target product selects this stack; run pinned SSR, cleanup, overlapping-request and component-contract scenarios.",
+      "installed": false
+    }
+  ]
+}
