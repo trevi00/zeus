@@ -1,0 +1,130 @@
+{
+  "run_id": "council-live-001",
+  "runtime_candidate": "a37e5863412b544cd3ab0f7c6274abdf85755230",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\team-lead-council-001\\live-001",
+  "files": [
+    {
+      "path": "manifest.json",
+      "bytes": 2965,
+      "sha256": "b16175461f8625f8be8a50bdde34590d966b2103bc65bca6d2fd186cd7f4c464"
+    },
+    {
+      "path": "receipt.json",
+      "bytes": 814,
+      "sha256": "fcc685359235e9484a75472773b3e44c5d42d32aa83ff9ad56db4a33ce9707da"
+    },
+    {
+      "path": "run.stdout",
+      "bytes": 13920,
+      "sha256": "84bb9d5ba93d095bd317cf6f87996fab68bc89f2d7d401f5a8beee19bf4bfa7f"
+    },
+    {
+      "path": "run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "cached-replay.json",
+      "bytes": 13919,
+      "sha256": "bdfd258eed1fb7b441e6894f6f8cc0cb9c3eb03bebcc2bebaab651f5eac514ba"
+    },
+    {
+      "path": "terminal-records.json",
+      "bytes": 28856,
+      "sha256": "4b2f8a360736374c118160f4871c7481180dbe09055c09727cf08cca6b830cdb"
+    },
+    {
+      "path": "replay-budget.json",
+      "bytes": 480,
+      "sha256": "6aef6704d8f155f6e5ad953f6bc31976cd14d4a74bb7e84407107c0dd9bc7c78"
+    },
+    {
+      "path": "observation-collect.json",
+      "bytes": 524,
+      "sha256": "7d626c026f0ed21c765b0127aa2228c0bf4c2223eb6574dddb31cc814894bd3a"
+    },
+    {
+      "path": "observation-status.json",
+      "bytes": 2334,
+      "sha256": "82adc751e4eb228f2cbf89846babe1b2bddb857b36a85375adf42899c91a9d88"
+    },
+    {
+      "path": "owner-checks.json",
+      "bytes": 289,
+      "sha256": "fd3d5f4da49ecced58606369a01f97f199e9a85c5db9f5a5b407b05fb850acdc"
+    },
+    {
+      "path": "owner-targeted.log",
+      "bytes": 101,
+      "sha256": "dac7e0a4e1a3cf2576487ebafc0722458e8a1fbbe97ba1aa554ebd6546ef83c5"
+    },
+    {
+      "path": "owner-ruff.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "owner-provenance.json",
+      "bytes": 28953,
+      "sha256": "5a1d8e7a052a42a17d0e97e124354ac2c4f4b72a1d94ae1c6be7c72b960cbd23"
+    },
+    {
+      "path": "runtime/artifacts/1dbf5d88bcd8e4b8fff127b34123a4e0e111f2dc8cf8aa8f2d3e0e9f3a6b6d90.txt",
+      "bytes": 752324,
+      "sha256": "1dbf5d88bcd8e4b8fff127b34123a4e0e111f2dc8cf8aa8f2d3e0e9f3a6b6d90"
+    },
+    {
+      "path": "runtime/artifacts/1fd3b386f39c36cb2ace95270d08f4c76983c0f4b5dc70b75449853690d57904.txt",
+      "bytes": 1271618,
+      "sha256": "1fd3b386f39c36cb2ace95270d08f4c76983c0f4b5dc70b75449853690d57904"
+    },
+    {
+      "path": "runtime/artifacts/c397817c72fced1b08a030f8fb816c5d92943310f2940865639c3627cec34224.txt",
+      "bytes": 1160248,
+      "sha256": "c397817c72fced1b08a030f8fb816c5d92943310f2940865639c3627cec34224"
+    },
+    {
+      "path": "runtime/artifacts/024f00478f541c36cbb2de25c9cba1c05989b21f450ca66b24771006f9e51af7.txt",
+      "bytes": 873614,
+      "sha256": "024f00478f541c36cbb2de25c9cba1c05989b21f450ca66b24771006f9e51af7"
+    },
+    {
+      "path": "runtime/artifacts/11fd5754305aa403b79e500a31d15ac6aa144f93af0e00e3eed2c4584a084d2e.txt",
+      "bytes": 1195892,
+      "sha256": "11fd5754305aa403b79e500a31d15ac6aa144f93af0e00e3eed2c4584a084d2e"
+    },
+    {
+      "path": "runtime/artifacts/096329c9642d71df330f1ca87d6d84323fbfbeecf29fa973cb9506dd0f10fd8d.txt",
+      "bytes": 224356,
+      "sha256": "096329c9642d71df330f1ca87d6d84323fbfbeecf29fa973cb9506dd0f10fd8d"
+    },
+    {
+      "path": "runtime/artifacts/23668e34730106db1f0c60eb45826dd49ad79443d7900afa2836204b77fca7f3.txt",
+      "bytes": 852093,
+      "sha256": "23668e34730106db1f0c60eb45826dd49ad79443d7900afa2836204b77fca7f3"
+    },
+    {
+      "path": "runtime/artifacts/e48db7d541c392364ab62c98dcf1192c96b28b88fec517e2a8776b7d02cfa1a0.txt",
+      "bytes": 1008,
+      "sha256": "e48db7d541c392364ab62c98dcf1192c96b28b88fec517e2a8776b7d02cfa1a0"
+    }
+  ],
+  "owner_helpers": [
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\team-lead-council-001\\run-live-001.py",
+      "sha256": "47559c5c096a08c32f31860066e59b49f2609a10012a5f9229de353652f14016"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\team-lead-council-001\\live-finish.py",
+      "sha256": "838b17e06b256150f29c00015d20ef9501cd274b1c8d2a319e3aa109cb19c130"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\team-lead-council-001\\live-checks.py",
+      "sha256": "a8eca8c422927899d14f1064444515d482887245d46d3b35bfc6516231e5e35b"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\team-lead-council-001\\live-audit.py",
+      "sha256": "345fb2059e49e5b2287ca1a71a12c380509d8b32f2ea5fdbec6ec1fc27988ac2"
+    }
+  ]
+}

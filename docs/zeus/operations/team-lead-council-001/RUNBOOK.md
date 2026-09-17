@@ -10,8 +10,8 @@ same validator, roles and six-start cap, with additive receipt metadata; neither
 Framework construction only. Actual Zeus Claude implementation and Codex review calls built/reviewed
 this candidate; their outcomes are in RESULT.md. Council orchestration unit tests use labelled
 executor, budget, snapshot, clock and role-output fixtures. `test_council_postgres.py` separately uses
-real isolated PostgreSQL. These prove the exercised contracts, not debate quality. A live seven-call
-council has not been measured; do not report one until its provider executions are.
+real isolated PostgreSQL. These prove the exercised contracts, not debate quality. The subsequent
+live seven-call council is measured separately in LIVE-001.md; construction fixtures do not establish it.
 
 ## Manifest
 
@@ -97,9 +97,12 @@ and for `found` only these required fields, each checked against a finite vocabu
 | `autonomous_runs` | `status` (`running` or an autonomous terminal status), `stage` (a v1 or v2 stage) |
 | `promotions` | `repository` (`verified:<run id>`) |
 
-- `unknown`: a row exists but a whitelisted field is absent, null or outside its vocabulary (or the body
-  is not an object). Only the digest is exported, no field. An arbitrary token-shaped string is never
-  copied out, and unknown is never read as success.
+- `unknown`: a row exists but a whitelisted field is absent or outside its vocabulary (or the body is
+  not an object). Every listed field must be present as a key. Null is valid only where the table
+  permits it, which is `lead_accepted` alone: an explicit `lead_accepted: null` is `found`, an
+  operations row without the `lead_accepted` key is `unknown`, and null in any other field is
+  `unknown`. Only the digest is exported, no field. An arbitrary token-shaped string is never copied
+  out, and unknown is never read as success.
 - `missing`: no row for that key at that snapshot. It says nothing about other keys, other buckets or a
   later moment.
 - Never exported: row bodies, free text, errors, prompts, paths, credentials, the DSN. The adapter's
