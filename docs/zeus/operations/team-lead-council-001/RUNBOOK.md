@@ -5,11 +5,12 @@ council (INV-COUNCIL-001): SSOT research, one read-only database snapshot, a DBA
 lead's proposal, the improvement lead's constructive alternative, the conductor's arbitration, then the
 existing Operation v2 implementation/review and one same-transaction promotion. `zeus autonomous status
 ID` reads the store only. `urn:zeus:autonomous:1` is unchanged (see `../autonomous-dge-001/RUNBOOK.md`):
-same validator, roles, six-start cap and receipts; nothing here is a fallback for it or the reverse.
+same validator, roles and six-start cap, with additive receipt metadata; neither mode is a fallback for the other.
 
-Framework construction only. No model and no live council was called to build or test this; the
-executor, budget, snapshot port, clock and every role output in `tests/test_council*.py` are labelled
-fixtures and injected faults. They prove the contracts below, not debate quality. A live seven-call
+Framework construction only. Actual Zeus Claude implementation and Codex review calls built/reviewed
+this candidate; their outcomes are in RESULT.md. Council orchestration unit tests use labelled
+executor, budget, snapshot, clock and role-output fixtures. `test_council_postgres.py` separately uses
+real isolated PostgreSQL. These prove the exercised contracts, not debate quality. A live seven-call
 council has not been measured; do not report one until its provider executions are.
 
 ## Manifest
