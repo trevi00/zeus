@@ -221,6 +221,28 @@ def test_the_profile_adds_hooks_and_bash_rules_and_changes_no_other_policy():
         merge_settings({"hooks": {"Stop": []}}, profile, hooks)
 
 
+def test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_preserved():
+    """Issue 124: the metadata module is granted as one exact command, never as a Python prefix."""
+    profile = load_profile("worker-v1")
+    exact = "Bash(python -m codex_harness.adapters.worker_profile_metadata)"
+    assert profile["permissions_allow"] == [
+        "Bash(python -m pytest:*)", "Bash(python -m pytest)", "Bash(python -m ruff:*)",
+        "Bash(python -m compileall:*)", "Bash(git status:*)", "Bash(git status)", "Bash(git diff:*)",
+        "Bash(git diff)", "Bash(git log:*)", exact]
+    assert not [rule for rule in profile["permissions_allow"]
+                if rule != exact and ("worker_profile_metadata" in rule or rule.startswith(("Bash(python:", "Bash(python -m:", "Bash(python -c")))]
+    manifest = json.loads(module._resource_path("worker-profile-v1.json").read_text("utf-8"))
+    assert list(manifest) == ["id", "version", "document", "document_sha256", "hook", "hook_sha256",
+                              "character_limit", "hooks", "permissions", "sources", "note"]
+    assert set(manifest["permissions"]) == {"allow"} and manifest["character_limit"] == module.MAX_CHARACTERS
+    assert manifest["hooks"] == ["SessionStart", "PostToolUse(Bash)"] and len(manifest["sources"]) == 7
+    base = claude_settings({**RUNTIME, "disallowed_tools": ["Task", "WebFetch", "Bash(python -c:*)"]})
+    merged = merge_settings(base, profile, hook_settings("cmd"))
+    assert merged["permissions"]["deny"] == ["Task", "WebFetch", "Bash(python -c:*)"], "denies are delivered unchanged"
+    assert merged["permissions"]["allow"] == [*RUNTIME["allowed_tools"], *profile["permissions_allow"]]
+    assert merged["permissions"]["allow"].count(exact) == 1 and merged["permissions"]["defaultMode"] == "acceptEdits"
+
+
 def test_the_profile_environment_prefixes_path_and_binds_pythonpath_to_the_candidate(tmp_path):
     interpreter = Path(sys.executable).resolve()
     base = {"PATH": os.pathsep.join(["/somewhere/else", str(interpreter.parent)]),

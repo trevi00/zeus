@@ -210,6 +210,35 @@ def test_python_replays_run_the_trusted_interpreter_against_the_candidate_source
     assert trusted_interpreter() == Path(TRUSTED)
 
 
+def test_the_profile_metadata_module_replays_only_as_its_exact_argv(tmp_path):
+    """Issue 124: the packaged policy grants the no-argument metadata command and nothing beside it.
+    Real subprocess: the replay runs in this checkout, whose packaged profile is what the loader verifies."""
+    packaged = packaged_policy()
+    exact = ['python', '-m', 'codex_harness.adapters.worker_profile_metadata']
+    assert exact in packaged['replay']['allowed_argv_prefixes'] and authorized(exact, packaged)
+    refused = ([*exact, '--help'], [*exact, 'src'], [*exact, ''], ['python', '-m', 'codex_harness.adapters.worker_profile'],
+               ['python', '-m', 'codex_harness.adapters.worker_profile_metadata.extra'],
+               ['python', '-m', 'codex_harness.adapters.artifact_reader'], [PY, *exact[1:]], ['uv', 'run', *exact])
+    assert not any(authorized(argv, packaged) for argv in refused)
+    broad = parse_policy({**policy(), 'replay': {**policy()['replay'], 'allowed_argv_prefixes': [['python', '-m'], exact]}})
+    assert authorized(exact, broad) and not authorized([*exact, '--help'], broad), 'exact even under a broader prefix'
+    assert authorized(['python', '-m', 'pytest', '-q'], broad), 'other commands keep prefix semantics'
+    assert authorized(['python', '-m', 'pytest', '-q'], packaged) and authorized(['python', '-m', 'ruff', 'check', '.'], packaged)
+    assert not authorized(exact, parse_policy(policy())), 'no policy entry, no grant'
+    insp = EvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')))
+    checkout = Path(__file__).resolve().parents[1]
+    report = insp.inspect([' '.join(exact), ' '.join(exact) + ' --help', 'python -m codex_harness.adapters.worker_profile'],
+                          checkout, {'task_id': 't', 'attempt': 1})
+    checked, extra, other = report['findings']
+    assert checked['state'] == 'checked', checked['cause']
+    assert checked['replay_argv'] == [TRUSTED, *exact[1:]] and checked['original_argv'] == exact
+    observed = json.loads(json.loads(insp.artifacts.text(checked['runs'][0]['stdout']['ref'], 100000))['raw'])
+    assert observed['status'] == 'ok' and observed['digest_matches'] and observed['within_limit']
+    for finding in (extra, other):
+        assert finding['state'] == 'not_checked' and 'not an authorized replay prefix' in finding['cause']
+        assert 'runs' not in finding or not finding['runs']
+
+
 def test_a_missing_trusted_interpreter_is_refused_before_any_child_and_never_recorded_as_success(tmp_path, setup_implementation):
     missing = str(tmp_path / 'missing-python')
     insp = EvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')), policy(), interpreter=missing)

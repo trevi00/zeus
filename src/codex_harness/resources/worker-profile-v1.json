@@ -20,7 +20,8 @@
       "Bash(git status)",
       "Bash(git diff:*)",
       "Bash(git diff)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(python -m codex_harness.adapters.worker_profile_metadata)"
     ]
   },
   "sources": [
