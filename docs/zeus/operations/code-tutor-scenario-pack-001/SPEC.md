@@ -169,3 +169,30 @@ as one nonblocking follow-up if the actual corrected cycle passes. If it fails a
 stop rather than repeat prompt patches. Run-003 uses a fresh isolated identity and six
 starts; total batch maximum seven actual calls, ledger59->ceiling65, not an unbounded
 budget reset. All pack acceptance conditions above remain unchanged.
+
+## Reframe after provider budget exhaustion: owner recovery
+
+Run-003 completed real research and three debate roles, then Claude reported
+error_max_budget_usd at the configured USD4 budget. Seven requested files remained;
+the owner preserved their exact bytes and hashes before inspection (commit ad8d61e).
+The new contract tests passed 9/9. No independent reviewer task started, and no
+autonomous acceptance or knowledge promotion occurred. Total actual starts: six
+(five Codex, one Claude), machine ledger64. No further model calls in this batch.
+
+The delivery path changes to explicit owner review of the preserved candidate,
+adjacent contract checks and CI, followed by normal Git acceptance if these pass.
+This does not repair provider output or rewrite the failed operation. The owner,
+as design authority, clarifies signup/login as visible actions and permits unknown
+results to resolve only from canonical server evidence; source declarations are
+corrected against the pinned package file. Product execution and human acceptance
+remain unperformed. Original artifacts and failure receipts stay on D.
+
+## User steering: future two-lead arbitration
+
+The intended future topology is two team leads discussing the same pinned research,
+goal and acceptance matrix, with the conductor arbitrating and assigning work to
+team members. Both leads develop alternatives and material counterexamples; neither
+is a permanent objection generator. Bound discussion rounds/time, record decisions,
+and separate design adoption from independent execution verification and human
+acceptance. This is a future requirement, not a change to the current runtime's
+researcher/proposer/attacker/arbiter roles or this pack's completion criteria.
