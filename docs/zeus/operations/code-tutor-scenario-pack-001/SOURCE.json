@@ -1,0 +1,121 @@
+{
+  "reference_repository": "https://github.com/trevi00/code-tutor-ai.git",
+  "reference_revision": "0d48f06dd8860a9e9f731e7af434824779eaadd8",
+  "reference_files": [
+    {
+      "path": "frontend/package.json",
+      "sha256": "38ffafd8909fc7d9f01410eec212979a03c07a5cf70edca2d7a41a477fdf1d6f",
+      "git_blob": "9fcdf6d3150a6e7df6b32c16ba47bacf9dd5cb81",
+      "read_extent": "targeted owner inspection"
+    },
+    {
+      "path": "frontend/package-lock.json",
+      "sha256": "76343170426da6282bd651b1219f33d6fd95245fe65d210d078c19981d23e02a",
+      "git_blob": "d77097e05da092ac75221c452fd281dde55e368e",
+      "read_extent": "targeted owner inspection; lockfile identity only"
+    },
+    {
+      "path": "frontend/playwright.config.ts",
+      "sha256": "a59395ce397c34ea33c5089fbe7b3298782ecc2701776622ab7b7ff4a4157dfb",
+      "git_blob": "20407b6741045cc1c546d9402e6a94cf578ca589",
+      "read_extent": "targeted owner inspection"
+    },
+    {
+      "path": "frontend/e2e/problem-solve.spec.ts",
+      "sha256": "e89f6c5d3495759217d7e13bb64f056c494a510071c2cd32317faa4fef3f13cc",
+      "git_blob": "b956308b49bfdfd093950b86a8b8fc7052937747",
+      "read_extent": "targeted owner inspection"
+    },
+    {
+      "path": "frontend/src/api/problems.ts",
+      "sha256": "ce97335921001532b8ba1b915c2ffd58adb14b1e269a7a20391604086a1f5fa4",
+      "git_blob": "6b521e3e6a285b7c4de85ceb2748e82a8961bd13",
+      "read_extent": "targeted owner inspection"
+    },
+    {
+      "path": "backend/src/code_tutor/learning/interface/routes.py",
+      "sha256": "4e4fb560744da61804a78a5a6ea7ba7410f3b2e782c121a74b72c985103a5305",
+      "git_blob": "a5580ab075a5a476a049fe2b617994889aea01d2",
+      "read_extent": "targeted owner inspection"
+    },
+    {
+      "path": "backend/pyproject.toml",
+      "sha256": "8b213aa7e915cf5f726dd57f5827144eb6acbb8328aff477ef31d4dbdb085f76",
+      "git_blob": "a3482630650580dcac7398b6d9decf7546a9b9a6",
+      "read_extent": "targeted owner inspection"
+    },
+    {
+      "path": "docker-compose.yml",
+      "sha256": "49552cd001624c5fe3ff06ef4ec021125457273b3c349c7ef14ef33ac70d8a26",
+      "git_blob": "29ca74d0cfbdb65c2514e660e3de1144bff0f624",
+      "read_extent": "targeted owner inspection"
+    }
+  ],
+  "baldrix_revision": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "selection_authority": "docs/zeus/operations/java-typescript-decision-001/DECISION.md",
+  "selected_principles": [
+    {
+      "path": "skills/typescript/5.x/frontend.md",
+      "sha256": "eaf60e52bc168459a82a542768fbf11bb7b622cd698cc9cbd7b958bbbbdb1a46",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/5.x/strict-config-and-runtime-contracts.md",
+      "sha256": "ebc0372d2f4ea9b3b2b2f4ae04d94a28d90cb5e8afe6208732c03df705d80fc1",
+      "group": "TS-CONTRACT",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Load configuration with the pinned compiler, build and execute runtime input/HTTP-error/authorization cases separately from type checking.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nextjs/auth-runtime-and-secrets.md",
+      "sha256": "77a3bfc349ea1ca109409e0e2ce8fff88a0331b2afd777be2b687f4a1a58c73d",
+      "group": "WEB-AUTH",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Verify real backend authorization, revocation, object ownership and cross-user cache isolation; no client-side approval substitution.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/nextjs/cache-data-and-route-boundaries.md",
+      "sha256": "bfc74d79f136b29089381d4ce9b9d4ffe47f91d13892816c5376fd6207d4d208",
+      "group": "WEB-AUTH",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Verify real backend authorization, revocation, object ownership and cross-user cache isolation; no client-side approval substitution.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/patterns.md",
+      "sha256": "8c81ac2c4f7220783f4d7810bdee091831d7a5027c4e2294d25e97d80d3cf521",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/testing.md",
+      "sha256": "ff466e77e45e02530979bce24fab9234e1cf30f2b510444c8d72ef8deb4f8be8",
+      "group": "UI-TEST",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Keep synthetic UI/unit tests separate; require unmocked core scenario service/database/UI evidence and human acceptance.",
+      "installed": false
+    },
+    {
+      "path": "skills/typescript/react/ui-design.md",
+      "sha256": "5306f08196333c80d7ff316c294c39d7de0f6a3a021ef54aa46284d3351f292c",
+      "group": "UI",
+      "disposition": "adapt",
+      "acceptance_before_installation": "Record state owner and lifetime, semantic tokens and loading/empty/error/success stories; verify visible behavior, keyboard and responsive layout.",
+      "installed": false
+    }
+  ],
+  "user_selected_flow": "signup/login -> choose problem -> submit -> result and learning history",
+  "limits": [
+    "No product execution or deployment; declarations are not environment measurement.",
+    "No upstream content/code redistribution; independently rewrite selected principles.",
+    "Next.js server/cache principles are framework-neutral adaptations, not a Next.js migration for the React/Vite app.",
+    "User selected the intended flow, not detailed oracle or actual-run acceptance."
+  ]
+}
