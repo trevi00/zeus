@@ -151,3 +151,22 @@ reviews the complete original profile adaptation and this test correction agains
 the same frame, with supplied isolated evidence and no host candidate execution.
 Owner checks the two-file corrective diff separately. Current111; explicit ceiling115
 reserves correction/lead and the original canary/lead pair. No automatic retries.
+
+## Canary verification ownership clarification
+
+First new-profile canary34f8ba32 read both modules and its fixed4 tests passed in
+isolated replay. Worker additionally ran lint under the default profile sequence;
+it honestly reported3 EXE002 executable-bit warnings in summary but included the
+failed command in legacy tests, which carries expected-exit0. Gate correctly refused
+2 mismatched lint claims; no lead ran, ledger114. No fabricated function success:
+the required command passed, optional lint did not. Do not change source modes,
+tests, lint policy or runtime to obtain a green fixture.
+
+Owner assignment failed to explicitly delegate full/lint verification as the profile
+requires when narrowing checks. One final canary on the SAME original6960637 baseline
+uses unchanged accepted image/profile: owner owns full/lint; worker runs ONLY the
+named fixed pytest command, results/skips/unrun checks stated separately. No changes
+to fixed tests, source contract or functional criteria. Preserve first run and label
+this a corrected assignment, not a clean first attempt or causal effectiveness result.
+Current114, explicit final ceiling116 for one worker/lead pair. No further automatic
+extension or runtime investigation in this delivery if it fails again.
