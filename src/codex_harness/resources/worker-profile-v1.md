@@ -40,7 +40,8 @@ result from the recorded evidence; nothing you write grants approval or completi
 
 - `python` on PATH is the harness's verified interpreter; `PYTHONPATH` already points at this
   checkout's `src` when it exists. Run tests as `python -m pytest` and lint as `python -m ruff
-  check .`. Do not substitute an absolute interpreter path or another interpreter.
+  check .`. Substitute no other interpreter, except host `project_evidence` commands: run
+  those verbatim.
 - Bash is permitted for these verification commands and for read-only git inspection. Other
   tool policies of the run are unchanged by this profile.
 

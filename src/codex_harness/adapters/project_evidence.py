@@ -14,6 +14,8 @@ Replays reuse the existing bounded `_capture`, allowlist, budgets and raw-output
 import hashlib
 import json
 import os
+import re
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -28,11 +30,19 @@ from codex_harness.adapters.evidence_inspection import (
 )
 from codex_harness.domain.evidence import authorized, classify_replays, finite_positive
 from codex_harness.domain.model import ContractError, digest, require
-from codex_harness.domain.project_evidence import classify_check, observed_checks, parse_profile
+from codex_harness.domain.project_evidence import (
+    classify_check,
+    enforceable,
+    observed_checks,
+    parse_profile,
+)
 
 SETTING = 'HARNESS_EVIDENCE_PROFILE'
 MAX_PROFILE_BYTES = 256 * 1024
 MAX_DEPENDENCY_BYTES = 8 * 1024 * 1024
+# `shlex.quote` makes any text one sh word; a control character would still break the one-line
+# command and its permission rule, so such a value is refused rather than delivered.
+UNPRINTABLE = re.compile(r'[\x00-\x1f\x7f]')
 
 
 def load_profile(host_settings, policy=None):
@@ -106,6 +116,28 @@ def resolve_profile(profile, cwd, base=None):
     return {'digest': digest(bound), 'profile_digest': profile['profile_digest'], 'workspace': str(root), 'contexts': contexts}
 
 
+def shell_command(context, argv):
+    """(cd part, run part) of one host check as POSIX `sh` text, every value quoted by `shlex.quote`.
+
+    Only host values enter it: the resolved context and the host's argv, whose first token is the
+    context interpreter exactly as replay substitutes it. PYTHONPATH is always assigned (empty when the
+    context names no source path) so a value the worker process carries can never stand in for it."""
+    require(enforceable(argv), 'Only python -m pytest and python -m ruff check have a worker command')
+    effective, _ = replay_argv(argv, context['interpreter'])
+    values = [context['cwd'], context['environment'].get('PYTHONPATH', ''), *effective]
+    require(not any(UNPRINTABLE.search(value) for value in values), 'Project evidence command value cannot be quoted safely')
+    assignments = ['PYTHONPATH=' + shlex.quote(context['environment'].get('PYTHONPATH', '')), 'PYTHONDONTWRITEBYTECODE=1']
+    return 'cd ' + shlex.quote(context['cwd']), ' '.join([*assignments, *(shlex.quote(token) for token in effective)])
+
+
+def _commands(profile, resolved):
+    listed = []
+    for check in profile['checks']:
+        change, run = shell_command(resolved['contexts'][check['context']], check['argv'])
+        listed.append({'check_id': check['id'], 'context': check['context'], 'command': change + ' && ' + run, 'parts': [change, run]})
+    return listed
+
+
 def execution_instructions(profile, cwd):
     """What a worker or reviewer is told: the host's checks and the context resolved for THIS checkout."""
     resolved = resolve_profile(profile, cwd)
@@ -114,10 +146,41 @@ def execution_instructions(profile, cwd):
                 for name, context in resolved['contexts'].items()}
     return {'schema': profile['schema'], 'profile_digest': profile['profile_digest'], 'contexts': contexts,
             'checks': [dict(check) for check in profile['checks']],
-            'instruction': 'These checks and contexts are host-authored. Run each check from its context cwd with that '
-            'context interpreter in place of the first token "python" and with the listed environment values; do not '
-            'choose another argv, cwd or interpreter and do not install dependencies. Every check is required. Report '
-            'what you observed, a nonzero exit included. Read results from stdout; write no output files into the checkout.'}
+            'commands': {entry['check_id']: entry['command'] for entry in _commands(profile, resolved)},
+            'instruction': 'These checks and contexts are host-authored and replace the legacy "python on PATH" rule for '
+            'these checks only. `commands` holds each check as exact POSIX sh text (cd to the context cwd, the context '
+            'environment, the context interpreter in place of the first token "python"); run it verbatim from the '
+            'repository root, which stays your working and editing root. In another shell use the same cwd, environment, '
+            'interpreter and argv. Do not choose another argv, cwd or interpreter and do not install dependencies. Every '
+            'check is required. Report what you observed, a nonzero exit included. Read results from stdout; write no '
+            'output files into the checkout.'}
+
+
+def worker_delivery(profile, cwd):
+    """What the Claude transport needs for THIS implementation checkout (INV-PROJECT-EVIDENCE-001 R3):
+    the exact commands, the exact per-run Bash allow rules for them and the system-prompt section.
+
+    Derived from the host profile and the resolved checkout only, never from model output. Every rule
+    is an exact command string with no wildcard: the whole compound command and, because Claude Code
+    checks compound commands part by part, its `cd` part and its run part. No deny rule is touched."""
+    resolved = resolve_profile(profile, cwd)
+    commands = _commands(profile, resolved)
+    allow = []
+    for entry in commands:
+        for text in (entry['command'], *entry.pop('parts')):
+            rule = 'Bash(' + text + ')'
+            if rule not in allow:
+                allow.append(rule)
+    lines = ['## Host project checks (this run)', '',
+             'The host selected project execution contexts for this run. For the checks below, and only for them, this '
+             'section overrides the "Environment" interpreter rule and the legacy `tests` command-string format above: '
+             'run each command verbatim with Bash from the repository root (it changes into its own context directory; '
+             'your working and editing root stays the repository root). Do not alter argv, cwd, interpreter or '
+             'environment, and do not install dependencies. `tests` holds exactly one {check_id, status, exit_code} per '
+             'check: executed with the exit code you observed (a failure stays a failure), or not_run with null.', '']
+    lines += [f'- {entry["check_id"]} (context {entry["context"]}): `{entry["command"]}`' for entry in commands]
+    return {'profile_digest': profile['profile_digest'], 'project_digest': resolved['digest'], 'workspace': resolved['workspace'],
+            'commands': commands, 'permissions_allow': allow, 'document': '\n'.join(lines) + '\n'}
 
 
 class ProjectEvidenceInspector(EvidenceInspector):
@@ -127,6 +190,7 @@ class ProjectEvidenceInspector(EvidenceInspector):
         super().__init__(artifacts, policy, interpreter)
         require(isinstance(profile, dict) and type(profile.get('profile_digest')) is str, 'Parsed project evidence profile required')
         self.profile = profile
+        self.clock = time.monotonic  # the one clock of the absolute aggregate deadline
 
     def snapshot(self, cwd=None):
         require(cwd is not None, 'Project evidence snapshot requires the candidate workspace')
@@ -138,32 +202,44 @@ class ProjectEvidenceInspector(EvidenceInspector):
                          for name, context in project['contexts'].items()}}}
         return {**snapshot, 'identity': identity, 'project': project}
 
-    def _check(self, claim, project, remaining_seconds):
+    def _check(self, claim, project, deadline):
+        """`deadline` is the inspection's one absolute monotonic instant. The remaining allowance is
+        recomputed before EVERY repeat, no repeat starts at or beyond it, and a result observed after
+        it is never counted as checked: a repeat can only spend what the aggregate budget still holds."""
         if claim['status'] == 'missing':
             return {'state': 'not_checked', 'cause': 'required check has no observation; not replayed'}
         if claim['status'] == 'not_run':
             return {'state': 'not_checked', 'cause': 'worker reported not_run; a required check stays incomplete and is not replayed'}
-        if not authorized(claim['argv'], self.policy):
+        if not (authorized(claim['argv'], self.policy) and enforceable(claim['argv'])):
             return {'state': 'not_checked', 'cause': 'command is not an authorized replay prefix; a profile is not authority'}
-        per_command = min(self.policy['replay']['per_command_seconds'], remaining_seconds)
-        if per_command <= 0:
-            return {'state': 'not_checked', 'cause': 'aggregate replay budget exhausted'}
-        finite_positive(per_command, 'replay deadline', self.policy['replay']['total_seconds'])
         context = project['contexts'][claim['context']]
         effective, transformation = replay_argv(claim['argv'], context['interpreter'])
-        runs = []
-        for _ in range(self.policy['replay']['replays_per_claim']):
+        runs, timeouts, exhausted = [], [], None
+        for attempt in range(self.policy['replay']['replays_per_claim']):
+            per_command = min(self.policy['replay']['per_command_seconds'], deadline - self.clock())
+            if per_command <= 0:
+                exhausted = f'aggregate replay budget exhausted before replay {attempt + 1}'
+                break
+            finite_positive(per_command, 'replay deadline', self.policy['replay']['total_seconds'])
+            timeouts.append(per_command)
             run = _capture(effective, context['cwd'], per_command, self.policy['replay']['max_output_bytes'],
                            dict(context['environment']))
             runs.append(self._archive(run))
             if run.get('failure'):
                 break
+            if self.clock() > deadline:
+                exhausted = f'replay {attempt + 1} ended after the aggregate replay deadline; a late result is not counted'
+                break
         observed = [run['returncode'] for run in runs]
-        state, cause = classify_check(claim, *classify_replays(runs, claim['expected_exit']), observed)
+        if exhausted is not None:
+            state, cause = 'not_checked', exhausted + (f'; replay exits so far {observed}' if runs else '')
+        else:
+            state, cause = classify_check(claim, *classify_replays(runs, claim['expected_exit']), observed)
         return {'state': state, 'cause': cause, 'runs': runs, 'check_id': claim['check_id'], 'context': claim['context'],
                 'original_argv': list(claim['argv']), 'replay_argv': effective, 'argv_transformation': transformation,
                 'reported_exit': claim['reported_exit'], 'expected_exit': claim['expected_exit'], 'observed_exits': observed,
-                'cwd': context['cwd'], 'interpreter': context['interpreter'], 'timeout_seconds': per_command}
+                'cwd': context['cwd'], 'interpreter': context['interpreter'],
+                'timeout_seconds': timeouts[0] if timeouts else 0, 'timeouts_seconds': timeouts}
 
     def inspect(self, claims, cwd, binding, environment=None, interpreter=None, project=None):
         root = Path(cwd)
@@ -185,12 +261,12 @@ class ProjectEvidenceInspector(EvidenceInspector):
                    'limits': 'interpreter path and byte digest do not attest installed dependency immutability'}
         checks, refusals = observed_checks(self.profile, claims)
         findings = []
-        deadline = time.monotonic() + self.policy['replay']['total_seconds']
+        deadline = self.clock() + self.policy['replay']['total_seconds']
         for index, claim in enumerate(checks):
             if index >= self.policy['replay']['max_claims']:
                 findings.append({'claim': claim, 'state': 'not_checked', 'cause': 'claim budget exhausted'})
                 continue
-            findings.append({'claim': claim, **self._check(claim, project, deadline - time.monotonic())})
+            findings.append({'claim': claim, **self._check(claim, project, deadline)})
         findings.extend({'claim': {k: v for k, v in refusal.items() if k != 'refused'}, 'state': 'error',
                          'cause': refusal['refused']} for refusal in refusals)
         return {'context': context, 'policy_hash': self.policy['policy_hash'], 'findings': findings,

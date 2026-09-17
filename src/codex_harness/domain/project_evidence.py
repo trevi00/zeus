@@ -23,6 +23,16 @@ KIND = 'project_check'
 SAFE_ID = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,63}\Z')
 MAX_CONTEXTS = 16
 MAX_PATHS = 32
+# Version 1 is Python-only by decision: replay enforces a context interpreter solely by replacing the
+# first token of `python -m ...`, so any other authorized form (`uv run ...`, bare `ruff`) would reach
+# the child unchanged while the finding named an interpreter it never ran. Those forms are refused
+# here; the legacy unprofiled contract keeps them.
+PROFILE_ARGV_PREFIXES = (('python', '-m', 'pytest'), ('python', '-m', 'ruff', 'check'))
+
+
+def enforceable(argv):
+    """Whether replay binds this argv to the context interpreter (intersected with the allowlist)."""
+    return any(tuple(argv[:len(prefix)]) == prefix for prefix in PROFILE_ARGV_PREFIXES)
 
 
 def safe_relative(path, name, *, allow_root=False):
@@ -79,6 +89,8 @@ def parse_profile(document, policy):
                 and all(type(a) is str and a and '\x00' not in a for a in argv), 'Project evidence check argv must be non-empty text tokens')
         # The SAME packaged allowlist: a host profile cannot widen replay authority.
         require(authorized(argv, policy), 'Project evidence check argv is not an authorized replay prefix')
+        require(enforceable(argv), 'Project evidence check argv must be python -m pytest or python -m ruff check: '
+                'profile version 1 enforces the context interpreter only for those forms')
         require(type(check['expected_exit']) is int and 0 <= check['expected_exit'] <= 255,
                 'Project evidence expected_exit must be an exit status')
         listed.append({'id': check['id'], 'context': check['context'], 'argv': list(argv), 'expected_exit': check['expected_exit']})

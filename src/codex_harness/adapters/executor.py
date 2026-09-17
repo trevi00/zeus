@@ -17,7 +17,11 @@ from codex_harness.adapters.execution_output import evidence_json, persist_resul
 from codex_harness.adapters.hooks import NativeHooks
 from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.output_schema import preflight
-from codex_harness.adapters.project_evidence import ProjectEvidenceInspector, execution_instructions
+from codex_harness.adapters.project_evidence import (
+    ProjectEvidenceInspector,
+    execution_instructions,
+    worker_delivery,
+)
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.providers import host_policy
 from codex_harness.adapters.skill_history import (
@@ -169,15 +173,20 @@ class Executor:
             self._execution_policy = host_policy()
         return self._execution_policy
 
-    def _open_runtime(self, assignment, model: str):
+    def _open_runtime(self, assignment, model: str, cwd=None, action: str | None = None):
         """Open the transport this assignment names. Nothing here falls back to another provider."""
         if assignment.transport == "app_server":
             return AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration())
         require(assignment.transport == "claude_cli", "Unsupported provider transport: " + assignment.transport)
+        # INV-PROJECT-EVIDENCE-001 (R3): the host profile resolved for THIS implementation checkout
+        # reaches the transport itself (exact Bash rules, system prompt), not only the prompt details.
+        # Without a profile the construction is exactly the legacy one.
+        project = ({"project_delivery": worker_delivery(self.evidence_profile, cwd)}
+                   if self.evidence_profile is not None and action == "implement" and cwd is not None else {})
         return ClaudeCodeRuntime(model=model, runtime=assignment.runtime,
                                  executable=assignment.controls.get("executable"),
                                  max_budget_usd=assignment.controls.get("max_budget_usd"),
-                                 settings_document=claude_settings(assignment.runtime))
+                                 settings_document=claude_settings(assignment.runtime), **project)
 
     def _run(self, agent: str, key: str, objective: str, evidence: dict, cwd: str,
              schema: dict, read_only: bool = False, heartbeat=None, lease=None, stage=None,
@@ -511,7 +520,7 @@ class Executor:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
                 # probe slot; breaker refusal must release the invocation reservation.
                 admission = self.breaker.admit(breaker_key(assignment.identity, workload), lease) if lease else None
-                opened = self._open_runtime(assignment, requested_model)
+                opened = self._open_runtime(assignment, requested_model, cwd, action)
                 # A transport whose construction is itself the external effect says so; one that
                 # starts its process later reports the exact moment through `on_enter`.
                 entry_on_open = getattr(opened, "enters_on_open", True)

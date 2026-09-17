@@ -33,15 +33,23 @@ from codex_harness.domain.project_evidence import (
 )
 
 PY = sys.executable
-PROBE = 'zeus_backend_probe'  # exists only under the candidate's backend/src
+PROBE = 'zeus_backend_probe'  # a module that exists only under the candidate's backend/src
 FAILING = 'zeus_backend_failing'
+FAIL_EXIT = 1  # pytest's exit status for a failed test
+
+
+def argv_for(module):
+    """Profile version 1 accepts `python -m pytest`/`python -m ruff check` only (R1), so every probe
+    is a real pytest run of one file in the backend context."""
+    return ['python', '-m', 'pytest', f'probes/test_{module}.py', '-q', '-p', 'no:cacheprovider']
 TASK = {'id': 'task-1', 'generation': 1, 'attempt': 1, 'lease_owner': 'worker'}
 CANDIDATE = {'revision': 'a' * 40, 'base': 'b' * 40, 'tree': 'c' * 40}
 
 
 def policy(**replay):
-    base = {'version': 1, 'replay': {'allowed_argv_prefixes': [['python', '-m', PROBE], ['python', '-m', FAILING],
-                                                             ['python', '-m', 'pytest']],
+    base = {'version': 1, 'replay': {'allowed_argv_prefixes': [['python', '-m', 'pytest'], ['python', '-m', 'ruff', 'check'],
+                                                             ['python', '-m', PROBE], ['ruff', 'check'],
+                                                             ['uv', 'run', 'python', '-m', 'pytest']],
                                      'per_command_seconds': 60, 'total_seconds': 180, 'max_claims': 8,
                                      'max_output_bytes': 4096, 'replays_per_claim': 2},
             'files': {'max_bytes': 1024 * 1024}}
@@ -58,13 +66,19 @@ def workspace(tmp_path, name='candidate'):
     source.mkdir(parents=True)
     (root / 'backend' / 'empty_tests').mkdir()
     (root / 'backend' / 'requirements.lock').write_bytes(b'example==1.0\n')
-    (source / (PROBE + '.py')).write_text(
-        'import os, sys\nfrom pathlib import Path\n'
-        'assert Path.cwd().name == "backend", Path.cwd()\n'
-        'assert os.environ.get("PYTHONDONTWRITEBYTECODE") == "1"\n'
-        'assert "ZEUS_SECRET" not in os.environ\n'
-        'print(os.environ["PYTHONPATH"])\n', encoding='utf-8')
-    (source / (FAILING + '.py')).write_text('import sys\nsys.exit(3)\n', encoding='utf-8')
+    (source / (PROBE + '.py')).write_text('VALUE = 1\n', encoding='utf-8')
+    probes = root / 'backend' / 'probes'
+    probes.mkdir()
+    (probes / f'test_{PROBE}.py').write_text(
+        'import os\nfrom pathlib import Path\n\n'
+        f'import {PROBE}\n\n\n'
+        'def test_context():\n'
+        f'    assert {PROBE}.VALUE == 1\n'
+        '    assert Path.cwd().name == "backend", Path.cwd()\n'
+        '    assert os.environ.get("PYTHONDONTWRITEBYTECODE") == "1"\n'
+        '    assert "ZEUS_SECRET" not in os.environ\n'
+        '    assert os.environ["PYTHONPATH"].endswith("src")\n', encoding='utf-8')
+    (probes / f'test_{FAILING}.py').write_text('def test_fails():\n    assert False\n', encoding='utf-8')
     return root
 
 
@@ -73,11 +87,11 @@ def document(checks=None, **context):
             'contexts': {'backend': {'cwd': 'backend', 'interpreter': PY, 'source_paths': ['backend/src'],
                                      'dependency_files': ['backend/requirements.lock'], **context}},
             'checks': checks if checks is not None else [
-                {'id': 'probe', 'context': 'backend', 'argv': ['python', '-m', PROBE], 'expected_exit': 0}]}
+                {'id': 'probe', 'context': 'backend', 'argv': argv_for(PROBE), 'expected_exit': 0}]}
 
 
 def check(name, module, expected=0):
-    return {'id': name, 'context': 'backend', 'argv': ['python', '-m', module], 'expected_exit': expected}
+    return {'id': name, 'context': 'backend', 'argv': argv_for(module), 'expected_exit': expected}
 
 
 def executed(name, code=0):
@@ -102,7 +116,7 @@ def test_required_check_replays_in_the_project_subdirectory_with_the_host_interp
     assert row['verdict'] == 'all_checked', row['findings']
     finding = row['findings'][0]
     assert finding['check_id'] == 'probe' and finding['context'] == 'backend'
-    assert finding['original_argv'] == ['python', '-m', PROBE] and finding['replay_argv'][0] == PY
+    assert finding['original_argv'] == argv_for(PROBE) and finding['replay_argv'][1:] == argv_for(PROBE)[1:] and finding['replay_argv'][0] == PY
     assert finding['reported_exit'] == 0 and finding['expected_exit'] == 0 and finding['observed_exits'] == [0, 0]
     assert Path(finding['cwd']) == (root / 'backend').resolve()
     assert all(run['stdout']['ref'].startswith('sha256:') for run in finding['runs'])
@@ -118,12 +132,13 @@ def test_required_check_replays_in_the_project_subdirectory_with_the_host_interp
 
 def test_reported_failure_is_retained_and_host_expected_nonzero_can_pass(tmp_path):
     root = workspace(tmp_path)
-    doc = document([check('must-pass', FAILING, 0), check('negative', FAILING, 3), check('probe', PROBE)])
+    doc = document([check('must-pass', FAILING, 0), check('negative', FAILING, FAIL_EXIT), check('probe', PROBE)])
     _, inspections = ledger(tmp_path, doc)
-    row = inspections.inspect(TASK, CANDIDATE, [executed('must-pass', 3), executed('negative', 3), executed('probe', 1)], str(root))
+    row = inspections.inspect(TASK, CANDIDATE, [executed('must-pass', FAIL_EXIT), executed('negative', FAIL_EXIT),
+                                                executed('probe', 1)], str(root))
     states = {f['check_id']: f for f in row['findings']}
     assert row['verdict'] == 'incomplete'
-    assert states['must-pass']['state'] == 'verified_mismatch' and states['must-pass']['reported_exit'] == 3
+    assert states['must-pass']['state'] == 'verified_mismatch' and states['must-pass']['reported_exit'] == FAIL_EXIT
     assert states['must-pass']['claim']['expected_exit'] == 0
     assert states['negative']['state'] == 'checked'
     # Replays pass, but the worker reported a failure: never coerced to the expectation.
@@ -159,7 +174,7 @@ def test_not_run_missing_unknown_and_duplicate_cannot_be_all_checked_and_do_not_
         {'check_id': 'probe', 'status': 'executed', 'exit_code': 0, 'argv': ['rm', '-rf', '/']}])
     assert [c['status'] for c in claims] == ['executed', 'missing']
     assert len(refusals) == 5
-    assert all(c['argv'] == ['python', '-m', PROBE] for c in claims)
+    assert all(c['argv'] == argv_for(PROBE) for c in claims)
 
 
 def test_refusals_are_error_findings_in_a_real_inspection(tmp_path):
@@ -182,11 +197,100 @@ def test_profile_refuses_unsafe_paths_and_unknown_fields(mutation):
     [{'id': 'fmt', 'context': 'backend', 'argv': ['python', '-m', 'ruff', 'format', '.'], 'expected_exit': 0}],
     [{'id': 'sh', 'context': 'backend', 'argv': ['sh', '-c', 'python -m pytest'], 'expected_exit': 0}],
     [{'id': 'pip', 'context': 'backend', 'argv': ['python', '-m', 'pip', 'install', 'x'], 'expected_exit': 0}],
-    [{'id': 'a', 'context': 'elsewhere', 'argv': ['python', '-m', PROBE], 'expected_exit': 0}],
-    [{'id': 'a', 'context': 'backend', 'argv': ['python', '-m', PROBE], 'expected_exit': 0, 'required': False}]])
+    [{'id': 'a', 'context': 'elsewhere', 'argv': argv_for(PROBE), 'expected_exit': 0}],
+    [{'id': 'a', 'context': 'backend', 'argv': argv_for(PROBE), 'expected_exit': 0, 'required': False}]])
 def test_profile_checks_are_closed_distinct_and_under_the_same_allowlist(checks):
     with pytest.raises(ContractError):
         parse_profile(document(checks), POLICY)
+
+
+@pytest.mark.parametrize('argv', [
+    ['uv', 'run', 'python', '-m', 'pytest', '-q'], ['ruff', 'check', '.'], ['python', '-m', PROBE],
+    ['python', '-m', 'ruff'], ['python', '-mpytest'], ['python3', '-m', 'pytest']])
+def test_r1_profile_refuses_every_form_whose_interpreter_replay_would_not_enforce(argv):
+    """R1: the test policy AUTHORIZES the first three forms, so the refusal is the profile's own
+    version-1 boundary, not the allowlist; the packaged legacy contract keeps them."""
+    from codex_harness.adapters.evidence_inspection import packaged_policy
+    from codex_harness.domain.evidence import authorized
+    with pytest.raises(ContractError, match='not an authorized|python -m pytest or python -m ruff check'):
+        parse_profile(document([{'id': 'a', 'context': 'backend', 'argv': argv, 'expected_exit': 0}]), POLICY)
+    assert authorized(['uv', 'run', 'python', '-m', 'pytest', '-q'], packaged_policy()), 'legacy form untouched'
+    for accepted in (['python', '-m', 'pytest', '-q'], ['python', '-m', 'ruff', 'check', '.']):
+        parsed = parse_profile(document([{'id': 'a', 'context': 'backend', 'argv': accepted, 'expected_exit': 0}]),
+                               packaged_policy())
+        assert parsed['checks'][0]['argv'] == accepted
+
+
+def test_r1_an_unenforceable_claim_never_reaches_capture(tmp_path, monkeypatch):
+    """Defense in depth: a profile object that bypassed the parser still cannot spawn `uv`."""
+    root = workspace(tmp_path)
+    spawned = []
+    monkeypatch.setattr('codex_harness.adapters.project_evidence._capture', lambda *a, **k: spawned.append(a) or {})
+    inspect = inspector(tmp_path)
+    inspect.profile = {**inspect.profile, 'checks': [{**inspect.profile['checks'][0],
+                                                      'argv': ['uv', 'run', 'python', '-m', 'pytest']}]}
+    found = inspect.inspect([executed('probe')], str(root), {})
+    assert found['findings'][0]['state'] == 'not_checked' and not spawned
+
+
+class Clock:
+    def __init__(self):
+        self.now = 100.0
+
+    def __call__(self):
+        return self.now
+
+
+def timed(tmp_path, monkeypatch, durations, total=1):
+    """Deterministic clock and capture seam (labelled fake: no process runs); each fake replay exits 0
+    after advancing the clock by its duration and records the timeout it was given."""
+    root = workspace(tmp_path)
+    inspect = ProjectEvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')), parse_profile(document(), POLICY),
+                                       policy(total_seconds=total, per_command_seconds=total))
+    clock, given, pending = Clock(), [], list(durations)
+    inspect.clock = clock
+
+    def capture(argv, cwd, timeout, max_bytes, env):
+        given.append(timeout)
+        clock.now += pending.pop(0)
+        return {'failure': None, 'terminated': False, 'returncode': 0, 'duration_seconds': 0.0}
+    monkeypatch.setattr('codex_harness.adapters.project_evidence._capture', capture)
+    return inspect.inspect([executed('probe')], str(root), {})['findings'][0], given
+
+
+def test_r2_each_repeat_gets_only_what_the_absolute_deadline_still_holds(tmp_path, monkeypatch):
+    # The reviewer's probe: 0.75s + 0.75s under a 1s budget used to be all_checked at 1.5s.
+    finding, given = timed(tmp_path, monkeypatch, [0.75, 0.75])
+    assert given == [1.0, 0.25], 'the second repeat is given the remainder, never the original allowance'
+    assert finding['state'] == 'not_checked' and 'late result is not counted' in finding['cause']
+    assert finding['observed_exits'] == [0, 0] and finding['timeouts_seconds'] == [1.0, 0.25]
+
+
+def test_r2_no_repeat_starts_at_or_beyond_the_deadline(tmp_path, monkeypatch):
+    finding, given = timed(tmp_path, monkeypatch, [1.0, 0.1])
+    assert given == [1.0], 'a partial first success is followed by exhaustion, not by another spawn'
+    assert finding['state'] == 'not_checked' and 'exhausted before replay 2' in finding['cause']
+    assert finding['observed_exits'] == [0]
+
+
+def test_r2_timely_repeats_are_still_checked(tmp_path, monkeypatch):
+    finding, given = timed(tmp_path, monkeypatch, [0.25, 0.25])
+    assert given == [1.0, 0.75] and finding['state'] == 'checked' and finding['observed_exits'] == [0, 0]
+
+
+def test_r2_a_real_second_replay_is_terminated_at_the_shrunken_timeout(tmp_path):
+    """Real subprocesses: a 3s pytest sleep under a 5s aggregate budget. The first replay may fit; a
+    second receives only the remainder and is terminated by the existing bounded capture."""
+    root = workspace(tmp_path)
+    (root / 'backend' / 'probes' / 'test_slow.py').write_text(
+        'import time\n\n\ndef test_slow():\n    time.sleep(3)\n', encoding='utf-8')
+    inspect = ProjectEvidenceInspector(FileArtifacts(str(tmp_path / 'artifacts')), parse_profile(
+        document([check('probe', 'slow')]), POLICY), policy(total_seconds=5, per_command_seconds=5))
+    finding = inspect.inspect([executed('probe')], str(root), {})['findings'][0]
+    assert finding['state'] != 'checked', finding
+    assert len(finding['timeouts_seconds']) <= 2 and finding['timeouts_seconds'][0] == pytest.approx(5, abs=0.2)
+    if len(finding['timeouts_seconds']) == 2:
+        assert finding['timeouts_seconds'][1] < 2.1 and finding['runs'][1]['terminated'] is True
 
 
 def test_missing_source_dependency_interpreter_and_symlink_escape_refuse_before_spawn(tmp_path, monkeypatch):

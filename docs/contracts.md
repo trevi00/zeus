@@ -1056,6 +1056,24 @@ the profile digest, so a same-id run under another profile is refused. For `atta
 `finding.criterion` the enum of the pinned plan `acceptance_criteria`; `domain.dge` exact membership
 is unchanged, nothing is normalized, and the static schema constants are never mutated.
 
+Correction batch (R1-R3). Version 1 support boundary, deliberate: a profile check argv must be
+`python -m pytest ...` or `python -m ruff check ...` AND pass the packaged allowlist. Replay
+enforces the context interpreter only by replacing the first token of `python -m`, so `uv run ...`,
+bare `ruff` and every other form is refused at profile load (and again before capture); the legacy
+unprofiled contract keeps those forms. The aggregate replay budget is one absolute monotonic
+deadline: the remaining allowance is recomputed before every repeat, no repeat starts at or beyond
+it, a result observed after it is `not_checked`, and `timeouts_seconds` records what each repeat
+was given. For a profiled `implement` on the `claude_cli` transport the executor resolves the host
+profile against that checkout (`worker_delivery`) and hands it to `ClaudeCodeRuntime`: each check
+becomes one exact POSIX `sh` command (`cd <cwd> && PYTHONPATH=<sources> PYTHONDONTWRITEBYTECODE=1
+<interpreter> -m ...`, every value through `shlex.quote`, control characters refused), the per-run
+`--settings` gain only exact wildcard-free `Bash(...)` allow rules for that command and its two
+parts, the system prompt gains a host section that overrides only the legacy interpreter and
+`tests` format instructions, and the process `PYTHONPATH` is unset. Deny rules, permission mode,
+the repository-root working directory and the legacy path without a profile are unchanged; nothing
+is derived from model output. Delivery is recorded as digests; whether the installed CLI honoured
+the rules is decided by a real canary, not by this configuration.
+
 # SDD preparation contracts
 
 - INV-SDD-001: Missing specs, unknown fields, uncovered requirements and reused retired scenario IDs fail validation. Git definitions produce immutable runtime snapshots bound to the current local ticket revision. Superseded iterations cannot append observations or request transitions. Given/When/Then are lists of statements, never one-line strings to be parsed; generated replay drafts embed the spec hash and attribute every assertion at runtime to its scenario, oracle index and requirement IDs, carry spec text only as Python literals without truncation, contain no placeholder or expected-failure skeletons, and are never written over a different existing draft.
