@@ -63,3 +63,24 @@ claims, any upstream text, examples or executables. License chain unverified; pr
   append makes eight, so that one test fails until the owner changes the constant. The test file is
   outside the allowed paths and was not edited. Full suite, image rebuild and canary belong to
   Codex/CI.
+
+## Source-count correction (resolved; history preserved)
+
+- Historical failure, kept as recorded above: the implementation batch ran
+  `python -m pytest tests/test_worker_profile.py -q -p no:cacheprovider` and observed 19 passed,
+  1 failed. The single failure was `test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_preserved`
+  at the `len(manifest["sources"]) == 7` expectation; the evidence gate stopped there (SPEC,
+  "Existing source-count assertion: owner scope correction"). The owner classified it as a
+  specification omission: the test predates the eighth source and the SPEC required the append.
+- Corrective batch, authorized by that SPEC section, changed only the expectation `7` to `8` in
+  `tests/test_worker_profile.py`. Every other assertion in that test and file is unchanged,
+  including the manifest key order, exact allow list, hook list, character limit, denies delivered
+  unchanged and the single exact metadata grant. Profile document, manifest and hook were not
+  touched; digest `ba0269ddf428f9f5faba870debc812fb709e88af5b6d182cc4239b5c1bb85bc1` and the
+  eight sources are as recorded above.
+- Verification for the corrective batch: `python -m pytest tests/test_worker_profile.py
+  tests/test_worker_profile_metadata.py -q -p no:cacheprovider` and `python -m ruff check .`.
+  Observed results are in the corrective batch's report, not restated here as expectations.
+- Still not claimed: the corrective batch also ran under the previously packaged profile. No run
+  under the new document digest has been observed in this delivery; that remains the rebuilt-image
+  canary task and CI, per the SPEC acceptance matrix.
