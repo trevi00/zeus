@@ -113,3 +113,11 @@ global Git or runtime change. A fresh c2 operation uses the same tested image/ru
 code. One explicit replacement worker/lead pair, ceiling123 from121 (five total calls
 instead of four). This is an owner fixture correction, not automatic retry or a fix to
 the accepted path helper. No further expansion if the corrected fixture fails.
+
+## Final local acceptance
+
+Implementation and actual direct-dot-path canary accepted; owner baseline contrast,
+Windows checks and exact candidate bytes passed. No owner-copy workaround. RESULT.md
+and EVIDENCE.json preserve the complete batch and limits. The operation objective assigned
+baseline reversion to the owner (not the worker). Final CI/merge/closure are the remaining
+delivery gates; no new model calls or exploratory review are needed.
