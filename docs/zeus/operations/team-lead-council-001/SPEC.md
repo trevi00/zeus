@@ -189,3 +189,43 @@ coverage as an approval decision. No current caller has that authority.
 The run stays rejected in PG; the reviewer output is preserved unchanged. Owner Git
 acceptance, contingent on full CI, is separate and does not create an accepted
 operation or knowledge promotion. No third implementation/model round for this P2.
+
+## Live council validation, 2026-09-17
+
+The user authorized the next actual operation. Goal: exercise the shipped seven-role
+path on one small maintenance topic: distinguish an absent required snapshot field
+from explicit nullable lead_accepted. This is a new council canary after framework
+delivery, not a retry of the rejected construction operation. Keep that verdict intact.
+
+Inputs are pinned Git definitions and the actual operation/task records from
+zeus_team_lead_council_002. Reuse that isolated schema to observe real history; give
+this run its own id, Redis namespace and runtime directory. These records establish
+prior execution states, not occurrence of a malformed row in production. The known
+missing-field reproducer is synthetic. Source semantics and PG17 references above
+remain applicable; no new platform or database behavior is introduced.
+
+Path: research -> frozen packet -> read-only snapshot -> DBA interpretation ->
+research lead proposal -> improvement lead alternative -> conductor arbitration ->
+Claude implementation -> independent Codex review -> verified graph promotion.
+Codex owns this frame and final acceptance; Claude alone makes runtime changes.
+Maximum seven starts, machine ledger 67 to 74, one round, 60-minute absolute
+deadline; Claude USD4 declared ceiling / 1200 seconds. No automatic retry or merge.
+
+Acceptance matrix for this phase:
+- Normal: all five design roles bind to distinct executions and shared evidence;
+  Claude implements the small fix, independent review accepts, promotion is bound.
+- Missing/unknown: absent lead_accepted becomes unknown with no exported fields;
+  explicit null/false/true remains found. Existing missing-row behavior is unchanged.
+- Failure/timeout: retain original terminal receipt and raw evidence; no repair of
+  model answers and no promotion on refusal. Do not rerun until green.
+- Restart: cached terminal replay uses zero additional calls and no extra promotion.
+- Concurrency/platform: existing council checks and CI cover unchanged boundaries;
+  this live run is Windows only, not evidence of a WSL live council.
+- Cleanup: collect observation spool, inspect unsettled reservations/unconfirmed
+  executions, preserve runtime and artifacts on D; do not erase historical runs.
+
+One batch: tiny domain fix + regression + runbook nullable clarification; targeted
+council tests and lint, independent review, owner provenance check, full CI for any
+resulting PR. Broader topology, automatic recovery, device/product acceptance and
+remaining reference absorption stay out of scope. A refusal is a measured limitation,
+not a reason to expand this task into exploratory environment repair.
