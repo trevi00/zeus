@@ -655,10 +655,11 @@
       "read_extent": "targeted ranges only; not full consumer closure"
     }
   ],
-  "selection_sha256": "19095b1c01a772e4f2c80d5ed73ae4d7390bd1f0ef0e6d0986c3b477252c9a73",
+  "selection_sha256": "ae486c42d7e1e8d332e0cf3327a254b740c663c73eb468cd3e9e12b46cde469e",
   "verification_notes": [
     "First metadata report stdout failed cp949 encoding after identity checks; rerun with Python -X utf8 succeeded.",
     "No upstream source was imported or executed. Hashing is identity verification, not semantic review.",
-    "Historical Claude receipt is preserved as input; no fresh Claude agreement is claimed."
+    "Historical Claude receipt is preserved as input; no fresh Claude agreement is claimed.",
+    "Initial owner check assumed the Java full marker for TypeScript full_body records; corrected to accept both explicit historical labels. Generated JSON line endings normalized to LF. Initial branch commit preceded the failed local checks; acceptance withheld until corrected checks passed."
   ]
 }
