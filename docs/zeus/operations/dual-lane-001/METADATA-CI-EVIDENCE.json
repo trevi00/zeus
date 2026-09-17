@@ -1,0 +1,72 @@
+{
+  "date": "2026-09-17",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\dual-lane-001",
+  "note": "Test-only correction after observed CI failure. Original manifests unchanged. Final CI is recorded by immutable run URL in PR126.",
+  "files": [
+    {
+      "path": "metadata-ci-integration-failed.log",
+      "bytes": 122220,
+      "sha256": "8b8877654e47a043b19300b3a0ee40a03be459794ec1a913f8d38057a1f7e20d"
+    },
+    {
+      "path": "metadata-ci-linux312-failed.log",
+      "bytes": 69938,
+      "sha256": "4018b3cca0869c02a15db268a6992d27a21864e74227096d0067ad1d709ca8b1"
+    },
+    {
+      "path": "metadata-ci-windows312-failed.log",
+      "bytes": 74198,
+      "sha256": "594bf22dc13fcbbebf3ef8fa9da24a23f64bb9ada5a6c25a90375813b6e0cf8f"
+    },
+    {
+      "path": "metadata-followup-export.py",
+      "bytes": 1508,
+      "sha256": "29e8914e1e447a7eb6ec1eadfd371d40f3c79eeb55f71a28a597139d0631a0e5"
+    },
+    {
+      "path": "metadata-followup-run.py",
+      "bytes": 8004,
+      "sha256": "9fb3e5728c3f737d6c2abf0c6bad837fc84f9c1c483ef1c83d83193c9ea298ef"
+    },
+    {
+      "path": "metadata-testfix/manifest.json",
+      "bytes": 2147,
+      "sha256": "448cc225c72a880cbae72c05b7a22fdf3c63634ecf95b94a2156e1fb1778f280"
+    },
+    {
+      "path": "metadata-testfix/receipt.json",
+      "bytes": 784,
+      "sha256": "c41f2dfc4fcb37a02e21b639f70c39fd1ff56942badc6f5d92e33078bd0af485"
+    },
+    {
+      "path": "metadata-testfix/records.json",
+      "bytes": 48270,
+      "sha256": "c575b6fbbf2af72e966cd8140c6bca89ac0e4b92ce33528f80195329132a3379"
+    },
+    {
+      "path": "metadata-testfix/runtime/artifacts/2f01f525692a160e91c809b6ffc16ee8512a3b94a9944f3a186a61c8cc7cb5f0.txt",
+      "bytes": 90740,
+      "sha256": "2f01f525692a160e91c809b6ffc16ee8512a3b94a9944f3a186a61c8cc7cb5f0"
+    },
+    {
+      "path": "metadata-testfix/runtime/artifacts/442a7694f7da8e231aafc3dd5e35f1e0a934359507ff2b15dd61239366df7817.txt",
+      "bytes": 680774,
+      "sha256": "442a7694f7da8e231aafc3dd5e35f1e0a934359507ff2b15dd61239366df7817"
+    },
+    {
+      "path": "metadata-testfix/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "metadata-testfix/stdout.json",
+      "bytes": 5163,
+      "sha256": "3f6b86e8c39c3e385c40bef0169638166412962b8bf39e26c9bf92aa2a78f987"
+    },
+    {
+      "path": "metadata-testfix/worker-tools.json",
+      "bytes": 7206,
+      "sha256": "c04434e0b2178303eced00518f300bc7285d06a80dee93f654b6aec2e23d91f2"
+    }
+  ]
+}

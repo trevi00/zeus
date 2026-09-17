@@ -58,6 +58,32 @@ no owner metadata repair.
 Only issue124 is eligible for closure after those checks pass. Earlier source-analysis dirty
 files, old failed receipts and unrelated goals remain untouched.
 
+### Final CI failure and scoped correction
+
+First PR run35200928738 failed: the pre-existing test_project_delivery.py assertion pinned
+`Run tests as` and an unwrapped host-exception sentence. The canary changed wording, not that
+requirement. Linux3.12/3.14, Windows3.12/3.14 and integration failed; downloaded Linux3.12,
+Windows3.12 and integration logs show the same single assertion. This was not an infrastructure
+flake. The owner omitted this affected file from the post-canary subset, despite the earlier
+bootstrap full suite passing. The same frame was amended before correction.
+
+Actual operation `profile-metadata-124-testfix` accepted candidate
+`2b483e2df32bde7e51d78ee1d4e9b4024e44bf3f`: only that test's assertion changes. It now normalizes
+whitespace and requires the complete current verified-interpreter, host-exception/run-verbatim
+and pytest/ruff guidance. No runtime/profile bytes change; no canary rerun or owner repair.
+Independent review observed65 passed/3 skipped and lint passed; skip causes: no POSIX sh,
+file-symlink privilege and unavailable integration environment. Its child tests created seven
+ignored pyc files despite parent bytecode suppression, violating review-checkout preservation;
+the reviewer corrected its cleanliness claim and preserved the files. This is recorded as an
+operating limitation, not silently cleaned or treated as a code defect. Tracked HEAD/tree were
+unchanged and the owner independently checked the test-only diff.
+
+Two additional calls were explicitly budgeted in the revised frame, both settled: continuation
+total6, machine91->97. This operation collected55 records with zero collection failures;
+total across the continuation252. Original METADATA-EVIDENCE.json remains unchanged; the
+follow-up receipt, logs and artifact hashes are in METADATA-CI-EVIDENCE.json. Final owner full
+suite and corrected-head CI results are published on PR126 before merge/issue closure.
+
 ## Operating limits
 
 These sessions are native Windows CLI processes, not per-session containers. Separate Git
