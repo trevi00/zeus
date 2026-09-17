@@ -7,13 +7,16 @@ and crashed on invalid UTF-8 output or a NUL path. Every replay below is a real 
 """
 import hashlib
 import json
+import os
 import sys
+import threading
 import time
 from pathlib import Path
 
 import pytest
 from test_workflow import assignment
 
+from codex_harness.adapters import evidence_inspection as ei
 from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.evidence_inspection import (
     POLICY_FILE,
@@ -285,6 +288,105 @@ def test_deadline_and_budgets_are_enforced_and_termination_is_recorded(tmp_path)
     assert report['findings'][1]['state'] == 'not_checked' and 'budget exhausted' in report['findings'][1]['cause']
     missing = insp.inspect([command('x')], tmp_path / 'absent', {'task_id': 't', 'attempt': 1})
     assert missing['findings'][0]['state'] == 'error' and 'workspace directory' in missing['findings'][0]['cause']
+
+
+# A real child that starts a real grandchild sharing its pipes: the streams reach EOF only when the
+# whole TREE is gone, which is what made a close-before-terminate block.
+HOLDER = ("import subprocess, sys, time; subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(120)']); "
+          "print('started', flush=True); time.sleep(120)")
+WATCHDOG_SECONDS = 60
+
+
+def interrupt_first_wait(monkeypatch, spawned, fired, replace=None):
+    """INJECTED cancellation on the REAL `ProcessTree` and its REAL child: only the first `wait` of the
+    returned process raises KeyboardInterrupt (after the child had time to start its grandchild).
+    The watchdog is test safety only; every caller asserts it never fired."""
+    real = ei.ProcessTree.spawn
+
+    def spawn(argv, **kwargs):
+        tree = real(replace(argv) if replace is not None else argv, **kwargs)
+        wait, calls = tree.process.wait, []
+
+        def interrupted(timeout=None):
+            calls.append(timeout)
+            if len(calls) == 1:
+                time.sleep(1.5)
+                raise KeyboardInterrupt
+            return wait(timeout=timeout)
+        tree.process.wait = interrupted
+        watchdog = threading.Timer(WATCHDOG_SECONDS, lambda: (fired.append(tree.process.pid), tree.close(),
+                                                              tree.process.kill()))
+        watchdog.daemon = True
+        watchdog.start()
+        spawned.append((tree, watchdog))
+        return tree
+    monkeypatch.setattr(ei.ProcessTree, 'spawn', staticmethod(spawn))
+
+
+def test_real_capture_keeps_normal_stream_receipts(tmp_path):
+    run = ei._capture([PY, '-c', "import sys; print('out'); sys.stderr.write('err'); sys.exit(3)"], str(tmp_path), 20, 4096,
+                      replay_environment())
+    body = b'out' + os.linesep.encode()
+    assert run['failure'] is None and run['terminated'] is False and run['returncode'] == 3
+    # A clean exit carries its positive cleanup proof too: a return alone proves nothing to the owner.
+    assert run['cleanup']['reason'] == 'exited' and run['cleanup']['confirmed'] is True
+    assert run['cleanup']['tree']['confirmed'] and sorted(run['cleanup']['streams_closed']) == ['stderr', 'stdout']
+    assert run['stdout'] == {'sha256': hashlib.sha256(body).hexdigest(), 'bytes': len(body), 'truncated': False,
+                             'decoding': 'utf-8', 'raw': body.decode()}
+    assert run['stderr']['bytes'] == 3 and run['stderr']['raw'] == 'err'
+
+
+def test_real_capture_timeout_terminates_the_tree_and_keeps_what_was_read(tmp_path):
+    started = time.monotonic()
+    run = ei._capture([PY, '-c', HOLDER], str(tmp_path), 2, 4096, replay_environment())
+    assert time.monotonic() - started < WATCHDOG_SECONDS / 2
+    assert run['terminated'] and run['failure'] == 'timeout after 2s; process tree terminated' and run['returncode'] is not None
+    assert run['cleanup']['confirmed'] and run['cleanup']['tree']['confirmed'] and run['cleanup']['readers_alive'] == []
+    assert sorted(run['cleanup']['streams_closed']) == ['stderr', 'stdout'] and run['stdout']['raw'].startswith('started')
+
+
+def test_real_capture_interrupted_in_wait_reclaims_the_tree_then_raises_the_original(tmp_path, monkeypatch):
+    spawned, fired = [], []
+    interrupt_first_wait(monkeypatch, spawned, fired)
+    started = time.monotonic()
+    with pytest.raises(KeyboardInterrupt) as raised:
+        ei._capture([PY, '-c', HOLDER], str(tmp_path), 120, 4096, replay_environment())
+    elapsed = time.monotonic() - started
+    (tree, watchdog), = spawned
+    watchdog.cancel()
+    assert fired == [] and elapsed < WATCHDOG_SECONDS / 2, 'cleanup finished on its own, before the watchdog'
+    cleanup = raised.value.capture_cleanup
+    assert cleanup['reason'] == 'KeyboardInterrupt' and cleanup['confirmed'] and cleanup['tree']['confirmed']
+    # EOF on both pipes means the grandchild holding them is gone too; only then were they closed.
+    assert cleanup['readers_alive'] == [] and sorted(cleanup['streams_closed']) == ['stderr', 'stdout']
+    assert tree.process.poll() is not None and tree.process.stdout.closed and tree.process.stderr.closed
+
+
+def test_real_capture_never_closes_a_stream_a_live_reader_owns_and_is_not_success(tmp_path, monkeypatch):
+    """INJECTED fault: tree termination changes nothing, so the readers cannot finish."""
+    trees = []
+    real = ei.ProcessTree.spawn
+
+    def spawn(argv, **kwargs):
+        tree = real(argv, **kwargs)
+        trees.append((tree, tree.terminate))
+        tree.terminate = lambda reason, **_: {'reason': reason, 'confirmed': False, 'injected': True}
+        tree.close = lambda: None
+        return tree
+    monkeypatch.setattr(ei.ProcessTree, 'spawn', staticmethod(spawn))
+    monkeypatch.setattr(ei, 'READER_JOIN_SECONDS', 1.0)
+    started = time.monotonic()
+    try:
+        run = ei._capture([PY, '-c', HOLDER], str(tmp_path), 2, 4096, replay_environment())
+        assert time.monotonic() - started < WATCHDOG_SECONDS / 2, 'no blocking close behind a live reader'
+        assert run['terminated'] and 'capture_cleanup_unconfirmed: readers still own stdout,stderr' in run['failure']
+        assert run['cleanup']['confirmed'] is False and run['cleanup']['streams_closed'] == []
+        assert classify_replays([run], 0)[0] == 'replay_failed' and not trees[0][0].process.stdout.closed
+    finally:
+        for tree, terminate in trees:  # test cleanup of the real tree the injected fault left alive
+            assert terminate('test cleanup')['confirmed']
+            del tree.close  # drop the injected no-op, then release the real job handle
+            tree.close()
 
 
 @pytest.mark.parametrize('backend', ['memory', 'postgres'])

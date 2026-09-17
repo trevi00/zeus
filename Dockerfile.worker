@@ -1,0 +1,46 @@
+# INV-ISOLATED-WORKER-001: the fixed worker/verifier image. Built by the owner; referenced only by
+# its immutable id (ZEUS_WORKER_IMAGE=sha256:<64hex>). No credential, ~/.claude, personal agent,
+# command or MCP asset is copied in; the token arrives at run time by environment name only.
+FROM node:22-bookworm-slim AS claude
+RUN npm install -g @anthropic-ai/claude-code@2.1.274
+
+FROM python:3.13-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir uv==0.12.2
+COPY --from=claude /usr/local/bin/node /usr/local/bin/node
+COPY --from=claude /usr/local/lib/node_modules /usr/local/lib/node_modules
+# The link targets the executable the installed package itself declares (package.json bin.claude;
+# measured for 2.1.274: bin/claude.exe, there is no cli.js). The build fails unless that exact
+# pinned CLI answers --version.
+RUN python -c "import json, os; root = '/usr/local/lib/node_modules/@anthropic-ai/claude-code'; os.symlink(os.path.join(root, json.load(open(root + '/package.json'))['bin']['claude']), '/usr/local/bin/claude')" \
+    && claude --version \
+    && claude --version | grep -F "2.1.274"
+# Trusted package, locked dependencies, pytest and ruff live in /opt/zeus, installed non-editable so
+# nothing under /workspace can shadow the entrypoint or the pinned profile hook.
+WORKDIR /build
+COPY pyproject.toml uv.lock README.md ./
+COPY src ./src
+ENV UV_PROJECT_ENVIRONMENT=/opt/zeus
+# The venv interpreter is a COPY, never a symlink: the worker profile resolves its interpreter
+# (Path.resolve) and puts that directory first on PATH, and a symlinked venv python resolves out to
+# /usr/local/bin, where neither pytest nor ruff exists (measured). uv sync reuses this venv; the
+# build fails if it was replaced by a symlinked one.
+RUN python -m venv --copies --without-pip /opt/zeus \
+    && uv sync --frozen --no-editable && rm -rf /build /root/.cache \
+    && test ! -L /opt/zeus/bin/python \
+    && test "$(/opt/zeus/bin/python -I -c 'import os, sys; print(os.path.realpath(sys.executable))')" = /opt/zeus/bin/python
+RUN useradd --uid 10001 --create-home --home-dir /home/worker worker && mkdir -p /workspace /evidence
+ENV PATH="/opt/zeus/bin:$PATH" \
+    DISABLE_AUTOUPDATER=1 \
+    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
+    PYTHONDONTWRITEBYTECODE=1
+USER 10001:10001
+WORKDIR /
+# Again as the unprivileged runtime user, through PATH, exactly as the inner runtime resolves it.
+RUN claude --version | grep -F "2.1.274"
+# The ACTUAL worker profile selection, not merely /opt/zeus/bin/python -m: the interpreter the profile
+# verifies, the environment it derives from the allow-listed child environment, `python` found through
+# that PATH, then the profile-selected pytest and ruff under exactly that environment. No credential,
+# no network and no model call is involved.
+RUN /opt/zeus/bin/python -I -c "import shutil, subprocess; from pathlib import Path; from codex_harness.adapters.claude_cli import child_environment; from codex_harness.adapters.worker_profile import profile_environment, verified_interpreter; interpreter = verified_interpreter(); assert interpreter.parent == Path('/opt/zeus/bin'), interpreter; env = profile_environment(child_environment()[0], '/workspace', interpreter)[0]; python = shutil.which('python', path=env['PATH']); assert python is not None and Path(python).resolve().parent == Path('/opt/zeus/bin'), python; [subprocess.run([python, '-m', tool, '--version'], env=env, cwd='/workspace', check=True) for tool in ('pytest', 'ruff')]"
+ENTRYPOINT ["/opt/zeus/bin/python", "-I", "-m", "codex_harness.adapters.isolated_worker_entry"]

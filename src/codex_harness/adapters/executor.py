@@ -15,6 +15,8 @@ from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector, trusted_interpreter
 from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
 from codex_harness.adapters.hooks import NativeHooks
+from codex_harness.adapters.isolated_worker import isolated_review_context
+from codex_harness.adapters.isolated_worker import summary as isolation_summary
 from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.output_schema import preflight
 from codex_harness.adapters.project_evidence import (
@@ -143,7 +145,7 @@ class Executor:
     """Infrastructure composition for role-specific, independently executed Codex tasks."""
 
     def __init__(self, service, git, artifacts, knowledge=None, research=None, release_runner=None, audit_runner=None,
-                 observer=None, execution_policy=None, evidence_profile=None):
+                 observer=None, execution_policy=None, evidence_profile=None, isolation=None):
         self.service, self.git, self.artifacts = service, git, artifacts
         # Read on first use: a malformed host configuration must refuse an execution, not a process.
         self._execution_policy = execution_policy
@@ -158,8 +160,15 @@ class Executor:
         # INV-PROJECT-EVIDENCE-001: the host-loaded profile (parsed once, before any provider entry)
         # or None; absence keeps the legacy inspector, schema and review context exactly.
         self.evidence_profile = evidence_profile
-        self.evidence = EvidenceInspections(service.store, EvidenceInspector(artifacts) if evidence_profile is None
-                                            else ProjectEvidenceInspector(artifacts, evidence_profile))
+        # INV-ISOLATED-WORKER-001: a host-selected IsolatedWorker, or None for exact host behaviour. A host
+        # project-evidence profile has no in-container mapping yet: the pair is refused, never run on host.
+        require(isolation is None or evidence_profile is None,
+                "Isolated worker mode refuses a host project evidence profile")
+        self.isolation = isolation
+        inspector = (isolation.inspector(artifacts) if isolation is not None
+                     else EvidenceInspector(artifacts) if evidence_profile is None
+                     else ProjectEvidenceInspector(artifacts, evidence_profile))
+        self.evidence = EvidenceInspections(service.store, inspector)
         self.releases = Releases(service.store, service.org)
         self.audit_execution = None
         if audit_runner is not None:
@@ -181,6 +190,11 @@ class Executor:
         # INV-PROJECT-EVIDENCE-001 (R3): the host profile resolved for THIS implementation checkout
         # reaches the transport itself (exact Bash rules, system prompt), not only the prompt details.
         # Without a profile the construction is exactly the legacy one.
+        if self.isolation is not None:
+            # Selected isolation is the only Claude path: there is no branch back to the host runtime.
+            return self.isolation.runtime(model=model, runtime=assignment.runtime,
+                                          max_budget_usd=assignment.controls.get("max_budget_usd"),
+                                          settings_document=claude_settings(assignment.runtime))
         project = ({"project_delivery": worker_delivery(self.evidence_profile, cwd)}
                    if self.evidence_profile is not None and action == "implement" and cwd is not None else {})
         return ClaudeCodeRuntime(model=model, runtime=assignment.runtime,
@@ -280,7 +294,8 @@ class Executor:
         if read_only:
             # The host names the interpreter and checkout a reviewer tests with; the model receives
             # this, it never chooses it (review-contract-001).
-            required["review_context"] = review_context(cwd)
+            required["review_context"] = (review_context(cwd) if self.isolation is None
+                                          else isolated_review_context(cwd, self.isolation.config))
             if self.evidence_profile is not None:
                 # Rebound to THIS clean checkout, never the implementation workspace.
                 required["review_context"]["project_evidence"] = execution_instructions(self.evidence_profile, cwd)
@@ -450,6 +465,8 @@ class Executor:
             # The reservation carries which policy chose this provider, so a receipt can be read back
             # to the configuration that produced it.
             request = {**parse_request(assignment.transport, options), "assignment": assignment.receipt()}
+            if self.isolation is not None and assignment.transport == "claude_cli":
+                request["isolation"] = isolation_summary(self.isolation.config)
             # INV-OUTPUT-001 / INV-OBSERVATION-001: a schema the subset refuses is a configuration
             # error; it is refused here, before any provider is entered, so it never needs a
             # termination record.
