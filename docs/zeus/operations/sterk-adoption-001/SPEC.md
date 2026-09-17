@@ -108,3 +108,23 @@ than manufacture live operational evidence. No Samsung/human product acceptance 
 | #99 #100 | Adapt source freshness/partial refresh now; existing loopback read-only snapshot architecture retained |
 
 Other unknowns are backlog, not acceptance blockers. No claim that all 27 issues are absorbed.
+
+## Consolidated owner acceptance / bounded correction
+
+2026-09-18, candidate da3ed8ef. Isolated worker/replay: monitoring 7 passed, lint passed.
+Independent lead rejected one concrete defect: transport.ok_at is numeric but date()/parseTime()
+accept strings, so last successful response time always reads as invalid. No other rejection.
+Owner Chromium 153 actual local HTTP checks passed fresh, stale, future, invalid, independent
+Docker/Redis during DB failure, retained search/tab/dialog, HTTP failure persistence/recovery,
+8 joined refresh callers with timeout (~9.5s remaining on existing request), and subsequent recovery.
+Input/delay injection is labelled; it is not operational throughput evidence. No operational
+monitoring.json exists at the configured runtime path. Owner driver initially hit cp949 output
+encoding (not page failure); UTF-8 rerun preserved the failed driver's JSON separately.
+
+One explicit correction batch, not automatic retry: ledger 125 -> ceiling 127, one Claude + one
+independent review. Fix only receipt timestamp representation: store transport.ok_at as ISO string
+(or narrowly format its numeric type without relaxing source timestamp checks). Preserve all
+accepted behavior. Update IMPLEMENTATION.md, run the same two exact checks. Reviewer covers this
+delta and directly affected success/failure/recovery clock display only; no new speculative review.
+Owner will verify response time display during success -> failure -> recovery and finish the
+remaining lifecycle/aging checks, then CI/merge. This amendment does not erase the rejected receipt.
