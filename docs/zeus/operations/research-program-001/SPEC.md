@@ -504,3 +504,23 @@ new tests, ruff, owner acceptance and CI decide code acceptance, separately from
 Completion: one reviewed candidate or concrete failed result preserved, <=2starts, paused. No
 recursive new scope. Snapshot age600s is an independent existing guard; do not weaken or refresh it
 as part of this delivery fix. The old blocked task remains pending reconciliation.
+
+
+### Delivery batch review and revised denominator (2026-09-19)
+
+Actual Claude candidate643bf6a and independent Codex decisionc75cd1a0 both completed, consuming
+185->187/187; decision rejected. Owner92 focused tests and lint passed, original candidate clean.
+Do not integrate candidate: retained actual conductor details through candidate Executor._run with
+injected store/Git/no-model runtime produce23377 required bytes against22000. Two prior lead inputs
+fit. Independent review found the measured-size fixture insufficient; owner verified actual refusal.
+
+Observation -> assumption:17819-byte projection alone fit, but complete required context did not.
+Discriminating check now fixed: whole serialized prompt, representative isolation/reader/path metadata,
+at least17819-byte projection plus exact retained-input owner replay. Reduce duplicated advisory
+instructions and non-authoritative repeated isolation metadata; preserve all meeting content, source
+handles, reader argv rules and existing guards. No wider context/deadline allowance or semantic trim.
+Existing matrix remains; this revises its measurement denominator rather than adding a new scope.
+
+One remaining correction, not multiple new tickets. Current batch stops paused at187/187. A further
+Claude+Codex pair needs explicit+2 authorization; no fresh live council is included. See
+CONDUCTOR-REVIEW-001.md for one consolidated handoff and hashes. Runtime candidate not integrated.

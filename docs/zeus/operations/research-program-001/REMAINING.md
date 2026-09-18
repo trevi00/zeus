@@ -30,3 +30,7 @@ Update after explicit ceiling187 approval: run003 completed as a failed test att
 succeeded; conductor timed out and requires reconciliation. Calls185/187, paused; no further
 starts authorized by the leftover slots. Automated review/full acceptance/tick2 remain unverified.
 See RESULT-003.md. The pending-grant wording above records preparation, not current budget state.
+
+
+Delivery correction review: candidate643bf6a rejected because complete conductor input still exceeds
+22000 bytes. Calls187/187, paused. See CONDUCTOR-REVIEW-001.md; candidate code not integrated.
