@@ -1,7 +1,8 @@
 import { Activity, AlertTriangle, Database, HardDrive, ListChecks, Radio } from "lucide-react"
 
 import { KeyValue, StatCard } from "@/components/stat-card"
-import { StatusBadge, severityTone, statusTone } from "@/components/status-badge"
+import { StatusBadge } from "@/components/status-badge"
+import { severityTone, statusTone } from "@/lib/tones"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -63,8 +64,8 @@ export function OverviewView({ snapshot, retained, now }: Props) {
                 <Table>
                   <TableHeader><TableRow><TableHead>운영 ID</TableHead><TableHead>결과</TableHead><TableHead>사유</TableHead><TableHead>팀장 수락</TableHead><TableHead>작업</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    {observations.operations.rows.slice(0, 12).map((row) => (
-                      <TableRow key={row.id ?? Math.random()}>
+                    {observations.operations.rows.slice(0, 12).map((row, index) => (
+                      <TableRow key={row.id ?? `row-${index}`}>
                         <TableCell className="font-mono text-xs max-w-48 truncate" title={row.criterion ?? ""}>{row.id ?? "—"}</TableCell>
                         <TableCell><StatusBadge tone={statusTone(row.status)}>{row.status ?? "unknown"}</StatusBadge></TableCell>
                         <TableCell className="text-xs">{row.reason_code ?? "—"}</TableCell>

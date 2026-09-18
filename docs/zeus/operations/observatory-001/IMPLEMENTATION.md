@@ -74,3 +74,43 @@ Owner keeps npm install/build, packaged output generation, browser acceptance, f
   check. `public/vite.svg` and `src/assets/react.svg` from the scaffold were left in place (unused).
 - Sample order is store id order (deterministic, not time order); a sample cut at 2000 rows per
   bucket is labelled `truncated` and the UI/report say totals are sampled.
+
+## Completion correction (2026-09-18, base 4e799631d2b47d606c548e9e5ead8a9868b13244)
+
+Scope: only R1/R2/R3 from the owner review at the end of SPEC.md. Backend, HTTP and tests untouched.
+Files: `frontend/monitor/eslint.config.js`, `src/App.tsx`, `src/components/{status-badge,
+source-strip,stat-card}.tsx`, `src/lib/{report,tones(new)}.ts`, `src/views/{overview,logs,report}.tsx`.
+
+- R1 build/lint: `StatusBadge` now takes `React.ComponentProps<"span">` and spreads them to the
+  generated `Badge`, so `title` (App.tsx:73) and `aria-live` type-check. `severityTone`,
+  `freshnessTone`, `statusTone` moved to `src/lib/tones.ts` (callers updated) so the component file
+  exports only a component. The overview operations table keys by `row.id ?? row-<index>` instead
+  of `Math.random()`. ESLint: one override limited to `src/components/ui/**/*.tsx` turns off
+  `react-refresh/only-export-components` for the generated shadcn variant exports; no other rule
+  changed, product code stays under the full rule set.
+- R2 phone overflow: the generated Badge is `whitespace-nowrap shrink-0`; `StatusBadge` overrides
+  it to `h-auto min-h-5 max-w-full min-w-0 whitespace-normal break-words`, so scope/transport/
+  source badges wrap inside their container instead of widening the body. Sinks fixed: header rows
+  and main get `min-w-0`; the desktop grid and `KeyValue` use `minmax(0,1fr)` columns; source cards
+  and report rows get `break-words`/`break-all` on ids; log filter tabs scroll inside their own
+  `max-w-full overflow-x-auto` Tabs root (nav and tables already scroll in bounded containers). No
+  body-level clip was added, so the owner's scrollWidth measurement stays meaningful. Desktop
+  classes are unchanged except the grid column min.
+- R3 report truth and pinning: `Report` schema is `zeus-observatory-report.v2` (no Python consumer
+  of v1 exists in the repository; grep on `zeus-observatory-report`/`critical_events` only hit the
+  frontend and the stale packaged bundle). `critical_events` and new `critical_events_total` are
+  `null` when the observations envelope is not `ok` (unknown), an empty list only when the source
+  was ok and returned none; new `observations {available,status,error,freshness}` and
+  `transport {state,detail,last_ok_at}` record the capture conditions. `buildReport` takes the
+  transport state. `ReportView` pins the report in `useState` at view entry (mount) and rebuilds
+  only on the new "보고서 재생성" button; the 1s tick and polls no longer rebuild it. Rendered page
+  (also printed) shows "고정 보고서 · 생성 <time>", a destructive alert when capture happened in a
+  non-ok transport state (with detail and last ok time), an explicit "확인 불가 (비어 있음 아님)"
+  alert and per-card text when observations were unavailable, "확인 불가" instead of "—" for null
+  counts, and a screen-only hint when a newer snapshot exists. JSON download and print describe the
+  same pinned object.
+
+Verification run here: `python -m pytest tests/test_monitoring.py tests/test_monitoring_observations.py
+-q -p no:cacheprovider` and `python -m ruff check .` (results in the worker summary). Not run by
+the worker, owner-owned: `npm run build`, `npm run lint`, browser 390x844 / 1440x960 checks,
+packaged asset regeneration, controlled unavailable-observations injection, full CI.

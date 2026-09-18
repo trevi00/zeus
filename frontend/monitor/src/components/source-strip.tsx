@@ -1,6 +1,7 @@
 import { Clock } from "lucide-react"
 
-import { StatusBadge, freshnessTone } from "@/components/status-badge"
+import { StatusBadge } from "@/components/status-badge"
+import { freshnessTone } from "@/lib/tones"
 import { FRESH_MS, SOURCE_LABELS, SOURCE_NAMES, STATE_LABELS, formatSeconds, formatTime, freshness, parseTime, type Snapshot } from "@/lib/snapshot"
 
 export function SourceStrip({ snapshot, now }: { snapshot: Snapshot | null; now: number }) {
@@ -11,7 +12,7 @@ export function SourceStrip({ snapshot, now }: { snapshot: Snapshot | null; now:
       {SOURCE_NAMES.map((name) => {
         const state = freshness(snapshot, name, now)
         return (
-          <div key={name} className="rounded-lg border bg-card px-3 py-2 text-xs">
+          <div key={name} className="min-w-0 rounded-lg border bg-card px-3 py-2 text-xs break-words">
             <div className="flex items-center justify-between gap-2">
               <span className="font-medium truncate">{SOURCE_LABELS[name]}</span>
               <StatusBadge tone={freshnessTone(state.state)}>{STATE_LABELS[state.state]}</StatusBadge>

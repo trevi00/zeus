@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react"
 import { ChevronDown, ChevronRight, Filter } from "lucide-react"
 
-import { StatusBadge, severityTone } from "@/components/status-badge"
+import { StatusBadge } from "@/components/status-badge"
+import { severityTone } from "@/lib/tones"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -62,13 +63,13 @@ export function LogsView({ snapshot, retained, now }: Props) {
       ) : null}
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center" role="group" aria-label="로그 필터">
-        <Tabs value={category} onValueChange={setCategory}>
+        <Tabs value={category} onValueChange={setCategory} className="max-w-full overflow-x-auto">
           <TabsList aria-label="분류 필터">
             <TabsTrigger value="all">전체</TabsTrigger>
             {CATEGORY_ORDER.map((c) => <TabsTrigger key={c} value={c}>{CATEGORY_LABELS[c]}{observations?.events.by_category[c] ? ` ${observations.events.by_category[c]}` : ""}</TabsTrigger>)}
           </TabsList>
         </Tabs>
-        <Tabs value={severity} onValueChange={setSeverity}>
+        <Tabs value={severity} onValueChange={setSeverity} className="max-w-full overflow-x-auto">
           <TabsList aria-label="심각도 필터">
             <TabsTrigger value="all">전체</TabsTrigger>
             {SEVERITY_ORDER.map((s) => <TabsTrigger key={s} value={s}>{SEVERITY_LABELS[s]}{observations?.events.by_severity[s] ? ` ${observations.events.by_severity[s]}` : ""}</TabsTrigger>)}

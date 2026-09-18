@@ -52,7 +52,7 @@ export function App() {
   )
 
   return (
-    <div className="min-h-svh lg:grid lg:grid-cols-[220px_1fr]">
+    <div className="min-h-svh lg:grid lg:grid-cols-[220px_minmax(0,1fr)]">
       <aside className="hidden lg:flex flex-col gap-6 border-r bg-sidebar text-sidebar-foreground p-4 no-print">
         <div>
           <p className="text-xs text-muted-foreground">ZEUS / LOCAL OBSERVATORY</p>
@@ -63,12 +63,12 @@ export function App() {
       </aside>
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-10 flex flex-col gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur no-print lg:px-8">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="lg:hidden">
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+            <div className="min-w-0 lg:hidden">
               <p className="text-xs text-muted-foreground">ZEUS / LOCAL OBSERVATORY</p>
               <h1 className="text-base font-semibold">관측소 · 운영 모니터</h1>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
               <StatusBadge tone="neutral">조회 전용</StatusBadge>
               <StatusBadge tone="neutral" title="관측 범위 라벨 · 상태나 성공 판정이 아닙니다">관측 범위 · {typeof snapshot?.scope?.label === "string" && snapshot.scope.label ? snapshot.scope.label : "라벨 없음"}</StatusBadge>
               <StatusBadge tone={transportTone} aria-live="polite">{transportText}{transport.detail ? ` · ${transport.detail}` : ""}</StatusBadge>
@@ -79,14 +79,14 @@ export function App() {
           </div>
           <div className="lg:hidden overflow-x-auto">{nav}</div>
         </header>
-        <main className="flex flex-col gap-6 p-4 lg:p-8">
+        <main className="flex min-w-0 flex-col gap-6 p-4 lg:p-8">
           <SourceStrip snapshot={snapshot} now={now} />
           {warnings.length ? (
-            <Alert variant="destructive" className="no-print"><AlertDescription>{warnings.join(" · ")}</AlertDescription></Alert>
+            <Alert variant="destructive" className="no-print"><AlertDescription className="break-words">{warnings.join(" · ")}</AlertDescription></Alert>
           ) : null}
           {view === "overview" ? <OverviewView snapshot={snapshot} retained={retained} now={now} /> : null}
           {view === "logs" ? <LogsView snapshot={snapshot} retained={retained} now={now} /> : null}
-          {view === "report" ? <ReportView snapshot={snapshot} now={now} /> : null}
+          {view === "report" ? <ReportView snapshot={snapshot} transport={transport} now={now} /> : null}
           {view === "design" ? <DesignSystemView /> : null}
           <footer className="text-xs text-muted-foreground">
             마지막 정상 응답 {transport.ok_at ? new Date(transport.ok_at).toLocaleTimeString("ko-KR") : "없음"} · 화면 {new Date(now).toLocaleTimeString("ko-KR")} · 5초마다 새로고침, 숨김 상태에서는 중단

@@ -17,7 +17,7 @@ export function StatCard({ title, value, note, icon }: { title: string; value: R
 
 export function KeyValue({ items }: { items: Array<[string, React.ReactNode]> }) {
   return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+    <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-sm">
       {items.map(([key, value]) => (
         <div key={key} className="contents">
           <dt className="text-muted-foreground">{key}</dt>

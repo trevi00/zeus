@@ -19,4 +19,13 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Generated shadcn/ui primitives export their cva variant objects (badgeVariants,
+    // buttonVariants, tabsListVariants) next to the component, which react-refresh flags.
+    // Exemption is limited to the generated directory; product code keeps the rule.
+    files: ['src/components/ui/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

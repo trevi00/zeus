@@ -1,7 +1,8 @@
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import type * as React from "react"
 
-export type Tone = "success" | "warning" | "error" | "unknown" | "neutral"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import type { Tone } from "@/lib/tones"
 
 const TONES: Record<Tone, string> = {
   success: "bg-success/15 text-success border-success/30",
@@ -11,32 +12,19 @@ const TONES: Record<Tone, string> = {
   neutral: "",
 }
 
-export function StatusBadge({ tone = "neutral", children, className }: { tone?: Tone; children: React.ReactNode; className?: string }) {
+type Props = React.ComponentProps<"span"> & { tone?: Tone }
+
+/**
+ * Outline badge with a Zeus tone. Accepts every span attribute (title, aria-live, ...). Unlike the
+ * generated Badge it may wrap: it never exceeds its container width, so long labels (scope, error
+ * detail, timestamps) break onto further lines instead of widening the document on phones.
+ */
+export function StatusBadge({ tone = "neutral", className, ...props }: Props) {
   return (
-    <Badge variant="outline" className={cn(TONES[tone], className)}>
-      {children}
-    </Badge>
+    <Badge
+      variant="outline"
+      className={cn("h-auto min-h-5 max-w-full min-w-0 text-left whitespace-normal break-words", TONES[tone], className)}
+      {...props}
+    />
   )
-}
-
-export function severityTone(severity: string): Tone {
-  if (severity === "critical" || severity === "error") return "error"
-  if (severity === "warning") return "warning"
-  if (severity === "info" || severity === "debug") return "neutral"
-  return "unknown"
-}
-
-export function freshnessTone(state: string): Tone {
-  if (state === "fresh") return "success"
-  if (state === "stale") return "warning"
-  if (state === "unavailable" || state === "invalid") return "error"
-  return "unknown"
-}
-
-export function statusTone(status: string | null | undefined): Tone {
-  if (!status) return "unknown"
-  if (["healthy", "succeeded", "accepted", "active", "running", "ok", "recorded", "closed", "resolved"].includes(status)) return "success"
-  if (["failed", "rejected", "exhausted", "unavailable", "pending_reconciliation", "unconfirmed", "blocked"].includes(status)) return "error"
-  if (["pending", "retry", "queued", "stale"].includes(status)) return "warning"
-  return "unknown"
 }
