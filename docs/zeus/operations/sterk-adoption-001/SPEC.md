@@ -213,3 +213,6 @@ Completion: code independently accepted + focused/CI checks pass, real services/
 owned-process recovery pass, PR merged, startup configured, implementation issue closed with
 receipt. Residual logoff/reboot verification and older schema browsing are documented limits,
 not reasons to rerun unrelated environment research. No required person approval defaults to yes.
+### Live continuation acceptance seam (2026-09-18)
+
+The first actual implementation/review pair accepted candidate 9bc1f18 within its five-file scope. Owner executed the existing measurement/monitor integration test: it fails because it expects three fabricated observations from an empty store. The original allowed paths omitted this directly affected test. Extend the same batch to `tests/test_measurements.py` and the live implementation note only: replace that obsolete expectation with empty/persisted read-only collection assertions, retaining the independent Measurements use-case tests. No runtime redesign. One corrective Claude/reviewer pair is authorized in this frame, machine ledger 129 to 131; no automatic retries. Owner deployment and full CI remain the final acceptance checks.
