@@ -147,7 +147,7 @@ No new external exposure, no historical-schema merge, no worker privilege change
   execution adapter and Measurements.collect writes observations/artifact bytes every iteration.
 - Existing UI is a sanitized snapshot consumer. Keep its freshness/request behavior accepted.
 - New actual operations for this deployment use existing public PG + Redis namespace zeus and
-  fixed D:/workspaces/zeus/artifacts/live-runtime/r. This is normal assigned work, not an import of
+  fixed D:/workspaces/zeus/artifacts/live/r. This is normal assigned work, not an import of
   past schemas or a synthetic completed record. Historical schemas stay untouched and are excluded
   from this monitor's named scope. The public ticket rows are preserved.
 
