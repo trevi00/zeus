@@ -195,11 +195,11 @@ class LocalCycle:
                     receipts.append({"entry_id": entry_id, "rejected": type(exc).__name__})
                     continue
                 if message["correlation_id"] != cycle["correlation_id"]:
-                    parked = self._park(message)
+                    parked, refusal = self._park(message)
                     if parked is None:
-                        observe_rejected(observer, entry_id, message, "foreign_correlation", dead_letter=False)
+                        observe_rejected(observer, entry_id, message, refusal, dead_letter=False)
                         receipts.append({"entry_id": entry_id, "message_id": message["message_id"],
-                                         "refused": "foreign_correlation"})
+                                         "refused": refusal})
                         self._stop(cycle["id"], "foreign_correlation")
                         return receipts
                     observe_parked(observer, entry_id, message, parked)
@@ -223,14 +223,18 @@ class LocalCycle:
                     return receipts
         return receipts
 
-    def _park(self, message) -> dict | None:
+    def _park(self, message) -> tuple[dict | None, str]:
         """A foreign message is consumed only when the workflow durably parked it in its own
-        transaction; an active or unknown owner, a conductor recipient or any other result keeps
-        the existing refusal (no ACK, no handling, no model call)."""
+        transaction; an active or unknown owner, a conductor recipient, a body that conflicts with
+        the id's older binding or any other result keeps the existing refusal (no ACK, no handling,
+        no model call). Returns (parked receipt or None, refusal code)."""
         if self.workflow is None or parkable(self.service.store, message) is None:
-            return None
-        result = self.workflow.handle(message)
-        return result if is_parked(result) else None
+            return None, "foreign_correlation"
+        try:
+            result = self.workflow.handle(message)
+        except ContractError as exc:  # e.g. ParkedMessageConflict / conflicting task identity: left pending
+            return None, type(exc).__name__
+        return (result, "parked") if is_parked(result) else (None, "foreign_correlation")
 
     def _candidate(self, cycle) -> dict:
         """Choose at most one executor entry; fail closed on anything the existing claim policy

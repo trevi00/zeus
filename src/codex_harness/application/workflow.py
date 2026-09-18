@@ -90,14 +90,15 @@ class Workflow:
             if message["what"]["action"] in {"plan", "implement"}:
                 require_adoption(tx, message["what"]["details"])
             old = tx.get("tasks", task_id)
-            if old is None or old.get("status") == "cancelled":
-                # INV-OPERATION-FINALIZATION-001: a late assignment of a terminal operation is parked
-                # in this transaction instead of becoming a queued task; a retired row stays as it is.
-                parked = park_terminal(tx, message)
-                if parked is not None:
-                    return parked
             if old:
                 require(old["input_hash"] == digest(message), "Conflicting task identity")
+            # INV-OPERATION-FINALIZATION-001, one ordering: the older immutable binding is validated
+            # first, then a message of a terminal operation is parked in this transaction whatever
+            # the old row's status (queued, retired, succeeded...); the old row is never rewritten.
+            parked = park_terminal(tx, message)
+            if parked is not None:
+                return parked
+            if old:
                 return old
             require_unused_fence(tx, "tasks", task_id)
             dependencies = message["when"]["after"]
@@ -435,10 +436,12 @@ class Workflow:
         if message['type'] == 'execution.notice':
             from codex_harness.application.execution_notices import receive
             with self.store.transaction() as tx:
-                if tx.get("workflow_inbox", message["message_id"]) is None:
-                    parked = park_terminal(tx, message)  # notice evidence is kept; nothing is acted on
-                    if parked is not None:
-                        return parked
+                old = tx.get("workflow_inbox", message["message_id"])
+                if old:
+                    require(old["hash"] == digest(message), "Conflicting execution notice delivery")
+                parked = park_terminal(tx, message)  # notice evidence is kept; nothing is acted on
+                if parked is not None:
+                    return parked
                 return receive(tx, message)
         if message["type"] == "task.assign":
             return self.submit(message)
@@ -447,11 +450,14 @@ class Workflow:
             old = tx.get("workflow_inbox", message["message_id"])
             if old:
                 require(old["hash"] == digest(message), "Conflicting report identity")
-                return old["result"]
-            # INV-OPERATION-FINALIZATION-001: same transaction as the decision this report would queue.
+            # INV-OPERATION-FINALIZATION-001: same transaction as the decision this report would queue;
+            # a previously handled report of a terminal operation is parked too, so a redelivery can
+            # be acknowledged; its inbox row and result stay as they are.
             parked = park_terminal(tx, message)
             if parked is not None:
                 return parked
+            if old:
+                return old["result"]
             details = message["what"]["details"]
             next_message = None
             if message["type"] == "hook.required":

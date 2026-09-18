@@ -1152,24 +1152,31 @@ row's agent/actor is `worker:implementation` or `lead:improvement`; free text, p
 malformed or active operations and conductor rows never qualify. Retirable rows are tasks
 `queued`/`retry` and decisions `pending`/`retry` without a live lease: each gets an append-only
 `operation_dispositions` record (stable id, prior status, generation, attempt and row hash), the row
-becomes `cancelled` with error `operation_terminal` and `retirement` metadata, keeps its message,
-result, error, failure, input and attempt history, advances the durable execution fence and clears
+becomes `cancelled` with separate `retirement` metadata (`reason_code: operation_terminal`) while its
+message, result, error, failure, input and `attempt_outcomes` stay exactly as they were (no cancelled
+attempt is invented and no prior error is replaced), advances the durable execution fence and clears
 inactive lease metadata; no notice, execution, outcome, retry, diagnosis or conductor message is
-produced. Running, blocked, live-leased, unparsable-lease and fence-ahead rows are untouched and
-listed in `finalization.unresolved` with a fixed reason code; already terminal rows are counted
-only. The summary (`urn:zeus:operation-finalization:1`) is cleanup evidence on the receipt beside
-the immutable outcome, never a change to it; a rolled-back transaction leaves neither the terminal
-status nor a disposition. Late messages of a terminal operation addressed to the two roles
-(`task.assign`, `task.result`, `review.result`, `hook.required`, `execution.notice`) are parked by
-`Workflow.submit`/`handle` in the transaction that would otherwise queue work: after authorization,
-an idempotent `operation_message_dispositions` record keeps the original six-W message and digest
-and the caller receives a parked receipt (`parked: true`, `authority: parked_no_work`) instead of a
-task, decision or inbox result; the same message id with another digest is refused
-(`ParkedMessageConflict`); conductor recipients and already handled messages bypass parking.
+produced. Running, blocked, live-leased, unparsable-lease and fence-ahead rows, and rows with an
+`observation_terminations` record of any attempt in `unconfirmed` or `pending_reconciliation`
+(INV-OBSERVATION-001), are untouched and listed in `finalization.unresolved` with a fixed reason
+code; already terminal rows are counted only. The summary (`urn:zeus:operation-finalization:1`) is
+cleanup evidence on the receipt beside the immutable outcome, never a change to it; a rolled-back
+transaction leaves neither the terminal status nor a disposition. Late messages of a terminal
+operation addressed to the two roles (`task.assign`, `task.result`, `review.result`,
+`hook.required`, `execution.notice`) are parked by `Workflow.submit`/`handle` in the transaction
+that would otherwise queue work, in one ordering: authorization, then validation of this exact
+message against every older immutable binding of its id (task `input_hash`, `workflow_inbox` hash,
+parked digest; a different body is refused with the existing identity error or
+`ParkedMessageConflict` and nothing is written), then parking regardless of the old row's status or
+inbox existence, otherwise the old result or the normal path. The idempotent
+`operation_message_dispositions` record keeps the original six-W message and digest and the caller
+receives a parked receipt (`parked: true`, `authority: parked_no_work`) instead of a task, decision
+or inbox result; the old task or inbox row is never rewritten; conductor recipients bypass parking.
 `LocalCycle._deliver` consumes a foreign message only after the workflow returned that durable
 parked receipt, then ACKs and continues within the existing `MESSAGE_DRAIN` bound; any other
-foreign message keeps the refusal (no ACK, no dead letter, `foreign_correlation`), and a replay
-after the commit but before the ACK returns the identical disposition without an executor start.
+foreign message, including a body that conflicts with its id's binding, keeps the refusal (no ACK,
+no dead letter, stop `foreign_correlation`, the refusal type in the receipt), and a replay after the
+commit but before the ACK returns the identical disposition without an executor start.
 Observation (INV-OBSERVATION-001): `Operation`, `LocalCycle` and `AutonomousRun` accept an optional
 observer, wired from `operate run`, `cycle step` and the autonomous CLI; `general.message_received`
 follows a validated decode, `general.message_accepted` follows durable handling,

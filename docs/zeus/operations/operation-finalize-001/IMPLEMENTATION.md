@@ -1,14 +1,15 @@
 # operation-finalize-001 — implementation note
 
-Worker: Claude (isolated Zeus worker), 2026-09-18. Base `0a061c4b`. Contract: INV-OPERATION-FINALIZATION-001 in `docs/contracts.md`.
+Worker: Claude (isolated Zeus worker), 2026-09-18. Base `0a061c4b`; correction batch on `beea02a1`
+(SPEC "Consolidated acceptance review 1"). Contract: INV-OPERATION-FINALIZATION-001 in `docs/contracts.md`.
 
-## Change
+## Change (original delivery)
 
 - `application/operation_finalization.py` (new): exact ownership (`owner`, `terminal_owner`), same-transaction
   `retire` (dispositions, cancelled rows, fence advance, unresolved summary) and `park` (idempotent
   `operation_message_dispositions`, conflict refusal, parked receipt).
 - `application/workflow.py`: `submit` and `handle` (reports and execution notices) park terminal-operation
-  messages in the transaction that would queue work; conductor recipients and handled messages bypass.
+  messages in the transaction that would queue work; conductor recipients bypass.
 - `application/local_cycle.py`: optional `observer`; foreign messages are ACKed only after a durable parked
   receipt, otherwise the existing refusal; shared `flush_outbox`/`observe_*` helpers; drain bound unchanged.
 - `application/operation.py`: optional `observer`; `_finish` retires inside the terminal transaction, adds
@@ -18,24 +19,50 @@ Worker: Claude (isolated Zeus worker), 2026-09-18. Base `0a061c4b`. Contract: IN
   publication events on the autonomous delivery path.
 - `domain/observation.py`: two new registry entries (`operations.operation_finalized`,
   `operations.operation_message_parked`).
-- `tests/test_operation.py`: the evidence-gate case now expects the never-started review decision retired
-  (cancelled with retirement metadata) instead of left pending.
+- `tests/test_operation.py`: the evidence-gate case expects the never-started review decision retired.
 
-## Verification actually run
+## Correction batch (consolidated acceptance review 1)
+
+1. **Terminal replay / identity.** One ordering in `Workflow.submit`/`handle` (assignments, reports, notices):
+   authorize; validate the exact message against the existing task `input_hash` / `workflow_inbox` hash
+   (existing errors); `park` (which re-checks those bindings via `require_identity` and the parked digest);
+   only then return the old task / inbox result or follow the normal path. A previously handled or queued
+   message of a terminal operation is therefore parked (old row untouched) and `LocalCycle` can ACK it; a
+   changed body under the same id raises the existing `ContractError` / `ParkedMessageConflict` and writes
+   nothing, and the original replay still parks afterwards. `LocalCycle._park` turns a `ContractError` from
+   the workflow into the existing refusal (no ACK, stop `foreign_correlation`, refusal type in the receipt).
+2. **Protected effects / evidence.** `retire` reads `observation_terminations` once and reports any row with an
+   `unconfirmed` or `pending_reconciliation` record of any attempt (same bucket/task) as unresolved before
+   touching row or fence. Retired rows keep `error`, `failure` and `attempt_outcomes` untouched; retirement
+   metadata is the separate `retirement` field (no `error=operation_terminal`, no invented cancelled
+   attempt). The `... or True` assertion was removed. Contract text updated accordingly.
+3. **Integration tests exercise the real contracts.** One `late()` message object per test (deepcopies for
+   replays). `_race` runs two real PostgreSQL transactions that overlap on the store's advisory lock with
+   events (`GatedStore` holds the finish transaction, or the claim / submit transaction, open while the
+   other side has started and blocks; timed `join` asserts the block), parametrized for both orderings of
+   claim-vs-finish and submit-vs-finish, plus restart replay and the conflicting body. Real Redis
+   commit-before-ACK: injected ACK failure, PEL inspected, test-owned `XCLAIM ... IDLE 120000` makes the
+   pending entry eligible for the unchanged reclaim policy, the same disposition is returned without an
+   executor call, and the observation order (parked before acknowledged, no acknowledged after the fault)
+   is checked. Rollback before the terminal / disposition commit is covered on MemoryStore and PostgreSQL
+   (no status, disposition, fence or `operations.operation_finalized` event).
+
+## Verification actually run (correction batch, this worker)
 
 ```
 python -m pytest tests/test_operation_finalization.py tests/test_operation.py tests/test_local_cycle.py tests/test_observation_wiring.py tests/test_workflow.py tests/test_autonomous.py -q -p no:cacheprovider
 python -m ruff check .
 ```
 
-Result: 140 passed, 13 skipped; ruff clean. Skips are the integration cases (`isolated_pgstore`, `HARNESS_INTEGRATION`),
-including the two new ones: PG claim-vs-finish / submit-vs-finish / restart and the real Redis commit-before-ACK gap
-with an injected ACK failure. Those two were written but not executed here (no services in this worker); the owner runs
-them with real PG+Redis. Full suite and CI were not run by this worker.
+Result: 150 passed, 17 skipped; ruff clean. The 17 skips are the `isolated_pgstore` / `HARNESS_INTEGRATION`
+cases, including the six PostgreSQL/Redis cases of this file (claim-vs-finish x2, submit-vs-finish x2, PG
+rollback, real Redis ACK gap): written, not executed here (no services in this worker). The owner runs them
+with real PG+Redis. Full suite and CI were not run by this worker. No git commands or model calls were run.
 
 ## Limitations
 
 - Concurrency cases rely on the existing single advisory-lock transaction ordering; no new lock was added.
 - Unsent outbox messages of a terminal operation are not rewritten; they are parked when a consumer receives them.
-- `LocalCycle` ACKs a foreign message only on a fresh parked receipt; a foreign message whose inbox result predates
-  finalization keeps the existing refusal (operator-owned).
+- The redis-py `xclaim(..., idle=)` keyword in the Redis test follows the library's documented signature; it
+  could not be executed in this worker (no ad-hoc Python or services allowed), so the owner's real run is the
+  first execution of that call.
