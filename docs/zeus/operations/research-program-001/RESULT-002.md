@@ -63,3 +63,7 @@ and fresh live run need their own bounded acceptance. The separate diagnostic-lo
 also remains. Issue152 and draft PR153 stay open.
 
 Hashes and local evidence locations are in EVIDENCE-002.md. No additional calls are scheduled.
+
+Follow-up diagnosis completed without model calls: the same source and original destination-root
+length reproduce failure at262 characters, while a short destination verifies all5,111 files.
+See [SNAPSHOT-DIAGNOSIS.md](SNAPSHOT-DIAGNOSIS.md). This does not replace the failed replay result.

@@ -334,3 +334,38 @@ bounded diagnostic is snapshot-only reproduction against retained candidate with
 stage/path evidence and no model call. Do not patch or retry in this stop-authorized run. Preserve
 accepted packet alignment and the now-observed research/council progress; do not reopen those.
 Overall acceptance and diagnostic-log residual remain incomplete. See RESULT-002/EVIDENCE-002.
+
+## Replay preparation diagnosis (continuation, 2026-09-19)
+
+Authorized outcome: identify the host preparation failure without model calls or rewriting the
+failed inspection. Inputs are the retained candidate and two original refused lifecycle records.
+Path: scan_tree(source) -> create snapshot parents -> copy regular files -> prepared -> Docker;
+both original failures precede prepared, so Docker/model execution is excluded from this check.
+
+Competing explanations: missing/changed source, destination path handling, concurrent deletion.
+One discriminating batch: scan and hash retained source; reproduce the exact preparation loop
+in exclusively created D scratch destinations with original snapshot-root length and a short
+root; capture exact failure operation, relative path, OS error and path lengths; verify source
+hashes before/after and destination bytes on successful copies. No fault injection. Do not change
+Windows settings, rename original workspace or execute candidate commands. Long-path behavior is
+a hypothesis until the comparison measures it. Missing sources or failed short control invalidate
+that explanation and are reported, not recursively patched.
+
+Completion: evidence-backed disposition, same-frame implementation handoff if a defect is found,
+and issue/PR record. Normal/failure/platform paths are the two actual Windows copies; restart and
+model behavior are irrelevant to this filesystem-only diagnostic. Cleanup only newly owned scratch
+after path containment checks; preserve originals and raw diagnostic JSON. Budget stays180/181;
+no worker/reviewer pair fits the remaining1 call, so no implementation call is part of this batch.
+
+Diagnosis complete: scan5,111files succeeded; original-length snapshot root128 reproduced copyfile
+FileNotFoundError at a262-character destination after2,761 verified files. The source exists and
+matches its hash. Short-root50 copied/verified all5,111; source hashes unchanged; owned scratch
+removed. No injection, model call, Docker execution or original evidence mutation. Microsoft
+MAX_PATH documentation supports the mechanism (see SNAPSHOT-DIAGNOSIS.md).
+
+Revised design choice: fix owner execution layout first, not runtime code. A fresh runtime root
+D:/workspaces/zeus/artifacts/rp003 projects max235-character replay destinations for the current
+manifest (max relative133); recheck against the next pinned revision before any future run.
+Do not move active/original workspaces or change global settings. No Claude implementation call
+is needed for this owner configuration choice. Do not claim container replay, independent review
+or live acceptance passed: those remain pending under a separately sufficient finite budget.
