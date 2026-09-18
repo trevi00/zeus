@@ -65,3 +65,10 @@ Owner Windows/isolated PostgreSQL checks:103passed; lintpassed. Calls172->174/17
 The two extra calls were implementation and review, not a replay of the failed researcher.
 No evidence yet shows that a new live model output follows the guidance. The original failed
 attempt above, remaining diagnostic limitation, and no-merge/no-deploy status all remain valid.
+
+## Latest actual result
+
+The separately authorized second attempt passed research, DBA, both leads and conductor, and Claude
+submitted a candidate. Host evidence replay preparation then failed before container creation;
+the independent reviewer and second tick did not start. Calls180/181; fleetpaused; no retry,
+merge or deployment. See [RESULT-002.md](RESULT-002.md) for the actual boundary and evidence.

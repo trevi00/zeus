@@ -312,3 +312,25 @@ packet-alignment batch is accepted: the earlier diagnostic-log residual and fail
 remain unchanged. The unchanged bad relationship remains consumer-refused; model adherence to new
 guidance has not been measured. A fresh seven-role run would need3 additional headroom (181 ceiling),
 not implicitly granted. No merge/deploy performed.
+
+## Second live authorization and terminal result (2026-09-19)
+
+User explicitly granted178->181 after CI success for one fresh run, then stop. CI35372344181
+passed onf1edf72, grant applied, research-live-002 registered with immutable new identity.
+Owner scheduling clarification: last_tick_at is completion time, so two collection ticks require
+two single-tick invocations separated by interval1second. This is finite external scheduling,
+not a code change or provider retry; second invocation only after accepted first cycle.
+
+Observed: researcher packet passed, DBA/research lead/improvement lead/conductor succeeded,
+Claude succeeded and submitted candidate d491e1de50a412fc1d2da1dac55fc99ab0d97f5e. Host evidence
+inspection refused both test claims with isolated_replay_unavailable:FileNotFoundError before
+container creation (no prepared transition). Reviewer and tick2 did not run. Calls174->180/181,
+fleetpaused, active lanes0, no worker/verifier containers; failed inspection preserved.
+
+Affected assumption: worker execution success does not establish that the host's fresh replay
+snapshot can be prepared at this runtime location. Root filesystem cause remains unknown; missing
+source, destination/path handling and concurrent deletion are alternatives, not findings. Next
+bounded diagnostic is snapshot-only reproduction against retained candidate with exact failure
+stage/path evidence and no model call. Do not patch or retry in this stop-authorized run. Preserve
+accepted packet alignment and the now-observed research/council progress; do not reopen those.
+Overall acceptance and diagnostic-log residual remain incomplete. See RESULT-002/EVIDENCE-002.
