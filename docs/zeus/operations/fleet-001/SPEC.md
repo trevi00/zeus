@@ -169,3 +169,17 @@ ceiling escalation. Any setup/implementation failure is recorded; revise this SA
 Canary jobs are real bounded absorption notes with disjoint paths, not simulated model outcomes.
 Service deployed paused/idle after canary until new explicit jobs are admitted. User does not authorize
 the service to invent further tasks or unlimited spending.
+
+## Consolidated acceptance follow-up (same batch)
+
+UI operation fleet-001-ui produced candidate f061306 and an independent rejected review: a queued
+job with an accepted prerequisite outside the latest-100 sample was counted as dependency-unmet.
+The recorded review was a static trace, not an executed browser reproduction. This affects the
+unknown/truncated presentation criterion, not runtime admission. Preserve that rejection. Owner
+integrated the candidate provisionally on the unreleased task branch for build/browser verification;
+TypeScript/Vite and ESLint pass. Do not deploy the provisional UI as accepted.
+
+Use one of the already-budgeted two real fleet canary assignments to separate confirmed unmet
+dependencies from missing/out-of-sample dependency status in fleet.tsx and update UI.md. No extra
+calls or expanded acceptance scope. The other canary remains a small experience-adoption note.
+Backend review and owner checks are consolidated before launching those assignments.
