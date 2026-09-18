@@ -437,3 +437,70 @@ batch first inspects retained input/execution timing, then defines one role-spec
 no claim that larger limits alone fix it. Current authorized batch is finished, stopped as promised.
 No retry, reconciliation, budget extension, implementation, merge or deployment follows implicitly.
 See RESULT-003.md and EVIDENCE-003.md. Full-path acceptance remains incomplete.
+
+
+## Conductor delivery batch (2026-09-19, user continuation)
+
+Outcome: remove observed delivery friction before another live attempt. Keep the original fixed
+program acceptance. User said proceed after run003 stopped; this batch uses at most the remaining
+2 starts under187 for one Claude implementation and one independent Codex review, then pauses.
+No new7-stage run, budget increase, repair/reconciliation, merge or deployment is included.
+
+Facts: run003 conductor task details are32119 UTF8 bytes. compile_context has22000 bytes usable
+(28000 minus6000 reserve); its estimated_tokens field is a byte estimate, not model tokens.
+The stored conductor context has4097 estimated bytes, zero inline evidence and the whole task
+listed omitted:budget. It retains a hash-bound reader handle. Actual event history records reading
+an artifact index and20516 input tokens in the last retained usage event; no completed verdict.
+The local policy is300 seconds. Both app-server READ_ONLY_INSTRUCTIONS and isolated_review_context
+incorrectly frame this pre-implementation dge_role as candidate review; the latter asserts worker
+and verifier ran when they have not. These delivery facts are demonstrated, not a proven sole
+cause of the timeout. Details size without prior_outputs and ssot is17819 bytes. Removing ssot
+from inline delivery must retain an exact pointer; it is not wholly duplicate or dispensable.
+
+Sources: local executor._run, autonomous_roles.execute_role, application/council.py, domain/model.py
+compile_context, app_server.py and isolated_worker.py at ee3c378. Official App Server documentation
+https://developers.openai.com/ko-KR/docs/app-server opened2026-09-19: turn/completed carries terminal
+status. It neither specifies Zeus's300s deadline nor establishes why this call exceeded it.
+Raw measured facts: D:/workspaces/zeus/artifacts/research-program-001/conductor-delivery/diagnosis.json.
+
+Complete affected path: immutable role details -> executor raw artifact/binding -> stage-aware
+context delivery -> existing context compiler -> App Server read-only assignment -> unchanged
+schema/consumer/digest checks -> role result or existing blocked termination. Original raw details,
+packet/report/snapshot digests, stage binding and DB task are authoritative. Delivery projection is
+only a view and must not be persisted as an alternative authoritative packet or mutate source.
+
+One implementation batch owned by Claude:
+1. For trusted action dge_role, construct truthful pre-implementation read-only context. Never
+assert a worker, verifier, candidate diff or execution evidence exists without that input. Keep
+no host candidate-code execution, no checkout writes and independent role boundaries. Replace
+App Server's unconditional candidate-review wording with phase-neutral read-only instructions;
+actual post-implementation review_context remains specific and unchanged.
+2. For council debate roles (research_lead, improvement_lead, conductor), deliver a deterministic
+lossless projection inline as required context: role/run/base/round, complete packet, packet digest,
+DBA report, snapshot/report digests, relay, exact acceptance criteria/blocker rule, and available
+research/improvement proposals once. Keep ssot and prior_outputs accessible by exact RFC6901
+pointers on the original hash-bound artifact; state explicitly these are not inline and provide
+precise reading instructions. No LLM summary, text truncation, dropped findings or rewritten IDs.
+Do not change task details at creation or downstream binding/validation. Avoid duplicating the full
+raw task as optional inline evidence when this projection is supplied. Original raw artifact remains.
+3. Required projection overflow must fail BEFORE provider entry under existing compiler rules,
+with no model call and no silently omitted semantic content. No larger global context/time budget.
+Give conductor concise phase-specific guidance to decide from the supplied verified meeting inputs,
+account for all findings, keep unknowns, and avoid redoing prior research absent a material gap.
+4. Regression tests cover actual compiler/executor delivery, not just helper dict shapes; a synthetic
+size-matched conductor case must retain all required fields inline <=22000 bytes while preserving
+exact original artifact and pointer access. Label synthetic/injected tests. Include large critical
+finding, Unicode, alias/source immutability, missing role data refusal, required-overflow before
+provider, and a real candidate-review control retaining its isolation instructions. Keep snapshot
+freshness, unknown verdicts, strict consumers, retries and timeouts unchanged.
+
+Acceptance matrix: normal three debate inputs and original pointer lookup; failure/missing input
+refused before provider; oversized mandatory content refused before provider; timeout/unknown keeps
+existing fail-closed path; concurrency/restart unchanged immutable task/binding ownership; Windows
+and POSIX use existing argv-list reader paths (no shell interpolation); cleanup read-only workspaces
+remain untouched. No live timing improvement claim follows from fixtures. Existing tests plus focused
+new tests, ruff, owner acceptance and CI decide code acceptance, separately from future live completion.
+
+Completion: one reviewed candidate or concrete failed result preserved, <=2starts, paused. No
+recursive new scope. Snapshot age600s is an independent existing guard; do not weaken or refresh it
+as part of this delivery fix. The old blocked task remains pending reconciliation.
