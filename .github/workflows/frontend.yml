@@ -1,0 +1,47 @@
+name: Frontend build
+# observatory-001: the React monitor is built from a locked dependency set and its packaged output
+# is tracked under src/codex_harness/resources/observatory. This job rebuilds and fails on any
+# drift between the tracked output and a fresh build. Python validation stays in validation.yml.
+on:
+  pull_request:
+    paths:
+      - 'frontend/monitor/**'
+      - 'src/codex_harness/resources/observatory/**'
+      - '.github/workflows/frontend.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/monitor/**'
+      - 'src/codex_harness/resources/observatory/**'
+      - '.github/workflows/frontend.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/monitor
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/monitor/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      - name: Tracked build output drift
+        working-directory: .
+        run: |
+          git add -N src/codex_harness/resources/observatory
+          git diff --stat --exit-code -- src/codex_harness/resources/observatory

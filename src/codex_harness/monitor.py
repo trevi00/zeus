@@ -75,7 +75,7 @@ def run_collector(args, root, runtime, snapshot):
                           containers=len(containers) if containers is not None else None)
             previous = {}
             while True:
-                result = collect(service, artifacts, str(root), url, containers, scope)
+                result = collect(service, artifacts, str(root), url, containers, scope, runtime=runtime)
                 for name, state in source_states(result).items():
                     if previous.get(name) != state:
                         journal.write('source_state', source=name, status=state[0], error=state[1])

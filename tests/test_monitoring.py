@@ -162,8 +162,11 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert store.data == before
     assert list((runtime / 'artifacts').iterdir()) == []
     lines = [json.loads(line) for line in (runtime / 'monitor-collector.log').read_text('utf-8').splitlines()]
-    assert [line['event'] for line in lines] == ['startup', 'source_state', 'source_state', 'source_state',
-                                                 'shutdown'] * 2
+    # Four sources since observatory-001: the CLI passes the runtime, adding the observations envelope.
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 4 + ['shutdown']) * 2
+    assert snapshot['sources']['observations']['status'] == 'ok'
+    assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
+                                                                    'reason': 'directory_missing'}
     assert lines[0] == {'at': lines[0]['at'], 'event': 'startup', 'mode': 'collect', 'once': True,
                         'scope': 'compose', 'containers': None}
     text = (runtime / 'monitor-collector.log').read_text('utf-8')
@@ -270,6 +273,26 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
         assert before <= observed <= datetime.fromisoformat(result['collected_at'])
 
 
+def test_index_falls_back_to_legacy_without_build_and_assets_are_strict(monkeypatch, tmp_path):
+    from codex_harness.adapters import monitoring_web
+    legacy = monitoring_web.resource('monitor.html').read_bytes()
+    assets = tmp_path / 'observatory' / 'assets'
+    assets.mkdir(parents=True)
+    (assets / 'index-abc.js').write_bytes(b'console.log(1)')
+    (assets / 'index-abc.css').write_bytes(b'body{}')
+    (assets / 'big.js').write_bytes(b'x' * (monitoring_web.MAX_ASSET_BYTES + 1))
+    (assets / 'secret.json').write_bytes(b'{}')
+    monkeypatch.setattr(monitoring_web, 'resource', lambda *parts: tmp_path.joinpath(*parts))
+    (tmp_path / 'monitor.html').write_bytes(legacy)
+    assert monitoring_web.index_page() == legacy  # no build output: the legacy page, not a placeholder
+    (tmp_path / 'observatory' / 'index.html').write_bytes(b'<!doctype html><div id="root"></div>')
+    assert monitoring_web.index_page().startswith(b'<!doctype html>')
+    assert monitoring_web.asset('index-abc.js') == (b'console.log(1)', 'text/javascript; charset=utf-8')
+    assert monitoring_web.asset('index-abc.css') == (b'body{}', 'text/css; charset=utf-8')
+    for name in ('big.js', 'secret.json', '../legacy/monitor.html', '..', 'index-abc.js/', '.hidden.js', 'x' * 130 + '.js'):
+        assert monitoring_web.asset(name) is None, name
+
+
 def test_credential_redaction():
     text = safe_text('postgresql://admin:secret@localhost/db Bearer abc token=def password=xyz')
     assert all(secret not in text for secret in ['secret', 'abc', 'def', 'xyz'])
@@ -300,6 +323,13 @@ def test_http_rejects_mutations_hosts_and_unavailable_snapshot(tmp_path):
         assert request('POST', '/api/status')[0] == 405
         assert request('GET', '/.env')[0] == 404
         assert request('GET', '/')[0] == 200
+        legacy = request('GET', '/legacy')
+        assert legacy[0] == 200 and b'<script>' in legacy[1]
+        assert request('GET', '/legacy', {'Host': 'untrusted.example'})[0] == 403
+        for endpoint in ('/assets/', '/assets/../monitor.html', '/assets/..%2fmonitor.html', '/assets/x/y.js',
+                         '/assets/monitor.html', '/assets/index.json', '/assets/.hidden.js', '/assets/missing.js',
+                         '/assets/index.js?x=1', '/legacy/'):
+            assert request('GET', endpoint)[0] == 404, endpoint
     finally:
         server.shutdown()
         server.server_close()
