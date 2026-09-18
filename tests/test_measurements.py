@@ -121,23 +121,46 @@ def test_workflow_retry_history_is_fenced_and_cancellation_authorized():
     assert row['attempt_outcomes'][0]['error'] == 'original failure'
 
 
-def test_monitor_collects_measurements_via_use_case(monkeypatch, tmp_path):
+def test_monitor_reads_persisted_measurements_without_evaluating_or_writing(monkeypatch, tmp_path):
+    """Producer/consumer seam: Measurements.collect persists rows and evidence; the monitor only
+    reads them back. An empty store yields no measurements, never fabricated evaluations."""
+    from copy import deepcopy
     from types import SimpleNamespace
 
     from codex_harness.adapters import monitoring
+    from codex_harness.adapters.monitoring import read_only
     from codex_harness.bootstrap import organization
-    store = MemoryStore()
-    service = SimpleNamespace(store=store, org=organization())
-    monkeypatch.setattr(monitoring, 'run_process', lambda *a, **kw:
-                        SimpleNamespace(returncode=0, stdout='a' * 40))
-    monkeypatch.setattr(monitoring, 'docker_facts', lambda *a: [])
-    monkeypatch.setattr(monitoring, 'redis_facts', lambda *a: [])
-    result = monitoring.collect(service, FileArtifacts(str(tmp_path / 'artifacts')), '.', '')
-    database = result['sources']['database']
+    store, artifacts_root = MemoryStore(), tmp_path / 'artifacts'
+    artifacts = FileArtifacts(str(artifacts_root))
+    # Injected fault (fixture): the monitor must not run git or any other process for measurements.
+    monkeypatch.setattr(monitoring, 'run_process',
+                        lambda *a, **kw: (_ for _ in ()).throw(AssertionError('monitor ran a process')))
+    monkeypatch.setattr(monitoring, 'docker_facts', lambda repository, containers=None: [])
+    monkeypatch.setattr(monitoring, 'redis_facts', lambda url, agents: [])
+    service, reader = read_only(SimpleNamespace(store=store, org=organization()), artifacts)
+
+    empty = monitoring.collect(service, reader, '.', '')['sources']['database']
+    assert empty['status'] == 'ok' and empty['data']['measurements'] == []
+    assert store.data == {} and list(artifacts_root.iterdir()) == []
+
+    produced = Measurements(store, artifacts).collect('a' * 40, NOW)
+    before, files = deepcopy(store.data), sorted(artifacts_root.iterdir())
+    assert len(files) == 2  # one evidence body plus its receipt, written by the use case only
+    for _ in range(2):
+        database = monitoring.collect(service, reader, '.', '')['sources']['database']
     assert database['status'] == 'ok'
-    assert len(database['data']['measurements']) == 3
-    assert database['data']['measurements'][2]['value'] == 0
-    assert not database['data']['measurements'][2]['promotion_approval']
+    measurements = database['data']['measurements']
+    assert [m['metric_id'] for m in measurements] == sorted(d.metric_id for d in DEFINITIONS)
+    assert all(m['source'] == 'persisted_observation' for m in measurements)
+    assert all(m['observed_at'] == NOW.isoformat() and m['age_seconds'] > 120 for m in measurements)
+    assert all(m['promotion_approval'] is False for m in measurements)
+    capacity = next(m for m in measurements if m['metric_id'] == 'active_execution_capacity')
+    assert capacity['value'] == 0 and capacity['evidence_refs'] == produced[2]['evidence_refs']
+    assert reader.document(capacity['evidence_refs'][0])['observed_at'] == NOW.isoformat()
+    assert store.data == before
+    with store.transaction() as tx:
+        assert len(tx.scan('metric_observations')) == 3
+    assert sorted(artifacts_root.iterdir()) == files
 
 
 @pytest.mark.parametrize('change', [
