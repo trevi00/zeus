@@ -215,6 +215,14 @@ receipt. Residual logoff/reboot verification and older schema browsing are docum
 not reasons to rerun unrelated environment research. No required person approval defaults to yes.
 ### Live continuation acceptance seam (2026-09-18)
 
+Post-merge owner transition: Stop-ScheduledTask left venv child processes on this Windows host.
+Source-byte equality was insufficient to prove promotion. Revised operator acceptance: disable
+the exact owned tasks, validate/inventory command plus PID creation identity, terminate only owned
+monitor children, prove zero, start main-configured tasks, then verify new process ownership and
+stable one-instance state across scheduled ticks. Implemented in the local stop-owned.ps1; this
+corrects deployment procedure, not runtime architecture. Preserve the earlier process-crash recovery
+evidence and record the premature promotion claim separately.
+
 Final test-only run ended `evidence_gate_refused`: requested pair/focused40/lint claims replayed successfully, but unrequested full-suite claim timed out and two unrelated commands had mismatched expected exits. Preserve failed operation; no retry, status rewrite or relaxed gate. Owner Codex independently reviewed the five-line environment ownership change and executed focused40 successfully. Accept this test-only candidate for the normal manual PR+full-CI route; this is not automatic operation acceptance. Calls used127 ->132 (the third run's reviewer was never invoked). Report scope overrun and free-text evidence extraction as follow-up observations in this frame, not new blockers for the accepted runtime.
 
 Full CI run35293839664 exposed test isolation: the new collector CLI test invokes `select_repository`, which updates both ZEUS_REPOSITORY and HARNESS_REPOSITORY, but the test does not register either with monkeypatch teardown. Owner reproduced with only collector entrypoint test followed by supervisor runtime test (1 passed,1 failed). Preserve runtime/live acceptance. One final test-only batch owns/restores both aliases before the real CLI invocation (do not mock select_repository or change supervisor). Scope: tests/test_monitoring.py and LIVE-IMPLEMENTATION.md. Run monitoring+measurements+supervisor together and ruff. Ledger131 ->133, one Claude/reviewer pair, no automatic retries. Full CI must pass on the resulting head.
