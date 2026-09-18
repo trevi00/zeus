@@ -114,3 +114,12 @@ Verification run here: `python -m pytest tests/test_monitoring.py tests/test_mon
 -q -p no:cacheprovider` and `python -m ruff check .` (results in the worker summary). Not run by
 the worker, owner-owned: `npm run build`, `npm run lint`, browser 390x844 / 1440x960 checks,
 packaged asset regeneration, controlled unavailable-observations injection, full CI.
+
+## Print seam follow-up (2026-09-18, base 1a86898256ed1e25f5515b09c29578b3c23298d2)
+
+Reviewer finding: the live `SourceStrip` and the live-time footer in `src/App.tsx` printed
+alongside the pinned report, mixing live chrome into a document that claims to be frozen.
+Fix: `SourceStrip` is wrapped in `<div className="no-print">` and the footer gets `no-print`;
+the existing `@media print { .no-print { display: none !important } }` rule in `src/index.css`
+hides both. Screen rendering, report capture and export logic are unchanged. Not run by the
+worker, owner-owned: `npm run build`, `npm run lint`, browser print check, asset regeneration.

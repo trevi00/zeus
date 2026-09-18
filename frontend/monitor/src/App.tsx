@@ -80,7 +80,7 @@ export function App() {
           <div className="lg:hidden overflow-x-auto">{nav}</div>
         </header>
         <main className="flex min-w-0 flex-col gap-6 p-4 lg:p-8">
-          <SourceStrip snapshot={snapshot} now={now} />
+          <div className="no-print"><SourceStrip snapshot={snapshot} now={now} /></div>
           {warnings.length ? (
             <Alert variant="destructive" className="no-print"><AlertDescription className="break-words">{warnings.join(" · ")}</AlertDescription></Alert>
           ) : null}
@@ -88,7 +88,7 @@ export function App() {
           {view === "logs" ? <LogsView snapshot={snapshot} retained={retained} now={now} /> : null}
           {view === "report" ? <ReportView snapshot={snapshot} transport={transport} now={now} /> : null}
           {view === "design" ? <DesignSystemView /> : null}
-          <footer className="text-xs text-muted-foreground">
+          <footer className="text-xs text-muted-foreground no-print">
             마지막 정상 응답 {transport.ok_at ? new Date(transport.ok_at).toLocaleTimeString("ko-KR") : "없음"} · 화면 {new Date(now).toLocaleTimeString("ko-KR")} · 5초마다 새로고침, 숨김 상태에서는 중단
           </footer>
         </main>
