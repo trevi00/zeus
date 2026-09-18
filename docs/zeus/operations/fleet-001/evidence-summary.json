@@ -1,0 +1,163 @@
+{
+  "date": "2026-09-18",
+  "runtime_commit": "b0f133b3ca174222f8b98ef353e0225cefe4681c",
+  "tested_commit": "9c12ea23c4b6d120f68f1bffadf712b38411bd0e",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\fleet-001",
+  "tests": {
+    "windows_full_suite": {
+      "passed": 2101,
+      "skipped": 454,
+      "seconds": 764.68
+    },
+    "frontend": "TypeScript/Vite and ESLint pass",
+    "postgres": "real disposable schemas; concurrency/pause/grants; synthetic job fixtures; no models",
+    "browser": "actual fleet plus explicitly synthetic envelopes;390px/dark/report compatible"
+  },
+  "execution": {
+    "initial_operations": "two rejected reviews, preserved",
+    "corrected_fleet_operations": "two accepted independent reviews",
+    "slots_before": 152,
+    "slots_after": 160,
+    "automatic_retries": 0,
+    "container_overlap_min_seconds": 126.31
+  },
+  "files": [
+    {
+      "path": "reference-89.json",
+      "bytes": 22513,
+      "sha256": "b5d29b7129e5f3167e277ae0d7b404631a5952c4d1bb6cce3ddee14ca2f10065"
+    },
+    {
+      "path": "reference-92.json",
+      "bytes": 15841,
+      "sha256": "20320168a04ee890ae4eb1aaf6bd12a463f702ff2c49d9da084ab546e0618a74"
+    },
+    {
+      "path": "preflight.json",
+      "bytes": 431,
+      "sha256": "2e1ed1692a84b687ab0933b58ed20bf2e17517c0ce78330029733df71f7b35aa"
+    },
+    {
+      "path": "backend/receipt.json",
+      "bytes": 993,
+      "sha256": "324f2499d8dbc7d08223f27c3ffbc21c0e65ebbecd046640b90c0f58896b1dbe"
+    },
+    {
+      "path": "ui/receipt.json",
+      "bytes": 988,
+      "sha256": "e45e40e69b5998898e2c8a37349a3c33c571e511fc8a3ecebde693116a32a547"
+    },
+    {
+      "path": "backend-result.json",
+      "bytes": 37571,
+      "sha256": "9996c87744737bc633cd32c17babbb4684ef2234894c388cfda6d72ef0baeb91"
+    },
+    {
+      "path": "ui-result.json",
+      "bytes": 40220,
+      "sha256": "d21a3bd97aa7aceeaeeed4b8155f986f42c831cbed150ce32c2a056d1af2e681"
+    },
+    {
+      "path": "live-prepared.json",
+      "bytes": 2957,
+      "sha256": "849f00690d9459af3e811206145d30bf9528eba4495395ce3e32102d4285162d"
+    },
+    {
+      "path": "live-receipt.json",
+      "bytes": 818,
+      "sha256": "14d03d3c86db36c4b41ff496044411166a2a05614fb3896f961e3e968b7600a3"
+    },
+    {
+      "path": "live-stdout.json",
+      "bytes": 460,
+      "sha256": "ddfa8381de012c4ec8dbcf197602b2b8ac6ceea01ff3b3fbb92fa75488f7947f"
+    },
+    {
+      "path": "live-state.json",
+      "bytes": 84344,
+      "sha256": "fbd31bafb99a65a41edfbc586c44776230616cd22c9a0de7bd74fa3aa76ef95b"
+    },
+    {
+      "path": "live-overlap.json",
+      "bytes": 1071,
+      "sha256": "7f250b2562f4abba0dab86288dabf309be97e4e27d258cbd73237ccda82dcb05"
+    },
+    {
+      "path": "execution-proof.json",
+      "bytes": 9794,
+      "sha256": "da8e9aaa3e22bb00a1e0d976acfa4b98825414ef407163486741e6b3b498497f"
+    },
+    {
+      "path": "owner-pg-check.json",
+      "bytes": 2854,
+      "sha256": "b162f8977ff4cd984f4c5af53cca69c264e80b354a109c2c573679821d0b47ec"
+    },
+    {
+      "path": "owner-grant-check.json",
+      "bytes": 513,
+      "sha256": "caadf96036494318aee6581f280b5d17569c777ceb346dc92d26a30f88da86b4"
+    },
+    {
+      "path": "browser-check.json",
+      "bytes": 375,
+      "sha256": "c3ad8e11979da56790dbbd42698257ea8f185bc5a4d2577ad43cb5c5f778fdb4"
+    },
+    {
+      "path": "browser-states.json",
+      "bytes": 342,
+      "sha256": "97aee7d5311fc44dfdb73feb73fa80ae2472968c1874484b4257753240eac759"
+    },
+    {
+      "path": "full-suite.log",
+      "bytes": 5928,
+      "sha256": "c05b658692c292384551057a2fba6219dc06fb8c78b8fc7f5ec5fcad06b464b0"
+    },
+    {
+      "path": "full-suite-first.log",
+      "bytes": 9012,
+      "sha256": "79f0ecbf536b4939ddcf0be99b255f9ef1a4d862e41a190b86220823e744c061"
+    },
+    {
+      "path": "fleet.json",
+      "bytes": 727,
+      "sha256": "2429298222655cc14ac363748e164636b478b0ab379be010d1032091546be362"
+    },
+    {
+      "path": "launch-fleet.ps1",
+      "bytes": 2568,
+      "sha256": "41621333cc7462edec49ac6721200132632ce980be24e441b304d4aab5f6a06d"
+    },
+    {
+      "path": "actual-dispatching.png",
+      "bytes": 61797,
+      "sha256": "4bc2604a32f45163d1b4523b2320d0923e20afdd7f248a8e377de146ed2ffdf6"
+    },
+    {
+      "path": "fleet-mobile.png",
+      "bytes": 47048,
+      "sha256": "6e3f8a9c248fe860024d1a9e89008c760da7d75dc559d8cade96f46b28f49fdd"
+    },
+    {
+      "path": "fleet-dark.png",
+      "bytes": 130544,
+      "sha256": "9515151837d04e1a6d8f247079d433ddfc135454c2eee636008dd1aa26f57d49"
+    },
+    {
+      "path": "dependency-before.png",
+      "bytes": 62231,
+      "sha256": "2009b1708100a93f768054cebcab267170bc1e0048ef4f00ea4145e867d39db5"
+    },
+    {
+      "path": "dependency-after.png",
+      "bytes": 48566,
+      "sha256": "5a851eff85fd93bdadfe195ff13b5ef7e1d7dab2e2f89bc81a4771c261f80a57"
+    }
+  ],
+  "limits": [
+    "single local fleet/current interactive host",
+    "finite explicit jobs;no task invention or automatic budget increase",
+    "accepted candidate is not merged deployment",
+    "per-lane full logs remain in original scopes",
+    "CI/deployment evidence is attached to issue146 after release commit"
+  ]
+}
