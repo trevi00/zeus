@@ -18,7 +18,14 @@ import time
 
 from codex_harness.application.dge import SESSIONS, DebateSessions, DgeRefused
 from codex_harness.application.evidence_inspection import EvidenceInspections
-from codex_harness.application.local_cycle import MESSAGE_DRAIN
+from codex_harness.application.local_cycle import (
+    MESSAGE_DRAIN,
+    flush_outbox,
+    observe_accepted,
+    observe_acknowledged,
+    observe_received,
+    observe_rejected,
+)
 from codex_harness.application.operation import BudgetedExecutor, BudgetRefused, Operation
 from codex_harness.application.promotion import promote
 from codex_harness.domain.autonomous import (
@@ -231,7 +238,8 @@ class AutonomousRun:
         self._transition(run_id, last_stage, "implementation")
         self._log("implementation", run_id, "started")
         started = time.monotonic()
-        operation = Operation(self.service, self.executor, self.bus, self.workflow, self.budget, self.collector)
+        operation = Operation(self.service, self.executor, self.bus, self.workflow, self.budget, self.collector,
+                              observer=self.observer)
         # The same absolute deadline is checked before the worker and the reviewer start; never reset.
         receipt = operation.run(operation_manifest(manifest, digest_value), identity, goal, deadline=manifest["deadline"],
                                 clock=self.clock, labels=provider_labels(manifest["claude"]["model"]))
@@ -271,14 +279,14 @@ class AutonomousRun:
             tx.put("outbox", message["message_id"], {"message": message, "sent": False})
         self._log(role, run_id, "started")
         started = time.monotonic()
-        self.service.flush_outbox(self.bus)
+        flush_outbox(self.service, self.bus, self.observer)
         self._deliver(agent, correlation)
         expected = {"id": message["message_id"], "correlation_id": correlation, "statuses": {"queued"}}
         try:
             result = wrapped.execute_one(agent, expected=expected)
         except BudgetRefused as exc:
             raise AutonomousRefused("budget_exhausted") from exc
-        self.service.flush_outbox(self.bus)
+        flush_outbox(self.service, self.bus, self.observer)
         if any(not s["settled"] for s in wrapped.slots):
             raise AutonomousRefused("settlement_failed")
         if result is None:
@@ -337,18 +345,24 @@ class AutonomousRun:
             if not row:
                 return handled
             entry_id, fields = row
+            message = None
             try:
                 message = self.bus.decode(fields)
+                observe_received(self.observer, entry_id, message)
                 require(message["who"]["recipient"] == agent, "Message routed to wrong agent")
                 self.service.org.authorize(message)
             except (ContractError, KeyError, ValueError) as exc:
                 self.bus.dead_letter(agent, entry_id, fields, str(exc))
+                observe_rejected(self.observer, entry_id, message, type(exc).__name__, dead_letter=True)
                 continue
             if message["correlation_id"] != correlation:
+                observe_rejected(self.observer, entry_id, message, "foreign_message", dead_letter=False)
                 raise AutonomousRefused("foreign_message")
-            self.workflow.handle(message)
-            self.service.flush_outbox(self.bus)
+            result = self.workflow.handle(message)
+            observe_accepted(self.observer, message, result)
+            flush_outbox(self.service, self.bus, self.observer)
             self.bus.ack(agent, entry_id)
+            observe_acknowledged(self.observer, entry_id, message)
             handled.append(message)
         return handled
 

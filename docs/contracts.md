@@ -1140,3 +1140,48 @@ lead, restrict worker egress or protect against a host administrator.
 - INV-ORACLE-001: Imported observations and structural coverage cannot populate approved expected outcomes, certify real-device execution, authenticate human QA, or authorize a release. Gaps remain visible. Eight-stage reports are preparation only until actual providers are implemented.
 - INV-SDD-002: SDD journals retain ordered, hash-linked events; duplicate imports/proposals are idempotent and transitions use compare-and-swap. Notifications are local records, not external messages. Model transfer candidates never change routing authority.
 - INV-GATE-001: Every gate verdict names one fixed statement, its stage, run, cycle and the definition hash it judged, with the runner receipt and process exit status or the reviewer's actor and authority level; a non-zero exit is never PASS and an unauthenticated reviewer claim never settles a statement. A runner receipt counts only when the receipt document itself names the same run, cycle, statement, definition, artifact, environment and exit status; human statements (`human_*`) accept reviewer decisions only; `authenticated_provider` authority is granted only by the configured provider's own verification of that exact statement and actor, and an unverified claim is kept as a pending unauthenticated claim. A retraction binds to the run, cycle, stage and definition of the verdict it names; one issued for another run or cycle is foreign and never removes a verdict here. All consumers use one fold: the planned statements are the denominator (`not_run` is a state, never an omission), verdicts for another run, cycle or definition are foreign, the latest live verdict wins, ERROR withdraws validity rather than leaving an earlier PASS, PARTIAL stays pending, and a retraction removes exactly one named verdict so that the fold of a compacted view equals the fold of the full view.
+
+## INV-OPERATION-FINALIZATION-001
+
+A terminal bounded operation (INV-OPERATION-001: accepted, rejected, failed, unknown, exhausted)
+retires only the follow-ups it provably owns, inside the same store transaction that makes its
+`operations` row terminal (`application/operation_finalization.retire`, called by
+`Operation._finish`). Ownership is exact: the correlation is `operation:<id>`, the `operations` row
+under that id carries that same correlation and cycle id plus an assignment message id, and the
+row's agent/actor is `worker:implementation` or `lead:improvement`; free text, prefixes, absent,
+malformed or active operations and conductor rows never qualify. Retirable rows are tasks
+`queued`/`retry` and decisions `pending`/`retry` without a live lease: each gets an append-only
+`operation_dispositions` record (stable id, prior status, generation, attempt and row hash), the row
+becomes `cancelled` with separate `retirement` metadata (`reason_code: operation_terminal`) while its
+message, result, error, failure, input and `attempt_outcomes` stay exactly as they were (no cancelled
+attempt is invented and no prior error is replaced), advances the durable execution fence and clears
+inactive lease metadata; no notice, execution, outcome, retry, diagnosis or conductor message is
+produced. Running, blocked, live-leased, unparsable-lease and fence-ahead rows, and rows with an
+`observation_terminations` record of any attempt in `unconfirmed` or `pending_reconciliation`
+(INV-OBSERVATION-001), are untouched and listed in `finalization.unresolved` with a fixed reason
+code; already terminal rows are counted only. The summary (`urn:zeus:operation-finalization:1`) is
+cleanup evidence on the receipt beside the immutable outcome, never a change to it; a rolled-back
+transaction leaves neither the terminal status nor a disposition. Late messages of a terminal
+operation addressed to the two roles (`task.assign`, `task.result`, `review.result`,
+`hook.required`, `execution.notice`) are parked by `Workflow.submit`/`handle` in the transaction
+that would otherwise queue work, in one ordering: authorization, then validation of this exact
+message against every older immutable binding of its id (task `input_hash`, `workflow_inbox` hash,
+parked digest; a different body is refused with the existing identity error or
+`ParkedMessageConflict` and nothing is written), then parking regardless of the old row's status or
+inbox existence, otherwise the old result or the normal path. The idempotent
+`operation_message_dispositions` record keeps the original six-W message and digest and the caller
+receives a parked receipt (`parked: true`, `authority: parked_no_work`) instead of a task, decision
+or inbox result; the old task or inbox row is never rewritten; conductor recipients bypass parking.
+`LocalCycle._deliver` consumes a foreign message only after the workflow returned that durable
+parked receipt, then ACKs and continues within the existing `MESSAGE_DRAIN` bound; any other
+foreign message, including a body that conflicts with its id's binding, keeps the refusal (no ACK,
+no dead letter, stop `foreign_correlation`, the refusal type in the receipt), and a replay after the
+commit but before the ACK returns the identical disposition without an executor start.
+Observation (INV-OBSERVATION-001): `Operation`, `LocalCycle` and `AutonomousRun` accept an optional
+observer, wired from `operate run`, `cycle step` and the autonomous CLI; `general.message_received`
+follows a validated decode, `general.message_accepted` follows durable handling,
+`general.message_acknowledged` follows the returned ACK, `general.message_rejected` carries the
+error type with `dead_letter` false for a foreign refusal, `operations.operation_message_parked`
+and `operations.operation_finalized` carry identifiers, counts and codes only, and every affected
+outbox flush audits through `observer.audit_system`; an absent observer keeps every prior caller
+unchanged, and an observation failure never alters handling, the ACK or the outcome.

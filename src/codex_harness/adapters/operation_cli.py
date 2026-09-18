@@ -129,8 +129,9 @@ def run(service, args) -> dict:
         # artifacts only; formal knowledge promotion is a separate explicit contract.
         executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False,
                                   evidence_profile=profile, **({} if isolated is None else {"isolation": isolated}))
+        # INV-OBSERVATION-001: the one process observer also sees the operation's message path.
         operation = Operation(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org),
-                              CallBudget(), build_collector(service.store, observer))
+                              CallBudget(), build_collector(service.store, observer), observer=observer)
         return operation.run(manifest, bound, goal)
     finally:
         observer.close()

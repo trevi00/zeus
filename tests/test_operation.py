@@ -285,7 +285,12 @@ def test_all_checked_summary_without_a_bound_all_checked_row_stops_before_review
     assert receipt["status"] == "failed" and receipt["reason_code"] == "evidence_gate_refused"
     assert executor.calls == ["task"] and len(budget.reserved) == 1, "reviewer reservation and call remain zero"
     with svc.store.transaction() as tx:
-        assert [d["status"] for d in tx.scan("decisions_pending")] == ["pending"]
+        # INV-OPERATION-FINALIZATION-001: the never-started review decision is retired with the
+        # failed outcome, keeping its message and input; it is not executed and not left runnable.
+        [decision] = tx.scan("decisions_pending")
+        assert decision["status"] == "cancelled" and decision["retirement"]["before"]["status"] == "pending"
+        assert decision["input"] is not None and decision["message"]["correlation_id"] == "operation:op-001"
+    assert receipt["finalization"]["retired"]["decisions_pending"] == [decision["id"]]
 
 
 def test_lead_rejection_stops_without_rework_and_unknown_verdict_is_unknown():

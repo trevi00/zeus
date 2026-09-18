@@ -432,7 +432,8 @@ def cycle_command(service, args):
     else:
         observer = build_observer(service.store, "cli.cycle")
         executor = build_executor(service, observer=observer)
-        cycle = LocalCycle(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org))
+        cycle = LocalCycle(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org),
+                           observer=observer)
         try:
             emit(cycle.step(args.cycle_id))
         finally:

@@ -11,7 +11,8 @@ from __future__ import annotations
 
 from codex_harness.application.dge import DgeRefused, design_gate
 from codex_harness.application.evidence_inspection import EvidenceInspections
-from codex_harness.application.local_cycle import LocalCycle
+from codex_harness.application.local_cycle import LocalCycle, flush_outbox
+from codex_harness.application.operation_finalization import retire
 from codex_harness.domain.dge import expired
 from codex_harness.domain.model import ContractError, digest, envelope, require, utcnow
 from codex_harness.domain.operation import (
@@ -118,9 +119,9 @@ class BudgetedExecutor:
 
 
 class Operation:
-    def __init__(self, service, executor=None, bus=None, workflow=None, budget=None, collector=None):
+    def __init__(self, service, executor=None, bus=None, workflow=None, budget=None, collector=None, observer=None):
         self.service, self.executor, self.bus, self.workflow = service, executor, bus, workflow
-        self.budget, self.collector = budget, collector
+        self.budget, self.collector, self.observer = budget, collector, observer
 
     # ----- read-only ----------------------------------------------------------------------
     def status(self, operation_id: str) -> dict:
@@ -134,7 +135,7 @@ class Operation:
         """Safe projection: identities, digests, codes and counts; no manifest text or raw errors."""
         keys = ("id", "status", "reason_code", "manifest_sha256", "identity", "goal", "design", "correlation_id",
                 "cycle_id", "assignment_message_id", "task_id", "decision_id", "lead_accepted", "calls", "evidence",
-                "cycle", "collection", "claimed_at", "updated_at", "finished_at")
+                "cycle", "collection", "finalization", "claimed_at", "updated_at", "finished_at")
         return {"schema": RECEIPT_SCHEMA, "authority": "operation_receipt; not merge, deploy or completion",
                 **{k: row.get(k) for k in keys}}
 
@@ -249,13 +250,13 @@ class Operation:
         wrapped = BudgetedExecutor(self.executor, self.budget, ceilings or manifest["budget"],
                                    "operation:" + manifest["id"], manifest["claude"]["model"], gate=self.evidence_gate,
                                    labels=labels, before=before)
-        cycle = LocalCycle(self.service, wrapped, self.bus, self.workflow)
+        cycle = LocalCycle(self.service, wrapped, self.bus, self.workflow, observer=self.observer)
         outcome = {"status": "unknown", "reason_code": "no_terminal_outcome"}
         idle, steps = 0, []
         try:
             for _ in range(MAX_STEPS):
                 if self.bus is not None:
-                    self.service.flush_outbox(self.bus)
+                    flush_outbox(self.service, self.bus, self.observer)
                 step = cycle.step(row["cycle_id"])
                 steps.append({"action": step["action"], "reason": _code(step.get("reason"))})
                 outcome = self._classify(step, wrapped)
@@ -349,7 +350,27 @@ class Operation:
                            evidence=evidence, cycle=handoff, collection=collection, steps=steps,
                            updated_at=utcnow(), finished_at=utcnow())
             tx.put(BUCKET, row["id"], current)
+            # INV-OPERATION-FINALIZATION-001: the same transaction retires owned unstarted follow-ups;
+            # a rollback leaves neither the terminal status nor a disposition. The summary is cleanup
+            # evidence beside the outcome, never a change to it.
+            current["finalization"] = retire(tx, current, current["finished_at"])
+            tx.put(BUCKET, row["id"], current)
+        self._observe_finalized(current)
         return {**self._receipt(current), "cached": False, "exit_code": 0 if status == "accepted" else 1}
+
+    def _observe_finalized(self, current) -> None:
+        """Counts and codes only, after the commit; unresolved rows are a warning, not a repair."""
+        if self.observer is None:
+            return
+        summary = current["finalization"]
+        unresolved = len(summary["unresolved"])
+        self.observer.emit("operations.operation_finalized", "observed" if not unresolved else "blocked",
+                           severity="warning" if unresolved else "info", correlation_id=current["correlation_id"],
+                           reason_code=_code(current.get("reason_code")).replace(":", "_"),
+                           attributes={"operation_id": current["id"], "operation_status": current["status"],
+                                       "retired_tasks": len(summary["retired"]["tasks"]),
+                                       "retired_decisions": len(summary["retired"]["decisions_pending"]),
+                                       "unresolved": unresolved, "already_terminal": summary["already_terminal"]})
 
     def _evidence(self, handoff, outcome) -> dict:
         target = handoff.get("target_record") or {}
