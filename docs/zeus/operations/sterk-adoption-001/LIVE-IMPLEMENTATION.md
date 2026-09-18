@@ -74,14 +74,63 @@ python -m pytest tests/test_monitoring.py -q -p no:cacheprovider
 python -m ruff check .
 ```
 
-## Outside the allowed paths, not changed
+## Outside the allowed paths at the time, corrected below
 
-`tests/test_measurements.py::test_monitor_collects_measurements_via_use_case` asserts that the
-monitor evaluates three measurements from an empty store. That contradicts SPEC item 1 (no
-`Measurements.collect`, empty store -> empty list) and will fail in the full suite until the
-owner or lead moves or rewrites it; it was outside this batch's allowed files.
+`tests/test_measurements.py::test_monitor_collects_measurements_via_use_case` asserted that the
+monitor evaluates three measurements from an empty store. That contradicted SPEC item 1 (no
+`Measurements.collect`, empty store -> empty list) and was outside the first batch's allowed
+files. The owner reproduced the failure; the correction batch below replaced the test.
 
 ## Not run
 
 Full suite, CI, real PostgreSQL/Redis/Docker, Windows scheduled tasks, logon startup and the
 browser matrix are owner/CI work. The page script was self-reviewed only; no JS engine ran here.
+
+## Correction batch: measurement/monitor seam test (2026-09-18)
+
+Worker: Zeus Claude implementation worker (Claude Fable 5.1), isolated Linux checkout at base
+revision d1501fb30ace22f089a34c01cb2b7820d434d4b0, SPEC section "Live continuation acceptance
+seam". Files changed: `tests/test_measurements.py` and this file only. No runtime, dependency,
+profile or other test change.
+
+Contract read before the change: producer `application/measurements.py::Measurements.collect`
+(writes `metric_observations` rows keyed by result digest plus one evidence artifact and its
+receipt through `FileArtifacts.put`) and consumer `adapters/monitoring.py::collect` ->
+`persisted_measurements(store)` behind `read_only()` (`ReadOnlyStore`, `ReadOnlyArtifacts`).
+The row shape the consumer relies on is `metric_id`, timezone-aware `observed_at`, and the stored
+`value`, `promotion_approval`, `evidence_refs` fields, which it returns unchanged plus `source`
+and `age_seconds`.
+
+Reproduced first: the focused command below failed only on the obsolete test (`assert 0 == 3`).
+
+Change: `test_monitor_collects_measurements_via_use_case` is replaced by
+`test_monitor_reads_persisted_measurements_without_evaluating_or_writing`, which:
+
+- collects through `read_only()` with `run_process` replaced by an injected fault (labelled in the
+  test) that fails if the monitor runs git or any process; Docker/Redis sources are stubbed empty;
+- asserts an empty store yields database status `ok` with `measurements == []`, no store rows and
+  an empty artifact directory (no fabricated evaluations);
+- persists three observations with the real `Measurements.collect` at the fixed test time, then
+  records a deep copy of the store data and the artifact directory listing (one evidence body
+  plus one receipt);
+- collects twice and asserts the three rows come back sorted by `metric_id` with `source:
+  persisted_observation`, the original `observed_at`, `age_seconds` above the 120 s freshness
+  window, `promotion_approval` false, the capacity metric at value 0 with the producer's evidence
+  reference, and the evidence readable through the read-only reader;
+- asserts the store data and artifact listing are unchanged and `metric_observations` still holds
+  exactly three rows after both refreshes (no new store or artifact writes).
+
+The independent `Measurements` use-case tests (`test_observations_reproduce_and_retain_original_inputs`
+and the domain `evaluate` tests) are untouched.
+
+Commands executed in this checkout, output read, both exit 0 (35 passed; "All checks passed!"):
+
+```
+python -m pytest tests/test_monitoring.py tests/test_measurements.py -q -p no:cacheprovider
+python -m ruff check .
+```
+
+Not run in this batch: the full suite, CI, real services, browser checks (owner/CI). A disposable
+run showing the new test failing against a per-refresh writing monitor was not performed: the
+worker's file tools are confined to the checkout and the allowed paths exclude a scratch test, so
+that detection rests on the deep-copied store/artifact before-and-after assertions above.
