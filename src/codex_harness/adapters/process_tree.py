@@ -29,6 +29,8 @@ import signal
 import subprocess
 import time
 
+from codex_harness.adapters.commands import no_console_kwargs
+
 if os.name == "nt":  # pragma: no cover - exercised on Windows hosts
     import ctypes
     from ctypes import wintypes
@@ -256,9 +258,11 @@ class ProcessTree:
         job = _windows_job()
         process = None
         try:
+            # Suspended, in its own group, and without a console window; the boundary and the
+            # resume order are unchanged by the console policy.
             process = subprocess.Popen(
                 argv, cwd=cwd, env=env, stdin=stdin, stdout=stdout, stderr=stderr,
-                creationflags=CREATE_SUSPENDED | subprocess.CREATE_NEW_PROCESS_GROUP)
+                **no_console_kwargs(process_group=True, creationflags=CREATE_SUSPENDED))
             if not _assign(job, process.pid):
                 raise TreeOwnershipError("the process could not be placed in its job object")
             if not _resume(process.pid):

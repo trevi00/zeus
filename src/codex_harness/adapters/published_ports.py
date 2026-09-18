@@ -32,6 +32,8 @@ import random
 import socket
 import subprocess
 
+from codex_harness.adapters.commands import no_console_kwargs
+
 # The window to choose from: above the well-known and registered service ranges, and below the lowest
 # ephemeral start this code can establish for the sides it can see.
 FLOOR = 20000
@@ -43,7 +45,7 @@ PEER_SECONDS = 20.0
 def _run(argv, seconds):
     try:
         done = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8",
-                              errors="replace", timeout=seconds)
+                              errors="replace", timeout=seconds, **no_console_kwargs())
     except (OSError, subprocess.SubprocessError):
         return None
     return done

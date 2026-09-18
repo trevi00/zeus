@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 from uuid import uuid4
 
-from codex_harness.adapters.commands import run_process
+from codex_harness.adapters.commands import no_console_kwargs, run_process
 from codex_harness.adapters.process_tree import ProcessTree
 from codex_harness.adapters.worker_profile import hook_receipts, load_profile, profile_digest
 from codex_harness.domain.model import ContractError, canonical, digest, require
@@ -174,7 +174,7 @@ def check_bounds(entries) -> dict:
 def list_revision(repository, revision: str) -> list:
     """[(mode, sha, size, path)] of the pinned candidate, read by host git from the REAL checkout."""
     listing = subprocess.run(["git", "-C", str(repository), "ls-tree", "-r", "-z", "-l", "--full-tree", revision],
-                             capture_output=True, timeout=120)
+                             capture_output=True, timeout=120, **no_console_kwargs())
     if listing.returncode != 0:
         raise IsolationError("source_revision_unavailable")
     entries = []
@@ -203,7 +203,7 @@ def stage_source(repository, revision: str, destination: Path) -> dict:
     destination.mkdir(parents=True)
     root = destination.resolve()
     reader = subprocess.Popen(["git", "-C", str(repository), "cat-file", "--batch"], stdin=subprocess.PIPE,
-                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, **no_console_kwargs())
 
     def request():
         try:
@@ -245,7 +245,7 @@ def init_standalone_git(staging: Path) -> dict:
     env = {k: v for k, v in os.environ.items() if k in ("PATH", "SYSTEMROOT", "SystemRoot", "TEMP", "TMP", "HOME", "USERPROFILE")}
     env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT="0")
     for args in (["init", "-q"], ["add", "-A", "-f"], ["commit", "-q", "--no-verify", "-m", "staged candidate"]):
-        result = subprocess.run([*base, *args], capture_output=True, timeout=600, env=env)
+        result = subprocess.run([*base, *args], capture_output=True, timeout=600, env=env, **no_console_kwargs())
         if result.returncode != 0:
             raise IsolationError("source_git_init_failed", args[0])
     return {"initialized": True, "remotes": 0, "hooks": "none", "note": "host git is never run here again"}
@@ -686,10 +686,11 @@ class IsolatedClaudeRuntime:
         secret = source_environment.get(TOKEN_NAME)
         try:
             revision = subprocess.run(["git", "-C", workspace, "rev-parse", "HEAD"], capture_output=True, text=True,
-                                      timeout=60)
+                                      timeout=60, **no_console_kwargs())
             if revision.returncode != 0:
                 raise IsolationError("source_revision_unavailable")
-            dirty = subprocess.run(["git", "-C", workspace, "status", "--porcelain"], capture_output=True, text=True, timeout=120)
+            dirty = subprocess.run(["git", "-C", workspace, "status", "--porcelain"], capture_output=True, text=True,
+                                   timeout=120, **no_console_kwargs())
             if dirty.returncode != 0 or dirty.stdout.strip():
                 raise IsolationError("source_candidate_dirty")
             source = stage_source(workspace, revision.stdout.strip(), staging)

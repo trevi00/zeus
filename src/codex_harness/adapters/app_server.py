@@ -12,6 +12,7 @@ from collections import deque
 from pathlib import Path
 
 from codex_harness.adapters.codex import resolve_codex
+from codex_harness.adapters.commands import no_console_kwargs
 from codex_harness.adapters.execution_output import completed_output
 from codex_harness.adapters.output_schema import preflight
 from codex_harness.domain.model import ContractError, canonical, require
@@ -71,8 +72,6 @@ class AppServer:
         self.context_window = context_window
 
     def __enter__(self):
-        flags = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt"
-                 else {"start_new_session": True})
         argv = [self.executable, "app-server"]
         if self.context_window:
             argv += ["-c", "model_context_window=" + str(self.context_window)]
@@ -80,7 +79,8 @@ class AppServer:
             argv += ["-c", "hooks=" + toml_literal({**self.hooks, "state": self.hook_state}), "--enable", "hooks"]
         self.process = subprocess.Popen(argv, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                        text=True, encoding="utf-8", errors="replace", **flags)
+                                        text=True, encoding="utf-8", errors="replace",
+                                        **no_console_kwargs(process_group=True))
         self.readers = [threading.Thread(target=self._read, daemon=True), threading.Thread(target=self._errors, daemon=True)]
         for reader in self.readers:
             reader.start()
@@ -275,7 +275,7 @@ class AppServer:
         if self.process.poll() is None:
             if os.name == "nt":
                 subprocess.run(["taskkill", "/PID", str(self.process.pid), "/T", "/F"],
-                               capture_output=True, timeout=20)
+                               capture_output=True, timeout=20, **no_console_kwargs())
             else:
                 os.killpg(self.process.pid, signal.SIGTERM)
             try:

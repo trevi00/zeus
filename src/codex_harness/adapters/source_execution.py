@@ -11,7 +11,7 @@ import time
 from pathlib import Path
 from uuid import uuid4
 
-from codex_harness.adapters.commands import run_process
+from codex_harness.adapters.commands import no_console_kwargs, run_process
 from codex_harness.application.source_execution import SourceExecutions
 from codex_harness.domain.check_results import classify_isolated_run
 from codex_harness.domain.model import ContractError, canonical, digest, require
@@ -39,7 +39,7 @@ class SourceExecutionClient:
 
 def bounded_command(argv, timeout):
     process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+                               stderr=subprocess.PIPE, **no_console_kwargs())
     tails = [b'', b'']
     def drain(stream, index):
         while block := stream.read(4096):

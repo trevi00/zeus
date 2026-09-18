@@ -9,7 +9,7 @@ import tempfile
 from dataclasses import replace
 from pathlib import Path
 
-from codex_harness.adapters.commands import run_process
+from codex_harness.adapters.commands import no_console_kwargs, run_process
 from codex_harness.adapters.source_verification import GitSourceVerifier
 from codex_harness.domain.check_results import classify_isolated_run
 from codex_harness.domain.model import canonical, digest, require
@@ -37,12 +37,13 @@ class AuditRunner:
         with FileLock(str(target) + '.lock', timeout=120):
             if not target.exists():
                 target.mkdir()
-                subprocess.run(['git', 'init', '--bare', str(target)], check=True, capture_output=True)
+                subprocess.run(['git', 'init', '--bare', str(target)], check=True, capture_output=True,
+                               **no_console_kwargs())
                 subprocess.run(['git', '-C', str(target), 'remote', 'add', 'origin', repository],
-                               check=True, capture_output=True)
+                               check=True, capture_output=True, **no_console_kwargs())
             verifier = GitSourceVerifier(target, self.artifacts)
             present = subprocess.run(['git', '-C', str(target), 'cat-file', '-e', commit + '^{commit}'],
-                                     capture_output=True, timeout=30).returncode == 0
+                                     capture_output=True, timeout=30, **no_console_kwargs()).returncode == 0
             if not present:
                 verifier.git('-c', 'protocol.file.allow=never', '-c', 'protocol.ext.allow=never',
                              'fetch', '--no-tags', '--depth=1', 'origin', commit)

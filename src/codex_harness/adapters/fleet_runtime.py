@@ -19,6 +19,7 @@ import psycopg
 from psycopg.conninfo import make_conninfo
 
 from codex_harness.adapters.call_budget import CallBudget
+from codex_harness.adapters.commands import no_console_kwargs
 from codex_harness.adapters.isolated_worker import IsolationError, load_isolation
 from codex_harness.application.fleet import LaunchRefused
 from codex_harness.domain.fleet import classify_outcome
@@ -113,11 +114,9 @@ class LaneLauncher:
         except OSError as exc:
             raise LaunchRefused("runtime_unwritable") from exc
         argv = [*self.argv, "--repository", lane["repository"], "operate", "run", "--file", str(manifest)]
-        kwargs = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt"
-                  else {"start_new_session": True})
         try:
             process = subprocess.Popen(argv, cwd=lane["repository"], env=env, stdin=subprocess.DEVNULL,
-                                       stdout=stdout, stderr=stderr, **kwargs)
+                                       stdout=stdout, stderr=stderr, **no_console_kwargs(process_group=True))
         except OSError as exc:
             stdout.close(), stderr.close()
             raise LaunchRefused("spawn_failed") from exc

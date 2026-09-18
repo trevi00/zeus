@@ -34,6 +34,8 @@ import sys
 import threading
 import time
 
+from codex_harness.adapters.commands import no_console_kwargs
+
 VANTAGES = ("container", "windows", "wsl")
 PROBE_SECONDS = 3.0
 CAPTURE_SECONDS = 10.0
@@ -68,7 +70,7 @@ def _run(argv, seconds):
     """Run a probe command. Says whether it ran at all, separately from what it printed."""
     try:
         done = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8",
-                              errors="replace", timeout=seconds)
+                              errors="replace", timeout=seconds, **no_console_kwargs())
     except (OSError, subprocess.SubprocessError):
         return {"ran": False, "why": "command_failed"}
     return {"ran": True, "code": done.returncode, "out": (done.stdout or "").strip()}
