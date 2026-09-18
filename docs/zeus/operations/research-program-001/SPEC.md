@@ -157,3 +157,48 @@ repo existing convention. Stub council/network only for deterministic failures, 
 owner canary is required separately. No full suite by worker; owner/CI owns full/platform checks.
 One consolidated review across this matrix, critical reachable defects only. Minor optional
 refactoring is follow-up, not a new blocker. Reframe here if an assumption fails.
+
+## Consolidated review001 and bounded correction (2026-09-19)
+
+Candidate75bc8bb2 was rejected by actual independent Codex. Owner native Windows + isolated PG
+checks49passed and lint passed, but the three whole-path boundaries below remain unaccepted.
+This WIP is integrated only onto the task branch for correction; main/deployed code is unchanged.
+Raw evidence D:/workspaces/zeus/artifacts/research-program-001/{review.json,owner-check.json,
+owner-boundaries.log,capture-check.json,test_owner_boundaries.py,capture-check.py}.
+
+R1 repository authority: register in A, run same id in real Git cloneB using same store/base.
+Owner reproduction with labelled synthetic feeds/budget/council reached council and created the
+capture ref in B. Expected: repository_identity(current root) must equal registered identity
+before cycle reservation or any fetch, log/filesystem capture or model effects. Enforce in the
+actual production runner, not just register; test wrong-root refusal with0newcycles,0fetches,
+0capture/ref and0council calls; matching root continues normally. Update fake tests to name real
+identities where necessary, do not weaken the production check to accept fixtures.
+
+R2 pre-dispatch ownership: after successful capture, injected PermissionError writing manifest
+artifact escaped, leaving state active/captured and indefinite busy with no failure reason. Owner
+reproduced on actual temporary Git with a specifically injected artifact failure; models were
+stand-ins. Wrap the whole known pre-provider preparation phase (derive, artifact write, manifest
+directory/write and start record) under explicit stage tracking. If state store remains available,
+fail_cycle must record blocked/count/claim and retained capture reference; zero council calls.
+Include failed on-disk manifest writes, not only an artifact mock. If recording itself is uncertain
+retain ownership and report inability; never claim a durable failure receipt that was not committed.
+Do not turn post-provider unknown outcomes into known failures or clear ownership to retry.
+
+R3 exact bytes: native Windows Git capture of UTF8 body18bytes yielded19byte Git blob (LF→CRLF),
+while receipt SHA named original18bytes. Existing text-mode test reads normalized away the defect.
+Capture must write exact UTF8 bytes (e.g. owned temp binary file + git hash-object -w -- path) and
+verify binary blob bytes/hash before publishing ref/claiming evidence. Do not globally modify
+commands.run_process semantics. Tests read raw git bytes/GitSource.blob, with LF and Korean text;
+owner repeats on Windows. Existing dirty checkout/index/HEAD and cleanup guarantees stay fixed.
+
+These share an end-to-end binding requirement: authorized repository -> exact evidence bytes ->
+durable pre-dispatch state. Fix all three as one batch, preserve already accepted functionality.
+No fourth speculative review round; expand only on changed boundaries or concrete failed checks.
+Worker targeted tests and lint unchanged; include regression tests in existing two test modules.
+Write CORRECTION.md with each finding, actual checks, labelled injections and unrun Windows/PG work.
+Allowed files remain the original boundary plus this CORRECTION.md; do not edit owner frame.
+
+Budget reallocation inside unchanged176 ceiling: after build/review169, use2 of remaining7 for
+explicit corrective implementation/review (not a provider retry), stopping at171. No grant or
+additional model calls are automatic. Real council headroom7 then exceeds remaining5; its live
+acceptance stays pending a separately explicit grant. Do not call this unattended-ready meanwhile.
