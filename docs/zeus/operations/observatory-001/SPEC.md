@@ -151,3 +151,14 @@ Owner follows this correction with actual build/lint/browser fixed matrix and fu
 redesign, new logging platform or automatic retry. One correction worker + reviewer pair ceiling
 135 (machine count now133); implementation timeout900s, USD3 ceiling. Existing partial source is
 the base; finish these three boundaries only and keep tests list restricted to assigned commands.
+
+### Final R3 print seam
+
+Candidate 812e6f4: owner npm build and lint pass; real browser overview/report at 390px both have
+scrollWidth390 (previous437). Independent review accepted R1 and found exactly one directly
+affected R3 seam: window.print includes App's live SourceStrip and footer outside pinned report.
+No new investigation scope. Final implementation is limited to adding no-print around SourceStrip
+and to footer in App.tsx, using existing print CSS; no report/data/backend redesign. Owner verifies
+PDF content and same-report JSON after actual refresh. Keep prior accepted checks. One final tiny
+worker/reviewer pair ceiling137 (current135), USD1.5 worker ceiling, 600s. This explicit extension
+finishes the same unmet print acceptance condition; no automatic retry loop or new criteria.
