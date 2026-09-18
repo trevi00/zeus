@@ -1,0 +1,164 @@
+{
+  "authority": "owner observations; not deployment",
+  "runtime_revision": "35f7123cc6aa184e7a738cb50f80da345813827c",
+  "runs": [
+    {
+      "id": "sterk-134-implementation",
+      "status": "rejected",
+      "lead_accepted": false,
+      "candidate": {
+        "base": "3295ecb7ca6d781eba62dd950dd9741d3ed5a1ba",
+        "revision": "da3ed8efb4ebfb00389be5d265f3c0ba6c95d614",
+        "tree": "d34c1265b5f5cc6e1b2556ae989148283f692236",
+        "diff_hash": "66e66c64ed924113bc59c93257e5af6a7f112bcaa214487217c9cd135c51f6c5"
+      },
+      "collection": {
+        "files": 1,
+        "records": 95,
+        "inserted": 95,
+        "sink_failures": 0,
+        "corrupt": 0,
+        "refused": 0
+      },
+      "calls": {
+        "reserved": 2,
+        "settled": 2,
+        "slots": [
+          {
+            "id": "948500950bec4fb2acf4ed2674a7fd08",
+            "kind": "task",
+            "agent": "worker:implementation",
+            "provider": "claude",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          },
+          {
+            "id": "ffd95418e4594b25a4fefe6fe4f8904c",
+            "kind": "decision",
+            "agent": "lead:improvement",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "sterk-134-correction",
+      "status": "accepted",
+      "lead_accepted": true,
+      "candidate": {
+        "base": "d65fd52478200584bb871d90d102e47409d70f75",
+        "revision": "35f7123cc6aa184e7a738cb50f80da345813827c",
+        "tree": "69acab931c70cc1f78b4840f4c6787b7bd17de1d",
+        "diff_hash": "5b63a531842e0f9d1929a2348f1491776ea395bb9fb8022d9537d4ccc8476e29"
+      },
+      "collection": {
+        "files": 1,
+        "records": 46,
+        "inserted": 46,
+        "sink_failures": 0,
+        "corrupt": 0,
+        "refused": 0
+      },
+      "calls": {
+        "reserved": 2,
+        "settled": 2,
+        "slots": [
+          {
+            "id": "dffab198394143dabdbf6ce7dd9f7f04",
+            "kind": "task",
+            "agent": "worker:implementation",
+            "provider": "claude",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          },
+          {
+            "id": "01884bdc852641aaa812283502a9f83e",
+            "kind": "decision",
+            "agent": "lead:improvement",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          }
+        ]
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\i\\manifest.json",
+      "sha256": "4b4cccef0849e9bcccd3bfd7d3c7c342202c36b540fe06c04cc0ef2a4a0617e4",
+      "bytes": 2193
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\i\\receipt.json",
+      "sha256": "79bb005952aa294251f2c965ceeaed64202967f03e808ddfe5310f665d43bf41",
+      "bytes": 963
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\i\\stdout.json",
+      "sha256": "b937b38682ab694d5974c8812f36219893c5937e9692cfd58116e6e8c4a295e6",
+      "bytes": 5688
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\i\\records.json",
+      "sha256": "1a8f84e11cd5b2b20bca6813d597d5830ffb2dfec8cfab5900d9bcd45fcc68a0",
+      "bytes": 68788
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\c\\manifest.json",
+      "sha256": "7cde446abc064b2481f4d448cdfddbec396e2b03cdb6b1f73cea599e4a65887c",
+      "bytes": 2076
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\c\\receipt.json",
+      "sha256": "f36068d58b991050c02061bd2bb13dd946fd81c8bcea7efc7bfa1700ca89c377",
+      "bytes": 959
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\c\\stdout.json",
+      "sha256": "323968c5a77deb46412fc00a9feafe4a8c73bed3531da0b0e53ae89f8152d51d",
+      "bytes": 5691
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\s134\\c\\records.json",
+      "sha256": "2b87c8747bf4b8967c322cc8475e76712f08e9ba9c49f0746e1a8e8d95dbcc73",
+      "bytes": 65227
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\sterk-adoption-001\\browser-check.json",
+      "sha256": "5d7b99475359433ece54144d303d478b0b6912879f219aa97b948385364f1d43",
+      "bytes": 7841
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\sterk-adoption-001\\browser-lifecycle.json",
+      "sha256": "a5044b58351a0a36cfc5c8784de3d1309c622110006065cbe0b934c132ccb0c5",
+      "bytes": 2351
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\sterk-adoption-001\\browser-clock.json",
+      "sha256": "1d359d32f36ff0490c1b2e24081736bbe3b69f0d930318469a2df5603487d8ea",
+      "bytes": 2036
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\sterk-adoption-001\\baseline-stale.png",
+      "sha256": "5f4e7f3fe3bf106aeb942723892ab15312f65cec10c9e52539c3594bbf5f7dbb",
+      "bytes": 43114
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\sterk-adoption-001\\final-browser.png",
+      "sha256": "6cc5a7195e349b358497a7c7b6861018378354807e3eeb16614368848e8f0106",
+      "bytes": 48856
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\sterk-adoption-001\\requests.jsonl",
+      "sha256": "51a50af9d3888bf83bc284de239a14909400cd3486d4cf1771d28fd4654ae25d",
+      "bytes": 7969
+    }
+  ]
+}

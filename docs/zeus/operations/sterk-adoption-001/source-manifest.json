@@ -1,0 +1,224 @@
+{
+  "retrieved_on": "2026-09-18",
+  "scope": "issue proposals, not upstream source semantic audit",
+  "raw_path": "D:\\workspaces\\zeus\\artifacts\\sterk-adoption-001\\issues.json",
+  "raw_sha256": "f9f0557d85fc6f9e9e5a4ee988392c070add12c23bfb7d3aabe58143b4d26db1",
+  "issues": [
+    {
+      "number": 74,
+      "title": "[SC-00] sterk-control 웹뷰 레퍼런스 분석 — 인덱스",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/74",
+      "updatedAt": "2026-09-15T07:07:38Z",
+      "body_sha256": "78cc76881741e0c691bb238da706aa42b76a0525ce79b00a3d62bc56c567c8b5"
+    },
+    {
+      "number": 75,
+      "title": "[SC-01] 작업(workspace) — 아바타 사무실·실시간 작업보드 관제 화면",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/75",
+      "updatedAt": "2026-09-15T07:06:33Z",
+      "body_sha256": "fe529f2f4259c6dd5618e75b048bac9d258ba27bbe6565930387baedc895b980"
+    },
+    {
+      "number": 76,
+      "title": "[SC-02] 대시보드(dashboard) — KPI·회차·팀 종합 홈",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/76",
+      "updatedAt": "2026-09-15T07:06:35Z",
+      "body_sha256": "4f1c0188333e6d64fcf065d94380b07eb4ca091c25b892dde62c44a41a2d9119"
+    },
+    {
+      "number": 77,
+      "title": "[SC-03] 프로젝트(projects) — 흐름·페이즈·스텝 3단 드릴다운",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/77",
+      "updatedAt": "2026-09-15T07:06:38Z",
+      "body_sha256": "92f20d58c626d3a6752f66470c47c68c8439479206fda8b8b53d96ca49bd3862"
+    },
+    {
+      "number": 78,
+      "title": "[SC-04] 받은 편지함(inbox) — 에이전트 질문(ask) 응답 큐",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/78",
+      "updatedAt": "2026-09-15T07:06:40Z",
+      "body_sha256": "8e0d4818c678cbf76294af249d78ab2680c63aa6284daa4f32fb92e82203dfc6"
+    },
+    {
+      "number": 79,
+      "title": "[SC-05] 요청(requests) — 요청 등록·인터뷰·일감화 라이프사이클",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/79",
+      "updatedAt": "2026-09-15T07:06:42Z",
+      "body_sha256": "06bb9bb3b03cca0eb0c86f18ff372b15ac22e8a5f5bc6fb13fabaf68db605c53"
+    },
+    {
+      "number": 80,
+      "title": "[SC-06] 회차 기록(ticks) — 자율 루프 실행 이력",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/80",
+      "updatedAt": "2026-09-15T07:06:45Z",
+      "body_sha256": "62ecd165070a1e037cfd02167f548352cde6ed73f4556360e8e1201fc50ab44f"
+    },
+    {
+      "number": 81,
+      "title": "[SC-07] 대기열(backlog) — 파생 작업 대기열",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/81",
+      "updatedAt": "2026-09-15T07:06:48Z",
+      "body_sha256": "4a594d8cd4f6c60222976e1e88931482a845c81588270942fd3ba656e407719d"
+    },
+    {
+      "number": 82,
+      "title": "[SC-08] 보고서(reports) — 워커 일일 보고",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/82",
+      "updatedAt": "2026-09-15T07:06:50Z",
+      "body_sha256": "b81ddeb7c3b1f2315e2b0dce245eb72c93105bf1a9c51f148d35170f66b3b55b"
+    },
+    {
+      "number": 83,
+      "title": "[SC-09] 강의(lecture) — 강의 폴더·문서 관리",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/83",
+      "updatedAt": "2026-09-15T07:06:52Z",
+      "body_sha256": "3d1a7a73775bb1f7ae0e07a5ae3a9ae6180611194e75f0e168ee9582d351269d"
+    },
+    {
+      "number": 84,
+      "title": "[SC-10] 위키(wiki) — 지식 위키·문서 뷰어·그래프",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/84",
+      "updatedAt": "2026-09-15T07:06:55Z",
+      "body_sha256": "93ebd374e3a8c93aea7df6516cf0b34a14172c663de3ea6e5ecd596594b37be0"
+    },
+    {
+      "number": 85,
+      "title": "[SC-11] 검색(search) — 세션·기억·문서 통합 검색",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/85",
+      "updatedAt": "2026-09-15T07:06:57Z",
+      "body_sha256": "554c9725e6ae07bcab845bb73dcf7059f0c6d6ca93e544bfed42096522ab0446"
+    },
+    {
+      "number": 86,
+      "title": "[SC-12] 세션(sessions) — 에이전트/사용자 세션 기록",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/86",
+      "updatedAt": "2026-09-15T07:07:00Z",
+      "body_sha256": "7f3f31b3131e404d827932165f63ecfe3d008eaa63097ce66b106d50dfc80f1d"
+    },
+    {
+      "number": 87,
+      "title": "[SC-13] 스킬(skills) — 스킬 레지스트리",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/87",
+      "updatedAt": "2026-09-15T07:07:03Z",
+      "body_sha256": "308c9e08a019c44f726fa2360cff0dbc78f580d89497cce50231035f02eca5ae"
+    },
+    {
+      "number": 88,
+      "title": "[SC-14] 기억(memory) — 승인 게이트·프로필·충돌",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/88",
+      "updatedAt": "2026-09-15T07:07:06Z",
+      "body_sha256": "588b8b3191047b901fd7620567a5665faf5c4b3000706f7540612ff97247761e"
+    },
+    {
+      "number": 89,
+      "title": "[SC-15] 팀 보드(board) — 워크아이템 보드·킬 스위치",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/89",
+      "updatedAt": "2026-09-15T07:07:08Z",
+      "body_sha256": "4c97347ef68b4b0bca2107f4b9d640b8bc2a6875a4a56add2a44db9d857ea48f"
+    },
+    {
+      "number": 90,
+      "title": "[SC-16] 역할(roles) — 15개 에이전트 역할 정의",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/90",
+      "updatedAt": "2026-09-15T07:07:10Z",
+      "body_sha256": "2ce1974545337392d19899128a4150c15e41e7ca06dff8658b5c3959603d45bd"
+    },
+    {
+      "number": 91,
+      "title": "[SC-17] 워커(workers) — 워커 라이브니스·성적",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/91",
+      "updatedAt": "2026-09-15T07:07:13Z",
+      "body_sha256": "fd7f9037e9764fc0b51da6524620ef2ebf17061d67aaabc6f967b3ab237b3713"
+    },
+    {
+      "number": 92,
+      "title": "[SC-18] 플릿(fleet) — 플릿 현황",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/92",
+      "updatedAt": "2026-09-15T07:07:16Z",
+      "body_sha256": "ecd4a9e43669acdda90c9dcf2f22100a963a8e7fa0f8b1c4b5253e2ebb674aae"
+    },
+    {
+      "number": 93,
+      "title": "[SC-19] 비용·통찰(usage) — 504 게이트웨이 타임아웃(동기 집계 안티패턴)",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/93",
+      "updatedAt": "2026-09-15T07:07:19Z",
+      "body_sha256": "bb92c8231abc21045681d452311e81f6dcfee4c3ab6d73b94c572726ff3ab929"
+    },
+    {
+      "number": 94,
+      "title": "[SC-20] 정책(policy) — 정책 토글·판정 엔진",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/94",
+      "updatedAt": "2026-09-15T07:07:21Z",
+      "body_sha256": "0c28bc0bc2e32fc19486401a46f202323778ecae0e749508acdf1852f5fe761a"
+    },
+    {
+      "number": 95,
+      "title": "[SC-21] 크론(cron) — 예약 작업 등록",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/95",
+      "updatedAt": "2026-09-15T07:07:23Z",
+      "body_sha256": "c3f097b9d5c4ad77d654df22479ad7d202194220fc24ad873c5e0aad9f345449"
+    },
+    {
+      "number": 96,
+      "title": "[SC-22] 질문(asks) — 질문 큐(/api/v1 네임스페이스)",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/96",
+      "updatedAt": "2026-09-15T07:07:26Z",
+      "body_sha256": "01a2928d7d402255279833f17f1bbca15f136b450db2012ca400967b406770b9"
+    },
+    {
+      "number": 97,
+      "title": "[SC-23] 목표(goals) — 목표 투입·planner 분해",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/97",
+      "updatedAt": "2026-09-15T07:07:28Z",
+      "body_sha256": "a198334a12d32af875eaee0abbd3f2738dc250298537c6d20afeb7e12f0264c5"
+    },
+    {
+      "number": 98,
+      "title": "[SC-24] 숨은 라우트 /p/jobs",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/98",
+      "updatedAt": "2026-09-15T07:07:31Z",
+      "body_sha256": "57cd982fa1efdfbc8c02c31fd1c15e2f41cbb2dec419a32ea4b6b78f1a421de7"
+    },
+    {
+      "number": 99,
+      "title": "[SC-25] 공통 레이아웃·디자인 시스템 — Mint 테마 토큰·사이드바·셸",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/99",
+      "updatedAt": "2026-09-15T07:07:33Z",
+      "body_sha256": "ddb0649fc98a9cc3aecd3cfd62983f5910e73a6f1acf856ba0e2008d58c6f6dc"
+    },
+    {
+      "number": 100,
+      "title": "[SC-26] 아키텍처·API 표면·운영 관찰 — 인증/CSRF/캐시/라우팅 종합",
+      "state": "OPEN",
+      "url": "https://github.com/trevi00/zeus/issues/100",
+      "updatedAt": "2026-09-15T07:07:36Z",
+      "body_sha256": "6a003e60eb063570d12f599098c880519e4697716d10377a94ec4890337b92d6"
+    }
+  ]
+}
