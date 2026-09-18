@@ -158,7 +158,9 @@ def test_collect_adds_observations_only_with_runtime_and_keeps_other_sources(mon
         tx.put('observations', 'e', event('e', 'operations', 'critical', record_kind='event'))
     service, artifacts = read_only(SimpleNamespace(store=store, org=organization()), None)
     legacy = monitoring.collect(service, artifacts, str(tmp_path), 'redis://127.0.0.1/0')
-    assert set(legacy['sources']) == {'database', 'docker', 'redis'}
+    assert set(legacy['sources']) == {'database', 'docker', 'redis', 'fleet'}
+    assert legacy['sources']['fleet']['data']['registered'] is False
+    assert 'observations' not in legacy['sources']
     before = store.data.copy()
     result = monitoring.collect(service, artifacts, str(tmp_path), 'redis://127.0.0.1/0', runtime=tmp_path / 'runtime')
     source = result['sources']['observations']
