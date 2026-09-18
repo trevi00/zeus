@@ -111,3 +111,17 @@ matrix and material reachable failures only; no expanding speculative nitpicks. 
 accepted candidates, runs full tests with skip reasons (-ra) and CI, verifies live deployment, then
 closes issue. If a candidate is rejected or calls exhausted, preserve it and hand off one consolidated
 remaining report rather than adding a hidden retry or silently raising164.
+
+## Owner disposition of noncritical review (same frame)
+
+UI candidate a12afdd7334e60aa53640079cdec4c3a50777169 received a static P2 rejection:
+an unregistered fleet's stale capture keeps its timestamp but lacks an inline stale badge. Preserve
+the operation's rejected status and reviewer evidence. This is a real presentation recommendation,
+not a provider/admission/ownership failure. The current registry is registered and immutable under
+the v1 API; registered stale captures already carry a warning. Source time and capture qualification
+are displayed even for unregistered snapshots. It does not block this current-host delivery under
+the user's explicit critical-only blocking policy. No extra calls, correction loop or authority
+change is justified. Owner may integrate this reviewed candidate for the fixed frontend acceptance
+checks and accept the release with this disclosed residual; never rewrite machine review to accepted.
+This qualifies the earlier "only accepted" wording: final owner judgment is distinct from the
+automated review disposition. Other material findings still block; all prior matrix checks remain.
