@@ -109,7 +109,7 @@ export function operationBars(operations: Observations["operations"] | null): Ex
   const bars: ExplanationBar[] = OPERATION_STATUS_ORDER.map((status) => ({
     status, label: OPERATION_STATUS_LABELS[status], count: operations.by_status[status] ?? 0, known_status: true,
   }))
-  const extra = Object.keys(operations.by_status).filter((status) => !(status in OPERATION_STATUS_LABELS)).sort()
+  const extra = Object.keys(operations.by_status).filter((status) => !Object.hasOwn(OPERATION_STATUS_LABELS, status)).sort()
   for (const status of extra) {
     bars.push({ status, label: `${status} (정의되지 않은 상태)`, count: operations.by_status[status], known_status: false })
   }

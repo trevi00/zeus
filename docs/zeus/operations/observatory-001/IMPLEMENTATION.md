@@ -171,3 +171,16 @@ Verification run here: `python -m pytest tests/test_monitoring.py tests/test_mon
 touches the TypeScript). Not run by the worker, owner-owned: `npm run build`/typecheck/lint,
 browser checks at 1440px and 390px, regenerate/pin/JSON/PDF equality, controlled unavailable or
 stale observations injection, packaged asset regeneration, CI.
+
+## Status membership correction (2026-09-18, base 356291777f642f420456e511de7daf954ffa4a87)
+
+Reviewer finding: `operationBars` in `frontend/monitor/src/lib/report.ts` dropped any own
+`by_status` key that is also an inherited property name of a plain object (`constructor`,
+`toString`, `__proto__`, ...). The `in` operator walks the prototype chain, so such a status was
+neither in the six known bars nor in the extra list; the owner reproduced denominator 1 with 0
+bars displayed. Fix: the extra-status filter uses `Object.hasOwn(OPERATION_STATUS_LABELS, status)`
+(ES2022, within the project's ES2023 lib) instead of `status in OPERATION_STATUS_LABELS`. One
+line changed; the six known bars, ordering, labels, `known_status` flags and counts are unchanged.
+Verification run here: the two Python commands above (results in the worker summary; neither
+executes the TypeScript). Not run by the worker, owner-owned: typecheck/build/lint, browser and
+print checks, packaged asset regeneration, CI.
