@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ExternalLink, FileText, LayoutDashboard, Palette, RefreshCw, ScrollText, type LucideIcon } from "lucide-react"
+import { ExternalLink, FileText, LayoutDashboard, Palette, RefreshCw, ScrollText, Users, type LucideIcon } from "lucide-react"
 
 import { SourceStrip } from "@/components/source-strip"
 import { StatusBadge } from "@/components/status-badge"
@@ -9,14 +9,19 @@ import { cn } from "@/lib/utils"
 import { SOURCE_NAMES, STATE_LABELS, freshness } from "@/lib/snapshot"
 import { useSnapshot, type TransportState } from "@/lib/use-snapshot"
 import { DesignSystemView } from "@/views/design-system"
+import { FleetView } from "@/views/fleet"
 import { LogsView } from "@/views/logs"
 import { OverviewView } from "@/views/overview"
 import { ReportView } from "@/views/report"
 
-type ViewName = "overview" | "logs" | "report" | "design"
+type ViewName = "overview" | "logs" | "fleet" | "report" | "design"
 const VIEWS: Array<{ id: ViewName; label: string; icon: LucideIcon }> = [
   { id: "overview", label: "개요", icon: LayoutDashboard },
   { id: "logs", label: "로그", icon: ScrollText },
+  // 팀 작업 reads the optional `sources.fleet` envelope only (fleet-001 SPEC). It is deliberately
+  // absent from SOURCE_NAMES: the source strip, the header warnings below and the pinned report
+  // keep the fixed four-source contract, and the fleet view shows its own freshness and notices.
+  { id: "fleet", label: "팀 작업", icon: Users },
   { id: "report", label: "보고서", icon: FileText },
   { id: "design", label: "디자인 시스템", icon: Palette },
 ]
@@ -86,6 +91,7 @@ export function App() {
           ) : null}
           {view === "overview" ? <OverviewView snapshot={snapshot} retained={retained} now={now} /> : null}
           {view === "logs" ? <LogsView snapshot={snapshot} retained={retained} now={now} /> : null}
+          {view === "fleet" ? <FleetView snapshot={snapshot} now={now} /> : null}
           {view === "report" ? <ReportView snapshot={snapshot} transport={transport} now={now} /> : null}
           {view === "design" ? <DesignSystemView /> : null}
           <footer className="text-xs text-muted-foreground no-print">

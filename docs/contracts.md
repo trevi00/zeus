@@ -1141,6 +1141,55 @@ lead, restrict worker egress or protect against a host administrator.
 - INV-SDD-002: SDD journals retain ordered, hash-linked events; duplicate imports/proposals are idempotent and transitions use compare-and-swap. Notifications are local records, not external messages. Model transfer candidates never change routing authority.
 - INV-GATE-001: Every gate verdict names one fixed statement, its stage, run, cycle and the definition hash it judged, with the runner receipt and process exit status or the reviewer's actor and authority level; a non-zero exit is never PASS and an unauthenticated reviewer claim never settles a statement. A runner receipt counts only when the receipt document itself names the same run, cycle, statement, definition, artifact, environment and exit status; human statements (`human_*`) accept reviewer decisions only; `authenticated_provider` authority is granted only by the configured provider's own verification of that exact statement and actor, and an unverified claim is kept as a pending unauthenticated claim. A retraction binds to the run, cycle, stage and definition of the verdict it names; one issued for another run or cycle is foreign and never removes a verdict here. All consumers use one fold: the planned statements are the denominator (`not_run` is a state, never an omission), verdicts for another run, cycle or definition are foreign, the latest live verdict wins, ERROR withdraws validity rather than leaving an earlier PASS, PARTIAL stays pending, and a retraction removes exactly one named verdict so that the fold of a compacted view equals the fold of the full view.
 
+## INV-FLEET-001
+
+`zeus fleet register|enqueue|run|pause|resume|authorize-budget|status` is the bounded multi-lane
+control plane over INV-OPERATION-001. One host configuration (`urn:zeus:fleet:1`: id, `max_parallel`
+1..lane count, fleet `budget`, 1..4 lanes with id, team, resolved absolute repository and runtime,
+non-public safe schema, Redis namespace; no DSN or token fields; unique ids/schemas/namespaces;
+runtime roots distinct, not nested and outside repositories) is registered once per control store
+into `fleet_registry` with its canonical digest; the identical configuration is idempotent, any
+other is `registration_conflict`; the registered row and digest are never rewritten. The effective
+budget lives in `fleet_control` beside the pause flag (registration seeds it with the registered
+ceilings; a row without one means the registered ceilings); pause/resume change only the flag. The
+only ceiling change is the explicit operator grant `authorize-budget --per-host --total
+--expected-total`, never invoked by the dispatcher or a model run: one store transaction requiring
+the expected total to equal the current effective total (`budget_expected_mismatch`), valid
+nondecreasing ceilings with at least one increase (`config_invalid`, `budget_decrease`,
+`budget_no_increase`) and no queued/dispatching/unknown job (`fleet_not_idle`); it writes the new
+effective budget without resuming and an immutable `fleet_budget_grants` record (prior and new
+ceilings, expected total, registered digest, time). The same original register stays idempotent and
+cannot undo a grant; historical jobs, frozen manifests and the machine ledger are unchanged.
+`registered()`, `fleet status` and the monitor `budget` expose the effective ceilings. Enqueue
+validates the operation manifest with the existing validator, binds the goal at the lane repository,
+requires the manifest budget to equal the effective fleet budget (`budget_mismatch`) and canonical
+non-glob relative paths, freezes the manifest and its digest in `fleet_jobs` under the operation id
+(one job per operation; identical enqueue idempotent, changed lane/manifest/goal/dependencies
+`binding_conflict`; dependencies must exist). Admission is one store transaction over the effective
+configuration re-read in that transaction (the runner re-reads it before every scan): not paused,
+machine ledger not at ceiling (counts only; reservation stays with the child's CallBudget use),
+fewer than `max_parallel` dispatching/unknown jobs, manifest budget equal to the effective one
+(`budget_stale` otherwise), lane free, no equal or directory-prefix allowed-path overlap (casefolded,
+separators normalized) with a reserving job of the same repository, all dependencies `accepted`
+(failed/rejected/exhausted/unknown prerequisites block only dependents). Every observed blocking
+reason (`paused`, `budget_exhausted`, `budget_stale`, `capacity`, `lane_busy`, `dependency_*`,
+`path_conflict`) is persisted on its queued job in that same transaction, its row and `updated_at`
+changing only when the reason differs from the recorded one, and cleared on admission. The claim is
+durable as `dispatching` with a fresh owner token before any process; only that owner finalizes.
+The child is the existing `zeus operate run` with both `ZEUS_`/`HARNESS_` lane overrides and the
+lane DSN built by psycopg.conninfo (`search_path=<schema>`, current_schema verified, never public,
+never created); Docker isolation must be selected. `accepted` needs exit 0 and the exact durable lane
+row (id, manifest digest, accepted); nonzero, contradictory, missing or unreadable evidence is
+`failed` (definite pre-claim refusal) or `unknown`. `unknown` and `dispatching` retain lane,
+capacity and path exclusion, are reported as `reconciliation_required`, are never relaunched after a
+restart and are never cleared by a command here. No retry, merge, deploy, automatic ceiling change
+or generated work. `sources.fleet` in the monitor snapshot (an additive source beside `database`,
+`docker`, `redis` and `observations`; unavailable on its own when the store fails, the fixed
+`registered: false` shape when no fleet is registered) and `fleet status` project
+`urn:zeus:fleet-status:1` from store reads only: identities, states, safe reason codes (including
+the persisted queued reasons), call counts, effective `budget`, last 100 jobs with `truncated`,
+`active_job` from all reserving jobs; never manifests, paths, schemas, DSNs or raw output.
+
 ## INV-OPERATION-FINALIZATION-001
 
 A terminal bounded operation (INV-OPERATION-001: accepted, rejected, failed, unknown, exhausted)
