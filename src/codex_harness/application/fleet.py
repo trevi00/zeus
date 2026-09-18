@@ -3,10 +3,14 @@
 Every admission is one existing store transaction (PostgresStore serializes it with the control
 advisory lock; MemoryStore with its lock): at most `max_parallel` reserving jobs, one per lane,
 no allowed-path conflict within a repository, all dependencies accepted, no pause and no exhausted
-machine ledger. The claim is durable as `dispatching` with a fresh owner token before any process
-exists; only that owner finalizes. The runner waits on children outside every transaction, never
-relaunches a dispatching/unknown job after a restart, never retries, merges or raises a ceiling.
-Execution itself is the existing `zeus operate run` in a lane environment, behind a launcher port.
+machine ledger. Every observed blocking reason of a queued job is persisted in that same
+transaction (timestamps move only when the reason changes) and cleared on admission. The claim is
+durable as `dispatching` with a fresh owner token before any process exists; only that owner
+finalizes. The runner waits on children outside every transaction, never relaunches a
+dispatching/unknown job after a restart, never retries or merges. The only ceiling change is the
+explicit operator `authorize_budget` (compare-and-swap, idle fleet only, immutable grant record);
+the dispatcher and the model never invoke it. Execution itself is the existing `zeus operate run`
+in a lane environment, behind a launcher port.
 """
 from __future__ import annotations
 
@@ -23,6 +27,7 @@ from codex_harness.domain.fleet import (
     FleetRefused,
     binding,
     config_digest,
+    effective_config,
     lane_of,
     new_job,
     projection,
@@ -30,12 +35,14 @@ from codex_harness.domain.fleet import (
     sanitized_config,
     select_admission,
     validate_config,
+    validate_grant,
     validate_job_manifest,
 )
 from codex_harness.domain.model import require, utcnow
 from codex_harness.domain.operation import manifest_digest
 
 BUCKET_REGISTRY, BUCKET_CONTROL, BUCKET_JOBS = "fleet_registry", "fleet_control", "fleet_jobs"
+BUCKET_GRANTS = "fleet_budget_grants"
 CONTROL_KEY = "admission"
 
 
@@ -70,16 +77,25 @@ class Fleet:
                    "registered_at": self.clock()}
             tx.put(BUCKET_REGISTRY, config["id"], row)
             if tx.get(BUCKET_CONTROL, CONTROL_KEY) is None:
-                tx.put(BUCKET_CONTROL, CONTROL_KEY, {"paused": False, "updated_at": self.clock()})
+                tx.put(BUCKET_CONTROL, CONTROL_KEY, {"paused": False, "budget": dict(config["budget"]),
+                                                     "updated_at": self.clock()})
         return {"registered": True, "cached": False, "id": config["id"], "config_sha256": sha,
                 "config": sanitized_config(config)}
 
+    @staticmethod
+    def _control(tx) -> dict:
+        """Pause flag and effective budget; an older row without a budget keeps the registered one."""
+        return tx.get(BUCKET_CONTROL, CONTROL_KEY) or {"paused": False}
+
     def registered(self) -> dict:
+        """The registry row with `config` carrying the effective ceilings (a grant replaces the
+        registered budget for new work); `config_sha256` stays the original registration digest."""
         with self.store.transaction() as tx:
             registry = self._registry(tx)
+            control = self._control(tx)
         if registry is None:
             raise FleetRefused("unregistered")
-        return registry
+        return {**registry, "config": effective_config(registry["config"], control)}
 
     # ----- enqueue ------------------------------------------------------------------------
     def enqueue(self, lane_id: str, manifest: dict, goal: dict, dependencies) -> dict:
@@ -92,8 +108,9 @@ class Fleet:
             registry = self._registry(tx)
             if registry is None:
                 raise FleetRefused("unregistered")
-            lane = lane_of(registry["config"], lane_id)
-            validate_job_manifest(manifest, registry["config"])
+            config = effective_config(registry["config"], self._control(tx))
+            lane = lane_of(config, lane_id)
+            validate_job_manifest(manifest, config)  # the effective ceilings, never a stale budget
             job = new_job(manifest, manifest_digest(manifest), lane, goal, dependencies, self.clock())
             if job["id"] in dependencies:
                 raise FleetRefused("dependency_self")
@@ -120,7 +137,8 @@ class Fleet:
         with self.store.transaction() as tx:
             if self._registry(tx) is None:
                 raise FleetRefused("unregistered")
-            row = {"paused": paused, "updated_at": self.clock()}
+            # Only the flag changes: a granted effective budget survives pause/resume.
+            row = {**self._control(tx), "paused": paused, "updated_at": self.clock()}
             tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
         return row
 
@@ -131,22 +149,62 @@ class Fleet:
     def resume(self) -> dict:
         return self._set_paused(False)
 
-    def admit_one(self, budget_exhausted: bool = False) -> dict:
-        """One transaction: choose the oldest admissible queued job and claim it as dispatching
-        with a fresh owner token. Returns `job` None with the blocking reasons when nothing fits."""
+    def authorize_budget(self, per_host, total, expected_total) -> dict:
+        """Explicit operator grant of higher effective ceilings, one transaction: the expected
+        total must equal the current effective total, ceilings valid and nondecreasing with at
+        least one increase, and no queued/dispatching/unknown job (queued work carries frozen
+        ceilings; reserving work holds the machine ledger). The registered config and digest stay
+        immutable; the control row takes the new budget beside the untouched pause flag and an
+        immutable `fleet_budget_grants` record keeps prior/new ceilings and time. No resume."""
         with self.store.transaction() as tx:
             registry = self._registry(tx)
             if registry is None:
                 raise FleetRefused("unregistered")
-            control = tx.get(BUCKET_CONTROL, CONTROL_KEY) or {"paused": False}
+            control = self._control(tx)
+            prior = effective_config(registry["config"], control)["budget"]
+            budget = validate_grant(prior, {"per_host": per_host, "total": total}, expected_total)
+            if any(row["status"] == QUEUED or row["status"] in RESERVING for row in tx.scan(BUCKET_JOBS)):
+                raise FleetRefused("fleet_not_idle")
+            now = self.clock()
+            grant_id = "grant-%08d" % (len(tx.scan(BUCKET_GRANTS)) + 1)
+            require(tx.get(BUCKET_GRANTS, grant_id) is None, "Fleet budget grant record already exists")
+            grant = {"id": grant_id, "fleet": registry["id"], "config_sha256": registry["config_sha256"],
+                     "prior": dict(prior), "budget": budget, "expected_total": expected_total, "granted_at": now}
+            tx.put(BUCKET_GRANTS, grant_id, grant)
+            row = {**control, "paused": bool(control.get("paused")), "budget": budget, "updated_at": now}
+            tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
+        return {"granted": True, "grant_id": grant_id, "prior": grant["prior"], "budget": dict(budget),
+                "paused": row["paused"], "granted_at": now}
+
+    def budget_grants(self) -> list[dict]:
+        with self.store.transaction() as tx:
+            return tx.scan(BUCKET_GRANTS)
+
+    def admit_one(self, budget_exhausted: bool = False) -> dict:
+        """One transaction: choose the oldest admissible queued job and claim it as dispatching
+        with a fresh owner token. Returns `job` None with the blocking reasons when nothing fits.
+        Every observed reason (paused, budget_exhausted, budget_stale, capacity, lane_busy,
+        dependency_*, path_conflict) is persisted on its queued job in this transaction; the row
+        and its `updated_at` change only when the reason differs from the recorded one."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            config = effective_config(registry["config"], control)  # refreshed every admission
             jobs = {row["id"]: row for row in tx.scan(BUCKET_JOBS)}
-            decision = select_admission(registry["config"], bool(control.get("paused")), jobs, budget_exhausted)
+            decision = select_admission(config, bool(control.get("paused")), jobs, budget_exhausted)
             job = decision["job"]
+            now = self.clock()
             if job is not None:
-                now = self.clock()
                 job.update(status=DISPATCHING, owner_token=self.token(), dispatched_at=now, updated_at=now,
                            reason_code=None)
                 tx.put(BUCKET_JOBS, job["id"], job)
+            for job_id, reason in decision["blocked"].items():
+                blocked = jobs[job_id]
+                if blocked.get("reason_code") != reason:
+                    blocked.update(reason_code=reason, updated_at=now)
+                    tx.put(BUCKET_JOBS, job_id, blocked)
         return {**decision, "job": job}
 
     def finalize(self, job_id: str, owner_token: str, outcome: dict) -> dict:
@@ -183,8 +241,10 @@ class Fleet:
         """The `urn:zeus:fleet-status:1` projection from PG reads only."""
         with self.store.transaction() as tx:
             registry = self._registry(tx)
-            control = tx.get(BUCKET_CONTROL, CONTROL_KEY) or {}
+            control = self._control(tx)
             rows = tx.scan(BUCKET_JOBS)
+        if registry is not None:
+            registry = {**registry, "config": effective_config(registry["config"], control)}
         return projection(registry, bool(control.get("paused")), rows)
 
 
@@ -204,10 +264,10 @@ class FleetRunner:
         self.stopping = True
 
     def run(self, once: bool) -> dict:
-        config = self.fleet.registered()["config"]
+        self.fleet.registered()  # refuse early when unregistered; ceilings are re-read per scan
         summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False}
         while True:
-            progressed = self._admit(config, summary)
+            progressed = self._admit(summary)
             progressed = self._reap(summary) or progressed
             if self.children or progressed:
                 continue
@@ -218,8 +278,11 @@ class FleetRunner:
         summary["reconciliation_required"] = self.fleet.reconciliation_required()
         return summary
 
-    def _admit(self, config: dict, summary: dict) -> bool:
+    def _admit(self, summary: dict) -> bool:
         progressed = False
+        # Effective ceilings are refreshed before every admission scan: a grant made while this
+        # service sleeps applies to the next scan without a restart and without any hidden reset.
+        config = self.fleet.registered()["config"]
         while not self.stopping and len(self.children) < config["max_parallel"]:
             exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
             decision = self.fleet.admit_one(budget_exhausted=exhausted)
@@ -266,4 +329,5 @@ class FleetRunner:
         summary["finalized"].append({"id": row["id"], "status": row["status"], "reason_code": row["reason_code"]})
 
 
-__all__ = ["BUCKET_CONTROL", "BUCKET_JOBS", "BUCKET_REGISTRY", "Fleet", "FleetRunner", "LaunchRefused", "QUEUED"]
+__all__ = ["BUCKET_CONTROL", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_REGISTRY", "Fleet", "FleetRunner",
+           "LaunchRefused", "QUEUED"]

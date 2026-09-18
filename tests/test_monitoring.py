@@ -162,9 +162,15 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert store.data == before
     assert list((runtime / 'artifacts').iterdir()) == []
     lines = [json.loads(line) for line in (runtime / 'monitor-collector.log').read_text('utf-8').splitlines()]
-    # Four sources since observatory-001: the CLI passes the runtime, adding the observations envelope.
-    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 4 + ['shutdown']) * 2
+    # Five sources: observatory-001 added observations (the CLI passes the runtime) and fleet-001
+    # added the additive fleet envelope (INV-FLEET-001).
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 5 + ['shutdown']) * 2
     assert snapshot['sources']['observations']['status'] == 'ok'
+    # Unregistered fleet: an ok envelope with the fixed empty shape; the read-only store is unchanged
+    # (asserted above) and no executor was built.
+    assert snapshot['sources']['fleet']['status'] == 'ok'
+    assert snapshot['sources']['fleet']['data'] == {'schema': 'urn:zeus:fleet-status:1', 'registered': False,
+                                                    'lanes': [], 'jobs': []}
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}
     assert lines[0] == {'at': lines[0]['at'], 'event': 'startup', 'mode': 'collect', 'once': True,
@@ -260,14 +266,17 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     sources = result['sources']
     assert result['schema'] == 'harness-monitor.v1'
     assert result['scope'] == {'label': 'repository ' + Path('.').resolve().name, 'docker': 'compose', 'containers': None}
-    assert set(sources) == {'database', 'docker', 'redis'}
+    assert set(sources) == {'database', 'docker', 'redis', 'fleet'}
     assert sources['database']['status'] == 'unavailable'
     assert sources['database']['data'] is None
     assert sources['database']['error'] == 'RuntimeError'
+    # The additive fleet source (INV-FLEET-001) reads the same store: unavailable, never a guess.
+    assert sources['fleet']['status'] == 'unavailable'
+    assert sources['fleet']['data'] is None and sources['fleet']['error'] == 'RuntimeError'
     assert sources['docker'] == {'status': 'ok', 'observed_at': sources['docker']['observed_at'],
                                  'data': [{'service': 'redis', 'state': 'running'}]}
     assert sources['redis']['status'] == 'ok' and sources['redis']['data'][0]['agent'] == 'conductor'
-    for name in ('database', 'docker', 'redis'):
+    for name in ('database', 'docker', 'redis', 'fleet'):
         observed = datetime.fromisoformat(sources[name]['observed_at'])
         assert observed.tzinfo is not None
         assert before <= observed <= datetime.fromisoformat(result['collected_at'])

@@ -152,6 +152,30 @@ def config_digest(config: dict) -> str:
     return digest(config)
 
 
+def effective_config(config: dict, control) -> dict:
+    """The registered configuration with the effective ceilings: a granted budget in the control
+    row replaces the registered one for new enqueue/admission; the registered config and its
+    digest are never rewritten. A control row without a budget keeps the registered ceilings."""
+    budget = control.get("budget") if isinstance(control, dict) else None
+    if budget is None:
+        return config
+    return {**config, "budget": validate_budget(budget)}
+
+
+def validate_grant(prior: dict, requested, expected_total) -> dict:
+    """An explicit operator grant over the effective ceilings (compare-and-swap on the total):
+    the stated expected total must be the current effective total, both ceilings must be valid
+    and monotonically nondecreasing, and at least one must increase. Never a reset."""
+    new = validate_budget(requested)
+    if not _integer(expected_total) or expected_total != prior["total"]:
+        raise FleetRefused("budget_expected_mismatch", "expected_total")
+    if new["per_host"] < prior["per_host"] or new["total"] < prior["total"]:
+        raise FleetRefused("budget_decrease", "budget")
+    if new == prior:
+        raise FleetRefused("budget_no_increase", "budget")
+    return new
+
+
 def sanitized_config(config: dict) -> dict:
     """What may be displayed: identities and ceilings; never paths, schemas or namespaces."""
     return {"schema": config["schema"], "id": config["id"], "max_parallel": config["max_parallel"],
@@ -206,7 +230,10 @@ def binding(job: dict) -> dict:
 
 def blocking_reason(job: dict, jobs: dict, config: dict) -> str | None:
     """Why this queued job cannot be admitted now, or None. Capacity and pause are fleet-wide and
-    checked by the caller; this covers the lane, the dependencies and the path exclusion."""
+    checked by the caller; this covers a stale budget, the lane, the dependencies and the path
+    exclusion. A job frozen with ceilings other than the effective ones is never dispatched."""
+    if job["manifest"].get("budget") != config["budget"]:
+        return "budget_stale"
     reserving = [other for other in jobs.values() if other["status"] in RESERVING]
     if any(other["lane"] == job["lane"] for other in reserving):
         return "lane_busy"
@@ -227,7 +254,8 @@ def blocking_reason(job: dict, jobs: dict, config: dict) -> str | None:
 
 def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: bool) -> dict:
     """The one queued job to dispatch next (oldest first) and the reason every other queued job
-    waits. At most `max_parallel` jobs reserve at once, one per lane."""
+    waits. At most `max_parallel` jobs reserve at once, one per lane. `config` carries the
+    effective ceilings; the caller persists every observed reason in the same transaction."""
     queued = sorted((j for j in jobs.values() if j["status"] == QUEUED), key=lambda j: (j["created_at"], j["id"]))
     reserving = sum(1 for j in jobs.values() if j["status"] in RESERVING)
     blocked, chosen = {}, None
@@ -307,7 +335,8 @@ def job_view(job: dict) -> dict:
 def projection(registry: dict | None, paused: bool, jobs: list[dict]) -> dict:
     """`urn:zeus:fleet-status:1`: no manifest text, objectives, paths, schemas, DSNs or raw
     errors. The job list is the last JOB_SAMPLE by update; `active_job` is derived from every
-    reserving job, including those outside the sample."""
+    reserving job, including those outside the sample. `registry["config"]` is the effective
+    configuration, so `budget` shows the ceilings new work must carry."""
     if registry is None:
         return {"schema": STATUS_SCHEMA, "registered": False, "lanes": [], "jobs": []}
     config = registry["config"]

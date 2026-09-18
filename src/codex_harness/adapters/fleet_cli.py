@@ -1,4 +1,6 @@
-"""`zeus fleet register|enqueue|run|pause|resume|status`: thin wiring around application.fleet."""
+"""`zeus fleet register|enqueue|run|pause|resume|authorize-budget|status`: thin wiring around
+application.fleet. `authorize-budget` is the operator's explicit grant under the trusted local CLI;
+nothing in the dispatcher or a model run calls it."""
 from __future__ import annotations
 
 import signal
@@ -26,6 +28,11 @@ def add_parser(commands) -> None:
     run.add_argument("--once", action="store_true", help="Drain runnable work, then exit")
     sub.add_parser("pause", help="Stop new admissions; running work finishes")
     sub.add_parser("resume", help="Allow new admissions again")
+    grant = sub.add_parser("authorize-budget", help="Operator grant of higher effective ceilings; idle fleet only")
+    grant.add_argument("--per-host", type=int, required=True, dest="per_host")
+    grant.add_argument("--total", type=int, required=True)
+    grant.add_argument("--expected-total", type=int, required=True, dest="expected_total",
+                       help="The current effective total; refused when it no longer matches")
     sub.add_parser("status", help="Read the fleet projection; store read only")
 
 
@@ -88,4 +95,7 @@ def execute(service, args) -> dict:
         return {**Fleet(service.store).pause(), "exit_code": 0}
     if command == "resume":
         return {**Fleet(service.store).resume(), "exit_code": 0}
+    if command == "authorize-budget":
+        grant = Fleet(service.store).authorize_budget(args.per_host, args.total, args.expected_total)
+        return {**grant, "exit_code": 0}
     return status(service, args)

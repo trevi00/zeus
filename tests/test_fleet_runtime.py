@@ -171,7 +171,21 @@ def test_cli_register_enqueue_status_and_refusals_are_redacted(tmp_path, monkeyp
     cli.fleet_command(svc, cli.parser().parse_args(["fleet", "status"]))
     assert outputs[-1]["paused"] is True and outputs[-1]["reconciliation_required"] == [] and outputs[-1]["jobs"][0]["id"] == "op-1"
     cli.fleet_command(svc, cli.parser().parse_args(["fleet", "resume"]))
-    assert outputs[-1]["paused"] is False
+    assert outputs[-1]["paused"] is False and outputs[-1]["budget"] == {"per_host": 2, "total": 4}
+    # The operator grant: refused while op-1 is queued, granted on an idle fleet, visible in status.
+    grant = ["fleet", "authorize-budget", "--per-host", "3", "--total", "6", "--expected-total", "4"]
+    with pytest.raises(SystemExit):
+        cli.fleet_command(svc, cli.parser().parse_args(grant))
+    assert outputs[-1] == {"status": "refused", "reason_code": "fleet_not_idle", "error_type": "FleetRefused", "exit_code": 1}
+    idle = Harness(MemoryStore(), organization())
+    cli.fleet_command(idle, cli.parser().parse_args(["fleet", "register", "--file", str(fleet_file)]))
+    cli.fleet_command(idle, cli.parser().parse_args(grant))
+    assert outputs[-1]["granted"] is True and outputs[-1]["budget"] == {"per_host": 3, "total": 6} and outputs[-1]["exit_code"] == 0
+    cli.fleet_command(idle, cli.parser().parse_args(["fleet", "status"]))
+    assert outputs[-1]["budget"] == {"per_host": 3, "total": 6} and outputs[-1]["paused"] is False
+    with pytest.raises(SystemExit):
+        cli.fleet_command(idle, cli.parser().parse_args(["fleet", "enqueue", "--lane", "a", "--file", str(op_file)]))
+    assert outputs[-1]["reason_code"] == "budget_mismatch"
     assert cli.parser().parse_args(["fleet", "run", "--once"]).once is True
     assert cli.parser().parse_args(["fleet", "enqueue", "--lane", "a", "--file", "x", "--after", "j1", "--after", "j2"]).after == ["j1", "j2"]
     assert CANARY not in json.dumps(outputs)

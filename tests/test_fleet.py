@@ -126,7 +126,9 @@ def test_admission_capacity_lane_paths_dependencies_pause_and_budget(tmp_path):
     assert first["job"]["id"] == "op-1" and first["job"]["status"] == "dispatching" and first["job"]["owner_token"]
     second = shared.admit_one()
     assert second["job"]["id"] == "op-3" and second["blocked"] == {"op-2": "path_conflict"}
+    assert {j["id"]: j["reason_code"] for j in shared.status()["jobs"]} == {"op-1": None, "op-2": "path_conflict", "op-3": None}
     assert shared.admit_one()["job"] is None
+    assert {j["id"]: j["reason_code"] for j in shared.status()["jobs"]}["op-2"] == "capacity"  # both slots now held
     assert shared.status()["lanes"] == [{"id": "a", "team": "alpha", "active_job": "op-1"},
                                        {"id": "b", "team": "beta", "active_job": "op-3"}]
     # Lane exclusivity and capacity on distinct repositories.
@@ -136,9 +138,12 @@ def test_admission_capacity_lane_paths_dependencies_pause_and_budget(tmp_path):
     f.enqueue("b", manifest("op-4", ["docs/z.md"]), GOAL, [])
     one = f.admit_one()
     assert one["job"]["id"] == "op-1" and one["blocked"] == {"op-2": "lane_busy", "op-3": "dependency_waiting", "op-4": "capacity"}
+    assert {j["id"]: j["reason_code"] for j in f.status()["jobs"]} == {
+        "op-1": None, "op-2": "lane_busy", "op-3": "dependency_waiting", "op-4": "capacity"}
     assert f.admit_one(budget_exhausted=True)["blocked"] == {"op-2": "budget_exhausted", "op-3": "budget_exhausted", "op-4": "budget_exhausted"}
     f.pause()
     assert f.status()["paused"] is True and f.admit_one()["blocked"]["op-4"] == "paused"
+    assert {j["reason_code"] for j in f.status()["jobs"] if j["status"] == "queued"} == {"paused"}
     f.resume()
     assert f.admit_one()["job"]["id"] == "op-4"
     assert f.admit_one()["blocked"] == {"op-2": "capacity", "op-3": "capacity"}
@@ -157,7 +162,142 @@ def test_admission_capacity_lane_paths_dependencies_pause_and_budget(tmp_path):
     assert f.status()["lanes"][1]["active_job"] == "op-4"
     f.finalize("op-2", f.store.data["fleet_jobs", "op-2"]["owner_token"], {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0, "calls": {"reserved": 2, "settled": 2}})
     assert f.admit_one()["blocked"] == {"op-3": "lane_busy"}  # unknown op-4 still holds lane b
+    assert {j["id"]: j["reason_code"] for j in f.status()["jobs"]}["op-3"] == "lane_busy"
     assert CANARY not in json.dumps(f.status()) and str(tmp_path) not in json.dumps(f.status())
+
+
+def ticking():
+    """Deterministic clock fixture: strictly increasing ISO timestamps, one per call."""
+    counter = iter(range(1, 10_000))
+    return lambda: "2026-09-18T00:00:00.%06d+00:00" % next(counter)
+
+
+def test_queued_reasons_persist_change_only_on_new_facts_and_reach_the_monitor(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    from codex_harness.adapters import monitoring
+    monkeypatch.setattr(monitoring, "docker_facts", lambda repository, containers=None: [])
+    monkeypatch.setattr(monitoring, "redis_facts", lambda url, agents: [])
+    f = Fleet(MemoryStore(), clock=ticking())
+    f.register(config(tmp_path))
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    f.enqueue("b", manifest("op-2", ["docs/y.md"]), GOAL, [])
+    f.enqueue("a", manifest("op-3", ["docs/z.md"]), GOAL, ["op-1"])
+    row = lambda job_id: f.store.data["fleet_jobs", job_id]  # noqa: E731
+    created = {j: row(j)["updated_at"] for j in ("op-1", "op-2", "op-3")}
+    # Budget exhaustion is observed and persisted before any claim.
+    assert f.admit_one(budget_exhausted=True)["job"] is None
+    assert row("op-1")["reason_code"] == row("op-2")["reason_code"] == "budget_exhausted"
+    stamped = {j: row(j)["updated_at"] for j in ("op-1", "op-2", "op-3")}
+    assert all(stamped[j] > created[j] for j in stamped)
+    # Same observation again: no row changes, no timestamp moves (not a heartbeat).
+    assert f.admit_one(budget_exhausted=True)["job"] is None
+    assert {j: row(j)["updated_at"] for j in ("op-1", "op-2", "op-3")} == stamped
+    # Admission clears the reason of the claimed job; the others record the new facts.
+    admitted = f.admit_one()
+    assert admitted["job"]["id"] == "op-1" and row("op-1")["reason_code"] is None
+    assert row("op-1")["updated_at"] > stamped["op-1"]
+    assert row("op-2")["reason_code"] == "capacity" and row("op-3")["reason_code"] == "lane_busy"
+    f.pause()
+    assert f.admit_one()["blocked"] == {"op-2": "paused", "op-3": "paused"}
+    f.resume()
+    f.finalize("op-1", row("op-1")["owner_token"], {"status": "failed", "reason_code": "child_refused", "exit_code": 2})
+    nxt = f.admit_one()
+    assert nxt["job"]["id"] == "op-2" and row("op-3")["reason_code"] == "dependency_failed"
+    # The reasons survive `status` and the monitor envelope, and a status read writes nothing.
+    service, _ = monitoring.read_only(SimpleNamespace(store=f.store, org=SimpleNamespace(agents={})), None)
+    before = deepcopy(f.store.data)
+    data = collect(service, None, str(tmp_path), "redis://127.0.0.1/0")["sources"]["fleet"]["data"]
+    assert {j["id"]: (j["status"], j["reason_code"]) for j in data["jobs"]} == {
+        "op-1": ("failed", "child_refused"), "op-2": ("dispatching", None), "op-3": ("queued", "dependency_failed")}
+    assert f.store.data == before
+
+
+def test_authorize_budget_is_idle_only_cas_immutable_and_survives_pause_and_register(tmp_path):
+    f = Fleet(MemoryStore(), clock=ticking())
+    registered = f.register(config(tmp_path))
+    original_digest, original_config = registered["config_sha256"], deepcopy(f.store.data["fleet_registry", "fleet-1"])
+    old, new = {"per_host": 4, "total": 8}, {"per_host": 6, "total": 12}
+    # Stale expected total, decreasing, invalid and unchanged ceilings are refused without a write.
+    before = deepcopy(f.store.data)
+    for kwargs, code in (
+        (dict(per_host=6, total=12, expected_total=7), "budget_expected_mismatch"),
+        (dict(per_host=6, total=12, expected_total=True), "budget_expected_mismatch"),
+        (dict(per_host=3, total=12, expected_total=8), "budget_decrease"),
+        (dict(per_host=4, total=7, expected_total=8), "budget_decrease"),
+        (dict(per_host=4, total=8, expected_total=8), "budget_no_increase"),
+        (dict(per_host=0, total=8, expected_total=8), "config_invalid"),
+        (dict(per_host=9, total=8, expected_total=8), "config_invalid"),
+        (dict(per_host="6", total=12, expected_total=8), "config_invalid"),
+    ):
+        with pytest.raises(FleetRefused, match=code):
+            f.authorize_budget(**kwargs)
+    assert f.store.data == before
+    with pytest.raises(FleetRefused, match="unregistered"):
+        Fleet(MemoryStore()).authorize_budget(6, 12, 8)
+    # Queued, dispatching and unknown jobs each refuse the grant; terminal jobs do not.
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    with pytest.raises(FleetRefused, match="fleet_not_idle"):
+        f.authorize_budget(6, 12, 8)
+    token = f.admit_one()["job"]["owner_token"]
+    with pytest.raises(FleetRefused, match="fleet_not_idle"):
+        f.authorize_budget(6, 12, 8)
+    f.finalize("op-1", token, {"status": "unknown", "reason_code": "receipt_missing", "exit_code": 0})
+    with pytest.raises(FleetRefused, match="fleet_not_idle"):
+        f.authorize_budget(6, 12, 8)
+    assert f.store.data.get(("fleet_control", "admission"))["budget"] == old and f.budget_grants() == []
+    idle = Fleet(MemoryStore(), clock=ticking())
+    idle.register(config(tmp_path))
+    idle.enqueue("a", manifest("op-0", ["docs/x.md"]), GOAL, [])
+    idle.finalize("op-0", idle.admit_one()["job"]["owner_token"], {"status": "rejected", "reason_code": "lead_rejected", "exit_code": 1})
+    idle.pause()
+    granted = idle.authorize_budget(6, 12, 8)
+    assert granted["granted"] is True and granted["prior"] == old and granted["budget"] == new and granted["paused"] is True
+    # No automatic resume; pause/resume preserve the effective budget; registry/digest untouched.
+    assert idle.status()["paused"] is True and idle.status()["budget"] == new
+    idle.resume()
+    assert idle.status()["paused"] is False and idle.status()["budget"] == new
+    idle.pause()
+    assert idle.status()["budget"] == new and idle.registered()["config"]["budget"] == new
+    assert idle.registered()["config_sha256"] == original_digest
+    assert idle.store.data["fleet_registry", "fleet-1"] == original_config
+    grants = idle.budget_grants()
+    assert len(grants) == 1 and grants[0]["prior"] == old and grants[0]["budget"] == new
+    assert grants[0]["config_sha256"] == original_digest and grants[0]["granted_at"] == granted["granted_at"]
+    # The original registration stays idempotent and cannot undo the grant.
+    assert idle.register(config(tmp_path))["cached"] is True and idle.status()["budget"] == new
+    with pytest.raises(FleetRefused, match="registration_conflict"):
+        idle.register(config(tmp_path, budget=new))
+    assert idle.status()["budget"] == new
+    # New manifests must carry the effective ceilings; old ones are refused at enqueue.
+    with pytest.raises(FleetRefused, match="budget_mismatch"):
+        idle.enqueue("a", manifest("op-old", ["docs/o.md"]), GOAL, [])
+    idle.enqueue("a", manifest("op-new", ["docs/n.md"], new), GOAL, [])
+    # The historical job keeps its frozen manifest and ceilings.
+    assert idle.store.data["fleet_jobs", "op-0"]["manifest"]["budget"] == old
+    # The new manifest is admitted under the new ceilings; the fleet drains before the next grant.
+    idle.resume()
+    token = idle.admit_one()["job"]["owner_token"]
+    idle.finalize("op-new", token, {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0})
+    # Two competing grants over the same expected total: the second sees the moved total.
+    first = idle.authorize_budget(6, 13, 12)
+    with pytest.raises(FleetRefused, match="budget_expected_mismatch"):
+        Fleet(idle.store).authorize_budget(7, 14, 12)
+    assert [g["id"] for g in idle.budget_grants()] == ["grant-00000001", "grant-00000002"]
+    assert idle.budget_grants()[1]["prior"] == new and idle.status()["budget"] == first["budget"] == {"per_host": 6, "total": 13}
+    assert CANARY not in json.dumps(idle.budget_grants()) and str(tmp_path) not in json.dumps(idle.budget_grants())
+
+
+def test_admission_blocks_a_queued_job_with_stale_ceilings(tmp_path):
+    """Control-plane guard only: the control row is edited directly (fixture) to stand in for a
+    grant that raced an enqueue on another connection; the CLI grant itself refuses queued work."""
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    with f.store.transaction() as tx:
+        tx.put("fleet_control", "admission", {**tx.get("fleet_control", "admission"), "budget": {"per_host": 6, "total": 12}})
+    decision = f.admit_one()
+    assert decision["job"] is None and decision["blocked"] == {"op-1": "budget_stale"}
+    assert f.status()["jobs"][0]["reason_code"] == "budget_stale" and f.status()["budget"] == {"per_host": 6, "total": 12}
 
 
 def test_two_dispatchers_cannot_double_claim_and_projection_bounds_sample(tmp_path):
@@ -167,8 +307,17 @@ def test_two_dispatchers_cannot_double_claim_and_projection_bounds_sample(tmp_pa
     other = Fleet(f.store)
     a, b = f.admit_one(), other.admit_one()
     assert a["job"]["id"] == "op-000" and b["job"] is None and b["blocked"]["op-001"] == "capacity"
+    # The first admission persisted `capacity` on all 101 waiting jobs at the same instant as the
+    # claim; the second dispatcher observed the same reasons and wrote nothing (timestamps equal).
+    rows = {k[1]: v for k, v in f.store.data.items() if k[0] == "fleet_jobs"}
+    assert {r["reason_code"] for r in rows.values() if r["status"] == "queued"} == {"capacity"}
+    assert len({r["updated_at"] for r in rows.values()}) == 1 and rows["op-000"]["reason_code"] is None
     view = f.status()
-    assert view["truncated"] is True and len(view["jobs"]) == 100 and view["jobs"][0]["id"] == "op-000"
+    assert view["truncated"] is True and len(view["jobs"]) == 100
+    sampled = {j["id"] for j in view["jobs"]}
+    assert "op-000" not in sampled and "op-001" not in sampled  # last 100 by (updated_at, id)
+    assert all(j["status"] == "queued" and j["reason_code"] == "capacity" for j in view["jobs"])
+    # `active_job` is derived from every reserving job, including one outside the sample.
     assert view["lanes"][0]["active_job"] == "op-000" and view["jobs"][-1]["calls"] == {"reserved": None, "settled": None}
     assert set(view["jobs"][0]) == {"id", "lane", "team", "status", "reason_code", "operation_id", "goal",
                                     "dependencies", "calls", "created_at", "updated_at"}
@@ -255,6 +404,40 @@ def test_runner_overlaps_independent_jobs_drains_once_and_keeps_unknown(tmp_path
     assert stopped.run(once=False)["stopped"] is True and again.launched == []
     exhausted = FleetRunner(f, FakeLauncher({}, exhausted=True), sleep=sleeps.append, interval=0).run(once=True)
     assert exhausted["blocked"] == {"op-6": "budget_exhausted"} and exhausted["admitted"] == []
+    assert {j["id"]: j["reason_code"] for j in f.status()["jobs"]}["op-6"] == "budget_exhausted"
+
+
+class CeilingLauncher(FakeLauncher):
+    """Fixture launcher that records the ceilings the runner asks about and exhausts the old ones."""
+
+    def __init__(self, outcomes, old):
+        super().__init__(outcomes)
+        self.old, self.asked = old, []
+
+    def budget_exhausted(self, budget):
+        self.asked.append(dict(budget))
+        return budget == self.old
+
+
+def test_running_service_refreshes_effective_ceilings_before_new_admission(tmp_path):
+    f = fleet(tmp_path, max_parallel=1)
+    old, new = {"per_host": 4, "total": 8}, {"per_host": 5, "total": 9}
+    launcher = CeilingLauncher({"op-1": {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0}}, old)
+    runner = FleetRunner(f, launcher, interval=0)
+    scans = []
+
+    def between_scans(seconds):
+        # The service sleeps between scans; the operator grants and enqueues in the meantime.
+        scans.append(seconds)
+        if len(scans) == 1:
+            assert f.authorize_budget(5, 9, 8)["budget"] == new
+            f.enqueue("a", manifest("op-1", ["docs/x.md"], new), GOAL, [])
+        else:
+            runner.stop()
+    runner.sleep = between_scans
+    summary = runner.run(once=False)
+    assert launcher.asked[0] == old and launcher.asked[-1] == new and launcher.launched == ["op-1"]
+    assert summary["admitted"] == ["op-1"] and summary["finalized"][0]["status"] == "accepted" and summary["stopped"] is True
 
 
 def test_monitor_snapshot_carries_fleet_envelope_and_survives_store_failure(tmp_path, monkeypatch):
