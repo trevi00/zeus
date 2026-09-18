@@ -229,3 +229,12 @@ CI. Finish by merging/deploying this frontend extension, updating #139 with evid
 Do not broaden to upstream skill evaluation, runtime LLM explanation, backend logging gaps or a
 general visualization engine. Existing RESULT/evidence remain frozen; add a separate extension
 section/artifact manifest without overwriting them.
+## Illustrated extension: fixed review completion
+
+Candidate 4d398af passes owner TypeScript/build/lint and seven report cases, but the independent
+review found that `status in OPERATION_STATUS_LABELS` drops inherited-property names such as
+`constructor`. This directly affects the already specified arbitrary-status preservation condition.
+Fix only that membership test with Object.hasOwn (or explicit known list), keep prior acceptance.
+One additional bounded pair, ledger139->141, Claude USD1/300s; no new criteria or exploratory review.
+Owner additionally probes constructor/toString/__proto__ and retains all prior report validation.
+Prior operation remains rejected; its unstarted rework is explicitly superseded, not auto-retried.
