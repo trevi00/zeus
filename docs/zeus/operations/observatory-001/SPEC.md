@@ -1,0 +1,120 @@
+# Zeus Observatory — one bounded operating visibility delivery
+
+Owner: Codex (analysis/design/acceptance); implementation: actual isolated Zeus Claude worker.
+Date: 2026-09-18. Base: 6c6d6e824f97dcbcc5c40f0ea2acf20c70bdbdbb.
+
+## Outcome, scope, authority, finish
+
+User wants a trustworthy operating monitor, debug/development/operations visibility ordered by
+material importance, a readable report, and an actual shadcn/ui + Lucide design system.
+Authorized: local source, isolated Claude implementation and independent review, tests, GitHub PR,
+merge after acceptance, replace only the owned localhost:8788 monitor. No external report sends.
+Finish: real stored observations and collection limitations visible in the new UI, report export
+matches that same snapshot, responsive accessible design, existing detailed views remain available,
+targeted checks/full CI and real browser acceptance pass, deploy the accepted revision.
+Excluded: new telemetry platform, historical isolated schema import, model routing changes,
+instrument every module, SLO claims, external alert integrations, unbounded reference absorption.
+
+## Evidence and complete path
+
+Facts: domain/observation.py defines general/development/operations and separate debug/info/warning/
+error/critical severity. application/observations.py stores append-only audit, deduplicated events,
+collections, quarantine, alerts and terminations. Producers write runtime/observations spool;
+existing Collector drains it to PostgreSQL. monitor.py is read-only and must stay so.
+Current monitor snapshot has database/docker/redis, measurements, task/stage projections; it does
+not expose observation buckets or collection health. UI is one static HTML, no React/components.json.
+Local read-only audit at 02:39 UTC: observations 253 (development 177, operations 76, general 0),
+debug 223/info 30; audits 10, collections 5, terminations 5 closed, alerts/quarantine 0. These are
+stored facts, NOT proof every expected event was emitted or that current failure rate is zero.
+Raw evidence D:/workspaces/zeus/artifacts/observatory-001/audit-before.json (initial root-only file
+count does NOT inspect nested spool). Follow-up through existing SpoolDirectory read methods:
+one spool segment, 1024 unacknowledged bytes, zero pending alert groups, one health record dated
+01:32:44 UTC, sink available at THAT time. Do not claim current completeness. Prior automated operation failed
+evidence inspection despite task success: task success must never become whole-operation success.
+
+Path: producers -> durable spool / same-transaction audit -> existing collector -> PG -> read-only
+monitor projection (+ read-only local spool health) -> atomic snapshot -> loopback HTTP -> React
+screen / downloadable report. Source generation time, event time and collection time remain separate.
+Owner-run build generates packaged static resources, Node is build-time only. Legacy detailed HTML
+remains /legacy. No writes/reconciliation/provider startup from monitoring or export.
+
+Primary docs consulted 2026-09-18 (web docs mutable; dependency versions pinned by lockfile):
+- https://ui.shadcn.com/docs/installation/vite — React/TypeScript + Tailwind Vite integration and
+  owned component installation. Does not prove our accessibility or build.
+- https://ui.shadcn.com/docs/theming — semantic CSS variables for reusable theme tokens.
+- https://lucide.dev/guide/react — typed React SVG icon imports, tree-shakable individual imports.
+- https://opentelemetry.io/docs/specs/otel/logs/data-model/ — severity and observed/event timestamps
+  are distinct fields. We retain Zeus contract rather than claiming OTel export compatibility.
+
+## Design / acceptance contract
+
+1. Add observation read model in adapters/monitoring_observations.py. Use existing buckets and
+   status concepts; no duplicate collector or business policy. Merge audit and collected events
+   by event_id, collected record wins without double count. Deterministic sort severity descending,
+   then category operations/development/general, then event observed_at and event_id. Thus critical
+   development outranks info operations. Invalid severity/category/time explicit unknown count.
+   Human label general = 일반·디버깅 (debug remains a severity, never reclassify stored category).
+2. Projection uses a declared bounded sample (entries paging capped e.g. 2000/bucket), reports
+   scanned/limit/truncated/selection and retained scope honestly. Totals describe sampled stored
+   records, never lifetime totals on a truncated sample; high severity list is from this sample.
+   Include safe allow-listed fields: event_id/type/category/severity/outcome/observed_at/collected_at,
+   task/attempt/process identity, evidence_refs (opaque refs only); never raw attributes/prompts.
+   Apply existing domain redaction to strings at public boundary, bound lengths/list sizes.
+3. Include alerts/quarantine counts, pending/unconfirmed termination count, last collection time,
+   collection lag and local pending alert/health/drop/corrupt indicators where readable. Missing
+   runtime/unreadable data is unknown/unavailable, not zero. Keep separate from DB envelope failure.
+   Never call mutating pruning/collector functions. No promise of complete logging from empty queues.
+   Include actual operation state read from operations bucket, separate from task state.
+4. Extend collector snapshot additively. Existing three sources and tests remain valid. Observation
+   failure must not erase working Docker/Redis or task data. Optional runtime argument to collect;
+   monitor.py passes actual runtime. HTTP only reads snapshot; safe fixed assets, no traversal,
+   strict MIME, same loopback Host check/read-only behavior. /legacy serves previous monitor.html.
+5. New frontend/monitor: React + TS + Vite + Tailwind, actual shadcn/ui source components and Lucide
+   icons; reusable Button/Card/Badge/Table/Tabs/Alert/Input/Separator at least where appropriate.
+   Neutral slate/zinc palette with teal accent, semantic success/warning/error/unknown tokens,
+   spacing 4/8/12/16/24/32, consistent 10px card radius, local/system font (no CDN dependency).
+   Korean-first interface with concise labels. Desktop sidebar/header + spacious content; phone
+   responsive navigation. Overview, logs, reports, design-system specimen views. Never dummy numbers.
+   Overview: source freshness, priority attention, actual operations and task distinction, service
+   resources, collection coverage. Logs: category/severity/text filters, priority ordering, event
+   identity and timestamp details, empty vs unavailable vs truncated. Legacy detail link prominent.
+   All icons accessible label or decorative. Keyboard controls and visible focus.
+6. Preserve accepted refresh semantics: one in-flight request, 5s timeout, hidden-page polling paused,
+   retain last good snapshot with conspicuous stale/unavailable state, avoid UI reset on refresh.
+   Freshness max 20s, reject invalid/future (>5s) timestamps. Source states independent. Report/export
+   captures one snapshot including scope, generated_at, source times, completeness limits, critical
+   events, operation outcomes, next actions and evidence IDs. HTML print/PDF via browser and JSON
+   download are local only. Escape data; do not claim global health, SLO or automatic acceptance.
+7. Build output under src/codex_harness/resources/observatory (small compiled app tracked for Python
+   packaging); locked dependencies. Build must be deterministic enough to check tracked output drift.
+   Separate frontend CI workflow (npm ci/typecheck/build plus git diff artifact check) required on
+   frontend changes; Python validation unchanged. No runtime npm/network/CDN dependency.
+
+## Fixed acceptance matrix / single batch
+
+| Path | Deciding check |
+|---|---|
+| Real normal | PG audit + actual HTTP/browser: stored counts, operations vs tasks, sources and links |
+| Priority/dedup | Focused Python test mixed category/severity, audit/event duplicate, invalid row |
+| Missing/truncated/failure | Bounded paging tests, unavailable local source, empty data explicitly labelled |
+| Timeout/hidden/restart | Browser request failure/held response/visibility controlled test, preserved last-good data |
+| Concurrency/read-only | Existing monitor tests + no put or artifacts from projection; same snapshot report |
+| Security | Redaction canary and script-like label tests, asset traversal/Host/mutation checks |
+| Windows/Linux | Owner Windows build/tests + full existing CI platform matrix + frontend CI |
+| Mobile/accessibility | Actual browser desktop + 390px screenshot, keyboard filter/navigation, no horizontal overflow |
+| Reports | Actual JSON export + print view with same counts/time/scope and limitations |
+| Cleanup | Only owned monitor processes replaced using stop-owned.ps1; no worker/verifier remains |
+
+Implementation one batch: backend projection + frontend + packaging/CI + tests/doc. Claude's isolated
+image has Python and Node but host evidence v1 only replays Python; worker MUST run ONLY:
+`python -m pytest tests/test_monitoring.py tests/test_monitoring_observations.py -q -p no:cacheprovider`
+and `python -m ruff check .`. Do NOT run full suite/npm/git/model/service commands. Owner explicitly
+owns npm install/build, browser, full CI, deployment. Worker tests list contains only the two actual
+commands, not result prose or unexecuted checks. Summaries label frontend build/browser not run.
+Owner installs official shadcn scaffold/dependencies before assigning; Claude edits product source.
+Scaffold: shadcn 4.21.0 radix-nova, Lucide React 1.47.0, React 19.2.8, Vite 8 / Tailwind 4;
+exact resolved dependencies in frontend/monitor/package-lock.json. Existing scaffold is disposable
+sample content, replace its App.tsx completely. Installed real UI primitives remain source-owned.
+One implementation + one independent review call initially; reserve at most one correction pair
+only for a material failed acceptance condition, no automatic retry of a failed operation.
+Unknown unrelated deficiencies get follow-up notes and do not silently extend this matrix.
