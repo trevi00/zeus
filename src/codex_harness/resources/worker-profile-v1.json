@@ -2,7 +2,7 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "3dba9d3b2ffa08421319d2b5057da89c69119e76b33020ba3d55344dd64fa2f2",
+  "document_sha256": "4a353bf3f4745d2203944290738a5c95d207e796189ee6d513bccdd2bd10b991",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "5498b27724a68662053b2e2e8949392ca6ba880bc6d8b83e3a9ddfa38ee5f1c2",
   "character_limit": 6000,
@@ -96,6 +96,15 @@
       "pinned_sha256": "7b75f38d2bc3ecbdcc5eb831451343252cf9df9f43a0fb72d7aec6f9dbd00a0e",
       "scope": "Selected producer-consumer contract comparison principles rewritten for assigned integrations only; no upstream execution or behavior guarantee",
       "disposition": "Adapt paired reads, authoritative shape/state/optional-field mapping and scoped evidence; reject global six-pattern gates, mandatory code generation, automatic loops and upstream incident claims"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/handoff-clear-trigger.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "0388365162155a528aedc3b1270855028117bf85",
+      "pinned_sha256": "a19c8bfc8148b0a5247112398eef14f790f5752542c570406835c172a1a4ec58",
+      "scope": "Evidence-bound bounded continuation principles rewritten for existing worker-v1; no upstream execution or behavior guarantee",
+      "disposition": "Adapt goal, verified evidence, remaining work and scoped next action; reject forced clear, numeric thresholds, fallback task invention and prose authority"
     }
   ],
   "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."
