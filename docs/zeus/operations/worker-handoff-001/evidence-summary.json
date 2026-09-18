@@ -1,0 +1,31 @@
+{
+  "operation": "worker-handoff-001",
+  "outcome": "failed",
+  "implementation_complete": false,
+  "review_executed": false,
+  "calls_before": 164,
+  "calls_after": 165,
+  "ceiling": 166,
+  "files": [
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\prepared.json",
+      "bytes": 2233,
+      "sha256": "503349b65f0383fdbe48a8d40bfd89944d9718abb97bb6cb6d67a5449efb9d90"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\result.json",
+      "bytes": 12239,
+      "sha256": "f9db3a93d31218809aa812509f241a1c7adca10719d323806a30dbc7c1624100"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\f2h\\isolated-worker\\runs\\8a6c413d54294b8a8dd10959a1c1c03b\\inner_result.json",
+      "bytes": 532889,
+      "sha256": "e24edc940db1dadd57c07ddb79071f7fc3f212877e50a9ca46476865dbfb6950"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\f2h\\isolated-worker\\runs\\8a6c413d54294b8a8dd10959a1c1c03b\\run.json",
+      "bytes": 8357,
+      "sha256": "9a452890226180ac764f36975d54e3e21eefe1d51ed713df60e4859c8433e7f3"
+    }
+  ]
+}

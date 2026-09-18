@@ -83,3 +83,27 @@ Owner reuses existing tests and CI. Critical reachable findings block; style ref
 nonblocking notes. No mutation test for this guidance change and no extra behavior canary.
 Login startup failure and stale-unregistered report warning are separately recorded follow-ups,
 not acceptance conditions. No new scheduling/reboot investigation in this batch.
+
+## Outcome and reframe after the first bounded attempt
+
+Actual operation worker-handoff-001 failed with execution_retry; no candidate was produced and
+the independent reviewer was not called. One Claude call consumed slot165 of166. Admissions are
+paused. The remaining slot is not authorization to replace the planned review with a retry.
+
+Observation: baseline5988/6000 characters left12 free. Claude reported over-limit drafts and
+returned an incomplete answer, with no net file change. Provider terminal subtype was success,
+not a budget-exceeded signal; its answer says budget ran out, and reported cost was USD2.871453
+(provider estimate, not billing evidence). Owner does not turn that self-report into proof of
+server-side budget enforcement. Lifecycle diff confirms added0/deleted0/modified0.
+
+Owner specification defect: tests/test_worker_profile.py line238 pins8 sources; adding source9
+requires an associated test change, but initial allowed paths excluded it. Owner confirmed that
+assertion directly. Also, available profile capacity was not budgeted before assignment.
+
+Revised next batch design, NOT dispatched: consolidate continuation with the existing Reporting
+section instead of asking the worker to add a separate long section. Owner must first measure a
+bounded replacement-text draft and map every existing safeguard to its retained wording. Keep
+the6000 limit and runtime unchanged. Include the source-count expectation in allowed test scope;
+preserve the exact permission/hook assertions, no broad test relaxation. Only then issue a new
+explicit implementation+review pair. No retry, cap increase, automatic fallback, or partial
+promotion is performed in this batch. Original criteria and failed evidence remain recorded.
