@@ -1,0 +1,305 @@
+{
+  "authority": "owner fixed-scope deployment observations; not unrestricted autonomy",
+  "runtime_revision": "9bc1f188646294c768c9703217a1df7caac88d9b",
+  "accepted_candidate": "93d928deac790dec8c96a5bf3711425768e16376",
+  "runs": [
+    {
+      "id": "monitor-live-136-implementation",
+      "status": "accepted",
+      "lead_accepted": true,
+      "collection": {
+        "files": 1,
+        "records": 111,
+        "inserted": 111,
+        "sink_failures": 0,
+        "corrupt": 0,
+        "refused": 0
+      },
+      "calls": {
+        "reserved": 2,
+        "settled": 2,
+        "slots": [
+          {
+            "id": "898b837cb7944449afa142664bc1a481",
+            "kind": "task",
+            "agent": "worker:implementation",
+            "provider": "claude",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          },
+          {
+            "id": "2ae606ca97134f52bfe14c9f5ae78027",
+            "kind": "decision",
+            "agent": "lead:improvement",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "monitor-live-136-correction",
+      "status": "accepted",
+      "lead_accepted": true,
+      "collection": {
+        "files": 2,
+        "records": 68,
+        "inserted": 68,
+        "sink_failures": 0,
+        "corrupt": 0,
+        "refused": 0
+      },
+      "calls": {
+        "reserved": 2,
+        "settled": 2,
+        "slots": [
+          {
+            "id": "df85586aa1d5460db5a6b33e027cf751",
+            "kind": "task",
+            "agent": "worker:implementation",
+            "provider": "claude",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          },
+          {
+            "id": "b4d4191edc794763b53f1f4501c02560",
+            "kind": "decision",
+            "agent": "lead:improvement",
+            "provider": "codex",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          }
+        ]
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\records.json",
+      "sha256": "593386e6e5c54bf3cfcbd549d95a57bb30eb02e03de5fb106803580e8a9aabf2",
+      "bytes": 143714
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\i\\manifest.json",
+      "sha256": "fec7ce78752b3d817557f340a99f59b5debcce7112b313222e73bc6f2223d87d",
+      "bytes": 2691
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\i\\receipt.json",
+      "sha256": "4a42042eeff897115f3375a7f83def316d5460cfa19df160f6dc76b3d0aa32a7",
+      "bytes": 940
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\i\\stdout.json",
+      "sha256": "2c357da13505fdf47091cb2f758f94dbd74e46c747e719757cbd2856a0bb4a90",
+      "bytes": 5766
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\c\\manifest.json",
+      "sha256": "48667158568472d07506945c73f3400609ccedba8fbc754bcd2fc0eb23707014",
+      "bytes": 2262
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\c\\receipt.json",
+      "sha256": "25019dc5aa042e1a300ad63df4b245c0224ffbb6b6919674ac5d6a61a7a955da",
+      "bytes": 592
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\c\\stdout.json",
+      "sha256": "c66d07f165ae1b72478c68c62f09ce7fcc9742e0f668d93d5d362ad92900280d",
+      "bytes": 5744
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\c\\postprocess-recovery.json",
+      "sha256": "9d7f4482b4e665425f428bb8abdf9c192571f57cd6e873e4e11b68301f926b0a",
+      "bytes": 689
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\readonly-before.json",
+      "sha256": "7ed41be1b72fc459b2aeb018d96de87e5d937aeccb7ab1e6298aa22e1cff6444",
+      "bytes": 893
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\readonly-after.json",
+      "sha256": "5ba2798425a892746c826c0ab8e3d75720b4c4117c3d020bbc7e92fc4085f1b3",
+      "bytes": 893
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\recovery-after.json",
+      "sha256": "dd6707dfedbc17e4ab838f018079a1ee882def34b10922ac2ca502030ea5aea8",
+      "bytes": 1344
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\missing-source.json",
+      "sha256": "c3c71a7aad59e4407180a38f5d0a76e0508a39eb810c3b6a6ba424e1fea89fb9",
+      "bytes": 569
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\browser-metric.json",
+      "sha256": "430081eb3d4fd38f7c46da1927387a1f5ac21c73e0be0cd23bbbea926e5d0658",
+      "bytes": 332
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\live-first.png",
+      "sha256": "9749ab4e436f4747f7fffdb307df701e6619e695d45d586bf2554a566136afe7",
+      "bytes": 51148
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\collector-stopped.png",
+      "sha256": "377ea74645093400c887ef5eca39bb37c1782d95894ceddbe4e6c8997d2fec48",
+      "bytes": 47869
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\launch-monitor.ps1",
+      "sha256": "45c52387cc533252c6c04e9c74cac9d62b9d17c099132d65ba706005e24de2d0",
+      "bytes": 2509
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\register-monitor.ps1",
+      "sha256": "bb052add0f18a6a652f921871d1c0c2f2d5ddc7b818aed1fc60bae7c90e7aebb",
+      "bytes": 2095
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\acceptance-collect.xml",
+      "sha256": "c06a951a5079aae63eda56497eddbd09ed5d1297cc231f2d5efea7d9d4d352ef",
+      "bytes": 2057
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\acceptance-web.xml",
+      "sha256": "d56cad15731e4957936d7c97f1f1ee32c86c38d55d7600c84bda27881f34462c",
+      "bytes": 2049
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\tickets-before.json",
+      "sha256": "40ac2f740a2c59943447ba5d8393c2e1b97c010834ddfdd3c8e02bfde1c207d1",
+      "bytes": 95776
+    }
+  ],
+  "readonly-before": {
+    "at": "2026-09-18T01:02:03.005938+00:00",
+    "document_count": 875,
+    "document_digest": "c384359e17a958094c35349f72d3c9801a7c06b03cd7b300f244284d850cc9db",
+    "metric_count": 0,
+    "artifact_count": 282,
+    "artifact_digest": "69a7825c36e020568353c32ea609e3ee813389d679ddb87102441eff27db6f28",
+    "calls": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 131,
+      "all_hosts": 131,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "snapshot_at": "2026-09-18T01:02:00.983191+00:00",
+    "sources": {
+      "database": "ok",
+      "docker": "ok",
+      "redis": "ok"
+    },
+    "scope": {
+      "label": "Zeus fixed operating ledger / historical isolated runs excluded",
+      "docker": "named",
+      "containers": [
+        "zeus-ticket-ledger",
+        "zeus-local-ops-redis"
+      ]
+    }
+  },
+  "readonly-after": {
+    "at": "2026-09-18T01:03:09.224745+00:00",
+    "document_count": 875,
+    "document_digest": "c384359e17a958094c35349f72d3c9801a7c06b03cd7b300f244284d850cc9db",
+    "metric_count": 0,
+    "artifact_count": 282,
+    "artifact_digest": "69a7825c36e020568353c32ea609e3ee813389d679ddb87102441eff27db6f28",
+    "calls": {
+      "host": "7be199c1f221da99264ac994e80268613718863902bfa4e923b384aa529cccfc",
+      "this_host": 131,
+      "all_hosts": 131,
+      "unreadable": 0,
+      "note": "a slot that was reserved and never settled still counts"
+    },
+    "snapshot_at": "2026-09-18T01:03:03.275295+00:00",
+    "sources": {
+      "database": "ok",
+      "docker": "ok",
+      "redis": "ok"
+    },
+    "scope": {
+      "label": "Zeus fixed operating ledger / historical isolated runs excluded",
+      "docker": "named",
+      "containers": [
+        "zeus-ticket-ledger",
+        "zeus-local-ops-redis"
+      ]
+    }
+  },
+  "recovery-after": [
+    {
+      "mode": "collect",
+      "launcher_count": 1,
+      "new_pid": 4900,
+      "recovery_seconds": 26.844616499999997,
+      "logon_trigger_configured": true,
+      "created_at": "2026-09-18T00:58:18.1767680Z",
+      "before": {
+        "killed_pid": 5560,
+        "launcher_pid": 3800,
+        "kind": "actual_owned_process_termination",
+        "mode": "collect",
+        "at": "2026-09-18T00:57:51.3321515+00:00"
+      },
+      "task_state": "Running",
+      "multiple_instances": "IgnoreNew",
+      "leaf_count": 1
+    },
+    {
+      "mode": "web",
+      "launcher_count": 1,
+      "new_pid": 12632,
+      "recovery_seconds": 17.9930537,
+      "logon_trigger_configured": true,
+      "created_at": "2026-09-18T00:59:17.6534110Z",
+      "before": {
+        "killed_pid": 4616,
+        "launcher_pid": 27524,
+        "kind": "actual_owned_process_termination",
+        "mode": "web",
+        "at": "2026-09-18T00:58:59.6603573+00:00"
+      },
+      "task_state": "Running",
+      "multiple_instances": "IgnoreNew",
+      "leaf_count": 1
+    }
+  ],
+  "missing-source": {
+    "kind": "actual Docker read with deliberately nonexistent named container; no container mutation",
+    "sources": {
+      "database": {
+        "status": "ok",
+        "error": null,
+        "observed_at": "2026-09-18T01:00:02.292639+00:00"
+      },
+      "docker": {
+        "status": "unavailable",
+        "error": "RuntimeError",
+        "observed_at": "2026-09-18T01:00:02.362904+00:00"
+      },
+      "redis": {
+        "status": "ok",
+        "error": null,
+        "observed_at": "2026-09-18T01:00:02.294243+00:00"
+      }
+    },
+    "provider_credentials_present": false
+  },
+  "browser-metric": {
+    "kind": "controlled browser renderer input only; not inserted into PG or live snapshot",
+    "passed": true,
+    "text": "MetricValueStatusReasonObservedWindowowner_controlled_old1확인 불가 stored observationstale evidence · stored observation is not current2020. 1. 1. 오전 9:00:00관측 없음 → 관측 없음"
+  }
+}
