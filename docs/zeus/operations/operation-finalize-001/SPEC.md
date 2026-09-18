@@ -187,3 +187,23 @@ task worktree. Run correction via the existing clean observatory-001 runtime (sa
 code as deployed main) and a separate task Redis namespace so the original rejected operation's
 unconsumed rework stays intact until accepted code can park it. No manual queue purge or outcome
 rewriting. Model-free verification and the post-merge zero-capacity canaries remain owner-owned.
+
+### Remaining identity guard, bounded final correction
+
+Owner executed all four prior counterexamples successfully and all 31 local PG/Redis tests passed
+at 1769eed (including six real-service cases). The independent review accepted the other corrections
+but found one omitted part of the same identity requirement: `require_identity` only looks up an
+older task when the incoming type is task.assign. A differently typed message can reuse that task
+ID and establish a conflicting parked digest. This requires a constructed conflicting input; it is
+not an observed production outage. The existing identity contract nevertheless explicitly covers it.
+
+Make only this correction: query the existing tasks binding by message_id regardless of incoming
+type, retaining the same hash comparison and all inbox/parking checks. Add one regression: after an
+accepted operation, copy its genuine task.result but replace its ID with the assignment ID; handling
+must refuse, create no conflicting disposition, and subsequent unchanged assignment replay must park.
+Do not reopen other accepted boundaries. Owner also updated the old CLI test Recorder signature and
+asserted identity of operation/executor/collector observer; 7 tests passed, no runtime change.
+
+Reserve a final small pair ledger145->147, Claude USD1 / 300s, same pinned old runtime and a distinct
+task queue. Retain the rejected review receipt; owner final acceptance includes the targeted regression,
+previous 4 counterexamples, 31-case service matrix, full suite/CI and existing live canary plan.
