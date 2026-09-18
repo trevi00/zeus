@@ -259,3 +259,48 @@ and a fresh complete live path. Diagnose prompt/schema ownership before a consol
 handoff; do not turn this into successive per-answer patches or another automatic call grant.
 
 RESULT.md records actual stages, evidence and the separate pre-existing diagnostic-log residual.
+
+## Packet producer alignment batch (2026-09-19, continuation authorized)
+
+Outcome: align researcher handoff with the existing question/claim contract without rewriting
+answers, relaxing evidence rules, adding provider retries or claiming guaranteed valid generation.
+Scope: adapters/autonomous_roles.py, focused role contract tests, contracts documentation and
+PACKET-ALIGNMENT.md. Existing program state, budget, source audit, diagnostic-log residual and
+deployment are excluded. Codex designs/reviews; Claude implements. Same issue152 and PR153.
+
+SSOT inspected at2d899bb: domain/dge.py::_questions rejects answered questions citing unknown
+claims and blocking unknown questions; domain/autonomous.py::packet_from_research constructs the
+packet; adapters/autonomous_roles.py::QUESTION admits both and OBJECTIVES[researcher] omits the
+answered-to-nonunknown reference rule. Real failed artifact is preserved in RESULT/EVIDENCE.
+This is a producer guidance/consumer relation mismatch. Schema shape success cannot establish
+cross-reference semantics. No external API or provider-subset change is needed beyond nested
+anyOf/enum/minItems already used by CLAIM and verified by existing output preflight tests.
+
+Design: encode local question constraints as provider-compatible typed alternatives: answered
+requires nonempty claim_ids and permits either blocking value; unknown requires blockingfalse
+and permits empty or nonempty references. Keep exact field sets and shared enum constants.
+Cross-array claim-kind lookup remains the existing domain validator's authority. Researcher
+guidance must explicitly self-check references: answered cites only fact/inference, never unknown;
+unknown evidence stays unknown, never relabelled for passage. Explain the meta-question case:
+"what remains unknown" can be answered by sourced facts about documented limitations while the
+underlying uncertainty remains a separate nonblocking unknown question/claim; alternatively mark
+the question unknown. Examples are synthetic, not repairs to the saved model answer. Blocking
+unresolved design choices must be reported honestly, not made nonblocking to bypass refusal.
+
+Acceptance matrix for this one batch:
+- normal: fact/inference answered references pass schema and unchanged packet validator;
+- failure: answered+unknown still fails the domain validator; no coercion or retry;
+- local schema: answered empty refs and blocking unknown refused, nonblocking unknown accepted;
+- relational limits: unknown/missing claim ids and mixed known+unknown answered refs remain
+  consumer-refused; explicitly distinguish schema capability from consumer proof;
+- concrete recurrence: labelled fixture reproducing q3/c11 semantics rejected, paired honest
+  nonblocking-unknown and sourced-limitation controls pass; original live artifact unchanged;
+- provider: existing output-schema preflight accepts all roles, other role contracts unchanged;
+- restart/concurrency/cleanup: no new ownership/resources; existing behavior unchanged, no new
+  platform-specific primitives. Run focused role/council/autonomous tests and lint. Owner full
+  suite/CI remains separate. Tests demonstrate contract behavior, not model adherence probability.
+
+Completion: one Claude implementation and one independent review inside unchanged ceiling178
+(currently172, expected174 after pair), owner checks, publish truthful result. No live council
+retry in this batch: remaining4 then cannot cover7 starts, and no grant is implicit. Record this
+as producer alignment only, not live path completion. Do not edit this owner frame or old receipts.
