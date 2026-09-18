@@ -50,6 +50,10 @@ def test_council_output_passes_the_schema_preflight_and_the_consumer(role):
     Draft202012Validator.check_schema(SCHEMAS[role])
     receipt = preflight(SCHEMAS[role])
     assert receipt["checks"] and not {"if", "then", "else", "allOf"} & set(receipt["keywords"])
+    # The researcher's typed claim/question alternatives do not leak into the council contracts: no anyOf, no
+    # questions field, and the objective carries no packet reference rule (packet producer alignment batch).
+    assert "anyOf" not in receipt["keywords"] and "questions" not in SCHEMAS[role]["properties"]
+    assert "Self-check every answered question" not in OBJECTIVES[role]
     result = schema_check(role, OUTPUTS[role])
     assert result["answer"] == OUTPUTS[role], result.get("failure")
     assert "snapshot_digest" in OBJECTIVES[role] or role == "dba"

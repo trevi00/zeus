@@ -980,6 +980,23 @@ scope, never truth of prose, merged code or product acceptance; `knowledge=False
 execution and `index_python`/`project_runtime` never touch the promoted namespace. Status reads the
 store only and prints digests, codes and counts.
 
+Packet producer alignment (`adapters/autonomous_roles.py`, research-program-001 cycle 1). The
+model-facing researcher schema states the packet consumer's LOCAL rules as typed alternatives under a
+nested `anyOf` with the same field sets and the same domain constants (`enum` always next to an explicit
+`type`, `minItems`; never `if`/`then`/`allOf`): a claim of kind fact/inference cites at least one source
+id and an unknown claim any list; an answered question cites at least one claim id with either
+`blocking` value and an unknown question is `blocking` false with any list. The cross-array rule that an
+answered question cites only fact/inference claims, existence and distinctness of cited ids and every
+other packet check stay exactly `domain.dge` (INV-DGE-001): the schema cannot see the claims array, so an
+output the schema admits is not an accepted packet, and the researcher objective carries that rule as
+guidance with a self-check, the two honest forms of a "what remains unknown" question (answered from a
+sourced fact about a documented limitation next to a separate nonblocking unknown, or unknown itself)
+and the instruction to report a truly blocking design choice as a blocking unknown even though it is
+refused. A refused output, at the schema (`schema_mismatch`, owner `agent_output`) or at the packet
+(`PacketError`), is the stop of that run: nothing relabels, repairs, retries or spends another entry.
+Fixture tests prove the schema and consumer behaviour on synthetic outputs, not that a live model follows
+the guidance.
+
 ## INV-COUNCIL-001
 
 `urn:zeus:autonomous:2` is the opt-in topic-bound council; `urn:zeus:autonomous:1` keeps its validator,

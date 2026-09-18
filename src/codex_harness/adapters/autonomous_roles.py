@@ -15,6 +15,12 @@ and the provider's structured output is refused at the model boundary instead of
 same boundary (live canary autonomous-ssot-canary-002, claim c6): the packet consumer requires
 source_ids for every kind except unknown, so the model-facing claim is a nested anyOf of typed
 variants, sourced fact/inference with minItems 1 and unknown with any list, never if/then or allOf.
+Question shape is the same boundary again (research-program-001 live cycle 1, question q3): the packet
+consumer requires nonempty claim_ids for an answered question and refuses a blocking unknown one, so
+the model-facing question is a nested anyOf of typed variants, answered with minItems 1 and either
+blocking value, unknown with blocking false and any list. What no local schema can state is the
+cross-array rule that an answered question cites only fact/inference claims: that stays the domain
+validator's authority (`domain.dge._questions`) and is carried to the model as guidance only.
 The consumers are not loosened and no output is coerced or repaired here.
 """
 from __future__ import annotations
@@ -68,8 +74,22 @@ def _claim(kinds, source_ids: dict) -> dict:
 
 
 CLAIM = {"anyOf": [_claim(SOURCED_KINDS, CITED), _claim({UNSOURCED_KIND}, STRINGS)]}
-QUESTION = _object({"id": TEXT, "question": TEXT, "blocking": {"type": "boolean"}, "status": _enum(QUESTION_STATUSES),
-                    "claim_ids": STRINGS})
+# `domain.dge._questions` demands nonempty claim_ids for an answered question and refuses a blocking unknown one
+# (INV-DGE-001: research first). The model-facing question states those two LOCAL rules as typed variants under
+# the same nested anyOf: answered keeps an ordinary boolean, unknown is pinned to blocking false with a typed
+# single-value enum (the subset requires an explicit type next to enum). Neither variant can see the claims
+# array, so "answered cites only non-unknown claims" remains the packet consumer's check, not a schema promise.
+UNRESOLVED_STATUS = "unknown"
+ANSWERED_STATUSES = QUESTION_STATUSES - {UNRESOLVED_STATUS}
+BOOLEAN = {"type": "boolean"}
+NONBLOCKING = {"type": "boolean", "enum": [False]}
+
+
+def _question(statuses, blocking: dict, claim_ids: dict) -> dict:
+    return _object({"id": TEXT, "question": TEXT, "blocking": blocking, "status": _enum(statuses), "claim_ids": claim_ids})
+
+
+QUESTION = {"anyOf": [_question(ANSWERED_STATUSES, BOOLEAN, CITED), _question({UNRESOLVED_STATUS}, NONBLOCKING, STRINGS)]}
 TRANSITION = {"type": ["object", "null"], "additionalProperties": False,
               "properties": {"compatibility": TEXT, "rollback": TEXT, "retirement": TEXT},
               "required": ["compatibility", "rollback", "retirement"]}
@@ -120,7 +140,19 @@ OBJECTIVES = {
                  "unknown stops the debate for more research. Tests of the future implementation that have not "
                  "run yet are not unknown design questions: the fix does not exist at base, so record the "
                  "expected verification as an inference or evidence, not as an unknown. You are read-only and "
-                 "are not asked to certify that the future fix works."),
+                 "are not asked to certify that the future fix works. "
+                 "Question references are checked across both arrays and the whole packet is refused, never "
+                 "repaired, on one bad reference: an answered question cites at least one claim id and only "
+                 + _listed(SOURCED_KINDS) + " claims, never an unknown claim; an unknown question has blocking false "
+                 "and cites an unknown claim or nothing. Self-check every answered question before you return: each "
+                 "cited id exists in claims and its kind is fact or inference. Never relabel an unknown claim as "
+                 "fact or inference, and never drop or invent a citation, so that a question can pass as answered: "
+                 "unknown evidence stays unknown. A question such as 'what remains unknown?' has two honest forms: "
+                 "answered, citing a fact or inference about a DOCUMENTED limitation (a source at base records it) "
+                 "while the uncertainty itself stays a separate nonblocking unknown question citing its unknown "
+                 "claim; or unknown itself, blocking false, citing that unknown claim. A design choice you truly "
+                 "cannot settle is status unknown with blocking true: the output is refused and research continues; "
+                 "do not mark it nonblocking or answered to pass the check."),
     "proposer": "Propose the design for the fixed plan citing packet claims only; do not change the plan.",
     "attacker": ("Identify only material blockers as critical: concrete reachable trigger, cited packet claims, the "
                  "exact fixed criterion, material impact and minimal mitigation. Everything else is minor. "
