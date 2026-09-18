@@ -1,7 +1,8 @@
-import { useState } from "react"
-import { Download, Printer, RefreshCw } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { ChevronDown, Download, Printer, RefreshCw } from "lucide-react"
 
 import { ReportExplainer } from "@/components/report-explainer"
+import { ReportVisualSummary } from "@/components/report-visual-summary"
 import { KeyValue } from "@/components/stat-card"
 import { StatusBadge } from "@/components/status-badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -29,19 +30,64 @@ function countText(record: Record<string, number> | null, labels: Record<string,
   return parts.length ? parts.join(" · ") : "없음 (비어 있음)"
 }
 
+/**
+ * Native `<details>` disclosure for long report records. Closed by default on screen so the
+ * first screen stays picture-first; the summary line carries the counts or state so a collapsed
+ * section still says what it holds. Printing opens every disclosure (see the beforeprint handler
+ * in ReportView and the `.report-details` print rules in index.css).
+ */
+function Disclosure({ title, state, children }: { title: string; state: string; children: React.ReactNode }) {
+  return (
+    <details className="report-details group min-w-0 rounded-xl bg-card ring-1 ring-foreground/10">
+      <summary className="flex min-w-0 cursor-pointer items-center gap-2 px-4 py-3 text-sm font-medium">
+        <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 print:hidden" />
+        <span className="min-w-0 break-words">{title}</span>
+        <span className="min-w-0 break-words font-normal text-muted-foreground">· {state}</span>
+      </summary>
+      <div className="flex min-w-0 flex-col gap-4 px-4 pb-4">{children}</div>
+    </details>
+  )
+}
+
 export function ReportView({ snapshot, transport, now }: Props) {
   // The report is pinned: built once when this view is entered and again only on explicit
   // regenerate. Polls and the clock tick do not rebuild it, so the printed page and the JSON
   // download describe the same object, labelled with its own generation time.
   const [report, setReport] = useState<Report>(() => buildReport(snapshot, transport, Date.now()))
+  const root = useRef<HTMLDivElement>(null)
   const generatedAt = parseTime(report.generated_at)
   const age = Number.isFinite(generatedAt) && now - generatedAt >= 0 ? now - generatedAt : null
   const newerSnapshot = snapshot != null && (snapshot.collected_at ?? null) !== report.collected_at
   const transportNotice = TRANSPORT_NOTICE[report.transport.state]
   const observationsUnknown = !report.observations.available
 
+  // Print must include every evidence record and limitation: open the disclosures the reader left
+  // closed for the duration of printing, then restore them. The CSS `::details-content` print rule
+  // covers engines where beforeprint does not fire before layout; neither touches the report data.
+  useEffect(() => {
+    const opened: HTMLDetailsElement[] = []
+    const before = () => {
+      root.current?.querySelectorAll<HTMLDetailsElement>("details.report-details:not([open])").forEach((element) => {
+        element.open = true
+        opened.push(element)
+      })
+    }
+    const after = () => {
+      for (const element of opened.splice(0)) element.open = false
+    }
+    window.addEventListener("beforeprint", before)
+    window.addEventListener("afterprint", after)
+    return () => {
+      window.removeEventListener("beforeprint", before)
+      window.removeEventListener("afterprint", after)
+    }
+  }, [])
+
+  const criticalState = report.critical_events == null ? "확인 불가 · 관측 출처 없음" : report.critical_events.length === 0 ? "샘플 안에서 없음 · 비어 있음" : `상위 ${report.critical_events.length}건 / 샘플 전체 ${report.critical_events_total ?? "?"}건`
+  const operationsState = !report.operations ? "확인 불가 · 관측 출처 없음" : report.operations.total === 0 ? "샘플 안에 기록 없음 · 비어 있음" : `${formatNumber(report.operations.total)}건${report.operations.rows_truncated ? " · 목록 일부만" : ""}`
+
   return (
-    <div className="flex min-w-0 flex-col gap-4">
+    <div ref={root} className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between no-print">
         <div className="min-w-0">
           <h2 className="text-lg font-semibold">보고서</h2>
@@ -70,8 +116,13 @@ export function ReportView({ snapshot, transport, now }: Props) {
           <AlertDescription className="break-words">observations 출처 상태 {report.observations.status}{report.observations.error ? ` · ${report.observations.error}` : ""}. 이벤트·경보·운영 결과는 알 수 없음이며 비어 있음이 아닙니다.</AlertDescription></Alert>
       ) : null}
 
-      <ReportExplainer explanation={report.explanation} />
+      <ReportVisualSummary report={report} />
 
+      <Disclosure title="쉬운 설명" state="같은 고정 보고서의 요약 · 구조 설명 · 읽는 법">
+        <ReportExplainer explanation={report.explanation} />
+      </Disclosure>
+
+      <Disclosure title="범위·시각·완전성 한계" state={`수집 ${formatTime(report.collected_at)} · ${report.completeness.sample ? (report.completeness.sample.truncated ? "샘플 잘림" : "샘플 잘리지 않음") : "샘플 확인 불가"}`}>
       <Card>
         <CardHeader><CardTitle>범위와 시각</CardTitle><CardDescription>생성 시각, 수집 시각, 출처 관측 시각은 서로 다른 시각입니다.</CardDescription></CardHeader>
         <CardContent>
@@ -98,7 +149,9 @@ export function ReportView({ snapshot, transport, now }: Props) {
           ]} />
         </CardContent>
       </Card>
+      </Disclosure>
 
+      <Disclosure title="건수 표 (샘플)" state={observationsUnknown ? "확인 불가 · 관측 출처 없음" : `이벤트 ${formatNumber(report.counts.events_total)}건`}>
       <Card>
         <CardHeader><CardTitle>건수 (샘플)</CardTitle>{observationsUnknown ? <CardDescription>관측 로그 출처 확인 불가 · 건수는 알 수 없음</CardDescription> : null}</CardHeader>
         <CardContent>
@@ -112,9 +165,11 @@ export function ReportView({ snapshot, transport, now }: Props) {
           ]} />
         </CardContent>
       </Card>
+      </Disclosure>
 
+      <Disclosure title="운영 결과 목록" state={operationsState}>
       <Card>
-        <CardHeader><CardTitle>운영 결과</CardTitle><CardDescription>작업 성공과 별개인 운영(operation) 결과</CardDescription></CardHeader>
+        <CardHeader><CardTitle>운영 결과</CardTitle><CardDescription>작업 성공과 별개인 운영(operation) 결과 · 분포 그림은 위 요약</CardDescription></CardHeader>
         <CardContent>
           {!report.operations ? <p className="text-sm text-muted-foreground">확인 불가 · 관측 로그 출처 없음 (비어 있음 아님)</p> : report.operations.total === 0 ? <p className="text-sm text-muted-foreground">샘플 안에 운영 기록 없음 (비어 있음)</p> : (
             <ul className="flex flex-col gap-1 text-sm">
@@ -123,7 +178,9 @@ export function ReportView({ snapshot, transport, now }: Props) {
           )}
         </CardContent>
       </Card>
+      </Disclosure>
 
+      <Disclosure title="치명·오류 이벤트 목록" state={criticalState}>
       <Card>
         <CardHeader><CardTitle>치명·오류 이벤트</CardTitle><CardDescription>{report.critical_events == null ? "확인 불가 · 관측 로그 출처 없음" : `샘플 상위 ${report.critical_events.length}건 · 샘플 전체 ${report.critical_events_total ?? "?"}건`}</CardDescription></CardHeader>
         <CardContent>
@@ -142,7 +199,9 @@ export function ReportView({ snapshot, transport, now }: Props) {
           )}
         </CardContent>
       </Card>
+      </Disclosure>
 
+      <Disclosure title="다음 조치와 근거 ID" state={`조치 ${report.next_actions.length}건 · 근거 참조 ${report.critical_events == null ? "확인 불가" : `${report.evidence_ids.length}개`}`}>
       <Card>
         <CardHeader><CardTitle>다음 조치와 근거 ID</CardTitle></CardHeader>
         <CardContent className="flex flex-col gap-3">
@@ -151,6 +210,7 @@ export function ReportView({ snapshot, transport, now }: Props) {
           <p className="text-xs font-mono break-all">{report.critical_events == null ? "근거 참조 확인 불가 (관측 출처 없음)" : report.evidence_ids.length ? report.evidence_ids.join(" ") : "근거 참조 없음"}</p>
         </CardContent>
       </Card>
+      </Disclosure>
     </div>
   )
 }

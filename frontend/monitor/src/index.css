@@ -148,7 +148,20 @@
   }
 }
 
+/* Report disclosures: native <details> with the UA marker replaced by the Lucide chevron in markup.
+   Chart bars keep their token fill when printed so the printed page matches the screen labels. */
+.report-details > summary { list-style: none; }
+.report-details > summary::-webkit-details-marker { display: none; }
+.report-bar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
 @media print {
   .no-print { display: none !important; }
   body { background: white; color: black; }
+  /* Printed report includes every evidence record and limitation: closed disclosures render their
+     content. The view's beforeprint handler also sets `open`; this rule is the engine-level backstop. */
+  .report-details { break-inside: avoid; }
+  .report-details > summary { cursor: default; }
+}
+@media print {
+  .report-details::details-content { content-visibility: visible; display: block; }
 }
