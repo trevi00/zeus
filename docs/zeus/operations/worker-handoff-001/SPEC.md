@@ -107,3 +107,44 @@ the6000 limit and runtime unchanged. Include the source-count expectation in all
 preserve the exact permission/hook assertions, no broad test relaxation. Only then issue a new
 explicit implementation+review pair. No retry, cap increase, automatic fallback, or partial
 promotion is performed in this batch. Original criteria and failed evidence remain recorded.
+
+## Continuation 002 — executable wording, same acceptance frame
+
+User authorized continuation after the failed result. This section supersedes the initial
+freeform drafting instruction and three-file restriction for this next batch only. Prior failed
+operation and evidence remain immutable. New operation worker-handoff-002: current count165,
+effective ceiling166 ->167, one Claude implementation + one independent Codex review maximum.
+No retries. USD5 declared worker limit,1200-second timeout. Owner integrates only accepted work.
+
+wording.json is owner design, NOT an already-applied profile. It names18 exact old/new replacements
+plus one insertion in Reporting. Applying them in order to baseline digest3dba9d3b... produces
+5906 LF-normalized characters and SHA256
+4a353bf3f4745d2203944290738a5c95d207e796189ee6d513bccdd2bd10b991.
+Worker applies those exact edits, not another rewrite. Metadata must independently confirm the
+result before its digest is copied to the manifest. No new runtime or limit change.
+
+Safeguard mapping reviewed by owner:
+- Intro/order/authority: assignment-only, evidence versus prose, no grant by guidance, scoped SSOT
+  discovery, unknown search, reuse/improve/migrate/new, no known-defect copying and migration kept.
+- Experience: source/content/run identity, relevant lessons, recurrence distinction, corrected
+  source precedence, historical versus current incident and unknown evidence kept.
+- Integrations: producer/consumer/contract, shape/state/ack checks, no weakened validation and
+  real-path verification kept. Only wording shortened; no claim equivalence from character count.
+- Review: whole batch, material criteria, evidence-based dispute, owner authority, affected checks
+  and no per-item loops kept. Boundaries/environment are byte-unchanged.
+- Verification: focused/full/lead exception, actual output, failure/skip reasons and honest gaps
+  kept. Investigation retains cause evidence, discriminating control, environment/denominator,
+  disposable regression checks, no user's-tree revert and bounded consolidated escalation.
+- Reporting: actual changes/checks and exact tests schema kept; four continuation requirements
+  added, conditional on being able to report. No crash-output guarantee or forced reset.
+
+Allowed files: previous three plus tests/test_worker_profile.py. Change only the existing source
+count assertion8 ->9 in that test; preserve all neighboring permission/hook/manifest assertions.
+Append source.json verbatim as ninth source. Existing8 source objects must remain identical.
+ADOPTION.md names actual checks, previous failure and limits. Run the same two focused commands
+and metadata utility. The owner validates exact designed bytes and unchanged manifest fields.
+This explicit test change repairs the owner assignment gap; no new mirrored tests are needed.
+
+Owner draft sizing attempts measured6303/6065/6018/6004 characters before5906; these are local
+in-memory design checks, not provider calls or model execution. The runtime profile was not edited
+by Codex. Once this batch reaches a terminal result, pause; no new goal or automatic retry follows.
