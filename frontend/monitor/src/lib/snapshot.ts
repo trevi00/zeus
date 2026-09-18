@@ -19,8 +19,42 @@ export type Snapshot = {
   schema?: string
   collected_at?: string
   scope?: { label?: string; docker?: string; containers?: string[] | null }
-  sources: Partial<Record<SourceName, Envelope>>
+  // `fleet` is additive (INV-FLEET-001, fleet-001 SPEC). It is not in SOURCE_NAMES: older
+  // snapshots without it stay valid, the source strip, retained map, header warnings and the pinned
+  // report keep their fixed four-source contract, and only the 팀 작업 view reads it.
+  sources: Partial<Record<SourceName, Envelope>> & { fleet?: Envelope }
 }
+
+// Wire shape of `sources.fleet.data` (fleet-001 SPEC "Monitoring wire contract"). Projection only:
+// no manifests, objectives, repository paths, schema names, DSNs or raw errors are expected here.
+export const FLEET_SCHEMA = "urn:zeus:fleet-status:1"
+export type FleetLane = { id: string; team: string; active_job: string | null }
+export type FleetJob = {
+  id: string
+  lane: string
+  team: string
+  status: string
+  reason_code: string | null
+  operation_id: string
+  goal: { path: string; criterion: string }
+  dependencies: string[]
+  calls: { reserved: number | null; settled: number | null }
+  created_at: string
+  updated_at: string
+}
+export type FleetUnregistered = { schema: string; registered: false; lanes: []; jobs: [] }
+export type FleetRegistered = {
+  schema: string
+  registered: true
+  id: string
+  paused: boolean
+  max_parallel: number
+  budget: { per_host: number; total: number }
+  lanes: FleetLane[]
+  jobs: FleetJob[]
+  truncated: boolean
+}
+export type FleetData = FleetUnregistered | FleetRegistered
 
 export type EventRow = {
   event_id: string | null
@@ -155,7 +189,16 @@ export function parseTime(value: unknown): number {
 
 export function freshness(snapshot: Snapshot | null, name: SourceName, now: number): Freshness {
   if (!snapshot) return { state: "unavailable", observed_at: null, age: null, reason: "응답 없음" }
-  const source = snapshot.sources?.[name]
+  return envelopeFreshness(snapshot.sources?.[name], now)
+}
+
+/** Same accepted freshness rules applied to the optional `sources.fleet` envelope. */
+export function fleetFreshness(snapshot: Snapshot | null, now: number): Freshness {
+  if (!snapshot) return { state: "unavailable", observed_at: null, age: null, reason: "응답 없음" }
+  return envelopeFreshness(snapshot.sources?.fleet, now)
+}
+
+function envelopeFreshness(source: Envelope | undefined, now: number): Freshness {
   if (!source || typeof source !== "object") {
     return { state: "unavailable", observed_at: null, age: null, reason: "출처 기록 없음" }
   }
