@@ -1,15 +1,24 @@
-"""Host-side collection. The HTTP server never imports this Docker/DB adapter."""
+"""Host-side collection. The HTTP server never imports this Docker/DB adapter.
+
+The collector is a read-only consumer: it reads PostgreSQL facts and already persisted
+metric observations, runs only read-only Docker/Redis commands and never puts rows or artifacts.
+"""
 import json
 import re
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import datetime, timezone
+from pathlib import Path
 
 from codex_harness.adapters.bus import RedisBus
 from codex_harness.adapters.commands import run_process
-from codex_harness.application.measurements import Measurements
 from codex_harness.application.monitoring import Monitoring
+from codex_harness.domain.model import ContractError
+
+CONTAINER_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}')
+MAX_CONTAINERS = 32
 
 
 def safe_text(value, limit=1200):
@@ -17,6 +26,129 @@ def safe_text(value, limit=1200):
     text = re.sub(r'([a-z]+://)[^\s/@]+:[^\s/@]+@', r'\1[redacted]@', text)
     text = re.sub(r'(?i)(Bearer\s+|(?:api[_-]?key|password|token)\s*[=:]\s*)\S+', r'\1[redacted]', text)
     return text[:limit]
+
+
+class ReadOnlyTransaction:
+    """Store transaction view for the monitor: reads delegate, every write is a contract error."""
+
+    def __init__(self, transaction):
+        self._transaction = transaction
+
+    def get(self, bucket, key):
+        return self._transaction.get(bucket, key)
+
+    def scan(self, bucket):
+        return self._transaction.scan(bucket)
+
+    def entries(self, bucket, after='', limit=100):
+        return self._transaction.entries(bucket, after, limit)
+
+    def records(self):
+        return self._transaction.records()
+
+    def put(self, *args, **kwargs):
+        raise ContractError('Monitor store is read-only')
+
+    def graph(self):
+        raise ContractError('Monitor store is read-only')
+
+
+class ReadOnlyStore:
+    def __init__(self, store):
+        self._store = store
+
+    @contextmanager
+    def transaction(self):
+        with self._store.transaction() as transaction:
+            yield ReadOnlyTransaction(transaction)
+
+
+class ReadOnlyArtifacts:
+    """Artifact reader for the monitor: bounded integrity-checked reads only, never put."""
+
+    def __init__(self, artifacts):
+        self._artifacts = artifacts
+
+    def put(self, *args, **kwargs):
+        raise ContractError('Monitor artifact reader is read-only')
+
+    def _body(self, reference, max_bytes=None):
+        return self._artifacts._body(reference, max_bytes)
+
+    def document(self, reference):
+        return self._artifacts.document(reference)
+
+    def text(self, reference, max_bytes):
+        return self._artifacts.text(reference, max_bytes)
+
+    def read(self, reference, start=0, length=8000):
+        return self._artifacts.read(reference, start, length)
+
+    def inspect(self, reference):
+        return self._artifacts.inspect(reference)
+
+    def search(self, reference, needle, limit=20):
+        return self._artifacts.search(reference, needle, limit)
+
+
+class ReadOnlyService:
+    """The two attributes DatabaseFacts uses, with the store wrapped read-only."""
+
+    def __init__(self, service):
+        self.store, self.org = ReadOnlyStore(service.store), service.org
+
+
+def read_only(service, artifacts):
+    return ReadOnlyService(service), ReadOnlyArtifacts(artifacts)
+
+
+def container_scope(value):
+    """ZEUS_MONITOR_CONTAINERS: unset/blank keeps Compose scope (None); otherwise a JSON list of
+    1..32 unique exact container names. Anything else is a configuration error, never a fallback."""
+    if value is None or not str(value).strip():
+        return None
+    try:
+        names = json.loads(value)
+    except ValueError as exc:
+        raise ValueError('Monitor container scope must be a JSON list') from exc
+    if not isinstance(names, list) or not 1 <= len(names) <= MAX_CONTAINERS:
+        raise ValueError(f'Monitor container scope must list 1..{MAX_CONTAINERS} names')
+    if not all(isinstance(name, str) and CONTAINER_NAME.fullmatch(name) for name in names):
+        raise ValueError('Monitor container scope names must be exact Docker container names')
+    if len(set(names)) != len(names):
+        raise ValueError('Monitor container scope names must be unique')
+    return list(names)
+
+
+def parse_observed(value):
+    """A stored observation counts only with a timezone-aware ISO timestamp."""
+    try:
+        observed = datetime.fromisoformat(value)
+    except (TypeError, ValueError):
+        return None
+    return observed if observed.tzinfo is not None else None
+
+
+def persisted_measurements(store, now=None):
+    """Latest persisted observation per metric_id from `metric_observations`, original time kept.
+    No observations means an empty list: the monitor never evaluates or fabricates values."""
+    now = now or datetime.now(timezone.utc)
+    with store.transaction() as tx:
+        rows = tx.scan('metric_observations')
+    latest = {}
+    for row in rows:
+        metric_id, observed = row.get('metric_id'), parse_observed(row.get('observed_at'))
+        if not isinstance(metric_id, str) or not metric_id or observed is None:
+            continue
+        current = latest.get(metric_id)
+        if current is None or observed > current[0]:
+            latest[metric_id] = (observed, row)
+    output = []
+    for metric_id in sorted(latest):
+        observed, row = latest[metric_id]
+        output.append({**row, 'source': 'persisted_observation',
+                       'age_seconds': (now - observed).total_seconds()})
+    return output
 
 
 class DatabaseFacts:
@@ -131,22 +263,46 @@ def audit_progress(data, control):
     return list(output.values())
 
 
-def docker_facts(repository):
-    process = run_process(['docker', 'compose', 'ps', '--all', '--format', 'json'], cwd=repository, timeout=15)
+def docker_stats(names):
+    if not names:
+        return {}
+    process = run_process(['docker', 'stats', '--no-stream', '--format', '{{json .}}', *names], timeout=15)
     if process.returncode:
-        raise RuntimeError('Docker status unavailable')
-    rows = [json.loads(line) for line in process.stdout.splitlines() if line.startswith('{')]
-    stats = []
-    names = [row['Name'] for row in rows if row.get('State') == 'running']
-    if names:
-        process = run_process(['docker', 'stats', '--no-stream', '--format', '{{json .}}', *names], timeout=15)
+        raise RuntimeError('Docker metrics unavailable')
+    stats = [json.loads(line) for line in process.stdout.splitlines() if line.startswith('{')]
+    return {row['Name']: row for row in stats}
+
+
+def docker_facts(repository, containers=None):
+    """Compose scope (containers None) is unchanged. Named scope lists exactly the requested
+    containers with read-only `docker ps --all` and `docker stats`; the CLI name filter matches
+    substrings, so returned names are checked exactly, unrelated containers are dropped and any
+    missing requested name makes the whole source unavailable rather than success-empty."""
+    if containers is None:
+        process = run_process(['docker', 'compose', 'ps', '--all', '--format', 'json'], cwd=repository, timeout=15)
         if process.returncode:
-            raise RuntimeError('Docker metrics unavailable')
-        stats = [json.loads(line) for line in process.stdout.splitlines() if line.startswith('{')]
-    lookup = {row['Name']: row for row in stats}
-    return [{'service': row['Service'], 'name': row['Name'], 'state': row['State'], 'image': row['Image'],
-             'cpu': lookup.get(row['Name'], {}).get('CPUPerc'),
-             'memory': lookup.get(row['Name'], {}).get('MemUsage')} for row in rows]
+            raise RuntimeError('Docker status unavailable')
+        rows = [json.loads(line) for line in process.stdout.splitlines() if line.startswith('{')]
+        rows = [{'service': row['Service'], 'name': row['Name'], 'state': row['State'], 'image': row['Image']}
+                for row in rows]
+    else:
+        filters = [arg for name in containers for arg in ('--filter', f'name={name}')]
+        process = run_process(['docker', 'ps', '--all', '--format', '{{json .}}', *filters], timeout=15)
+        if process.returncode:
+            raise RuntimeError('Docker status unavailable')
+        listed = {}
+        for line in process.stdout.splitlines():
+            if line.startswith('{'):
+                row = json.loads(line)
+                listed[row.get('Names')] = row
+        missing = [name for name in containers if name not in listed]
+        if missing:
+            raise RuntimeError('Docker container missing')
+        rows = [{'service': name, 'name': name, 'state': listed[name].get('State'),
+                 'image': listed[name].get('Image')} for name in containers]
+    lookup = docker_stats([row['name'] for row in rows if row['state'] == 'running'])
+    return [{**row, 'cpu': lookup.get(row['name'], {}).get('CPUPerc'),
+             'memory': lookup.get(row['name'], {}).get('MemUsage')} for row in rows]
 
 
 def redis_facts(url, agents):
@@ -164,7 +320,14 @@ def redis_facts(url, agents):
     return output
 
 
-def collect(service, artifacts, repository, redis_url):
+def scope_label(repository, label=None):
+    """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
+    label for the page toolbar, not a status or success claim."""
+    text = safe_text(label, 200).strip()
+    return text or f'repository {Path(repository).resolve().name}'
+
+
+def collect(service, artifacts, repository, redis_url, containers=None, scope=None):
     def sample(callback):
         try:
             return {'status': 'ok', 'observed_at': datetime.now(timezone.utc).isoformat(), 'data': callback()}
@@ -172,15 +335,17 @@ def collect(service, artifacts, repository, redis_url):
             return {'status': 'unavailable', 'observed_at': datetime.now(timezone.utc).isoformat(),
                     'error': type(exc).__name__, 'data': None}
     def database():
-        revision = run_process(['git', 'rev-parse', 'HEAD'], cwd=repository, timeout=15)
-        if revision.returncode:
-            raise RuntimeError('Measurement revision unavailable')
-        measurements = Measurements(service.store, artifacts).collect(revision.stdout.strip())
-        return {**Monitoring(DatabaseFacts(service, artifacts)).snapshot(), 'measurements': measurements}
+        # Read-only: stored facts plus already persisted observations; nothing is evaluated or written.
+        return {**Monitoring(DatabaseFacts(service, artifacts)).snapshot(),
+                'measurements': persisted_measurements(service.store)}
     jobs = {'database': database,
-            'docker': lambda: docker_facts(repository),
+            'docker': lambda: docker_facts(repository, containers),
             'redis': lambda: redis_facts(redis_url, service.org.agents)}
     with ThreadPoolExecutor(max_workers=3) as pool:
         futures = {name: pool.submit(sample, callback) for name, callback in jobs.items()}
         sources = {name: future.result() for name, future in futures.items()}
-    return {'schema': 'harness-monitor.v1', 'collected_at': datetime.now(timezone.utc).isoformat(), 'sources': sources}
+    return {'schema': 'harness-monitor.v1', 'collected_at': datetime.now(timezone.utc).isoformat(),
+            'scope': {'label': scope_label(repository, scope),
+                      'docker': 'named' if containers is not None else 'compose',
+                      'containers': list(containers) if containers is not None else None},
+            'sources': sources}
