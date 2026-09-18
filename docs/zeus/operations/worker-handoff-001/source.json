@@ -1,0 +1,9 @@
+{
+  "source": "baldrix",
+  "path": "skills/_common/handoff-clear-trigger.md",
+  "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+  "blob": "0388365162155a528aedc3b1270855028117bf85",
+  "pinned_sha256": "a19c8bfc8148b0a5247112398eef14f790f5752542c570406835c172a1a4ec58",
+  "scope": "Evidence-bound bounded continuation principles rewritten for existing worker-v1; no upstream execution or behavior guarantee",
+  "disposition": "Adapt goal, verified evidence, remaining work and scoped next action; reject forced clear, numeric thresholds, fallback task invention and prose authority"
+}

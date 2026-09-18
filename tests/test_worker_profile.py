@@ -235,7 +235,7 @@ def test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_pres
     assert list(manifest) == ["id", "version", "document", "document_sha256", "hook", "hook_sha256",
                               "character_limit", "hooks", "permissions", "sources", "note"]
     assert set(manifest["permissions"]) == {"allow"} and manifest["character_limit"] == module.MAX_CHARACTERS
-    assert manifest["hooks"] == ["SessionStart", "PostToolUse(Bash)"] and len(manifest["sources"]) == 8
+    assert manifest["hooks"] == ["SessionStart", "PostToolUse(Bash)"] and len(manifest["sources"]) == 9
     base = claude_settings({**RUNTIME, "disallowed_tools": ["Task", "WebFetch", "Bash(python -c:*)"]})
     merged = merge_settings(base, profile, hook_settings("cmd"))
     assert merged["permissions"]["deny"] == ["Task", "WebFetch", "Bash(python -c:*)"], "denies are delivered unchanged"
