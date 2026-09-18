@@ -6,6 +6,7 @@ import subprocess
 from dataclasses import replace
 from pathlib import Path
 
+from codex_harness.adapters.commands import no_console_kwargs
 from codex_harness.adapters.providers import ExecutionPolicy, packaged_policy
 from codex_harness.application.operation import Operation, OperationRefused, identity_digest
 from codex_harness.domain.model import ContractError, digest, require
@@ -39,7 +40,8 @@ class GitSource:
         self.repository = str(repository)
 
     def _run(self, *args) -> subprocess.CompletedProcess:
-        return subprocess.run(["git", "-C", self.repository, *args], capture_output=True, timeout=60)
+        return subprocess.run(["git", "-C", self.repository, *args], capture_output=True, timeout=60,
+                              **no_console_kwargs())
 
     def commit_exists(self, revision: str) -> bool:
         return self._run("cat-file", "-e", revision + "^{commit}").returncode == 0

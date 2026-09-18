@@ -161,6 +161,9 @@
      content. The view's beforeprint handler also sets `open`; this rule is the engine-level backstop. */
   .report-details { break-inside: avoid; }
   .report-details > summary { cursor: default; }
+  /* Story diagram: one job's four connected nodes stay on one page; node borders keep their tone. */
+  .report-story-job { break-inside: avoid; }
+  .report-story-node { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 @media print {
   .report-details::details-content { content-visibility: visible; display: block; }

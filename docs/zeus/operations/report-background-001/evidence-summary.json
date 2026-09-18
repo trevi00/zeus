@@ -1,0 +1,89 @@
+{
+  "date": "2026-09-18",
+  "runtime_commit": "f1fe94e5fac587b43e26e337b40057743d99ad35",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\report-background-001",
+  "state": "native/browser/execution evidence; full suite, CI and deployment follow on issue148",
+  "budget": {
+    "before": 160,
+    "after": 164,
+    "extra_calls": 4,
+    "retries": 0,
+    "paused": true
+  },
+  "reviews": {
+    "backend": "accepted",
+    "ui": "rejected; owner nonblocking presentation disposition, retained verbatim"
+  },
+  "files": [
+    {
+      "path": "prepared.json",
+      "bytes": 4700,
+      "sha256": "d98852c1a790a7703d1bec1d8d0a82efe901010c5aca41c5b3f6d5a121e89973"
+    },
+    {
+      "path": "live-state.json",
+      "bytes": 152380,
+      "sha256": "4346dea32a0fdec0d843f736f9e40d8733d204afadb4fed168083a359a261e2d"
+    },
+    {
+      "path": "status.json",
+      "bytes": 2979,
+      "sha256": "e91aafa9fbb2bc219d501c50bb1a0238266aede7d560010cf8ff7dd952d79f5a"
+    },
+    {
+      "path": "execution-proof.json",
+      "bytes": 8335,
+      "sha256": "2a9f641d3b7572b51a1647b6bc612983e4f5b71157e634a71ad716ece44bf082"
+    },
+    {
+      "path": "console-before.json",
+      "bytes": 160,
+      "sha256": "8783f5a95a21232ddf0a5f22f3bb93d1eef09a90c66e757aa855faf6d7d6cd6f"
+    },
+    {
+      "path": "console-after.json",
+      "bytes": 188,
+      "sha256": "26b4b1e815b96722077b2296267c3413eb50d5bcac09183e72178deb7ada57ee"
+    },
+    {
+      "path": "native-check.json",
+      "bytes": 559,
+      "sha256": "0adc6a5898d6b35f8e98e1cc9395e7ddefbf1162143cd20710868d2c6832dd61"
+    },
+    {
+      "path": "browser-proof.json",
+      "bytes": 690,
+      "sha256": "1c3af90a4277f7126b3a9cd0e7c1cf177eb7fe3e2ca7fd5dd56820e71bf08697"
+    },
+    {
+      "path": "report-captured.json",
+      "bytes": 35864,
+      "sha256": "92cb15e3993958f35005c6700f7746a413b48598e2f70ed3396330fb2a7e97d8"
+    },
+    {
+      "path": "report-before.png",
+      "bytes": 170164,
+      "sha256": "9e058347d717ebd6bc7f0d83e002d4a1bcad13fa9d27c7a11618b52936c53a7f"
+    },
+    {
+      "path": "report-after.png",
+      "bytes": 451759,
+      "sha256": "e7eb551303069e9bffa14646272d537c2416bf901fb0086abd66f47ce54d43cd"
+    },
+    {
+      "path": "report-mobile-story.png",
+      "bytes": 54424,
+      "sha256": "b45059ec644b9655b8ce37742f57f7c314b9cbe0f7e610410d511ecafaf0f125"
+    },
+    {
+      "path": "background-entry.pyw",
+      "bytes": 1625,
+      "sha256": "179b3a172920a8cfb8f95cd5476367b1c28b96fcb13690acdeb71f2bd7a31eea"
+    },
+    {
+      "path": "install-background.ps1",
+      "bytes": 2630,
+      "sha256": "d0446dd1e1d61e1a133330c40cc876c6edf1c2a00579acbe22015eab0cccb55f"
+    }
+  ]
+}

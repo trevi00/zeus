@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { ChevronDown, Download, Printer, RefreshCw } from "lucide-react"
 
 import { ReportExplainer } from "@/components/report-explainer"
+import { ReportStory } from "@/components/report-story"
 import { ReportVisualSummary } from "@/components/report-visual-summary"
 import { KeyValue } from "@/components/stat-card"
 import { StatusBadge } from "@/components/status-badge"
@@ -91,7 +92,7 @@ export function ReportView({ snapshot, transport, now }: Props) {
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between no-print">
         <div className="min-w-0">
           <h2 className="text-lg font-semibold">보고서</h2>
-          <p className="text-sm text-muted-foreground">화면 진입 또는 재생성 시점의 스냅샷 하나에서 생성 · 자동 갱신 없음 · 로컬 저장/인쇄만 · 외부 전송 없음 · 쉬운 설명은 같은 캡처에서 계산됨</p>
+          <p className="text-sm text-muted-foreground">화면 진입 또는 재생성 시점의 스냅샷 하나에서 생성 · 자동 갱신 없음 · 로컬 저장/인쇄만 · 외부 전송 없음 · 팀 작업 이야기와 쉬운 설명은 같은 캡처에서 계산됨</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => setReport(buildReport(snapshot, transport, Date.now()))}><RefreshCw aria-hidden="true" />보고서 재생성</Button>
@@ -116,6 +117,9 @@ export function ReportView({ snapshot, transport, now }: Props) {
           <AlertDescription className="break-words">observations 출처 상태 {report.observations.status}{report.observations.error ? ` · ${report.observations.error}` : ""}. 이벤트·경보·운영 결과는 알 수 없음이며 비어 있음이 아닙니다.</AlertDescription></Alert>
       ) : null}
 
+      {/* Story first (SPEC: before aggregate metrics, never behind a disclosure), then the aggregate picture. */}
+      <ReportStory story={report.story} fleet={report.fleet} />
+
       <ReportVisualSummary report={report} />
 
       <Disclosure title="쉬운 설명" state="같은 고정 보고서의 요약 · 구조 설명 · 읽는 법">
@@ -132,6 +136,7 @@ export function ReportView({ snapshot, transport, now }: Props) {
             ["수집 시각", formatTime(report.collected_at)],
             ["캡처 시점 연결", `${report.transport.state}${report.transport.detail ? ` · ${report.transport.detail}` : ""} · 마지막 정상 응답 ${report.transport.last_ok_at ? formatTime(report.transport.last_ok_at) : "없음"}`],
             ["출처", <div className="flex flex-wrap gap-2">{Object.entries(report.sources).map(([name, s]) => <StatusBadge key={name} tone={freshnessTone(s.freshness)}>{name} · {s.freshness} · {formatTime(s.observed_at)}</StatusBadge>)}</div>],
+            ["fleet 출처 (선택)", <StatusBadge tone={report.fleet.state === "registered" ? freshnessTone(report.fleet.freshness) : report.fleet.state === "unregistered" ? "neutral" : "unknown"}>{report.fleet.state} · {report.fleet.freshness} · {formatTime(report.fleet.observed_at)}</StatusBadge>],
             ["권위", "informational_only · 전역 상태·SLO·자동 수락 판정 아님"],
           ]} />
         </CardContent>

@@ -7,6 +7,7 @@ import json
 import subprocess
 from dataclasses import asdict
 
+from codex_harness.adapters.commands import no_console_kwargs
 from codex_harness.domain.model import canonical, require
 from codex_harness.domain.research import InventoryEntry, SourceIdentity
 
@@ -17,7 +18,8 @@ class GitSourceVerifier:
 
     def git(self, *args):
         result = subprocess.run(['git', '--no-replace-objects', '-C', self.repository, *args],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60,
+                                **no_console_kwargs())
         require(result.returncode == 0, 'Source Git inspection failed: '
                 + result.stderr.decode('utf-8', errors='replace'))
         return result.stdout

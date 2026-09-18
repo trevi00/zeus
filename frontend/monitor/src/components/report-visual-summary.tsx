@@ -9,7 +9,8 @@ import { CATEGORY_LABELS, CATEGORY_ORDER, SEVERITY_LABELS, SEVERITY_ORDER, SOURC
 import { freshnessTone, severityTone, type Tone } from "@/lib/tones"
 
 /**
- * Picture-first head of the pinned report (Sterk #82 adaptation). It renders `report` only: the
+ * Aggregate picture of the pinned report (Sterk #82 adaptation), placed after the goal/team/verdict
+ * story of report-story.tsx (report-background-001). It renders `report` only: the
  * object `buildReport` pinned at capture, which the print view and the JSON download also describe.
  * Nothing here reads the live snapshot, the clock or a fetch, and no new count is computed: every
  * figure is a field of the report or a percentage of two such fields shown next to both numbers.
@@ -142,7 +143,9 @@ export function ReportVisualSummary({ report }: Props) {
   const sampleLabel = sample ? `버킷당 ${formatNumber(sample.limit_per_bucket)}행 · ${sample.truncated ? "잘림" : "잘리지 않음"}` : "샘플 한계 확인 불가"
 
   return (
-    <section aria-label="그림으로 보는 고정 보고서" className="flex min-w-0 flex-col gap-3">
+    <section aria-label="집계 요약 (샘플)" className="flex min-w-0 flex-col gap-3">
+      {/* Aggregate picture: sits below the goal/team/verdict story (report-story.tsx) and reads the same pinned report. */}
+      <h3 className="text-base font-semibold">집계 요약 (샘플) <span className="text-xs font-normal text-muted-foreground">· 위 팀 작업 이야기와 같은 캡처 · 관측 로그 출처 기준 · fleet 출처와 별개</span></h3>
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <StatCard title="이벤트 (샘플)" value={report.counts.events_total == null ? <Unknown /> : formatNumber(report.counts.events_total)}
           note={unknownObservations ? "관측 출처 확인 불가 · 0 아님" : sampleLabel} />
