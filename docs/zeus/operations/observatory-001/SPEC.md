@@ -162,3 +162,70 @@ and to footer in App.tsx, using existing print CSS; no report/data/backend redes
 PDF content and same-report JSON after actual refresh. Keep prior accepted checks. One final tiny
 worker/reviewer pair ceiling137 (current135), USD1.5 worker ceiling, 600s. This explicit extension
 finishes the same unmet print acceptance condition; no automatic retry loop or new criteria.
+# User extension — illustrated explanations (2026-09-18)
+
+The user explicitly requested DreambigOu/ELI5 as a reference, explanatory diagrams, easy Korean
+explanations and access in the webpage. PR #140's accepted backend/read-only/source/frozen-report
+results remain accepted. This is one bounded presentation extension, not a reopening of those
+reviews. Codex designs/accepts; one actual Zeus Claude implementation plus independent Codex review.
+Reserve at most two additional model calls, machine ledger 137 -> 139, Claude USD4/900s; stop at
+the bound and preserve a failed result. No extra provider calls to generate report explanations.
+
+## Reference facts and decisions
+
+Read 2026-09-18: https://github.com/DreambigOu/ELI5 at
+`a766623b062331fdde53467001379b4ddf3acc2f`, README, skills/eli5/SKILL.md and LICENSE (MIT).
+It is an audience-adapted explanation skill, not a diagram renderer. Relevant principles:
+purpose first, familiar language, layered detail, consequences relevant to the reader.
+The repository's suggested age-5 default and tolerance of lower accuracy are NOT adopted:
+the audience is an adult Korean operator, and numbers, uncertainty and evidence remain exact.
+No source code/skill text is copied or globally installed; independently authored design is
+informed by the linked reference. Diagrams are our requested UI extension, not a claimed feature
+of that repository. No additional research is needed for this presentation decision.
+
+## Complete path and single delivery
+
+Existing sanitized `/api/status` -> existing `buildReport` fixed capture -> a deterministic,
+JSON-serializable `explanation` field in report schema v3 -> one new `ReportExplainer` component
+inside the report view -> identical screen/JSON/PDF capture. No timer, fetch, model, storage mutation,
+remote image, Mermaid renderer or CDN is added. Existing technical details remain below.
+
+Implement only frontend/monitor/src/lib/report.ts, new components/report-explainer.tsx,
+views/report.tsx and an IMPLEMENTATION.md note. Reuse shadcn Cards/Badges and existing Lucide,
+semantic tokens, CSS grid/flex/HTML bars. Owner builds tracked assets and verifies in the browser.
+
+Required output:
+1. A top section `한눈에 이해하기`: short respectful Korean summary of observed operation results,
+   error/critical count and data limitations, distinguishing work completion from accepted operation.
+   No global all-clear, presumed root cause, predicted ETA, invented success rate or advice to retry.
+2. Three/four boxes connected as a conceptual log-to-report flow (record -> durable storage/collection
+   -> fixed report). Label it `구조 설명 · 개별 실행을 추적한 증거가 아님`. Display only relevant
+   captured counts/units and explicitly avoid portraying different populations as a funnel.
+3. An observed operation-status distribution with labeled HTML bars and exact counts (accepted,
+   failed, rejected, exhausted/running/unknown/other). Translate known status labels into Korean;
+   unknown values remain visible. Keep null/unavailable distinct from genuine zero/empty. Label
+   sample/truncation and denominator. Do not infer pending from false acceptance.
+4. Short plain-language reading guide: severity vs general/development/operations categories;
+   a development error outranks informational operations, zero doesn't prove complete collection.
+   Include ELI5 reference as design inspiration, not endorsement or data source.
+5. JSON stores the same summary, diagram labels/counts, limitations and provenance as the view.
+   All are derived at capture. Source/transport freshness remains explicit even with retained data.
+
+## Acceptance matrix and completion
+
+Normal: actual fixed PG data -> diagram/counts match report JSON; refresh leaves all explanatory
+content pinned; explicit regenerate updates the whole capture. Missing observations/no snapshot:
+unknown counts/diagram values and no zero-success claims. Stale/invalid/unavailable source or failed
+transport: show limitations without interpreting old values as current. Empty and mixed states:
+known zero stays zero; arbitrary status labels/counts retained. Sample truncation: lower scope
+visible, no global conclusion. No concurrency/restart changes: reuse accepted singleflight/frozen
+report implementation. Platform: Chrome at desktop and390px; keyboard/print reading; HTML text
+equivalents and labels, no color-only meaning. Cleanup: no new service, assets, queues or auth flow.
+
+Worker runs only existing focused Python monitoring tests + ruff (regression); no npm in worker,
+no full suite, no git/model calls. Exact executed commands only in worker's test claims. Owner runs
+TypeScript/lint/build and actual browser report capture cases above, PDF render check, final required
+CI. Finish by merging/deploying this frontend extension, updating #139 with evidence and closing it.
+Do not broaden to upstream skill evaluation, runtime LLM explanation, backend logging gaps or a
+general visualization engine. Existing RESULT/evidence remain frozen; add a separate extension
+section/artifact manifest without overwriting them.
