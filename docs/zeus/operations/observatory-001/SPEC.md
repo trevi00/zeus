@@ -118,3 +118,36 @@ sample content, replace its App.tsx completely. Installed real UI primitives rem
 One implementation + one independent review call initially; reserve at most one correction pair
 only for a material failed acceptance condition, no automatic retry of a failed operation.
 Unknown unrelated deficiencies get follow-up notes and do not silently extend this matrix.
+
+## Owner review — one completion correction (2026-09-18)
+
+First actual Claude call hit provider budget USD6 before final response. Its 22 changed files were
+preserved and copied byte-for-byte for owner review (recovered-files.json). Operation remains
+failed/execution_retry; no candidate/automated acceptance was invented. Owner ran Python targeted
+28 passed + ruff clean. Vite-only compilation for PREVIEW succeeded, but the required complete
+build/typecheck and ESLint failed. Actual live read-only preview at localhost:8790 displayed the
+current PG logs/operations and Docker/Redis with no browser errors. Accepted backend and HTTP
+boundaries are retained; do not rewrite them during the correction.
+
+One consolidated frontend correction:
+- R1 / required build: npm run build fails App.tsx:73 StatusBadge title prop not supported.
+  npm run lint fails helper exports in status-badge.tsx, standard generated shadcn variants in
+  button/badge/tabs, and Math.random row key in overview. Support correct props, use stable keys,
+  move own helpers to a library module. A narrowly documented eslint exemption for the GENERATED
+  UI variants is fine; do not disable lint broadly. Owner runs npm, worker does not.
+- R2 / phone: real 390x844 browser report view has document.scrollWidth 437. Scope badge uses
+  unbreakable text; constrain/wrap the header and content so BODY never overflows (tables/nav may
+  scroll inside their own bounded containers). Desktop 1440x960 is already legible; preserve it.
+- R3 / report truth and stability: owner injected ONLY the browser observations envelope as
+  unavailable/ControlledTestFailure while other actual sources stayed ok. The report still said
+  '샘플 안에 치명·오류 이벤트 없음' because missing source became empty critical_events. Distinguish
+  unknown from an observed empty list, in rendered report AND JSON. Report currently rebuilds every
+  1s tick / poll (useMemo(snapshot,now)); pin one report at explicit generation or view entry, with
+  an explicit regenerate action. Print/JSON must describe that pinned object, including generation
+  time, and must retain a transport failure notice if capture occurred after request failure.
+  A report that was correctly captured earlier stays a historical report, labelled with its time.
+
+Owner follows this correction with actual build/lint/browser fixed matrix and full CI. No unrelated
+redesign, new logging platform or automatic retry. One correction worker + reviewer pair ceiling
+135 (machine count now133); implementation timeout900s, USD3 ceiling. Existing partial source is
+the base; finish these three boundaries only and keep tests list restricted to assigned commands.

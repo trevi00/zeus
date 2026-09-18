@@ -14,6 +14,7 @@ from pathlib import Path
 
 from codex_harness.adapters.bus import RedisBus
 from codex_harness.adapters.commands import run_process
+from codex_harness.adapters.monitoring_observations import observation_facts
 from codex_harness.application.monitoring import Monitoring
 from codex_harness.domain.model import ContractError
 
@@ -327,7 +328,9 @@ def scope_label(repository, label=None):
     return text or f'repository {Path(repository).resolve().name}'
 
 
-def collect(service, artifacts, repository, redis_url, containers=None, scope=None):
+def collect(service, artifacts, repository, redis_url, containers=None, scope=None, runtime=None):
+    """Three legacy sources; with a runtime directory an additive fourth `observations` envelope
+    (observatory-001). Every envelope fails independently."""
     def sample(callback):
         try:
             return {'status': 'ok', 'observed_at': datetime.now(timezone.utc).isoformat(), 'data': callback()}
@@ -341,7 +344,9 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
     jobs = {'database': database,
             'docker': lambda: docker_facts(repository, containers),
             'redis': lambda: redis_facts(redis_url, service.org.agents)}
-    with ThreadPoolExecutor(max_workers=3) as pool:
+    if runtime is not None:
+        jobs['observations'] = lambda: observation_facts(service.store, runtime)
+    with ThreadPoolExecutor(max_workers=4) as pool:
         futures = {name: pool.submit(sample, callback) for name, callback in jobs.items()}
         sources = {name: future.result() for name, future in futures.items()}
     return {'schema': 'harness-monitor.v1', 'collected_at': datetime.now(timezone.utc).isoformat(),
