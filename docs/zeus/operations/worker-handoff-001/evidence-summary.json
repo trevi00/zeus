@@ -27,5 +27,45 @@
       "bytes": 8357,
       "sha256": "9a452890226180ac764f36975d54e3e21eefe1d51ed713df60e4859c8433e7f3"
     }
-  ]
+  ],
+  "continuation002": {
+    "outcome": "accepted",
+    "calls_before": 165,
+    "calls_after": 167,
+    "ceiling": 167,
+    "paused": true,
+    "ci_release": "pending; see final issue comment",
+    "files": [
+      {
+        "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\prepared2.json",
+        "sha256": "9433189385ce0f7aa56ea7db848f609a9819ba3ca95c6f68e1109f9262778757",
+        "bytes": 1605
+      },
+      {
+        "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\result2.json",
+        "sha256": "29129fd015ea451a2310cc41e37b383054c83470502f9a6addedbe4c44211efd",
+        "bytes": 19613
+      },
+      {
+        "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\owner-check2.json",
+        "sha256": "35de03d5331c565c4eed0af76d7e065fb32265eb02c51d47cfd0a4740c1382a5",
+        "bytes": 918
+      },
+      {
+        "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\metadata2.log",
+        "sha256": "e2d879ce5dec515386c3778f1095c2f9c13ab21bf411f4de7c8ccaee0f6ea219",
+        "bytes": 427
+      },
+      {
+        "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\focused2.log",
+        "sha256": "6bcc8902539e528ca17108a8e72958ee70cae24e1079d5f8f4eb382713fe93a6",
+        "bytes": 101
+      },
+      {
+        "path": "D:\\workspaces\\zeus\\artifacts\\worker-handoff-001\\lint2.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "bytes": 19
+      }
+    ]
+  }
 }
