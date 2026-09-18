@@ -7,6 +7,17 @@ retries, grants budget or invents goals. Live results are only what the owner ru
 
 ## Commands
 
+On this Windows host use a short, run-specific runtime root, e.g.
+`D:/workspaces/zeus/artifacts/rp003`, via both `ZEUS_RUNTIME_DIR` and
+`HARNESS_RUNTIME_DIR` in the launcher process. Do not nest runtime snapshots below the long
+human-readable evidence directory. Keep the latter for reports and links to raw run records.
+Do not move a live workspace or existing failed run. Before the next pinned run, calculate the
+full replay path (`runtime/isolated-worker/replays/<32-character id>/workspace/<relative file>`)
+for its source inventory; choose a shorter root if any target reaches260 characters on this host.
+This is an operating constraint for the observed Windows behavior, not a universal path API fix.
+At the retained candidate, the short root's maximum was235 and actual container replays passed;
+see [SHORT-ROOT-VERIFICATION.md](SHORT-ROOT-VERIFICATION.md).
+
 ```
 zeus research-program register --file CONFIG.json   # validate, bind goal + local rows at base, store; no models
 zeus research-program resume ID                     # paused -> active (initial state is paused)

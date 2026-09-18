@@ -369,3 +369,22 @@ manifest (max relative133); recheck against the next pinned revision before any 
 Do not move active/original workspaces or change global settings. No Claude implementation call
 is needed for this owner configuration choice. Do not claim container replay, independent review
 or live acceptance passed: those remain pending under a separately sufficient finite budget.
+
+## Short-root recovery verification (2026-09-19, authorized continuation)
+
+Resolve the measured replay preparation blocker by applying fresh runtime root
+D:/workspaces/zeus/artifacts/rp003. Run the retained candidate's exact two authorized test claims
+through the existing DockerEvidenceInspector with its pinned image, no network/credentials and
+unchanged replay policy. This is a new owner verification receipt, not mutation of the old
+inspection, task, program or acceptance. No model calls, merge, deployment or automatic council
+resume. Preflight current file/path bounds; verify candidate HEAD/tree/cleanliness before/after;
+accept only actual successful replay, archived outputs and confirmed owned-container cleanup.
+On failure preserve evidence and stop. Existing short-copy diagnostic remains accepted.
+
+Recovery verification complete: same candidate d491e1de50a412fc1d2da1dac55fc99ab0d97f5e, pinned
+image, production DockerEvidenceInspector and unchanged policy; pytest twice21passed/1skipped,
+lint twicepassed; all four exits0, cleanupremovedtrue, no unresolved runs. Candidate hash/HEAD
+and clean state unchanged; calls180before/after. Short runtime root applied for this verification
+and prescribed in RUNBOOK for future owner launchers; production code and global settings unchanged.
+Original failed DB inspection remains intact. This resolves the measured snapshot/replay blocker,
+not the missing independent model review, full new live cycle or separate diagnostic-log residual.

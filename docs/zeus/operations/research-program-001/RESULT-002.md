@@ -67,3 +67,8 @@ Hashes and local evidence locations are in EVIDENCE-002.md. No additional calls 
 Follow-up diagnosis completed without model calls: the same source and original destination-root
 length reproduce failure at262 characters, while a short destination verifies all5,111 files.
 See [SNAPSHOT-DIAGNOSIS.md](SNAPSHOT-DIAGNOSIS.md). This does not replace the failed replay result.
+
+Subsequent authorized recovery verification applied the short runtime root and passed both actual
+container commands twice, with all four containers removed and zero model calls. See
+[SHORT-ROOT-VERIFICATION.md](SHORT-ROOT-VERIFICATION.md). The path blocker is resolved for this
+candidate; this failed run's DB status and its missing independent review/tick2 remain unchanged.
