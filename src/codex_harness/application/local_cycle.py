@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 
+from codex_harness.application.operation_finalization import is_parked, parkable
 from codex_harness.application.workflow import ClaimGuardRefused
 from codex_harness.domain.model import ContractError, require, utcnow
 
@@ -42,9 +43,11 @@ EXECUTION_STRING_FIELDS = ("agent", "kind", "id", "status", "at", "result_id")
 class LocalCycle:
     """One correlation, one executor start per step, counts that survive restart."""
 
-    def __init__(self, service, executor=None, bus=None, workflow=None):
+    def __init__(self, service, executor=None, bus=None, workflow=None, observer=None):
         self.service, self.executor, self.bus = service, executor, bus
         self.workflow = workflow
+        # INV-OBSERVATION-001: optional; absent keeps the exact existing behaviour of every caller.
+        self.observer = observer
 
     # ----- policy -------------------------------------------------------------------------
     def start(self, cycle_id: str, correlation_id: str, max_executions: int) -> dict:
@@ -164,12 +167,14 @@ class LocalCycle:
     # ----- helpers ------------------------------------------------------------------------
     def _flush(self):
         if self.bus is not None:
-            self.service.flush_outbox(self.bus)
+            flush_outbox(self.service, self.bus, self.observer)
 
     def _deliver(self, cycle) -> list[dict]:
         """Existing serve semantics: handle, relay outbox, then ACK. A foreign message is left
-        pending (not ACKed, not dead-lettered) and stops the cycle; a notice stops it after ACK."""
-        workflow = self.workflow
+        pending (not ACKed, not dead-lettered) and stops the cycle, unless the terminal-operation
+        policy durably parked it (INV-OPERATION-FINALIZATION-001): then it is ACKed and the drain
+        continues within the same bound; a notice of this correlation stops the cycle after ACK."""
+        workflow, observer = self.workflow, self.observer
         receipts = []
         for agent in ROLES:
             consumer = f"{agent}:cycle:{cycle['id']}"
@@ -178,31 +183,54 @@ class LocalCycle:
                 if not row:
                     break
                 entry_id, fields = row
+                message = None
                 try:
                     message = self.bus.decode(fields)
+                    observe_received(observer, entry_id, message)
                     require(message["who"]["recipient"] == agent, "Message routed to wrong agent")
                     self.service.org.authorize(message)
                 except (ContractError, KeyError, ValueError) as exc:
                     self.bus.dead_letter(agent, entry_id, fields, str(exc))
+                    observe_rejected(observer, entry_id, message, type(exc).__name__, dead_letter=True)
                     receipts.append({"entry_id": entry_id, "rejected": type(exc).__name__})
                     continue
                 if message["correlation_id"] != cycle["correlation_id"]:
-                    receipts.append({"entry_id": entry_id, "message_id": message["message_id"],
-                                     "refused": "foreign_correlation"})
-                    self._stop(cycle["id"], "foreign_correlation")
-                    return receipts
+                    parked = self._park(message)
+                    if parked is None:
+                        observe_rejected(observer, entry_id, message, "foreign_correlation", dead_letter=False)
+                        receipts.append({"entry_id": entry_id, "message_id": message["message_id"],
+                                         "refused": "foreign_correlation"})
+                        self._stop(cycle["id"], "foreign_correlation")
+                        return receipts
+                    observe_parked(observer, entry_id, message, parked)
+                    self.bus.ack(agent, entry_id)
+                    observe_acknowledged(observer, entry_id, message)
+                    receipts.append({"entry_id": entry_id, "message_id": message["message_id"], "type": message["type"],
+                                     "parked": parked["disposition_id"], "operation_id": parked["operation_id"]})
+                    continue
                 if message["type"] == "incident.report":
                     result = self.service.record_incident(message)
                 else:
                     result = workflow.handle(message)
-                self.service.flush_outbox(self.bus)
+                observe_accepted(observer, message, result)
+                flush_outbox(self.service, self.bus, observer)
                 self.bus.ack(agent, entry_id)
+                observe_acknowledged(observer, entry_id, message)
                 receipts.append({"entry_id": entry_id, "message_id": message["message_id"],
                                  "type": message["type"], "handled": bool(result)})
                 if message["type"] == "execution.notice":
                     self._stop(cycle["id"], "execution_notice:" + str(message["what"]["details"].get("reason_code")))
                     return receipts
         return receipts
+
+    def _park(self, message) -> dict | None:
+        """A foreign message is consumed only when the workflow durably parked it in its own
+        transaction; an active or unknown owner, a conductor recipient or any other result keeps
+        the existing refusal (no ACK, no handling, no model call)."""
+        if self.workflow is None or parkable(self.service.store, message) is None:
+            return None
+        result = self.workflow.handle(message)
+        return result if is_parked(result) else None
 
     def _candidate(self, cycle) -> dict:
         """Choose at most one executor entry; fail closed on anything the existing claim policy
@@ -276,6 +304,60 @@ class LocalCycle:
 def _correlation(row) -> str | None:
     message = row.get("message")
     return message.get("correlation_id") if isinstance(message, dict) else None
+
+
+# ----- message observation (INV-OBSERVATION-001), shared by cycle and autonomous paths --------
+def flush_outbox(service, bus, observer=None) -> dict:
+    """The existing relay; with an observer its publication audits land in the relay transaction."""
+    if observer is None:
+        return service.flush_outbox(bus)
+    return service.flush_outbox(bus, audit=observer.audit_system)
+
+
+def observe_received(observer, entry_id, message) -> None:
+    """After a validated decode, before authorization: a receipt, not acceptance."""
+    if observer is not None:
+        observer.emit("general.message_received", "observed", correlation_id=message["correlation_id"],
+                      causation_id=message["message_id"],
+                      attributes={"stream_entry_id": str(entry_id), "message_id": message["message_id"],
+                                  "message_type": message["type"], "sender": message["who"]["sender"],
+                                  "recipient": message["who"]["recipient"]})
+
+
+def observe_accepted(observer, message, result) -> None:
+    """Only after the workflow durably handled the message; the result kind, never its content."""
+    if observer is not None:
+        observer.emit("general.message_accepted", "succeeded", correlation_id=message["correlation_id"],
+                      causation_id=message["message_id"],
+                      attributes={"message_id": message["message_id"], "message_type": message["type"],
+                                  "result_kind": type(result).__name__})
+
+
+def observe_acknowledged(observer, entry_id, message) -> None:
+    """Only after the transport ACK returned; a PEL removal, never business success."""
+    if observer is not None:
+        observer.emit("general.message_acknowledged", "observed", correlation_id=message["correlation_id"],
+                      causation_id=message["message_id"],
+                      attributes={"stream_entry_id": str(entry_id), "message_id": message["message_id"]})
+
+
+def observe_rejected(observer, entry_id, message, error_type, *, dead_letter: bool) -> None:
+    """Invalid or unauthorized (dead-lettered) or foreign (blocked, left pending); the type only."""
+    if observer is not None:
+        correlation = message.get("correlation_id") if isinstance(message, dict) else None
+        observer.emit("general.message_rejected", "blocked", severity="warning",
+                      correlation_id=correlation if type(correlation) is str else None, reason_code=error_type,
+                      attributes={"stream_entry_id": str(entry_id), "error_type": error_type, "dead_letter": dead_letter})
+
+
+def observe_parked(observer, entry_id, message, parked) -> None:
+    """A durable parking disposition (INV-OPERATION-FINALIZATION-001): explicit, never a task success."""
+    if observer is not None:
+        observer.emit("operations.operation_message_parked", "blocked", correlation_id=message["correlation_id"],
+                      causation_id=message["message_id"], reason_code=parked["reason_code"],
+                      attributes={"operation_id": parked["operation_id"], "message_id": message["message_id"],
+                                  "message_type": message["type"], "disposition_id": parked["disposition_id"],
+                                  "stream_entry_id": str(entry_id) if entry_id is not None else None})
 
 
 def _reason(reason) -> tuple[str | None, str | None]:

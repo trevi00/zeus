@@ -93,6 +93,12 @@ REGISTRY = {
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},
+    # INV-OPERATION-FINALIZATION-001: identifiers, counts and codes only; a parked message is a
+    # durable disposition, never a task result, and the finalization summary is not the outcome.
+    "operations.operation_finalized": {"operation_id": _S, "operation_status": _S, "retired_tasks": _I,
+                                       "retired_decisions": _I, "unresolved": _I, "already_terminal": _I},
+    "operations.operation_message_parked": {"operation_id": _S, "message_id": _S, "message_type": _S,
+                                            "disposition_id": _S, "stream_entry_id": _N},
 }
 
 # Runner classification (INV-INVOCATION-001) → observation outcome. Only `accepted` succeeds.

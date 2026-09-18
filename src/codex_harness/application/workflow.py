@@ -28,6 +28,7 @@ from codex_harness.application.execution_time import (
     pin_clock,
     running,
 )
+from codex_harness.application.operation_finalization import park as park_terminal
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.domain.model import (
     ContractError,
@@ -89,6 +90,12 @@ class Workflow:
             if message["what"]["action"] in {"plan", "implement"}:
                 require_adoption(tx, message["what"]["details"])
             old = tx.get("tasks", task_id)
+            if old is None or old.get("status") == "cancelled":
+                # INV-OPERATION-FINALIZATION-001: a late assignment of a terminal operation is parked
+                # in this transaction instead of becoming a queued task; a retired row stays as it is.
+                parked = park_terminal(tx, message)
+                if parked is not None:
+                    return parked
             if old:
                 require(old["input_hash"] == digest(message), "Conflicting task identity")
                 return old
@@ -428,6 +435,10 @@ class Workflow:
         if message['type'] == 'execution.notice':
             from codex_harness.application.execution_notices import receive
             with self.store.transaction() as tx:
+                if tx.get("workflow_inbox", message["message_id"]) is None:
+                    parked = park_terminal(tx, message)  # notice evidence is kept; nothing is acted on
+                    if parked is not None:
+                        return parked
                 return receive(tx, message)
         if message["type"] == "task.assign":
             return self.submit(message)
@@ -437,6 +448,10 @@ class Workflow:
             if old:
                 require(old["hash"] == digest(message), "Conflicting report identity")
                 return old["result"]
+            # INV-OPERATION-FINALIZATION-001: same transaction as the decision this report would queue.
+            parked = park_terminal(tx, message)
+            if parked is not None:
+                return parked
             details = message["what"]["details"]
             next_message = None
             if message["type"] == "hook.required":
