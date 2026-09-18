@@ -119,8 +119,8 @@ def test_operate_run_builds_the_real_executor_without_knowledge_and_binds_the_ru
     wired = {}
 
     class Recorder:
-        def __init__(self, service, executor, bus, workflow, budget, collector):
-            wired.update(executor=executor, bus=bus, budget=budget, collector=collector)
+        def __init__(self, service, executor, bus, workflow, budget, collector, observer=None):
+            wired.update(executor=executor, bus=bus, budget=budget, collector=collector, observer=observer)
 
         def run(self, manifest, identity, goal):
             wired.update(identity=identity, goal=goal)
@@ -132,6 +132,7 @@ def test_operate_run_builds_the_real_executor_without_knowledge_and_binds_the_ru
     assert receipt["exit_code"] == 1 and isinstance(wired["executor"], Executor) and wired["executor"].knowledge is None
     assert wired["identity"]["runtime"] == digest(str((root / ".runtime-test").resolve())) and wired["goal"]["base_revision"] == head
     assert wired["bus"].url and wired["budget"].kind == "budget"
+    assert wired["observer"] is wired["executor"].observer is wired["collector"].observer
 
 
 def test_parser_and_dispatch_exit_nonzero_with_redacted_output(monkeypatch):
