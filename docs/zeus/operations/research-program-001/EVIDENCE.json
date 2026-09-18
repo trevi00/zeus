@@ -1,4 +1,4 @@
-﻿{
+{
     "files":  [
                   {
                       "sha256":  "4f80da519c6fd4236bf23d71ccc18b3b6c07bad16742531d53027f1241e12d43",
@@ -44,7 +44,66 @@
                       "sha256":  "9cd007fc28787752804e5c0e379b3cba0d33b2f45eb5bf3f63544c88afea013f",
                       "file":  "source-preflight.json",
                       "bytes":  391
+                  },
+                  {
+                      "sha256":  "c187b7a6caedb16b7ccce62b8680564975de407dade22ca46e07946d50d3ec84",
+                      "file":  "grant178.json",
+                      "bytes":  270
+                  },
+                  {
+                      "sha256":  "46eb094019e4f7e7c7d5a20a9ce218893482a47bd60d0dd37822457e5e37cbd3",
+                      "file":  "live-config.json",
+                      "bytes":  3862
+                  },
+                  {
+                      "sha256":  "a5c18a9e9197a18915f87841e2c157e3faa28fcaaafe550e079cf5e500bc5418",
+                      "file":  "live-receipt.json",
+                      "bytes":  1109
+                  },
+                  {
+                      "sha256":  "1727b8e0d3b75b1236052fddd76a2e19080a89d71e42cb39d6b30c47ae53ed9c",
+                      "file":  "live-run.json",
+                      "bytes":  619
+                  },
+                  {
+                      "sha256":  "2421e0b6a63164e4a84f2b695c98ac415d07f5e1e697cc6332d93b2de19c9562",
+                      "file":  "live-status.json",
+                      "bytes":  3961
+                  },
+                  {
+                      "sha256":  "7f37e600b1df1d7c44e98dd8bdc0e7334f4723856f3e2baa49cf650800f0fbff",
+                      "file":  "live-authoritative.json",
+                      "bytes":  27627
+                  },
+                  {
+                      "sha256":  "f69e42b4db7cb9ba99d081ff490bfc900564f197b26691f5c89781370b1cc43a",
+                      "file":  "packet-diagnosis.json",
+                      "bytes":  513
+                  },
+                  {
+                      "sha256":  "604bc6be68437ae5922130f3ee2fa03a7df79845770243de3fb62ab744a058db",
+                      "file":  "live/research-program/research-live-001/events.jsonl",
+                      "bytes":  1418
+                  },
+                  {
+                      "sha256":  "28345064259b09c8dd705bbc8a607cb537b80f919fffee3125fd28a69e581ca3",
+                      "file":  "live/research-program/research-live-001/report.md",
+                      "bytes":  1017
                   }
               ],
-    "root":  "D:/workspaces/zeus/artifacts/research-program-001"
+    "root":  "D:/workspaces/zeus/artifacts/research-program-001",
+    "live_event_counts":  [
+                              {
+                                  "count":  2,
+                                  "category":  "general"
+                              },
+                              {
+                                  "count":  3,
+                                  "category":  "development"
+                              },
+                              {
+                                  "count":  1,
+                                  "category":  "operations"
+                              }
+                          ]
 }

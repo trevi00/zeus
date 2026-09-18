@@ -230,3 +230,32 @@ leave5, below required7 headroom. No partial council or automatic budget increas
 additional2-call grant would set ceiling178 and reserve exactly7 remaining calls, then stop.
 
 Evidence manifest and limitations: OWNER-REVIEW.md. No additional exploratory review pass.
+
+## Authorized live attempt and stop (2026-09-19)
+
+User explicitly granted ceiling176 ->178 for this two-tick/one-council verification, then stop;
+no automatic merge/deploy. Grant00000005 applied while fleet paused. CI35363033521 completed
+successfully on954399c (Windows/Linux3.12/3.14, integration, gate; docs job intentionally skipped).
+
+One actual attempt ran against real PG/Redis with both live feeds. Cycle1 collected31 candidates,
+selected the pinned local notes, and captured commit c63c303f3d3069f882325851dc9a5c15f946b0a8.
+The actual researcher succeeded as an execution but its packet was rejected: answered questionq3
+cites claimc11 of kindunknown. Pure validator replay against the unchanged execution artifact
+reproduces PacketError. No fabricated role output, output editing or extra model call was used.
+
+Observed outcome: programblocked, autonomous runfailed, reasonpacket_invalid:PacketError;
+calls171 ->172/178; no DBA/debate/Claude/reviewer call; tick2 not executed. Fleet remains paused,
+active lanes0; no worker container remains. The requested stop is honored. This is an unsuccessful
+live acceptance attempt, not completion of two ticks or general unattended readiness.
+
+Reframe for a later bounded batch (not executed/authorized by this stop-only verification):
+observation -> researcher JSON passed execution schema but failed the packet's relational rule;
+affected assumption -> successful structured role output is not necessarily a valid council packet;
+discriminating check -> replay of unchanged real artifact confirms q3/c11 relationship failure;
+design boundary -> align producer guidance/schema examples with existing semantic packet rules,
+including answered-with-unknown and nonblocking unknown questions. Preserve validator rejection,
+original evidence and no silent repair. Acceptance must include valid/invalid relationship controls
+and a fresh complete live path. Diagnose prompt/schema ownership before a consolidated Claude
+handoff; do not turn this into successive per-answer patches or another automatic call grant.
+
+RESULT.md records actual stages, evidence and the separate pre-existing diagnostic-log residual.
