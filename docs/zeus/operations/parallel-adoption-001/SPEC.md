@@ -118,3 +118,37 @@ Owner authorizes one corrected pair of distinct operation IDs after this measure
 same lane schemas/namespaces, fixed global ceiling152 (148 existing +four intended calls), not a
 reset/retry of the old IDs or an automatic escalation. Original unknown reservation status remains
 visible; code order and absent run/container establish source preparation failed before creation.
+
+## Continuing whole-experience programme (not added to this delivery's gates)
+
+The user requires maximum comprehensive absorption. The existing path-ledger/coverage remains the
+analysis authority; existing operational specs/implementation records remain adoption evidence.
+The local snapshot presently enumerates 2736 tracked paths and 707 unreviewed paths, with an
+additional separately inventoried local-assets population. These are coverage counts, not an
+adoption percentage or a claim all reviewed paths are semantically complete. Dirty ledger bytes
+were preserved under the raw reference-index; do not silently publish them as accepted main.
+
+Each future batch links source revision/content -> experience/contract -> current Zeus owner ->
+reuse/improve/migrate decision -> verification -> integrated release. Repeated sources map to one
+contract; rejected methods remain negative lessons with applicability and evidence. Corrected
+experience supersedes old conclusions without deleting their provenance. Credentials/private
+session material stays outside ingestion. No relevant technical experience is discarded without
+a recorded disposition. Full text and logs stay referenced, not always injected into every prompt.
+
+| Dependency group | Existing authority / Sterk reference | Next admission condition |
+|---|---|---|
+| Context and experience | docs/design.md; full-analysis; #87 skills, #88 memory | existing context/profile mechanism first; no second knowledge store |
+| Goal and backlog scheduling | goal_progress, operations; #79 requests, #81 backlog, #97 goals | goal/criterion binding and fixed batch ceiling, no recursive task spawning |
+| Multi-lane runtime | current Operation/LocalCycle; #89 board, #90 roles, #91 workers, #92 fleet | owned lane mapping, conflict/dependency admission and aggregate read-only visibility |
+| Reports and explanations | pinned Report v3; #82 reports, #84 wiki, #93 usage | actual metrics only; unknown costs and historical data labelled |
+| Human decisions | existing decision authority; #78 inbox, #96 asks | scoped question, durable answer, no fabricated approval |
+
+Other reference pages remain in the 27-issue catalogue (#74 index), not silently adopted or closed.
+Read their actual contracts/evidence when their goal is admitted. This map is a dependency queue,
+not five mandatory pre-operation projects. Independent write scopes can execute together; common
+contract migrations and merge/deploy steps stay ordered. The next reusable control-plane delivery
+must make lane definitions, global admission/budget and cross-lane reporting first-class, rather
+than accumulating task-specific shell launchers. This pilot's scripts are evidence orchestration.
+
+Progress reports distinguish source coverage, accepted migrations, actual completed operations,
+unknowns and reopenings; ticket count, token use and repeated test runs are not progress by themselves.
