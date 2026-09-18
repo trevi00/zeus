@@ -128,3 +128,88 @@ accepted behavior. Update IMPLEMENTATION.md, run the same two exact checks. Revi
 delta and directly affected success/failure/recovery clock display only; no new speculative review.
 Owner will verify response time display during success -> failure -> recovery and finish the
 remaining lifecycle/aging checks, then CI/merge. This amendment does not erase the rejected receipt.
+
+## Continuation: live monitor deployment (2026-09-18)
+
+User requested the remaining work after PR135 merged at cda05da. Preserve prior UI acceptance.
+Outcome: the existing monitor continuously serves real bounded-operation records on this Windows
+host, with correct source identity, durable local startup/recovery and no per-refresh DB/artifact
+writes. This is the live-deployment remainder, not the deferred reports/profile/whole-catalog work.
+No new external exposure, no historical-schema merge, no worker privilege change, no reboot.
+
+### Observations and complete path
+
+- Current .env PG points to local zeus DB port63556; public has34 tickets but no tasks. Prior real
+  operations live in separate explicit schemas. Redis .env port56379 is stale; actual existing
+  zeus-local-ops-redis publishes63589. Existing Zeus containers were created without Compose labels.
+- start_monitor.ps1 already launches collect/web and can register HKCU logon startup. Nothing is
+  currently listening on8787 and no monitoring.json exists. Current collector builds a full
+  execution adapter and Measurements.collect writes observations/artifact bytes every iteration.
+- Existing UI is a sanitized snapshot consumer. Keep its freshness/request behavior accepted.
+- New actual operations for this deployment use existing public PG + Redis namespace zeus and
+  fixed D:/workspaces/zeus/artifacts/live-runtime/r. This is normal assigned work, not an import of
+  past schemas or a synthetic completed record. Historical schemas stay untouched and are excluded
+  from this monitor's named scope. The public ticket rows are preserved.
+
+Path: owner deployment configuration -> read-only service/artifact reader -> PG facts and persisted
+measurement observations, named Docker containers, scoped Redis -> atomic D monitoring.json ->
+loopback web -> browser. Owner schedules the two existing entrypoints for current-user Windows
+logon with bounded restart and no simultaneous instances. Operator logs/startup definitions stay
+on D; home credentials/call ledger and existing C repository stay at their current locations.
+
+Primary references read 2026-09-18: Docker container ls reference
+https://docs.docker.com/reference/cli/docker/container/ls/ documents --all, JSON formatting and
+name filtering (substring matching, so application must check exact returned names). Microsoft
+New-ScheduledTaskSettingsSet reference (WindowsServer2025 PowerShell view) documents restart and
+MultipleInstances settings. Installed cmdlets are present. Documentation is not reboot evidence.
+
+### One Claude implementation batch
+
+Allowed files: adapters/monitoring.py, monitor.py, resources/monitor.html, tests/test_monitoring.py,
+and LIVE-IMPLEMENTATION.md in this directory. Codex owns this design/deployment; Claude implements.
+One implementation/review pair, ledger127 ->129. No automatic model retries.
+
+1. Make monitor collection read-only: never call Measurements.collect or put artifacts/PG rows.
+   Read already persisted metric_observations from the same store instead, select latest per
+   metric_id by valid timezone-aware observed_at, keep definition/window/evidence and original time.
+   No stored observations means empty list, not fabricated zeroes. Do not weaken the original
+   Measurements use case used elsewhere. Current-source freshness must not make an old metric
+   observation current: show original observed_at and historical/unknown status when stale.
+2. monitor.py collect builds only build() service and FileArtifacts reader, not build_executor.
+   No provider/isolation/OAuth preflight or knowledge writes just to view state. Atomic snapshot
+   replacement and collector lock remain. Add bounded rotating local operational log (1MiB,2
+   backups) for startup/source-state transitions/shutdown or failures, sanitized event/type/time
+   only; never DSN, env values, payloads, raw exceptions or repeated every-tick identical logs.
+3. Optional ZEUS_MONITOR_CONTAINERS (alias HARNESS) is a JSON list of1..32 unique exact Docker names
+   (alphanumeric first, then alphanumeric/underscore/dot/dash, <=128chars). Unset keeps old Compose
+   scope. Named mode uses only read-only ps/stats commands; exact-filter returned names, unrelated
+   containers excluded, any missing requested name makes Docker unavailable (not success-empty).
+   Preserve stopped container visibility and no mutation commands. No docker inspect env payloads.
+4. Optional ZEUS_MONITOR_SCOPE safe_text label emitted at snapshot scope and rendered with textContent
+   in existing toolbar (default repository scope). Label observation scope, not a global autonomy
+   success claim. Owner label: 'Zeus 고정 운영 원장 · 과거 격리 실행 제외'. Preserve accepted UI logic.
+5. Focused tests: read-only store refuses put and reader refuses artifact.put while collection still
+   works; empty/stale persisted metrics; exact container selection, missing/invalid names, Compose
+   compatibility; existing HTTP/freshness contract. Fault injection is labelled. Run exactly
+   python -m pytest tests/test_monitoring.py -q -p no:cacheprovider and python -m ruff check . .
+   Owner/CI owns full suite, actual Docker/PG/Redis/Windows scheduler/browser evidence.
+
+### Fixed deployment acceptance matrix
+
+| Boundary | Evidence required |
+|---|---|
+| Normal | Actual Claude+review rows in public displayed; PG, Redis, named Docker snapshots fresh |
+| Scope | Explicit scope label; old schemas unmodified/excluded, unrelated flexday container absent |
+| Read-only | Repeated monitor collection does not grow metric_observations or artifact count |
+| Auth unavailable | Collector startup succeeds without worker OAuth env, no model calls by monitor |
+| Missing source | Named nonexistent container reports unavailable; no data invented |
+| Metric history | Old stored metric stays old/unknown despite a fresh source snapshot |
+| Restart/concurrency | Owner terminate only monitor-owned process; scheduled restart, one live instance |
+| Startup | Registered current-user logon triggers inspected; actual reboot/logoff not performed |
+| Logs/storage | Atomic snapshot + bounded logs on D; no secrets in logs; no unrelated process cleanup |
+| Platforms | Existing Linux/Windows CI; current Windows runtime/browser actual, no Linux service claim |
+
+Completion: code independently accepted + focused/CI checks pass, real services/browser and
+owned-process recovery pass, PR merged, startup configured, implementation issue closed with
+receipt. Residual logoff/reboot verification and older schema browsing are documented limits,
+not reasons to rerun unrelated environment research. No required person approval defaults to yes.
