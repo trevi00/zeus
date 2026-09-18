@@ -133,3 +133,57 @@ tests/test_local_cycle.py tests/test_observation_wiring.py tests/test_workflow.p
 -p no:cacheprovider` (one line), and `python -m ruff check .`. Integration skips in worker are
 explicit; owner/CI runs full suite and real integration. Do not run full suite inside the model call.
 Owner independently reviews this complete matrix once, then only directly affected corrections.
+
+## Consolidated acceptance review 1 / correction batch (2026-09-18)
+
+Candidate f410e004; actual Zeus worker succeeded, independent Codex lead rejected it. Receipt:
+`D:/workspaces/zeus/artifacts/operation-finalize-001/implementation/`; reviewer artifact
+`sha256:0c4240dda837acf74fb342f351f3c9ef76f57f90d4afb008d9bf73835ebe7534`.
+Owner independently executed four synthetic application counterexamples: 4 failed; real local
+PG/Redis suite: 15 passed, 2 failed. These are not production outages. Full unit run is tracked
+separately; passing original tests cannot override these fixed acceptance conditions.
+
+Observation -> assumption: a terminal message can already have an inbox/task record; treating that
+record as a reason to bypass parking reopens the same manual-queue problem. A parked digest must
+not override an older immutable input binding. Thus use ONE transaction ordering below, not more
+consumer-side special cases. No new feature or scope is added.
+
+1. **Terminal replay / identity, including previously handled messages.** Authorize; validate any
+   existing task input_hash, workflow_inbox hash, and parked digest against this exact message;
+   then park proven terminal messages regardless of the prior task status or inbox existence;
+   otherwise return the old result / follow the normal path. Never overwrite the original inbox
+   or task evidence. LocalCycle can ACK this durable parked receipt. Owner reproduction: run an
+   accepted `test_operation_finalization.build(bus=Bus())` operation, publish a deepcopy of its
+   previously handled task.result again on that Bus, then run op-002: currently unknown /
+   foreign_correlation with zero executor calls. It must progress. Also retire a retry task,
+   deepcopy its original assignment, change plan.objective under the SAME message_id, submit:
+   currently accepted as parked instead of raising ContractError. Original matching replay must
+   still park after the conflicting input is refused. Cover assignments, reports and notices.
+2. **Protected effects and evidence preservation.** `retire` currently never reads
+   observation_terminations. Before changing a row/fence, protect any same bucket/task unconfirmed
+   or pending_reconciliation record, any attempt; report unresolved. Owner injected each of those
+   persisted marker states beside an eligible queued row and retire changed both row and fence.
+   This is an explicit required persisted-state boundary, not a claimed observed outage. Keep the
+   prior error and attempt_outcomes untouched; retirement metadata is separate. Do not invent a
+   cancelled execution attempt when no prior history exists. Remove the `... or True` assertion:
+   it establishes nothing. Raw preserved evidence stays in its existing restricted DB row; receipt
+   and observations remain IDs/counts/digests only.
+3. **Exercise the real contracts in integration.** Both newly skipped integration tests fail because
+   each late() call constructs a different UUID. Reuse one message object/deepcopy. Real Redis
+   replay must arrange eligible PEL idle (e.g. test-owned XCLAIM IDLE >=60000), without changing
+   production reclaim policy or sleeping a minute. Check the same durable disposition and no
+   executor call after the ACK fault. Test actual concurrent transactions with barriers/events
+   for claim-vs-finish and submit-vs-finish, both orderings; do not title sequential calls races.
+   Include transaction rollback before terminal/disposition commit and the directly affected
+   observation ordering. Keep tests bounded and test-owned resources cleaned in finally.
+
+Already accepted source evidence: module ownership in application, unchanged provider/conductor
+authority, bounded drain, observer wiring and allowlisted event fields, atomic retirement transaction.
+Collection-before-finalization is explicitly disclosed and acceptable with the existing external
+collector; do not expand scope to redesign it. Review only the above fixes and their interactions.
+
+Authorize one bounded correction pair, ledger143->145, same Claude USD8/1200s controls. Reuse this
+task worktree. Run correction via the existing clean observatory-001 runtime (same application
+code as deployed main) and a separate task Redis namespace so the original rejected operation's
+unconsumed rework stays intact until accepted code can park it. No manual queue purge or outcome
+rewriting. Model-free verification and the post-merge zero-capacity canaries remain owner-owned.
