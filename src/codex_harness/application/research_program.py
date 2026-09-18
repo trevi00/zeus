@@ -105,11 +105,15 @@ class ResearchProgram:
             return {"id": program_id, "state": row["state"], "active_cycle": row["active_cycle"]}
 
     # ----- reservation ------------------------------------------------------------------------
-    def reserve_cycle(self, program_id: str) -> dict:
-        """One transaction before any fetch: pause, deadline, cap, interval and busy checks, then the
-        next cycle number with a fresh owner token. `reserved` False carries the fixed reason."""
+    def reserve_cycle(self, program_id: str, repository: str) -> dict:
+        """One transaction before any fetch: the current repository identity must equal the
+        registered one (review001 R1: `repository_mismatch` is raised before any reservation, log,
+        fetch, capture or model effect), then pause, deadline, cap, interval and busy checks, then
+        the next cycle number with a fresh owner token. `reserved` False carries the fixed reason."""
         with self.store.transaction() as tx:
             row = self._row(tx, program_id)
+            if not repository or row.get("repository") != repository:
+                raise ProgramRefused("repository_mismatch")
             now = self.clock()
             config = row["config"]
             if row["active_cycle"] is not None:
@@ -261,10 +265,13 @@ class ResearchProgram:
     def fail_cycle(self, cycle_ref: str, owner: str, stage: str, code: str, recovery: dict | None = None) -> dict:
         """Evidence, Git, capture, manifest or council-start failure: persisted with stage and fixed
         code, the cycle counted, the program blocked; the claimed candidate stays claimed and any
-        recorded capture reference stays as recovery evidence."""
+        recorded capture reference stays on the cycle AND in `failure.recovery` (review001 R2).
+        A store failure here propagates: the caller must then keep ownership and report inability."""
         with self.store.transaction() as tx:
             cycle, row = self._owned(tx, cycle_ref, owner, {COLLECTING, SELECTED, CAPTURED, COUNCIL})
-            cycle["failure"] = {"stage": stage, "code": safe_code(code), "recovery": recovery}
+            capture = cycle.get("capture") or {}
+            retained = {k: capture.get(k) for k in ("revision", "ref", "path", "blob", "sha256")} if capture else None
+            cycle["failure"] = {"stage": stage, "code": safe_code(code), "recovery": recovery, "capture": retained}
             self._close(tx, cycle, row, self.clock(), result="failed" if cycle["status"] == COUNCIL else None,
                         status=CYCLE_FAILED, stop_reason="failed:" + stage, blocked_reason=stage + ":" + safe_code(code))
             return cycle

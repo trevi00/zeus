@@ -4,6 +4,7 @@ outcomes, failure/unknown blocking, concurrency and the monitor projection. Feed
 council are LABELLED fixtures; no network, provider or real PostgreSQL unless HARNESS_INTEGRATION=1."""
 import hashlib
 import json
+import subprocess
 import threading
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,8 +24,9 @@ from test_research_program_fixtures import (
     template,
 )
 
-from codex_harness.adapters import monitoring
+from codex_harness.adapters import monitoring, research_program
 from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.dge_cli import repository_identity
 from codex_harness.adapters.operation_cli import GitSource
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.research_program import (
@@ -61,8 +63,11 @@ class Clock:
         return self.value
 
 
-def build(tmp_path, store=None, clock=None, council=None, outages=(), budget=None):
-    root, head = repository(tmp_path)
+def build(tmp_path, store=None, clock=None, council=None, outages=(), budget=None, root=None, head=None):
+    """`root`/`head` default to a fresh real temporary repository; a caller may pass another real
+    root (a clone) so the runner names THAT root's real identity, as the production CLI does."""
+    if root is None:
+        root, head = repository(tmp_path)
     store = store or MemoryStore()
     clock = clock or Clock()
     service = SimpleNamespace(store=store, org=None)
@@ -71,14 +76,15 @@ def build(tmp_path, store=None, clock=None, council=None, outages=(), budget=Non
     sources = FakeSources(artifacts, outages)
     council = council or FakeCouncil(store)
     runner = ProgramRunner(service, programs, sources, GitSource(root), GitCapture(root), budget or FakeBudget(), artifacts,
-                           tmp_path / "runtime", council=council, github_detail=sources.github_detail, clock=clock)
+                           tmp_path / "runtime", council=council, github_detail=sources.github_detail, clock=clock,
+                           repository=repository_identity(root))
     return SimpleNamespace(root=root, head=head, store=store, clock=clock, programs=programs, sources=sources, council=council,
-                           runner=runner, runtime=tmp_path / "runtime")
+                           runner=runner, runtime=tmp_path / "runtime", identity=repository_identity(root))
 
 
 def registered(env, **overrides):
     cfg = validate_config(config(env.head, **overrides), POLICY)
-    env.programs.register(cfg, "repo-identity", [])
+    env.programs.register(cfg, env.identity, [])
     env.programs.resume(cfg["id"])
     return cfg
 
@@ -165,11 +171,16 @@ def test_registration_is_immutable_and_counters_and_schedule_are_durable():
         programs.register(cfg, "repo-2", [])
     with pytest.raises(ProgramRefused, match="registration_conflict"):
         programs.register(validate_config(config("a" * 40, max_cycles=3), POLICY), "repo-1", [])
-    assert programs.reserve_cycle("rp-001") == {"reserved": False, "reason": "paused", "state": "paused"}
+    assert programs.reserve_cycle("rp-001", "repo-1") == {"reserved": False, "reason": "paused", "state": "paused"}
     assert programs.resume("rp-001")["state"] == "active"
-    reserved = programs.reserve_cycle("rp-001")
+    for other in ("repo-2", "", None):
+        with pytest.raises(ProgramRefused, match="repository_mismatch"):
+            programs.reserve_cycle("rp-001", other)
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_CYCLES) == [] and tx.get("research_programs", "rp-001")["next_cycle"] == 1, "mismatch reserves nothing"
+    reserved = programs.reserve_cycle("rp-001", "repo-1")
     assert reserved["reserved"] and reserved["cycle"]["number"] == 1 and reserved["cycle"]["status"] == "collecting"
-    assert programs.reserve_cycle("rp-001")["reason"] == "busy", "an owned cycle is never taken over"
+    assert programs.reserve_cycle("rp-001", "repo-1")["reason"] == "busy", "an owned cycle is never taken over"
     assert programs.pause("rp-001") == {"id": "rp-001", "state": "paused", "active_cycle": "rp-001:001"}
     owner = reserved["cycle"]["owner"]
     with pytest.raises(ProgramRefused, match="owner_mismatch"):
@@ -180,21 +191,21 @@ def test_registration_is_immutable_and_counters_and_schedule_are_durable():
     view = programs.status("rp-001")
     assert view["cycles"] == {"completed": 1, "max": 2, "remaining": 1, "active": None} and view["state"] == "paused"
     programs.resume("rp-001")
-    assert programs.reserve_cycle("rp-001")["reason"] == "not_due", "interval not reached: no increment, no sleep"
+    assert programs.reserve_cycle("rp-001", "repo-1")["reason"] == "not_due", "interval not reached: no increment, no sleep"
     clock.value = "2028-01-01T01:00:00+00:00"
-    second = programs.reserve_cycle("rp-001")
+    second = programs.reserve_cycle("rp-001", "repo-1")
     assert second["reserved"] and second["cycle"]["number"] == 2
     programs.record_collection("rp-001:002", second["cycle"]["owner"], {}, [], {"this_host": 0, "all_hosts": 0})
     programs.complete_cycle("rp-001:002", second["cycle"]["owner"])
     assert programs.status("rp-001")["state"] == "completed" and programs.status("rp-001")["stop_reason"] == "max_cycles_reached"
-    assert programs.reserve_cycle("rp-001")["reason"] == "program_completed"
+    assert programs.reserve_cycle("rp-001", "repo-1")["reason"] == "program_completed"
     with pytest.raises(ProgramRefused, match="program_completed"):
         programs.resume("rp-001")
     late = ResearchProgram(store, clock=Clock("2031-01-01T00:00:00+00:00"))
     cfg2 = validate_config(config("a" * 40, id="rp-late"), POLICY)
     late.register(cfg2, "repo-1", [])
     late.resume("rp-late")
-    assert late.reserve_cycle("rp-late")["reason"] == "deadline_expired" and late.status("rp-late")["state"] == "completed"
+    assert late.reserve_cycle("rp-late", "repo-1")["reason"] == "deadline_expired" and late.status("rp-late")["state"] == "completed"
     with pytest.raises(ProgramRefused, match="unknown_program"):
         programs.status("nope")
 
@@ -208,7 +219,7 @@ def test_concurrent_reservations_claim_exactly_one_cycle():
 
     def worker():
         start.wait()
-        results.append(programs.reserve_cycle("rp-001")["reserved"])
+        results.append(programs.reserve_cycle("rp-001", "repo-1")["reserved"])
     threads = [threading.Thread(target=worker) for _ in range(6)]
     for t in threads:
         t.start()
@@ -225,7 +236,7 @@ def test_postgres_reservation_claims_exactly_one_cycle(isolated_pgstore):
     programs.register(validate_config(config("a" * 40), POLICY), "repo-1", [])
     programs.resume("rp-001")
     results = []
-    threads = [threading.Thread(target=lambda: results.append(programs.reserve_cycle("rp-001")["reserved"])) for _ in range(4)]
+    threads = [threading.Thread(target=lambda: results.append(programs.reserve_cycle("rp-001", "repo-1")["reserved"])) for _ in range(4)]
     for t in threads:
         t.start()
     for t in threads:
@@ -328,7 +339,7 @@ def test_unknown_council_and_crash_after_row_block_the_program_and_keep_the_clai
     assert receipt["result"] == "unknown" and receipt["state"] == "blocked"
     view = env.programs.status("rp-001")
     assert view["blocked_reason"] == "council_unknown:fixture_unknown" and view["cycles"]["completed"] == 1
-    assert env.programs.reserve_cycle("rp-001")["reason"] == "program_blocked"
+    assert env.programs.reserve_cycle("rp-001", env.identity)["reason"] == "program_blocked"
     with pytest.raises(ProgramRefused, match="program_blocked"):
         env.programs.resume("rp-001")
     assert env.programs.candidate("rp-001", "local-note")["status"] == "claimed"
@@ -366,7 +377,7 @@ def test_ticks_stop_at_the_requested_cap_and_a_reserved_cycle_blocks_fetching(tm
     assert result["ticks"][1]["reason"] == "not_due", "the clock did not advance; the second tick is not_due"
     assert env.programs.status("rp-001")["cycles"]["completed"] == 1
     env.clock.value = "2028-01-01T02:00:00+00:00"
-    env.programs.reserve_cycle("rp-001")  # a crashed owner: reserved, never finished
+    env.programs.reserve_cycle("rp-001", env.identity)  # a crashed owner: reserved, never finished
     env.sources.calls.clear()
     assert env.runner.tick("rp-001")["reason"] == "busy" and env.sources.calls == [], "busy: no fetch, no model"
     with pytest.raises(ProgramRefused, match="ticks_invalid"):
@@ -399,5 +410,141 @@ def test_monitor_projection_is_additive_bounded_and_read_only(tmp_path):
     assert CANARY not in json.dumps(facts) and "config" not in program
     assert monitoring.research_program_facts(MemoryStore()) == {"schema": "urn:zeus:research-program-monitor:1", "programs": [], "truncated": False}
     for i in range(21):
-        env.programs.register(validate_config(config(env.head, id="rp-%03d" % (i + 10)), POLICY), "repo-x", [])
+        env.programs.register(validate_config(config(env.head, id="rp-%03d" % (i + 10)), POLICY), env.identity, [])
     assert monitoring.research_program_facts(env.store)["truncated"] is True and len(monitoring.research_program_facts(env.store)["programs"]) == 20
+
+
+# ----- review001 corrections: R1 repository authority, R2 pre-dispatch ownership, R3 exact bytes -----
+def clone(tmp_path, root):
+    """A REAL second Git clone of the temporary repository (same objects, different root)."""
+    other = tmp_path / "clone"
+    git(root, "clone", "-q", str(root), str(other))
+    return other
+
+
+def test_r1_wrong_repository_refuses_before_any_effect_and_the_registered_root_continues(tmp_path):
+    env = build(tmp_path)
+    registered(env)
+    other = clone(tmp_path, env.root)
+    assert repository_identity(other) != env.identity
+    wrong = build(tmp_path / "w", store=env.store, clock=env.clock, root=other, head=env.head)
+    with pytest.raises(ProgramRefused, match="repository_mismatch"):
+        wrong.runner.tick("rp-001")
+    with pytest.raises(ProgramRefused, match="repository_mismatch"):
+        wrong.runner.run("rp-001", 2)
+    with env.store.transaction() as tx:
+        assert tx.scan(BUCKET_CYCLES) == [] and tx.get("research_programs", "rp-001")["next_cycle"] == 1, "0 new cycles"
+    assert wrong.sources.calls == [] and wrong.council.manifests == [], "0 fetches, 0 council calls"
+    for root in (env.root, other):
+        assert git(root, "for-each-ref", "refs/zeus/").stdout == "", "0 capture refs"
+    assert not (wrong.runtime / "research-program").exists(), "0 log/filesystem effects"
+    assert env.programs.status("rp-001")["state"] == "active" and env.programs.status("rp-001")["cycles"]["completed"] == 0
+    receipt = env.runner.tick("rp-001")
+    assert receipt["reserved"] and receipt["selected"] == "local-note" and receipt["result"] == "rejected", "matching root continues"
+
+
+def test_r2_actual_manifest_file_write_failure_is_a_durable_blocked_receipt_with_capture_retained(tmp_path):
+    env = build(tmp_path)
+    registered(env)
+    manifests = env.runtime / "research-program" / "rp-001" / "manifests"
+    manifests.parent.mkdir(parents=True)
+    manifests.write_text("a regular file where the manifest directory must be created\n", encoding="utf-8")  # real OS failure
+    receipt = env.runner.tick("rp-001")
+    assert receipt["failure"]["stage"] == "manifest_file" and receipt["failure"]["code"] == "FileExistsError"
+    assert receipt["failure"]["recorded"] is True and receipt["state"] == "blocked" and receipt["result"] is None
+    assert env.council.manifests == [], "zero council calls"
+    view = env.programs.status("rp-001")
+    cycle = view["cycle_receipts"][0]
+    assert cycle["status"] == "failed" and cycle["council"] is None and cycle["failure"]["stage"] == "manifest_file"
+    assert cycle["failure"]["code"] == "FileExistsError" and cycle["failure"]["capture"]["revision"] == cycle["capture"]["revision"]
+    assert cycle["failure"]["recovery"]["capture"]["ref"] == "refs/zeus/research/rp-001/001"
+    assert git(env.root, "rev-parse", cycle["capture"]["ref"]).stdout.strip() == cycle["capture"]["revision"], "capture retained"
+    assert view["state"] == "blocked" and view["blocked_reason"] == "manifest_file:FileExistsError"
+    assert view["cycles"] == {"completed": 1, "max": 2, "remaining": 1, "active": None}, "counted, not busy"
+    assert view["adoptions"]["dispatched"] == 1 and env.programs.candidate("rp-001", "local-note")["status"] == "claimed"
+    assert env.programs.reserve_cycle("rp-001", env.identity)["reason"] == "program_blocked"
+    events = [json.loads(line) for line in (env.runtime / "research-program" / "rp-001" / "events.jsonl").read_text("utf-8").splitlines()]
+    assert [e["event"] for e in events if e["category"] == "operations"] == ["cycle_failed"]
+    assert CANARY not in json.dumps(view) and CANARY not in json.dumps(events)
+
+
+def test_r2_injected_artifact_failure_and_unavailable_store_keep_ownership_honest(tmp_path, monkeypatch):
+    # LABELLED injected fault: the manifest artifact write raises PermissionError (the owner's case).
+    env = build(tmp_path)
+    registered(env)
+    real_put = env.runner.artifacts.put
+
+    def failing_put(body, source):
+        if source.startswith("research-program:"):
+            raise PermissionError("fixture: manifest artifact denied " + CANARY)
+        return real_put(body, source)
+    monkeypatch.setattr(env.runner.artifacts, "put", failing_put)
+    receipt = env.runner.tick("rp-001")
+    assert receipt["failure"]["stage"] == "manifest_artifact" and receipt["failure"]["code"] == "PermissionError"
+    assert receipt["state"] == "blocked" and receipt["failure"]["recorded"] is True and env.council.manifests == []
+    view = env.programs.status("rp-001")
+    assert view["blocked_reason"] == "manifest_artifact:PermissionError" and view["cycles"]["active"] is None
+    assert view["cycle_receipts"][0]["failure"]["capture"]["ref"] == "refs/zeus/research/rp-001/001"
+    assert not (env.runtime / "research-program" / "rp-001" / "manifests").exists()
+    # LABELLED control: the store becomes unavailable at the same moment; no durable receipt is
+    # claimed, the cycle stays owned (busy) and nothing is retried or cleared.
+    store = MemoryStore()
+
+    class FlakyStore:
+        fail = False
+
+        def transaction(self):
+            if self.fail:
+                raise OSError("fixture: store unavailable " + CANARY)
+            return store.transaction()
+    flaky = FlakyStore()
+    env2 = build(tmp_path / "b", store=flaky)
+    registered(env2)
+    real_put2 = env2.runner.artifacts.put
+
+    def cut_then_fail(body, source):
+        if source.startswith("research-program:"):
+            flaky.fail = True
+            raise PermissionError("fixture " + CANARY)
+        return real_put2(body, source)
+    monkeypatch.setattr(env2.runner.artifacts, "put", cut_then_fail)
+    receipt = env2.runner.tick("rp-001")
+    assert receipt["failure"] == {"stage": "manifest_artifact", "code": "PermissionError", "recorded": False,
+                                  "record_code": "OSError", "capture": receipt["failure"]["capture"]}
+    assert receipt["state"] == "unknown" and receipt["report"] is None and env2.council.manifests == []
+    flaky.fail = False
+    view = env2.programs.status("rp-001")
+    assert view["cycles"] == {"completed": 0, "max": 2, "remaining": 2, "active": "rp-001:001"}, "still owned, not counted"
+    assert view["cycle_receipts"][0]["status"] == "captured" and view["cycle_receipts"][0]["failure"] is None
+    assert env2.programs.reserve_cycle("rp-001", env2.identity)["reason"] == "busy", "ownership retained; no takeover"
+    assert CANARY not in json.dumps(receipt)
+
+
+def test_r3_capture_stores_exact_utf8_bytes_and_verifies_them_before_the_ref(tmp_path, monkeypatch):
+    root, head = repository(tmp_path)
+    git(root, "config", "core.autocrlf", "true")  # the Windows default; a path hash-object would convert without --no-filters
+    body = "{\n \"note\": \"한국어 텍스트\",\n \"lines\": \"a\\nb\"\n}\n"
+    data = body.encode("utf-8")
+    assert b"\r" not in data and data.count(b"\n") == 4 and len(data) > len(body)
+    real_run = research_program.run_process
+
+    def windows_pipe(argv, **kwargs):  # LABELLED: simulates the Windows text-mode stdin pipe (LF -> CRLF)
+        if kwargs.get("input_text") is not None:
+            kwargs["input_text"] = kwargs["input_text"].replace("\n", "\r\n")
+        return real_run(argv, **kwargs)
+    monkeypatch.setattr(research_program, "run_process", windows_pipe)
+    path, ref = "docs/zeus/research-captures/rp-001/001.json", "refs/zeus/research/rp-001/001"
+    result = GitCapture(root).capture(head, path, body, ref)
+    assert result["bytes"] == len(data) and result["sha256"] == hashlib.sha256(data).hexdigest()
+    raw = subprocess.run(["git", "-C", str(root), "cat-file", "blob", result["blob"]], capture_output=True, check=True).stdout
+    assert raw == data, "raw git blob bytes are the exact UTF-8 bytes"
+    assert GitSource(root).blob(result["revision"], path) == ("100644", data), "the dge reader sees the same bytes"
+    assert hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest() == result["blob"]
+    assert git(root, "rev-parse", ref).stdout.strip() == result["revision"] and git(root, "rev-parse", "HEAD").stdout.strip() == head
+    assert (root / "dirty.txt").exists() and not (root / path).exists()
+    # LABELLED injected fault: a wrong blob id must be caught before any commit or ref is published.
+    monkeypatch.setattr(GitCapture, "_hash_blob", lambda self, file, data, env: hashlib.sha1(b"other").hexdigest())
+    with pytest.raises(CaptureError, match="capture_blob_mismatch"):
+        GitCapture(root).capture(head, "docs/zeus/research-captures/rp-001/002.json", body, "refs/zeus/research/rp-001/002")
+    assert git(root, "for-each-ref", "refs/zeus/").stdout.count("\n") == 1, "only the verified ref exists"
+    assert not list(Path(tmp_path).glob("zeus-capture-*")), "owned temporary directory cleaned up"

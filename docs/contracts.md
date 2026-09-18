@@ -1275,7 +1275,17 @@ authoritative `autonomous_runs` row (id and manifest digest must match) and is e
 accepted/rejected/failed/unknown; stdout, return values and exceptions are never authority; a
 missing row after a refusal is `failed`. failed/unknown block the program and keep the claim;
 rejected stays rejected. Capture, manifest or Git failures persist stage and code, count the cycle
-and block the program. `status`, the additive read-only monitor source `research_programs`
+and block the program. Review001 corrections: (R1) `reserve_cycle` takes the CURRENT repository
+identity and raises `repository_mismatch` inside the reservation transaction when it differs from
+the registered one, before any log, fetch, capture or model effect; (R2) the post-capture
+pre-provider phase (`capture_record`, `manifest_derive`, `manifest_artifact`, `manifest_file`,
+`council_start`) is stage-tracked, a failure records the blocked cycle with the capture reference
+retained in `failure.capture` and runs no council, and if that record cannot be committed the
+receipt says `recorded: false`, the cycle stays owned and nothing is cleared or retried;
+(R3) the capture blob is written from exact UTF-8 bytes through an owned binary file with
+`hash-object --no-filters`, its id must equal the content-addressed SHA-1 and the commit's blob
+must read back byte-identical through `GitSource.blob` before the ref is created.
+`status`, the additive read-only monitor source `research_programs`
 (`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
 `runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store
 only; the local JSONL event log carries general/development/operations records with identifiers,

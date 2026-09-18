@@ -15,6 +15,12 @@ zeus research-program status ID                     # store read only, urn:zeus:
 zeus research-program pause ID                      # block new ticks; an owned cycle finishes
 ```
 
+`run` must be invoked from the repository the program was registered in: another clone or root is
+refused with `repository_mismatch` before any reservation, fetch, capture or model call. A failure
+between the capture commit and the council start (stages `capture_record`, `manifest_derive`,
+`manifest_artifact`, `manifest_file`, `council_start`) blocks the program with `<stage>:<code>`
+and keeps the capture ref; a receipt with `failure.recorded: false` means the store could not
+record it and the cycle is still owned (`busy`), to be inspected, never retried blindly.
 `run` stops early after a `not_due`, `busy`, `paused`, completed or blocked tick and after any
 failed/unknown council. Exit 0 means every tick was recorded without failure/unknown; exit 1 means a
 refusal or a blocking outcome (the receipt names it). Refusals print `reason_code` and `error_type`

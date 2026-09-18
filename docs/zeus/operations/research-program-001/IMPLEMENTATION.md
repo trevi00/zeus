@@ -19,7 +19,12 @@ checkout was made by the worker. The owner canary and CI are separate unexecuted
 
 ## Full path (one tick)
 
-1. `reserve_cycle`: one store transaction. Refuses `busy` (owned cycle), `paused`,
+0. Review001 corrections (see `CORRECTION.md`): the runner passes the current repository identity
+   to `reserve_cycle`, which raises `repository_mismatch` before anything else; the post-capture
+   pre-provider stages are tracked and a failure is a blocked receipt with the capture retained
+   (or `recorded: false` with ownership kept when the store cannot record it); the capture blob is
+   written from exact bytes, hash-checked and read back before the ref exists.
+1. `reserve_cycle`: one store transaction. Refuses `repository_mismatch`, `busy` (owned cycle), `paused`,
    `program_completed`/`program_blocked`; completes on `deadline_expired`/`max_cycles_reached`;
    `not_due` returns without increment. Otherwise writes the cycle row (`collecting`, owner token)
    and advances `next_cycle`. PostgreSQL serializes this through the existing store advisory lock.

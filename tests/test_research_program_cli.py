@@ -11,6 +11,7 @@ from test_research_program_fixtures import (
     FakeCouncil,
     FakeSources,
     config,
+    git,
     repository,
 )
 
@@ -121,3 +122,37 @@ def test_cli_command_emits_redacted_refusals_and_exit_codes(monkeypatch):
     monkeypatch.setattr(research_program_cli.ResearchProgram, "status", lambda self, program_id: {"state": "paused"})
     cli.research_program_command(SimpleNamespace(store=MemoryStore()), args)
     assert outputs[-1] == {"state": "paused", "exit_code": 0} and CANARY not in json.dumps(outputs)
+
+
+def test_run_in_another_real_clone_is_refused_before_any_effect(tmp_path, monkeypatch):
+    """review001 R1 through the production CLI wiring: register in A, run the same id from a real
+    Git clone B on the same store; nothing is reserved, fetched, captured or dispatched."""
+    root, head = repository(tmp_path)
+    svc = guarded(monkeypatch, root)
+    council = FakeCouncil(svc.store, status="rejected")
+    calls = []
+
+    class Sources(FakeSources):
+        def collect(self, source):
+            calls.append(source)
+            return super().collect(source)
+    monkeypatch.setattr("codex_harness.adapters.research.ResearchSources", Sources)
+    monkeypatch.setattr("codex_harness.adapters.call_budget.CallBudget", lambda *a, **k: FakeBudget())
+    monkeypatch.setattr("codex_harness.adapters.autonomous_cli.run", council)
+    path = tmp_path / "program.json"
+    path.write_text(json.dumps(config(head)), encoding="utf-8")
+    assert research_program_cli.execute(svc, SimpleNamespace(research_program_command="register", file=path))["exit_code"] == 0
+    research_program_cli.execute(svc, SimpleNamespace(research_program_command="resume", program_id="rp-001"))
+    other = tmp_path / "clone"
+    git(root, "clone", "-q", str(root), str(other))
+    monkeypatch.setenv("ZEUS_REPOSITORY", str(other))
+    refused = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=2))
+    assert refused == {"status": "refused", "reason_code": "repository_mismatch", "error_type": "ProgramRefused", "exit_code": 1}
+    assert calls == [] and council.manifests == []
+    assert git(other, "for-each-ref", "refs/zeus/").stdout == "" and git(root, "for-each-ref", "refs/zeus/").stdout == ""
+    assert not (other / ".runtime" / "research-program").exists()
+    view = research_program_cli.execute(svc, SimpleNamespace(research_program_command="status", program_id="rp-001"))
+    assert view["cycles"] == {"completed": 0, "max": 2, "remaining": 2, "active": None} and view["state"] == "active"
+    monkeypatch.setenv("ZEUS_REPOSITORY", str(root))
+    result = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=1))
+    assert result["exit_code"] == 0 and result["ticks"][0]["selected"] == "local-note" and len(council.manifests) == 1

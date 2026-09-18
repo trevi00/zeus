@@ -59,7 +59,8 @@ def run(service, args) -> dict:
     artifacts = FileArtifacts(str(runtime / "artifacts"))
     sources = ResearchSources(artifacts)
     runner = ProgramRunner(service, ResearchProgram(service.store), sources, GitSource(repository), GitCapture(repository),
-                           CallBudget(), artifacts, runtime, council=autonomous_cli.run, github_detail=sources.github_detail)
+                           CallBudget(), artifacts, runtime, council=autonomous_cli.run, github_detail=sources.github_detail,
+                           repository=repository_identity(repository))  # R1: current root, checked before any tick effect
     result = runner.run(args.program_id, args.ticks)
     bad = any(t.get("failure") or t.get("result") in {"failed", "unknown"} for t in result["ticks"])
     return {**result, "exit_code": 1 if bad else 0}

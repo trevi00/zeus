@@ -17,6 +17,7 @@ from types import SimpleNamespace
 
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.dge_cli import verify_sources
+from codex_harness.adapters.operation_cli import GitSource
 from codex_harness.application.autonomous import BUCKET as RUNS
 from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
@@ -115,6 +116,7 @@ class GitCapture:
         data = body.encode("utf-8")
         if len(data) > MAX_SNAPSHOT_BYTES:
             raise CaptureError("capture_too_large")
+        expected_blob = hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
         code, _ = self._git("cat-file", "-e", base + "^{commit}")
         if code:
             raise CaptureError("base_revision_missing")
@@ -129,9 +131,12 @@ class GitCapture:
             code, _ = self._git("read-tree", base, env=env)
             if code:
                 raise CaptureError("capture_read_tree_failed")
-            code, blob = self._git("hash-object", "-w", "--stdin", env=env, input_text=body)
-            if code or len(blob) != 40:
-                raise CaptureError("capture_blob_failed")
+            # review001 R3: exact UTF-8 bytes. A text-mode stdin pipe rewrites LF on Windows, so the
+            # body goes through an owned binary temp file and `--no-filters` (no attribute/eol
+            # conversion); the content-addressed blob id proves the stored bytes are `data`.
+            blob = self._hash_blob(Path(directory) / "snapshot.bin", data, env)
+            if blob != expected_blob:
+                raise CaptureError("capture_blob_mismatch")
             code, _ = self._git("update-index", "--add", "--cacheinfo", "100644," + blob + "," + path, env=env)
             if code:
                 raise CaptureError("capture_index_failed")
@@ -142,12 +147,23 @@ class GitCapture:
             code, commit = self._git("commit-tree", tree, "-p", base, "-m", message, env=env)
             if code or len(commit) != 40:
                 raise CaptureError("capture_commit_failed")
+        # Binary readback through the same reader the dge verifier uses, BEFORE the ref exists.
+        mode, stored = GitSource(self.repository).blob(commit, path)
+        if mode != "100644" or stored != data:
+            raise CaptureError("capture_readback_mismatch")
         # The empty old value makes the ref creation refuse any ref that appeared meanwhile.
         code, _ = self._git("update-ref", ref, commit, "")
         if code:
             raise CaptureError("capture_ref_failed")
         return {"revision": commit, "tree": tree, "blob": blob, "ref": ref, "path": path,
                 "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
+
+    def _hash_blob(self, file: Path, data: bytes, env: dict) -> str:
+        file.write_bytes(data)
+        code, blob = self._git("hash-object", "-w", "--no-filters", "--", str(file), env=env)
+        if code or len(blob) != 40:
+            raise CaptureError("capture_blob_failed")
+        return blob
 
 
 # ----- event log and report ---------------------------------------------------------------------------------
@@ -213,10 +229,13 @@ class ProgramRunner:
     labelled stand-in. `github_detail(url)` is optional and its failure is recorded unknown."""
 
     def __init__(self, service, programs: ResearchProgram, sources, git_source, capture: GitCapture, budget, artifacts,
-                 runtime: Path, council, github_detail=None, clock=utcnow):
+                 runtime: Path, council, github_detail=None, clock=utcnow, repository: str = ""):
         self.service, self.programs, self.sources, self.git_source = service, programs, sources, git_source
         self.capture, self.budget, self.artifacts, self.runtime = capture, budget, artifacts, Path(runtime)
         self.council, self.github_detail, self.clock = council, github_detail, clock
+        # review001 R1: the identity digest of the CURRENT repository root; compared with the
+        # registered identity inside the reservation transaction, before any tick effect.
+        self.repository = repository
 
     def run(self, program_id: str, ticks: int) -> dict:
         if type(ticks) is not int or ticks < 1:
@@ -231,7 +250,7 @@ class ProgramRunner:
 
     def tick(self, program_id: str) -> dict:
         log = EventLog(self.runtime, program_id)
-        reservation = self.programs.reserve_cycle(program_id)
+        reservation = self.programs.reserve_cycle(program_id, self.repository)  # raises repository_mismatch first
         if not reservation["reserved"]:
             log.emit("general", "tick_skipped", reason=reservation["reason"], state=reservation["state"])
             return {"reserved": False, "reason": reservation["reason"], "state": reservation["state"]}
@@ -271,16 +290,25 @@ class ProgramRunner:
             log.emit("operations", "cycle_failed", cycle=number, stage="capture", code=type(exc).__name__)
             return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": candidate["id"],
                                                           "failure": {"stage": "capture", "code": type(exc).__name__}, "result": None})
-        self.programs.record_capture(cycle["id"], owner, capture)
-        log.emit("development", "capture_recorded", cycle=number, revision=capture["revision"], ref=capture["ref"])
-        # ----- council: manifest persisted and its start recorded before any provider -----
-        manifest = derive_manifest(config, number, capture["revision"], candidate)
-        sha = manifest_digest(manifest)
-        stored = self.artifacts.put(canonical(manifest), "research-program:" + program_id + ":" + str(number))
-        path = self.runtime / "research-program" / program_id / "manifests" / (run_id(program_id, number) + ".json")
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(canonical(manifest), encoding="utf-8", newline="\n")
-        self.programs.record_council_start(cycle["id"], owner, manifest["id"], sha, stored["ref"])
+        # ----- pre-provider preparation (review001 R2): every stage tracked; a failure here is
+        # recorded as a blocked cycle with the capture reference retained, and no council runs -----
+        stage = "capture_record"
+        try:
+            self.programs.record_capture(cycle["id"], owner, capture)
+            log.emit("development", "capture_recorded", cycle=number, revision=capture["revision"], ref=capture["ref"])
+            stage = "manifest_derive"
+            manifest = derive_manifest(config, number, capture["revision"], candidate)
+            sha = manifest_digest(manifest)
+            stage = "manifest_artifact"
+            stored = self.artifacts.put(canonical(manifest), "research-program:" + program_id + ":" + str(number))
+            stage = "manifest_file"
+            path = self.runtime / "research-program" / program_id / "manifests" / (run_id(program_id, number) + ".json")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(canonical(manifest), encoding="utf-8", newline="\n")
+            stage = "council_start"
+            self.programs.record_council_start(cycle["id"], owner, manifest["id"], sha, stored["ref"])
+        except Exception as exc:
+            return self._fail_before_council(program_id, log, cycle, owner, capture, stage, exc)
         log.emit("development", "council_started", cycle=number, run_id=manifest["id"], manifest_sha256=sha)
         error = None
         try:
@@ -297,6 +325,28 @@ class ProgramRunner:
         log.emit(category, "council_result", cycle=number, run_id=manifest["id"], **verdict)
         return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": candidate["id"],
                                                       "run_id": manifest["id"], "capture": capture["revision"], **verdict})
+
+    def _fail_before_council(self, program_id, log, cycle, owner, capture, stage, exc) -> dict:
+        """Zero council calls. If the store still records the failure, the cycle is counted, the
+        program blocked and the claim plus capture reference kept. If recording itself fails the
+        cycle stays owned (busy) and the receipt says so: no durable receipt is claimed."""
+        code = getattr(exc, "reason_code", None) or type(exc).__name__
+        number = cycle["number"]
+        retained = {"revision": capture["revision"], "ref": capture["ref"], "path": capture["path"], "artifact": capture["artifact"]}
+        receipt = {"reserved": True, "cycle": cycle["id"], "selected": capture["candidate"], "result": None,
+                   "failure": {"stage": stage, "code": code, "recorded": True, "capture": retained}}
+        try:
+            self.programs.fail_cycle(cycle["id"], owner, stage, code, recovery={"capture": retained})
+        except Exception as record_exc:
+            receipt["failure"].update(recorded=False, record_code=type(record_exc).__name__)
+            try:
+                log.emit("operations", "cycle_failure_unrecorded", cycle=number, stage=stage, code=code,
+                         record_code=type(record_exc).__name__, capture=capture["revision"])
+            except OSError:
+                pass
+            return {**receipt, "state": "unknown", "stop_reason": None, "report": None}
+        log.emit("operations", "cycle_failed", cycle=number, stage=stage, code=code, capture=capture["revision"])
+        return self._finish(program_id, log, number, receipt)
 
     def _capture(self, config, number, candidate, sources) -> dict:
         local_sha = None
