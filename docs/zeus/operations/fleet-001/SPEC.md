@@ -183,3 +183,49 @@ Use one of the already-budgeted two real fleet canary assignments to separate co
 dependencies from missing/out-of-sample dependency status in fleet.tsx and update UI.md. No extra
 calls or expanded acceptance scope. The other canary remains a small experience-adoption note.
 Backend review and owner checks are consolidated before launching those assignments.
+
+### Consolidated follow-up specification
+
+Backend candidate5659a79 was also review-rejected for one P2 visibility gap: admit_one returns blocked
+reasons but never saves them, so status/monitor show queued.reason_code=null for budget exhaustion,
+dependencies and path conflicts. Owner has executed the actual PG concurrency/pause/retained-owner
+checks (owner-pg-check.json), all pass with no model calls. These two review findings affect truthful
+visibility, not provider ownership. Owner admits the two already-budgeted canaries on this provisional
+runtime solely to correct the accepted-scope gaps. Neither original rejection is rewritten. No general
+release until corrected independent reviews and owner checks pass. The other planned experience
+note is replaced by the backend correction; no extra task or model starts added.
+
+Backend correction (one assignment):
+1. Persist each observed queued blocking reason in the same admission transaction. Clear it when
+   the job is admitted; change timestamps only when a fact/reason changes, not every poll. Capacity,
+   lane/path conflict, pause, dependency, budget reasons must survive status and monitor projection.
+2. Update only the two old monitoring assertions for the intentional additive source; assert fleet
+   unregistered/read-only semantics as well. Owner reproduced exactly those two failures/19passes.
+3. Architecture correction for reuse: immutable lifetime budget currently makes an exhausted fleet
+   permanently unusable. Add explicit owner CLI `fleet authorize-budget --per-host N --total N
+   --expected-total OLD`. It is never invoked by dispatcher/model. In one store transaction require
+   the expected effective total matches, valid monotonically nondecreasing ceilings with at least
+   one increase, and NO queued/dispatching/unknown jobs. Keep the original registered config/digest
+   immutable. Put effective budget in fleet_control alongside pause (pause/resume must preserve it),
+   plus an immutable `fleet_budget_grants` record with prior/new ceilings and time. registered()
+   and status expose effective ceilings for new enqueue/dispatch; historical jobs/manifests and
+   machine ledger stay unchanged. Same original register remains idempotent and cannot undo a grant.
+   A running service must refresh effective config before new admission, and reject stale-job budget
+   at enqueue/admission; no hidden ceiling reset. No automatic resume on grant. Tests: stale expected
+   total, decreasing/invalid ceilings, queued/reserving/unknown refusal, successful idle grant,
+   pause persistence, new manifest acceptance and old manifest refusal, two competing grants.
+   This is explicit operator authorization under the existing trusted local CLI, not model authority.
+4. Update BACKEND.md and INV-FLEET-001 for the corrected behavior and executed checks.
+
+UI correction (one assignment): count confirmed non-accepted prerequisites separately from absent
+prerequisites. Outside-sample status is unknown. A job with a known non-accepted prerequisite can be
+counted as confirmed unmet even if another dependency is absent, but never infer unmet solely from
+absence. Make counts' meanings explicit and keep job-level outside-sample disclosure. Update UI.md.
+Owner reproduced the pre-fix false count in a browser-only synthetic envelope; no production rows
+were altered by that reproduction.
+
+Both canaries run through the new fleet dispatcher, with the same machine ceiling160 (builds used
+156). Backend and UI write scopes disjoint. Backend focused fleet+monitor tests/ruff; UI ruff only
+because its pinned base retains the two known monitor assertion failures until backend integration.
+Owner runs frontend checks and the integrated full suite. No further scope expansion or retries are
+authorized by this paragraph; failures return one consolidated evidence report.
