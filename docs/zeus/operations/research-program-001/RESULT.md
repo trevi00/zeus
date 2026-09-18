@@ -52,3 +52,16 @@ recorded in the manifest summary; these categories do not by themselves prove ex
 Preparation history: PowerShell wrote the grant receipt as UTF16; the first launcher preflight
 stopped decoding it before registration/provider use. The local receipt was converted to UTF8,
 then the single actual attempt above began. This was a local preparation failure, not a model retry.
+
+## Subsequent authorized correction, not a second canary
+
+The user then authorized continuation. Claude implemented the bounded producer-alignment batch;
+independent Codex accepted candidate `fbde62db2f37ab43eacb9054a97c4a67a91652b9`. Local schema
+constraints now require nonempty citations for answered questions and nonblocking unknowns;
+researcher guidance explicitly covers cross-claim semantics and honest uncertainty. The consumer
+validator remains unchanged, and the old invalid relationship still fails. See PACKET-ALIGNMENT.md.
+
+Owner Windows/isolated PostgreSQL checks:103passed; lintpassed. Calls172->174/178; fleetpaused.
+The two extra calls were implementation and review, not a replay of the failed researcher.
+No evidence yet shows that a new live model output follows the guidance. The original failed
+attempt above, remaining diagnostic limitation, and no-merge/no-deploy status all remain valid.

@@ -89,6 +89,46 @@
                       "sha256":  "28345064259b09c8dd705bbc8a607cb537b80f919fffee3125fd28a69e581ca3",
                       "file":  "live/research-program/research-live-001/report.md",
                       "bytes":  1017
+                  },
+                  {
+                      "sha256":  "8da172854fd28d8aa19802b159a312640d7730afcbc53c0f55e803d6e1d4e6d7",
+                      "file":  "operation3.json",
+                      "bytes":  2313
+                  },
+                  {
+                      "sha256":  "4b6aba271b627f7d826e7dfd6f97d6cac2a667ed74992af6227968f50517b6d2",
+                      "file":  "prepared3.json",
+                      "bytes":  1399
+                  },
+                  {
+                      "sha256":  "33627c9145f068ab8756c93564883a3c2fc8d2093747ee1357da6ed9f2208e67",
+                      "file":  "result3.json",
+                      "bytes":  21750
+                  },
+                  {
+                      "sha256":  "50e6800ed9940ae69e4ff8c6aee92a803fcb801511542c8906bf4dd8278ad758",
+                      "file":  "candidate3.json",
+                      "bytes":  583
+                  },
+                  {
+                      "sha256":  "50963c5d2bc3e8b958892fec27a655ef921efc966e802509486094b4ee4f4f72",
+                      "file":  "worker3.json",
+                      "bytes":  13845
+                  },
+                  {
+                      "sha256":  "fd35a9ded3df7a2be8ca89a845e9e5da25d97b1e84869ec317fcf0f873ee4838",
+                      "file":  "owner-check3.json",
+                      "bytes":  211
+                  },
+                  {
+                      "sha256":  "15e71686274232b077eed2dfa79d4e3f2b362d936deae09659f8e70ff441eb55",
+                      "file":  "focused-pg3.log",
+                      "bytes":  184
+                  },
+                  {
+                      "sha256":  "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+                      "file":  "lint3.log",
+                      "bytes":  19
                   }
               ],
     "root":  "D:/workspaces/zeus/artifacts/research-program-001",

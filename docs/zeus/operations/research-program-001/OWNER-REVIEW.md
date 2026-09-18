@@ -31,3 +31,12 @@ Passing `test_owner_log_failure.py` means the unresolved failure was reproduced,
 
 Actual worker candidates: initial75bc8bb2ac700c96f54fce66230e840285968f9a;
 correction b047dc87205c99fd6e7e0593b1946df4069e527c. No model calls were used by owner fault tests.
+
+## Packet-alignment continuation
+
+Actual Claude candidate `fbde62db2f37ab43eacb9054a97c4a67a91652b9` passed independent Codex
+review (decision `950776f2-4ae0-43a2-b276-c1ef1e9fe10b`). The owner checked the schema alternatives,
+guidance and honest recurrence controls, then ran103 Windows/isolated PostgreSQL related tests
+and lint successfully. Consumer rules are unchanged; invalid cross-array references still fail.
+This is acceptance of the packet-alignment change only, not reversal of review002 or completion
+of the failed live canary. Calls are174/178; fleetpaused; no new live canary has started.

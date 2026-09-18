@@ -304,3 +304,11 @@ Completion: one Claude implementation and one independent review inside unchange
 (currently172, expected174 after pair), owner checks, publish truthful result. No live council
 retry in this batch: remaining4 then cannot cover7 starts, and no grant is implicit. Record this
 as producer alignment only, not live path completion. Do not edit this owner frame or old receipts.
+
+Batch outcome: actual Claude candidatefbde62db2f37ab43eacb9054a97c4a67a91652b9 was accepted by
+independent Codex decision950776f2-4ae0-43a2-b276-c1ef1e9fe10b. Owner Windows + isolated PG
+checks103passed, lintpassed. Calls172->174/178; fleetpaused after terminal acceptance. Only this
+packet-alignment batch is accepted: the earlier diagnostic-log residual and failed live acceptance
+remain unchanged. The unchanged bad relationship remains consumer-refused; model adherence to new
+guidance has not been measured. A fresh seven-role run would need3 additional headroom (181 ceiling),
+not implicitly granted. No merge/deploy performed.
