@@ -70,7 +70,8 @@ Registered board, top to bottom:
    enforced by CallBudget at start), 검토 수락 count from the sample labelled "병합·배포·완료 아님";
    when not fresh the accepted count is drawn in the unknown tone with "현재 아님".
 3. Conceptual flow card badged "개념 경로 · 개별 작업의 실제 이동을 추적한 것이 아님": 소유자
-   등록·투입 → admission (cap, one per lane, path exclusion, queued and dependency-blocked counts)
+   등록·투입 → admission (cap, one per lane, path exclusion, queued count, and the two dependency
+   counts defined under "Dependency counts" below)
    → 레인 실행 (existing `zeus operate run`, isolated container, owner token, child stdout never
    proves acceptance) → 독립 검토 → 종단 상태 (accepted = exit 0 + matching lane operation +
    review accepted; no merge/deploy/retry) → 읽기 전용 투영 (this screen, observed time, PG read
@@ -81,13 +82,44 @@ Registered board, top to bottom:
    sampled) or 비어 있음.
 5. Job list (`md:2` columns, collector order, no re-sorting): status badge with hover note, id,
    team/lane, criterion, goal path, status meaning, operation id, reason code (없음 when null),
-   dependencies with each prerequisite's label or "(표본 밖)", calls reserved/settled (`null` →
-   확인 불가, never 0), created, and "마지막 기록 · 마지막 실행 사실 · 생존 신호 아님". Queued jobs
-   with dependencies get the rule text: admitted only when all dependencies are 검토 수락;
-   failed/rejected/unknown prerequisites block only this job; accepted is a candidate, the fixed base
-   does not change.
+   dependencies with each prerequisite's label or "(표본 밖)", for queued jobs with dependencies a
+   "의존성 판정" badge (see "Dependency counts"), calls reserved/settled (`null` → 확인 불가, never
+   0), created, and "마지막 기록 · 마지막 실행 사실 · 생존 신호 아님". Queued jobs with dependencies
+   get the rule text: how many prerequisites are outside the sample and therefore unreadable and not
+   counted as unmet; whether a sampled non-accepted prerequisite confirms unmet; admitted only when
+   all dependencies are 검토 수락; failed/rejected/unknown prerequisites block only this job;
+   accepted is a candidate, the fixed base does not change.
 6. Reading guide line repeating the 확인 불가 / 비어 있음 / 검토 수락 / 알 수 없음 / heartbeat / budget
    distinctions.
+
+### Dependency counts (consolidated follow-up correction, 2026-09-18)
+
+The rejected candidate f061306 computed one "의존성 미충족" count that treated a prerequisite absent
+from the latest-100 sample as unmet. The projection cannot read the status of an out-of-sample job,
+so absence is unknown, not a fact. `dependencyState(job, jobsById)` in `fleet.tsx` now classifies
+each job from the sampled jobs only, evaluated in this order:
+
+| Verdict | Condition | Counted as |
+|---|---|---|
+| `confirmed_unmet` (미충족 확인, error tone) | at least one prerequisite is in the sample and its status is not `accepted`; this wins even when another prerequisite is absent | "의존성 미충족 확인 N건" |
+| `unknown` (표본 밖 · 알 수 없음, unknown tone) | no sampled non-accepted prerequisite, but at least one prerequisite is not in the sample | "표본 밖 의존성(알 수 없음) N건", never added to the unmet count |
+| `all_accepted` (모두 검토 수락 (표본), success tone) | every prerequisite is in the sample and `accepted` | neither count; the badge says admission is still a separate decision |
+| `none` | no dependencies | neither count |
+
+The admission flow node shows both counts on their own line plus the meaning line "확인 = 표본 안
+선행 작업이 검토 수락 아님 · 표본 밖은 미충족으로 세지 않음". Only queued jobs are classified for the
+counts. Job-level disclosure stays: each prerequisite is listed with its sampled label or "(표본 밖)",
+the "의존성 판정" badge shows the verdict with its hover note, and the rule text states the number of
+out-of-sample prerequisites and that they are not counted as unmet. The truncated notice adds the
+same sentence. Nothing else in the accepted view changed; `truncated:false` with an absent
+prerequisite still yields `unknown`, because the collector's sample is the only evidence this screen
+has either way.
+
+Owner reproduced the pre-fix false count with a browser-only synthetic envelope (SPEC, consolidated
+follow-up). This worker did not run a browser or the TypeScript checker; the synthetic shapes that
+exercise the three verdicts are: queued job depending on a sampled `failed` job (confirmed unmet);
+queued job depending only on an id absent from `jobs` (unknown); queued job depending on one sampled
+`failed` and one absent id (confirmed unmet, with the out-of-sample sentence still shown).
 
 No HTTP mutation control, no fetch, no timer and no state of its own: the view is a pure render of
 `snapshot` and `now` from the existing `useSnapshot`. Because `use-snapshot.ts` is outside the
@@ -104,8 +136,14 @@ are used, so the dark theme applies without new CSS. Not verified in a browser h
 
 Run here (restricted worker, no npm, no node_modules present):
 
-- `python -m pytest tests/test_monitoring.py -q -p no:cacheprovider` — result in the worker answer.
+- `python -m pytest tests/test_monitoring.py -q -p no:cacheprovider` — result in the worker answer
+  (original UI operation only).
 - `python -m ruff check .` — result in the worker answer.
+
+Consolidated follow-up correction (fleet-001-fix-ui): only `python -m ruff check .` was run, as
+assigned; the pinned base keeps the two known monitoring assertion failures that the backend lane
+owns, so pytest was not run by this worker. Git reads were denied in the worker sandbox, so the base
+revision was not confirmed by the worker.
 
 Neither command exercises the TypeScript files. Not run by this worker and owed to the owner:
 `npm run typecheck`, `npm run lint`, `npm run build`, browser acceptance at 390px and in dark mode,

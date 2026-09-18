@@ -84,6 +84,31 @@ function callsText(value: number | null): string {
   return value == null ? "확인 불가" : `${formatNumber(value)}회`
 }
 
+/**
+ * Dependency verdict for one job from the sampled jobs only (SPEC "Consolidated follow-up", UI correction):
+ * - `confirmed_unmet`: at least one prerequisite is in the sample and is not `accepted` (wins even if another is absent);
+ * - `unknown`: no confirmed non-accepted prerequisite, but at least one prerequisite is outside the sample, so
+ *   its status cannot be read here and is never inferred as unmet;
+ * - `all_accepted`: every prerequisite is in the sample and `accepted`;
+ * - `none`: the job has no dependencies.
+ */
+type DependencyState = "none" | "confirmed_unmet" | "unknown" | "all_accepted"
+
+function dependencyState(job: FleetJob, jobsById: Map<string, FleetJob>): DependencyState {
+  if (job.dependencies.length === 0) return "none"
+  const sampled = job.dependencies.map((dep) => jobsById.get(dep))
+  if (sampled.some((prerequisite) => prerequisite && prerequisite.status !== "accepted")) return "confirmed_unmet"
+  if (sampled.some((prerequisite) => !prerequisite)) return "unknown"
+  return "all_accepted"
+}
+
+const DEPENDENCY_STATE: Record<DependencyState, { label: string; tone: Tone; note: string }> = {
+  none: { label: "없음", tone: "neutral", note: "의존성 없음" },
+  confirmed_unmet: { label: "미충족 확인", tone: "error", note: "표본 안 선행 작업이 검토 수락이 아님 · 이 작업만 막힘" },
+  unknown: { label: "표본 밖 · 알 수 없음", tone: "unknown", note: "선행 작업이 표본 밖이라 상태를 읽지 못함 · 미충족으로 세지 않음 · 충족도 아님" },
+  all_accepted: { label: "모두 검토 수락 (표본)", tone: "success", note: "표본 안 선행 작업이 모두 검토 수락 · admission 은 별도" },
+}
+
 function countBy(jobs: FleetJob[]): Record<string, number> {
   const counts: Record<string, number> = {}
   for (const job of jobs) counts[job.status] = (counts[job.status] ?? 0) + 1
@@ -200,10 +225,11 @@ export function FleetView({ snapshot, now }: Props) {
   const counts = countBy(registered.jobs)
   const teams = [...new Set([...registered.lanes.map((lane) => lane.team), ...registered.jobs.map((job) => job.team)])].sort()
   const sampleNote = registered.truncated ? "최근 100건 표본 · 잘림 · 전체 아님" : "표본 기준 · 잘리지 않음"
-  const blockedDependents = registered.jobs.filter((job) => job.status === "queued" && job.dependencies.some((dep) => {
-    const prerequisite = jobsById.get(dep)
-    return !prerequisite || prerequisite.status !== "accepted"
-  }))
+  // Consolidated follow-up: a prerequisite outside the sample has unknown status here. Only a sampled
+  // non-accepted prerequisite confirms "unmet"; absence alone is never counted as unmet.
+  const queuedDependencyStates = registered.jobs.filter((job) => job.status === "queued" && job.dependencies.length).map((job) => dependencyState(job, jobsById))
+  const confirmedUnmet = queuedDependencyStates.filter((state) => state === "confirmed_unmet").length
+  const dependencyUnknown = queuedDependencyStates.filter((state) => state === "unknown").length
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
@@ -224,7 +250,7 @@ export function FleetView({ snapshot, now }: Props) {
           </AlertDescription></Alert>
       ) : null}
       {registered.truncated ? (
-        <Alert><AlertTriangle aria-hidden="true" /><AlertTitle>작업 목록이 잘렸습니다</AlertTitle><AlertDescription>최근 100건까지만 읽었습니다. 아래 건수와 팀별 분포는 표본 기준이며 전체 합계가 아닙니다. 레인의 활성 작업은 표본 밖도 포함합니다.</AlertDescription></Alert>
+        <Alert><AlertTriangle aria-hidden="true" /><AlertTitle>작업 목록이 잘렸습니다</AlertTitle><AlertDescription>최근 100건까지만 읽었습니다. 아래 건수와 팀별 분포는 표본 기준이며 전체 합계가 아닙니다. 레인의 활성 작업은 표본 밖도 포함합니다. 표본 밖 선행 작업의 상태는 알 수 없음이며 의존성 미충족으로 세지 않습니다.</AlertDescription></Alert>
       ) : null}
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
@@ -248,7 +274,7 @@ export function FleetView({ snapshot, now }: Props) {
               <FlowNode icon={Users} title="1. 소유자 등록·투입" tone="neutral" badge="명시적 enqueue 만" lines={[`레인 ${formatNumber(registered.lanes.length)}개 · 팀 ${formatNumber(teams.length)}개`, "생성된 백로그 없음 · 매니페스트는 소유자 설계"]} />
             </li>
             <li className="contents"><FlowArrow />
-              <FlowNode icon={Workflow} title="2. admission" tone={registered.paused ? "warning" : "neutral"} badge={registered.paused ? "일시 정지 · 신규 차단" : "열림"} lines={[`상한 ${formatNumber(registered.max_parallel)} · 레인당 1개 · 경로 충돌 배제`, `대기 ${formatNumber(counts.queued ?? 0)}건 (표본) · 의존성 미충족 ${formatNumber(blockedDependents.length)}건`]} />
+              <FlowNode icon={Workflow} title="2. admission" tone={registered.paused ? "warning" : "neutral"} badge={registered.paused ? "일시 정지 · 신규 차단" : "열림"} lines={[`상한 ${formatNumber(registered.max_parallel)} · 레인당 1개 · 경로 충돌 배제`, `대기 ${formatNumber(counts.queued ?? 0)}건 (표본)`, `의존성 미충족 확인 ${formatNumber(confirmedUnmet)}건 · 표본 밖 의존성(알 수 없음) ${formatNumber(dependencyUnknown)}건`, "확인 = 표본 안 선행 작업이 검토 수락 아님 · 표본 밖은 미충족으로 세지 않음"]} />
             </li>
             <li className="contents"><FlowArrow />
               <FlowNode icon={GitBranch} title="3. 레인 실행" tone={activeLanes.length ? "warning" : "neutral"} badge={`활성 레인 ${formatNumber(activeLanes.length)} / ${formatNumber(registered.max_parallel)}`} lines={["기존 `zeus operate run` · 격리 컨테이너 · 소유 토큰", "자식 출력만으로 수락 판정 없음"]} />
@@ -308,6 +334,11 @@ export function FleetView({ snapshot, now }: Props) {
             {registered.jobs.map((job) => {
               const info = jobStatus(job.status)
               const missingDeps = job.dependencies.filter((dep) => !jobsById.has(dep))
+              const depState = dependencyState(job, jobsById)
+              const depInfo = DEPENDENCY_STATE[depState]
+              const depRow: Array<[string, React.ReactNode]> = job.status === "queued" && job.dependencies.length
+                ? [["의존성 판정", <StatusBadge tone={depInfo.tone} title={depInfo.note}>{depInfo.label}</StatusBadge>]]
+                : []
               return (
                 <li key={job.id} className="min-w-0">
                   <Card size="sm" className="min-w-0 h-full">
@@ -329,13 +360,15 @@ export function FleetView({ snapshot, now }: Props) {
                           const prerequisite = jobsById.get(dep)
                           return `${dep} (${prerequisite ? jobStatus(prerequisite.status).label : "표본 밖"})`
                         }).join(", ")}</span>],
+                        ...depRow,
                         ["호출 예약 / 정산", `${callsText(job.calls.reserved)} / ${callsText(job.calls.settled)}`],
                         ["생성", formatTime(job.created_at)],
                         ["마지막 기록", `${formatTime(job.updated_at)} · 마지막 실행 사실 · 생존 신호 아님`],
                       ]} />
                       {job.status === "queued" && job.dependencies.length ? (
                         <p className="mt-2 text-xs text-muted-foreground break-words">
-                          {missingDeps.length ? "표본 밖 의존성은 여기서 상태를 알 수 없습니다. " : ""}
+                          {missingDeps.length ? `표본 밖 의존성 ${formatNumber(missingDeps.length)}건은 여기서 상태를 알 수 없으며 미충족으로 세지 않습니다. ` : ""}
+                          {depState === "confirmed_unmet" ? "표본 안 선행 작업 중 검토 수락이 아닌 것이 있어 미충족으로 확인됩니다. " : ""}
                           의존성이 모두 검토 수락일 때만 배정됩니다. 실패·거부·알 수 없음 의존성은 이 작업만 막고 독립 레인은 계속 진행됩니다. 수락은 후보 수락이며 기준 base 는 바뀌지 않습니다.
                         </p>
                       ) : null}
