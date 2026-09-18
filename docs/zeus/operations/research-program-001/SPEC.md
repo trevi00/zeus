@@ -388,3 +388,27 @@ and clean state unchanged; calls180before/after. Short runtime root applied for 
 and prescribed in RUNBOOK for future owner launchers; production code and global settings unchanged.
 Original failed DB inspection remains intact. This resolves the measured snapshot/replay blocker,
 not the missing independent model review, full new live cycle or separate diagnostic-log residual.
+
+## Consolidated remaining acceptance (2026-09-19)
+
+Owner Codex independently reviewed retained candidate d491e1de50a412fc1d2da1dac55fc99ab0d97f5e:
+diff is exactly the allowed100-line recommendation document; inspected read_document and its
+target tests substantiate the scoped encoding-test proposal. Earlier short-root container replay
+already checks its exact tests. The recommendation is acceptable as an owner-reviewed proposal,
+not a deployed implementation. Its heading says reviewed but explicitly labels worker draft;
+runtime/council facts remain externally evidenced, not established by that heading. No blocker
+for the fixed recommendation criterion; no new encoding task is automatically created.
+
+This session's owner review is NOT the missing automated review_lead execution. Do not insert a
+synthetic decision into PG or reopen the terminal failed program. Full-path acceptance still needs
+one new program: two scheduled collection ticks, at most one seven-role council with real independent
+review, fixed goal and120-line recommendation limit, then stop. Use fresh short runtime rp004 and
+check projected snapshot paths before any provider start. Preserve existing role/byte/PG evidence;
+do not add another exploratory review. Diagnostic-log recovery remains the documented nonblocking
+limitation for this finite healthy-log canary, not silently considered fixed.
+
+Current180/181 permits1 call;7 starts require ceiling187 (additional6), not yet granted. Prepare
+the exact config and CI gate before requesting that explicit grant. No merge/deploy or unbounded
+retry. If granted and CI passes, one attempt only; failure stops. Completion requires real accepted
+run plus second collection with0extra model starts and max_cycles termination. A manual review or
+standalone collection must not be substituted for that whole-path result.
