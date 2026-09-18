@@ -80,10 +80,23 @@ configuration, process-only runtime/Redis overrides, and no credential copies. A
 the accepted main source path as CodeRoot. No global `.env` runtime rewrite was made because old
 ticket artifact references may still rely on its original runtime directory.
 
-To pause this deployment, disable and stop only `ZeusMonitor-collect` and `ZeusMonitor-web`.
-To resume, enable/start those two tasks. Preserve the D runtime/evidence. Rollback never requires
+To pause or replace this deployment, use the owner-scoped
+`D:/workspaces/zeus/artifacts/monitor-live-001/stop-owned.ps1`: it validates the two task actions,
+disables/stops their triggers, inventories exact monitor commands, checks PID creation identities,
+and terminates only those owned Python children. **Stop-ScheduledTask alone did not terminate
+the venv child processes on this PC.** Then register/start the two tasks using `register-monitor.ps1`.
+Preserve the D runtime/evidence. Rollback never requires
 deleting PG rows, Redis messages, old schemas or unrelated harness tasks. Recovery was executed;
 full deployment rollback was documented but not executed.
+
+Post-merge correction: the first main-promotion HTTP check matched source bytes but did not prove
+process replacement; earlier children survived task stop. The collector lock correctly refused
+new copies, while old HTTP processes also remained. Owner corrected this at01:53UTC by stopping
+the six exact owned Python processes (including forwarding processes), verifying zero remaining,
+and starting the main-configured tasks. Fresh startup logs and new process identities show one
+actual collector and one web process after subsequent scheduled ticks. Neither unrelated tasks nor
+the user's Chrome was terminated. The initial completion comment is superseded by the correction
+comment/evidence; no runtime code or previously accepted recovery test was changed.
 
 Small evidence summaries/hashes: `live-evidence-summary.json`. Raw evidence stays on D. CI and
 exact merge/main promotion results are recorded in the PR and implementation issue #136.
