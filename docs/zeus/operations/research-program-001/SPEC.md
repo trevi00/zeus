@@ -202,3 +202,31 @@ Budget reallocation inside unchanged176 ceiling: after build/review169, use2 of 
 explicit corrective implementation/review (not a provider retry), stopping at171. No grant or
 additional model calls are automatic. Real council headroom7 then exceeds remaining5; its live
 acceptance stays pending a separately explicit grant. Do not call this unattended-ready meanwhile.
+
+## Owner disposition after review002 (2026-09-19)
+
+Candidate b047dc87205c99fd6e7e0593b1946df4069e527c corrects repository binding,
+manifest preparation containment and exact Git bytes. Native Windows/isolated PostgreSQL
+focused checks: 54 passed; lint passed. Binary capture: original18bytes == Git18bytes,
+SHA256 8301c655af3516611f45755f017b4c045044ca1ef38f9214d734a3da305ababf.
+
+Independent review002 remains REJECTED: council_started diagnostic append can raise after
+the council-start record and before dispatch. Owner reproduced with real temporary Git,
+injected OSError, and explicitly synthetic feeds/store/budget/council. No council call occurs;
+ownership remains active and the next tick is busy. This proves containment in that injected
+case, not correct failure reporting or recovery. No machine verdict was changed.
+
+Owner scope decision under the user's critical-only policy: this diagnostic failure is a
+recorded limitation for a finite healthy-log canary, not permission to declare general
+unattended readiness. The prior full failure-reporting condition remains unmet. Keep issue152
+open, keep deployment unchanged, and prepare a draft PR. Do not retry or clear such ownership
+automatically. If observed in the canary, stop and record external owner evidence. A coherent
+diagnostic-failure/recovery design is required before general unattended acceptance; do not
+patch each emit call in successive reviews.
+
+Remaining acceptance: CI, then two real collection ticks with at most one seven-role council
+and a reviewed recommendation artifact (not runtime release). Current calls171/ceiling176
+leave5, below required7 headroom. No partial council or automatic budget increase. A concrete
+additional2-call grant would set ceiling178 and reserve exactly7 remaining calls, then stop.
+
+Evidence manifest and limitations: OWNER-REVIEW.md. No additional exploratory review pass.

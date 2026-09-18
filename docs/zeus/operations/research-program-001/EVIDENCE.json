@@ -1,0 +1,50 @@
+﻿{
+    "files":  [
+                  {
+                      "sha256":  "4f80da519c6fd4236bf23d71ccc18b3b6c07bad16742531d53027f1241e12d43",
+                      "file":  "review.json",
+                      "bytes":  23373
+                  },
+                  {
+                      "sha256":  "d6b63ad47e4f09ff661a3704dd728e453332da4381f29dc0be27d11e79259619",
+                      "file":  "review2.json",
+                      "bytes":  18694
+                  },
+                  {
+                      "sha256":  "03aecfbfe49de764d3eeeafc2b84b2976cb094cf78dd3bbe3a29c74286962240",
+                      "file":  "owner-check2.json",
+                      "bytes":  211
+                  },
+                  {
+                      "sha256":  "7c31bc3a1f0c2efda9af44512881ed88734326e10c91443d8af25d75f3f4cfa3",
+                      "file":  "focused-pg2.log",
+                      "bytes":  102
+                  },
+                  {
+                      "sha256":  "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+                      "file":  "lint2.log",
+                      "bytes":  19
+                  },
+                  {
+                      "sha256":  "92b6fc72f6627a1f68f4dd3b3ba0adb750d13e84e11507261b98a9af772ccef9",
+                      "file":  "capture-check2.json",
+                      "bytes":  277
+                  },
+                  {
+                      "sha256":  "bc1770f39b0128432e856b2c153de735a0177d40b68da0f034838f4fe5b12367",
+                      "file":  "test_owner_log_failure.py",
+                      "bytes":  1109
+                  },
+                  {
+                      "sha256":  "341c3f1ca0020304dfa9e26eca262ba43fce41018c609fb4bd54079c961f9795",
+                      "file":  "owner-log-failure.log",
+                      "bytes":  202
+                  },
+                  {
+                      "sha256":  "9cd007fc28787752804e5c0e379b3cba0d33b2f45eb5bf3f63544c88afea013f",
+                      "file":  "source-preflight.json",
+                      "bytes":  391
+                  }
+              ],
+    "root":  "D:/workspaces/zeus/artifacts/research-program-001"
+}
