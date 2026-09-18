@@ -123,3 +123,64 @@ Fix: `SourceStrip` is wrapped in `<div className="no-print">` and the footer get
 the existing `@media print { .no-print { display: none !important } }` rule in `src/index.css`
 hides both. Screen rendering, report capture and export logic are unchanged. Not run by the
 worker, owner-owned: `npm run build`, `npm run lint`, browser print check, asset regeneration.
+
+## User extension: illustrated explanations (2026-09-18, base 2cc604110c0c6a80b7c97db3455f9ea86c506dd3)
+
+Scope: the "User extension — illustrated explanations" section at the end of SPEC.md only. Files:
+`frontend/monitor/src/lib/report.ts`, new `src/components/report-explainer.tsx`,
+`src/views/report.tsx`, this note. Backend, HTTP, tests, dependencies and packaged assets untouched.
+
+- Authority searched: `zeus-observatory-report` has no Python consumer (grep over the checkout hit
+  only `report.ts`, SPEC/IMPLEMENTATION and the stale packaged bundle), so the schema moves to
+  `zeus-observatory-report.v3` additively: every v2 field is unchanged and one `explanation`
+  object is added. Operation status vocabulary comes from `application/operation.py`
+  (`accepted/failed/rejected/exhausted/running/unknown`); the projection in
+  `adapters/monitoring_observations.py` counts `by_status` over the whole bounded operations sample
+  and `total` is its denominator, so bars sum to the denominator by construction.
+- `report.ts`: `buildExplanation(snapshot, observations, sources, transport, generated_at)` runs
+  inside `buildReport` at capture and uses only those arguments (no clock, fetch, storage or model
+  call). Output is JSON-serializable: `summary` (fixed Korean sentences chosen by the captured
+  state), `flow` (label `구조 설명 · 개별 실행을 추적한 증거가 아님`, four steps record → collection
+  → read-only snapshot → pinned report, each with its own units and `known` flag per fact, plus a
+  note that the boxes are different populations and not a funnel), `operations` (`state`
+  `unknown|empty|observed`, `denominator` null when observations were unusable and `0` for an
+  observed empty sample, Korean labels for the six known statuses with zero rows kept as `0`,
+  arbitrary status values kept raw and marked `known_status:false`, scope from the operations
+  bucket scan and truncation, a note that pending is not inferred from `lead_accepted=false`),
+  `guide` (severity vs category, priority rule, zero ≠ complete collection, 확인 불가 vs 0,
+  task vs operation, ELI5 named as design reference only), `caveats` (transport state, every
+  non-fresh source with its state and error, truncated buckets, row limits, unknown-value counts,
+  unreadable local spool, missing collection receipts; one explicit "no warnings" line otherwise),
+  `provenance` (generated/collected/observation times, observation status, transport state,
+  `computed_by`, ELI5 repo/commit/role). No global health, cause, ETA, success rate or retry
+  advice is generated in any branch.
+- `report-explainer.tsx`: renders `report.explanation` only. shadcn Card/Separator, `StatusBadge`
+  tones, Lucide `Lightbulb/BookOpen/AlertTriangle/ArrowRight/ArrowDown` (all `aria-hidden`; step
+  order is carried by the numbered titles). Flow is an `<ol>` in a single column on phones and a
+  four-box CSS grid with arrows from `md`. Distribution bars are plain `div`s with inline width,
+  `aria-hidden`, and the exact `n건 / N건` text next to a tone badge and the raw status, so no
+  meaning is colour-only and print keeps the numbers. Unknown state renders "확인 불가 … (0건 아님)",
+  empty state renders "0건 (비어 있음)". All text containers use `min-w-0 break-words`.
+- `report.tsx`: `<ReportExplainer explanation={report.explanation} />` inserted after the capture
+  alerts and before the existing "범위와 시각" card; every previous card stays below unchanged.
+  Print and JSON download already describe the pinned object, so they include the explanation
+  without further change.
+
+Verification run here: `python -m pytest tests/test_monitoring.py tests/test_monitoring_observations.py
+-q -p no:cacheprovider` and `python -m ruff check .` (results in the worker summary; neither
+touches the TypeScript). Not run by the worker, owner-owned: `npm run build`/typecheck/lint,
+browser checks at 1440px and 390px, regenerate/pin/JSON/PDF equality, controlled unavailable or
+stale observations injection, packaged asset regeneration, CI.
+
+## Status membership correction (2026-09-18, base 356291777f642f420456e511de7daf954ffa4a87)
+
+Reviewer finding: `operationBars` in `frontend/monitor/src/lib/report.ts` dropped any own
+`by_status` key that is also an inherited property name of a plain object (`constructor`,
+`toString`, `__proto__`, ...). The `in` operator walks the prototype chain, so such a status was
+neither in the six known bars nor in the extra list; the owner reproduced denominator 1 with 0
+bars displayed. Fix: the extra-status filter uses `Object.hasOwn(OPERATION_STATUS_LABELS, status)`
+(ES2022, within the project's ES2023 lib) instead of `status in OPERATION_STATUS_LABELS`. One
+line changed; the six known bars, ordering, labels, `known_status` flags and counts are unchanged.
+Verification run here: the two Python commands above (results in the worker summary; neither
+executes the TypeScript). Not run by the worker, owner-owned: typecheck/build/lint, browser and
+print checks, packaged asset regeneration, CI.

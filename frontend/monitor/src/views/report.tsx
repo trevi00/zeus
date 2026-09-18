@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Download, Printer, RefreshCw } from "lucide-react"
 
+import { ReportExplainer } from "@/components/report-explainer"
 import { KeyValue } from "@/components/stat-card"
 import { StatusBadge } from "@/components/status-badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -44,7 +45,7 @@ export function ReportView({ snapshot, transport, now }: Props) {
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between no-print">
         <div className="min-w-0">
           <h2 className="text-lg font-semibold">보고서</h2>
-          <p className="text-sm text-muted-foreground">화면 진입 또는 재생성 시점의 스냅샷 하나에서 생성 · 자동 갱신 없음 · 로컬 저장/인쇄만 · 외부 전송 없음</p>
+          <p className="text-sm text-muted-foreground">화면 진입 또는 재생성 시점의 스냅샷 하나에서 생성 · 자동 갱신 없음 · 로컬 저장/인쇄만 · 외부 전송 없음 · 쉬운 설명은 같은 캡처에서 계산됨</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => setReport(buildReport(snapshot, transport, Date.now()))}><RefreshCw aria-hidden="true" />보고서 재생성</Button>
@@ -68,6 +69,8 @@ export function ReportView({ snapshot, transport, now }: Props) {
         <Alert variant="destructive"><AlertTitle>관측 로그 출처 확인 불가</AlertTitle>
           <AlertDescription className="break-words">observations 출처 상태 {report.observations.status}{report.observations.error ? ` · ${report.observations.error}` : ""}. 이벤트·경보·운영 결과는 알 수 없음이며 비어 있음이 아닙니다.</AlertDescription></Alert>
       ) : null}
+
+      <ReportExplainer explanation={report.explanation} />
 
       <Card>
         <CardHeader><CardTitle>범위와 시각</CardTitle><CardDescription>생성 시각, 수집 시각, 출처 관측 시각은 서로 다른 시각입니다.</CardDescription></CardHeader>
