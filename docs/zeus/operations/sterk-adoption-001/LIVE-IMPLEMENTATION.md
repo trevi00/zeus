@@ -134,3 +134,48 @@ Not run in this batch: the full suite, CI, real services, browser checks (owner/
 run showing the new test failing against a per-refresh writing monitor was not performed: the
 worker's file tools are confined to the checkout and the allowed paths exclude a scratch test, so
 that detection rests on the deep-copied store/artifact before-and-after assertions above.
+
+## Correction batch: collector test environment isolation (2026-09-18)
+
+Worker: Zeus Claude implementation worker (Claude Fable 5.1), isolated Linux checkout at base
+revision 258dbc450193e3057337648cd742d334fa6df1c7. Files changed: `tests/test_monitoring.py` and
+this file only. No runtime, supervisor, dependency, profile or other test change; no mock of
+`select_repository`, no assertion removed.
+
+Observation, reproduced first in this checkout before any edit: running
+`tests/test_monitoring.py::test_collector_entrypoint_is_read_only_and_needs_no_executor` followed
+by `tests/test_supervisor.py::test_once_reports_failure_to_scheduler_and_resolves_runtime` gave
+1 passed, 1 failed. The supervisor test failed on `(tmp_path / "state").is_dir()`.
+
+Cause, traced in code: `monitor.main` calls the real
+`adapters/configuration.py::select_repository(root)`, which writes both `ZEUS_REPOSITORY` and
+`HARNESS_REPOSITORY` into `os.environ` for the process. The collector test passed `--repository
+<tmp_path>` but never registered either name with `monkeypatch`, so teardown left both set to the
+monitor test's `tmp_path`. `settings()` (`aliases`) lets `ZEUS_*` win over `HARNESS_*` within the
+process layer, so the later supervisor test's `HARNESS_REPOSITORY` was overridden by the stale
+`ZEUS_REPOSITORY` and the runtime directory was created under the wrong `tmp_path`.
+
+Change: before the first CLI invocation the collector test now calls `monkeypatch.setenv` for
+both `ZEUS_REPOSITORY` and `HARNESS_REPOSITORY` (value `tmp_path`, the same root the CLI selects).
+`monkeypatch` records the pre-test value or absence at that point and restores it at teardown,
+so the real `select_repository` still runs unmodified and the process environment is returned
+to its original state afterwards.
+
+Commands executed in this checkout, output read:
+
+```
+python -m pytest tests/test_monitoring.py::test_collector_entrypoint_is_read_only_and_needs_no_executor tests/test_supervisor.py::test_once_reports_failure_to_scheduler_and_resolves_runtime -q -p no:cacheprovider
+python -m pytest tests/test_monitoring.py tests/test_measurements.py tests/test_supervisor.py -q -p no:cacheprovider
+python -m pytest -q -p no:cacheprovider
+python -m ruff check .
+```
+
+Results: the reproduction pair went from 1 passed/1 failed (before the edit) to 2 passed; the
+focused command 40 passed, exit 0; ruff "All checks passed!". The full suite in this sandbox:
+2003 passed, 445 skipped, 1 failed, 51 errors. The 51 errors (`tests/test_ticket_lifecycle.py`,
+`tests/test_ticket_review.py`) are `FileNotFoundError: 'ssh-keygen'` (binary absent in the
+sandbox) and the 1 failure (`tests/test_output_schema.py::test_baseline_reconstruction_and_semantic_preservation`)
+is `git show` refusing the checkout with "dubious ownership". Both reproduce when run alone,
+neither touches the repository env aliases, and neither involves the changed test; they are
+environment gaps here, not regressions from this batch, and remain for owner/CI to confirm on
+a host with `ssh-keygen` and a trusted checkout.

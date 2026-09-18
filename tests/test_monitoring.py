@@ -144,6 +144,11 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     monkeypatch.setenv('ZEUS_MONITOR_SCOPE', 'Zeus 고정 운영 원장 · 과거 격리 실행 제외 password=secret')
     for name in ('CODEX_HOME', 'HARNESS_CODEX_AUTH', 'ZEUS_CODEX_AUTH'):
         monkeypatch.delenv(name, raising=False)
+    # The real CLI calls select_repository, which writes both repository aliases into os.environ.
+    # Register both with monkeypatch first so teardown restores the original process environment
+    # instead of leaking tmp_path into later tests (e.g. tests/test_supervisor.py).
+    for name in ('ZEUS_REPOSITORY', 'HARNESS_REPOSITORY'):
+        monkeypatch.setenv(name, str(tmp_path))
     monkeypatch.chdir(tmp_path)
     before = store.data.copy()
     for _ in range(2):
