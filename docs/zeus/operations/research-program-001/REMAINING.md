@@ -24,3 +24,9 @@ CI success and the next pinned source inventory/path check are prerequisites.
 Calls180/181 leave1. The full7-stage attempt needs ceiling187, an explicit additional6; no
 increase is applied by this document. The planned USD/time controls remain unchanged. Raw config
 and launcher preparation live in `D:/workspaces/zeus/artifacts/research-program-001/run003`.
+
+
+Update after explicit ceiling187 approval: run003 completed as a failed test attempt. Four roles
+succeeded; conductor timed out and requires reconciliation. Calls185/187, paused; no further
+starts authorized by the leftover slots. Automated review/full acceptance/tick2 remain unverified.
+See RESULT-003.md. The pending-grant wording above records preparation, not current budget state.

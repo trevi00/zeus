@@ -72,3 +72,7 @@ The separately authorized second attempt passed research, DBA, both leads and co
 submitted a candidate. Host evidence replay preparation then failed before container creation;
 the independent reviewer and second tick did not start. Calls180/181; fleetpaused; no retry,
 merge or deployment. See [RESULT-002.md](RESULT-002.md) for the actual boundary and evidence.
+
+
+Latest authorized attempt: [RESULT-003.md](RESULT-003.md). CI passed, ceiling187 applied;
+180->185 calls, conductor execution timeout, blocked and stopped; no worker/reviewer/tick2.

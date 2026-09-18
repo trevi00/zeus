@@ -412,3 +412,28 @@ the exact config and CI gate before requesting that explicit grant. No merge/dep
 retry. If granted and CI passes, one attempt only; failure stops. Completion requires real accepted
 run plus second collection with0extra model starts and max_cycles termination. A manual review or
 standalone collection must not be substituted for that whole-path result.
+
+
+## Approved ceiling187 and third live attempt (2026-09-19)
+
+User explicitly granted187 (+6 from181), one fresh attempt after CI, at most2collections/1council,
+stop on success or failure, no merge/deploy. Pinned CI35379964168 on1a0e9bf passed before the grant.
+The prepared short-root runtime rp004 was used; no production code or global settings changed.
+
+Actual run003 used180->185/187. Collection and four roles succeeded; conductor crossed its local
+execution deadline, task became blocked/reconciliation_required and council failed/role_blocked.
+Worker, independent reviewer and tick2 were not started. Fleet paused, active lanes0, no leftover
+worker/verifier containers. Exact-token scan0, unreadable0. The2unused slots remain unused.
+
+Acceptance matrix disposition: collection/research/DBA/leads observed; conductor timeout safely
+stopped this program; complete council/replay/reviewer/tick2 not exercised in this attempt. Prior
+short-root replay remains accepted separately. No current concurrency/restart/platform expansion
+was needed for this single authorized Windows-host run. General log-failure recovery remains open.
+
+Reframe only the unmet conductor completion boundary: observed deadline expiration -> previous
+assumption that the existing role allocation suffices for this payload did not hold in this run.
+Input/output burden versus variable provider latency remain competing explanations. Any future
+batch first inspects retained input/execution timing, then defines one role-specific bounded design;
+no claim that larger limits alone fix it. Current authorized batch is finished, stopped as promised.
+No retry, reconciliation, budget extension, implementation, merge or deployment follows implicitly.
+See RESULT-003.md and EVIDENCE-003.md. Full-path acceptance remains incomplete.
