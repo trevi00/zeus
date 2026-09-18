@@ -1,0 +1,191 @@
+{
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\parallel-adoption-001",
+  "authority": "execution and review evidence; not whole-asset completion",
+  "operations": {
+    "accepted": 2,
+    "initial_preparation_failed": 2,
+    "total_slots_consumed": 6,
+    "corrected_round_calls": 4
+  },
+  "validation": {
+    "windows_full": {
+      "passed": 2086,
+      "skipped": 454
+    },
+    "frontend_build": true,
+    "frontend_lint": true,
+    "owner_call_boundaries_passed": 23,
+    "browser": {
+      "fixture_inputs": "Browser-only modifications of an actual sanitized public snapshot; no PG writes or model calls",
+      "mobile": {
+        "width": 390,
+        "scroll": 390,
+        "closed": 6
+      },
+      "pinned_export_unchanged": true,
+      "actual": {
+        "events": 1187,
+        "operations": 16,
+        "generated_at": "2026-09-18T07:18:34.909Z"
+      },
+      "unknown": {
+        "passed": true,
+        "scope": "synthetic browser input"
+      },
+      "empty": {
+        "passed": true,
+        "scope": "synthetic browser input"
+      },
+      "truncated": {
+        "passed": true,
+        "scope": "synthetic browser input"
+      },
+      "errors": {
+        "errors": [],
+        "lifecycle": {
+          "effectiveLaunch": {
+            "browserLaunched": true,
+            "engine": "chrome",
+            "launchHash": 11677035664275010974
+          },
+          "launched": false,
+          "relaunchedBrowser": false,
+          "restartedBackground": false,
+          "restoreStatus": "not_configured",
+          "reused": true,
+          "saveStatus": "not_configured"
+        }
+      }
+    },
+    "pdf": {
+      "pages": 7,
+      "all_detail_labels_present": true,
+      "rendered_pages": 7,
+      "layout_review": "seven rendered pages inspected; diagrams/details readable; no missing detail section",
+      "export_counts_match": true,
+      "generated_at": "2026-09-18T07:18:59.797Z"
+    }
+  },
+  "files": [
+    {
+      "path": "preflight.json",
+      "bytes": 563,
+      "sha256": "767916c440836fe8c972e3012a59a81686b9ecc7586bbccf01ce64c620ef852f"
+    },
+    {
+      "path": "path-probe.json",
+      "bytes": 192,
+      "sha256": "234c98caa1c6474ea1ce93e38df622e6dd71806cdfb4a7ab22567eb65ac3ab38"
+    },
+    {
+      "path": "overlap.json",
+      "bytes": 560,
+      "sha256": "b613730a7e431479d57f215fd3bfb9c1b76ef4a1037b00808e88b74033f3d4f4"
+    },
+    {
+      "path": "reference-index.json",
+      "bytes": 8017,
+      "sha256": "69c8f136b6a273893b815a52ca450d9cf24f9bb5be88c820d4ed764062225e0c"
+    },
+    {
+      "path": "parallel-proof.json",
+      "bytes": 32219,
+      "sha256": "c4a2f65f291b7f6288dfd0983049bc2e50663981fe1dfec53ddf9f7642590b6d"
+    },
+    {
+      "path": "accepted.json",
+      "bytes": 78053,
+      "sha256": "cd75b174bf6d0ff301f3f5d970bdaa09670dbae85563f8e073c960d36caa9015"
+    },
+    {
+      "path": "experience/receipt.json",
+      "bytes": 993,
+      "sha256": "695ef910353809ab11872e83823a5ec0e9738e085f694a0a9cb164f15fbd9797"
+    },
+    {
+      "path": "visual/receipt.json",
+      "bytes": 989,
+      "sha256": "435919865a03d29650873305137512fa54d93c4fe69843c98e6a0933d8918f23"
+    },
+    {
+      "path": "experience-short/receipt.json",
+      "bytes": 993,
+      "sha256": "11a03f76c59c2aebbb78c6ac57da9d1b9d2852d5f029f5347c2293f6523edf4b"
+    },
+    {
+      "path": "visual-short/receipt.json",
+      "bytes": 989,
+      "sha256": "28dabc71626916a8cd4bdfee4bda668529e940f92d9432707e0de974cb9688ee"
+    },
+    {
+      "path": "experience-short/stdout.json",
+      "bytes": 6233,
+      "sha256": "26a80b8b3f26670ef5438b9863202475d34fdf805d30850d2bfc5597d660ca0c"
+    },
+    {
+      "path": "visual-short/stdout.json",
+      "bytes": 6209,
+      "sha256": "118014c7f5bbea04d4fb0b8c3f8b0cba6e47641906c85963edfa539bdcc6de08"
+    },
+    {
+      "path": "browser-check.json",
+      "bytes": 1010,
+      "sha256": "bc1bc1d7c12b7643c17d404e967b4512770d018997dcbddc83565e4fc4b7386c"
+    },
+    {
+      "path": "browser-first-attempt.json",
+      "bytes": 404,
+      "sha256": "57c665addf151d4eea9c42347f275e77653a5263b6a4e739c0dc178555e2fee2"
+    },
+    {
+      "path": "browser-second-attempt.json",
+      "bytes": 446,
+      "sha256": "0c4437f2beea8cd023a43e8a088d31278828c997a0ab0403d3536152b6f3e5cd"
+    },
+    {
+      "path": "pdf-check.json",
+      "bytes": 267,
+      "sha256": "1d1a29fd5b867f59df0b63cf570b7a4563b5701502c0d22df5887e468ea627d7"
+    },
+    {
+      "path": "final-report.json",
+      "bytes": 22192,
+      "sha256": "d8f07e2893d09dcf754531831f66977837cdcc257c2fade4295757aec4f36b23"
+    },
+    {
+      "path": "report.pdf",
+      "bytes": 332912,
+      "sha256": "b4797a803edf64769d28185a4d55240bfb981dc42f1a36093c5ddb0decb23a4a"
+    },
+    {
+      "path": "report-desktop.png",
+      "bytes": 132435,
+      "sha256": "553997d777a13e7cfd8a19b2061e5b6c737f990328db6459b11e75bb75f2b005"
+    },
+    {
+      "path": "report-mobile-diagram.png",
+      "bytes": 49172,
+      "sha256": "57dd9ce3f4067bbc9cf1f39f60ac7d18ec69671e9027734d65bf9e82350a2d49"
+    },
+    {
+      "path": "report-dark.png",
+      "bytes": 132321,
+      "sha256": "ceffa64b8db5f7481daaed56beffe51a53f1c93adb0eb69c1108c3caaac59171"
+    },
+    {
+      "path": "experience-collection.json",
+      "bytes": 524,
+      "sha256": "855b4c2c5765ed8bd834ade2f7d46683c5e912832a5c2c1cadedb115256998a6"
+    },
+    {
+      "path": "visual-collection.json",
+      "bytes": 524,
+      "sha256": "7d687c382f5ae79048f7b4f8ca066074f55b40a9d2b26fba58ba8ca5e6030a64"
+    },
+    {
+      "path": "full-suite.log",
+      "bytes": 5928,
+      "sha256": "f731a12ac4b742bc48d27664ec89fd48fccd6e9dfb648f53bacc4c45242d156a"
+    }
+  ]
+}
