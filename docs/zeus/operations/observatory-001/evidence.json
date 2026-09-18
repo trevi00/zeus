@@ -1,0 +1,126 @@
+{
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\observatory-001",
+  "authority": "selected acceptance evidence, not all runtime history",
+  "files": {
+    "audit-before.json": {
+      "bytes": 3585,
+      "sha256": "891635a6360578a9fd35c857d599f7cebce6b4f0122dc7b1fb1db37b33f1b219"
+    },
+    "recovered-files.json": {
+      "bytes": 3713,
+      "sha256": "9b8296432f2e2635b2c6541afa21c7f8cdbf19282a59cfdc403b5c9335f2492d"
+    },
+    "pending-disposition.json": {
+      "bytes": 23938,
+      "sha256": "265dd6e274b34747a2ccb6040653fffa1f2cd4604da52fbe74cf8c83736ce273"
+    },
+    "failed-attempt-disposition.json": {
+      "bytes": 478,
+      "sha256": "5ca0750fb61a7cc8d4cbf5ebb00b4b453260190984d90b16a5888dd170cee8f2"
+    },
+    "completion-queue-disposition.json": {
+      "bytes": 13716,
+      "sha256": "1f840fe04049c93d3429665404c02314c262b4b2de0248413195b72e20a03e71"
+    },
+    "superseded-assignment-disposition.json": {
+      "bytes": 681,
+      "sha256": "256be3eedc3b4da1f0194274600cf4dd3f5da1626bdef875e083e83139c32e72"
+    },
+    "implementation/receipt.json": {
+      "bytes": 971,
+      "sha256": "45ae7bf524503ff46ad0cc97ea5ebd9c36c6d16a23029dd9d97ce70cc4997c68"
+    },
+    "implementation/stdout.json": {
+      "bytes": 3773,
+      "sha256": "49d460522000068b3ad3a0c23132050af52729def43bd8ae7575b60bd4222015"
+    },
+    "implementation-2/receipt.json": {
+      "bytes": 971,
+      "sha256": "1c8af039af68ed7e8f08a941769ecd9b5959d4929a697607bae6f13375e756eb"
+    },
+    "implementation-2/stdout.json": {
+      "bytes": 4624,
+      "sha256": "4483958d3cf7a777d68a186ffbda53a89846e81008038c627ad72cddebe2c130"
+    },
+    "correction/receipt.json": {
+      "bytes": 971,
+      "sha256": "1efa1270db799dd09d1c3073cf14479ce7628559669b82cb04cbc39a89b5f82a"
+    },
+    "correction/stdout.json": {
+      "bytes": 3755,
+      "sha256": "2d5d0fdb99072485e86edf44b9b4eda5321058e1bd130558b4d65c5c247cd786"
+    },
+    "correction-2/receipt.json": {
+      "bytes": 971,
+      "sha256": "6aac66f115d81438fb38b4111f48c7fea54bcbe5f7d6d8b05d1557f5f0f8493e"
+    },
+    "correction-2/stdout.json": {
+      "bytes": 5712,
+      "sha256": "313a2f984ac5f0e1b4dee05c96a12415972786435eb5be70a4144967abfe65a2"
+    },
+    "print/receipt.json": {
+      "bytes": 971,
+      "sha256": "988d372e7f6d39e6355cd717614aa915164ee6583983b239dce8d623a01dc030"
+    },
+    "print/stdout.json": {
+      "bytes": 3745,
+      "sha256": "96fc830339b20d1e594f2d2137ed335df6a226609c7cbc33b2ec509f463a92ec"
+    },
+    "print-2/receipt.json": {
+      "bytes": 971,
+      "sha256": "c3e50770b8021f6d5e264e4c5f6fcd64671794da452b78bad5e6d301d8e71d85"
+    },
+    "print-2/stdout.json": {
+      "bytes": 5697,
+      "sha256": "3a1c75d74cd540614abda61fe7b26d54c87153c352bd7d8fe78f6d1b92b4ffa0"
+    },
+    "browser-timeout.json": {
+      "bytes": 185,
+      "sha256": "8216e8902b728ddf0ab634e4a3bc125676da165c896a79e568587ac87fb58f14"
+    },
+    "browser-freshness.json": {
+      "bytes": 568,
+      "sha256": "6330c2d67f6956b03152fddadb9aa93ab76e0e737eee7ac1389b90e4a0ea4092"
+    },
+    "report-a.json": {
+      "bytes": 10482,
+      "sha256": "19368ead9fd6c7cdd12fffb501fd7d59ef2866aebf6214650f576f2477d66f74"
+    },
+    "report-b.json": {
+      "bytes": 10482,
+      "sha256": "19368ead9fd6c7cdd12fffb501fd7d59ef2866aebf6214650f576f2477d66f74"
+    },
+    "report-unavailable.json": {
+      "bytes": 2002,
+      "sha256": "1213950f116477a62e5b2d8e064fc069dd15207f57f065cc456bbe9de4659440"
+    },
+    "report-transport-failure.json": {
+      "bytes": 2032,
+      "sha256": "d6e20fa7156bba5294725afe04ea6c35fef165a18d0bb01c154e97465dde513f"
+    },
+    "zeus-operation-report.json": {
+      "bytes": 10451,
+      "sha256": "bf953a0cb229ba90d5ca30cee431bdbbd9c73c8d8469cd5712a6706e7604b3fc"
+    },
+    "zeus-operation-report.pdf": {
+      "bytes": 138392,
+      "sha256": "70f1f7ff4ccedf92b1c2203ac165943a78caea8c9b5f26c8703556f3da4cb56d"
+    },
+    "report-page-1.png": {
+      "bytes": 90096,
+      "sha256": "36eaede0787ce673e4d143e9f6206f1256fcbf36d64dbdfef8e769440b04da47"
+    },
+    "report-page-2.png": {
+      "bytes": 42978,
+      "sha256": "d79104fca18d6862b1b82b4f8f13e70e75fcb86a780de5d75450317d7eb57e5e"
+    },
+    "final-desktop.png": {
+      "bytes": 110404,
+      "sha256": "a9c455056755d10d23405cc632a337d0333f26ef7a5c6aa49668fffee944765c"
+    },
+    "corrected-mobile.png": {
+      "bytes": 46227,
+      "sha256": "26b461603a409fc16095ca74f8f7a8c02f8888edaccef3a2adf91f6c46329b28"
+    }
+  }
+}
