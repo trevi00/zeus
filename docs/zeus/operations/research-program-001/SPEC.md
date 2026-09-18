@@ -1,0 +1,159 @@
+# Research program001 — finite discovery-to-improvement operation
+
+Owner Codex,2026-09-18. Base29f95b955cf0f4a015133ba61c0d1d6b61cc4016. One bounded delivery.
+
+## Outcome, authority, completion
+
+User wants current local/sterk residuals AND GitHub Trending/GeekNews to feed ongoing improvement,
+not another isolated profile patch. Connect existing collectors, durable store and real council/DGE
+through a reusable finite program. Operator authorizes goal/topic/write scopes and budgets once;
+the program discovers, deduplicates, selects and runs within that authority, without human relay.
+Claude implements; Codex owns this design, independent review, final release and issue closure.
+No automatic merge/deploy, host/global edits, provider retries, budget grants or arbitrary new goals.
+
+Batch authority: machine167 ->176 maximum: implementation+independent review2, then one real
+autonomous:2 council cycle at most7. No extra calls on failure. Implementation USD12 declared,
+1800seconds; canary worker USD4 declared,1200seconds; provider estimates are not billing guarantees.
+Canary: two real collection ticks, max1 selected improvement, second tick must observe previous
+candidate/result and avoid repeat or exceed cap. This is two collection cycles, NOT two completed
+model improvements. Show local + both live sources and actual scoped research/report improvement.
+External candidate may remain a lead or be deferred; no mandatory adoption of today's headlines.
+Do not claim readiness until candidate code is independently accepted, focused Windows/PG tests,
+CI and the two-tick actual run pass. Failure ends with evidence and the same frame revised.
+
+## Facts, source-backed decisions and limits
+
+Inspected current source2026-09-18:
+- adapters/research.ResearchSources collects GitHub Trending and GeekNews Atom/RSS (15entries,
+  2MB/30s bound); github_detail fixes commit and README evidence. Not full repository analysis.
+- application/scheduling schedules6h research and separate audit work. Workflow discovers topics
+  but intentionally defers source audit. Never mark those audits approved or bypass require_dispatch.
+- autonomous_cli.run + CouncilRun already perform researcher, DBA, research lead, improvement lead,
+  conductor, Claude implementation and independent review, with evidence-bound PG promotion.
+- Fleet accepts operation manifests only; do not weaken it or duplicate its dispatcher.
+- DGE verifies source citations against regular Git blobs at base, so mutable fetched text cannot
+  be claimed as a verified Git source. Need a capture commit, not self-reported external citation.
+- Existing FileArtifacts, Store transactions, CallBudget, no_console_kwargs/run_process and
+  monitoring.collect are the reused ownership/logging surfaces.
+
+Primary external surfaces checked2026-09-18: https://github.com/trending rendered by web reader;
+https://news.hada.io/rss/news failed in that reader. Neither establishes local collector success;
+owner live run must record actual fetch success/failure. No remote content is executable authority.
+Local source is read only; no upstream hooks/install/tests. No popularity-as-quality claim.
+
+## Complete path and interfaces
+
+Add `zeus research-program register --file CONFIG`, `run ID --ticks N`, `status ID`, `pause ID`,
+`resume ID`. Finite synchronous runner can be invoked by an existing hidden scheduled launcher;
+no service installation by worker. `run --ticks` obeys BOTH requested cap and immutable program
+max_cycles and interval; status is read only. Register never runs models. Pause blocks new ticks,
+active council finishes; no takeover or retry of uncertain active work.
+
+Use versioned strict JSON config (urn:zeus:research-program:1), unknown/missing fields refused:
+id, base_revision, deadline(aware ISO), interval_seconds(positive), max_cycles(1..100),
+max_adoptions(0..max_cycles), budget{per_host,total}, topics, local_candidates, template.
+topics: nonempty list of {id, keywords(nonempty lowercased strings)} defining owner-authorized
+relevance. local_candidates: bounded list(max100) of {id, topic, path, sha256, rationale}; path is
+regular tracked source at base and hash verified. These may reference existing local-analysis or
+sterk evidence; no inference that all source analysis/adoption is complete. template is a valid
+autonomous:2 manifest with operator goal/plan/research/current_state and SAME base/budget. Program
+never broadens its allowed_paths, criteria or goal. Validate all with existing domain validators.
+One local candidate per source identity; URL normalized(no fragment) for external dedup. Same URL
+updated content remains the same candidate in this program: explicit conservative policy, revised
+version requires a newly authorized program. Source content digests are separately preserved.
+
+Persistent buckets `research_programs`, `research_program_candidates`, `research_program_cycles`.
+Register immutable config digest incl resolved repository identity; repeated identical registration
+is cached; changed config/id/repository refused. No count reset on restart. State active/paused/
+completed/blocked; initially paused. Each tick reserves the next cycle number/owner in one PG
+transaction before fetching; a concurrent run refuses busy. Crash leaves owned/busy, never assumed
+empty. DB failure means no fetch/model start. No transaction stays open across I/O/provider calls.
+Persist cycle state before council start; candidate claim and max_adoptions reservation in same
+transaction. Count any dispatched attempt (not just accepted); failure/unknown blocks program and
+does not unclaim candidate. Same id/terminal replay does not call providers. No blind auto repair.
+
+Each tick: enforce pause/deadline/max_cycles; collect BOTH live feeds via ResearchSources plus
+verified local rows; record source ok/unavailable independently(type/code only, no exception text).
+One unavailable feed need not suppress verified local work but must show degraded, never 'empty'.
+Discovery itself is read-only and uses no model calls. Dedup across ticks in PG. Map relevance by
+topic keyword match in bounded title/summary; record deterministic reason, never call this semantic
+quality evaluation. Stable order: authorized local first, then topic/id/url lexical. Nonmatches
+remain ignored with reason; matching candidates are eligible leads only. No new topic invention.
+Select at most1 eligible unclaimed candidate if adoption cap and remaining machine headroom>=7;
+otherwise record no-selection reason. Cap exhaustion still permits remaining collection ticks.
+If due time not reached return not_due without increment or sleep; host scheduler calls later.
+
+## Evidence capture and council reuse
+
+For a selected candidate create canonical bounded snapshot JSON with source URL/ref/fetched_at,
+candidate identity/reason and source-status map; read local bytes at config.base (never live dirty
+files). For selected GitHub candidate optionally reuse github_detail once; absence/failure recorded
+as unknown, not successful review. GeekNews feed description is discovery only, never primary-source
+verification; missing primary proof must be reported/deferred by the council, not fabricated.
+
+Pin snapshot at `docs/zeus/research-captures/<program>/<cycle>.json` in a NEW detached capture commit
+based on immutable config.base in the SAME object database; never commit/reset checkout working
+tree or current branch. Recommended temporary Git index + read-tree/hash-object/update-index/
+write-tree/commit-tree with explicit synthetic commit author; fixed argv/no shell, run_process
+timeouts, cleanup only owned index. Ref under refs/zeus/research/<program>/<cycle> retains commit.
+Reject existing target path/ref conflicts; avoid symlink/path injection; never follow source data
+as commands. Writes only snapshot blob and this ref; do not stage user files or move user HEAD.
+Capture records are unverified source data, not approved knowledge. Keep large raw feed bodies in
+FileArtifacts runtime directory and their SHA refs; small bounded snapshot in Git. State failure
+after commit records recovery reference; don't delete evidence or silently redo active cycle.
+
+Derive council manifest only: new deterministic run id, base=capture commit, deadline=min(program
+deadline,template.deadline), original goal/plan/budget unchanged, add snapshot path to research
+search_scope and a bounded discovery question naming it as untrusted lead and reminding primary
+evidence requirements. Goal file hash remains valid at capture commit; no generated role answers.
+Call existing autonomous_cli.run(service,args) using persisted manifest path and existing configured
+repository/runtime/Redis/DB. One existing CouncilRun owns actual calls, cancellation, output and
+promotion. Read authoritative autonomous_runs row and require matching manifest/run status; never
+accept stdout/model 'success' as authority. Return accepted/rejected/failed/unknown exactly, record
+candidate + cycle result references. No fake/provider substitute in owner live acceptance.
+
+## Logs and reports
+
+PG cycle receipt: counts discovered/new/duplicate/ignored/selected, source statuses, selection reason,
+budget snapshot, capture revision, council id/status, timestamps, remaining cycles/adoptions and
+stop reason. Progress persists through failure; unknown distinct from0/missing. General (tick),
+development (selection/evidence/check), operations (failure/budget/blocked) categories in explicit
+local safe JSONL event log if existing observer cannot represent these without schema changes;
+no raw exception, source body, credentials or DSNs in logs. Do not change observation schema here.
+Reuse monitoring envelope: additive `research_programs` read-only bounded projection(max20,
+truncated explicit) in monitoring.collect, exposing program/cycle counts/outcomes/stop reasons;
+no frontend redesign. `status` emits same safe facts with schema/version. Write bounded report.md
+under runtime/research-program/<id>/ with real counts and a simple source→selection→DGE→result
+diagram; clearly distinguish configured stages from observed successes. No model-generated facts.
+
+## Implementation boundary / checks
+
+Allowed: new domain/research_program.py, application/research_program.py,
+adapters/research_program.py, adapters/research_program_cli.py; cli.py minimal wiring;
+adapters/monitoring.py additive source only; tests/test_research_program*.py plus directly affected
+monitor/CLI tests; docs/contracts.md new INV-RESEARCH-PROGRAM-001;
+docs/zeus/operations/research-program-001/{IMPLEMENTATION.md,RUNBOOK.md,example.json}.
+Do not modify fleet, autonomous/council engine, provider policy, loader/profile or permissions.
+No global process, env, credential or source-ledger writes. No new dependencies. Code functions
+live in reusable package, not an untracked one-off automation. Outer domain/application remain
+stdlib + ports; adapters own filesystem/network/process operations.
+
+Acceptance matrix:
+| Boundary | Required evidence |
+| Normal | Two ticks: same candidate dedup; local + both external inputs; <=1dispatch/tick |
+| Relevance/authority | unrelated ignored, deterministic rationale; template scope/goal/budget immutable |
+| Missing/error | source unavailable distinct from empty; evidence/DB/capture/council failure persisted |
+| Budgets/time | headroom7 preflight + existing reservations; absolute deadline; caps persist; no retry |
+| Restart/concurrency | identical replay no duplicate; separate-process/concurrent PG claim exactly1; active unknown blocks |
+| Git/cleanup | native temp Git dirty checkout unchanged; only snapshot/ref; bounded owned temp cleanup |
+| Truth | rejected remains rejected; mocked unit outcomes labeled; actual canary no mocks; no audit promotion bypass |
+| Platforms | focused Windows plus CI Linux/Windows; fake clock/faults in tests labeled |
+| Reporting | counts from PG, source errors visible, pause/status read without models; three categories |
+
+Worker runs `python -m pytest tests/test_research_program.py tests/test_research_program_cli.py -q
+-p no:cacheprovider` (create these two test files; helpers may be test_research_program*.py),
+`python -m ruff check .`. Tests use real temporary Git; PG integration gated consistently with
+repo existing convention. Stub council/network only for deterministic failures, labeled; real
+owner canary is required separately. No full suite by worker; owner/CI owns full/platform checks.
+One consolidated review across this matrix, critical reachable defects only. Minor optional
+refactoring is follow-up, not a new blocker. Reframe here if an assumption fails.
