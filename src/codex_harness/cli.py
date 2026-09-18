@@ -304,7 +304,11 @@ def parser() -> argparse.ArgumentParser:
     from codex_harness.adapters.fleet_cli import add_parser as add_fleet_parser
     add_fleet_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
+    from codex_harness.adapters.research_program_cli import (
+        add_parser as add_research_program_parser,
+    )
     add_autonomous_parser(commands)
+    add_research_program_parser(commands)
     ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
     ticket_commands = ticket.add_subparsers(dest="ticket_command", required=True)
     ticket_commands.add_parser("list")
@@ -491,6 +495,16 @@ def autonomous_command(service, args):
         raise SystemExit(1)
 
 
+def research_program_command(service, args):
+    """INV-RESEARCH-PROGRAM-001: exit 0 only for a recorded, replayed or read result; refusals print a
+    code and a type, never configs, feed bodies, DSNs or raw exceptions."""
+    from codex_harness.adapters import research_program_cli
+    result = research_program_cli.execute(service, args)
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
 def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -651,6 +665,8 @@ def main() -> None:
             autonomous_command(service, args)
         elif args.command == "fleet":
             fleet_command(service, args)
+        elif args.command == "research-program":
+            research_program_command(service, args)
         elif args.command == "observe":
             observe_command(service, args)
         elif args.command == "demo":

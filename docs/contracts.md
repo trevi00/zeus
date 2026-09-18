@@ -1234,3 +1234,50 @@ error type with `dead_letter` false for a foreign refusal, `operations.operation
 and `operations.operation_finalized` carry identifiers, counts and codes only, and every affected
 outbox flush audits through `observer.audit_system`; an absent observer keeps every prior caller
 unchanged, and an observation failure never alters handling, the ACK or the outcome.
+
+## INV-RESEARCH-PROGRAM-001
+
+`zeus research-program register|run|status|pause|resume` is the finite discovery-to-council program
+over the existing collectors, store and council. One strict config (`urn:zeus:research-program:1`:
+id, base_revision, aware deadline, positive interval_seconds, max_cycles 1..100, max_adoptions
+0..max_cycles, machine `budget`, 1..20 topics with lowercase keywords, at most 100 local candidates
+with a regular tracked path and exact sha256 at base, and one complete `urn:zeus:autonomous:2`
+template with the SAME base and budget) is validated by the existing council and operation
+validators, its template goal bound at base and every local candidate verified through the dge Git
+verifier before the row exists. Registration stores the canonical config with the digest of
+config+resolved repository identity in `research_programs`; the identical registration is cached,
+any other config, id or repository is `registration_conflict`; the row's config, digest and counters
+are never rewritten by a tick and never reset. Programs start `paused`; `resume` moves paused to
+`active` only (completed and blocked are refused; no repair); `pause` blocks new ticks while an owned
+cycle finishes. Every tick reserves the next cycle number with a fresh owner token in ONE store
+transaction before any fetch (`busy` while a cycle is owned, `paused`, `deadline_expired` and
+`max_cycles_reached` completing the program, `not_due` without increment); no transaction spans a
+fetch, Git command or the council. Discovery is read-only and model-free: local rows re-verified at
+base, BOTH live feeds through `ResearchSources`, each source recorded ok/unavailable with an
+exception type or dge code only (degraded, never empty). Candidates dedup across ticks in
+`research_program_candidates` by `local:<path>` or `url:<https url without fragment>`; relevance is
+a deterministic keyword match in bounded title/summary with a recorded reason, never a semantic
+judgement; the stable order is local first, then topic/id/url. At most one eligible unclaimed
+candidate is claimed per tick, in the same transaction that counts the adoption, only when the
+adoption cap and the machine ledger headroom (>= 7 remaining on both ceilings, unreadable counts are
+not free) allow; otherwise the fixed no-selection reason is recorded and collection still counts.
+For a selection the bounded snapshot JSON goes to the artifact store and to a NEW detached commit on
+the immutable base in the same object database (temporary index, hash-object/update-index/
+write-tree/commit-tree, fixed argv, synthetic author, one new `refs/zeus/research/<program>/<cycle>`
+created with an empty old value): the checkout, index, HEAD and branches are never read or moved,
+an existing target path or ref is refused, and captures are unverified source data. The council
+manifest is derived only: deterministic id `<program>.c<NNN>`, base = capture commit, deadline =
+min(program, template), template goal/plan/budget/claude/current_state byte-identical, snapshot path
+appended to the research scope with one bounded question naming the lead as untrusted; it is
+persisted and its start recorded in `research_program_cycles` before `autonomous_cli.run` executes
+it under the existing CouncilRun, CallBudget and promotion. The result is read from the
+authoritative `autonomous_runs` row (id and manifest digest must match) and is exactly
+accepted/rejected/failed/unknown; stdout, return values and exceptions are never authority; a
+missing row after a refusal is `failed`. failed/unknown block the program and keep the claim;
+rejected stays rejected. Capture, manifest or Git failures persist stage and code, count the cycle
+and block the program. `status`, the additive read-only monitor source `research_programs`
+(`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
+`runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store
+only; the local JSONL event log carries general/development/operations records with identifiers,
+counts and codes; none of them carry configs, feed bodies, exception text, credentials or DSNs.
+No retry, merge, deploy, service install, budget grant, scope change or generated goal.
