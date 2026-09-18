@@ -207,3 +207,23 @@ asserted identity of operation/executor/collector observer; 7 tests passed, no r
 Reserve a final small pair ledger145->147, Claude USD1 / 300s, same pinned old runtime and a distinct
 task queue. Retain the rejected review receipt; owner final acceptance includes the targeted regression,
 previous 4 counterexamples, 31-case service matrix, full suite/CI and existing live canary plan.
+
+### Final owner verification and deployment boundary
+
+The small Claude call exhausted its USD1 budget after writing the requested guard and regression;
+the operation remains failed/execution_retry, with no fabricated accepted model verdict. Codex
+preserved and imported its exact three-file diff (patch SHA256
+`f8add064165cd0270c4f3710c9bcdbbc0f23c62e44956a87f934349fe8d7c371`), independently reviewed the one
+guard and executed the final checks at adb8ce8: real PG/Redis 32 passed, focused 152 passed/23 skipped,
+four prior counterexamples passed, lint passed. Full local tests at 659399c (before the last guard)
+were 2085 passed/454 skipped. Final-head platform/full integration CI is required before merge.
+Call ledger141->146: two implementation/review pairs and one bounded worker; no automatic retry.
+
+One deployment migration is explicit: the failed identity operation ran under the old runtime and
+left a retry/diagnose pair. After acceptance, invoke the new retire policy for ONLY that exact owned
+terminal operation in a PG transaction, add a marked owner-initiated finalization summary, and keep
+its failed outcome, original error/history and all uncertain-effect protections. This is not a
+historical sweeper or evidence of automatic handling by the old runtime. Then use the accepted
+LocalCycle to park preserved side-queue messages, and perform the two ordinary zero-capacity
+operate runs on the main namespace to prove automatic finalization and next-operation continuation.
+No provider is called in these rollout checks. CI, rollout and closure receipts are recorded on #142.
