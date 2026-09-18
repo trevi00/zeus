@@ -103,3 +103,18 @@ Owner commits this frame, runs lanes, reviews against this matrix, integrates di
 builds static assets, performs browser/full CI, merges/deploys within existing authorization.
 Recommendations outside this matrix remain notes. Full asset absorption is tracked in the existing
 analysis ledger, not reported as two-item completion or a percentage derived from file counts.
+
+## One pre-provider preparation correction
+
+Both initial lane attempts failed during stage_source materialization with FileNotFoundError on
+deep tracked evidence paths, before the adapter's container create call. Each reserved a machine
+slot (146 ->148); neither produced candidate code or a worker run record. Preserve both failed
+operations and unsettled_unknown reservation records; do not rewrite them as successful calls.
+Discriminating check: exact same source revision, existing stage_source and 5062 files/59,597,999
+bytes exported successfully under a shorter D runtime prefix (path-probe.json). No source fix,
+model call, public runtime cleanup or OS setting change was used. Thus shorten only the two
+owned runtime roots to D:/workspaces/zeus/artifacts/p1e and p1v. Original partial copies remain.
+Owner authorizes one corrected pair of distinct operation IDs after this measured setup correction;
+same lane schemas/namespaces, fixed global ceiling152 (148 existing +four intended calls), not a
+reset/retry of the old IDs or an automatic escalation. Original unknown reservation status remains
+visible; code order and absent run/container establish source preparation failed before creation.
