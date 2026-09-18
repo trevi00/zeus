@@ -185,7 +185,9 @@ def require_identity(tx, message: dict) -> dict | None:
     the message's own bucket (task or inbox row) so the caller can answer with the old result.
     """
     identity = digest(message)
-    old = tx.get("tasks", message["message_id"]) if message.get("type") == "task.assign" else None
+    # The tasks binding is checked for every type: a differently typed message reusing a task id
+    # must not establish a parked digest under that id (INV-OPERATION-FINALIZATION-001).
+    old = tx.get("tasks", message["message_id"])
     if old is not None:
         require(old.get("input_hash") == identity, IDENTITY_ERRORS["task.assign"])
     inbox = tx.get("workflow_inbox", message["message_id"])

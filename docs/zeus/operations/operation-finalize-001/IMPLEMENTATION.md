@@ -47,6 +47,18 @@ Worker: Claude (isolated Zeus worker), 2026-09-18. Base `0a061c4b`; correction b
    is checked. Rollback before the terminal / disposition commit is covered on MemoryStore and PostgreSQL
    (no status, disposition, fence or `operations.operation_finalized` event).
 
+## Final identity-guard correction (SPEC "Remaining identity guard")
+
+- `require_identity` now reads the `tasks` binding by `message_id` for every incoming type (before: only
+  `task.assign`); the hash comparison, inbox check and parking checks are unchanged. A differently typed
+  message reusing a task id is refused with the existing `Conflicting task identity` error and no parked
+  digest is written under that id.
+- One regression in `tests/test_operation_finalization.py`
+  (`test_a_differently_typed_message_reusing_the_task_id_is_refused_and_the_assignment_still_parks`):
+  accepted operation, genuine `task.result` copied with the assignment's id, `handle` refuses, no
+  disposition, task row untouched; the unchanged assignment replay then parks and the poisoned copy is
+  still refused afterwards. Verification: the two commands below, rerun on this correction.
+
 ## Verification actually run (correction batch, this worker)
 
 ```

@@ -332,6 +332,31 @@ def test_handled_report_and_notice_conflicts_are_refused_before_parking_and_orig
         assert [d["status"] for d in tx.scan("decisions_pending")] == ["succeeded"], "no new decision from any replay"
 
 
+def test_a_differently_typed_message_reusing_the_task_id_is_refused_and_the_assignment_still_parks():
+    bus = Bus()
+    svc, operation, _ = build(bus=bus)
+    receipt = operation.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "accepted"
+    [assignment] = [m for m in bus.published if m["message_id"] == receipt["assignment_message_id"]]
+    [report] = [m for m in bus.published if m["type"] == "task.result"]  # the genuine handled report
+    with svc.store.transaction() as tx:
+        task_before = deepcopy(tx.get("tasks", assignment["message_id"]))
+    workflow = Workflow(svc.store, svc.org)
+    poisoned = deepcopy(report)
+    poisoned["message_id"] = assignment["message_id"]  # a task.result under the assignment's task id
+    with pytest.raises(ContractError, match="Conflicting task identity"):
+        workflow.handle(poisoned)
+    with svc.store.transaction() as tx:
+        assert tx.scan(MESSAGE_DISPOSITIONS) == [], "no parked digest under the task id"
+        assert tx.get("tasks", assignment["message_id"]) == task_before
+    parked = workflow.submit(deepcopy(assignment))
+    assert parked["parked"] is True and parked["message_id"] == assignment["message_id"]
+    with pytest.raises(ContractError, match="Conflicting task identity"):
+        workflow.handle(deepcopy(poisoned))  # the task binding still wins over the parked digest
+    with svc.store.transaction() as tx:
+        assert len(tx.scan(MESSAGE_DISPOSITIONS)) == 1 and tx.get("tasks", assignment["message_id"]) == task_before
+
+
 def test_a_conflicting_foreign_body_on_the_bus_is_refused_without_ack():
     svc, operation, _ = build(worker="retry")
     receipt = operation.run(valid(), IDENTITY, BOUND_GOAL)
