@@ -15,6 +15,7 @@ from pathlib import Path
 from codex_harness.adapters.bus import RedisBus
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.monitoring_observations import observation_facts
+from codex_harness.application.fleet import Fleet
 from codex_harness.application.monitoring import Monitoring
 from codex_harness.domain.model import ContractError
 
@@ -321,6 +322,13 @@ def redis_facts(url, agents):
     return output
 
 
+def fleet_facts(store):
+    """INV-FLEET-001 projection (`urn:zeus:fleet-status:1`) from PG reads only: identities,
+    states, codes and counts; never manifests, paths, schemas, DSNs or raw errors. Registration
+    is not service health, and `updated_at` is the last recorded fact, not liveness."""
+    return Fleet(store).status()
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -343,7 +351,9 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
                 'measurements': persisted_measurements(service.store)}
     jobs = {'database': database,
             'docker': lambda: docker_facts(repository, containers),
-            'redis': lambda: redis_facts(redis_url, service.org.agents)}
+            'redis': lambda: redis_facts(redis_url, service.org.agents),
+            # Additive fleet envelope (INV-FLEET-001): same read-only store, fails independently.
+            'fleet': lambda: fleet_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
     with ThreadPoolExecutor(max_workers=4) as pool:

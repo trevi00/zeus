@@ -301,6 +301,8 @@ def parser() -> argparse.ArgumentParser:
     operate_status.add_argument("operation_id")
     from codex_harness.adapters.dge_cli import add_parser as add_dge_parser
     add_dge_parser(commands)
+    from codex_harness.adapters.fleet_cli import add_parser as add_fleet_parser
+    add_fleet_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
     add_autonomous_parser(commands)
     ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
@@ -460,6 +462,20 @@ def dge_command(service, args):
     type, never packet text, payloads, DSNs or raw exceptions."""
     from codex_harness.adapters import dge_cli
     result = dge_cli.execute(service, args)
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def fleet_command(service, args):
+    """INV-FLEET-001: exit 0 only for a completed command; refusals print a code and a type, never
+    manifests, paths, schemas, DSNs, raw exceptions or process output."""
+    from codex_harness.adapters import fleet_cli
+    try:
+        result = fleet_cli.execute(service, args)
+    except Exception as exc:
+        emit(fleet_cli.refusal(exc))
+        raise SystemExit(1) from exc
     emit(result)
     if result.get("exit_code", 1) != 0:
         raise SystemExit(1)
@@ -633,6 +649,8 @@ def main() -> None:
             dge_command(service, args)
         elif args.command == "autonomous":
             autonomous_command(service, args)
+        elif args.command == "fleet":
+            fleet_command(service, args)
         elif args.command == "observe":
             observe_command(service, args)
         elif args.command == "demo":
