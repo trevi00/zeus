@@ -1,7 +1,8 @@
 {
   "authority": "owner fixed-scope deployment observations; not unrestricted autonomy",
   "runtime_revision": "9bc1f188646294c768c9703217a1df7caac88d9b",
-  "accepted_candidate": "93d928deac790dec8c96a5bf3711425768e16376",
+  "accepted_candidate": "de6a749af5466e2d9e9c1987e40661c20babf271",
+  "test_only_acceptance": "manual owner Codex review plus focused40 and required final CI; third automated operation failed and stays failed",
   "runs": [
     {
       "id": "monitor-live-136-implementation",
@@ -76,13 +77,41 @@
           }
         ]
       }
+    },
+    {
+      "id": "monitor-live-136-test-isolation",
+      "status": "failed",
+      "lead_accepted": false,
+      "collection": {
+        "files": 2,
+        "records": 74,
+        "inserted": 74,
+        "sink_failures": 0,
+        "corrupt": 0,
+        "refused": 0
+      },
+      "calls": {
+        "reserved": 1,
+        "settled": 1,
+        "slots": [
+          {
+            "id": "0e5b4bc038244c7f9d4d0451fa7e96b8",
+            "kind": "task",
+            "agent": "worker:implementation",
+            "provider": "claude",
+            "outcome": "succeeded",
+            "settled": true,
+            "settle_error": null
+          }
+        ]
+      }
     }
   ],
   "files": [
     {
       "path": "D:\\workspaces\\zeus\\artifacts\\monitor-live-001\\records.json",
-      "sha256": "593386e6e5c54bf3cfcbd549d95a57bb30eb02e03de5fb106803580e8a9aabf2",
-      "bytes": 143714
+      "sha256": "ff54ecd1e681b644f10f8a4b1a57dd43febbdc7e0d0b61b69b4699e39cde7423",
+      "bytes": 263176
     },
     {
       "path": "D:\\workspaces\\zeus\\artifacts\\m136\\i\\manifest.json",
@@ -113,6 +142,21 @@
       "path": "D:\\workspaces\\zeus\\artifacts\\m136\\c\\stdout.json",
       "sha256": "c66d07f165ae1b72478c68c62f09ce7fcc9742e0f668d93d5d362ad92900280d",
       "bytes": 5744
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\t\\manifest.json",
+      "sha256": "90c1434adb47b4b5dec767ae134cee09f00907ba3b7217d9c866ec5529df05a7",
+      "bytes": 2391
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\t\\receipt.json",
+      "sha256": "6c4b7c26846cfce33abec46b561189b1eeba8e926a845ac3bb72e26f568e2208",
+      "bytes": 1010
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\m136\\t\\stdout.json",
+      "sha256": "8ac749c9690e9f13fce70f865cc2840a79d84eeb422daaca5e229420b7912b15",
+      "bytes": 4640
     },
     {
       "path": "D:\\workspaces\\zeus\\artifacts\\m136\\c\\postprocess-recovery.json",

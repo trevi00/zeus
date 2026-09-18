@@ -17,6 +17,10 @@ remain in place. Credentials and the machine call ledger were not moved.
   or provider call from the monitor.
 - Owner ran the corrected monitoring/measurement tests: **35 passed** on Windows Python3.14.
   Independent review preserved the first runtime acceptance and checked the correction seam.
+- First full CI run35293839664 failed: the new CLI test leaked repository environment aliases
+  into subsequent tests. Owner reproduced it with a two-test sequence. Claude candidate
+  `de6a749` owns both aliases through monkeypatch teardown; no runtime changed. Owner independently
+  reviewed this five-line test correction and ran monitoring/measurement/supervisor: **40 passed**.
 - Real PG, Redis and named Docker sources return `ok`. The browser displays actual assigned work
   and reviews. `flexday-pg` and transient worker containers are outside the named scope.
 - Real owned-process termination: collector PID5560 ->4900 in26.84s; web PID4616 ->12632 in17.99s.
@@ -39,6 +43,18 @@ remain in place. Credentials and the machine call ledger were not moved.
   are written.
 
 ## Failures and limits
+
+The third Zeus run `monitor-live-136-test-isolation` remains **failed / evidence_gate_refused**.
+The requested tests and lint replayed successfully, but the worker also ran an unrequested full
+suite and unrelated investigations. The extracted full-suite claim exceeded the300s replay limit;
+two unrelated extracted claims expected exit0 and returned1. The worker note describes those as
+failures, so the observed discrepancy also concerns free-text claim extraction; no general claim
+of parser correctness or model dishonesty follows. Inspection `7f977249...` retains all six
+claims and results. No automatic reviewer ran. Owner manually accepts only the narrow test fix
+subject to full CI; the failed operation is not relabelled, retried or promoted. Total model calls
+for this continuation: **five**, ledger127 ->132 (Claude3, automated Codex reviews2). The reserved
+ceiling133 was not consumed. Scope adherence and explicit command-result evidence are follow-up
+observations; resolving them is not added to this monitor deployment's acceptance.
 
 The first scope omitted an existing test that expected the monitor to manufacture observations.
 Owner reproduced its failure, expanded the same frame by that test file, and obtained one correction.
