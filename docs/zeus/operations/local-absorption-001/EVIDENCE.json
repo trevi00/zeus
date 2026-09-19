@@ -1,0 +1,180 @@
+{
+  "schema": "urn:zeus:local-absorption-evidence:1",
+  "run_id": "local-absorption-001-utf8",
+  "raw_root": "D:\\workspaces\\zeus\\artifacts\\local-absorption-001",
+  "candidate": {
+    "base": "50dcd0f3a6a05f98963e290e13093c11d31647c6",
+    "tree": "a51fda442d21ada5652f6db67c4ae4bafe8841e2",
+    "revision": "da6af9558d747c8911f72443fa4f411f26768aa2",
+    "diff_hash": "7538420ec4448b3657005aac1b0a2a3c2fbcf672a375cfba61b3326638c5662c"
+  },
+  "delivery_code_commit": "71bdfbd47cf7ffbb9a6c20489254e553b171d157",
+  "runtime_commit": "a1b40e25a91d530d94a24178c39f37e8266e18e3",
+  "pr": "https://github.com/trevi00/zeus/pull/154",
+  "calls_before": 227,
+  "calls_after": 229,
+  "calls": {
+    "slots": [
+      {
+        "id": "dc2cb6853fc1430f949facf37663db51",
+        "kind": "task",
+        "agent": "worker:implementation",
+        "outcome": "succeeded",
+        "settled": true,
+        "provider": "claude",
+        "settle_error": null
+      },
+      {
+        "id": "cc6389ebd8104fbf8a8fa7000c7b65d1",
+        "kind": "decision",
+        "agent": "lead:improvement",
+        "outcome": "succeeded",
+        "settled": true,
+        "provider": "codex",
+        "settle_error": null
+      }
+    ],
+    "settled": 2,
+    "reserved": 2
+  },
+  "collection": {
+    "files": 2,
+    "corrupt": 0,
+    "records": 90,
+    "refused": 0,
+    "inserted": 90,
+    "sink_failures": 0
+  },
+  "checks": {
+    "focused": {
+      "tests": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 27
+    },
+    "full": {
+      "tests": 2756,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 455,
+      "passed": 2301
+    }
+  },
+  "final_state": {
+    "preserved_file_count": 130,
+    "changed_files": [],
+    "c_head_unchanged": true,
+    "fleet_paused": true,
+    "active_lanes": [],
+    "job_status": "accepted",
+    "worker_containers": [],
+    "health": {
+      "service": "harness-monitor"
+    },
+    "runtime_head": "a1b40e25a91d530d94a24178c39f37e8266e18e3"
+  },
+  "files": [
+    {
+      "path": "operation.json",
+      "bytes": 2172,
+      "sha256": "3f0f54601228a0d444f106a7c0682756242c41c8635eec80ef0d7f35aeadd65b"
+    },
+    {
+      "path": "operation-receipt.json",
+      "bytes": 6662,
+      "sha256": "12a5023d03c6a5f21e75438f75254443fc8558ad281a868593a4d1b7447d8daa"
+    },
+    {
+      "path": "batch-receipt.json",
+      "bytes": 13164,
+      "sha256": "1853f2ba3d254f9200956ea39b6e9146ff1b9470028a34aa83fa12668c080cd1"
+    },
+    {
+      "path": "task-and-review.json",
+      "bytes": 32079,
+      "sha256": "b7685e979d3a18c097ab523c59c44d76b38b5dad5ac66687263fe5e29cf8e4b5"
+    },
+    {
+      "path": "provider-facts.json",
+      "bytes": 9021,
+      "sha256": "43841023b00bdcd30c8ff7f526a7770b4230e2ad3e3ed0e61153bf4946edd913"
+    },
+    {
+      "path": "deployment.json",
+      "bytes": 784,
+      "sha256": "0673a6ae3def2d443b5a4a435a8fd93d74a2fbf233e254e9709443122984b9ca"
+    },
+    {
+      "path": "retired-old-monitors.json",
+      "bytes": 1906,
+      "sha256": "6eeeba71ff71ed0d6cb292af62b8ce0de4c6ab3a101a0ef01e91b0ff4f16efba"
+    },
+    {
+      "path": "c-preservation-before.json",
+      "bytes": 17559,
+      "sha256": "fb3a6ba47635ad538b5c83be0d3789153a2e212353f710442aca2aadf7bdfa47"
+    },
+    {
+      "path": "final-state.json",
+      "bytes": 311,
+      "sha256": "ecebc003e14fdf97c7b0a0df145dab43893c582c35b8c026c266bd09168b623e"
+    },
+    {
+      "path": "final-monitor-snapshot.json",
+      "bytes": 599137,
+      "sha256": "6ebd114ebf4916e03d5b91e33679171bddc7dbbe8e7923867014ab3ac22bba97"
+    },
+    {
+      "path": "baseline.json",
+      "bytes": 214,
+      "sha256": "85481e4f695f7717861b0caaa2eca43218205ebb80bf89b73da945534166a2e0"
+    },
+    {
+      "path": "baseline-bom.json",
+      "bytes": 27,
+      "sha256": "12ac075a5a24ba971e22e0688ece12c008d52d67c65a929deabbd6cbd0de9964"
+    },
+    {
+      "path": "candidate-bom.json",
+      "bytes": 178,
+      "sha256": "529c889f69d7984eb22dd657334dccc87ef19bb30c1159e92e0bb07ee5df003d"
+    },
+    {
+      "path": "owner-checks.py",
+      "bytes": 1624,
+      "sha256": "5ba33b0701918e9da028e234b704d001bbebe85224d7af0da01de6c111998be6"
+    },
+    {
+      "path": "owner-validation.json",
+      "bytes": 439,
+      "sha256": "a9bbc8bfd1b9f18bfccfea51839fbb31968ab99e472da1e7ce553b671687c011"
+    },
+    {
+      "path": "owner-focused.xml",
+      "bytes": 4398,
+      "sha256": "d9117025d3542b4dcd48ce4bc61b93d033a6e6b47f9d6f984a2f1333c4e41cf9"
+    },
+    {
+      "path": "owner-full.xml",
+      "bytes": 508415,
+      "sha256": "313f753eef2f01384959ee58e00e0c248c9df837804646c53e34ed13ac0687cc"
+    },
+    {
+      "path": "owner-focused.log",
+      "bytes": 113,
+      "sha256": "145c0f559195cee9467b53eff0d142c2d82b39252a3946e576be6cfe3877e17e"
+    },
+    {
+      "path": "owner-lint.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "owner-full.log",
+      "bytes": 3206,
+      "sha256": "df7b4870f4edfa62d3628c127e5bb5ae3eda32218b4b19b7676da3fe87176821"
+    }
+  ],
+  "portability": "Raw evidence remains on this host; hashes are committed, not a claim of remote archival."
+}

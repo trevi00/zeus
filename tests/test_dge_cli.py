@@ -6,6 +6,8 @@ import subprocess
 from types import SimpleNamespace
 
 import pytest
+from test_research_program_fixtures import config as program_config
+from test_research_program_fixtures import repository as program_repository
 
 from codex_harness import cli
 from codex_harness.adapters import dge_cli, operation_cli
@@ -17,9 +19,11 @@ from codex_harness.bootstrap import organization
 from codex_harness.domain.dge import PacketError, packet_digest, validate_packet
 from codex_harness.domain.model import ContractError
 from codex_harness.domain.operation import validate_manifest
+from codex_harness.domain.research_program import config_digest, validate_config
 
 CANARY = "CANARY-must-never-be-emitted"
 NOTE = b"# research note\nPG store serializes writers with one advisory lock.\n"
+BOM = b"\xef\xbb\xbf"
 
 
 def git(root, *argv, **kwargs):
@@ -57,6 +61,65 @@ def packet(head, **overrides):
 def event(digest_value, role, version, payload):
     return {"schema": "urn:zeus:debate-event:1", "id": role + "-1", "expected_version": version,
             "packet_digest": digest_value, "round": 1, "role": role, "payload": payload}
+
+
+def written(path, document, *, bom: bool, crlf: bool):
+    """Exact operator bytes on disk: optional leading UTF-8 BOM, LF or CRLF, non-ASCII left as UTF-8."""
+    text = json.dumps(document, ensure_ascii=False, indent=2)
+    path.write_bytes((BOM if bom else b"") + (text.replace("\n", "\r\n") if crlf else text).encode("utf-8"))
+    return path
+
+
+def test_read_document_accepts_one_leading_bom_and_keeps_packet_and_config_identities(tmp_path):
+    """Windows-authored operator JSON: BOM/no BOM x LF/CRLF x Korean text parse to the same validated
+    documents and the same canonical digests; no schema, shape or digest input changes."""
+    root, head = repository(tmp_path)
+    document = packet(head, topic="저장소 잠금 연구", objective="한국어 목표 " + CANARY)
+    expected = validate_packet(document)
+    program_root, program_head = program_repository(tmp_path / "program")
+    candidate = dict(program_config(program_head)["local_candidates"][0], rationale="한국어 채택 근거 " + CANARY)
+    program = program_config(program_head, local_candidates=[candidate])  # keywords are ASCII by contract
+    expected_config = validate_config(program, packaged_policy())
+    identity = dge_cli.repository_identity(program_root)
+    for bom in (False, True):
+        for crlf in (False, True):
+            suffix = str(bom) + str(crlf) + ".json"
+            parsed = dge_cli.read_document(written(tmp_path / ("packet" + suffix), document, bom=bom, crlf=crlf),
+                                           "Research packet")
+            assert parsed == document, "the BOM is transport, not data"
+            assert validate_packet(parsed) == expected
+            assert packet_digest(validate_packet(parsed)) == packet_digest(expected)
+            read = dge_cli.read_document(written(tmp_path / ("program" + suffix), program, bom=bom, crlf=crlf),
+                                         "Research program config")
+            assert read == program
+            assert validate_config(read, packaged_policy()) == expected_config
+            assert config_digest(validate_config(read, packaged_policy()), identity) == config_digest(expected_config, identity)
+
+
+def test_read_document_refuses_malformed_bytes_and_counts_the_bom_against_the_budget(tmp_path):
+    """Only one leading BOM is dropped: malformed encodings, UTF-16, duplicates, oversize and missing
+    files still refuse with their existing labels, and interior U+FEFF stays part of the data."""
+    path = tmp_path / "document.json"
+    for content, label in ((BOM + b'{"id": "a", "id": "b"}', "duplicate JSON key"),
+                           (BOM + b'{"id": ', "not valid JSON"),
+                           (BOM + BOM + b'{"id": "a"}', "not valid JSON"),
+                           (b'{"id": "\xff\xfe"}', "not valid JSON"),
+                           ('{"id": "a"}'.encode("utf-16"), "not valid JSON"),
+                           ('{"id": "a"}'.encode("utf-16-be"), "not valid JSON")):
+        path.write_bytes(content)
+        with pytest.raises(ContractError, match=label):
+            dge_cli.read_document(path, "Research packet")
+    path.write_bytes(BOM + b'{"note": "a' + BOM + b'b", "' + BOM + b'key": 1}')  # interior U+FEFF is data
+    assert dge_cli.read_document(path, "Debate event") == {"note": "a\N{ZERO WIDTH NO-BREAK SPACE}b",
+                                                           "\N{ZERO WIDTH NO-BREAK SPACE}key": 1}
+    body = b'["' + b"a" * (dge_cli.MAX_DOCUMENT_BYTES - 4) + b'"]'
+    path.write_bytes(body)
+    assert dge_cli.read_document(path, "Debate event") == ["a" * (dge_cli.MAX_DOCUMENT_BYTES - 4)]
+    path.write_bytes(BOM + body)  # the raw byte budget counts the BOM; acceptance does not widen
+    with pytest.raises(ContractError, match="exceeds budget"):
+        dge_cli.read_document(path, "Debate event")
+    with pytest.raises(ContractError, match="unavailable"):
+        dge_cli.read_document(tmp_path / "absent.json", "Debate event")
 
 
 def test_verify_sources_binds_regular_blobs_and_refuses_missing_symlink_tree_and_corrupt_bytes(tmp_path):

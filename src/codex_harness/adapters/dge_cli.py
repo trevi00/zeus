@@ -18,7 +18,9 @@ MAX_DOCUMENT_BYTES = 256 * 1024
 
 
 def read_document(path: Path, label: str) -> dict:
-    """Bounded UTF-8 JSON with duplicate keys refused; errors name the file role, not its content."""
+    """Bounded UTF-8 JSON with duplicate keys refused; errors name the file role, not its content.
+    utf-8-sig drops one optional leading BOM from operator-authored files: the raw byte budget still
+    counts it, interior U+FEFF stays data, and malformed UTF-8 or UTF-16 remains refused."""
     def unique(pairs):
         result = {}
         for key, value in pairs:
@@ -27,7 +29,7 @@ def read_document(path: Path, label: str) -> dict:
         return result
     try:
         require(path.stat().st_size <= MAX_DOCUMENT_BYTES, label + " exceeds budget")
-        return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique)
+        return json.loads(path.read_text(encoding="utf-8-sig"), object_pairs_hook=unique)
     except OSError as exc:
         raise ContractError(label + " unavailable") from exc
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
