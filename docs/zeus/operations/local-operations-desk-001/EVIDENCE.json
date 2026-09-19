@@ -1,0 +1,91 @@
+{
+  "root": "D:\\workspaces\\zeus\\artifacts\\local-operations-desk-001",
+  "runtime_revision": "8511ceaa560b1a3bebeaa83a8a334bd054ab8b6a",
+  "files": [
+    {
+      "file": "owner-baseline.xml",
+      "bytes": 520364,
+      "sha256": "fc7cf3ca75afbba1491cc9a906c7561c04cc383460c06e1ba22b1a2c5a9cb74b"
+    },
+    {
+      "file": "owner-final-focused.xml",
+      "bytes": 37490,
+      "sha256": "1f9689fdeee8dffca8b1a4167f6f048135e8b8d93d725621203a4990c137b751"
+    },
+    {
+      "file": "owner-pg-probe.json",
+      "bytes": 502,
+      "sha256": "fef549b4ab95f50c12232757aac35bb7b4d2655b5cf8a65cefe9ef93fdf9a06f"
+    },
+    {
+      "file": "client-boundaries.json",
+      "bytes": 121,
+      "sha256": "39f62d0194709bb919ade2cdd0a4bf857a0601598c7d3a528750c182b3051dc1"
+    },
+    {
+      "file": "browser-boundaries.json",
+      "bytes": 931,
+      "sha256": "a85d11d8a9d3721ff7a212c4ebaa3fe4568e23260bdd97681648a63c773159fd"
+    },
+    {
+      "file": "report-boundaries.json",
+      "bytes": 158,
+      "sha256": "b4e124f4f82fee1878f7cfd604570feae204adacf5842d561394421e06748f17"
+    },
+    {
+      "file": "canary-final-verification.json",
+      "bytes": 2851,
+      "sha256": "9bcf680811d969fad9232b31975677f9dcee3d526e9b0df70fe5c2234c7de9ba"
+    },
+    {
+      "file": "failed-canary-reconciliation.json",
+      "bytes": 815,
+      "sha256": "f1137062991dad5bbd055d032f9908510b7eb743cc15c4bafe4ac55eea65b7ce"
+    },
+    {
+      "file": "owner-delivery-published.json",
+      "bytes": 875,
+      "sha256": "138c646f92b34c64bf075f7a05e789040c25fd8ecb1732ba76404abfbabbf89e"
+    },
+    {
+      "file": "desk-final-desktop.png",
+      "bytes": 123141,
+      "sha256": "15d373f583ecd817349c873c227dfe988e44b718d6f34b6dda23523337628368"
+    },
+    {
+      "file": "desk-final-mobile.png",
+      "bytes": 47599,
+      "sha256": "ae815fe1332a039089c8590a3e4d2d51be55941becb136204a6911eec3f719b6"
+    },
+    {
+      "file": "schema-repair/operation-receipt.json",
+      "bytes": 6752,
+      "sha256": "ef42dec8cedd775965564ea5cd2429aab05ff4597e31b825e1de017d2058fb26"
+    },
+    {
+      "file": "schema-repair/task-and-review.json",
+      "bytes": 10819,
+      "sha256": "2a27e614781fbff1f9028878c8aed77791f24913a417fbf674c4a4d840d70841"
+    },
+    {
+      "file": "canary-3e508bed-7086-4747-8c0e-370f7bafd3e9.json",
+      "bytes": 1748,
+      "sha256": "1aa23d25f5ef3a16ed91f91761980e76e64dc8e897c88371dfd95e4b41181f79"
+    },
+    {
+      "file": "canary-7f67cb06-9134-4068-8ce2-8cb299288351.json",
+      "bytes": 1602,
+      "sha256": "2e48b0ab8e87172bca513faa53d966a46c93ba80e6120e8bceb0d39d6fdfcd76"
+    },
+    {
+      "file": "canary-ed0fd3df-087b-4180-ac60-9dc28db3a87f.json",
+      "bytes": 1742,
+      "sha256": "590b376500c69940fec98c40041bcaef16aab998ead7a1bacba625b836db6b93"
+    },
+    {
+      "file": "canary-final-verification.json",
+      "bytes": 2851,
+      "sha256": "9bcf680811d969fad9232b31975677f9dcee3d526e9b0df70fe5c2234c7de9ba"
+    }
+  ]
+}
