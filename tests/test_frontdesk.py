@@ -697,6 +697,36 @@ def fake_executor_object(svc, answer, git=None, recorder=None):
     return SimpleNamespace(service=svc, git=git or FakeGit(), _run=_run)
 
 
+def test_the_desk_output_schema_requires_every_property_and_keeps_null_and_empty_values():
+    """Provider contract (local-operations-desk-001): Structured Outputs requires every property of
+    a closed object, so the earlier `required: ["answer"]` form was rejected by an actual turn with
+    invalid_json_schema. Optional meaning stays a nullable objective and empty lists. This runs the
+    harness' own preflight plus Draft 2020-12 validation; it is not a provider call."""
+    from codex_harness.adapters.execution_output import completed_output
+    from codex_harness.adapters.frontdesk import DESK_OUTPUT
+
+    fields = ["answer", "objective", "acceptance_criteria", "questions"]
+    assert DESK_OUTPUT["additionalProperties"] is False
+    assert DESK_OUTPUT["required"] == list(DESK_OUTPUT["properties"]) == fields
+    assert DESK_OUTPUT["properties"]["objective"]["type"] == ["string", "null"]
+    consultation = {"answer": "현재 포착된 상태만 말씀드립니다.", "objective": None,
+                    "acceptance_criteria": [], "questions": []}
+    request = {"answer": "제안을 정리했습니다.", "objective": "관측소 개선",
+               "acceptance_criteria": ["관측 사실만 보고한다"], "questions": ["범위를 넓힐까요?"]}
+    for payload in (consultation, request):
+        result = completed_output(canonical(payload), DESK_OUTPUT)
+        assert "failure" not in result and result["structural"]["checks"]["schema"] == "checked"
+        assert result["answer"] == payload
+        # The consumer keeps a null objective null and an empty list empty; neither is invented.
+        answer = validate_answer(payload)
+        assert answer["objective"] == payload["objective"]
+        assert answer["acceptance_criteria"] == payload["acceptance_criteria"]
+        assert answer["questions"] == payload["questions"]
+    # An omitted property is now a schema mismatch here as well as at the provider.
+    omitted = completed_output(canonical({"answer": "답"}), DESK_OUTPUT)
+    assert omitted["failure"]["output_reason"] == "schema_mismatch"
+
+
 def test_conversational_branch_runs_read_only_in_a_clean_checkout_at_the_request_base():
     from codex_harness.adapters.frontdesk import execute_frontdesk
 

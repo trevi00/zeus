@@ -28,8 +28,8 @@ newest 50 turns, counts and omissions. A dispatch exception is `needs_reconcilia
 works; a failed terminal write leaves the turn `dispatching`, stops the process without retry, is a
 durable `failure` outside that bounded list and exits `zeus desk run` nonzero, while an idle `--once`
 run and a graceful interrupt stay 0. Observer and host lock are released even when wiring fails.
+4. Provider output schema. `DESK_OUTPUT` derives `required` from its properties, so all four are required under `additionalProperties: false`;
+optional meaning stays the nullable `objective` and empty lists. This repairs the actual `invalid_json_schema` rejection of the first browser turn, which stays failed with no automatic replay.
 
 ## Not proven here
-No provider ran; injected executors, buses, collectors and storage failures are labelled injected.
-Real browser -> Redis -> PG -> Codex -> response, refresh persistence, full CI and the owner delivery
-record of #157 remain owner work. Verified: `python -m pytest tests/test_frontdesk.py tests/test_frontdesk_http.py tests/test_fleet_delivery.py` and `python -m ruff check .`; not the suite.
+No provider ran; injected executors, buses, collectors and storage failures are labelled injected. Real browser -> Redis -> PG -> Codex -> response, refresh persistence, full CI, the owner schema canary and the #157 delivery record remain owner work. Earlier verification: `python -m pytest tests/test_frontdesk.py tests/test_frontdesk_http.py tests/test_fleet_delivery.py` and `python -m ruff check .`; the schema repair itself ran only `python -m pytest tests/test_frontdesk.py` and `python -m ruff check .`; not the suite.

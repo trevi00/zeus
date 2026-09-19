@@ -44,13 +44,20 @@ TEXT = {"type": "string"}
 STRINGS = {"type": "array", "items": TEXT}
 # The fixed output contract of one desk turn. `objective` and the lists describe a PROPOSED goal
 # for the owner to specify; they are not an accepted change and never an operation manifest.
-DESK_OUTPUT = {"type": "object", "additionalProperties": False, "required": ["answer"], "properties": {
+DESK_PROPERTIES = {
     "answer": {**TEXT, "description": "Korean plain-language answer to the local operator."},
     "objective": {"type": ["string", "null"], "description": "One proposed objective when the "
                   "operator asked for work; null for a consultation. Never a dispatched task."},
     "acceptance_criteria": {**STRINGS, "description": "Criteria a future owner-fixed specification "
                             "would have to satisfy; empty when none are warranted."},
-    "questions": {**STRINGS, "description": "Only decisions that change scope; ask nothing else."}}}
+    "questions": {**STRINGS, "description": "Only decisions that change scope; ask nothing else, "
+                  "and leave this empty when none apply."}}
+# Structured Outputs requires EVERY declared property in `required` under a closed object; optional
+# meaning is expressed by a nullable type or an empty list, never by omitting the key. An actual
+# provider turn rejected the earlier `required: ["answer"]` form with `invalid_json_schema`
+# (local-operations-desk-001). `autonomous_roles._object` derives `required` the same way.
+DESK_OUTPUT = {"type": "object", "additionalProperties": False, "properties": DESK_PROPERTIES,
+               "required": list(DESK_PROPERTIES)}
 
 PROMPT = (
     "You are the local operations desk of this Zeus checkout. Answer the operator's current request "
