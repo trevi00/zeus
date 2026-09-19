@@ -22,6 +22,21 @@
 - Never mark a repository fully analyzed while files or subsystems remain unreviewed. Carry forward
   remaining work using immutable evidence references and bounded context, rather than skipping it.
 
+## Two-strike research before another correction
+
+- After two distinct attempts encounter the same or similar failure, including repeated material
+  review rejection, stop repeating that approach. A replayed log/event is not a second attempt.
+  Similar symptoms open an investigation; they do not establish a shared root cause.
+- Reuse the task's existing frame. Search the SSOT, responsible code and source-backed experience;
+  consult relevant primary documentation when needed. Record sources/version/date, observations,
+  hypotheses and one discriminating check before choosing one coherent correction batch.
+- Keep the investigation bounded by the original goal and material acceptance conditions. If it
+  needs unavailable evidence or authority, hand that exact gap to the lead. Do not recursively
+  spawn investigations or keep retrying until green; minor findings remain follow-up notes.
+- Verify the correction against the affected criteria and preserve failed attempts. A hook's
+  research-required notice is not proof that research ran or that knowledge was verified.
+  Only the existing independent review/promotion path can accept the resulting change.
+
 ## Review checkout recording
 
 - An independent review runs in a clean checkout at the candidate commit. Do not create, modify or
