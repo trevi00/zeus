@@ -50,3 +50,10 @@ Update007: Claude candidate2a616bf passes owner96focused tests, lint and retaine
 (conductor20777/22000bytes). Full suite/CI pending. Direct owner review, not automated acceptance.
 Subscription policy migration and one actual full cycle remain; local absorption/project view
 are subsequent operational projects. See CONDUCTOR-ACCEPTANCE-007.md.
+
+
+Current update004 (supersedes prior pending counts): input correction and subscription accounting are
+integrated into PR153, full owner suite2184passed/455skipped, final runtime CI passed. Actual subscription
+Claude+Codex operation accepted. Live research004 stopped after4 successful roles because new conductor
+input exceeded22000 bytes; full cycle/tick2 remain unaccepted. See RESULT-004.md. Usage199, subscription
+mode has no lifetime count ceiling; old numeric grant paragraphs are historical. Fleet remains paused.

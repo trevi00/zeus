@@ -1,0 +1,42 @@
+{
+  "run": "research-live-004.c001",
+  "root": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run004",
+  "files": {
+    "summary.json": {
+      "sha256": "34008aa855be6c47d3d2052076a3b38e4456ff55b0fe85e8b35f0d4910bc67ab",
+      "bytes": 753
+    },
+    "live-receipt.json": {
+      "sha256": "2166217f04e889e16cb44435adc95ea57aa8261aecc754596bbd94c5294e0186",
+      "bytes": 1205
+    },
+    "authoritative.json": {
+      "sha256": "a4f17390b4e20715cd67b6516f819389e1a2eacfb32adc2f812fcdd6a1c3a4e0",
+      "bytes": 152597
+    },
+    "bound-tasks.json": {
+      "sha256": "1547a9583cc8febbb9acf67fbbbbe296dd1eec5c9d0d3fc4d6d9ceec28d650d2",
+      "bytes": 180505
+    },
+    "input-diagnosis.json": {
+      "sha256": "93e29b18d0a34d418484b62b6ecae80fd59258f3431add26ba982ce55ebc22d0",
+      "bytes": 528
+    },
+    "actual-executor-check.json": {
+      "sha256": "1d6eb09f1fe02119e2e2f1d9886a5e7ff2bbc619f99f54b2bf40e38cfd719610",
+      "bytes": 474
+    },
+    "ci-gate.json": {
+      "sha256": "47b960446fdd6da2bb4eedf2ee36e4ccca00d898bbb87f49eef2831bcb145e6b",
+      "bytes": 712
+    },
+    "worker-image-build.json": {
+      "sha256": "1114ad74c7932acdb69623c4fc382fbf6ada4ec3414d0bdecde1197e27dfddb5",
+      "bytes": 86
+    },
+    "worker-image-preflight.json": {
+      "sha256": "f3197c8ee294554af77e8b643c77b68a989a12c1fbee78c174af3009de4cc3e9",
+      "bytes": 118
+    }
+  }
+}

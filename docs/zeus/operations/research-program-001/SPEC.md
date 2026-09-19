@@ -767,3 +767,26 @@ Update SUBSCRIPTION-ACCOUNTING.md and docs/contracts.md. No schema weakening or 
 One Claude completion attempt, owner direct review; legacy ceiling192 holds the remaining slot.
 Bootstrap call alone uses10USD estimate cap to finish this migration, not new billing authorization;
 900s execution bound stays. Future subscription mode forwards no dollar cap. No live retry now.
+
+
+### Live004 reframe: variable meeting input exceeds the complete envelope
+
+Actual evidence: RESULT-004.md / EVIDENCE-004.json. Four roles succeeded; conductor preflight refused.
+Old retained-input proof remains accepted. New exact-input no-model replay is23055/22000 complete bytes;
+projection alone20751. No timeout, quota exhaustion or stale snapshot is implicated by this failure.
+Subscription operation010 was actually accepted and final runtime CI passed. No numeric grant loop.
+
+Invalid assumption: fixed advisory compaction alone bounds variable upstream packet/proposal contents.
+Do not respond with another arbitrary short sentence, raised context ceiling, or silent semantic truncation.
+Next bounded design decision: compare existing hash-bound paged reader delivery against an explicit
+producer/consumer byte-envelope contract. A valid solution must preserve every claim, proposal, finding,
+unknown, citation and digest, or refuse the plan before spending its downstream role calls. Inspect actual
+reader execution/receipt coverage before relying on model self-report that all pages were read.
+Acceptance matrix: old/new exact raw inputs; non-ASCII size; empty/maximum admitted arrays; missing,
+corrupt or changed pages; all findings accounted; cancellation/deadline; finite total read/output bounds.
+Concurrency/restart use existing immutable artifact identity and attempt binding; no new mutable store.
+A successful small fixture alone cannot close this issue. No implementation selected or claimed yet.
+
+Next implementation remains Claude's responsibility under one consolidated owner specification; Codex
+reviews the complete delivery path. No new live retry in004. Completion criteria remain accepted full
+cycle plus tick2/stop; absorption and project page are queued operational projects, not launch blockers.
