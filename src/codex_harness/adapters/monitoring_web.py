@@ -10,6 +10,7 @@ import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files
 
+from codex_harness.adapters import frontdesk_http
 from codex_harness.adapters.monitoring_readiness import readiness
 
 ASSET_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}')
@@ -55,7 +56,13 @@ def index_page():
     return resource('monitor.html').read_bytes()
 
 
-def handler(snapshot_path):
+def handler(snapshot_path, desk=None):
+    """`desk` is the opt-in local front-door service (local-operations-desk-001, part B).
+
+    Without it this handler is exactly what it was: every GET route below is read-only, unknown
+    paths are 404 and every POST is 405. With it, and only with it, the four `/api/desk` routes
+    exist; the loopback Host check above still applies to them first.
+    """
     class Handler(BaseHTTPRequestHandler):
         def respond(self, status, body, content_type):
             self.send_response(status)
@@ -67,13 +74,20 @@ def handler(snapshot_path):
             self.end_headers()
             self.wfile.write(body)
 
+        def authority(self):
+            """The existing exact loopback authority; every desk route reuses it unchanged."""
+            value = self.headers.get('Host', '')
+            allowed = {f'127.0.0.1:{self.server.server_port}', f'localhost:{self.server.server_port}'}
+            return value if value in allowed else None
+
         def do_GET(self):
-            authority = self.headers.get('Host', '')
-            if authority not in {f'127.0.0.1:{self.server.server_port}', f'localhost:{self.server.server_port}'}:
+            if self.authority() is None:
                 self.respond(403, b'Forbidden host', 'text/plain')
                 return
             path = self.path.split('?', 1)[0]
-            if path == '/':
+            if desk is not None and (result := frontdesk_http.handle_get(desk, path)) is not None:
+                self.respond(result[0], result[1], frontdesk_http.JSON)
+            elif path == '/':
                 self.respond(200, index_page(), 'text/html; charset=utf-8')
             elif path == '/legacy':
                 self.respond(200, resource('monitor.html').read_bytes(), 'text/html; charset=utf-8')
@@ -105,12 +119,34 @@ def handler(snapshot_path):
                 self.respond(404, b'Not found', 'text/plain')
 
         def do_POST(self):
-            self.respond(405, b'Read only', 'text/plain')
+            path = self.path.split('?', 1)[0]
+            if desk is None or path not in frontdesk_http.ROUTES_POST:
+                # Unrelated POST, and every POST at all while the desk is not injected.
+                self.respond(405, b'Read only', 'text/plain')
+                return
+            host = self.authority()
+            if host is None:
+                self.respond(403, b'Forbidden host', 'text/plain')
+                return
+            try:
+                self.connection.settimeout(frontdesk_http.READ_TIMEOUT_SECONDS)
+            except OSError:
+                pass
+            refusal = frontdesk_http.check_intent(self, host)
+            if refusal is not None:
+                self.respond(refusal[0], frontdesk_http.error(refusal[1]), frontdesk_http.JSON)
+                return
+            document, failure = frontdesk_http.read_body(self)
+            if failure is not None:
+                self.respond(failure[0], frontdesk_http.error(failure[1]), frontdesk_http.JSON)
+                return
+            status, body = frontdesk_http.handle_post(desk, path, document)
+            self.respond(status, body, frontdesk_http.JSON)
 
         def log_message(self, *args):
             pass
     return Handler
 
 
-def serve(snapshot_path, port=8787):
-    ThreadingHTTPServer(('127.0.0.1', port), handler(snapshot_path)).serve_forever()
+def serve(snapshot_path, port=8787, desk=None):
+    ThreadingHTTPServer(('127.0.0.1', port), handler(snapshot_path, desk)).serve_forever()

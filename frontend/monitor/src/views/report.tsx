@@ -10,6 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { ACCOUNTING_TITLE, accountingTone } from "@/lib/accounting"
 import { buildReport, downloadJson, type Report } from "@/lib/report"
 import { CATEGORY_LABELS, SEVERITY_LABELS, formatNumber, formatSeconds, formatTime, parseTime, type Snapshot } from "@/lib/snapshot"
 import { freshnessTone, severityTone } from "@/lib/tones"
@@ -61,6 +62,8 @@ export function ReportView({ snapshot, transport, now }: Props) {
   const newerSnapshot = snapshot != null && (snapshot.collected_at ?? null) !== report.collected_at
   const transportNotice = TRANSPORT_NOTICE[report.transport.state]
   const observationsUnknown = !report.observations.available
+  // Captured with the report: the poll never rewrites it, so this row matches the story strip.
+  const accounting = report.fleet.data?.accounting ?? null
 
   // Print must include every evidence record and limitation: open the disclosures the reader left
   // closed for the duration of printing, then restore them. The CSS `::details-content` print rule
@@ -137,6 +140,10 @@ export function ReportView({ snapshot, transport, now }: Props) {
             ["캡처 시점 연결", `${report.transport.state}${report.transport.detail ? ` · ${report.transport.detail}` : ""} · 마지막 정상 응답 ${report.transport.last_ok_at ? formatTime(report.transport.last_ok_at) : "없음"}`],
             ["출처", <div className="flex flex-wrap gap-2">{Object.entries(report.sources).map(([name, s]) => <StatusBadge key={name} tone={freshnessTone(s.freshness)}>{name} · {s.freshness} · {formatTime(s.observed_at)}</StatusBadge>)}</div>],
             ["fleet 출처 (선택)", <StatusBadge tone={report.fleet.state === "registered" ? freshnessTone(report.fleet.freshness) : report.fleet.state === "unregistered" ? "neutral" : "unknown"}>{report.fleet.state} · {report.fleet.freshness} · {formatTime(report.fleet.observed_at)}</StatusBadge>],
+            [`fleet ${ACCOUNTING_TITLE}`, accounting
+              ? <span className="text-xs break-words"><StatusBadge tone={accountingTone(accounting)}>{accounting.label}</StatusBadge> · {accounting.numbers_label} {formatNumber(report.fleet.data?.budget.per_host)} / {formatNumber(report.fleet.data?.budget.total)} · {accounting.numbers_note} · 판단 근거 {accounting.basis} · {accounting.detail}</span>
+              : report.fleet.state === "unregistered" ? "등록된 fleet 없음 · 회계 방식을 말할 대상이 없음 (비어 있음)"
+                : "확인 불가 · fleet 기록을 읽지 못함 · 유한 상한으로도 구독으로도 해석하지 않음"],
             ["권위", "informational_only · 전역 상태·SLO·자동 수락 판정 아님"],
           ]} />
         </CardContent>
@@ -164,9 +171,9 @@ export function ReportView({ snapshot, transport, now }: Props) {
             ["이벤트", report.counts.events_total == null ? "확인 불가" : formatNumber(report.counts.events_total)],
             ["분류별", countText(report.counts.by_category, CATEGORY_LABELS)],
             ["심각도별", countText(report.counts.by_severity, SEVERITY_LABELS)],
-            ["경보", report.counts.alerts ? `${report.counts.alerts.recorded} (${countText(report.counts.alerts.by_status)})` : "확인 불가"],
-            ["격리", report.counts.quarantine ? `${report.counts.quarantine.total} (${countText(report.counts.quarantine.by_reason)})` : "확인 불가"],
-            ["종료 기록", report.counts.terminations ? `미확정 ${report.counts.terminations.pending} · ${countText(report.counts.terminations.by_status)}` : "확인 불가"],
+            ["경보 (기록 이력)", report.counts.alerts ? `${report.counts.alerts.recorded} (${countText(report.counts.alerts.by_status)}) · 저장된 과거 기록 · 현재 미해결 증거 아님` : "확인 불가"],
+            ["격리 (기록 이력)", report.counts.quarantine ? `${report.counts.quarantine.total} (${countText(report.counts.quarantine.by_reason)}) · 저장된 과거 기록` : "확인 불가"],
+            ["종료 기록", report.counts.terminations ? `미확정 ${report.counts.terminations.pending} (현재 상태 · 해당 작업의 재실행·복구만 차단) · ${countText(report.counts.terminations.by_status)}` : "확인 불가"],
           ]} />
         </CardContent>
       </Card>
@@ -185,9 +192,9 @@ export function ReportView({ snapshot, transport, now }: Props) {
       </Card>
       </Disclosure>
 
-      <Disclosure title="치명·오류 이벤트 목록" state={criticalState}>
+      <Disclosure title="치명·오류 이벤트 목록 (기록 이력)" state={criticalState}>
       <Card>
-        <CardHeader><CardTitle>치명·오류 이벤트</CardTitle><CardDescription>{report.critical_events == null ? "확인 불가 · 관측 로그 출처 없음" : `샘플 상위 ${report.critical_events.length}건 · 샘플 전체 ${report.critical_events_total ?? "?"}건`}</CardDescription></CardHeader>
+        <CardHeader><CardTitle>치명·오류 이벤트 (기록 이력)</CardTitle><CardDescription>{report.critical_events == null ? "확인 불가 · 관측 로그 출처 없음" : `샘플 상위 ${report.critical_events.length}건 · 샘플 전체 ${report.critical_events_total ?? "?"}건 · 저장된 과거 기록 · 각 행의 결과는 기록된 값 그대로이며 현재 미해결 여부는 이 목록으로 알 수 없음`}</CardDescription></CardHeader>
         <CardContent>
           {report.critical_events == null ? (
             <p className="text-sm text-muted-foreground break-words">확인 불가 · 관측 로그 출처 {report.observations.status}{report.observations.error ? ` · ${report.observations.error}` : ""} · 비어 있음이 아니라 알 수 없음</p>
@@ -197,7 +204,7 @@ export function ReportView({ snapshot, transport, now }: Props) {
                 <li key={row.event_id ?? `event-${index}`} className="py-2 flex min-w-0 flex-wrap gap-2 items-center">
                   <StatusBadge tone={severityTone(row.severity)}>{SEVERITY_LABELS[row.severity] ?? row.severity}</StatusBadge>
                   <span className="font-mono text-xs break-all">{row.event_type}</span>
-                  <span className="text-xs text-muted-foreground break-words">{formatTime(row.observed_at)} · {row.outcome}{row.reason_code ? ` · ${row.reason_code}` : ""} · {row.event_id?.slice(0, 16)}</span>
+                  <span className="text-xs text-muted-foreground break-words">{formatTime(row.observed_at)} · 결과 {row.outcome ?? "기록 없음 · 알 수 없음"}{row.reason_code ? ` · ${row.reason_code}` : ""} · {row.event_id?.slice(0, 16)}</span>
                 </li>
               ))}
             </ul>
@@ -208,7 +215,8 @@ export function ReportView({ snapshot, transport, now }: Props) {
 
       <Disclosure title="다음 조치와 근거 ID" state={`조치 ${report.next_actions.length}건 · 근거 참조 ${report.critical_events == null ? "확인 불가" : `${report.evidence_ids.length}개`}`}>
       <Card>
-        <CardHeader><CardTitle>다음 조치와 근거 ID</CardTitle></CardHeader>
+        <CardHeader><CardTitle>다음 조치와 근거 ID</CardTitle>
+          <CardDescription className="break-words">각 줄은 근거의 종류를 먼저 밝힙니다. '현재 상태'는 현재 상태가 명시적으로 기록된 항목, '기록 이력'은 저장된 과거 기록(결과 미확정·알 수 없음), '확인 불가'는 이 캡처의 출처·표본 한계입니다. 이력 항목은 삭제되거나 해결로 바뀌지 않습니다.</CardDescription></CardHeader>
         <CardContent className="flex flex-col gap-3">
           <ol className="list-decimal pl-5 text-sm flex flex-col gap-1 break-words">{report.next_actions.map((action) => <li key={action}>{action}</li>)}</ol>
           <Separator />
