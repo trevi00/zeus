@@ -96,3 +96,101 @@ B's exact wire/authority design is finalized here after tracing the existing exe
 implementation is queued. This is an integration dependency, not an invitation to recursively add
 tasks. No unknown outside this matrix blocks the current UI assignment. A completes as accepted
 candidate; the whole delivery does not complete until B/C and actual operating evidence are done.
+
+## Part B — exact local front-door backend contract
+
+Decision after tracing bootstrap.build_executor, Workflow, RedisBus, scoped flush_outbox and
+BudgetedExecutor: reuse those owners. Do not start a separate raw provider CLI or a model inside an
+HTTP request. Add `lead:frontdesk` as a lead of conductor (team control); no organization rule change.
+Trusted web intake creates conductor -> lead:frontdesk `task.assign`, action `frontdesk`, six-W v1.
+The originator is separately `local_user` in request metadata, never fabricated as a model message.
+Conductor intake/routing here is deterministic; the responding conversational lead is actual Codex.
+Do not label this as autonomous conductor reasoning, debate, implementation or independent approval.
+
+New application FrontDesk persists buckets desk_sessions, desk_requests, desk_events in existing PG
+Store transactions. Session and request IDs are client-generated UUIDs. Session creation is idempotent
+by ID/title. A submission contains session_id, request_id, intent (`consult` or `request`), text
+(1..6000 chars), with an overall encoded body <=32KiB. Same request ID/content returns same row;
+conflicting content/session is409. At most one queued/dispatching request per session; second different
+request409 until terminal, to freeze conversation order. Bound each session to100 requests; never
+silently discard user history. List up to50 sessions, detail returns explicit bounded history and
+state. Persist user message and outbox assignment together before202. No PG =>503, no local fallback.
+Carry a bounded prior conversation (last10 completed turns, <=24000chars; report omitted count),
+plus current request and sanitized fleet snapshot as model evidence. No file path/model/provider/
+command/base/budget from browser; base is owner's configured full Git revision, captured per request.
+
+Lifecycle: queued -> dispatching (durable owner token before external work) -> answered | needs_spec |
+failed | needs_reconciliation. `consult` successful result is answered; `request` successful result
+is needs_spec: accepted request/proposed goal, NOT an implementation dispatched. The answer can
+contain questions, an objective and acceptance criteria. A model answer is unverified context and
+must NOT become ontology/knowledge, approval or a new operation manifest. Execution of a new free-text
+goal still requires Codex-owned fixed specification and existing Fleet admission; no raw-text-to-shell.
+This v1 lets the user converse and submit requests from the web, not approve arbitrary generated code.
+
+Runner: new `zeus desk run --revision <40hex> [--once]` owns a runtime FileLock and processes one
+request at a time. Default loop continues for future local messages, with interrupt shutdown and
+no automatic retry of failed/uncertain requests. Startup: queued remains queued; dispatching with a
+matching succeeded task can be finalized without another provider call, otherwise mark uncertainty
+and retain evidence. Never take over a running provider, clear termination marks, or reserve twice.
+Use scoped outbox publication; receive only the dedicated frontdesk stream and validate exact expected
+message ID/correlation/body before Workflow.handle and ACK. Foreign/malformed input fails this turn,
+not an arbitrary other actor's queue. Use guarded Executor.execute_one for exactly its queued task.
+Use BudgetedExecutor with the CURRENT Fleet effective accounting mode and explicit Codex model label
+from existing routing, max provider handoffs1, task deadline180s/max_attempts1. Ledger settlement
+failure means needs_reconciliation, not answered. Preserve reused execution/audit/termination gates.
+Result sent to conductor by normal Workflow outbox; flush this correlation before recording completed
+frontdesk turn. Store task_id/execution_ref and safe fixed error code; no raw exception or credential.
+Use observer + collector; log intake/dispatch/terminal metadata (IDs/status, not conversation text).
+Session text is user data stored in PG, not operational log content. Diagnostics never print it.
+
+Executor: additive action branch delegates to adapter frontdesk execution helper. A clean
+git.review_workspace(request base, task id), read-only `_run`, workload design, one handoff, fixed
+output JSON `{answer:string, objective:string|null, acceptance_criteria:string[], questions:string[]}`.
+Bound output fields in consumer as well. Before/after clean tree and exact HEAD checks; prior turns
+are context, not instructions overriding host policy. Prompt Korean plain-language answer, SSOT-first,
+facts vs unknowns, ask only decisions that change scope, do not recursively invent follow-up work.
+No knowledge adapter writes and no model-selected provider. Reuse bootstrap with knowledge=False.
+
+HTTP opt-in: existing `handler(snapshot_path)` stays fully read-only unless injected desk service;
+production monitor web enables it only when ZEUS_DESK_REVISION is configured as a valid full revision.
+GET /api/desk -> `{schema:'urn:zeus:desk:1',sessions:[...]}`.
+GET /api/desk/session/<uuid> -> session and ordered request rows, safe answer/provenance/status.
+POST /api/desk/sessions `{session_id,title}` ->201 or200 replay.
+POST /api/desk/messages `{session_id,request_id,intent,text}` ->202 or200 replay.
+All response objects use schema above, and fixed errors `{schema,error:<code>}`.
+Host must match existing exact loopback authority. Every POST requires exact matching
+`Origin: http://<Host>`, `Content-Type: application/json` (optional charset=utf-8),
+`X-Zeus-Desk: 1`, one valid Content-Length <=32768, no Transfer-Encoding; read timeout5s.
+Missing/foreign/null origin refused403, length missing411/too large413, bad input400/conflict409,
+disabled503. No CORS grants. GET and old routes unchanged, unrelated POST405. No body/exception echo.
+Local OS user/processes are the trust boundary; not multi-user authentication or remote-safe exposure.
+
+## Owner delivery records (B, separate from conversation)
+
+Add `zeus fleet record-delivery --job <id> --file <json>` trusted owner CLI only. Immutable PG
+fleet_delivery records, no web/model writer. Document `{schema:'urn:zeus:owner-delivery:1',job_id,
+candidate_revision,merge_revision,deployed_revision,recorded_at,evidence_refs,report_url}` with
+40hex revisions (deployed nullable), aware timestamp, nonempty sha256 refs, https github repo report
+URL or null. Existing accepted fleet job required. This is explicitly owner-reported evidence, not
+independent GitHub/network verification. Same complete document replay idempotent, conflicting record
+refused; never alter job status or grant authority. Optional safe `delivery` in Fleet job projection:
+document fields + `authority:'owner_recorded'`. Missing remains unknown. Frontend displays source
+label and revisions, distinguishes merged vs deployed. Do not infer delivery from another job's
+timestamp or goal. Owner records actual #157 facts after verifying bindings from preserved receipt;
+worker must not seed production state. This record is for visibility, not a release approval gate.
+
+## B tests and concrete handoff
+
+Normal actual HTTP/PG persistence and outbox; same-ID replay/conflict, concurrent duplicate request,
+session ordering, invalid bounds, unavailable store, old readonly handler, origin/header/body gates,
+provider success/timeout/settlement failure, interrupted ownership with no extra call, result binding,
+foreign message refusal, owner delivery conflict/nonaccepted job/projection. Use MemoryStore and
+existing optional real-PG fixture; label injected provider failures, do not claim a fixture calls AI.
+No frontend or compiled asset edits in B. Focused pytest plus ruff only; owner performs full CI and
+actual browser -> Redis -> PG -> Codex -> response, refresh persistence, and existing UI checks.
+Allowed: new domain/frontdesk.py, application/frontdesk.py, adapters/frontdesk.py,
+adapters/frontdesk_cli.py, adapters/frontdesk_http.py; adapters/executor.py additive branch;
+resources/organization.json; cli.py thin parser/dispatch; monitor.py and adapters/monitoring_web.py
+opt-in only; application/fleet.py, domain/fleet.py, adapters/fleet_cli.py for owner delivery;
+tests/test_frontdesk.py, tests/test_frontdesk_http.py, tests/test_fleet_delivery.py, BACKEND.md.
+No schema migration needed: existing documents store. No control over fleet pause/budget via web.
