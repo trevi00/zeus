@@ -646,6 +646,23 @@ unsupported is refused by name when present. Every request records which of its 
 effect verified here and which were left to the provider, so a spend ceiling is never read back as
 a spend guarantee.
 
+The usage-accounting mode of the machine ledger (`domain.usage_policy`: `finite`, the legacy
+default, or explicit `subscription`) also decides whether the `claude_cli` dollar cap is forwarded
+at all. It is read from one explicit host setting per transport (`ZEUS_CLAUDE_ACCOUNTING_MODE` for
+`claude_cli`; `zeus operate run` always sets it from the manifest budget, so a host environment
+value never decides an operation's mode); absent or `finite` yields the byte-identical legacy
+configuration, digest and command; any other value refuses the configuration whole. Under
+`subscription` the `max_budget_usd` control is still validated by the same rules when present but
+is retained metadata: it is not required, it is absent from the assignment's `controls`, the
+configuration digest differs, the selected runtime carries `accounting_mode`, the request options
+omit the cap (never a null), the command passes no `--max-budget-usd` and the CLI preflight does
+not require that option, and the command receipt records `max_budget_usd: null` with the named
+`accounting_mode`. A runtime told `subscription` refuses a configured ceiling and an unknown mode
+before any probe or process; finite still requires and passes a positive ceiling exactly as
+before. None of this is a provider allowance, a billing change, a remaining-usage claim, a retry or
+a change to auth, timeouts, schema, model, permissions, isolation or the isolated request protocol
+(the mode travels in the `runtime` dictionary the request already serializes).
+
 The prompt reaches a provider over its input stream, never through an argument vector or a shell
 string, and the recorded command replaces every value that could carry schema, context or
 configuration text with its digest. Both output streams are drained concurrently under a per-line
@@ -835,9 +852,12 @@ authority, and no report, comparison or binding grants completion, permission, m
 point; `operate status ID` is its read-only receipt. The manifest (`urn:zeus:operation:1`) is
 strict: exact fields `id`, 40-hex `base_revision`, `goal` (relative Markdown path, sha256,
 criterion, rationale), `plan` (objective, acceptance_criteria, allowed_paths), `budget` (per_host,
-total) and `claude` (model, timeout_seconds, max_budget_usd); unknown fields, wrong types,
-booleans as integers, nonfinite numbers, traversal, `.git` or absolute paths and empty values are
-refused, and the claude controls are validated by the existing provider policy validators. The one
+total and an optional `mode` of `finite` or `subscription` under `domain.usage_policy`; the finite
+canonical form is the unchanged legacy shape) and `claude` (model, timeout_seconds, a positive
+finite max_budget_usd that under subscription is retained metadata, never an active ceiling);
+unknown fields, wrong types, booleans as integers, nonfinite numbers, traversal, `.git` or absolute
+paths and empty values are refused, and the claude controls are validated by the existing provider
+policy validators with the budget's accounting mode bound in (INV-CLAUDE-WORKER-001). The one
 path grammar (`safe_relative_path`, shared by goal.path, allowed_paths, the research packet sources
 and the autonomous search scope) is forward-slash relative, at most 1024 characters, each segment
 an alphanumeric start followed by ASCII letters, digits, `.`, `_` or `-` up to 255 characters, with

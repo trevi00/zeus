@@ -19,6 +19,9 @@ from codex_harness.domain.council import SCHEMA_AUTONOMOUS_V2, validate_council_
 from codex_harness.domain.dge import parse_deadline
 from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.operation import ID, REVISION, SHA256, safe_relative_path
+from codex_harness.domain.usage_policy import NUMERIC_FIELDS, UsagePolicyError, accounting_mode
+from codex_harness.domain.usage_policy import headroom as policy_headroom
+from codex_harness.domain.usage_policy import validate_budget as policy_budget
 
 CONFIG_SCHEMA = "urn:zeus:research-program:1"
 STATUS_SCHEMA = "urn:zeus:research-program-status:1"
@@ -26,7 +29,7 @@ CAPTURE_SCHEMA = "urn:zeus:research-capture:1"
 MONITOR_SCHEMA = "urn:zeus:research-program-monitor:1"
 CONFIG_FIELDS = {"schema", "id", "base_revision", "deadline", "interval_seconds", "max_cycles", "max_adoptions",
                  "budget", "topics", "local_candidates", "template"}
-BUDGET_FIELDS = {"per_host", "total"}
+BUDGET_FIELDS = set(NUMERIC_FIELDS)  # the legacy finite shape; `mode` is optional (usage_policy)
 TOPIC_FIELDS = {"id", "keywords"}
 LOCAL_FIELDS = {"id", "topic", "path", "sha256", "rationale"}
 MAX_CYCLES, MAX_LOCAL, MAX_TOPICS, MAX_KEYWORDS = 100, 100, 20, 50
@@ -78,11 +81,11 @@ def _fields(document, expected, name):
 
 # ----- configuration --------------------------------------------------------------------------------
 def validate_budget(budget, name="budget") -> dict:
-    _fields(budget, BUDGET_FIELDS, name)
-    if not (_integer(budget["per_host"]) and _integer(budget["total"]) and budget["per_host"] > 0
-            and budget["total"] >= budget["per_host"]):
-        raise ProgramRefused("config_invalid", name)
-    return {"per_host": budget["per_host"], "total": budget["total"]}
+    """The shared usage policy decides the shape (finite legacy form or explicit subscription mode)."""
+    try:
+        return policy_budget(budget)
+    except UsagePolicyError as exc:
+        raise ProgramRefused("config_" + exc.reason_code, name) from exc
 
 
 def _topic(topic, index: int) -> dict:
@@ -217,13 +220,11 @@ def order_key(entry: dict) -> tuple:
 
 
 def headroom(budget: dict, counts: dict) -> dict:
-    """Machine ledger headroom for ONE council (HEADROOM starts): the smaller of the per-host and
-    total remainders. Unreadable or missing counts are not free space."""
-    mine, everyone = counts.get("this_host"), counts.get("all_hosts")
-    if not (_integer(mine) and _integer(everyone)):
-        return {"remaining": None, "ok": False, "required": HEADROOM}
-    remaining = min(budget["per_host"] - mine, budget["total"] - everyone)
-    return {"remaining": remaining, "ok": remaining >= HEADROOM, "required": HEADROOM}
+    """Machine ledger headroom for ONE council (HEADROOM starts) under the shared usage policy:
+    finite, the smaller of the per-host and total remainders; subscription, `remaining` None and
+    `ok` only for a readable ledger. Unreadable or missing counts are never free space, and
+    `required` is the council's shape, not provider quota."""
+    return policy_headroom(budget, counts, HEADROOM)
 
 
 def select_candidate(eligible: list, adoptions: int, max_adoptions: int, room: dict) -> dict:
@@ -360,7 +361,8 @@ def program_view(row: dict, cycles: list, candidates: list) -> dict:
                        "active": row.get("active_cycle")},
             "adoptions": {"dispatched": row["adoptions"], "max": config["max_adoptions"],
                           "remaining": config["max_adoptions"] - row["adoptions"]},
-            "budget": dict(config["budget"]), "stop_reason": row.get("stop_reason"), "blocked_reason": row.get("blocked_reason"),
+            "budget": dict(config["budget"]), "accounting_mode": accounting_mode(config["budget"]),
+            "stop_reason": row.get("stop_reason"), "blocked_reason": row.get("blocked_reason"),
             "last_tick_at": row.get("last_tick_at"), "registered_at": row["registered_at"], "updated_at": row["updated_at"],
             "candidates": {"total": len(candidates), "eligible": sum(c["status"] == ELIGIBLE for c in candidates),
                            "claimed": sum(c["status"] == CLAIMED for c in candidates),
@@ -381,6 +383,7 @@ def monitor_projection(programs: list, cycles: list) -> dict:
         mine = sorted(by_program.get(row["id"], []), key=lambda c: c["number"])
         last = mine[-1] if mine else None
         out.append({"id": row["id"], "state": row["state"], "cycles": row["cycles"], "max_cycles": row["config"]["max_cycles"],
+                    "accounting_mode": accounting_mode(row["config"]["budget"]),
                     "adoptions": row["adoptions"], "max_adoptions": row["config"]["max_adoptions"],
                     "stop_reason": row.get("stop_reason"), "blocked_reason": row.get("blocked_reason"),
                     "outcomes": {r: sum(1 for c in mine if c.get("result") == r) for r in RESULTS},

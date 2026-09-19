@@ -13,11 +13,14 @@ import re
 
 from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.operation import safe_relative_path
+from codex_harness.domain.usage_policy import NUMERIC_FIELDS, UsagePolicyError, accounting_mode
+from codex_harness.domain.usage_policy import validate_budget as policy_budget
+from codex_harness.domain.usage_policy import validate_grant as policy_grant
 
 CONFIG_SCHEMA = "urn:zeus:fleet:1"
 STATUS_SCHEMA = "urn:zeus:fleet-status:1"
 CONFIG_FIELDS = {"schema", "id", "max_parallel", "budget", "lanes"}
-BUDGET_FIELDS = {"per_host", "total"}
+BUDGET_FIELDS = set(NUMERIC_FIELDS)  # the legacy finite shape; `mode` is optional (usage_policy)
 LANE_FIELDS = {"id", "team", "repository", "schema", "redis_namespace", "runtime"}
 MAX_LANES = 4
 JOB_SAMPLE = 100
@@ -96,11 +99,11 @@ def absolute_resolved(value) -> bool:
 
 
 def validate_budget(budget, name="budget") -> dict:
-    _fields(budget, BUDGET_FIELDS, name)
-    if not (_integer(budget["per_host"]) and _integer(budget["total"]) and budget["per_host"] > 0
-            and budget["total"] >= budget["per_host"]):
-        raise FleetRefused("config_invalid", name)
-    return {"per_host": budget["per_host"], "total": budget["total"]}
+    """The shared usage policy decides the shape (finite legacy form or explicit subscription mode)."""
+    try:
+        return policy_budget(budget)
+    except UsagePolicyError as exc:
+        raise FleetRefused("config_" + exc.reason_code, name) from exc
 
 
 def _lane(lane, index: int) -> dict:
@@ -163,23 +166,23 @@ def effective_config(config: dict, control) -> dict:
 
 
 def validate_grant(prior: dict, requested, expected_total) -> dict:
-    """An explicit operator grant over the effective ceilings (compare-and-swap on the total):
-    the stated expected total must be the current effective total, both ceilings must be valid
-    and monotonically nondecreasing, and at least one must increase. Never a reset."""
+    """An explicit operator grant over the effective budget (compare-and-swap on the total): the
+    stated expected total must be the current effective total, both numbers must be valid and
+    monotonically nondecreasing, and either a number increases or the accounting mode changes
+    with unchanged numbers (usage_policy.validate_grant). Never a reset."""
     new = validate_budget(requested)
     if not _integer(expected_total) or expected_total != prior["total"]:
         raise FleetRefused("budget_expected_mismatch", "expected_total")
-    if new["per_host"] < prior["per_host"] or new["total"] < prior["total"]:
-        raise FleetRefused("budget_decrease", "budget")
-    if new == prior:
-        raise FleetRefused("budget_no_increase", "budget")
-    return new
+    try:
+        return policy_grant(prior, new)
+    except UsagePolicyError as exc:
+        raise FleetRefused("budget_decrease" if exc.reason_code == "decrease" else "budget_no_increase", "budget") from exc
 
 
 def sanitized_config(config: dict) -> dict:
     """What may be displayed: identities and ceilings; never paths, schemas or namespaces."""
     return {"schema": config["schema"], "id": config["id"], "max_parallel": config["max_parallel"],
-            "budget": dict(config["budget"]),
+            "budget": dict(config["budget"]), "accounting_mode": accounting_mode(config["budget"]),
             "lanes": [{"id": lane["id"], "team": lane["team"]} for lane in config["lanes"]]}
 
 
@@ -347,6 +350,7 @@ def projection(registry: dict | None, paused: bool, jobs: list[dict]) -> dict:
     ordered = sorted(jobs, key=lambda j: (j["updated_at"], j["id"]), reverse=True)
     return {"schema": STATUS_SCHEMA, "registered": True, "id": config["id"], "paused": bool(paused),
             "max_parallel": config["max_parallel"], "budget": dict(config["budget"]),
+            "accounting_mode": accounting_mode(config["budget"]),
             "lanes": [{"id": lane["id"], "team": lane["team"], "active_job": active.get(lane["id"])}
                       for lane in config["lanes"]],
             "jobs": [job_view(job) for job in ordered[:JOB_SAMPLE]], "truncated": len(ordered) > JOB_SAMPLE}

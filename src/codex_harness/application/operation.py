@@ -25,6 +25,7 @@ from codex_harness.domain.operation import (
     cycle_id,
     manifest_digest,
 )
+from codex_harness.domain.usage_policy import SUBSCRIPTION, accounting_mode, validate_budget
 
 BUCKET = "operations"
 RECEIPT_SCHEMA = "urn:zeus:operation-receipt:1"
@@ -74,7 +75,10 @@ class BudgetedExecutor:
     """
 
     def __init__(self, executor, budget, ceilings: dict, purpose: str, model: str, gate=None, labels=None, before=None):
-        self.executor, self.budget, self.ceilings = executor, budget, ceilings
+        # The shared usage policy binds the accounting mode once; an unknown mode is refused here,
+        # before any reservation. Finite ceilings keep the legacy reservation call unchanged.
+        self.executor, self.budget, self.ceilings = executor, budget, validate_budget(ceilings)
+        self.mode = accounting_mode(self.ceilings)
         self.purpose, self.model, self.gate = purpose, model, gate
         # `labels(kind, agent)` names the actual provider and model of each start for the ledger;
         # `before(kind, agent)` runs ahead of every reservation (deadline check), never after one.
@@ -87,13 +91,18 @@ class BudgetedExecutor:
         if kind == "decision" and self.gate is not None:
             self.gate(expected)  # before the reservation, before any provider entry
         provider, model = self.labels(kind, agent)
+        arguments = {"per_host": self.ceilings["per_host"], "total": self.ceilings["total"],
+                     "purpose": self.purpose + ":" + kind, "provider": provider, "model": model}
+        if self.mode == SUBSCRIPTION:
+            # The kwarg travels only for subscription accounting: finite callers and their existing
+            # fake ledgers see the exact legacy call. The ledger itself rejects unknown modes.
+            arguments["mode"] = self.mode
         try:
-            slot = self.budget.reserve(per_host=self.ceilings["per_host"], total=self.ceilings["total"],
-                                       purpose=self.purpose + ":" + kind, provider=provider, model=model)
+            slot = self.budget.reserve(**arguments)
         except ContractError as exc:
             raise BudgetRefused("budget_exhausted") from exc
         record = {"id": slot["id"], "kind": kind, "agent": agent, "provider": provider, "reserved_at": slot.get("reserved_at"),
-                  "outcome": None, "settled": False}
+                  "outcome": None, "settled": False, "accounting_mode": self.mode}
         self.slots.append(record)
         outcome, error = "exception", None
         try:
@@ -135,7 +144,7 @@ class Operation:
         """Safe projection: identities, digests, codes and counts; no manifest text or raw errors."""
         keys = ("id", "status", "reason_code", "manifest_sha256", "identity", "goal", "design", "correlation_id",
                 "cycle_id", "assignment_message_id", "task_id", "decision_id", "lead_accepted", "calls", "evidence",
-                "cycle", "collection", "finalization", "claimed_at", "updated_at", "finished_at")
+                "cycle", "collection", "finalization", "accounting_mode", "claimed_at", "updated_at", "finished_at")
         return {"schema": RECEIPT_SCHEMA, "authority": "operation_receipt; not merge, deploy or completion",
                 **{k: row.get(k) for k in keys}}
 
@@ -164,7 +173,7 @@ class Operation:
                 except DgeRefused as exc:
                     raise DesignGateRefused(exc.reason_code) from exc
             row = {"id": operation_id, "status": "running", "reason_code": None, **binding, "design": design,
-                   "deadline": deadline,
+                   "deadline": deadline, "accounting_mode": accounting_mode(manifest["budget"]),
                    "correlation_id": correlation, "cycle_id": cycle, "assignment_message_id": message["message_id"],
                    "max_executions": MAX_EXECUTIONS, "task_id": None, "decision_id": None, "lead_accepted": None,
                    "calls": {"reserved": 0, "settled": 0, "slots": []}, "evidence": {}, "cycle": None,
@@ -237,7 +246,10 @@ class Operation:
     def run(self, manifest: dict, identity: dict, goal: dict, ceilings: dict | None = None,
             deadline: str | None = None, clock=utcnow, labels=None) -> dict:
         """`deadline` (aware ISO 8601, optional) is checked by `clock` before every provider start;
-        a passed deadline ends `failed`/`deadline_expired` without a reservation and is never reset."""
+        a passed deadline ends `failed`/`deadline_expired` without a reservation and is never reset.
+        An override `ceilings` must satisfy the same usage policy as the manifest budget, checked
+        before the claim so an unknown mode leaves no row behind."""
+        ceilings = validate_budget(ceilings) if ceilings is not None else None
         claimed = self.claim(manifest, identity, goal, deadline)
         if claimed["cached"]:
             return {**self._receipt(claimed["row"]), "cached": True, "exit_code": 0 if claimed["row"]["status"] == "accepted" else 1}

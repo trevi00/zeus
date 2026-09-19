@@ -15,7 +15,8 @@ input objects unchanged. This is input-delivery evidence, not live model timing 
 Scope acceptance: complete inline meeting data, original reader refs/pointer argv, critical and
 unknown guidance preserved; generic readers, nonempty recovery and candidate-review controls
 covered by the focused suite. Missing/oversized mandatory input still refuses before provider.
-No new blocker found across the agreed changed boundary. Full owner suite/CI still running.
+No new blocker found across the agreed changed boundary. Full owner suite:2173passed/455skipped,668.42s. Skips are unexecuted environment paths.
+CI at7a878cf: Linux3.12/3.14 and integration passed; Windows jobs pending at recording.
 
 Large raw evidence: D:/workspaces/zeus/artifacts/research-program-001/conductor-delivery/whole-layout.
 

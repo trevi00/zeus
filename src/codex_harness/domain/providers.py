@@ -19,8 +19,16 @@ from dataclasses import dataclass, field
 
 from codex_harness.domain.model import ContractError, digest, require
 from codex_harness.domain.provider_stream import STREAMS
+from codex_harness.domain.usage_policy import FINITE, MODES, SUBSCRIPTION
 
 POLICY_VERSION = "provider-policy.v1"
+# Research program001 batch008: the dollar cap is a `claude_cli` invocation option (domain.invocation
+# SUPPORT), so the usage-accounting mode that decides whether it is forwarded is bound per transport
+# and read from one explicit host setting. Absent or `finite` is the unchanged legacy configuration;
+# `subscription` retains the dollar-cap control as validated metadata and never forwards it; any
+# other value refuses. The setting is never a provider allowance or a remaining-usage claim.
+ACCOUNTING_SETTINGS = {"claude_cli": "ZEUS_CLAUDE_ACCOUNTING_MODE"}
+DOLLAR_CAP_CONTROL = "max_budget_usd"
 MODEL_SOURCES = ("model_routing", "explicit_setting")
 RESUME_STATES = ("supported", "unsupported")
 CONTROL_KINDS = ("number", "integer", "path")
@@ -168,6 +176,24 @@ def _number(text, spec, name):
     return value
 
 
+def accounting_mode_setting(provider: Provider) -> str | None:
+    """The host setting naming this provider's usage-accounting mode, or None when its transport has
+    no dollar-cap option to withhold."""
+    return ACCOUNTING_SETTINGS.get(provider.transport)
+
+
+def read_accounting_mode(provider: Provider, settings: dict) -> str:
+    """finite unless the transport's setting explicitly says subscription; an unknown value refuses
+    the configuration as a whole, never guesses."""
+    name = accounting_mode_setting(provider)
+    raw = settings.get(name) if name is not None else None
+    if raw is None or not str(raw).strip():
+        return FINITE
+    mode = str(raw).strip()
+    require(mode in MODES, f"{name} must be one of {', '.join(MODES)}: it is not a provider allowance")
+    return mode
+
+
 def parse_configuration(policy: ProviderPolicy, settings: dict) -> ProviderConfiguration:
     """Read host enablement for every non-default provider; refuse the configuration as a whole when
     it names a pairing the packaged policy does not permit, or omits a required control."""
@@ -179,6 +205,7 @@ def parse_configuration(policy: ProviderPolicy, settings: dict) -> ProviderConfi
         raw = settings.get(provider.enable_setting)
         if raw is None or not str(raw).strip():
             continue
+        mode = read_accounting_mode(provider, settings)
         pairs = []
         for token in str(raw).split(","):
             token = token.strip()
@@ -204,13 +231,24 @@ def parse_configuration(policy: ProviderPolicy, settings: dict) -> ProviderConfi
         for control, spec in sorted(provider.controls.items()):
             value = settings.get(spec["setting"])
             present = value is not None and str(value).strip() != ""
-            require(present or not spec["required"],
+            # Subscription accounting: the dollar cap is retained migration metadata. A present value
+            # is still validated by the same rules (never weakened), but it is not required and it
+            # never becomes a control, so nothing downstream can forward or claim a ceiling.
+            retained = mode == SUBSCRIPTION and control == DOLLAR_CAP_CONTROL
+            require(present or not spec["required"] or retained,
                     f"{spec['setting']} is required before {name} may execute")
             if not present:
                 continue
-            controls[control] = (str(value).strip() if spec["kind"] == "path"
-                                 else _number(str(value).strip(), spec, spec["setting"]))
-        enabled[name] = {"pairs": tuple(pairs), "model": model, "controls": controls}
+            parsed = (str(value).strip() if spec["kind"] == "path"
+                      else _number(str(value).strip(), spec, spec["setting"]))
+            if not retained:
+                controls[control] = parsed
+        entry = {"pairs": tuple(pairs), "model": model, "controls": controls}
+        if mode == SUBSCRIPTION:
+            # Only the non-default mode is written, so every finite configuration keeps its exact
+            # legacy entry and config digest; a subscription configuration is a different digest.
+            entry["accounting_mode"] = SUBSCRIPTION
+        enabled[name] = entry
     return ProviderConfiguration(enabled=enabled,
                                  config_digest=digest({"policy": policy.policy_digest, "enabled": enabled}))
 
@@ -234,19 +272,25 @@ class ExecutionAssignment:
     action: str | None
     workload: str
     read_only: bool
+    # The usage-accounting mode this execution runs under (usage_policy MODES). Under subscription
+    # `controls` carries no dollar cap and `runtime["accounting_mode"]` tells the transport so.
+    accounting_mode: str = FINITE
 
     @property
     def is_default(self) -> bool:
         return self.selected_by == "packaged_default"
 
     def receipt(self) -> dict:
-        """Everything a reviewer needs to know which policy chose this provider; no secret values."""
+        """Everything a reviewer needs to know which policy chose this provider; no secret values.
+        `controls` lists exactly what is forwarded, so a receipt never claims a ceiling that was not
+        passed; `accounting_mode` names why one is absent."""
         return {"provider": self.provider, "identity": self.identity, "transport": self.transport,
                 "model_source": self.model_source, "session_resume": self.session_resume,
                 "policy_version": self.policy_version, "policy_digest": self.policy_digest,
                 "config_digest": self.config_digest, "selected_by": self.selected_by,
                 "role": self.role, "action": self.action, "workload": self.workload,
-                "read_only": self.read_only, "controls": dict(self.controls)}
+                "read_only": self.read_only, "controls": dict(self.controls),
+                "accounting_mode": self.accounting_mode}
 
 
 def select_execution(policy: ProviderPolicy, configuration: ProviderConfiguration, *, role: str,
@@ -266,14 +310,20 @@ def select_execution(policy: ProviderPolicy, configuration: ProviderConfiguratio
                 f"{name} is enabled for {role}/{action} but the packaged policy does not permit it as "
                 f"workload={workload} read_only={read_only}")
         entry = configuration.enabled[name]
+        mode = entry.get("accounting_mode", FINITE)
+        runtime = dict(provider.runtime)
+        if mode == SUBSCRIPTION:
+            # Bound into the selected runtime, which is the one dictionary every Claude transport
+            # (host or isolated request) already receives; finite runtimes stay byte-identical.
+            runtime["accounting_mode"] = SUBSCRIPTION
         return ExecutionAssignment(
             provider=name, identity=provider.identity, transport=provider.transport,
             model_source=provider.model_source, configured_model=entry["model"],
             session_resume=provider.session_resume, controls=dict(entry["controls"]),
-            runtime=dict(provider.runtime), policy_version=policy.version,
+            runtime=runtime, policy_version=policy.version,
             policy_digest=policy.policy_digest, config_digest=configuration.config_digest,
             selected_by="host_configuration", role=role, action=action, workload=workload,
-            read_only=read_only)
+            read_only=read_only, accounting_mode=mode)
     default = policy.provider(policy.default_provider)
     return ExecutionAssignment(
         provider=default.name, identity=default.identity, transport=default.transport,

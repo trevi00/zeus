@@ -176,6 +176,22 @@ DELIVERY_ARTIFACT_READER = {
 }
 
 
+def invocation_options(assignment, *, model, timeout, schema, read_only: bool) -> dict:
+    """INV-INVOCATION-001: the request options for this assignment's transport.
+
+    The claude_cli dollar cap travels only when the selected configuration carries the control. Under
+    subscription accounting (domain.providers, research program001 batch008) the control is absent
+    and the option is omitted rather than sent as null, so the request never declares a ceiling the
+    command will not pass and the receipt's `effect_left_to_provider` stays truthful.
+    """
+    options = {"model": model, "timeout": timeout, "output_schema": schema, "read_only": read_only}
+    if assignment.transport == "claude_cli":
+        if "max_budget_usd" in assignment.controls:
+            options["max_budget_usd"] = assignment.controls["max_budget_usd"]
+        options["permission_mode"] = assignment.runtime.get("permission_mode")
+    return options
+
+
 class Executor:
     """Infrastructure composition for role-specific, independently executed Codex tasks."""
 
@@ -499,13 +515,8 @@ class Executor:
             if assignment.transport == "claude_cli":
                 ceiling = assignment.controls.get("timeout_seconds")
                 timeout = min(timeout, ceiling) if ceiling else timeout
-                options = {"model": requested_model, "timeout": timeout, "output_schema": schema,
-                           "read_only": read_only,
-                           "max_budget_usd": assignment.controls.get("max_budget_usd"),
-                           "permission_mode": assignment.runtime.get("permission_mode")}
-            else:
-                options = {"model": requested_model, "timeout": timeout, "output_schema": schema,
-                           "read_only": read_only}
+            options = invocation_options(assignment, model=requested_model, timeout=timeout, schema=schema,
+                                         read_only=read_only)
             # The reservation carries which policy chose this provider, so a receipt can be read back
             # to the configuration that produced it.
             request = {**parse_request(assignment.transport, options), "assignment": assignment.receipt()}

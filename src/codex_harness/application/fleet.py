@@ -40,6 +40,7 @@ from codex_harness.domain.fleet import (
 )
 from codex_harness.domain.model import require, utcnow
 from codex_harness.domain.operation import manifest_digest
+from codex_harness.domain.usage_policy import MODES, SUBSCRIPTION, accounting_mode
 
 BUCKET_REGISTRY, BUCKET_CONTROL, BUCKET_JOBS = "fleet_registry", "fleet_control", "fleet_jobs"
 BUCKET_GRANTS = "fleet_budget_grants"
@@ -149,32 +150,42 @@ class Fleet:
     def resume(self) -> dict:
         return self._set_paused(False)
 
-    def authorize_budget(self, per_host, total, expected_total) -> dict:
-        """Explicit operator grant of higher effective ceilings, one transaction: the expected
-        total must equal the current effective total, ceilings valid and nondecreasing with at
-        least one increase, and no queued/dispatching/unknown job (queued work carries frozen
-        ceilings; reserving work holds the machine ledger). The registered config and digest stay
-        immutable; the control row takes the new budget beside the untouched pause flag and an
-        immutable `fleet_budget_grants` record keeps prior/new ceilings and time. No resume."""
+    def authorize_budget(self, per_host, total, expected_total, mode=None) -> dict:
+        """Explicit operator grant over the effective budget, one transaction: the expected total
+        must equal the current effective total, numbers valid and nondecreasing, either a number
+        increases or the accounting `mode` changes (None keeps the current mode; unknown modes
+        refuse), and no queued/dispatching/unknown job (queued work carries frozen budgets;
+        reserving work holds the machine ledger). The registered config and digest stay immutable;
+        the control row takes the new budget beside the untouched pause flag and an immutable
+        `fleet_budget_grants` record keeps prior/new budget, both modes and time. No resume, and
+        nothing here is called by the dispatcher or a model run."""
         with self.store.transaction() as tx:
             registry = self._registry(tx)
             if registry is None:
                 raise FleetRefused("unregistered")
             control = self._control(tx)
             prior = effective_config(registry["config"], control)["budget"]
-            budget = validate_grant(prior, {"per_host": per_host, "total": total}, expected_total)
+            requested = {"per_host": per_host, "total": total}
+            if mode is None:
+                mode = accounting_mode(prior)
+            if type(mode) is not str or mode not in MODES:
+                raise FleetRefused("config_invalid", "mode")
+            if mode == SUBSCRIPTION:
+                requested["mode"] = mode
+            budget = validate_grant(prior, requested, expected_total)
             if any(row["status"] == QUEUED or row["status"] in RESERVING for row in tx.scan(BUCKET_JOBS)):
                 raise FleetRefused("fleet_not_idle")
             now = self.clock()
             grant_id = "grant-%08d" % (len(tx.scan(BUCKET_GRANTS)) + 1)
             require(tx.get(BUCKET_GRANTS, grant_id) is None, "Fleet budget grant record already exists")
             grant = {"id": grant_id, "fleet": registry["id"], "config_sha256": registry["config_sha256"],
-                     "prior": dict(prior), "budget": budget, "expected_total": expected_total, "granted_at": now}
+                     "prior": dict(prior), "budget": budget, "expected_total": expected_total,
+                     "prior_mode": accounting_mode(prior), "mode": accounting_mode(budget), "granted_at": now}
             tx.put(BUCKET_GRANTS, grant_id, grant)
             row = {**control, "paused": bool(control.get("paused")), "budget": budget, "updated_at": now}
             tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
         return {"granted": True, "grant_id": grant_id, "prior": grant["prior"], "budget": dict(budget),
-                "paused": row["paused"], "granted_at": now}
+                "prior_mode": grant["prior_mode"], "mode": grant["mode"], "paused": row["paused"], "granted_at": now}
 
     def budget_grants(self) -> list[dict]:
         with self.store.transaction() as tx:

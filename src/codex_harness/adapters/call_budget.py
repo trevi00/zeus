@@ -25,6 +25,7 @@ from uuid import uuid4
 from filelock import FileLock, Timeout
 
 from codex_harness.domain.model import ContractError, canonical, digest, require
+from codex_harness.domain.usage_policy import FINITE, MODES
 
 LEDGER_TIMEOUT = 20.0
 STATUSES = ("reserved", "used")
@@ -75,8 +76,16 @@ class CallBudget:
                 "note": "a slot that was reserved and never settled still counts"}
 
     # ---- taking a slot ---------------------------------------------------------------------------
-    def reserve(self, *, per_host: int, total: int, purpose: str, provider: str, model: str) -> dict:
-        """Take one slot before anything can spawn, or refuse. Raises ContractError when full."""
+    def reserve(self, *, per_host: int, total: int, purpose: str, provider: str, model: str,
+                mode: str = FINITE) -> dict:
+        """Take one slot before anything can spawn, or refuse. Raises ContractError when full.
+
+        `mode` is the explicit accounting mode (domain.usage_policy): `finite` (the default and the
+        unchanged legacy behavior) refuses at the ceilings; `subscription` still takes the machine
+        lock, needs a readable ledger and writes the slot before any provider entry, but the
+        lifetime counts never refuse it. The mode is recorded in the slot. Unknown modes refuse.
+        """
+        require(type(mode) is str and mode in MODES, "Unknown call budget accounting mode")
         require(type(per_host) is int and per_host > 0, "The per-host ceiling must be a positive count")
         require(type(total) is int and total >= per_host, "The overall ceiling cannot be below the per-host one")
         require(type(purpose) is str and bool(purpose), "A reserved call slot names its purpose")
@@ -88,16 +97,24 @@ class CallBudget:
             raise ContractError("The call budget ledger is busy; no slot was taken") from exc
         try:
             counts = self.counts()
-            if counts["this_host"] >= per_host:
+            if mode == FINITE:
+                if counts["this_host"] >= per_host:
+                    raise ContractError(
+                        f"{counts['this_host']} real calls are already recorded for this host "
+                        f"(ceiling {per_host}); the ledger is at {self.root}")
+                if counts["all_hosts"] >= total:
+                    raise ContractError(
+                        f"{counts['all_hosts']} real calls are already recorded across hosts "
+                        f"(ceiling {total}); the ledger is at {self.root}")
+            elif counts["unreadable"]:
+                # No ceiling is left to count a damaged slot against: the record itself is the
+                # control, so an unreadable ledger refuses before any provider entry.
                 raise ContractError(
-                    f"{counts['this_host']} real calls are already recorded for this host "
-                    f"(ceiling {per_host}); the ledger is at {self.root}")
-            if counts["all_hosts"] >= total:
-                raise ContractError(
-                    f"{counts['all_hosts']} real calls are already recorded across hosts "
-                    f"(ceiling {total}); the ledger is at {self.root}")
+                    f"{counts['unreadable']} unreadable slot(s) in the call ledger at {self.root}; "
+                    "subscription accounting needs a readable ledger")
             slot = {"id": uuid4().hex, "host": self.host["id"], "host_facts": self.host,
                     "status": "reserved", "purpose": purpose, "provider": provider, "model": model,
+                    "accounting_mode": mode,
                     "per_host_ceiling": per_host, "total_ceiling": total,
                     "counts_at_reservation": counts,
                     "reserved_at": datetime.now(timezone.utc).isoformat(), "pid": os.getpid()}
@@ -126,5 +143,5 @@ class CallBudget:
 
     def summary(self) -> dict:
         return {"ledger": str(self.root), "host": self.host, **self.counts(),
-                "slots": [{k: row.get(k) for k in ("id", "status", "purpose", "outcome", "reserved_at")}
+                "slots": [{k: row.get(k) for k in ("id", "status", "purpose", "outcome", "reserved_at", "accounting_mode")}
                           for row in self.slots()]}

@@ -662,3 +662,108 @@ production reliability. Current unresolved log-recovery limitation remains expli
 it must not be hidden by an accepted input-size test. Project UI/asset inventory are next project
 work, not new launch gates. Completion evidence must separate prepared, implemented, tested,
 actually executed and independently accepted states.
+
+
+### Implementation batch008: subscription accounting admission
+
+Owner decision: add OPTIONAL budget.mode="subscription" beside existing positive per_host/total
+fields. Old shape remains byte-for-byte canonical finite mode. In subscription mode the two
+numbers are retained migration metadata, NOT active ceilings or provider allowance. Do not use
+an enormous sentinel or clear history. Unknown modes/extra fields refuse. Centralize budget
+validation/admission semantics in a small domain usage_policy module and use it from Operation,
+Fleet and research program. This is explicit operator policy, not a claim to detect billing plan.
+Local observed Codex auth_mode=chatgpt and no API key; isolated Claude passes only OAuth token.
+No credential, provider selection, extra usage, or auth configuration change in this batch.
+
+Required complete path:
+1. Domain operation/fleet/research_program validators preserve optional subscription mode, legacy
+   finite dictionaries unchanged. Autonomous/council inherited budget binding stays exact.
+2. CallBudget.reserve accepts explicit mode="subscription" only when passed by BudgetedExecutor;
+   still acquires machine lock, checks readable ledger, writes one slot before provider and settles.
+   Record accounting mode in that slot. Lifetime counts never block that mode; other errors do.
+   Keep finite behavior unchanged and reject unknown modes. Pass new kwarg ONLY for subscription
+   so existing finite fake adapters remain compatible. No reservation bypass or second ledger.
+3. Fleet LaneLauncher exhaustion and research headroom use same mode semantics. Subscription
+   headroom.remaining=null, ok=true only when observed counts are valid/readable; required=7
+   remains shape information, not free provider quota. Add accounting_mode for truthful reports.
+4. Existing idle atomic authorize-budget CLI gains optional --mode subscription. Keep numeric
+   fields for migration compatibility. Immutable grant records include mode; preserve pause and
+   refuse queued/active/unknown jobs. A mode change with unchanged numbers is valid; ordinary
+   finite same/decrease rules stay. Runtime admissions never grant/change mode themselves.
+5. Fleet status/sanitized_config retain mode. Do not remove per-run max_starts/deadlines, program
+   caps, ownership, evidence, reconciliation or failure stops. This stage has explicit STOP on
+   provider error; automatic reset/resume is deferred until structured provider evidence exists.
+   It is finite unattended execution, not a promise of uninterrupted service across provider limits.
+
+Tests: old finite cutoff; subscription reservation above historical ceiling preserves all slots;
+unknown mode and unreadable ledger fail before provider; concurrent subscription reservations;
+operation wrapper actually passes mode; Fleet idle grant/admission and mismatch; program headroom
+and manifest/template round trip; fixed deadlines/caps remain. Injected failures labelled. Do not
+call providers in tests. Focused command: python -m pytest tests/test_call_budget.py tests/test_fleet.py
+tests/test_fleet_runtime.py tests/test_operation.py tests/test_research_program.py tests/test_research_program_cli.py
+tests/test_subscription_accounting.py -q -p no:cacheprovider . Then python -m ruff check .
+Owner full suite/CI separate. Write actual report SUBSCRIPTION-ACCOUNTING.md; no full live cycle here.
+No frontend redesign now: status API reports mode; the existing UI mode label will be verified with
+project-view work, and must not be described as an already migrated dashboard. No automatic merge.
+
+
+### Operational projects after launch: owner routing
+
+User asks to run complete local-experience absorption AS unattended work and see active projects.
+Existing SSOT inspected: docs/full-analysis/path-ledger.json, coverage.json, local-assets-status.json;
+coverage says tracked_paths2736 and whole_analysis_complete=false, not_approved_not_incorporated.
+This is a recorded inventory snapshot, not a new full local scan or current semantic coverage claim.
+Reuse these pinned sources and operation goal bindings; no new competing asset/progress ledger.
+
+First project local-harness-absorption: inventory every authorized source, trace semantics/callers,
+compare incumbent Zeus contracts, assign adopt/migrate/already-covered/defer-with-reason disposition,
+Claude implements selected bounded changes and Codex reviews evidence. Private auth/session material
+is not publishable implementation. Keep local evidence on D; Git stores small specifications/hashes.
+Denominators stay separate: inventoried, semantically reviewed, dispositioned, implemented, verified.
+Second project project-observability: extend existing Fleet read-only snapshot and monitor route with
+stable project identity/goal, jobs grouped by binding, phase/owner, last evidence timestamp, blockers,
+remaining acceptance conditions and observed usage. Missing/stale/truncated data is unknown, never
+zero or done. Accepted review is not deployment. Existing shadcn/Lucide/tokens/components reused.
+No extra launch gate: these projects begin after the bounded real-cycle acceptance, not before it.
+
+
+### Batch008 observed obstacle and complete provider-control correction
+
+Actual worker008 stopped with result_subtype=error_max_budget_usd at the legacy5USD CLI estimate
+cap. This is NOT observed subscription exhaustion or an API bill. Dirty implementation preserved
+in14fa934, owner83tests passed/2skipped and lint passed; no terminal model answer/candidate existed.
+Owner also named a nonexistent test_call_budget.py; correct focused ledger file is
+ test_claude_review_boundaries.py. Do not repeat the nonexistent command.
+
+Revised SAME design: accounting mode must reach provider command AND invocation receipt, not just
+admission. Implement this complete narrow path on top of preserved008 code:
+- domain.operation.provider_settings explicitly sets ZEUS_CLAUDE_ACCOUNTING_MODE to finite or
+  subscription from manifest budget. Keep manifest positive numeric max_budget_usd for compatibility;
+  in subscription it is retained metadata, not forwarded as an active dollar ceiling.
+- domain.providers validates that explicit setting (unknown refuses); binds subscription into the
+  selected Claude runtime accounting_mode/config digest. Finite/default canonical configuration
+  remains unchanged. Subscription selection omits max_budget_usd from assignment.controls.
+- Executor builds invocation options WITHOUT max_budget_usd when absent; assignment/receipt must
+  identify accounting_mode and must not claim delivery of a dollar cap. No change to timeout,
+  schema, model, permissions, worktree/isolation, provider auth or actual usage recording.
+- ClaudeRuntime requires a positive spend ceiling on finite/default exactly as before. Explicit
+  runtime.accounting_mode=subscription omits --max-budget-usd, records null dollar cap and named
+  accounting mode; unknown mode refuses before spawning. Capability preflight may still require
+  supported CLI features, but must not claim an unused option was passed. No enormous dollar cap.
+- isolated runtime serializes runtime dict already; verify the mode crosses request/entry and
+  isolated command generation. Owner must rebuild/pin worker image from accepted source before
+  live use: old immutable image contains old ClaudeRuntime. Do not falsely claim host-only code
+  changes update the image. Worker does not build images or call providers.
+
+Tests cover finite unchanged, subscription command flag absent/receipt truthful, unknown rejected,
+provider_settings -> policy select -> executor invocation, and isolated request transport. Add in
+ test_subscription_accounting.py; preserve old tests. Focused verification: python -m pytest
+ tests/test_subscription_accounting.py tests/test_fleet.py tests/test_fleet_runtime.py
+ tests/test_operation.py tests/test_research_program.py tests/test_research_program_cli.py
+ tests/test_claude_review_boundaries.py tests/test_claude_cli_process.py tests/test_claude_assignment.py
+ tests/test_invocation_ledger.py -q -p no:cacheprovider. Check file existence before commands; report any
+ name mismatch and substitute actual file, do not invent success. Then python -m ruff check .
+Update SUBSCRIPTION-ACCOUNTING.md and docs/contracts.md. No schema weakening or automatic retry.
+One Claude completion attempt, owner direct review; legacy ceiling192 holds the remaining slot.
+Bootstrap call alone uses10USD estimate cap to finish this migration, not new billing authorization;
+900s execution bound stays. Future subscription mode forwards no dollar cap. No live retry now.
