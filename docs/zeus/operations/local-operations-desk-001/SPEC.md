@@ -314,3 +314,19 @@ UI repair cc626221 had one unchecked tool claim, so its automated evidence gate 
 review. Its failed operation remains unchanged. Root Codex directly reviews the changed paths and
 supplies actual npm lint/build, injected503/body deadline and real browser persistence evidence.
 Neither machine operation is relabelled accepted. Owner final PR acceptance is a separate judgment.
+
+## Actual provider schema rejection (2026-09-20)
+
+First real browser turn 7f67cb06-9134-4068-8ce2-8cb299288351 reached the provider and was rejected
+with invalid_json_schema: DESK_OUTPUT declares four properties but only answer is required. This
+invalidates the assumption that local JSON Schema validation establishes provider compatibility.
+Official source opened 2026-09-20: https://developers.openai.com/api/docs/guides/structured-outputs
+requires every object property in required; optional meaning uses nullable types. The discriminating
+evidence is the actual server rejection, not a hypothetical compatibility issue.
+
+One narrowly scoped Claude repair: require answer, objective, acceptance_criteria, questions in
+DESK_OUTPUT, preserving nullable objective and empty lists. Add a focused provider-schema contract
+test covering required/property equality, additionalProperties=false and consultation/request
+payload validity. Do not broaden the adapter, alter other schemas or revisit accepted findings.
+Owner verifies this and resumes two planned turns with new explicitly recorded request identities;
+the failed first attempt remains failed and its machine slot stays counted. No automatic replay.
