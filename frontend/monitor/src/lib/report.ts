@@ -1,5 +1,5 @@
 import { interpretAccounting, type Accounting } from "./accounting"
-import { FLEET_SCHEMA, SOURCE_LABELS, SOURCE_NAMES, STATE_LABELS, fleetFreshness, formatNumber, formatTime, freshness, type EventRow, type FleetData, type FleetJob, type FleetLane, type FleetRegistered, type FreshState, type Observations, type Snapshot } from "./snapshot"
+import { FLEET_SCHEMA, SOURCE_LABELS, SOURCE_NAMES, STATE_LABELS, fleetFreshness, formatNumber, formatTime, freshness, readDelivery, type EventRow, type FleetData, type FleetDelivery, type FleetJob, type FleetLane, type FleetRegistered, type FreshState, type Observations, type Snapshot } from "./snapshot"
 import type { Transport } from "./use-snapshot"
 
 /**
@@ -35,6 +35,10 @@ import type { Transport } from "./use-snapshot"
  * scope: an explicit current state, a stored historical record whose outcome is unresolved or
  * unknown, or a limit/unknown of this capture. No v4 field is removed or renamed, no historical
  * count is dropped, no absent value becomes zero and no incident state is inferred from age.
+ * Additively within v5 (local-operations-desk-001, Part C): each captured job keeps the optional
+ * owner-recorded `delivery` document of the same wire row, so the pinned report distinguishes
+ * merge from deploy exactly as the live view does. Missing stays unknown, an off-contract record
+ * is captured as unreadable, and neither is an independent verification of a merge or deployment.
  */
 export type ExplanationFact = { label: string; value: string; known: boolean }
 export type ExplanationStep = { key: string; title: string; description: string; facts: ExplanationFact[] }
@@ -114,11 +118,23 @@ export type StoryJob = {
   dependencies: StoryDependency[]
   dependency_state: StoryDependencyState
   dependency_label: string
+  /** Owner-recorded merge/deploy of this job, captured with the rest; absence stays unknown. */
+  delivery: StoryDelivery
   /** 무엇이 남았는가: the recorded facts and who decides next, never a predicted completion. */
   remaining: string
   created_at: string | null
   updated_at: string | null
 }
+/**
+ * Captured owner delivery of one job (SPEC "Owner delivery records"):
+ * - `unknown`: the job carries no record, so merge and deploy are simply not known here;
+ * - `invalid`: a record exists but is off the `urn:zeus:owner-delivery:1` contract -> not shown;
+ * - `merged`: the owner recorded a merge revision and nothing about a deployment;
+ * - `deployed`: the owner also recorded a deployed revision.
+ * Every state is the owner's own report, never this report's verification of GitHub or of a host.
+ */
+export type StoryDeliveryState = "unknown" | "invalid" | "merged" | "deployed"
+export type StoryDelivery = { state: StoryDeliveryState; label: string; note: string; record: FleetDelivery | null }
 export type StoryLane = { id: string; active_job: string | null; active_in_sample: boolean | null }
 export type StoryTeam = { team: string; lanes: StoryLane[]; jobs: StoryJob[] }
 export type StoryControl = {
@@ -447,7 +463,7 @@ const VERDICTS: Record<StoryVerdict, { label: string; meaning: string }> = {
 const VERDICT_ORDER: StoryVerdict[] = ["accepted", "dispatching", "queued", "unknown", "rejected", "failed", "exhausted", "undefined"]
 /** 무엇이 남았는가 per verdict (SPEC "결과와 잔여"): recorded facts and the next owner decision only. */
 const VERDICT_REMAINING: Record<StoryVerdict, string> = {
-  accepted: "후보 수락됨 · 병합·배포 여부는 이 출처로 알 수 없음(소유자 기록 미연결) · 다음은 소유자 통합 결정",
+  accepted: "후보 수락됨 · 병합·배포는 소유자 기록이 있을 때만 알 수 있음 · 다음은 소유자 통합 결정",
   dispatching: "배정됨 · 종료 기록 없음 · 결과 알 수 없음 · 자동 시간 초과 없음",
   queued: "admission 대기 · 기록된 사유와 의존성 판정 그대로 · 소유자 개입 없이는 배정 순서만 기다림",
   unknown: "소유자 reconciliation 필요 · 소유권·예약 유지 · 성공도 실패도 아님",
@@ -529,6 +545,9 @@ function parseFleet(data: unknown): ParsedFleet {
         dependencies: Array.isArray(job.dependencies) ? job.dependencies.filter((d): d is string => typeof d === "string") : [],
         calls: { reserved: typeof job.calls?.reserved === "number" ? job.calls.reserved : null, settled: typeof job.calls?.settled === "number" ? job.calls.settled : null },
         created_at: typeof job.created_at === "string" ? job.created_at : "", updated_at: typeof job.updated_at === "string" ? job.updated_at : "",
+        // Same shared reading as the live decoder: the owner delivery document is captured once,
+        // absence stays unknown and an off-contract record is captured as unreadable, not as facts.
+        delivery: readDelivery(job.delivery),
       })),
       truncated: record.truncated,
     },
@@ -578,6 +597,27 @@ function dependencyStateOf(job: FleetJob, jobsById: Map<string, FleetJob>): Stor
   return "all_accepted"
 }
 
+/** The captured delivery of one job. The owner's document only; absence is never "미배포". */
+function storyDelivery(delivery: FleetDelivery | null | false): StoryDelivery {
+  if (delivery === false) {
+    return { state: "invalid", label: "배송 기록 형식 불일치", record: null,
+      note: "계약(urn:zeus:owner-delivery:1)과 다른 기록 · 표시하지 않음 · 확인 불가" }
+  }
+  if (delivery === null) {
+    return { state: "unknown", label: "소유자 기록 없음", record: null,
+      note: "병합·배포 여부 확인 불가 · 미배포 증거 아님 · '검토 수락'에서 배포를 추론하지 않음" }
+  }
+  const deployed = delivery.deployed_revision != null
+  return {
+    state: deployed ? "deployed" : "merged",
+    label: deployed ? "소유자 기록 · 병합 + 배포" : "소유자 기록 · 병합만",
+    note: `소유자가 직접 기록한 문서(owner_recorded) · 독립 검증 아님 · 병합 ${delivery.merge_revision.slice(0, 12)}`
+      + (deployed ? ` · 배포 ${delivery.deployed_revision?.slice(0, 12)}` : " · 배포 기록 없음 · 배포 여부 확인 불가")
+      + ` · 기록 시각 ${formatTime(delivery.recorded_at)} · 증거 ${formatNumber(delivery.evidence_refs.length)}건`,
+    record: delivery,
+  }
+}
+
 function shortId(id: string): string {
   return id.length > 20 ? `${id.slice(0, 20)}…` : id
 }
@@ -585,9 +625,12 @@ function shortId(id: string): string {
 function storyJob(job: FleetJob, jobsById: Map<string, FleetJob>): StoryJob {
   const verdict = verdictOf(job.status)
   const dependencyState = dependencyStateOf(job, jobsById)
+  const delivery = storyDelivery(job.delivery)
   const remainingParts = [VERDICT_REMAINING[verdict]]
   if (verdict === "queued" && job.reason_code) remainingParts.unshift(`기록된 사유 ${job.reason_code}`)
   if (verdict === "queued" && dependencyState !== "none") remainingParts.push(DEPENDENCY_LABELS[dependencyState])
+  // Delivery is a separate owner statement, appended to the verdict rather than replacing it.
+  if (delivery.state === "merged" || delivery.state === "deployed") remainingParts.push(delivery.label)
   return {
     id: job.id,
     short_id: shortId(job.id),
@@ -607,6 +650,7 @@ function storyJob(job: FleetJob, jobsById: Map<string, FleetJob>): StoryJob {
     }),
     dependency_state: dependencyState,
     dependency_label: DEPENDENCY_LABELS[dependencyState],
+    delivery,
     remaining: remainingParts.join(" · "),
     created_at: job.created_at || null,
     updated_at: job.updated_at || null,
@@ -688,7 +732,13 @@ export function buildStory(fleet: ReportFleet): Story {
   if (decided) remaining.push(`실패·거부·예산 소진 ${formatNumber(decided)}건 · 사유는 노드에 기록 · 소유자 다음 결정 필요`)
   if (counts.dispatching) remaining.push(`배정됨 ${formatNumber(counts.dispatching)}건 · 종료 기록 없음 · 결과 알 수 없음`)
   if (counts.queued) remaining.push(`대기 ${formatNumber(counts.queued)}건 · admission 과 의존성 판정 대기`)
-  if (counts.accepted) remaining.push(`검토 수락 ${formatNumber(counts.accepted)}건 · 후보 수락 · 소유자 병합·배포 기록 미연결이라 배포 여부는 확인 불가 · 소유자 통합 결정`)
+  const deliveries = jobs.map((job) => job.delivery)
+  const merged = deliveries.filter((delivery) => delivery.state === "merged" || delivery.state === "deployed").length
+  const deployed = deliveries.filter((delivery) => delivery.state === "deployed").length
+  const deliveryInvalid = deliveries.filter((delivery) => delivery.state === "invalid").length
+  if (counts.accepted) {
+    remaining.push(`검토 수락 ${formatNumber(counts.accepted)}건 · 후보 수락 · 소유자 병합 기록 ${formatNumber(merged)}건 · 그중 배포 기록 ${formatNumber(deployed)}건 (표본) · 기록 없는 작업은 확인 불가 · 소유자 통합 결정`)
+  }
   if (counts.undefined) remaining.push(`정의되지 않은 상태 ${formatNumber(counts.undefined)}건 · 해석하지 않음`)
   if (jobs.length === 0) remaining.push("표본 안에 작업 없음 · 등록됨 · 비어 있음 · 확인 불가 아님")
 
@@ -701,7 +751,8 @@ export function buildStory(fleet: ReportFleet): Story {
   if (data.accounting.mode === "unknown") caveats.push(`호출 회계 방식 확인 불가 · ${data.accounting.detail} · 기록된 호출 수치를 적용 중인 상한으로 읽지 않음`)
   if (data.accounting.mode === "subscription") caveats.push(`구독 사용량 기록 · ${data.accounting.numbers_note}`)
   caveats.push("단계별 시각·검토 세부 소견·패치·병합·배포 사실은 fleet 출처에 없음 · 표시하지 않음 · 마지막 기록 시각은 생존 신호 아님")
-  caveats.push("소유자의 병합·배포 기록은 아직 이 보고서에 연결되지 않음 · '검토 수락'에서 배포를 추론하지 않으며, 기록이 없다는 것이 미배포의 증거도 아님")
+  caveats.push("병합·배포는 소유자가 직접 남긴 기록(owner_recorded)만 표시 · 이 보고서의 독립 검증이 아니며 GitHub·호스트를 확인하지 않음 · '검토 수락'에서 배포를 추론하지 않고, 기록이 없다는 것도 미배포의 증거가 아님")
+  if (deliveryInvalid) caveats.push(`계약과 다른 배송 기록 ${formatNumber(deliveryInvalid)}건 · 표시하지 않음 · 확인 불가`)
 
   return { ...empty, fleet_id: data.id, control, teams, outcomes, remaining, caveats }
 }

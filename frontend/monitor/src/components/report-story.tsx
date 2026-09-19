@@ -19,8 +19,9 @@ import { freshnessTone, type Tone } from "@/lib/tones"
  *   `registered:false` is 비어 있음; stale or invalid observation time is labelled on the header;
  * - every node carries stored facts only (criterion, id, team/lane, status, reason, calls,
  *   created/updated); the four stages are conceptual, so no per-stage time is shown;
- * - 검토 수락 is a review-accepted candidate: merge and deploy are unknown here, not implied, and
- *   the owner's delivery records are not connected to this report yet (their absence proves nothing);
+ * - 검토 수락 is a review-accepted candidate: merge and deploy are never implied by it. They are
+ *   shown only from the owner's own recorded document, merge and deploy separately; a job without
+ *   a record is unknown (its absence proves nothing) and none of it is independent verification;
  * - the call numbers are read through the captured accounting mode (lib/accounting.ts): declared
  *   ceilings in finite mode, retained migration metadata in subscription mode, and neither when the
  *   mode is unknown; sample sums are never the machine total;
@@ -90,8 +91,16 @@ function JobLanes({ job }: { job: StoryJob }) {
           <div>호출 예약 {callsText(job.calls.reserved)} · 정산 {callsText(job.calls.settled)}</div>
         </Node>
         <Arrow />
-        <Node icon={Flag} title="남은 것" tone={tone} badge={job.verdict === "accepted" ? "후보 수락 · 배포 기록 미연결" :job.verdict === "unknown" ? "소유자 조정 필요" : job.verdict === "queued" ? "대기 · 기록된 사유" : job.verdict === "dispatching" ? "종료 기록 없음" : job.verdict === "undefined" ? "해석 불가" : "소유자 다음 결정"}>
+        <Node icon={Flag} title="남은 것" tone={tone} badge={job.verdict === "accepted" ? "후보 수락 · 병합·배포는 소유자 기록" :job.verdict === "unknown" ? "소유자 조정 필요" : job.verdict === "queued" ? "대기 · 기록된 사유" : job.verdict === "dispatching" ? "종료 기록 없음" : job.verdict === "undefined" ? "해석 불가" : "소유자 다음 결정"}>
           <div>{job.remaining}</div>
+          {/* Owner-recorded delivery only: merge and deploy separately, no record stays unknown. */}
+          <div className="flex min-w-0 flex-wrap items-center gap-1">
+            <StatusBadge tone={job.delivery.state === "invalid" || job.delivery.state === "unknown" ? "unknown" : "neutral"} title={job.delivery.note}>{job.delivery.label}</StatusBadge>
+            {job.delivery.record ? (
+              <span className="font-mono break-all">병합 {job.delivery.record.merge_revision.slice(0, 12)} · 배포 {job.delivery.record.deployed_revision ? job.delivery.record.deployed_revision.slice(0, 12) : "기록 없음"}</span>
+            ) : null}
+          </div>
+          <div>{job.delivery.note}</div>
           {job.dependencies.length ? (
             <div className="flex min-w-0 flex-wrap items-center gap-1">
               <StatusBadge tone={dependencyTone} title={job.dependency_label}>{job.dependency_label}</StatusBadge>
@@ -236,7 +245,7 @@ export function ReportStory({ story, fleet }: Props) {
         <Card size="sm" className="min-w-0">
           <CardHeader>
             <CardTitle id={outcomesId}>결과 (표본)</CardTitle>
-            <CardDescription>{registered ? `작업 ${formatNumber(fleet.sample.count)}건의 저장된 상태별 건수 · 검토 수락은 후보 수락 · 병합·배포 아님 · 소유자 배포 기록 미연결` :story.state === "unregistered" ? "등록된 fleet 없음 · 비어 있음" : "fleet 출처 확인 불가 · 건수 없음 (0건 아님)"}</CardDescription>
+            <CardDescription>{registered ? `작업 ${formatNumber(fleet.sample.count)}건의 저장된 상태별 건수 · 검토 수락은 후보 수락 · 병합·배포 아님 · 병합·배포는 소유자 기록이 있는 작업에만 표시` :story.state === "unregistered" ? "등록된 fleet 없음 · 비어 있음" : "fleet 출처 확인 불가 · 건수 없음 (0건 아님)"}</CardDescription>
           </CardHeader>
           <CardContent>
             {!registered ? (
