@@ -27,8 +27,15 @@ from codex_harness.domain.model import ContractError, digest, require
 RESOURCES = "codex_harness.resources"
 PROFILES = {"worker-v1": "worker-profile-v1.json"}
 MAX_CHARACTERS = 6000
-HOOK_EVENTS = ("SessionStart", "PostToolUse")
+HOOK_EVENTS = ("SessionStart", "PostToolUse", "PostToolUseFailure")
 HOOK_TOOL_MATCHER = "Bash"
+# two-strike-001: the failure event is registered for the tools whose failures the hook can
+# fingerprint. The matcher is a regular expression the CLI applies to the tool name.
+FAILURE_EVENT = "PostToolUseFailure"
+FAILURE_TOOL_MATCHER = "Bash|Edit|Glob|Grep|Read|Write"
+HOOKS_DECLARED = ("SessionStart", f"PostToolUse({HOOK_TOOL_MATCHER})",
+                  f"{FAILURE_EVENT}({FAILURE_TOOL_MATCHER})")
+STRIKE_THRESHOLD = 2
 # A hook command is one string that a shell parses. It must mean the same thing to POSIX `sh`
 # and to `cmd.exe`, so every element is double-quoted and every character either shell treats
 # specially inside double quotes is refused rather than escaped differently per host.
@@ -104,7 +111,7 @@ def delivery_receipt(profile: dict, evidence_directory: Path) -> dict:
             "manifest_sha256": profile["manifest_sha256"], "hook_sha256": profile["hook_sha256"],
             "characters": profile["characters"], "character_limit": MAX_CHARACTERS,
             "document_transport": "--append-system-prompt",
-            "hooks_transport": "--settings", "hooks": [HOOK_EVENTS[0], f"{HOOK_EVENTS[1]}({HOOK_TOOL_MATCHER})"],
+            "hooks_transport": "--settings", "hooks": list(HOOKS_DECLARED),
             "permissions_added": list(profile["permissions_allow"]),
             "sources": [{key: source.get(key) for key in ("source", "path", "commit", "blob",
                                                           "pinned_sha256", "scope")}
@@ -139,10 +146,13 @@ def hook_command(interpreter, hook_path, evidence_directory, profile_digest_valu
 
 
 def hook_settings(command: str) -> dict:
-    """The per-run hook configuration: SessionStart and PostToolUse(Bash) only, no Stop hook."""
+    """The per-run hook configuration: SessionStart, PostToolUse(Bash) and the two-strike
+    PostToolUseFailure matcher only. There is still no Stop hook and no other event."""
     return {"hooks": {
         "SessionStart": [{"hooks": [{"type": "command", "command": command}]}],
         "PostToolUse": [{"matcher": HOOK_TOOL_MATCHER,
+                         "hooks": [{"type": "command", "command": command}]}],
+        FAILURE_EVENT: [{"matcher": FAILURE_TOOL_MATCHER,
                          "hooks": [{"type": "command", "command": command}]}]}}
 
 
@@ -213,6 +223,7 @@ def hook_receipts(directory: Path, expected_digest: str) -> dict:
     """Read what the hook actually wrote for this session. Absence is "not observed"."""
     counts = {event: 0 for event in HOOK_EVENTS}
     records, foreign, unreadable, sessions = 0, 0, 0, set()
+    strikes: list[dict] = []
     if directory.is_dir():
         for path in sorted(directory.glob("*.json")):
             try:
@@ -228,9 +239,37 @@ def hook_receipts(directory: Path, expected_digest: str) -> dict:
             counts[event] = counts.get(event, 0) + 1
             if body.get("session_id"):
                 sessions.add(str(body["session_id"]))
+            if isinstance(body.get("two_strike"), dict):
+                strikes.append(body["two_strike"])
     return {"observed": records > 0, "records": records, "events": counts,
             "foreign_records": foreign, "unreadable_records": unreadable,
             "sessions_named": sorted(sessions), "directory": str(directory),
+            "two_strike": two_strike_facts(strikes),
             "provenance": "files written by the packaged hook into this session's directory, "
                           "read after the run; a missing file is not observed, not absent",
             "authority": "none: a receipt shows the hook ran, it approves and completes nothing"}
+
+
+def two_strike_facts(strikes: list) -> dict:
+    """What the hook counted, read out of the receipts it wrote (two-strike-001).
+
+    This reader never opens or changes the hook's SQLite state: it projects the facts the hook
+    already recorded. A fingerprint is a hash of a normalized symptom, so no command, output or
+    error text is carried here, and reaching the threshold marks a research candidate only.
+    """
+    counted = [strike for strike in strikes if strike.get("status") == "counted"]
+    required = sorted({str(strike.get("fingerprint")) for strike in counted
+                       if strike.get("research_required") and strike.get("fingerprint")})
+    return {"observed": bool(strikes), "failure_observations": len(strikes),
+            "counted_failures": len(counted),
+            "distinct_fingerprints": len({str(strike.get("fingerprint")) for strike in counted}),
+            "unknown_observations": sum(strike.get("status") == "unknown" for strike in strikes),
+            "unavailable_observations": sum(strike.get("status") == "unavailable"
+                                            for strike in strikes),
+            "unknown_reasons": sorted({str(strike.get("reason")) for strike in strikes
+                                       if strike.get("status") == "unknown"}),
+            "research_required_fingerprints": required, "research_required": len(required),
+            "contexts_emitted": sum(bool(strike.get("context_emitted")) for strike in strikes),
+            "threshold": STRIKE_THRESHOLD,
+            "authority": "none: a repeated symptom is a research candidate, not a confirmed cause, "
+                         "and an emitted context is not evidence that research was done"}

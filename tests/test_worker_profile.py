@@ -213,8 +213,9 @@ def test_the_profile_adds_hooks_and_bash_rules_and_changes_no_other_policy():
     assert merged["permissions"]["defaultMode"] == "acceptEdits"
     assert merged["permissions"]["allow"][:3] == RUNTIME["allowed_tools"]
     assert "Bash(python -m ruff:*)" in merged["permissions"]["allow"]
-    assert set(merged["hooks"]) == {"SessionStart", "PostToolUse"}
+    assert set(merged["hooks"]) == {"SessionStart", "PostToolUse", "PostToolUseFailure"}
     assert merged["hooks"]["PostToolUse"][0]["matcher"] == "Bash"
+    assert merged["hooks"]["PostToolUseFailure"][0]["matcher"] == "Bash|Edit|Glob|Grep|Read|Write"
     assert "Stop" not in merged["hooks"]
     assert merge_settings(None, profile, hooks)["permissions"]["allow"] == profile["permissions_allow"]
     with pytest.raises(WorkerProfileError, match="already carry hooks"):
@@ -235,7 +236,12 @@ def test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_pres
     assert list(manifest) == ["id", "version", "document", "document_sha256", "hook", "hook_sha256",
                               "character_limit", "hooks", "permissions", "sources", "note"]
     assert set(manifest["permissions"]) == {"allow"} and manifest["character_limit"] == module.MAX_CHARACTERS
-    assert manifest["hooks"] == ["SessionStart", "PostToolUse(Bash)"] and len(manifest["sources"]) == 9
+    assert manifest["hooks"] == ["SessionStart", "PostToolUse(Bash)",
+                                 "PostToolUseFailure(Bash|Edit|Glob|Grep|Read|Write)"]
+    assert len(manifest["sources"]) == 12
+    assert {source["path"] for source in manifest["sources"]} >= {
+        "scripts/lib/repeat_error_tracker.py", "scripts/lib/strike_dispatcher.py",
+        "scripts/cli/strike_research_consume.py"}
     base = claude_settings({**RUNTIME, "disallowed_tools": ["Task", "WebFetch", "Bash(python -c:*)"]})
     merged = merge_settings(base, profile, hook_settings("cmd"))
     assert merged["permissions"]["deny"] == ["Task", "WebFetch", "Bash(python -c:*)"], "denies are delivered unchanged"
@@ -280,7 +286,7 @@ def test_a_profiled_run_delivers_the_document_and_hooks_and_reads_back_real_rece
     assert "document" not in selected and selected["compliance"].startswith("not judged")
     assert selected["sources"][0]["pinned_sha256"]
     settings = json.loads(seen["settings"])
-    assert set(settings["hooks"]) == {"SessionStart", "PostToolUse"}
+    assert set(settings["hooks"]) == {"SessionStart", "PostToolUse", "PostToolUseFailure"}
     assert settings["permissions"]["deny"] == RUNTIME["disallowed_tools"]
     assert "Bash(python -m ruff:*)" in settings["permissions"]["allow"]
 
@@ -294,7 +300,8 @@ def test_a_profiled_run_delivers_the_document_and_hooks_and_reads_back_real_rece
     assert [run["exit_code"] for run in seen["hook_runs"]] == [0, 0], seen["hook_runs"]
     receipts = result["worker_profile"]["hook_receipts"]
     assert receipts["observed"] is True and receipts["records"] == 2
-    assert receipts["events"] == {"SessionStart": 1, "PostToolUse": 1}
+    assert receipts["events"] == {"SessionStart": 1, "PostToolUse": 1, "PostToolUseFailure": 0}
+    assert receipts["two_strike"]["observed"] is False and receipts["two_strike"]["research_required"] == 0
     assert receipts["sessions_named"] == [SESSION] and receipts["foreign_records"] == 0
     directory = Path(receipts["directory"])
     assert directory == (root / SESSION).resolve() and directory.is_dir()
@@ -314,7 +321,7 @@ def test_hooks_that_never_ran_are_recorded_as_not_observed(tmp_path):
     result = execute("normal", workspace, runtime)  # the normal child ignores its settings
     receipts = result["worker_profile"]["hook_receipts"]
     assert receipts["observed"] is False and receipts["records"] == 0
-    assert receipts["events"] == {"SessionStart": 0, "PostToolUse": 0}
+    assert receipts["events"] == {"SessionStart": 0, "PostToolUse": 0, "PostToolUseFailure": 0}
     assert result["command"]["worker_profile"]["id"] == "worker-v1", "installation is still recorded"
     assert result["answer"] is not None, "the run's own outcome is unchanged by an absent receipt"
 

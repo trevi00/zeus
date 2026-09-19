@@ -22,6 +22,21 @@
 - Never mark a repository fully analyzed while files or subsystems remain unreviewed. Carry forward
   remaining work using immutable evidence references and bounded context, rather than skipping it.
 
+## Two-strike research before another correction
+
+- After two distinct attempts encounter the same or similar failure, including repeated material
+  review rejection, stop repeating that approach. A replayed log/event is not a second attempt.
+  Similar symptoms open an investigation; they do not establish a shared root cause.
+- Reuse the task's existing frame. Search the SSOT, responsible code and source-backed experience;
+  consult relevant primary documentation when needed. Record sources/version/date, observations,
+  hypotheses and one discriminating check before choosing one coherent correction batch.
+- Keep the investigation bounded by the original goal and material acceptance conditions. If it
+  needs unavailable evidence or authority, hand that exact gap to the lead. Do not recursively
+  spawn investigations or keep retrying until green; minor findings remain follow-up notes.
+- Verify the correction against the affected criteria and preserve failed attempts. A hook's
+  research-required notice is not proof that research ran or that knowledge was verified.
+  Only the existing independent review/promotion path can accept the resulting change.
+
 ## Review checkout recording
 
 - An independent review runs in a clean checkout at the candidate commit. Do not create, modify or
@@ -51,7 +66,9 @@
   `digest_matches` and `within_limit`. Exit 0: the manifest matches. Exit 1: stale digest, overlong
   document or a named input failure (the computed facts are still reported when they exist).
   Exit 2: arguments were passed.
-- The command is read-only and fixed to those two cwd-relative files. The profile grants this one
+- The command is read-only and fixed to the document, manifest and packaged hook at their three
+  cwd-relative paths. It also reports `hook_sha256`, `hook_digest_matches` and `hook_status`;
+  an undeclared hook remains explicitly `not_declared`, not a profile-validity verdict. The profile grants this one
   exact command and the evidence policy replays this one exact argv: no arbitrary Python
   (`python -c`, scripts, other modules), no arguments and no other paths. It observes metadata only;
   `worker_profile.load_profile` and the profile tests remain the authority over the final bytes.
