@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 
+from codex_harness.application.execution_notices import receive_foreign
 from codex_harness.application.operation_finalization import is_parked, parkable
 from codex_harness.application.workflow import ClaimGuardRefused
 from codex_harness.domain.model import ContractError, require, utcnow
@@ -172,8 +173,10 @@ class LocalCycle:
     def _deliver(self, cycle) -> list[dict]:
         """Existing serve semantics: handle, relay outbox, then ACK. A foreign message is left
         pending (not ACKed, not dead-lettered) and stops the cycle, unless the terminal-operation
-        policy durably parked it (INV-OPERATION-FINALIZATION-001): then it is ACKed and the drain
-        continues within the same bound; a notice of this correlation stops the cycle after ACK."""
+        policy durably parked it (INV-OPERATION-FINALIZATION-001) or, for an `execution.notice`
+        only, the shared execution store proved it informational (Implementation014): then it is
+        ACKed and the drain continues within the same bound; a notice of this correlation stops the
+        cycle after ACK, a proven foreign notice never touches the cycle."""
         workflow, observer = self.workflow, self.observer
         receipts = []
         for agent in ROLES:
@@ -195,18 +198,24 @@ class LocalCycle:
                     receipts.append({"entry_id": entry_id, "rejected": type(exc).__name__})
                     continue
                 if message["correlation_id"] != cycle["correlation_id"]:
-                    parked, refusal = self._park(message)
-                    if parked is None:
+                    notice = message["type"] == "execution.notice"
+                    consumed, refusal = self._foreign_notice(message) if notice else self._park(message)
+                    if consumed is None:
                         observe_rejected(observer, entry_id, message, refusal, dead_letter=False)
                         receipts.append({"entry_id": entry_id, "message_id": message["message_id"],
                                          "refused": refusal})
                         self._stop(cycle["id"], "foreign_correlation")
                         return receipts
-                    observe_parked(observer, entry_id, message, parked)
+                    receipt = {"entry_id": entry_id, "message_id": message["message_id"], "type": message["type"]}
+                    if notice:
+                        observe_accepted(observer, message, consumed)
+                        receipt.update(notice=consumed["notice_id"], authority=consumed["authority"])
+                    else:
+                        observe_parked(observer, entry_id, message, consumed)
+                        receipt.update(parked=consumed["disposition_id"], operation_id=consumed["operation_id"])
                     self.bus.ack(agent, entry_id)
                     observe_acknowledged(observer, entry_id, message)
-                    receipts.append({"entry_id": entry_id, "message_id": message["message_id"], "type": message["type"],
-                                     "parked": parked["disposition_id"], "operation_id": parked["operation_id"]})
+                    receipts.append(receipt)
                     continue
                 if message["type"] == "incident.report":
                     result = self.service.record_incident(message)
@@ -235,6 +244,17 @@ class LocalCycle:
         except ContractError as exc:  # e.g. ParkedMessageConflict / conflicting task identity: left pending
             return None, type(exc).__name__
         return (result, "parked") if is_parked(result) else (None, "foreign_correlation")
+
+    def _foreign_notice(self, message) -> tuple[dict | None, str]:
+        """A notice under another correlation is consumed only after the stored transition proved
+        it (`execution_notices.receive_foreign`, committed before the ACK); terminal-operation
+        parking is never a substitute for that proof, whatever the notice's operation metadata.
+        An unproven or conflicting notice keeps the existing refusal (no ACK, no handling, no model
+        call); a store failure propagates unACKed. Returns (informational receipt or None, code)."""
+        try:
+            return receive_foreign(self.service.store, message), "informational_only"
+        except ContractError as exc:
+            return None, type(exc).__name__
 
     def _candidate(self, cycle) -> dict:
         """Choose at most one executor entry; fail closed on anything the existing claim policy

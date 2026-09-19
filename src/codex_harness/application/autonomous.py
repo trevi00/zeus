@@ -18,6 +18,7 @@ import time
 
 from codex_harness.application.dge import SESSIONS, DebateSessions, DgeRefused
 from codex_harness.application.evidence_inspection import EvidenceInspections
+from codex_harness.application.execution_notices import receive_foreign as receive_foreign_notice
 from codex_harness.application.local_cycle import (
     MESSAGE_DRAIN,
     flush_outbox,
@@ -337,7 +338,9 @@ class AutonomousRun:
 
     def _deliver(self, agent: str, correlation: str) -> list:
         """Existing serve semantics for the dedicated lead: handle, relay outbox, ACK. A foreign message
-        is left pending and stops the run; nothing is dead-lettered on its behalf. Returns the handled
+        is left pending and stops the run; nothing is dead-lettered on its behalf. The one exception is
+        a foreign `execution.notice` the shared execution store proves (Implementation014): it is
+        committed as informational and ACKed, never handled by this run's workflow. Returns the handled
         messages so a caller can prove a specific report went through the workflow."""
         consumer, handled = agent + ":autonomous", []
         for _ in range(MESSAGE_DRAIN):
@@ -356,6 +359,19 @@ class AutonomousRun:
                 observe_rejected(self.observer, entry_id, message, type(exc).__name__, dead_letter=True)
                 continue
             if message["correlation_id"] != correlation:
+                if message["type"] == "execution.notice":
+                    # Proof + inbox binding committed before the ACK; an unproven or conflicting notice
+                    # keeps the existing refusal (pending, no ACK, fixed code, no source text). A store
+                    # failure propagates unACKed like every other store failure in this run.
+                    try:
+                        result = receive_foreign_notice(self.service.store, message)
+                    except ContractError as exc:
+                        observe_rejected(self.observer, entry_id, message, "foreign_message", dead_letter=False)
+                        raise AutonomousRefused("foreign_message") from exc
+                    observe_accepted(self.observer, message, result)
+                    self.bus.ack(agent, entry_id)
+                    observe_acknowledged(self.observer, entry_id, message)
+                    continue  # informational only: not in `handled`, nothing of this run advances
                 observe_rejected(self.observer, entry_id, message, "foreign_message", dead_letter=False)
                 raise AutonomousRefused("foreign_message")
             result = self.workflow.handle(message)

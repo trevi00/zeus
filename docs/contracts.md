@@ -766,8 +766,10 @@ start, only for worker:implementation tasks or lead:improvement review_lead deci
 taken and an in-flight marker recorded in one transaction before the executor starts; a marker
 found by another step refuses execution and is never released automatically. Any outcome other
 than success (retry, failed, blocked, expired, exception, no claim), a pending diagnose decision,
-a received execution notice, a message or queued work under another correlation, or running
-residue in the ledger stops the cycle with a recorded reason. The candidate is chosen outside the
+a received execution notice of this correlation, a message or queued work under another
+correlation (except a durably proven foreign execution notice, INV-OPERATION-FINALIZATION-001,
+which is informational and does not touch the cycle), or running residue in the ledger stops the
+cycle with a recorded reason. The candidate is chosen outside the
 claim transaction, so the step passes an optional execution guard (row id, correlation, allowed
 statuses) into the existing `Workflow.claim` / `decide_one` selection; the guard is validated inside
 the claim transaction before the fence, the lease and any provider entry, and a mismatch (for
@@ -1105,7 +1107,10 @@ task/artifact/reservation/stage/input binding as v1, with its real agent; roles 
 thread are refused. The only hierarchy exception is the conductor's self-addressed `dge_role` task with
 `details.role == "conductor"` and its `task.result`; other self-assignment, lead-to-lead assignment or
 report and worker approval stay refused. The DBA `task.result` must pass the conductor's workflow
-before the verified report is handed to both leads (`report_not_relayed`). The DBA report names the
+before the verified report is handed to both leads (`report_not_relayed`); a persisted
+`execution.notice` of an older execution on the conductor stream is consumed as informational only
+under the proof of INV-OPERATION-FINALIZATION-001 and never counts as a relayed report, while any
+other foreign message still stops the run with `foreign_message`. The DBA report names the
 snapshot digest and known packet claim ids and is interpretation, never a Git-supported fact. Both
 leads and the conductor echo the same snapshot and report digests (`council_identity_mismatch`) and may
 cite only known packet claim ids, including in the improvement alternative that never reaches the DGE
@@ -1321,6 +1326,26 @@ parked receipt, then ACKs and continues within the existing `MESSAGE_DRAIN` boun
 foreign message, including a body that conflicts with its id's binding, keeps the refusal (no ACK,
 no dead letter, stop `foreign_correlation`, the refusal type in the receipt), and a replay after the
 commit but before the ACK returns the identical disposition without an executor start.
+Informational notices on the shared transport (research-program-001 Implementation014): the outbox
+and the execution store are shared, so a persisted `execution.notice` of an older execution can
+reach the stream a current run drains under another correlation. `AutonomousRun._deliver` (the
+council conductor relay included) and `LocalCycle._deliver` consume a foreign `execution.notice`
+only through `execution_notices.receive_foreign`: after the existing recipient check and route
+authorization, the same proof as `receive` (stored `execution_notices` row whose transition digest
+is the notice id and whose message equals the delivered bytes, idempotent `workflow_inbox` binding)
+runs in its own transaction and commits BEFORE the ACK; the receipt is `informational_only`
+(`general.message_accepted` then `general.message_acknowledged`), the message is never handed to
+the current run's workflow or listed among its handled reports, the drain continues within
+`MESSAGE_DRAIN`, and the current run, cycle row, tasks, decisions, reservations and promotion are
+unchanged. The terminal-operation parking above is never a substitute for that proof: a foreign
+notice with terminal operation metadata is refused, not parked, unless the store proves it. A
+missing or tampered stored notice, a conflicting body under the same id, or an unknown notice keeps
+the existing refusal (no ACK, no dead letter, no inbox row, `foreign_message` for the autonomous
+run, `foreign_correlation` with the refusal type in the cycle receipt); a route or schema rejection
+keeps the existing dead letter; a store failure propagates with nothing written and nothing ACKed,
+so a later delivery can retry the informational persistence only. Foreign `task.assign`,
+`task.result`, `review.result` and `hook.required` keep the refusal or the parking above, and a
+notice of the run's own correlation keeps the existing `Workflow.handle` path.
 Observation (INV-OBSERVATION-001): `Operation`, `LocalCycle` and `AutonomousRun` accept an optional
 observer, wired from `operate run`, `cycle step` and the autonomous CLI; `general.message_received`
 follows a validated decode, `general.message_accepted` follows durable handling,

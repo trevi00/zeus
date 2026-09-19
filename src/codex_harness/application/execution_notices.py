@@ -100,3 +100,21 @@ def receive(tx, message):
     result = {'handled': True, 'notice_id': identity, 'authority': 'informational_only'}
     tx.put('workflow_inbox', identity, {'hash': digest(message), 'result': result})
     return result
+
+
+def receive_foreign(store, message):
+    """Prove and durably consume a notice that reached a consumer's stream under ANOTHER correlation.
+
+    The outbox and the execution store are shared, so a persisted notice of an older execution can
+    land on the stream a current run is draining (Implementation014, INV-OPERATION-FINALIZATION-001).
+    The consumer has already checked the recipient and authorized the route; this is the same proof
+    as `receive` (stored transition digest, exact message bytes, idempotent inbox binding) in its own
+    transaction, committed before the caller ACKs. The terminal-operation parking shortcut is never
+    consulted: only the stored transition proves a notice. A ContractError (unproven, conflicting)
+    or a store failure propagates with nothing written, so the message stays pending. The receipt is
+    `informational_only`: it queues no task or decision, grants no provider entry, is no task result
+    and changes no current run or cycle state.
+    """
+    require(isinstance(message, dict) and message.get('type') == 'execution.notice', 'Not an execution notice')
+    with store.transaction() as tx:
+        return receive(tx, message)
