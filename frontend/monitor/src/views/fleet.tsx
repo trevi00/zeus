@@ -274,8 +274,10 @@ export function FleetView({ snapshot, now }: Props) {
   // One shared reading for the strip, the notice and the reading guide below: the numbers are the
   // wire values in every mode, but only finite mode calls them ceilings.
   // Owner delivery is decoded per job; a job without a record stays unknown and is not counted here.
-  const deliveryRecorded = registered.jobs.filter((job) => job.delivery && job.delivery !== false).length
-  const deliveryDeployed = registered.jobs.filter((job) => job.delivery && job.delivery !== false && job.delivery.deployed_revision).length
+  // `null` (no record) and `false` (off-contract) are both falsy, so a truthy `delivery` is the
+  // readable record itself; the unreadable ones are counted separately below.
+  const deliveryRecorded = registered.jobs.filter((job) => job.delivery).length
+  const deliveryDeployed = registered.jobs.filter((job) => job.delivery && job.delivery.deployed_revision).length
   const deliveryUnreadable = registered.jobs.filter((job) => job.delivery === false).length
   const accounting = registered.accounting
   const budgetNumbers = `${formatNumber(registered.budget.per_host)} / ${formatNumber(registered.budget.total)}`

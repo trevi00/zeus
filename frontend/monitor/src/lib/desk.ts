@@ -17,6 +17,12 @@
  * consulted in the SPEC, a rejected or aborted fetch is NOT a failed submission: it is uncertain,
  * kept in local storage with its identity and body until an authoritative answer exists.
  *
+ * What counts as an authoritative refusal is narrow: only an explicit 4xx (validation or conflict)
+ * decides a submission. A 5xx with a fixed code — `desk_unavailable` above all — may still have
+ * committed before the answer was lost, so it is uncertainty: the identity is kept, never cleared,
+ * and never replaced with a fresh one. The deadline and the caller's cancellation stay connected
+ * through reading and parsing the body, so a stalled response cannot hang a call forever.
+ *
  * Nothing here sends a model, base revision, command or budget: the server owns all of those.
  * User text is never written to the console.
  */
@@ -28,6 +34,7 @@ export const DESK_TITLE_MAX = 200
 export const DESK_TIMEOUT_MS = 8_000
 export const DESK_POLL_MS = 3_000
 const PENDING_KEY = "zeus.desk.pending.v1"
+const CREATION_KEY = "zeus.desk.creation.v1"
 const SELECTED_KEY = "zeus.desk.selected.v1"
 
 export type DeskIntent = "consult" | "request"
@@ -93,8 +100,16 @@ export type PendingSubmission = {
   first_attempt_at: string
 }
 
+/** A session creation held locally in the same way: the id AND the title are frozen until decided. */
+export type PendingCreation = {
+  session_id: string
+  title: string
+  attempts: number
+  first_attempt_at: string
+}
+
 const ERROR_TEXT: Record<string, string> = {
-  desk_unavailable: "창구 저장소에 연결하지 못했습니다 (PG 없음). 로컬 대체 저장은 없으며, 이 요청은 저장되지 않았습니다.",
+  desk_unavailable: "창구 저장소(PG)에 연결하지 못했습니다.",
   origin_refused: "브라우저가 보낸 출처가 서버의 루프백 권한과 일치하지 않아 거부되었습니다.",
   content_type_refused: "요청 형식이 JSON 이 아니어서 거부되었습니다.",
   desk_header_required: "로컬 의도 확인 헤더가 없어 거부되었습니다.",
@@ -176,43 +191,66 @@ function readRequest(value: unknown): DeskRequest | null {
 const UNCERTAIN = (code: string, message: string, status: number | null = null): DeskResult<never> =>
   ({ ok: false, kind: "uncertain", status, code, message })
 
+const CANCELLED_TEXT = "요청이 취소되었습니다. 전송 여부는 알 수 없습니다."
+const TIMEOUT_TEXT = `응답이 ${DESK_TIMEOUT_MS / 1000}초 안에 끝나지 않았습니다. 전송 여부는 알 수 없습니다.`
+const NO_ANSWER_TEXT = "응답을 받지 못했습니다 (연결 실패). 전송 여부는 알 수 없습니다."
+
 /**
  * One desk call with its own deadline. `external` lets a caller abort on unmount or on a changed
  * selection, so a stale response can never be written into a newer selection.
+ *
+ * The deadline covers the WHOLE call, body included: a response whose stream never finishes is
+ * aborted at `DESK_TIMEOUT_MS` instead of waiting forever, and an external abort keeps working
+ * after the headers arrive. An already-aborted caller never opens a connection at all, and the
+ * timer and the listener are released in one outer `finally` on every path.
  */
 async function call<T>(path: string, init: RequestInit, external: AbortSignal | undefined,
                        read: (envelope: unknown) => T | null): Promise<DeskResult<T>> {
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), DESK_TIMEOUT_MS)
+  let timedOut = false
+  const onTimeout = () => { timedOut = true; controller.abort() }
   const onAbort = () => controller.abort()
-  external?.addEventListener("abort", onAbort)
-  let response: Response
+  const timer = setTimeout(onTimeout, DESK_TIMEOUT_MS)
+  if (external?.aborted) controller.abort()
+  else external?.addEventListener("abort", onAbort)
   try {
-    response = await fetch(path, { ...init, signal: controller.signal, cache: "no-store", credentials: "same-origin" })
-  } catch {
-    // A rejected or aborted fetch is not a refusal and not a delivery: the outcome is unknown.
-    return UNCERTAIN("transport_uncertain", external?.aborted ? "요청이 취소되었습니다." : "응답을 받지 못했습니다 (시간 초과 또는 연결 실패). 전송 여부는 알 수 없습니다.")
+    if (controller.signal.aborted) return UNCERTAIN("transport_uncertain", CANCELLED_TEXT)
+    let response: Response
+    try {
+      response = await fetch(path, { ...init, signal: controller.signal, cache: "no-store", credentials: "same-origin" })
+    } catch {
+      // A rejected or aborted fetch is not a refusal and not a delivery: the outcome is unknown.
+      return UNCERTAIN("transport_uncertain", timedOut ? TIMEOUT_TEXT : controller.signal.aborted ? CANCELLED_TEXT : NO_ANSWER_TEXT)
+    }
+    let envelope: unknown
+    try {
+      // Still under the same deadline and the same cancellation: aborting errors the body stream.
+      envelope = await response.json()
+    } catch {
+      if (timedOut) return UNCERTAIN("transport_uncertain", TIMEOUT_TEXT, response.status)
+      if (controller.signal.aborted) return UNCERTAIN("transport_uncertain", CANCELLED_TEXT, response.status)
+      return UNCERTAIN("body_unreadable", "응답 본문을 읽지 못했습니다. 전송 여부는 알 수 없습니다.", response.status)
+    }
+    if (!isRecord(envelope) || envelope.schema !== DESK_SCHEMA) {
+      return UNCERTAIN("schema_mismatch", `응답이 ${DESK_SCHEMA} 계약과 다릅니다.`, response.status)
+    }
+    if (typeof envelope.error === "string") {
+      const code = envelope.error
+      // Only an explicit 4xx decides the submission: the server read the body and rejected it.
+      if (response.status >= 400 && response.status < 500) {
+        return { ok: false, kind: "refused", status: response.status, code, message: errorText(code) }
+      }
+      // Any other status with a fixed code (503 above all) may have committed before answering.
+      return UNCERTAIN(code, `${errorText(code)} 저장 여부는 알 수 없습니다.`, response.status)
+    }
+    if (!response.ok) return UNCERTAIN("status_unexpected", "서버가 사유 코드 없이 오류 상태를 돌려주었습니다.", response.status)
+    const value = read(envelope)
+    if (value === null) return UNCERTAIN("shape_unexpected", "응답 내용이 계약과 다릅니다.", response.status)
+    return { ok: true, value, status: response.status, replayed: envelope.replayed === true }
   } finally {
     clearTimeout(timer)
     external?.removeEventListener("abort", onAbort)
   }
-  let envelope: unknown
-  try {
-    envelope = await response.json()
-  } catch {
-    return UNCERTAIN("body_unreadable", "응답 본문을 읽지 못했습니다.", response.status)
-  }
-  if (!isRecord(envelope) || envelope.schema !== DESK_SCHEMA) {
-    return UNCERTAIN("schema_mismatch", `응답이 ${DESK_SCHEMA} 계약과 다릅니다.`, response.status)
-  }
-  if (typeof envelope.error === "string") {
-    // A fixed error code is authoritative: the server decided, whatever the status is.
-    return { ok: false, kind: "refused", status: response.status, code: envelope.error, message: errorText(envelope.error) }
-  }
-  if (!response.ok) return UNCERTAIN("status_unexpected", "서버가 사유 코드 없이 오류 상태를 돌려주었습니다.", response.status)
-  const value = read(envelope)
-  if (value === null) return UNCERTAIN("shape_unexpected", "응답 내용이 계약과 다릅니다.", response.status)
-  return { ok: true, value, status: response.status, replayed: envelope.replayed === true }
 }
 
 function postInit(body: unknown): RequestInit {
@@ -271,12 +309,29 @@ function readStored<T>(key: string, accept: (value: unknown) => T | null): T | n
   }
 }
 
-function write(key: string, value: unknown): void {
+/**
+ * Write and read back. `true` only if the value is really there afterwards: a storage that throws,
+ * that is full or that silently drops the write is NOT durable, and the caller must then refuse the
+ * submission instead of keeping the identity in memory only, where a reload would lose it.
+ */
+function write(key: string, value: unknown): boolean {
   try {
-    if (value === null) window.localStorage.removeItem(key)
-    else window.localStorage.setItem(key, JSON.stringify(value))
+    if (value === null) {
+      window.localStorage.removeItem(key)
+      return window.localStorage.getItem(key) === null
+    }
+    const raw = JSON.stringify(value)
+    window.localStorage.setItem(key, raw)
+    return window.localStorage.getItem(key) === raw
   } catch {
-    // Storage may be unavailable; the screen then states that a retry is only possible in this tab.
+    return false
+  }
+}
+
+function attemptsOf(value: Record<string, unknown>): Pick<PendingSubmission, "attempts" | "first_attempt_at"> {
+  return {
+    attempts: typeof value.attempts === "number" ? value.attempts : 1,
+    first_attempt_at: typeof value.first_attempt_at === "string" ? value.first_attempt_at : "",
   }
 }
 
@@ -286,14 +341,25 @@ export function loadPending(): PendingSubmission | null {
     const { session_id, request_id, intent, text } = value
     if (typeof session_id !== "string" || typeof request_id !== "string" || typeof text !== "string") return null
     if (intent !== "consult" && intent !== "request") return null
-    return { session_id, request_id, intent, text,
-      attempts: typeof value.attempts === "number" ? value.attempts : 1,
-      first_attempt_at: typeof value.first_attempt_at === "string" ? value.first_attempt_at : "" }
+    return { session_id, request_id, intent, text, ...attemptsOf(value) }
   })
 }
 
-export function savePending(pending: PendingSubmission | null): void {
-  write(PENDING_KEY, pending)
+export function savePending(pending: PendingSubmission | null): boolean {
+  return write(PENDING_KEY, pending)
+}
+
+export function loadPendingCreation(): PendingCreation | null {
+  return readStored(CREATION_KEY, (value) => {
+    if (!isRecord(value)) return null
+    const { session_id, title } = value
+    if (typeof session_id !== "string" || typeof title !== "string") return null
+    return { session_id, title, ...attemptsOf(value) }
+  })
+}
+
+export function savePendingCreation(creation: PendingCreation | null): boolean {
+  return write(CREATION_KEY, creation)
 }
 
 export function loadSelected(): string | null {
