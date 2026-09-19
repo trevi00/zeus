@@ -194,3 +194,55 @@ resources/organization.json; cli.py thin parser/dispatch; monitor.py and adapter
 opt-in only; application/fleet.py, domain/fleet.py, adapters/fleet_cli.py for owner delivery;
 tests/test_frontdesk.py, tests/test_frontdesk_http.py, tests/test_fleet_delivery.py, BACKEND.md.
 No schema migration needed: existing documents store. No control over fleet pause/budget via web.
+
+## Preserved-draft completion batch (2026-09-20)
+
+Both 900-second Claude turns timed out after source export, without acceptance. UI draft 4ece013
+and backend draft 39c69cd are preserved and integrated, not accepted. Owner A typecheck/lint passed;
+B 97 focused tests + ruff passed. An initial B test command omitted PYTHONPATH and loaded the old
+compatibility checkout; that collection error is not a product defect. Production is unchanged.
+Reuse these drafts. Final independent review covers the whole feature relative to e67842a, not only
+follow-up diff. No expanded feature scope or blank-slate retry.
+
+### B completion
+
+1. execute_frontdesk always receives snapshot=None. Connect bounded sanitized owner-runtime
+monitoring.json facts to that actual adapter path: capture/freshness, source states, fleet status/
+accounting and pending observation counters. No paths, credentials, task bodies or raw logs.
+Missing/stale/invalid snapshot is explicit unknown, never silently current or a provider failure.
+Test the actual execution helper, not only evidence(snapshot=...).
+2. recover currently finalizes succeeded tasks without settlement or publication proof. Persist a
+per-turn accounting receipt containing only newly created wrapper slots after call and before final
+status. Recovery requires durable settled receipt, bound task/result and successful scoped flush;
+otherwise needs_reconciliation without a call. Crash between settle and receipt is unknown, not
+success. Previous-turn slots must not contaminate later outcomes. Do not edit machine ledger.
+3. Collect observations after turns/recovery. Bound process summary memory. Dispatch exceptions end
+in safe uncertainty where storage works; unavailable store leaves dispatching for startup, no retry.
+Release observer/lock even if wiring fails. Reuse metadata-only events. Keep host policy/deadline/
+read-only/outbox scope. Focused regressions + ruff only; BACKEND.md <=35lines, no long narrative.
+
+### C frontend completion
+
+Add views/desk.tsx, lib/desk.ts and App navigation '대화 창구', using exact implemented API above.
+Installed shadcn/tokens/Lucide only, no packages. Desktop session-list/thread; mobile stacked layout.
+Create/select session, consult/request intent, send, durable pending/answer/failure/reconciliation/
+needs_spec states and provenance. Escaped plain text. Request is proposed goal, not implementation.
+Show a simple flow 사용자 -> 창구 -> 지휘자 검토 -> 명세 -> 팀원 작업, marking only actual stages.
+
+Client checks HTTP status/schema/shape, aborts timed-out requests, polls selected session only while
+visible, prevents overlapping/stale-selection writes. Persist selected session and uncertain
+submission UUID+body locally until authoritative outcome; retry identical identity/body, never a
+fresh call on network uncertainty. Stable creation IDs too. Disable double send, explicit retry,
+surface409/503, retain prior history with stale indication. Reload PG history; max6000chars. No
+model/base/command controls, no user text in console. Keep existing views and accessibility.
+
+Accounting: only one explicit mode uses it; both absent legacy finite; conflicting explicit modes
+or malformed present values unknown. Subscription migration numbers secondary, never active ceiling.
+Short human explanation; hide wire details. Keep historical errors separate from pending counters.
+Decode optional owner delivery in live Fleet AND pinned report; label owner-recorded, separate merge
+and deploy, missing unknown. No hardcoded PR facts or independent-verification claim. UI.md <=35lines.
+Worker ruff only (node absent); owner npm typecheck/lint/build/browser and full preserved-A review.
+
+Finish original matrix, exactly two predeclared real browser turns, replay without extra call, no
+automatic implementation, CI, pinned release and hidden local desk service. Broad redesign and
+autonomous approvals remain excluded.
