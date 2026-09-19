@@ -1027,6 +1027,31 @@ by exact RFC 6901 pointer on the unchanged hash-bound task artifact; the raw tas
 as optional evidence. A missing mandatory input or a required block over the existing compiler budget
 refuses before any provider entry; nothing is summarized, truncated, persisted as a packet or repaired.
 
+Bounded inline council input `urn:zeus:council-input:1` (`domain/council_input.py`, research-program-001
+delivery implementation011). One domain module owns the policy: caps are UTF-8 lengths of the canonical JSON of
+each value (escaping and multi-byte text count; the unit is local bytes, never model tokens or capacity):
+packet 16384, normalized DBA report 4096, complete research proposal 4096, complete improvement proposal
+including every finding 8192 (payload total 32768); `council_delivery` wrapper (serialized projection minus
+its present payload components) 4096; host overhead (complete rendered ContextPacket outside the serialized
+delivery, measured after recovery/skills assembly with actual ids, paths and evidence) 4096; required total
+40960 = council compiler window 49152 minus reserved 8192. The legacy non-council budget (28000/6000) is
+unchanged and every other execution keeps it. Producers gate in `CouncilRun`: the frozen packet right after
+`_freeze_packet` and before the snapshot or the DBA, the normalized report before the relay and either lead,
+each lead's complete derived proposal before `sessions.submit` or the next role; the run ends `failed` with
+the precise `needs_scope_split:<section>:<observed>/<limit>` reason, original role evidence retained, no
+retry, summary, drop or resize. Consumers recheck: `council_delivery` admits the full projection, the
+executor grants the council window only to an admitted delivery (actual read-only `dge_role`, matching debate
+role, stage `dge:<role>` and real agent, and the exact deterministic projection of this task's details; a
+foreign, trimmed or inflated delivery is refused) and then admits the final rendered prompt before any
+provider. A consumer refusal fails the role task with the typed reason, which `CouncilRun` lifts into the run
+reason only in its safe shape. A missing mandatory field stays a distinct `ContractError`. Telemetry is
+additive: the execution receipt carries `context_measurement` (policy, window, reserved, usable, rendered
+bytes; for council prompts the named section bytes, delivery overhead, host overhead and limit) and
+`estimated_tokens` keeps its old meaning. Producer objectives state each role's own limit and the rule that
+concision never drops a finding or an unknown. Not guaranteed: that arbitrary research fits (these limits are
+a bounded supported workload); a council delivery with recovery evidence items currently exceeds the host
+allowance and is refused before the provider.
+
 ## INV-COUNCIL-001
 
 `urn:zeus:autonomous:2` is the opt-in topic-bound council; `urn:zeus:autonomous:1` keeps its validator,

@@ -34,6 +34,7 @@ from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
 from codex_harness.domain.council import AGENTS
+from codex_harness.domain.council_input import CouncilInputOverflow
 from codex_harness.domain.dge import DECISIONS, VERDICTS
 from codex_harness.domain.model import ContractError, canonical
 
@@ -103,7 +104,8 @@ def harness(tmp_path, monkeypatch, answer=None, entered=None):
         def __exit__(self, *args): pass
         def run(self, prompt, cwd, schema, timeout, **kwargs):
             prompts.append(json.loads(prompt))
-            assert len(prompt.encode("utf-8")) <= 22000, "the compiler window minus reserve"
+            # urn:zeus:council-input:1: the council window minus its reserve (49152 - 8192); legacy prompts keep 22000.
+            assert len(prompt.encode("utf-8")) <= 40960, "the council window minus reserve"
             return {"answer": answer, "events": [], "thread_id": "thread", "turn_id": "turn", "usage": None,
                     "rotate": False, "interrupted": False, "requested_model": kwargs.get("model")}
 
@@ -224,10 +226,11 @@ def test_size_matched_synthetic_conductor_case_keeps_required_fields_inline_with
 
 
 # Owner replay of the retained run003 conductor input (CONDUCTOR-REVIEW-001): projection 17819 bytes, complete
-# required context 23377 bytes against the unchanged 22000 budget. The deciding regression measures the COMPLETE
-# compiled prompt, not the projected dictionary alone.
+# required context 23377 bytes against the then 22000 budget. The deciding regression measures the COMPLETE
+# compiled prompt, not the projected dictionary alone; the budget is now the council usable window
+# (urn:zeus:council-input:1: 49152 - 8192), whose host allowance outside the delivery is checked separately.
 OWNER_PROJECTION_BYTES = 17819
-BUDGET = 22000
+BUDGET = 40960
 
 
 @pytest.fixture
@@ -256,13 +259,17 @@ def test_complete_compiled_prompt_with_representative_metadata_fits_the_budget_f
     if role == "conductor":
         assert projection_bytes(details) >= OWNER_PROJECTION_BYTES, projection_bytes(details)
     frozen = copy.deepcopy(details)
-    deliver(executor, role, details)
+    result = deliver(executor, role, details)
     [prompt] = prompts
     rendered = canonical(prompt).encode("utf-8")
     sizes = {k: len(canonical(v).encode("utf-8")) for k, v in prompt["required"].items()}
     print("\n", role, "TOTAL", len(rendered), "projection", projection_bytes(details), sizes)
     assert len(rendered) <= BUDGET, (len(rendered), sizes)
     assert details == frozen
+    # Additive byte telemetry in the execution receipt: the measured complete prompt against the named policy.
+    measured = json.loads(artifacts._body(result["execution_ref"]))["context_measurement"]
+    assert measured["policy"] == "urn:zeus:council-input:1" and measured["required_bytes"] == len(rendered)
+    assert measured["host_overhead_bytes"] == len(rendered) - sizes["council_delivery"] <= 4096 and measured["limit_bytes"] == BUDGET
     inline = prompt["required"]["council_delivery"]["inline"]
     for key in ("packet", "dba_report", "acceptance_criteria", "blocker_rule", "relay"):
         assert inline[key] == details[key], key
@@ -285,12 +292,16 @@ def test_missing_mandatory_council_input_is_refused_before_the_provider(tmp_path
 
 
 def test_required_projection_overflow_is_refused_before_the_provider_with_nothing_omitted(tmp_path, monkeypatch):
-    # INJECTED oversize: the mandatory inline part alone exceeds the usable window; the existing compiler rule
-    # refuses the whole execution instead of silently dropping semantic content.
+    # INJECTED oversize: the packet alone exceeds its urn:zeus:council-input:1 cap; the typed needs_scope_split
+    # refusal (section, observed and limit bytes only) stops the execution before any provider instead of
+    # silently dropping semantic content. The raw task details are untouched.
     details = details_for("conductor", claims=200, text_bytes=120)
+    frozen = copy.deepcopy(details)
     executor, _, _ = harness(tmp_path, monkeypatch, entered=False)
-    with pytest.raises(ContractError, match="Required contract exceeds budget"):
+    with pytest.raises(CouncilInputOverflow, match="needs_scope_split:packet:") as info:
         execute_role(executor, task_for("conductor", details), heartbeat=None)
+    assert (info.value.section, info.value.limit) == ("packet", 16384)
+    assert info.value.observed == len(canonical(details["packet"]).encode("utf-8")) > 16384 and details == frozen
 
 
 def test_projection_is_a_deep_copy_and_pointers_are_exact_argv_lists():
@@ -317,25 +328,23 @@ def test_projection_is_a_deep_copy_and_pointers_are_exact_argv_lists():
     assert "snapshot_digest" in OBJECTIVES["conductor"] and "report_digest" in OBJECTIVES["conductor"]
 
 
-def test_delivery_with_injected_recovery_sources_regains_the_full_reader_catalogue(tmp_path, monkeypatch):
-    # INJECTED: a bound checkpoint and progress row for the same conductor task (a retried attempt). Recovery
-    # sources list no operation in the delivery, so the prompt carries the full catalogue again; the delivery
-    # descriptor itself is unchanged (no file path, exact pointers).
+def test_delivery_with_injected_recovery_sources_is_refused_by_the_host_allowance_before_the_provider(tmp_path, monkeypatch):
+    # INJECTED: a bound checkpoint and progress row for the same conductor task (a retried attempt). Under the
+    # urn:zeus:council-input:1 host allowance (4096 bytes outside the serialized delivery) the recovery evidence
+    # items plus the full reader catalogue they bring back overflow: measured in this batch at 4721 bytes even with
+    # these minimal rows. The SPEC fixes this as "current recovery overflow explicitly fails safely": the typed
+    # refusal happens before any provider entry, nothing is omitted or resized, and no prompt is produced.
+    # (The earlier observed property that such a prompt regains the full reader catalogue is no longer reachable.)
     details = details_for("conductor")
-    executor, artifacts, prompts = harness(tmp_path, monkeypatch, answer=CONDUCTOR_ANSWER)
+    executor, artifacts, prompts = harness(tmp_path, monkeypatch, entered=False)
     binding = {"stage": "dge:conductor", "evidence_ref": artifacts.put(canonical(details), "probe")["ref"], "basis_revision": BASE}
     with executor.service.store.transaction() as tx:
         tx.put("sessions", AGENTS["conductor"], {"generation": 1, "checkpoint": {"task_id": "task-conductor", "research_binding": binding}})
         tx.put("execution_progress", "task-conductor", {"id": "task-conductor", "recent": [], "research_binding": binding})
-    deliver(executor, "conductor", details)
-    [prompt] = prompts
-    sources = prompt["required"]["recovery"]["sources"]
-    assert set(sources) == {"checkpoint", "progress"} and all(s["reader_argv_prefix"][-1] == s["ref"] for s in sources.values())
-    assert "Before repeating tools" in prompt["required"]["recovery"]["instruction"], "nonempty recovery keeps its instruction"
-    assert prompt["required"]["artifact_reader"] == ARTIFACT_READER
-    assert set(prompt["required"]["external_context"]) == {"ref", "reader_argv_prefix"}
-    assert prompt["required"]["external_context"]["ref"] == binding["evidence_ref"]
-    assert prompt["required"]["council_delivery"]["not_inline"]["ssot"]["operation"][:3] == ["pointer", "--pointer", "/ssot"]
+    with pytest.raises(CouncilInputOverflow, match="needs_scope_split:host_overhead:") as info:
+        deliver(executor, "conductor", details)
+    assert info.value.limit == 4096 < info.value.observed and prompts == []
+    assert artifacts._body(binding["evidence_ref"]) == canonical(details), "the raw task artifact is untouched"
 
 
 def test_real_candidate_review_control_keeps_its_isolation_instructions(tmp_path, monkeypatch):

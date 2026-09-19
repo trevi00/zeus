@@ -10,7 +10,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from codex_harness.adapters.app_server import AppServer
-from codex_harness.adapters.autonomous_roles import role_context
+from codex_harness.adapters.autonomous_roles import admitted_delivery, role_context
 from codex_harness.adapters.claude_cli import ClaudeCodeRuntime, claude_settings
 from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector, trusted_interpreter
@@ -53,6 +53,8 @@ from codex_harness.application.observations import (
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
+from codex_harness.domain.council_input import SCHEMA as COUNCIL_INPUT_POLICY
+from codex_harness.domain.council_input import admit_required, council_budget
 from codex_harness.domain.invocation import classify_result, parse_request, usage_record
 from codex_harness.domain.model import (
     ContextItem,
@@ -293,6 +295,11 @@ class Executor:
         # Conductor delivery: with a required projection the raw task is not duplicated as optional inline
         # evidence; the hash-bound artifact stays reachable through external_context and its pointers. A task
         # contract field the projection already carries verbatim (acceptance_criteria) is stated once, inline.
+        # urn:zeus:council-input:1: the council compiler budget is granted only to an admitted delivery (actual
+        # read-only dge_role, matching debate role/stage/agent, the exact projection of this task); every other
+        # execution keeps the legacy 28000/6000 budget exactly. `council` holds the projection measurements.
+        council = admitted_delivery(agent, action, read_only, stage, evidence, delivery) if delivery is not None else None
+        window, reserved = council_budget() if council is not None else (28000, 6000)
         if delivery is not None:
             task_contract = {k: v for k, v in task_contract.items() if k not in delivery["inline"]}
         # Measured whole-layout revision: a delivery prompt omits an EMPTY task_contract (every contract field is
@@ -415,13 +422,24 @@ class Executor:
                     'included': skill_selection['selected'], 'omitted': skill_selection['selected']},
                     "artifact_reader": reader,
                     "recovery": recovery_block},
-                items + recovery_items, 28000, 6000)
+                items + recovery_items, window, reserved)
             before_counts = packet.estimated_tokens
             included = sum(item['id'].startswith('project-skill:') for item in packet.evidence)
             packet.required['project_skills'].update(
                 included=included, omitted=skill_selection['selected'] - included)
             packet.seal()
             require(packet.estimated_tokens <= before_counts, 'Skill counts increased context size')
+            # Named byte measurements of the FINAL rendered prompt (actual ids, paths, recovery, skills and
+            # evidence included). `estimated_tokens` keeps its old meaning (rendered UTF-8 bytes); these are
+            # additive and never a token estimate. For an admitted council delivery the host overhead outside
+            # the serialized delivery and the whole required prompt are checked here, before any provider.
+            context_measurement = {"policy": COUNCIL_INPUT_POLICY if council is not None else "legacy",
+                                   "unit": "utf8_bytes", "window": window, "reserved": reserved,
+                                   "usable": window - reserved, "rendered_bytes": packet.estimated_tokens}
+            if council is not None:
+                context_measurement.update(admit_required(packet.estimated_tokens, council["delivery_bytes"]),
+                                           sections=council["sections"],
+                                           delivery_overhead_bytes=council["delivery_overhead_bytes"])
             context_ref = self.artifacts.put(canonical(asdict(packet)), "context:" + key)
             history_recording = None
             if skill_observation:
@@ -586,7 +604,9 @@ class Executor:
                                    correlation_id=correlation, causation_id=key,
                                    attributes={"reservation_id": reservation_id, "transport": assignment.transport,
                                                "requested_model": requested_model, "read_only": read_only,
-                                               "timeout_seconds": float(timeout), "context_ref": context_ref["ref"]})
+                                               "timeout_seconds": float(timeout), "context_ref": context_ref["ref"],
+                                               "context_bytes": context_measurement["rendered_bytes"],
+                                               "context_policy": context_measurement["policy"]})
 
             try:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
@@ -647,6 +667,7 @@ class Executor:
                                   context_ref=context_ref["ref"], research_binding=binding)
                 result["model_selection"] = model_receipt
                 result["execution_assignment"] = assignment.receipt()
+                result["context_measurement"] = context_measurement  # persisted in the execution receipt below
                 result['invocation'] = {'request': request, 'outcome': classify_result(result),
                                         'usage': usage_record({**result, 'requested_model': requested_model},
                                                               assignment.transport),

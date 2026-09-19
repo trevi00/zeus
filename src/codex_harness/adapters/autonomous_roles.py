@@ -40,6 +40,15 @@ from codex_harness.domain.council import (
     IMPROVEMENT_LEAD,
     RESEARCH_LEAD,
 )
+from codex_harness.domain.council_input import (
+    DBA_REPORT,
+    IMPROVEMENT_PROPOSAL,
+    PACKET,
+    RESEARCH_PROPOSAL,
+    admit_delivery,
+    output_limit,
+)
+from codex_harness.domain.council_input import SCHEMA as INPUT_POLICY
 from codex_harness.domain.dge import CLAIM_KINDS, DECISIONS, QUESTION_STATUSES, SEVERITIES, VERDICTS
 from codex_harness.domain.model import require
 
@@ -152,7 +161,8 @@ OBJECTIVES = {
                  "while the uncertainty itself stays a separate nonblocking unknown question citing its unknown "
                  "claim; or unknown itself, blocking false, citing that unknown claim. A design choice you truly "
                  "cannot settle is status unknown with blocking true: the output is refused and research continues; "
-                 "do not mark it nonblocking or answered to pass the check."),
+                 "do not mark it nonblocking or answered to pass the check. In a council (urn:zeus:autonomous:2) run: "
+                 + output_limit(PACKET)),
     "proposer": "Propose the design for the fixed plan citing packet claims only; do not change the plan.",
     "attacker": ("Identify only material blockers as critical: concrete reachable trigger, cited packet claims, the "
                  "exact fixed criterion, material impact and minimal mitigation. Everything else is minor. "
@@ -166,14 +176,17 @@ OBJECTIVES = {
           "Name the exact snapshot_digest, summarize what the selected records show (found/missing/unknown and "
           "their whitelisted status fields), cite only packet claim ids, and list unknowns. A missing key is absent "
           "at that snapshot in the explicit scope only; an unknown record is not a success. Your report is an "
-          "interpretation, never a new Git-supported fact and never a substitute for the observation."),
+          "interpretation, never a new Git-supported fact and never a substitute for the observation. "
+          + output_limit(DBA_REPORT)),
     RESEARCH_LEAD: ("Propose the design for the fixed plan from the packet AND the frozen DBA report, citing packet "
-                    "claims only; echo the snapshot_digest and report_digest you worked from; do not change the plan."),
+                    "claims only; echo the snapshot_digest and report_digest you worked from; do not change the plan. "
+                    + output_limit(RESEARCH_PROPOSAL)),
     IMPROVEMENT_LEAD: ("Respond with a constructive alternative: summary, decision (" + _listed(SSOT_DECISIONS) + "), "
                        "rationale, transition (compatibility, rollback, retirement for improve/migrate, null otherwise), "
                        "claim ids, plus findings under the existing rule: only material blockers are critical (concrete "
                        "reachable trigger, cited claims, exact fixed criterion, impact, minimal mitigation); everything "
-                       "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest."),
+                       "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest. "
+                       + output_limit(IMPROVEMENT_PROPOSAL)),
     # Measured whole-layout revision (SPEC "Prepared whole-layout batch"): the conductor objective is concise; the
     # phase rule lives once in council_delivery.guidance, the enums stay listed as the schema declares them.
     CONDUCTOR_ROLE: ("Arbitrate the supplied proposals. Account for every finding; never defer a critical finding. "
@@ -227,8 +240,25 @@ def council_delivery(role: str, details: dict) -> dict:
     pointers = {k: {"pointer": "/" + k,
                     "operation": ["pointer", "--pointer", "/" + k, "--cursor", "0", "--limit", "8000"]}
                 for k in POINTER_DELIVERY}
-    return {"schema": "urn:zeus:council-delivery:1", "inline": inline, "not_inline": pointers,
-            "reading": READING, "guidance": DELIVERY_GUIDANCE[role]}
+    delivery = {"schema": "urn:zeus:council-delivery:1", "input_policy": INPUT_POLICY, "inline": inline,
+                "not_inline": pointers, "reading": READING, "guidance": DELIVERY_GUIDANCE[role]}
+    # urn:zeus:council-input:1 consumer gate: every payload component and the wrapper within the policy, or the
+    # typed needs_scope_split refusal before any provider (distinct from the missing-field error above).
+    admit_delivery(delivery)
+    return delivery
+
+
+def admitted_delivery(agent: str, action: str | None, read_only: bool, stage: str | None, details: dict, delivery) -> dict:
+    """The executor's admission of a supplied delivery before it grants the council compiler budget: only an
+    actual read-only `dge_role` execution of a debate role on that role's real agent and stage, and only the
+    exact deterministic projection of THIS task's details. A caller cannot hand in a foreign, trimmed or
+    inflated delivery to obtain the larger window. Returns the policy measurements of the projection."""
+    require(action == "dge_role" and read_only is True, "Council delivery requires a read-only dge_role execution")
+    role = delivery["inline"].get("role") if isinstance(delivery, dict) and isinstance(delivery.get("inline"), dict) else None
+    require(role in COUNCIL_DEBATE_ROLES, "Council delivery names no debate role")
+    require(stage == "dge:" + role and agent == AGENTS[role], "Council delivery role, stage and agent must agree")
+    require(delivery == council_delivery(role, details), "Council delivery is not the projection of this task")
+    return admit_delivery(delivery)
 
 
 def isolation_reference(config: dict | None) -> dict | None:
@@ -292,5 +322,6 @@ def execute_role(executor, task: dict, heartbeat) -> dict:
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role execution changed its commit")
     if role in DEBATE_ROLES:
         require(details.get("packet_digest") == (details.get("packet_digest") or ""), "Packet digest required")
-    result["role_execution"] = {"role": role, "stage": stage, "read_only": True, "provider_entries_cap": MAX_ROLE_ENTRIES}
+    result["role_execution"] = {"role": role, "stage": stage, "read_only": True, "provider_entries_cap": MAX_ROLE_ENTRIES,
+                                "input_policy": INPUT_POLICY if delivery is not None else None}
     return result
