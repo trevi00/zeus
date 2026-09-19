@@ -122,3 +122,28 @@ new architecture or scope. Preserve accepted HTTP/security/optional-source/recov
 first failed evidence; no full suite was run after the failed focus gate. First code CI was cancelled
 by the owner after the deterministic Windows failure, not reported as green. Run the final candidate's
 focused/full checks and CI. Update IMPLEMENTATION with these failures and actual correction results.
+
+## Portable input acceptance clarification, 2026-09-19
+
+Observation: CI35446193663 Linux Python3.14 failed only the deep-nesting fixture reason assertion:
+it safely returned503, invalid/sources_unexpected, rather than invalid/undecodable. The test used
+a20,000-deep array in sources. Other observed environments refused during JSON decode. No handler
+crash or false200 occurred. Exact interpreter/runtime cause is not established and not needed to
+accept either safe refusal. Source data payloads remain outside semantic inspection.
+
+Affected assumption: this and the Windows test-ID failure share a portability family: test-runner
+and parser representation details were mistaken for the endpoint's required safety behavior.
+The discriminating CI receipt shows parsing can reach structural validation. Acceptance is the
+fixed HTTP503, ready=false, invalid state, no sources, no payload disclosure and responsive server;
+the parser may reject first (undecodable) or structure may reject next (sources_unexpected).
+This clarifies the original deep-nesting refusal requirement. No independent numerical nesting-depth
+threshold was specified; do not invent one or change the runtime parser. Deep valid data may be
+decoded within the byte bound and is not evaluated as health. Correct prior prose claiming all deep
+input hits the interpreter recursion guard on every platform.
+
+One test/documentation-only correction through Claude and independent review. Allowed paths ONLY
+tests/test_monitor_readiness.py and IMPLEMENTATION.md beside this SPEC. Keep all17 payload bytes,
+short IDs, test count and other reason expectations unchanged. Only deep-nesting may accept the two
+documented reasons, retaining all other assertions. No runtime, threshold, route, skip, dependency,
+workflow or global setting changes. Run the same focused command and ruff; owner rechecks this exact
+change and CI. Preserve native/full/HTTP evidence already executed; this is not a new review topic.
