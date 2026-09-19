@@ -1,3 +1,14 @@
+# Current disposition after live008 (2026-09-19)
+
+Bounded source-to-reviewed-recommendation operation PASSED at runtime00713a6: two collection
+cycles, one seven-role council, 7/7 starts settled, verified graph5nodes/4edges, normal capped stop.
+See RESULT-008.md and EVIDENCE-008.json. No unresolved launch blocker from Implementation015.
+Fleet remains paused; this completed a finite batch, not an always-on service deployment.
+Local-asset absorption and the BOM recommendation are subsequent operating work, not new launch gates.
+No merge, deployment, automatic retry, reboot verification or full-asset-absorption completion claimed.
+
+Everything below is retained historical status and must not override this current disposition.
+
 Current status2026-09-19: RESULT-006.md and RESULT-007.md supersede the earlier status below.
 Accepted:013 shared input policy and014 proven foreign informational notices. Both independent reviews,
 owner full suites and required CI passed. Actual006 completed all five meeting roles but failed notice

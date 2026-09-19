@@ -1,0 +1,126 @@
+{
+  "schema": "urn:zeus:owner-evidence-manifest:1",
+  "authority": "owner evidence references; not deployment authorization",
+  "run": "research-live-008",
+  "runtime_head": "00713a6c54ac162bead2a0a11cc4880789d826a7",
+  "implementation_candidate": "663d7fd3cd11aa2aa5f9709b7173ba547b1f0ef6",
+  "live_candidate": {
+    "base": "cb4d13b37416dd3052d75c0330d00c431d9fb941",
+    "tree": "57ac340d552d5519c114bdd125620fbb68746198",
+    "revision": "75a5a9d21b6bcbe830d05b8b2ff5e2a91bdb0e4e",
+    "diff_hash": "67ec9aea9c36bc13fbbc45d259a0317a4e64e44e3376807ea045b130a5d7bcfd"
+  },
+  "execution_ref": "sha256:e048714adf0a3a0c71c4ff25378aa60decbe50d108b9b361f84e9cac998172c3",
+  "review_execution_ref": "sha256:0fc743c1372f11ed54d591fe4e3e140fabbf8e0bcebbafbc45ac01f218689b36",
+  "promotion": {
+    "id": "research-live-008.c001",
+    "edges": 4,
+    "nodes": [
+      "verified:research-live-008.c001:goal",
+      "verified:research-live-008.c001:research",
+      "verified:research-live-008.c001:design",
+      "verified:research-live-008.c001:candidate",
+      "verified:research-live-008.c001:verification"
+    ],
+    "cached": false,
+    "repository": "verified:research-live-008.c001",
+    "graph_sha256": "33a01d0c594f3b45617adabb5448f837a81e83e9a39b56aa010eb0300e2c0d5b"
+  },
+  "files": [
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\ci-gate.json",
+      "bytes": 494,
+      "sha256": "c206ebee6fc72ab64e802f21871b98a734d6f81c205e0a7c0d7349cf0c246cfe"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\ci-observation.json",
+      "bytes": 16853,
+      "sha256": "3e86ec6f41fe3004792acc88687da96d3aa9599a0c907db930ce0ed720065773"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\live-config.json",
+      "bytes": 3918,
+      "sha256": "1b46981d8dac000b01cb969dd4e32753a916a96ef8f39890ff2646dcb3837db5"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\live-receipt.json",
+      "bytes": 1214,
+      "sha256": "2d58fa8fe7dd594836f0ed641a7c242fe9b4d59a9d2a329166fa1ec7a3f29b03"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\live-run.json",
+      "bytes": 583,
+      "sha256": "90d8d996d2f278f6bebbd14963d0d8405dd89cb27a6b2bc785acfe0a319416ca"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\live-run-second.json",
+      "bytes": 470,
+      "sha256": "8ad7dd0e999c822e001d058800ed523e6bf79f9816538e08d78f0855b73887a2"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\live-status.json",
+      "bytes": 5854,
+      "sha256": "25a5243c6c58cfe8a0e9cd8c53da2e7c43b437890bb67797431c66db047962ed"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\authoritative.json",
+      "bytes": 275614,
+      "sha256": "5c829410af911f96f13f91032caa1ffaa9495f9fd9fff0469c91de480e4ade5c"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\summary.json",
+      "bytes": 876,
+      "sha256": "a51ae8ef2614cae11287c3ef8eaec2738e68dbfde25aa2a93fd4b542cbbaba64"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run008\\run-live.py",
+      "bytes": 6096,
+      "sha256": "2b1774221ecf90281a6afa07c266b712215368071700d37877c61212b88f428d"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\operation.json",
+      "bytes": 2695,
+      "sha256": "c7c8208101cadad02f21e13c5eb2cc47ccbbddc569473cc59c828fb5476cfefe"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\run-receipt.json",
+      "bytes": 503,
+      "sha256": "8c038c374dd6ce16ebddd739cce5d889df31753b09db79fab6097f07b4fe784a"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\result.json",
+      "bytes": 6351,
+      "sha256": "2fd9196f2ae5d9a26b76fe8e8c3f872107b5be3aac9a637e5d7f90a3330ec358"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\owner-review-notes.json",
+      "bytes": 2814,
+      "sha256": "6e23384e8712ee1c5474fe098a7da7304a8cb61bbe8c68f18cccabc9687587c6"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\owner-validation.json",
+      "bytes": 440,
+      "sha256": "aded0fb1002ce93c1c176e63168beceddb1c5d0ab80dbdb9d61402b80449e5ca"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\owner-focused.log",
+      "bytes": 276,
+      "sha256": "0f8b69a75c464b97d06147aa3fe8ef99fae1bcb0227e273b52e628d71ed0abbe"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\owner-full.log",
+      "bytes": 3206,
+      "sha256": "2960f85b96677c87fd1aaa4d52583d6589191d01169295a0dfaf64d338848685"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\owner-lint.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract017\\image-build.log",
+      "bytes": 14440,
+      "sha256": "32b90c075fbd74ef5818c8a63c9169e528ef1df34deee8e1c23724b305ce4bd8"
+    }
+  ]
+}

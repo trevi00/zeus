@@ -1197,3 +1197,13 @@ unfinished publication must stop safely rather than be silently ignored. Disting
 question from a proven defect. No unrelated expansion, provider calls, full suite or deployment.
 Owner will independently review FULL diff from691f12f, including retained016 code, then full tests
 and CI. The new automated reviewer reviews the continuation delta; that alone cannot accept draft016.
+
+
+Implementation015 acceptance (2026-09-19): Opus continuation017 succeeded; independent Codex
+continuation review accepted. Owner reviewed full691f12f->663d7fd diff; focused151passed18skipped,
+full2299passed455skipped, lint passed. Runtime00713a6 has the same tree; required CI35433653764
+passed attempt1. Actual live008 completed2ticks/1council, all7 starts succeeded and settled220->227.
+Sources local/GitHub/GeekNews ok both cycles; second cycle31duplicates, no extra adoption.
+Verified graph5nodes4edges; Fleetpaused/active0, no worker containers. RESULT-008 and EVIDENCE-008
+record the limited acceptance. No further exploratory launch gate: subsequent local-asset absorption
+is operating work. No automatic merge/deploy or always-on service claim.
