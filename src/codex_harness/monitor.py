@@ -102,6 +102,24 @@ def run_collector(args, root, runtime, snapshot):
         raise
 
 
+def desk_service():
+    """The opt-in local front door (local-operations-desk-001), or None.
+
+    The web process serves the desk only when the owner configured ZEUS_DESK_REVISION as a full
+    40-hex Git revision; that configured revision is the base every request is captured at. An
+    unset value keeps the web process exactly read-only, and a malformed one refuses to start
+    rather than serving a half-enabled desk. No store connection is opened here: an unreachable
+    PostgreSQL is answered per request, never with a local fallback.
+    """
+    configured = settings().get('ZEUS_DESK_REVISION')
+    if not configured:
+        return None
+    from codex_harness.application.frontdesk import FrontDesk
+    from codex_harness.bootstrap import build
+
+    return FrontDesk(build(), configured)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mode', choices=['collect', 'web'])
@@ -117,7 +135,7 @@ def main():
     snapshot = runtime / 'monitoring.json'
     if args.mode == 'web':
         from codex_harness.adapters.monitoring_web import serve
-        serve(snapshot, args.port)
+        serve(snapshot, args.port, desk=desk_service())
         return
     run_collector(args, root, runtime, snapshot)
 

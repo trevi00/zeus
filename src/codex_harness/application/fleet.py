@@ -18,6 +18,7 @@ import time
 from uuid import uuid4
 
 from codex_harness.domain.fleet import (
+    ACCEPTED,
     DISPATCHING,
     FAILED,
     QUEUED,
@@ -27,6 +28,7 @@ from codex_harness.domain.fleet import (
     FleetRefused,
     binding,
     config_digest,
+    delivery_view,
     effective_config,
     lane_of,
     new_job,
@@ -35,6 +37,7 @@ from codex_harness.domain.fleet import (
     sanitized_config,
     select_admission,
     validate_config,
+    validate_delivery,
     validate_grant,
     validate_job_manifest,
 )
@@ -44,6 +47,7 @@ from codex_harness.domain.usage_policy import MODES, SUBSCRIPTION, accounting_mo
 
 BUCKET_REGISTRY, BUCKET_CONTROL, BUCKET_JOBS = "fleet_registry", "fleet_control", "fleet_jobs"
 BUCKET_GRANTS = "fleet_budget_grants"
+BUCKET_DELIVERY = "fleet_delivery"
 CONTROL_KEY = "admission"
 
 
@@ -241,6 +245,39 @@ class Fleet:
             tx.put(BUCKET_JOBS, job_id, job)
         return self._view(job)
 
+    # ----- owner delivery records ---------------------------------------------------------
+    def record_delivery(self, job_id: str, document) -> dict:
+        """Record one immutable owner-reported delivery for an ACCEPTED job (trusted owner CLI only).
+
+        The complete document replays idempotently; any other document for the same job is refused
+        and nothing is overwritten. No web request and no model run reaches this method. The job's
+        status, review verdict and authority are untouched: this record is delivery VISIBILITY, not
+        a release approval gate, and it is not an independent GitHub or network verification.
+        """
+        record = validate_delivery(document)
+        if record["job_id"] != job_id:
+            raise FleetRefused("delivery_job_mismatch", "job_id")
+        with self.store.transaction() as tx:
+            job = tx.get(BUCKET_JOBS, job_id)
+            if job is None:
+                raise FleetRefused("job_unknown")
+            if job["status"] != ACCEPTED:
+                raise FleetRefused("job_not_accepted")
+            old = tx.get(BUCKET_DELIVERY, job_id)
+            if old is not None:
+                if old["document"] != record:
+                    raise FleetRefused("delivery_conflict")
+                return {"recorded": True, "cached": True, "delivery": delivery_view(old)}
+            row = {"id": job_id, "job_id": job_id, "document": record, "source": "owner_cli",
+                   "authority": "owner_recorded", "recorded_by": "owner", "created_at": self.clock()}
+            tx.put(BUCKET_DELIVERY, job_id, row)
+        return {"recorded": True, "cached": False, "delivery": delivery_view(row)}
+
+    def delivery(self, job_id: str) -> dict | None:
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_DELIVERY, job_id)
+        return delivery_view(row) if row is not None else None
+
     # ----- read-only ----------------------------------------------------------------------
     def reconciliation_required(self) -> list[str]:
         """Dispatching/unknown jobs: never relaunched, never cleared by an operator command here."""
@@ -249,14 +286,18 @@ class Fleet:
         return sorted(row["id"] for row in rows if row["status"] in RESERVING)
 
     def status(self) -> dict:
-        """The `urn:zeus:fleet-status:1` projection from PG reads only."""
+        """The `urn:zeus:fleet-status:1` projection from PG reads only.
+
+        A job with an owner delivery record carries its safe `delivery` projection; a job without
+        one is unchanged, and its delivery stays unknown."""
         with self.store.transaction() as tx:
             registry = self._registry(tx)
             control = self._control(tx)
             rows = tx.scan(BUCKET_JOBS)
+            deliveries = {row["job_id"]: row for row in tx.scan(BUCKET_DELIVERY)}
         if registry is not None:
             registry = {**registry, "config": effective_config(registry["config"], control)}
-        return projection(registry, bool(control.get("paused")), rows)
+        return projection(registry, bool(control.get("paused")), rows, deliveries)
 
 
 class FleetRunner:
@@ -340,5 +381,5 @@ class FleetRunner:
         summary["finalized"].append({"id": row["id"], "status": row["status"], "reason_code": row["reason_code"]})
 
 
-__all__ = ["BUCKET_CONTROL", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_REGISTRY", "Fleet", "FleetRunner",
-           "LaunchRefused", "QUEUED"]
+__all__ = ["BUCKET_CONTROL", "BUCKET_DELIVERY", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_REGISTRY",
+           "Fleet", "FleetRunner", "LaunchRefused", "QUEUED"]

@@ -303,6 +303,8 @@ def parser() -> argparse.ArgumentParser:
     add_dge_parser(commands)
     from codex_harness.adapters.fleet_cli import add_parser as add_fleet_parser
     add_fleet_parser(commands)
+    from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
+    add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
     from codex_harness.adapters.research_program_cli import (
         add_parser as add_research_program_parser,
@@ -479,6 +481,20 @@ def fleet_command(service, args):
         result = fleet_cli.execute(service, args)
     except Exception as exc:
         emit(fleet_cli.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def desk_command(service, args):
+    """local-operations-desk-001: exit 0 only for a completed command; refusals print a code and a
+    type, never conversation text, paths, DSNs, raw exceptions or provider output."""
+    from codex_harness.adapters import frontdesk_cli
+    try:
+        result = frontdesk_cli.execute(service, args)
+    except Exception as exc:
+        emit(frontdesk_cli.desk_refusal(exc))
         raise SystemExit(1) from exc
     emit(result)
     if result.get("exit_code", 1) != 0:
@@ -665,6 +681,8 @@ def main() -> None:
             autonomous_command(service, args)
         elif args.command == "fleet":
             fleet_command(service, args)
+        elif args.command == "desk":
+            desk_command(service, args)
         elif args.command == "research-program":
             research_program_command(service, args)
         elif args.command == "observe":

@@ -206,6 +206,87 @@ def validate_job_manifest(manifest: dict, config: dict) -> None:
         raise FleetRefused("path_not_canonical", "plan.allowed_paths")
 
 
+# ----- owner delivery records (local-operations-desk-001) -----------------------------------
+DELIVERY_SCHEMA = "urn:zeus:owner-delivery:1"
+DELIVERY_FIELDS = {"schema", "job_id", "candidate_revision", "merge_revision", "deployed_revision",
+                   "recorded_at", "evidence_refs", "report_url"}
+REVISION = re.compile(r"^[0-9a-f]{40}$")
+EVIDENCE_REF = re.compile(r"^(sha256:)?[0-9a-f]{64}$")
+REPORT_URL = re.compile(r"^https://github\.com/[A-Za-z0-9._-]{1,100}/[A-Za-z0-9._-]{1,100}"
+                        r"(/[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]{0,300})?$")
+MAX_EVIDENCE_REFS = 20
+
+
+def _aware_timestamp(value) -> str:
+    """An explicit timezone-aware ISO 8601 instant; a naive or malformed stamp is refused."""
+    from datetime import datetime
+
+    if type(value) is not str or not value:
+        raise FleetRefused("delivery_invalid", "recorded_at")
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError as exc:
+        raise FleetRefused("delivery_invalid", "recorded_at") from exc
+    if parsed.utcoffset() is None:
+        raise FleetRefused("delivery_invalid", "recorded_at")
+    return value
+
+
+def _delivery_revision(value, field: str, nullable: bool = False) -> str | None:
+    if value is None and nullable:
+        return None
+    if type(value) is not str or REVISION.fullmatch(value) is None:
+        raise FleetRefused("delivery_invalid", field)
+    return value
+
+
+def validate_delivery(document) -> dict:
+    """Strict validation of one owner-reported delivery document; returns the canonical copy.
+
+    This is what the OWNER states after verifying the bindings from a preserved receipt. It is
+    explicitly owner-reported evidence, never an independent GitHub or network verification, and
+    it grants no authority: no job status, review verdict or release gate changes because of it.
+    """
+    if not isinstance(document, dict) or document.get("schema") != DELIVERY_SCHEMA:
+        raise FleetRefused("delivery_schema")
+    if set(document) != DELIVERY_FIELDS:
+        raise FleetRefused("delivery_fields", "root")
+    if not _token(document["job_id"]):
+        raise FleetRefused("delivery_invalid", "job_id")
+    refs = document["evidence_refs"]
+    if not (isinstance(refs, list) and 1 <= len(refs) <= MAX_EVIDENCE_REFS):
+        raise FleetRefused("delivery_invalid", "evidence_refs")
+    for ref in refs:
+        if type(ref) is not str or EVIDENCE_REF.fullmatch(ref) is None:
+            raise FleetRefused("delivery_invalid", "evidence_refs")
+    if len(set(refs)) != len(refs):
+        raise FleetRefused("delivery_duplicate", "evidence_refs")
+    url = document["report_url"]
+    if url is not None and (type(url) is not str or REPORT_URL.fullmatch(url) is None):
+        raise FleetRefused("delivery_invalid", "report_url")
+    return {"schema": DELIVERY_SCHEMA, "job_id": document["job_id"],
+            "candidate_revision": _delivery_revision(document["candidate_revision"], "candidate_revision"),
+            "merge_revision": _delivery_revision(document["merge_revision"], "merge_revision"),
+            "deployed_revision": _delivery_revision(document["deployed_revision"], "deployed_revision", True),
+            "recorded_at": _aware_timestamp(document["recorded_at"]),
+            "evidence_refs": list(refs), "report_url": url}
+
+
+def delivery_view(record: dict) -> dict:
+    """The safe projection of an owner delivery: the document fields and their authority label.
+
+    `merged` and `deployed` stay distinguishable: a null deployed revision means the owner recorded
+    a merge and nothing about a deployment. Absence of a record anywhere means unknown, never
+    "not delivered", and delivery is never inferred from another job's timestamp or goal.
+    """
+    document = record["document"]
+    return {"schema": DELIVERY_SCHEMA, "authority": "owner_recorded",
+            "job_id": document["job_id"], "candidate_revision": document["candidate_revision"],
+            "merge_revision": document["merge_revision"], "deployed_revision": document["deployed_revision"],
+            "recorded_at": document["recorded_at"], "evidence_refs": list(document["evidence_refs"]),
+            "report_url": document["report_url"]}
+
+
 def repository_identity(path: str) -> str:
     """The lane repository as an identity: the digest of its normalized resolved path."""
     return digest(normalize_path(path))
@@ -335,11 +416,15 @@ def job_view(job: dict) -> dict:
             "created_at": job["created_at"], "updated_at": job["updated_at"]}
 
 
-def projection(registry: dict | None, paused: bool, jobs: list[dict]) -> dict:
+def projection(registry: dict | None, paused: bool, jobs: list[dict], deliveries: dict | None = None) -> dict:
     """`urn:zeus:fleet-status:1`: no manifest text, objectives, paths, schemas, DSNs or raw
     errors. The job list is the last JOB_SAMPLE by update; `active_job` is derived from every
     reserving job, including those outside the sample. `registry["config"]` is the effective
-    configuration, so `budget` shows the ceilings new work must carry."""
+    configuration, so `budget` shows the ceilings new work must carry.
+
+    `deliveries` (optional, job id -> owner delivery record) adds the safe `delivery` projection to
+    the jobs that HAVE one. A job without a record keeps its exact previous shape: missing delivery
+    evidence stays unknown and is never inferred from `accepted` or from another job."""
     if registry is None:
         return {"schema": STATUS_SCHEMA, "registered": False, "lanes": [], "jobs": []}
     config = registry["config"]
@@ -353,4 +438,9 @@ def projection(registry: dict | None, paused: bool, jobs: list[dict]) -> dict:
             "accounting_mode": accounting_mode(config["budget"]),
             "lanes": [{"id": lane["id"], "team": lane["team"], "active_job": active.get(lane["id"])}
                       for lane in config["lanes"]],
-            "jobs": [job_view(job) for job in ordered[:JOB_SAMPLE]], "truncated": len(ordered) > JOB_SAMPLE}
+            "jobs": [_with_delivery(job_view(job), (deliveries or {}).get(job["id"]))
+                     for job in ordered[:JOB_SAMPLE]], "truncated": len(ordered) > JOB_SAMPLE}
+
+
+def _with_delivery(view: dict, record) -> dict:
+    return view if not isinstance(record, dict) else {**view, "delivery": delivery_view(record)}

@@ -37,6 +37,10 @@ def add_parser(commands) -> None:
     grant.add_argument("--mode", choices=list(MODES), default=None,
                        help="Accounting mode for new work: finite (numbers are ceilings) or subscription "
                             "(every call recorded, numbers retained as migration metadata); omitted keeps the current mode")
+    delivery = sub.add_parser("record-delivery", help="Record the owner's merge/deploy evidence for an "
+                              "accepted job (urn:zeus:owner-delivery:1); trusted owner CLI only")
+    delivery.add_argument("--job", required=True, help="Existing accepted fleet job id")
+    delivery.add_argument("--file", type=Path, required=True, help="Owner delivery document JSON")
     sub.add_parser("status", help="Read the fleet projection; store read only")
 
 
@@ -81,6 +85,13 @@ def run(service, args) -> dict:
     return {**runner.run(once=bool(args.once)), "exit_code": 0}
 
 
+def record_delivery(service, args) -> dict:
+    """The owner states what they verified from a preserved receipt. This CLI is the only writer:
+    no web request and no model run records a delivery, and recording one changes no job status."""
+    document = read_manifest(args.file)
+    return {**Fleet(service.store).record_delivery(args.job, document), "exit_code": 0}
+
+
 def status(service, args) -> dict:
     # Store read only: no executor, observer, bus, budget or provider is built.
     fleet = Fleet(service.store)
@@ -99,6 +110,8 @@ def execute(service, args) -> dict:
         return {**Fleet(service.store).pause(), "exit_code": 0}
     if command == "resume":
         return {**Fleet(service.store).resume(), "exit_code": 0}
+    if command == "record-delivery":
+        return record_delivery(service, args)
     if command == "authorize-budget":
         grant = Fleet(service.store).authorize_budget(args.per_host, args.total, args.expected_total,
                                                       mode=getattr(args, "mode", None))

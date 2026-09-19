@@ -7,6 +7,12 @@
       "team": "control"
     },
     {
+      "id": "lead:frontdesk",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "control"
+    },
+    {
       "id": "lead:research",
       "role": "lead",
       "parent": "conductor",
