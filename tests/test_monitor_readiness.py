@@ -7,6 +7,7 @@ collector failure. Every server thread and connection is closed in `finally`.
 import json
 import os
 import time
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
@@ -366,8 +367,47 @@ def test_host_guard_and_read_only_refusal_cover_the_new_route(monitor):
     assert monitor.request('GET', '/ready?x=1')[0] == 200  # query strings are ignored for routing
 
 
-def test_each_request_is_one_immutable_view_while_the_file_is_replaced(monitor):
-    """Atomic replacement only ever exposes the old or the new complete file, never a partial one."""
+def concurrent_view(status, answer):
+    """The complete answers a reader may lawfully get while the snapshot is being republished.
+
+    Publication integrity and the availability of an open handle are two different facts. A read
+    that succeeds must expose one whole published document: each fixture here writes `collected_at`
+    and all three required envelopes at the same instant, so a consistent view carries one state,
+    one reason and one identical age across the snapshot and every source, so a mixed, partial or
+    `invalid` answer cannot pass. A read whose open is refused (Windows can deny an open that
+    overlaps `os.replace`) is the only other lawful answer: 503, `unavailable` with
+    `file_missing`/`file_unreadable`, null age and no sources, never a 200. Returns the view name;
+    every assertion carries the whole answer as its diagnostic.
+    """
+    snapshot, sources = answer['snapshot'], answer['sources']
+    assert answer['ready'] is (status == 200), answer
+    if snapshot['state'] == 'unavailable':
+        assert status == 503 and answer['ready'] is False, answer
+        assert snapshot['reason'] in ('file_missing', 'file_unreadable'), answer
+        assert snapshot['age_seconds'] is None, answer
+        assert sources == {}, answer
+        return 'unavailable'
+    assert snapshot['state'] in ('fresh', 'stale'), answer
+    reason = 'current' if snapshot['state'] == 'fresh' else 'older_than_window'
+    assert snapshot['reason'] == reason, answer
+    assert status == (200 if snapshot['state'] == 'fresh' else 503), answer
+    assert isinstance(snapshot['age_seconds'], (int, float)), answer
+    assert (snapshot['age_seconds'] < FRESH_SECONDS) is (snapshot['state'] == 'fresh'), answer
+    assert set(sources) == REQUIRED, answer                 # the whole published source set
+    for source in sources.values():
+        assert (source['state'], source['reason']) == (snapshot['state'], reason), answer
+        assert source['age_seconds'] == snapshot['age_seconds'], answer
+    return snapshot['state']
+
+
+def test_each_request_is_one_complete_view_or_a_refused_open_while_the_file_is_replaced(monitor):
+    """Atomic replacement never exposes a partial file, but an overlapping open can be refused.
+
+    Every response is kept whole and checked by `concurrent_view`; there is no HTTP retry and no
+    skip, so a refused open is recorded as a legitimate unavailable answer rather than retried
+    away. Only the writer retries, for its own sharing violation. After the writers and readers
+    finish, one fresh publication must restore a ready 200 on the same running server.
+    """
     replace(monitor.path, document(datetime.now(timezone.utc)))
     results, failures = [], []
 
@@ -375,8 +415,7 @@ def test_each_request_is_one_immutable_view_while_the_file_is_replaced(monitor):
         for _ in range(10):
             try:
                 status, raw, _ = monitor.request('GET', '/ready')
-                answer = json.loads(raw)
-                results.append((status, answer['ready'], answer['snapshot']['state']))
+                results.append((status, json.loads(raw)))
             except Exception as exc:                        # pragma: no cover - reported below
                 failures.append(repr(exc))
 
@@ -392,10 +431,15 @@ def test_each_request_is_one_immutable_view_while_the_file_is_replaced(monitor):
         for thread in threads:
             thread.join(timeout=10)
             assert not thread.is_alive()
-    assert not failures
+    assert not failures, failures                           # no request or JSON failure is allowed
     assert len(results) == 40
-    assert all(status == (200 if ready else 503) for status, ready, _ in results)
-    assert all(state in ('fresh', 'stale') for _status, _ready, state in results)
+    views = Counter(concurrent_view(status, answer) for status, answer in results)
+    assert views.total() == 40, views                       # counts reported when anything fails
+
+    replace(monitor.path, document(datetime.now(timezone.utc)))
+    recovered = ready_answer(monitor, 200)
+    assert recovered['snapshot']['state'] == 'fresh', recovered
+    assert {source['state'] for source in recovered['sources'].values()} == {'fresh'}, recovered
 
 
 def test_naive_now_is_a_caller_error_not_a_snapshot_state(tmp_path):

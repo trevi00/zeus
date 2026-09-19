@@ -3,8 +3,9 @@
 Worker: Claude, isolated Zeus worker, Linux. First candidate base revision
 `eb274f93ebe6d430f29d989540124d2c4220afd0`; the correction batch below was supplied with base
 `f444fc3180b0e88e1d1e053ebae9836cbff0099a`; the portable input acceptance batch below was supplied
-with base `45bc27b8f5b85b548b4a649f429d44c614cc98a5`. Git commands were out of scope here, so all
-three revisions are carried forward as supplied, not re-observed. Frame: `SPEC.md` in this
+with base `45bc27b8f5b85b548b4a649f429d44c614cc98a5`; the concurrency matrix batch below was
+supplied with base `2bbe6bcca283963a06ee14677a57cfe4119d3469`. Git commands were out of scope here,
+so all four revisions are carried forward as supplied, not re-observed. Frame: `SPEC.md` in this
 directory, read in full and followed as fixed. Owner keeps the full suite, CI, deployment and the
 real stale/recovery observation against a running collector.
 
@@ -142,13 +143,60 @@ dependency, workflow or global setting was touched, and the deployed behaviour i
   endpoint safety defects. Neither is evidence of a runtime regression, and nothing here claims the
   deployed endpoint improved.
 
+## Concurrency matrix batch (SPEC "Complete portable concurrency matrix, 2026-09-19")
+
+Test and documentation only, the same two allowed paths as the previous batch
+(`tests/test_monitor_readiness.py` and this file). No runtime code, threshold, route, skip,
+dependency, timeout or global setting was touched; the deployed behaviour is unchanged.
+
+- **Reported failure (not mine)**: CI 35446996683, Windows 3.12. All 40 HTTP reads completed and
+  the ready/status consistency held, but one or more snapshot states fell outside `fresh`/`stale`.
+  The old assertion kept only `(status, ready, state)` triples, so the reason, the age and the
+  source map of the offending answer were discarded: **the exact CI state and its cause stay
+  unknown**, and I did not rerun or re-observe that job. It is not green.
+- **Reported measurement (the owner's, not mine)**: one predeclared native Windows experiment,
+  four readers x 250 requests against 200 atomic replacements over real temp files and real HTTP,
+  recorded 612 fresh 200, 366 stale 503, 22 unavailable/`file_unreadable` 503 and zero request
+  errors (receipt `artifacts/monitor-readiness-001/concurrency-probe.json`). That establishes safe
+  read *unavailability* in that local scenario. It does not prove the hidden CI reason, and the two
+  facts are kept apart here. Microsoft's `CreateFileW` documentation explains that incompatible
+  open/delete sharing modes can refuse an open; that supports possibility, not CI causality.
+- **Correction made**: the old test's implicit "every read is readable" assumption was wrong, and
+  it also discarded the evidence needed to diagnose a violation. The row is reframed around two
+  facts that are not the same — snapshot *publication integrity* and the availability of an *open
+  handle*:
+  - each response is now retained whole (status plus the complete safe JSON answer) and every
+    assertion carries that answer as its diagnostic;
+  - a successful read must be one complete published view: `fresh`/`current` 200 or
+    `stale`/`older_than_window` 503, `ready` agreeing with the status, the age agreeing with the
+    20 s window, the whole required source set present, and every source sharing the snapshot's
+    state, reason and exact age (the fixtures stamp `collected_at` and all three envelopes at one
+    instant, so a mixed or partial view cannot pass);
+  - a refused open is the only permitted alternative: 503, `unavailable` with `file_missing` or
+    `file_unreadable`, null age, empty sources — never a 200;
+  - `invalid` states and request/JSON failures remain test failures in this controlled scenario;
+  - after the writers and readers finish, one fresh publication must restore a ready 200 with a
+    fresh snapshot and fresh sources on the same running server.
+  Retained unchanged: 40 actual HTTP requests (four threads x 10), 20 atomic replacements
+  (10 fresh/stale pairs), the valid fresh and stale payloads, the bounded joins with the server and
+  sockets closed in `finally`, and the writer-only `PermissionError` retry in `replace`. There is
+  no HTTP retry, no skip, no marker and no timeout increase: a refused open is recorded and
+  asserted, not retried away.
+- **Observed here (Linux, this session)**: the reframed test passed, and a deliberately failing
+  assertion run as a one-off diagnostic printed the distribution of the 40 reads as
+  `Counter({'fresh': 22, 'stale': 18})` — zero unavailable answers on this platform and this run.
+  That is a local Linux observation of one run only; it neither reproduces the owner's Windows
+  unavailability nor says anything about the CI state, which stays unknown. The unavailable branch
+  of the matrix was therefore **not exercised here**; it is permitted by assertion, not observed.
+
 ## Verification
 
 Run here, with the output read:
 
 - `python -m pytest tests/test_monitor_readiness.py tests/test_monitoring.py -q -p no:cacheprovider`
   — 69 passed on Linux (67 before the correction batch, plus the two sub-millisecond regressions;
-  the portable input acceptance batch re-ran the same 69 and added no case). New file:
+  the portable input acceptance batch and the concurrency matrix batch each re-ran the same 69 and
+  added no case). New file:
   the fixed contract over real HTTP; optional envelopes present/absent; the
   19.999 / 19.9996 / 19.999999 / 20 / 20.001 / -5 / -5.001 boundaries; collector-versus-source
   independence; broken
@@ -160,11 +208,17 @@ Run here, with the output read:
   stale to fresh to stale recovery on one running server; no reflection of secrets, keys, paths,
   collector errors or raw timestamps; no file created or modified; Host 403, POST 405, `/ready/`
   404, query string ignored; four threads polling while the file is atomically replaced 20 times
-  (40 responses, every one a complete fresh-or-stale answer, `ready` always matching the status).
+  (40 retained answers, each either one complete internally consistent fresh-or-stale view or a
+  refused-open `unavailable` 503 with null age and no sources, then a fresh publication restoring
+  ready 200 — see the concurrency matrix batch above for what this run actually observed).
 - `python -m ruff check .` — All checks passed.
 - `python -m pytest tests/test_monitor_readiness.py -p no:cacheprovider --collect-only -q`, read to
   confirm the new ids (this is the evidence for the portability fix; it collects only the readiness
   file and runs nothing).
+- One diagnostic attempt in the concurrency batch: the same focused command was run once with the
+  final `views.total()` assertion deliberately set to 41, which failed as expected (1 failed,
+  68 passed) and printed `Counter({'fresh': 22, 'stale': 18})`. The assertion was restored to 40
+  and the focused command re-run green; the number above is the only local distribution recorded.
 
 Not run by me, by instruction: the full suite, CI, any Git, Docker or service command, and any
 deployed-collector observation. The concurrency test's atomic replacement retries briefly on
@@ -183,6 +237,10 @@ interpreter invocation was denied in this session (`pyproject.toml` requires >= 
   endpoint behaving against a running collector.
 - The reader assumes a local regular file. A snapshot path on hung storage or a FIFO can block the
   request; there is no timeout promise, matching the SPEC.
+- The exact snapshot state that CI 35446996683 (Windows 3.12) saw outside `fresh`/`stale` remains
+  unknown: the old assertion discarded it and I did not rerun the job. The reframed test would now
+  print the whole answer if it recurs, but that is a future diagnostic, not a diagnosis of the past
+  failure, and the unavailable branch has not been observed on Linux.
 - Follow-up (outside the allowed paths, not done): `docs/contracts.md` has no entry for this
   endpoint, so the module cites `monitor-readiness-001` rather than an `INV-` identifier; the owner
   may want a contract ID and a line in the monitor runbook. The frontend does not consume `/ready`
