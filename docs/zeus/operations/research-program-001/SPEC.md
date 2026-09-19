@@ -524,3 +524,21 @@ Existing matrix remains; this revises its measurement denominator rather than ad
 One remaining correction, not multiple new tickets. Current batch stops paused at187/187. A further
 Claude+Codex pair needs explicit+2 authorization; no fresh live council is included. See
 CONDUCTOR-REVIEW-001.md for one consolidated handoff and hashes. Runtime candidate not integrated.
+
+
+### Authorized correction189 outcome and delivery-shape revision (2026-09-19)
+
+User approved189 (+2) for one Claude correction and one independent Codex review, then stop.
+Grant applied; candidate f571809 submitted on741fd68. Required evidence gate found1test mismatch
+and stopped before review; no gate bypass or extra correction. Calls188/189, paused, active lanes0.
+Owner actual preserved conductor input now fits21917/22000bytes in the labelled no-model replay,
+but representative complete-prompt regression fails (short-root Windows94passed/1failed, lintpassed).
+No source integrated. See CONDUCTOR-CORRECTION-189.md including first owner path-limit diagnostic.
+
+Repeated local wording cuts are not the next design. One council-specific reader descriptor should
+carry original ref + argv prefix once; the existing exact pointer arrays already supply operations.
+Remove derivable duplicate file path/generic recipes only for this delivery path; preserve cursor,
+output bounds, safe argv, full raw accessibility and other consumers' readers unchanged. This is a
+proposed next correction, not an implemented guarantee. Complete prompt remains the denominator;
+keep all meeting content and guards. Existing matrix and accepted results stand. No new live run,
+reconciliation, merge, deployment or provider call follows automatically from the unused slot.

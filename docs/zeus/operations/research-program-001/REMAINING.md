@@ -34,3 +34,8 @@ See RESULT-003.md. The pending-grant wording above records preparation, not curr
 
 Delivery correction review: candidate643bf6a rejected because complete conductor input still exceeds
 22000 bytes. Calls187/187, paused. See CONDUCTOR-REVIEW-001.md; candidate code not integrated.
+
+
+Correction189: actual input fits in labelled no-model replay, but representative complete-input
+regression still fails. Evidence gate stopped before review;188/189 calls, paused. Candidate not
+integrated. See CONDUCTOR-CORRECTION-189.md for the single revised delivery-shape boundary.
