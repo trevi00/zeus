@@ -1,3 +1,18 @@
+Current status2026-09-19: RESULT-006.md and RESULT-007.md supersede the earlier status below.
+Accepted:013 shared input policy and014 proven foreign informational notices. Both independent reviews,
+owner full suites and required CI passed. Actual006 completed all five meeting roles but failed notice
+relay;014 fixed that boundary and the original notice replay passes. Actual007 failed before DBA provider:
+the current assignment was absent from a single global outbox page. Exact PG/Redis evidence and the
+108-record no-model reproducer establish the cause. SAME SPEC Implementation015 defines current-run
+publication across all seams plus pre-reservation task admission; it is NOT implemented.
+Claude015 stopped on actual Fable subscription limit; no edits/candidate/review.217 counted slots, all
+latest slots settled, subscription mode. Program/Fleet stopped, no worker container. No automatic retry,
+model switch, merge/deploy or issue closure. Needed:015 implementation/review/checks, then one accepted
+full cycle+tick2/stop, then explicit operating-service transition. Local absorption/project views remain
+operational follow-up projects, not extra launch gates.
+
+Historical statuses follow; none overrides the current paragraph.
+
 Current status2026-09-19: see RESULT-005.md. Delivery implementation and CI passed; live005
 stopped before improvement lead because research_proposal4260 exceeded fixed4096, despite shared capacity
 remaining. Program/Fleet paused. Full cycle and tick2/stop are NOT accepted. Next bounded design is shared

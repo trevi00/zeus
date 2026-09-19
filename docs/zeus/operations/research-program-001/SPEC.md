@@ -1166,3 +1166,9 @@ docs/contracts.md. No schema, provider, isolation, budget limits or input policy
 pytest and ruff only; owner full suite and CI. Do not rerun actual007 or clear its pending assignment.
 One complete Claude implementation plus independent review; no further live run until this entire matrix
 passes. Next actual run remains2ticks/1council/fail-stop/no merge or deploy, not a loop until green.
+
+
+Implementation015 attempt disposition: actual Claude provider returned Fable subscription limit after
+source reading, is_error=true; no changed files/candidate/review, slot216->217 settled, container removed.
+This is an availability constraint, not evidence against the015 design. No further provider call or model
+substitution. Preserve the completed013/014 acceptance; resume exactly015 when model availability permits.

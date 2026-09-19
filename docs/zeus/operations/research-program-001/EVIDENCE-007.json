@@ -1,0 +1,101 @@
+{
+  "schema": "urn:zeus:owner-evidence-manifest:1",
+  "runtime": "9892d49",
+  "accepted_candidates": [
+    "e27c8219fe138e16903d2c7be106867afc774403",
+    "b5845529a032b06347c0db89ad9f16ded6a27af3"
+  ],
+  "operational_acceptance": false,
+  "files": [
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run006\\summary.json",
+      "sha256": "2e103ab26fc93436c8d389cbfb184cbe1147fc492b52408379fe66fff7b1cd79",
+      "bytes": 789
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run006\\live-receipt.json",
+      "sha256": "c66bc24bd213a38464217c8c91e11c7bbebaee354f2fe748e0fb586fe6b2b7e8",
+      "bytes": 1205
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run006\\ci-gate.json",
+      "sha256": "67f3cc5844a3201dd8e7ce7c3e29f6af017d42796a1f0b75d98bede56869e0ab",
+      "bytes": 712
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run006\\foreign-message-diagnosis.json",
+      "sha256": "089214fb8348c8c18316457c2541596994f86a4acf10cb871e382fff846fcd18",
+      "bytes": 4140
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run006\\foreign-notice-source.json",
+      "sha256": "5cb78730e83fb5876627ed51a615b5a06d8fbe3a05158b772f84658854a945c1",
+      "bytes": 1065
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run006\\retained-foreign-notice.json",
+      "sha256": "975522eb51b3fa13f2ce866fc0a0f63f1d2fb98fa7a54e112cf1342c6f5a8753",
+      "bytes": 2199
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run007\\summary.json",
+      "sha256": "1895a35e0ff7a60ccb3a61a7787a355859922629288f6f71980befc22d9a475c",
+      "bytes": 666
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run007\\live-receipt.json",
+      "sha256": "26495e7733a5d2f654a2a4157514fc6186ed6e5532355e6c7ee9ed7db3bb6a41",
+      "bytes": 1205
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run007\\ci-gate.json",
+      "sha256": "c5eb5b44cb65342c6de5049fbefd64226962f23397a202b8c0c19d37e81d4dd8",
+      "bytes": 712
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run007\\dispatch-diagnosis.json",
+      "sha256": "8bb48f02c242639cd6f5b848da24cf47073d9c0bc4b3eba88f849550e397760d",
+      "bytes": 1793
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run007\\dispatch-reproducer.py",
+      "sha256": "2c01bceffd477421f8c33411e65a248ed448a3c95dbf173d4618cb0baf02844d",
+      "bytes": 1582
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\run007\\dispatch-reproducer.json",
+      "sha256": "c17afbdb7182f6923599fdfa0f2f1eb2a30cf6323e3af67bd92d171b7eedbace",
+      "bytes": 435
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract013\\owner-evidence-manifest.json",
+      "sha256": "fabb9592e76e96eeac17e485bb9fb7f1366b4987a2ea7915ea6dcd45a8cb7c8c",
+      "bytes": 3287
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract014\\owner-evidence-manifest.json",
+      "sha256": "b90ba34936db6d6f0d18da53dae8639d6d818f5bcabd9f18a20346b0aa35cd12",
+      "bytes": 3207
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract015\\operation.json",
+      "sha256": "2bac133ba89000969487eb0a59b09fc0ed778ff896f4f4bef3905f721a7ffdde",
+      "bytes": 2990
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract015\\result.json",
+      "sha256": "40067a1edbeb5c4387feb393b11fa5bb246b49d9a5a995fc710bb17716c2cdf2",
+      "bytes": 5487
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract015\\run-receipt.json",
+      "sha256": "7d74482301a8f0f112ffa3649e871d2047f14a09b785c74fe729433296c0f2b4",
+      "bytes": 503
+    },
+    {
+      "path": "D:\\workspaces\\zeus\\artifacts\\research-program-001\\conductor-delivery\\contract015\\quota-summary.json",
+      "sha256": "a563dd64c83fae8c8ecf7efbf38f45676ba7e3c4fdde5df0ffb0ceafec4639b7",
+      "bytes": 540
+    }
+  ]
+}
