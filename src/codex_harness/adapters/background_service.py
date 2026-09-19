@@ -25,8 +25,17 @@ The exit status is the report:
 The journal is a rotating JSONL file of facts an operator may read in the open: an event name, a
 timestamp, the child's pid, exit codes, whether cleanup was confirmed and the class name of a
 failure. Never the command line, the environment, exception text or a raw termination receipt. A
-journal that cannot be opened starts nothing, because a run nobody can account for has not started;
-a journal that stops accepting writes later cannot skip the cleanup and cannot report success.
+journal that cannot be opened starts nothing, and neither does one that opens but refuses its
+first line: opening a file is not writing to it, so the `starting` receipt is written before the
+spawn and a run nobody can account for never begins. A journal that stops accepting writes later
+cannot skip the cleanup and cannot report success.
+
+A POSIX SIGTERM is recorded, not raised. A handler that unwinds can arrive in the middle of
+acquiring the ownership object - between the process existing and this owner holding the tree that
+represents it - and that answer is a 143 beside a live child, which is the orphan this module
+exists to prevent. So the handler only sets a flag, the wait polls in finite steps so a sleeping
+service is still stopped promptly, and the acquired tree is always reclaimed before 143 is
+returned. SIGKILL and a descendant that calls `setsid` remain outside the promise.
 
 The last line the owner writes is `shutdown`. Its absence is not evidence that cleanup failed: an
 owner killed outright never reaches it, and on Windows what ends the tree then is the OS closing
@@ -58,6 +67,8 @@ EXIT_SIGTERM = 143
 
 # ProcessTree's own finite waits, kept finite here: terminate then settle, nothing unbounded.
 TERMINATE_TIMEOUT, SETTLE_TIMEOUT = 5.0, 5.0
+# How long one step of the child wait blocks, so a recorded stop is acted on without an unwind.
+WAIT_POLL = 0.2
 
 LOG_BYTES, LOG_BACKUPS = 1024 * 1024, 2
 LOGGER_NAME = "zeus.background_service"
@@ -72,8 +83,18 @@ class JournalWriteError(RuntimeError):
     """A journal line did not reach the file. Carries the failing class name only, never its text."""
 
 
-class _Terminated(BaseException):
-    """POSIX SIGTERM reached the owner. A deliberate stop, so it is not an `Exception`."""
+class _Pending:
+    """A stop that was recorded, not raised.
+
+    The signal handler writes one attribute and returns; nothing unwinds out of a signal, so no
+    stop can arrive in the middle of a spawn, a handoff, a cleanup or the final journal entries.
+    """
+
+    def __init__(self):
+        self.stop_code: int | None = None
+
+    def observed(self) -> int | None:
+        return self.stop_code
 
 
 def _write_failed(record):
@@ -131,21 +152,27 @@ def _record(book: _Journal, event: str, **fields) -> str | None:
 
 @contextmanager
 def _posix_sigterm():
-    """SIGTERM as an unwind, so the `finally` cleanup runs; POSIX main thread only, then restored."""
+    """Record SIGTERM in a flag; POSIX main thread only, previous handler restored on the way out.
+
+    Yields the flag to watch, or `None` where nothing is installed: on Windows, off the main thread
+    (`signal.signal` is main-thread only), and where the platform refuses the handler. In those
+    cases the run proceeds unchanged and the POSIX stop is simply not promised.
+    """
     if os.name == "nt" or threading.current_thread() is not threading.main_thread():
-        yield False
+        yield None
         return
+    pending = _Pending()
 
     def handle(signum, frame):
-        raise _Terminated()
+        pending.stop_code = EXIT_SIGTERM  # recorded here, acted on by the owner's own code
 
     try:
         previous = signal.signal(signal.SIGTERM, handle)
     except (ValueError, OSError):
-        yield False
+        yield None
         return
     try:
-        yield True
+        yield pending
     finally:
         try:
             signal.signal(signal.SIGTERM, previous)
@@ -175,8 +202,21 @@ def _release(tree: ProcessTree) -> tuple[bool, str | None]:
     return confirmed, error
 
 
-def _stop_code(stop: BaseException) -> int:
-    return EXIT_INTERRUPTED if isinstance(stop, KeyboardInterrupt) else EXIT_SIGTERM
+def _await_child(process, pending: _Pending | None) -> int | None:
+    """The child's exit code, or `None` when a recorded stop is to be answered instead.
+
+    With nothing to watch this is one blocking wait and no wakeups. With a flag to watch it is the
+    same wait in finite steps, so a service that is asleep for ten minutes is still stopped within
+    one step of the signal rather than at the end of its sleep.
+    """
+    if pending is None:
+        return process.wait()
+    while pending.observed() is None:
+        try:
+            return process.wait(timeout=WAIT_POLL)
+        except subprocess.TimeoutExpired:
+            continue
+    return None
 
 
 def _final_code(*, confirmed: bool, stop_code: int | None, error_type: str | None,
@@ -203,19 +243,27 @@ def run_owned(argv: list[str], *, cwd: str | None = None, env: dict | None = Non
     except (OSError, ValueError, TypeError):
         return EXIT_OWNER_ERROR  # nothing has been started, and nothing will be
     try:
-        with _posix_sigterm():
-            return _own(argv, cwd=cwd, env=env, book=book)
+        # A journal that opened is not yet a journal that writes. This line is the proof, and it is
+        # taken before anything exists to account for: a failure here is 125 with zero spawns.
+        try:
+            book.write("starting")
+        except KeyboardInterrupt:
+            return EXIT_INTERRUPTED
+        except BaseException:
+            return EXIT_OWNER_ERROR
+        with _posix_sigterm() as pending:
+            return _own(argv, cwd=cwd, env=env, book=book, pending=pending)
     finally:
         book.close()
 
 
-def _own(argv, *, cwd, env, book: _Journal) -> int:
+def _own(argv, *, cwd, env, book: _Journal, pending: _Pending | None) -> int:
     try:
         tree = ProcessTree.spawn(argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL,
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    except (KeyboardInterrupt, _Terminated) as stop:
-        _record(book, "start_interrupted", error_type=type(stop).__name__)
-        return _stop_code(stop)
+    except KeyboardInterrupt:
+        _record(book, "start_interrupted", error_type="KeyboardInterrupt")
+        return EXIT_INTERRUPTED
     except TreeOwnershipLeak as leak:
         # spawn's own cleanup could not prove the process it created is gone. A second start would
         # add a second one to whatever the first one is, so there is no retry here, ever.
@@ -231,10 +279,16 @@ def _own(argv, *, cwd, env, book: _Journal) -> int:
     child_exit_code: int | None = None
     try:
         book.write("startup", pid=tree.process.pid)
-        child_exit_code = tree.process.wait()
-        book.write("child_exited", child_exit_code=child_exit_code)
-    except (KeyboardInterrupt, _Terminated) as stop:
-        stop_code, error_type = _stop_code(stop), type(stop).__name__
+        # A signal that arrived while the tree was being acquired is answered here, with the tree
+        # in hand, and never as a 143 returned beside a child nobody owns.
+        child_exit_code = None if (pending and pending.observed()) else _await_child(tree.process,
+                                                                                    pending)
+        if child_exit_code is None:
+            stop_code, error_type = EXIT_SIGTERM, "SIGTERM"
+        else:
+            book.write("child_exited", child_exit_code=child_exit_code)
+    except KeyboardInterrupt:
+        stop_code, error_type = EXIT_INTERRUPTED, "KeyboardInterrupt"
     except BaseException as failure:  # a wait or a journal write that failed still owns a tree
         error_type = type(failure).__name__
     finally:
@@ -245,7 +299,14 @@ def _own(argv, *, cwd, env, book: _Journal) -> int:
     error_type = error_type or cleanup_error or journal_error
     final = _final_code(confirmed=confirmed, stop_code=stop_code, error_type=error_type,
                         child_exit_code=child_exit_code)
-    if _record(book, "shutdown", child_exit_code=child_exit_code, final_exit_code=final,
-               cleanup_confirmed=confirmed, error_type=error_type) and final == 0:
-        final = EXIT_OWNER_ERROR  # the final entry never reached the file; success is unreportable
+    shutdown_error = _record(book, "shutdown", child_exit_code=child_exit_code,
+                             final_exit_code=final, cleanup_confirmed=confirmed,
+                             error_type=error_type)
+    if shutdown_error:
+        # The final entry never reached the file, so this run is an owner-side failure whatever the
+        # child said: a 7 with no receipt is not a reported 7. The same precedence still decides,
+        # so an unproven tree stays 124 and a deliberate stop stays 130/143.
+        final = _final_code(confirmed=confirmed, stop_code=stop_code,
+                            error_type=error_type or shutdown_error,
+                            child_exit_code=child_exit_code)
     return final

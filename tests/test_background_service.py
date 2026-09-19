@@ -12,8 +12,12 @@ Three kinds of evidence, kept apart:
   the journal's contents, a start that never happened;
 * labelled fault injection for the paths an OS will not produce on demand - an unconfirmed or
   failing `terminate`, a leaked spawn, a journal stream that stops accepting writes, an interrupt;
-* native platform behaviour: POSIX SIGTERM and the documented SIGKILL limit, and the Windows
-  abrupt-owner stop, which skip with a reason on the other platform and are never read as passes.
+* native platform behaviour: real POSIX signals - at the spawn handoff, during an ordinary wait and
+  during cleanup - plus SIGTERM and the documented SIGKILL limit against a real owner process, and
+  the Windows abrupt-owner stop. Each skips with a reason elsewhere and is never read as a pass.
+
+The signal tests deliver an actual SIGTERM with `os.kill`; only the moment of delivery is chosen,
+and each of them refuses to signal at all unless the owner's own handler is installed.
 
 The Windows tests below were not executed by the worker that wrote them (Linux host); they are the
 owner's native checks.
@@ -211,7 +215,7 @@ def test_the_childs_own_exit_code_survives_and_its_grandchild_does_not(service, 
     assert service.free(service.grandchild_lock), "the grandchild outlived the owner"
     assert service.free(service.child_lock)
     assert sentinel.poll() is None, "an unrelated process was caught by the cleanup"
-    assert service.events() == ["startup", "child_exited", "cleanup", "shutdown"]
+    assert service.events() == ["starting", "startup", "child_exited", "cleanup", "shutdown"]
     assert service.last("child_exited")["child_exit_code"] == code
     assert service.last("shutdown") | {"timestamp": None} == {
         "timestamp": None, "event": "shutdown", "child_exit_code": code, "final_exit_code": code,
@@ -245,6 +249,53 @@ def test_a_journal_that_cannot_be_opened_starts_nothing(service, sentinel):
     assert not unwritable.exists() and sentinel.poll() is None
 
 
+def test_a_journal_that_opens_but_refuses_its_first_line_spawns_nothing(service, sentinel,
+                                                                        monkeypatch):
+    """Injection: the journal opens and then refuses every write, the way a full disk does.
+
+    Opening a file is not writing to it, which is what the first submission assumed. The receipt
+    that proves the journal works is taken before the spawn, so a refusal here leaves no process
+    at all rather than an unaccounted service.
+    """
+    real_popen = subprocess.Popen
+    attempts = []
+
+    class Watched(real_popen):
+        def __init__(self, argv, **kwargs):
+            attempts.append(list(argv))
+            super().__init__(argv, **kwargs)
+
+    monkeypatch.setattr(subprocess, "Popen", Watched)
+    monkeypatch.setattr(background_service, "RotatingFileHandler", refusing_from("starting"))
+    assert run_owned(service.argv("exit", 0), journal=str(service.journal)) == 125
+    assert attempts == [], "a journal that cannot be written starts nothing"
+    assert not service.child_ready.exists() and not service.grandchild_ready.exists()
+    assert service.free(service.child_lock, timeout=1), "no child means no held lock"
+    assert service.entries() == [] and sentinel.poll() is None
+
+
+def test_the_starting_receipt_is_written_before_the_first_spawn(service, monkeypatch):
+    """The other half of the same rule: the successful pre-spawn receipt, and ordinary events after.
+
+    The journal is read at the moment the owner starts the process, so the order is observed
+    rather than inferred from the finished file.
+    """
+    real_popen = subprocess.Popen
+    at_spawn = []
+
+    class Watched(real_popen):
+        def __init__(self, argv, **kwargs):
+            at_spawn.append(service.events())
+            super().__init__(argv, **kwargs)
+
+    monkeypatch.setattr(subprocess, "Popen", Watched)
+    assert run_owned(service.argv("exit", 0), journal=str(service.journal)) == 0
+    assert at_spawn == [["starting"]], "the journal proved itself writable before anything ran"
+    assert service.events() == ["starting", "startup", "child_exited", "cleanup", "shutdown"]
+    assert service.last("starting") | {"timestamp": None} == {"timestamp": None, "event": "starting"}
+    assert service.last("startup")["pid"] > 0, "the pid-bearing record still follows ownership"
+
+
 def test_a_missing_program_is_one_sanitized_failure_and_no_second_start(service, monkeypatch):
     """Start failure: no retry, no orphan, and the journal names the class, never the path."""
     real_popen = subprocess.Popen
@@ -259,7 +310,7 @@ def test_a_missing_program_is_one_sanitized_failure_and_no_second_start(service,
     missing = str(service.root / "there-is-no-such-program")
     assert run_owned([missing], journal=str(service.journal)) == 125
     assert attempts == [[missing]], "a failed start must not be tried twice"
-    assert service.events() == ["start_failed"]
+    assert service.events() == ["starting", "start_failed"]
     assert service.last("start_failed")["error_type"] in ("FileNotFoundError", "NotADirectoryError",
                                                           "PermissionError", "OSError")
     assert missing not in service.text()
@@ -331,7 +382,7 @@ def test_a_leaked_start_is_124_and_is_never_started_again(service, monkeypatch):
     monkeypatch.setattr(ProcessTree, "spawn", leaking)
     assert run_owned(service.argv("exit", 0), journal=str(service.journal)) == 124
     assert len(attempts) == 1
-    assert service.events() == ["start_leaked"]
+    assert service.events() == ["starting", "start_leaked"]
     assert service.last("start_leaked") | {"timestamp": None} == {
         "timestamp": None, "event": "start_leaked", "cleanup_confirmed": False,
         "error_type": "TreeOwnershipLeak"}
@@ -376,15 +427,45 @@ def test_a_journal_failure_after_the_start_still_reclaims_the_tree_and_refuses_s
     assert run_owned(service.argv("exit", 0), journal=str(service.journal)) == 125
     assert service.free(service.grandchild_lock), "a broken journal must not skip the cleanup"
     assert service.free(service.child_lock) and sentinel.poll() is None
-    assert service.events() == ["startup"], "the entries after the failure never reached the file"
+    assert service.events() == ["starting", "startup"], "nothing after the failure reached the file"
 
 
-def test_a_final_entry_that_cannot_be_written_is_not_reported_as_success(service, monkeypatch):
-    """The child exited 0 and the tree is gone, but the owner cannot say so: 125, not 0."""
+@pytest.mark.parametrize("code", [0, 7])
+def test_a_final_entry_that_cannot_be_written_is_an_owner_error_whatever_the_child_said(service,
+                                                                                        monkeypatch,
+                                                                                        code):
+    """The child exited and the tree is gone, but the owner cannot say so: 125, not 0 and not 7.
+
+    A nonzero child is the case the first submission got wrong: it answered 7, which reads as the
+    child's own, fully accounted run rather than as an owner whose last receipt never landed.
+    """
     monkeypatch.setattr(background_service, "RotatingFileHandler", refusing_from("shutdown"))
-    assert run_owned(service.argv("exit", 0), journal=str(service.journal)) == 125
-    assert service.events() == ["startup", "child_exited", "cleanup"]
+    assert run_owned(service.argv("exit", code), journal=str(service.journal)) == 125
+    assert service.events() == ["starting", "startup", "child_exited", "cleanup"]
+    assert service.last("child_exited")["child_exit_code"] == code
     assert service.last("cleanup")["cleanup_confirmed"] is True
+
+
+def test_a_failed_final_entry_does_not_outrank_an_unproven_tree(service, sentinel, monkeypatch):
+    """Control for the precedence above: 124 is still first when both faults are injected."""
+    calls: list[tuple] = []
+    injected_terminate(monkeypatch, "unconfirmed", calls)
+    monkeypatch.setattr(background_service, "RotatingFileHandler", refusing_from("shutdown"))
+    assert run_owned(service.argv("exit", 7), journal=str(service.journal)) == 124
+    assert service.last("cleanup")["cleanup_confirmed"] is False
+    assert "shutdown" not in service.events()
+    assert service.free(service.grandchild_lock) and sentinel.poll() is None
+
+
+def test_a_failed_final_entry_does_not_outrank_a_deliberate_interruption(service, sentinel,
+                                                                        monkeypatch):
+    """Control for the precedence above: a stop stays 130 when the last receipt also fails."""
+    interrupting_spawn(monkeypatch, service, KeyboardInterrupt)
+    monkeypatch.setattr(background_service, "RotatingFileHandler", refusing_from("shutdown"))
+    assert run_owned(service.argv("stay", 0), journal=str(service.journal)) == 130
+    assert service.events() == ["starting", "startup", "cleanup"]
+    assert service.free(service.child_lock) and service.free(service.grandchild_lock)
+    assert sentinel.poll() is None
 
 
 def interrupting_spawn(monkeypatch, service, failure):
@@ -411,7 +492,7 @@ def test_an_interrupted_owner_is_130_after_the_tree_is_gone(service, sentinel, m
     assert run_owned(service.argv("stay", 0), journal=str(service.journal)) == 130
     assert service.free(service.child_lock) and service.free(service.grandchild_lock)
     assert sentinel.poll() is None
-    assert service.events() == ["startup", "cleanup", "shutdown"]
+    assert service.events() == ["starting", "startup", "cleanup", "shutdown"]
     assert service.last("shutdown")["error_type"] == "KeyboardInterrupt"
     assert service.last("shutdown")["cleanup_confirmed"] is True
     assert service.last("shutdown")["child_exit_code"] is None
@@ -420,6 +501,11 @@ def test_an_interrupted_owner_is_130_after_the_tree_is_gone(service, sentinel, m
 # ---- the SIGTERM handler: POSIX, main thread, and put back ---------------------------------------
 
 def test_the_sigterm_handler_is_restored_when_the_run_ends(service, monkeypatch):
+    """The installed handler is also called here directly: it must record and return, never raise.
+
+    That is the whole of the deferred stop. A handler that unwinds can do so anywhere the owner
+    happens to be, including inside the spawn that is producing the tree it would have to reclaim.
+    """
     real_spawn = ProcessTree.spawn
     seen = []
 
@@ -435,6 +521,7 @@ def test_the_sigterm_handler_is_restored_when_the_run_ends(service, monkeypatch)
         assert seen == [before], "no handler is installed on Windows"
     else:
         assert seen != [before] and callable(seen[0])
+        assert seen[0](signal.SIGTERM, None) is None, "the handler records the stop; it never raises"
 
 
 def test_a_run_off_the_main_thread_installs_no_handler_and_still_owns_its_tree(service):
@@ -448,6 +535,106 @@ def test_a_run_off_the_main_thread_installs_no_handler_and_still_owns_its_tree(s
     assert not worker.is_alive() and answer == [3]
     assert signal.getsignal(signal.SIGTERM) is before
     assert service.free(service.grandchild_lock)
+
+
+# ---- native POSIX: a real signal, delivered where it used to unwind ------------------------------
+
+@POSIX_ONLY
+def test_a_real_sigterm_at_the_spawn_handoff_is_143_only_after_the_tree_is_reclaimed(service,
+                                                                                     sentinel,
+                                                                                     monkeypatch):
+    """The reproduced defect: the signal arrives while the owner is taking the tree.
+
+    The signal is real - `os.kill` to this very process - and only the moment of delivery is
+    chosen: the whole tree is up, the spawn has produced it, and the owner has not yet returned
+    from the handoff. A handler that raised here unwound out with the processes already created,
+    which is a 143 reported beside a live service. Recorded instead, the stop waits for the owner.
+    """
+    real_spawn = ProcessTree.spawn
+    before = signal.getsignal(signal.SIGTERM)
+    handed_over = []
+
+    def spawn(argv, **kwargs):
+        tree = real_spawn(argv, **kwargs)
+        assert service.wait_ready(), "the tree was not up when the signal was delivered"
+        assert signal.getsignal(signal.SIGTERM) is not before, "no owner handler is installed"
+        os.kill(os.getpid(), signal.SIGTERM)
+        handed_over.append(tree.process.pid)  # reached only because nothing unwound from the signal
+        return tree
+
+    monkeypatch.setattr(ProcessTree, "spawn", spawn)
+    assert run_owned(service.argv("stay", 0), journal=str(service.journal)) == 143
+    assert len(handed_over) == 1, "the handoff completed; the signal did not raise through it"
+    assert service.free(service.child_lock) and service.free(service.grandchild_lock)
+    assert not alive(handed_over[0]) and sentinel.poll() is None
+    assert signal.getsignal(signal.SIGTERM) is before
+    assert service.events() == ["starting", "startup", "cleanup", "shutdown"]
+    assert service.last("shutdown")["final_exit_code"] == 143
+    assert service.last("shutdown")["cleanup_confirmed"] is True
+    assert service.last("shutdown")["child_exit_code"] is None
+
+
+@POSIX_ONLY
+def test_a_real_sigterm_during_an_ordinary_wait_is_answered_by_the_bounded_poll(service, sentinel,
+                                                                                monkeypatch):
+    """The sleeping service: the child sleeps for 600 seconds and the stop is answered in one step.
+
+    The owner's wait is recorded, so "bounded" is asserted rather than assumed, and the previous
+    SIGTERM handler is back when the run ends.
+    """
+    real_spawn = ProcessTree.spawn
+    before = signal.getsignal(signal.SIGTERM)
+    waits = []
+
+    def spawn(argv, **kwargs):
+        tree = real_spawn(argv, **kwargs)
+        real_wait = tree.process.wait
+
+        def watched(*args, **kwargs):
+            waits.append(kwargs.get("timeout"))
+            tree.process.wait = real_wait  # the cleanup's own waits are the real ones
+            assert service.wait_ready(), "the tree was not up when the signal was sent"
+            assert signal.getsignal(signal.SIGTERM) is not before, "no owner handler is installed"
+            os.kill(os.getpid(), signal.SIGTERM)  # a real signal, into a real wait
+            return real_wait(*args, **kwargs)
+
+        tree.process.wait = watched
+        return tree
+
+    monkeypatch.setattr(ProcessTree, "spawn", spawn)
+    started = time.monotonic()
+    assert run_owned(service.argv("stay", 0), journal=str(service.journal)) == 143
+    elapsed = time.monotonic() - started
+    assert waits and waits[0] is not None and waits[0] <= 1.0, waits
+    assert elapsed < 120, "the child sleeps for 600s; the stop was not waited out"
+    assert signal.getsignal(signal.SIGTERM) is before
+    assert service.free(service.child_lock) and service.free(service.grandchild_lock)
+    assert sentinel.poll() is None
+    assert service.last("shutdown")["final_exit_code"] == 143
+    assert service.last("shutdown")["cleanup_confirmed"] is True
+
+
+@POSIX_ONLY
+def test_a_real_sigterm_during_cleanup_does_not_raise_through_it(service, sentinel, monkeypatch):
+    """The stop arrives after the child's run was finished and recorded, while cleanup is running.
+
+    Nothing may unwind out of the signal there either. The answer stays the child's own code: that
+    run completed and was accounted for before the stop existed, and the tree is gone either way.
+    """
+    real_terminate = ProcessTree.terminate
+    before = signal.getsignal(signal.SIGTERM)
+
+    def terminate(self, reason, *, timeout=20.0, settle=10.0):
+        assert signal.getsignal(signal.SIGTERM) is not before, "no owner handler is installed"
+        os.kill(os.getpid(), signal.SIGTERM)
+        return real_terminate(self, reason, timeout=timeout, settle=settle)
+
+    monkeypatch.setattr(ProcessTree, "terminate", terminate)
+    assert run_owned(service.argv("exit", 5), journal=str(service.journal)) == 5
+    assert service.free(service.grandchild_lock) and sentinel.poll() is None
+    assert signal.getsignal(signal.SIGTERM) is before
+    assert service.last("shutdown")["final_exit_code"] == 5
+    assert service.last("shutdown")["cleanup_confirmed"] is True
 
 
 # ---- native POSIX: a real owner, a real signal ---------------------------------------------------
