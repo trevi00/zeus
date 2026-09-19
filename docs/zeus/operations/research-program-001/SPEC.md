@@ -967,3 +967,27 @@ No broad redesign or deadline increase. Complete the existing implementation in 
    edits. Add a required-host input that exceeds whole40960 and verify named safe diagnostics/provider0.
 4. Run focused tests and lint; return structured result promptly, do not perform full suite (owner/CI does).
 This completes existing input gate acceptance and log compatibility; no new requirement outside touched path.
+
+
+### Live005 reframe: fixed partitions waste the bounded total (no new execution)
+
+Source RESULT-005.md/EVIDENCE-005.json. Implementation011/012 and CI pass; actual live producer correctly
+refuses research proposal4260 against4096. Raw original retained. Three real roles succeeded, then stop.
+Invalid owner assumption: four independent maximum allocations are a necessary way to ensure total admission.
+Discriminating check: exact packet11965 + report1677 + proposal4260 + future improvement reservation8192 +
+overhead reservations8192 =34286, below40960 by6674. No semantic compression is needed for this observed case.
+
+Revised next bounded design recommendation: shared payload pool32768 plus existing two4096 overhead caps.
+In declared production order, require sum(actual committed payloads through current stage) + sum(default
+reservations for future payloads) <=32768. Initial reservations remain16384/4096/4096/8192. Earlier unused
+capacity is available downstream; future capacity is never spent twice. Final consumer checks exact total
+and all mandatory components instead of obsolete per-section maxima; preserve role/hash/source matching.
+Default sizes are future reservations, not immutable section ceilings after earlier stages finish. Do not
+silently keep both conflicting policies. Version the policy; old receipts retain original meanings.
+
+Before a next implementation, one full matrix must cover every stage, exact pool/pool+1, non-ASCII,
+missing/future components, current observed input, future-reservation exhaustion, whole-envelope/recovery,
+restart binding, and source retention. No global budget raise, summarization, tool-context bypass or recursive
+retry. Current v1 guard remains in force; this recommendation is NOT implemented and has NOT passed a live run.
+No further model call in005. Acceptance stays complete real cycle plus tick2/stop; do not call early refusal
+an operational success. Keep successful code/CI evidence and move only this changed policy assumption forward.
