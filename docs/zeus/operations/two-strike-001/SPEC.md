@@ -102,3 +102,9 @@ Projection terminology: `counted_failures` currently means counted receipt obser
 can produce another receipt), not unique invocations. Individual `distinct_failures` counters and
 research triggers are deduplicated in SQLite. Do not use the receipt-observation count as a
 cross-job recurrence metric. A future Projects aggregation must retain this distinction.
+
+Owner integration checks found two stale literal contracts while completing the draft: the profile
+rewrite dropped the word `run` from the host-command instruction, and adding three pinned source
+records left an older test expecting exactly nine. A bounded search of profile consumers found
+the affected assertions. Preserve the exact instruction and update the provenance assertion to
+twelve plus the three newly adopted paths; permissions and runtime acceptance are not weakened.
