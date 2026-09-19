@@ -896,3 +896,50 @@ comprehension metrics. Completion remains one accepted full council and second b
 local absorption and project monitoring are operational projects, not extra launch prerequisites.
 
 Offline evidence: `D:\workspaces\zeus\artifacts\research-program-001\delivery-research\paging-measurement.json`; SHA256 `dcebc7a51d3abbb7e114b263e83f89d12755d829525d4ae2e8c5d4adc353196e`.
+
+
+### Delivery implementation011: owner-fixed bounded inline contract
+
+Authorization: user says proceed after research. One Claude implementation + independent review, owner
+checks and CI; live canary only if accepted, at most2ticks/1council and stop at first failure. No merge/deploy.
+Use existing six-W, council, raw artifact and input compiler. No paged-receipt subsystem in this batch.
+
+Versioned contract urn:zeus:council-input:1, UTF-8 lengths of canonical JSON (including JSON escaping):
+packet<=16384; normalized DBA report<=4096; complete research proposal<=4096; complete improvement
+proposal INCLUDING all findings<=8192. Sum32768. Full council_delivery metadata/wrapper (serialized
+projection size minus serialized present payload components) <=4096. Complete required ContextPacket
+outside serialized delivery <=4096, checked after recovery/skills metadata assembly. Thus maximum
+required context40960; council-debate compiler window49152, reserved8192. These are explicit local byte
+policy values, NOT model tokens/capacity. Legacy non-council budget28000-6000 remains unchanged.
+Current live004 payloads11871/1295/2666/3085 and required envelope23055 fit with headroom. These limits
+are a bounded supported workload, not proof arbitrary research fits. Raw originals are never truncated.
+
+One SSOT domain module owns constants, canonical-byte validation, safe typed overflow and a policy
+manifest. Producers: CouncilRun validates frozen packet immediately after _freeze_packet BEFORE snapshot
+or DBA; normalized DBA report before relay/next lead; complete derived lead proposal before sessions.submit
+or any downstream role. Domain consumers recheck the full projection before provider, not just producer
+promises. Council run ends with precise needs_scope_split reason (terminal failure is acceptable if existing
+status enum retained), safe section/observed/max byte diagnostics, with original role evidence retained.
+No automatic retries/summary/drop/resize. Missing mandatory fields remain errors distinct from size overflow.
+
+Executor uses council policy only when actual action=dge_role, appropriate debate role/stage, and validated
+delivery; caller cannot inject an arbitrary delivery to obtain larger budget. Measure final required prompt
+including actual IDs/paths/recovery/skills, fail before provider if host allowance exceeded, and emit named
+byte measurements in context artifact/receipt without changing old estimated_tokens semantics silently.
+Expose context policy/version, measured required bytes and limit in an additive compatibility-safe place.
+No token estimates masquerading as observed usage. Output instructions give producer limits and require
+concise factual content with all findings/unknowns preserved; no schema keyword unsupported by pinned CLI.
+
+Tests: unchanged legacy compiler and non-council executor; valid roles and caller-spoof rejection; exact cap
+and cap+1 including multi-byte/escaped text; complete largest-admitted payloads+metadata+host under actual
+Executor/compiler; producer overflow stops before NEXT provider/session submission (calls counted via
+injected fakes and labelled); missing/unknown fields; hash/source unchanged; raw originals retained;
+current recovery overflow explicitly fails safely. Existing timeout/cancel/restart/clean checkout gates stay.
+Owner replays actual run003/004 raw inputs using no-model runtime and labels that limitation. Synthetic max
+checks prove deterministic delivery, not semantic model quality. Then owner full suite and CI; one real run
+only after pass. If a meaningful assumption breaks, return one consolidated failure; do not patch repeatedly.
+
+Claude allowed paths: new domain/council_input.py; application/council.py; adapters/autonomous_roles.py;
+adapters/executor.py; tests/test_council_input.py and directly affected council-delivery tests;
+docs/contracts.md. Do not change global model.py serialization, provider limits, source/privacy gates,
+auth, budgets, snapshot freshness, deadlines, consumer evidence or PR-review artifacts. No extra model calls.
