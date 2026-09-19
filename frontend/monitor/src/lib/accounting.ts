@@ -13,13 +13,12 @@ import type { Tone } from "./tones"
  *
  * Reading rules, in order:
  * - both statements present and equal -> that mode;
- * - only `budget.mode` present -> that mode (an older collector may not carry the top-level field);
- * - only `accounting_mode` present -> that mode when it agrees with the legacy reading of the
- *   budget (no `mode` key means finite); `subscription` over a budget without `mode` is a
- *   contradiction, because the canonical subscription budget always carries the key;
+ * - exactly one statement present -> that one explicit mode, whichever field carries it. A single
+ *   explicit statement is the only statement; the absent field is an older or newer wire shape,
+ *   not a second, contradicting claim, so `subscription` stated once is read as subscription;
  * - neither present -> `finite`, the legacy shape; this is the contract, not a guess;
- * - statements that disagree, or a present value outside the contract (wrong type, `null`, an
- *   unknown string) -> `unknown`: never silently finite, and not claimed as subscription either.
+ * - two present statements that disagree, or a present value outside the contract (wrong type,
+ *   `null`, an unknown string) -> `unknown`: never silently finite, never claimed as subscription.
  *
  * In subscription mode `per_host`/`total` stay on the wire as retained migration metadata. They are
  * not ceilings, not a provider allowance, not free usage, not remaining money and not remaining
@@ -103,22 +102,25 @@ export function interpretAccounting(topLevelMode: unknown, budgetMode: unknown):
     return { ...UNKNOWN_READING, mode: "unknown", basis: "malformed", declared, ceiling_applies: null,
       detail: `계약(finite·subscription)에 없는 회계 방식 값 · ${wire}` }
   }
-  // An absent `budget.mode` is the legacy finite statement, not silence.
-  const budgetSays: "finite" | "subscription" = budget === "absent" ? FINITE : budget
-  if (top === "absent") {
-    const basis: AccountingBasis = budget === "absent" ? "legacy_absent" : "budget_mode"
-    return { ...READINGS[budgetSays], mode: budgetSays, basis, declared, ceiling_applies: budgetSays === FINITE,
-      detail: budget === "absent"
-        ? `두 표기가 모두 없음 · 이전 계약의 유한 형식(mode 키 없음)으로 읽음 · ${wire}`
-        : `budget.mode 만 기록됨(이전 수집기일 수 있음) · ${wire}` }
+  if (top === "absent" && budget === "absent") {
+    // Neither field states a mode: the legacy finite shape, which is the contract, not a guess.
+    return { ...READINGS.finite, mode: FINITE, basis: "legacy_absent", declared, ceiling_applies: true,
+      detail: `두 표기가 모두 없음 · 이전 계약의 유한 형식(mode 키 없음)으로 읽음 · ${wire}` }
   }
-  if (top !== budgetSays) {
+  // Exactly one explicit statement is the only statement: the absent field is a different wire
+  // shape, not a contradicting claim, so it is never used to outvote what was actually declared.
+  if (top === "absent" || budget === "absent") {
+    const stated = (top === "absent" ? budget : top) as "finite" | "subscription"
+    const basis: AccountingBasis = top === "absent" ? "budget_mode" : "top_level"
+    return { ...READINGS[stated], mode: stated, basis, declared, ceiling_applies: stated === FINITE,
+      detail: `${top === "absent" ? "budget.mode" : "accounting_mode"} 한쪽만 기록됨(다른 표기는 없음) · 기록된 표기를 그대로 읽음 · ${wire}` }
+  }
+  if (top !== budget) {
     return { ...UNKNOWN_READING, mode: "unknown", basis: "conflict", declared, ceiling_applies: null,
-      detail: `두 표기가 서로 다름 · ${wire} (budget.mode 없음 = 유한 형식) · 한쪽을 임의로 채택하지 않음` }
+      detail: `두 표기가 서로 다름 · ${wire} · 한쪽을 임의로 채택하지 않음` }
   }
-  const basis: AccountingBasis = budget === "absent" ? "top_level" : "agreed"
-  return { ...READINGS[top], mode: top, basis, declared, ceiling_applies: top === FINITE,
-    detail: budget === "absent" ? `accounting_mode 표기와 유한 형식 budget 이 일치 · ${wire}` : `두 표기가 일치 · ${wire}` }
+  return { ...READINGS[top], mode: top, basis: "agreed", declared, ceiling_applies: top === FINITE,
+    detail: `두 표기가 일치 · ${wire}` }
 }
 
 /**

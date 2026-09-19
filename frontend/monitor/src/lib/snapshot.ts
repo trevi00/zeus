@@ -43,7 +43,55 @@ export type FleetJob = {
   calls: { reserved: number | null; settled: number | null }
   created_at: string
   updated_at: string
+  /** Owner-recorded delivery: the record, `null` for no record (unknown), `false` for off-contract. */
+  delivery: FleetDelivery | null | false
 }
+/**
+ * Optional owner-recorded delivery of one fleet job (`urn:zeus:owner-delivery:1`, SPEC "Owner
+ * delivery records"). This is what the OWNER stated after checking a preserved receipt; it is not
+ * an independent GitHub or network verification, and it grants no authority of its own.
+ * `merge_revision` and `deployed_revision` stay separate: a null deployed revision means the owner
+ * recorded a merge and said nothing about a deployment. A job with no record at all is unknown,
+ * never "not delivered", and delivery is never inferred from `accepted` or from another job.
+ */
+export const DELIVERY_SCHEMA = "urn:zeus:owner-delivery:1"
+export type FleetDelivery = {
+  authority: "owner_recorded"
+  candidate_revision: string
+  merge_revision: string
+  deployed_revision: string | null
+  recorded_at: string
+  evidence_refs: string[]
+  report_url: string | null
+}
+
+/**
+ * Narrow the optional `delivery` object of one job view. Shared by the live 팀 작업 decoder and the
+ * report capture so both say the same thing. Absent stays absent (`null` = unknown, not "none"),
+ * and an off-contract record is `false`: it is reported as unreadable rather than shown as facts.
+ */
+export function readDelivery(value: unknown): FleetDelivery | null | false {
+  if (value === undefined || value === null) return null
+  if (typeof value !== "object") return false
+  const record = value as Record<string, unknown>
+  if (record.schema !== DELIVERY_SCHEMA || record.authority !== "owner_recorded") return false
+  const revision = (field: unknown) => typeof field === "string" && /^[0-9a-f]{40}$/.test(field)
+  if (!revision(record.candidate_revision) || !revision(record.merge_revision)) return false
+  if (!(record.deployed_revision === null || revision(record.deployed_revision))) return false
+  if (typeof record.recorded_at !== "string" || !record.recorded_at) return false
+  if (!Array.isArray(record.evidence_refs) || !record.evidence_refs.every((ref) => typeof ref === "string")) return false
+  if (!(record.report_url === null || typeof record.report_url === "string")) return false
+  return {
+    authority: "owner_recorded",
+    candidate_revision: record.candidate_revision as string,
+    merge_revision: record.merge_revision as string,
+    deployed_revision: (record.deployed_revision as string | null) ?? null,
+    recorded_at: record.recorded_at,
+    evidence_refs: [...(record.evidence_refs as string[])],
+    report_url: (record.report_url as string | null) ?? null,
+  }
+}
+
 export type FleetUnregistered = { schema: string; registered: false; lanes: []; jobs: [] }
 export type FleetRegistered = {
   schema: string

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ExternalLink, FileText, LayoutDashboard, Palette, RefreshCw, ScrollText, Users, type LucideIcon } from "lucide-react"
+import { ExternalLink, FileText, LayoutDashboard, MessageSquare, Palette, RefreshCw, ScrollText, Users, type LucideIcon } from "lucide-react"
 
 import { SourceStrip } from "@/components/source-strip"
 import { StatusBadge } from "@/components/status-badge"
@@ -8,16 +8,21 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { SOURCE_NAMES, STATE_LABELS, freshness } from "@/lib/snapshot"
 import { useSnapshot, type TransportState } from "@/lib/use-snapshot"
+import { DeskView } from "@/views/desk"
 import { DesignSystemView } from "@/views/design-system"
 import { FleetView } from "@/views/fleet"
 import { LogsView } from "@/views/logs"
 import { OverviewView } from "@/views/overview"
 import { ReportView } from "@/views/report"
 
-type ViewName = "overview" | "logs" | "fleet" | "report" | "design"
+type ViewName = "overview" | "logs" | "fleet" | "desk" | "report" | "design"
 const VIEWS: Array<{ id: ViewName; label: string; icon: LucideIcon }> = [
   { id: "overview", label: "개요", icon: LayoutDashboard },
   { id: "logs", label: "로그", icon: ScrollText },
+  // 대화 창구 talks to the separate desk routes (`/api/desk*`, local-operations-desk-001), not to
+  // the status snapshot: it has its own transport, freshness and errors, and the read-only
+  // snapshot contract above is unaffected by it.
+  { id: "desk", label: "대화 창구", icon: MessageSquare },
   // 팀 작업 reads the optional `sources.fleet` envelope only (fleet-001 SPEC). It is deliberately
   // absent from SOURCE_NAMES: the source strip, the header warnings below and the pinned report
   // keep the fixed four-source contract, and the fleet view shows its own freshness and notices.
@@ -64,7 +69,7 @@ export function App() {
           <h1 className="text-base font-semibold">관측소 · 운영 모니터</h1>
         </div>
         {nav}
-        <p className="mt-auto text-xs text-muted-foreground">조회 전용 · 페이지 연결 정상은 하네스 정상 판정과 다릅니다. 출처가 최신(20초 미만)일 때만 현재 상태를 주장합니다.</p>
+        <p className="mt-auto text-xs text-muted-foreground">관측 화면은 조회 전용 · 페이지 연결 정상은 하네스 정상 판정과 다릅니다. 출처가 최신(20초 미만)일 때만 현재 상태를 주장합니다. 대화 창구만 요청을 접수하며, 요청은 제안일 뿐 구현 배정이 아닙니다.</p>
       </aside>
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-10 flex flex-col gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur no-print lg:px-8">
@@ -74,7 +79,8 @@ export function App() {
               <h1 className="text-base font-semibold">관측소 · 운영 모니터</h1>
             </div>
             <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-              <StatusBadge tone="neutral">조회 전용</StatusBadge>
+              {/* Only the desk writes, and only conversation rows; every other view stays read-only. */}
+              <StatusBadge tone="neutral">{view === "desk" ? "대화 창구 · 접수만 (실행 제어 없음)" : "조회 전용"}</StatusBadge>
               <StatusBadge tone="neutral" title="관측 범위 라벨 · 상태나 성공 판정이 아닙니다">관측 범위 · {typeof snapshot?.scope?.label === "string" && snapshot.scope.label ? snapshot.scope.label : "라벨 없음"}</StatusBadge>
               <StatusBadge tone={transportTone} aria-live="polite">{transportText}{transport.detail ? ` · ${transport.detail}` : ""}</StatusBadge>
               <Button size="sm" variant="outline" onClick={() => void refresh()} disabled={inflight} aria-busy={inflight}>
@@ -92,6 +98,7 @@ export function App() {
           {view === "overview" ? <OverviewView snapshot={snapshot} retained={retained} now={now} /> : null}
           {view === "logs" ? <LogsView snapshot={snapshot} retained={retained} now={now} /> : null}
           {view === "fleet" ? <FleetView snapshot={snapshot} now={now} /> : null}
+          {view === "desk" ? <DeskView /> : null}
           {view === "report" ? <ReportView snapshot={snapshot} transport={transport} now={now} /> : null}
           {view === "design" ? <DesignSystemView /> : null}
           <footer className="text-xs text-muted-foreground no-print">
