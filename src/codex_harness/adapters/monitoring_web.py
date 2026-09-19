@@ -2,12 +2,15 @@
 
 Routes: `/` serves the packaged React observatory (falls back to the legacy page while no build
 output is packaged), `/legacy` the previous static page, `/assets/<file>` fixed packaged assets by
-exact name with a strict MIME allow-list, `/api/status` the snapshot, `/health` liveness.
+exact name with a strict MIME allow-list, `/api/status` the snapshot, `/health` liveness,
+`/ready` current observation freshness (monitor-readiness-001).
 """
 import json
 import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files
+
+from codex_harness.adapters.monitoring_readiness import readiness
 
 ASSET_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}')
 ASSET_TYPES = {'.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -91,6 +94,13 @@ def handler(snapshot_path):
                     self.respond(503, b'{"error":"snapshot_unavailable"}', 'application/json')
             elif path == '/health':
                 self.respond(200, b'{"service":"harness-monitor"}', 'application/json')
+            elif path == '/ready':
+                # Liveness above stays 200 without reading the snapshot; readiness answers only
+                # whether the observation delivered right now is fresh (monitor-readiness-001).
+                # The assessment is total and carries fixed codes only, so it needs no sanitizing.
+                report = readiness(snapshot_path)
+                body = json.dumps(report).encode('utf-8')
+                self.respond(200 if report['ready'] else 503, body, 'application/json; charset=utf-8')
             else:
                 self.respond(404, b'Not found', 'text/plain')
 
