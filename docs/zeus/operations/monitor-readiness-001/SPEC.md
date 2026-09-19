@@ -147,3 +147,33 @@ short IDs, test count and other reason expectations unchanged. Only deep-nesting
 documented reasons, retaining all other assertions. No runtime, threshold, route, skip, dependency,
 workflow or global setting changes. Run the same focused command and ruff; owner rechecks this exact
 change and CI. Preserve native/full/HTTP evidence already executed; this is not a new review topic.
+
+## Complete portable concurrency matrix, 2026-09-19
+
+CI35446996683 Windows3.12: all40 HTTP reads completed and HTTP/ready consistency passed, but one
+or more snapshot states were outside fresh/stale. The old test discarded reasons, so the exact CI
+state/cause is unknown. All other CI jobs passed. Do not call this CI green or rerun until green.
+Owner's one predeclared native Windows experiment (four readers x250 requests,200 replacements,
+one run, actual temp files/HTTP) recorded612 fresh200,366 stale503,22 unavailable/file_unreadable503,
+zero request errors. Receipt: artifacts/monitor-readiness-001/concurrency-probe.json. This establishes
+safe read unavailability during the local scenario; it does not prove the hidden CI reason.
+Microsoft CreateFileW documentation read2026-09-19,
+https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew explains incompatible
+open/delete sharing modes can refuse an open. It supports possibility, not historical CI causality.
+
+Reframe the full test matrix: successful read -> complete fresh or stale snapshot; refused read ->
+unavailable503 with file_missing/file_unreadable, null age and empty sources; partial/invalid decoded
+snapshot -> test failure in this controlled publication scenario; request/JSON failure -> test failure;
+after writers/readers finish and fresh publication succeeds -> ready200 recovery. This supersedes
+the earlier concurrency row's implicit always-readable assumption. Snapshot publication integrity
+and availability of an open handle are different facts. Runtime already implements these states.
+
+One consolidated test/documentation-only delivery: same two allowed paths as prior correction.
+Keep40 actual requests,20 replacements, valid fresh/stale payloads, bounded joins/cleanup and existing
+writer-only sharing retry. Retain complete safe JSON responses (not just state triples) and include
+them in assertion diagnostics. Validate each successful read as the complete old/new semantic view;
+permit only the named unavailable503 alternatives above (never as200), not arbitrary invalid states.
+Assert recovery after publication ends. No HTTP retry, no skip, no runtime changes or global timeout
+increase. Update IMPLEMENTATION's concurrency claims and preserve the prior failure plus measured
+counts. All other acceptance rows and accepted evidence stay fixed; exact cause of CI's hidden
+state stays unknown. Owner focused checks and final CI determine completion, then deploy/observe.
